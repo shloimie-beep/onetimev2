@@ -28,6 +28,9 @@
 - Wired OT-44 into the shared app with a non-mutating read-only session scope resolver, global Communications route, contact Communications view, and no default CRM overview Communications prefetch/API request.
 - Integrated PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted module.
 - Added billing contracts, disabled-by-default config parser, fixture provider adapter, network guard, return-path validation, entitlement policy, service/router hooks, repository, migration `1300`, reference UI, and focused tests.
+- Integrated PR #15 / OT-52 parent/student portals as an isolated, unmounted module.
+- Added portal contracts, migration `1500`, repository, domain services, exported routers, feature-local UI components, browser harness, screenshots, and focused router/service/UI tests.
+- Preserved parent household authorization, student single-learner isolation, three-active-learner limit, append-only reward corrections, digest-only credential lifecycle, helper unavailable by default, no-send support preview, and protected-action raw provider URL rejection.
 
 ## Supersession Security Port
 

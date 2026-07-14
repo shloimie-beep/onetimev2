@@ -4,6 +4,10 @@
 
 OT-52P implements isolated Parent and Student Portals V1 as feature-local contracts, services, repository/migration, routers, UI components, and tests. The work remains unmounted by design and does not modify central app composition.
 
+## OT-60R Convergence Note
+
+The recovery branch preserved OT-52P as an isolated, unmounted module. Live parent/student mounts, auth-session mapping, CSRF wiring, and provider-safe adapters remain future work.
+
 ## Key Invariants
 
 - Parent scope is household-authorized.

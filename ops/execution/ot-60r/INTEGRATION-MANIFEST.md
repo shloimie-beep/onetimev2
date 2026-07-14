@@ -15,7 +15,7 @@
 | #8  | `571b18f36cdc645f757cc3be6b0519f1af3225f6` | Audited        | Applied as delivery correction            |
 | #14 | `76cae19be515ee896f22d0da976082a09d1d25d6` | Audited        | Applied with shared app wiring            |
 | #12 | `f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899` | Audited        | Applied as fixture-only isolated module   |
-| #15 | `9594c228b9ac3047f42bb9e8c804384cc45a3e40` | Audited        | Pending                                   |
+| #15 | `9594c228b9ac3047f42bb9e8c804384cc45a3e40` | Audited        | Applied as isolated unmounted portals     |
 | #13 | `e235af05759f0a97496552c6e8aabed7ba3eee18` | Audited        | Pending                                   |
 | #6  | `0ea782d8551c26edd48b08d644b573e19b9835b1` | Audited        | Pending                                   |
 | #10 | `9444176dbc55e0c5af048ec1df2ea75ffa8dde33` | Audited        | Evidence-only, defer implementation claim |
@@ -39,3 +39,4 @@ Result: PR #3/#9 alternate trains are superseded. Only the verified missing HMAC
 | PR #4 / OT-36 and PR #8 / OT-40 | Applied. Cherry-picked the OT-36 range in order, then OT-40 correction, keeping sink/mock delivery worker semantics, deterministic outbox intents, corrected migration `0004`, and no real provider activation.                                                                                                                                  |
 | PR #14 / OT-44                  | Applied. Integrated communications contracts/domain/server/client/tests and additionally wired the shared app with a read-only session resolver plus lazy CRM shell route/contact view while preserving no default Communications prefetch from CRM overview.                                                                                    |
 | PR #12 / OT-46                  | Applied. Integrated fixture-only billing contracts/domain/db/router/reference UI/tests and kept central app wiring deferred, all feature flags default-off, and no live Stripe/provider/access mutation.                                                                                                                                         |
+| PR #15 / OT-52                  | Applied. Integrated parent/student portal contracts, migration `1500_ot52_portal_households_learners.sql`, repository, domain services, routers, feature-local UI, tests, and evidence. Kept unmounted from central app/server composition pending safe auth/session and adapter wiring.                                                         |

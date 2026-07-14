@@ -59,6 +59,19 @@ Real disposable PostgreSQL plan proof remains pending for the later PR #6 assura
 
 Real PostgreSQL 16 proof remains pending; production database use and live Stripe calls remain forbidden.
 
+## OT-52 Parent/Student Portals
+
+- `npx vitest run tests/ot-52/portal-router.test.ts tests/ot-52/portal-services.test.ts tests/ot-52/portal-ui.test.ts`: PASS, 15 tests.
+- `npm run typecheck`: PASS.
+- `npm run build`: PASS. Portals remain isolated/unmounted and did not add a public/app bundle chunk.
+- `npm run format`: FAILED as a full-repo baseline check because existing non-OT-52 files remain Prettier-noisy. Scoped OT-52 formatting/check below passed after excluding SQL, which this repo's Prettier config cannot parse.
+- `npx prettier --check <OT-52 touched supported files>`: PASS.
+- `git diff --check --cached`: PASS.
+- `node -e "JSON.parse(...)"`: PASS for OT-52 `BROWSER-HARNESS.json` and `REAL-POSTGRES-CONCURRENCY.json`.
+- `npm run secret:scan`: PASS across 265 repo text files.
+
+Real PostgreSQL concurrency proof remains pending for a safe disposable database target; `db:verify` remains blocked without `DATABASE_URL`.
+
 ## Supersession Security Port
 
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.

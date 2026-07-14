@@ -15,6 +15,7 @@ Completed so far:
 - Integrated PR #4 / OT-36 delivery foundation range and PR #8 / OT-40 delivery correction with sink/mock guardrails and no real provider activation.
 - Integrated PR #14 / OT-44 communications read model and wired it into the shared app with read-only session scope and lazy CRM shell route/contact view.
 - Integrated PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted, default-off module with no live Stripe/provider/access mutation.
+- Integrated PR #15 / OT-52 parent/student portals as an isolated, unmounted module with household/student isolation, learner-limit, credential, helper, support-preview, and provider-URL safeguards.
 
 Current head is not a canonical integrated product candidate yet. Feature integration
-is still pending, continuing with PR #15 / OT-52 parent/student portals.
+is still pending, continuing with PR #13 / OT-51 Telegram mock/default-off foundation.

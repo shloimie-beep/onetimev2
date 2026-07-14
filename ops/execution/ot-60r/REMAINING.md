@@ -1,6 +1,6 @@
 # OT-60R Remaining Work
 
-1. Apply isolated modules: PR #15, PR #13.
+1. Apply isolated module PR #13.
 2. Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.
 3. Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.
 4. Run required verification locally where possible and record CI/disposable PostgreSQL needs honestly.

@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #12 / OT-46 fixture-only billing integrated
+- Phase: PR #15 / OT-52 parent/student portals integrated
 - Status: building
 
 ## Completed
@@ -47,6 +47,10 @@
 - Preserved default-off billing flags, fixture-only provider adapter, no Stripe SDK/network calls, no provider mutations, and no entitlement/access grants.
 - Verified with OT-46 focused unit/integration tests, `npm run typecheck`, `npm run build`, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
 - Committed the PR #12 / OT-46 fixture-only billing checkpoint at `e004161af0f7ef1873fe4b7b3e5a4b109d79b54a`.
+- Applied PR #15 / OT-52 parent/student portals as an isolated, unmounted module.
+- Preserved household-authorized parent scope, actor-derived student scope, three-active-learner limit, append-only rewards, digest-only credentials, default-unavailable helper behavior, no-send support preview, and protected-action provider URL rejection.
+- Verified with OT-52 focused router/service/UI tests, `npm run typecheck`, `npm run build`, touched-file formatting check, JSON parse check, `git diff --check --cached`, and `npm run secret:scan`.
+- Committed the PR #15 / OT-52 portal checkpoint at `30df628f4eca6be2674dcdd0d59fd2e769af89da`.
 
 ## Last Safe Command
 
@@ -57,9 +61,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git cherry-pick --no-commit 9594c228b9ac3047f42bb9e8c804384cc45a3e40
+git cherry-pick --no-commit e235af05759f0a97496552c6e8aabed7ba3eee18
 ```
 
-Continue PR #15 / OT-52 parent/student portals. Preserve parent/student scope boundaries and relationship/learner isolation.
+Continue PR #13 / OT-51 Telegram mock/default-off foundation. Preserve default-off behavior and avoid live Telegram/provider mutations.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.
