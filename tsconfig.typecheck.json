@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "allowJs": false,
+    "types": ["node", "vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "@onetime/config": ["packages/config/src/index.ts"],
+      "@onetime/contracts": ["packages/contracts/src/index.ts"],
+      "@onetime/domain": ["packages/domain/src/index.ts"],
+      "@onetime/db": ["packages/db/src/index.ts"],
+      "@onetime/observability": ["packages/observability/src/index.ts"]
+    }
+  },
+  "include": [
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "packages/**/*.ts",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.*.config.ts",
+    "playwright.config.ts",
+    "eslint.config.js"
+  ]
+}
