@@ -48,7 +48,8 @@ export async function captureLead({ pool, config, payload }: CaptureLeadInput): 
       [config.accountKey, config.productKey, parsed.idempotency_key],
     );
     if (duplicate.rowCount) {
-      return duplicate.rows[0].response_json as LeadSuccessResponse;
+      const previous = duplicate.rows[0].response_json as LeadSuccessResponse;
+      return { ...previous, duplicate_submission: true };
     }
 
     await upsertContact(client, config, parsed, contactKey, email, phone);
