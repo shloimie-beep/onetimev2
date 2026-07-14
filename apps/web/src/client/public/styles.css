@@ -378,6 +378,10 @@ img {
   object-fit: cover;
 }
 
+.benefit-card[data-benefit='Accomplishment'] .benefit-visual img {
+  object-position: 50% 48%;
+}
+
 .how p {
   max-width: 680px;
   color: var(--color-muted);

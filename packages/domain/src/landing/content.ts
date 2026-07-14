@@ -47,10 +47,9 @@ export const landingContent = {
       {
         title: 'Accomplishment',
         body: "One perek a day gives him a clear goal, steady progress, and a real sense of finishing each day's learning.",
-        image: null,
-        alt: '',
-        assetBlocker:
-          'Toronto.jpg was explicitly assigned for Accomplishment but was not present in the BNA repo or Downloads search. This card intentionally does not substitute Lakewood or another image.',
+        image: '/assets/outcomes/accomplishment-toronto-class.jpg',
+        alt: 'Rabbi Scheller smiling with boys after a Toronto One Time Torah class',
+        assetBlocker: null,
         provisionalCopy:
           'This paragraph is the currently deployed accomplishment copy preserved provisionally; it is not operator-certified final copy.',
       },

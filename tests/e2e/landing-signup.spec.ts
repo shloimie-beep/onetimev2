@@ -32,12 +32,50 @@ test('landing preserves exact receive structure and asset assignments', async ({
   await expect(page.getByRole('heading', { name: 'What You Receive' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Live Daily Mishnayos' })).toBeVisible();
   await expect(page.getByText('Secure student portal')).toBeVisible();
-  await expect(page.getByText('Toronto.jpg pending')).toBeVisible();
+  await expect(page.getByText('Toronto.jpg pending')).toHaveCount(0);
+  await expect(
+    page.locator(
+      'article[data-benefit="Accomplishment"] img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]',
+    ),
+  ).toBeVisible();
   await expect(page.getByRole('heading', { name: "Who It's For" })).toBeVisible();
   expect(requests.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
   const html = await page.content();
   expect(html).not.toContain('Monitored platform');
   expect(html).not.toContain('View as Rabbi');
+});
+
+test('Toronto accomplishment image keeps its crop across required viewports', async ({ page }) => {
+  for (const size of [
+    { width: 360, height: 800 },
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 1000 },
+  ]) {
+    await page.setViewportSize(size);
+    await page.goto('/');
+    const card = page.locator('article[data-benefit="Accomplishment"]');
+    const image = card.locator('img');
+    await card.scrollIntoViewIfNeeded();
+    await expect(image).toBeVisible();
+    await expect(image).toHaveAttribute('src', '/assets/outcomes/accomplishment-toronto-class.jpg');
+    await expect(image).toHaveJSProperty('complete', true);
+    const metrics = await image.evaluate((element) => {
+      const img = element as HTMLImageElement;
+      const box = img.getBoundingClientRect();
+      return {
+        naturalWidth: img.naturalWidth,
+        naturalHeight: img.naturalHeight,
+        ratio: box.width / box.height,
+        objectPosition: getComputedStyle(img).objectPosition,
+      };
+    });
+    expect(metrics.naturalWidth).toBeGreaterThanOrEqual(1000);
+    expect(metrics.naturalHeight).toBeGreaterThanOrEqual(700);
+    expect(metrics.ratio).toBeGreaterThan(1.55);
+    expect(metrics.ratio).toBeLessThan(1.65);
+    expect(metrics.objectPosition).toBe('50% 48%');
+  }
 });
 
 test('family and school signup submit through canonical lead endpoint', async ({ page }) => {

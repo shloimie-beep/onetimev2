@@ -65,12 +65,13 @@ describe('lead validation and content contracts', () => {
     expect(JSON.stringify(landingContent)).not.toContain('Questions with Rabbi Scheller');
   });
 
-  it('records the Toronto accomplishment asset blocker without substituting Lakewood', () => {
+  it('assigns the approved Toronto accomplishment asset without substituting Lakewood', () => {
     const accomplishment = landingContent.gain.cards.find(
       (card) => card.title === 'Accomplishment',
     );
-    expect(accomplishment?.image).toBeNull();
-    expect(accomplishment?.assetBlocker).toContain('Toronto.jpg');
+    expect(accomplishment?.image).toBe('/assets/outcomes/accomplishment-toronto-class.jpg');
+    expect(accomplishment?.alt).toContain('Toronto');
+    expect(accomplishment?.assetBlocker).toBeNull();
     expect(landingContent.gain.cards.some((card) => card.image?.includes('lakewood'))).toBe(false);
   });
 });
