@@ -1,8 +1,9 @@
-import { createHmac } from 'node:crypto';
+import { createHmac, randomUUID } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
+import { base32Decode, totp } from '../../packages/domain/src/auth/totp.ts';
 import {
   CrmCursorError,
   authenticateUser,
@@ -16,6 +17,9 @@ let pool: DbPool;
 let server: ReturnType<ReturnType<typeof createApp>['listen']>;
 let baseUrl: string;
 let appConfig: ReturnType<typeof config>;
+let totpSecrets: Map<string, Buffer>;
+
+const TEST_MFA_KEY = 'MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE';
 
 const config = () =>
   loadConfig({
@@ -24,11 +28,15 @@ const config = () =>
     APP_VERSION: 'test',
     COMMIT_SHA: 'test',
     OUTBOX_TRANSPORT_MODE: 'sink',
+    AUTH_CSRF_SECRET: 'test-auth-csrf-secret-with-enough-entropy',
+    AUTH_MFA_ENCRYPTION_KEYS: `v1:${TEST_MFA_KEY}`,
+    AUTH_MFA_ACTIVE_KEY_VERSION: 'v1',
   });
 
 beforeEach(async () => {
   pool = createMemoryPool();
   appConfig = config();
+  totpSecrets = new Map();
   await runMigrations(pool);
   resetAuthRateLimitForTests();
   await createAccountUser({
@@ -84,11 +92,13 @@ describe('standalone CRM authentication', () => {
 
     const owner = await loginAs('owner@example.test', 'OwnerPass!234');
     expect(owner.json.user.role_label).toBe('Owner');
-    expect(owner.json.user.auth_assurance).toBe('password_only');
-    expect(owner.json.user.mfa_verified).toBe(false);
+    expect(owner.json.user.auth_assurance).toBe('mfa');
+    expect(owner.json.user.mfa_verified).toBe(true);
 
     const login = await loginAs('admin@example.test', 'AdminPass!234');
     expect(login.json.user.role_label).toBe('Administrator');
+    expect(login.json.user.auth_assurance).toBe('mfa');
+    expect(login.json.user.mfa_verified).toBe(true);
     expect(login.cookies).toContain('otcrm_session=');
     expect(login.cookies).not.toContain('connect.sid');
     expect(login.responseHeaders.get('cache-control')).toContain('no-store');
@@ -98,15 +108,17 @@ describe('standalone CRM authentication', () => {
     });
     expect(session.status).toBe(200);
     expect(session.headers.get('cache-control')).toContain('no-store');
+    const sessionJson = (await session.json()) as { csrf_token: string };
+    const refreshedCookies = mergeCookies(login.cookies, cookieHeader(session.headers));
 
     const logout = await fetch(`${baseUrl}/api/v1/auth/logout`, {
       method: 'POST',
       headers: {
-        cookie: login.cookies,
+        cookie: refreshedCookies,
         'content-type': 'application/json',
-        'x-csrf-token': login.json.csrf_token,
+        'x-csrf-token': sessionJson.csrf_token,
       },
-      body: JSON.stringify({ csrf_token: login.json.csrf_token }),
+      body: JSON.stringify({ csrf_token: sessionJson.csrf_token }),
     });
     expect(logout.status).toBe(200);
 
@@ -133,6 +145,7 @@ describe('standalone CRM authentication', () => {
         location: 'Jerusalem',
         timezone: 'Asia/Jerusalem',
         lead_status: 'new',
+        idempotency_key: 'body-token-create',
       }),
     });
     expect(bodyOnly.status).toBe(201);
@@ -169,6 +182,144 @@ describe('standalone CRM authentication', () => {
       body: JSON.stringify({}),
     });
     expect(crossSession.status).toBe(403);
+  });
+
+  it('requires MFA after password, rejects replay, and consumes recovery codes once', async () => {
+    const csrf = await getLoginCsrf();
+    const passwordAccepted = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: csrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'AdminPass!234',
+        csrf_token: csrf.token,
+      }),
+    });
+    expect(passwordAccepted.status).toBe(200);
+    const preAuthCookies = mergeCookies(csrf.cookies, cookieHeader(passwordAccepted.headers));
+    const preAuthJson = await passwordAccepted.json();
+    expect(preAuthJson).toMatchObject({
+      success: true,
+      mfa_required: true,
+      mfa_mode: 'enroll',
+    });
+
+    const blocked = await fetch(`${baseUrl}/api/v1/crm/contacts`, {
+      headers: { cookie: preAuthCookies },
+    });
+    expect(blocked.status).toBe(401);
+
+    const secret = secretFromOtpAuth(preAuthJson.enrollment.otpauth_uri);
+    const encodedSecret = new URL(preAuthJson.enrollment.otpauth_uri).searchParams.get('secret');
+    const code = totp({ secret });
+    const mfa = await fetch(`${baseUrl}/api/v1/auth/mfa/verify`, {
+      method: 'POST',
+      headers: {
+        cookie: preAuthCookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        pre_auth_token: preAuthJson.pre_auth_token,
+        csrf_token: csrf.token,
+        totp_code: code,
+      }),
+    });
+    expect(mfa.status).toBe(200);
+    const mfaJson = await mfa.json();
+    expect(mfaJson.user).toMatchObject({ auth_assurance: 'mfa', mfa_verified: true });
+    expect(mfaJson.recovery_codes).toHaveLength(10);
+    const storedFactor = await pool.query(
+      `SELECT secret_ciphertext
+         FROM onetime.user_mfa_factors
+        WHERE user_key = $1`,
+      [mfaJson.user.user_key],
+    );
+    expect(String(storedFactor.rows[0].secret_ciphertext)).not.toContain(encodedSecret ?? '');
+    expect(String(storedFactor.rows[0].secret_ciphertext)).not.toContain(
+      secret.toString('base64url'),
+    );
+
+    const replay = await fetch(`${baseUrl}/api/v1/auth/mfa/verify`, {
+      method: 'POST',
+      headers: {
+        cookie: preAuthCookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        pre_auth_token: preAuthJson.pre_auth_token,
+        csrf_token: csrf.token,
+        totp_code: code,
+      }),
+    });
+    expect(replay.status).toBe(410);
+
+    const challenge = await startLogin('admin@example.test', 'AdminPass!234');
+    expect(challenge.json).toMatchObject({
+      success: true,
+      mfa_required: true,
+      mfa_mode: 'challenge',
+    });
+    const recovery = String(mfaJson.recovery_codes[0]);
+    const recoveryLogin = await verifyMfaLogin(challenge, {
+      recovery_code: recovery,
+    });
+    expect(recoveryLogin.json.user).toMatchObject({ auth_assurance: 'mfa', mfa_verified: true });
+
+    const secondChallenge = await startLogin('admin@example.test', 'AdminPass!234');
+    const recoveryReplay = await fetch(`${baseUrl}/api/v1/auth/mfa/verify`, {
+      method: 'POST',
+      headers: {
+        cookie: secondChallenge.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': secondChallenge.csrfToken,
+      },
+      body: JSON.stringify({
+        pre_auth_token: secondChallenge.json.pre_auth_token,
+        csrf_token: secondChallenge.csrfToken,
+        recovery_code: recovery,
+      }),
+    });
+    expect(recoveryReplay.status).toBe(401);
+  });
+
+  it('normalizes safe return paths and rejects return-path attacks', async () => {
+    const cases: Array<[string, string]> = [
+      ['/app/crm/contacts/contact_123', '/app/crm/contacts/contact_123'],
+      ['/public-page', '/app/crm'],
+      ['//evil.example/path', '/app/crm'],
+      ['https://evil.example/app/crm', '/app/crm'],
+      ['/login?return_to=/app/crm', '/app/crm'],
+      ['/api/v1/crm/contacts', '/app/crm'],
+      ['/%2f%2fevil.example', '/app/crm'],
+      ['/app/%5csettings', '/app/crm'],
+      ['\\evil', '/app/crm'],
+    ];
+
+    for (const [returnTo, expected] of cases) {
+      const csrf = await getLoginCsrf();
+      const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: {
+          cookie: csrf.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': csrf.token,
+        },
+        body: JSON.stringify({
+          email: 'viewer@example.test',
+          password: 'ViewerPass!234',
+          csrf_token: csrf.token,
+          return_to: returnTo,
+        }),
+      });
+      expect(response.status).toBe(200);
+      expect((await response.json()).return_to).toBe(expected);
+    }
   });
 
   it('requires login CSRF and rate-limits failed login attempts', async () => {
@@ -278,18 +429,18 @@ describe('standalone CRM authentication', () => {
     expect(accountPaths).toEqual(['account']);
   });
 
-  it('fails closed when verified MFA is required and reports password-only assurance otherwise', async () => {
+  it('fails closed when privileged MFA config is missing and keeps viewer password-only', async () => {
     const blocked = await authenticateUser({
       pool,
-      config: { ...appConfig, requireVerifiedMfa: true },
+      config: { ...appConfig, mfaEncryptionKeys: {}, mfaActiveKeyVersion: undefined },
       email: 'admin@example.test',
       password: 'AdminPass!234',
     });
-    expect(blocked).toMatchObject({ ok: false, code: 'MFA_REQUIRED' });
+    expect(blocked).toMatchObject({ ok: false, code: 'MFA_CONFIG_REQUIRED' });
 
     const viewer = await authenticateUser({
       pool,
-      config: { ...appConfig, requireVerifiedMfa: true },
+      config: appConfig,
       email: 'viewer@example.test',
       password: 'ViewerPass!234',
     });
@@ -298,6 +449,23 @@ describe('standalone CRM authentication', () => {
       expect(viewer.user.auth_assurance).toBe('password_only');
       expect(viewer.user.mfa_verified).toBe(false);
     }
+  });
+
+  it('invalidates privileged sessions when the password changes in another instance', async () => {
+    const login = await loginAs('admin@example.test', 'AdminPass!234');
+    await createAccountUser({
+      pool,
+      config: appConfig,
+      email: 'admin@example.test',
+      password: 'AdminPass!999',
+      displayName: 'Admin User',
+      role: 'admin',
+      mfaCapable: true,
+    });
+    const staleSession = await fetch(`${baseUrl}/api/v1/auth/session`, {
+      headers: { cookie: login.cookies },
+    });
+    expect(staleSession.status).toBe(401);
   });
 });
 
@@ -335,10 +503,7 @@ describe('CRM vertical slice', () => {
     expect((await replay.json()).duplicate_submission).toBe(true);
 
     const login = await loginAs('admin@example.test', 'AdminPass!234');
-    const list = await apiGet<ListJson>(
-      '/api/v1/crm/contacts?search=lead%40example.test',
-      login.cookies,
-    );
+    const list = await apiSearch<ListJson>({ search: 'lead@example.test' }, login);
     expect(list.contacts).toHaveLength(1);
     const first = list.contacts[0];
     if (!first) throw new Error('expected CRM contact');
@@ -405,12 +570,21 @@ describe('CRM vertical slice', () => {
     expect(tampered.status).toBe(400);
     expect(await tampered.json()).toMatchObject({ code: 'INVALID_CURSOR' });
 
-    const wrongQuery = await fetch(
-      `${baseUrl}/api/v1/crm/contacts?limit=2&sort=name_asc&search=alpha&cursor=${encodeURIComponent(
-        first.next_cursor ?? '',
-      )}`,
-      { headers: { cookie: login.cookies } },
-    );
+    const wrongQuery = await fetch(`${baseUrl}/api/v1/crm/contacts/search`, {
+      method: 'POST',
+      headers: {
+        cookie: login.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': login.json.csrf_token,
+      },
+      body: JSON.stringify({
+        limit: 2,
+        sort: 'name_asc',
+        search: 'alpha',
+        cursor: first.next_cursor ?? '',
+        csrf_token: login.json.csrf_token,
+      }),
+    });
     expect(wrongQuery.status).toBe(400);
     expect(await wrongQuery.json()).toMatchObject({ code: 'INVALID_CURSOR' });
 
@@ -485,6 +659,7 @@ describe('CRM vertical slice', () => {
         location: 'Jerusalem',
         timezone: 'Asia/Jerusalem',
         lead_status: 'new',
+        idempotency_key: 'manual-duplicate-create',
       }),
     });
     expect(duplicate.status).toBe(409);
@@ -594,6 +769,7 @@ describe('CRM vertical slice', () => {
           timezone: 'Asia/Jerusalem',
           lead_status: 'new',
           assigned_user_key: assignedUserKey,
+          idempotency_key: `bad-assignee-${assignedUserKey}`,
         }),
       });
       expect(createDenied.status).toBe(400);
@@ -629,15 +805,17 @@ describe('CRM vertical slice', () => {
   it('keeps CRM list and detail query counts bounded', async () => {
     const email = 'query-count@example.test';
     const contactKey = stableKey('contact', [appConfig.accountKey, appConfig.productKey, email]);
-    await pool.query(
+    const inserted = await pool.query(
       `INSERT INTO onetime.contacts
        (contact_key, account_key, product_key, display_name, family_school_classification,
         family_or_school, location_text, timezone, email_normalized, reminder_preference,
         suppression_state, source)
        VALUES ($1,$2,$3,'Query Count','family','Query Count','Jerusalem','Asia/Jerusalem',
-        $4,'none','suppressed_no_consent','manual_crm')`,
+        $4,'none','suppressed_no_consent','manual_crm')
+       RETURNING public_id`,
       [contactKey, appConfig.accountKey, appConfig.productKey, email],
     );
+    const publicId = inserted.rows[0]?.public_id;
     const login = await loginAs('admin@example.test', 'AdminPass!234');
 
     const originalQuery = pool.query.bind(pool);
@@ -649,16 +827,13 @@ describe('CRM vertical slice', () => {
 
     try {
       queryCount = 0;
-      const list = await apiGet<ListJson>(
-        '/api/v1/crm/contacts?search=query-count%40example.test',
-        login.cookies,
-      );
+      const list = await apiSearch<ListJson>({ search: 'query-count@example.test' }, login);
       expect(list.contacts).toHaveLength(1);
       expect(queryCount).toBeLessThanOrEqual(3);
 
       queryCount = 0;
       await apiGet<ContactJson>(
-        `/api/v1/crm/contacts/${encodeURIComponent(contactKey)}`,
+        `/api/v1/crm/contacts/${encodeURIComponent(publicId)}`,
         login.cookies,
       );
       expect(queryCount).toBeLessThanOrEqual(3);
@@ -689,14 +864,12 @@ describe('CRM vertical slice', () => {
         email: 'denied@example.test',
         location: 'Jerusalem',
         timezone: 'Asia/Jerusalem',
+        idempotency_key: 'viewer-denied-create',
       }),
     });
     expect(denied.status).toBe(403);
 
-    const list = await apiGet<ListJson>(
-      '/api/v1/crm/contacts?search=other%40example.test',
-      viewer.cookies,
-    );
+    const list = await apiSearch<ListJson>({ search: 'other@example.test' }, viewer);
     expect(list.contacts).toHaveLength(0);
   });
 });
@@ -708,6 +881,20 @@ type LoginResult = {
     success: true;
     csrf_token: string;
     user: { role_label: string; auth_assurance: string; mfa_verified: boolean };
+  };
+};
+
+type PreAuthResult = {
+  cookies: string;
+  csrfToken: string;
+  responseHeaders: Headers;
+  json: {
+    success: true;
+    mfa_required: true;
+    mfa_mode: 'enroll' | 'challenge';
+    pre_auth_token: string;
+    enrollment?: { otpauth_uri: string };
+    return_to?: string;
   };
 };
 
@@ -744,6 +931,17 @@ async function getLoginCsrf(targetBaseUrl = baseUrl) {
 }
 
 async function loginAs(email: string, password: string): Promise<LoginResult> {
+  const preAuth = await startLogin(email, password);
+  if (!preAuth.json.mfa_required) return preAuth as unknown as LoginResult;
+  const secret =
+    preAuth.json.enrollment?.otpauth_uri &&
+    rememberSecret(email, secretFromOtpAuth(preAuth.json.enrollment.otpauth_uri));
+  const knownSecret = secret ?? totpSecrets.get(email);
+  if (!knownSecret) throw new Error(`missing TOTP secret for ${email}`);
+  return verifyMfaLogin(preAuth, { totp_code: totp({ secret: knownSecret }) });
+}
+
+async function startLogin(email: string, password: string): Promise<PreAuthResult> {
   const csrf = await getLoginCsrf();
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -755,8 +953,44 @@ async function loginAs(email: string, password: string): Promise<LoginResult> {
     body: JSON.stringify({ email, password, csrf_token: csrf.token }),
   });
   expect(response.status).toBe(200);
+  const json = await response.json();
+  if (!json.mfa_required) {
+    return {
+      cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
+      csrfToken: json.csrf_token,
+      responseHeaders: response.headers,
+      json,
+    } as PreAuthResult;
+  }
   return {
     cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
+    csrfToken: csrf.token,
+    responseHeaders: response.headers,
+    json: json as PreAuthResult['json'],
+  };
+}
+
+async function verifyMfaLogin(
+  preAuth: PreAuthResult,
+  factor: { totp_code?: string; recovery_code?: string },
+): Promise<LoginResult> {
+  const response = await fetch(`${baseUrl}/api/v1/auth/mfa/verify`, {
+    method: 'POST',
+    headers: {
+      cookie: preAuth.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': preAuth.csrfToken,
+    },
+    body: JSON.stringify({
+      pre_auth_token: preAuth.json.pre_auth_token,
+      csrf_token: preAuth.csrfToken,
+      return_to: preAuth.json.return_to ?? '/app/crm',
+      ...factor,
+    }),
+  });
+  expect(response.status).toBe(200);
+  return {
+    cookies: mergeCookies(preAuth.cookies, cookieHeader(response.headers)),
     responseHeaders: response.headers,
     json: (await response.json()) as LoginResult['json'],
   };
@@ -776,12 +1010,30 @@ async function apiGet<T>(path: string, cookies: string) {
   return (await response.json()) as T;
 }
 
+async function apiSearch<T>(body: Record<string, unknown>, login: LoginResult) {
+  const response = await fetch(`${baseUrl}/api/v1/crm/contacts/search`, {
+    method: 'POST',
+    headers: {
+      cookie: login.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': login.json.csrf_token,
+    },
+    body: JSON.stringify({ ...body, csrf_token: login.json.csrf_token }),
+  });
+  expect(response.status).toBe(200);
+  return (await response.json()) as T;
+}
+
 async function apiWrite<T>(
   path: string,
   method: 'POST' | 'PATCH',
   login: LoginResult,
   body: Record<string, unknown>,
 ) {
+  const payload =
+    method === 'POST' && path === '/api/v1/crm/contacts' && !body.idempotency_key
+      ? { ...body, idempotency_key: randomUUID() }
+      : body;
   const response = await fetch(`${baseUrl}${path}`, {
     method,
     headers: {
@@ -789,10 +1041,21 @@ async function apiWrite<T>(
       'content-type': 'application/json',
       'x-csrf-token': login.json.csrf_token,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
   });
   expect([200, 201]).toContain(response.status);
   return (await response.json()) as T;
+}
+
+function secretFromOtpAuth(uri: string) {
+  const secret = new URL(uri).searchParams.get('secret');
+  if (!secret) throw new Error('missing otpauth secret');
+  return base32Decode(secret);
+}
+
+function rememberSecret(email: string, secret: Buffer) {
+  totpSecrets.set(email, secret);
+  return secret;
 }
 
 function signupPayload(email: string, idempotencyKey: string) {

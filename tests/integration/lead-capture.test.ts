@@ -50,6 +50,10 @@ describe('lead capture transaction', () => {
     expect(result.duplicate_submission).toBe(false);
     expect(result.message.heading).toBe("You're signed up.");
     expect(result.outbox_intents).toHaveLength(2);
+    expect(result.contact_key).toMatch(/^contact_/);
+    expect(result.contact_key).not.toBe(
+      stableKey('contact', [config.accountKey, config.productKey, payload.email]),
+    );
 
     await expectCount('contacts', 1);
     await expectCount('signup_leads', 1);
@@ -160,16 +164,17 @@ describe('lead capture transaction', () => {
   it('reactivates exact-email archived contacts while preserving CRM-owned fields', async () => {
     const email = 'archived@example.test';
     const contactKey = stableKey('contact', [config.accountKey, config.productKey, email]);
+    const publicId = 'contact_archived_public';
     await pool.query(
       `INSERT INTO onetime.contacts
-       (contact_key, account_key, product_key, display_name, family_school_classification,
+       (contact_key, public_id, account_key, product_key, display_name, family_school_classification,
         family_or_school, location_text, timezone, email_normalized, phone_normalized,
         reminder_preference, suppression_state, source, lead_status, assigned_user_key,
         internal_note, archived_at)
-       VALUES ($1,$2,$3,'CRM Owned Name','school','CRM School','CRM Location',
-        'America/New_York',$4,'+12125550000','none','suppressed_no_consent','manual_crm',
+       VALUES ($1,$2,$3,$4,'CRM Owned Name','school','CRM School','CRM Location',
+        'America/New_York',$5,'+12125550000','none','suppressed_no_consent','manual_crm',
         'archived','user_preserve','Keep this note.',now())`,
-      [contactKey, config.accountKey, config.productKey, email],
+      [contactKey, publicId, config.accountKey, config.productKey, email],
     );
 
     const result = await captureLead({
@@ -184,7 +189,7 @@ describe('lead capture transaction', () => {
         idempotency_key: 'idem-archived-reactivation',
       },
     });
-    expect(result.contact_key).toBe(contactKey);
+    expect(result.contact_key).toBe(publicId);
 
     const row = await pool.query(
       `SELECT display_name, family_school_classification, family_or_school, location_text,

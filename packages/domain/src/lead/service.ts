@@ -10,6 +10,7 @@ import { inTransaction } from '../../../db/src/index.ts';
 import {
   normalizeEmail,
   normalizePhone,
+  randomPublicKey,
   requestHash,
   stableKey,
   successCopy,
@@ -56,16 +57,6 @@ export async function captureLead({
   const contactKey = stableKey('contact', [config.accountKey, config.productKey, email]);
   const signupKey = stableKey('signup', [contactKey, OFFER_VERSION, CONTENT_VERSION]);
   const message = successCopy(parsed.audience_type);
-  const responseBase = {
-    success: true as const,
-    duplicate_submission: false,
-    classification: parsed.audience_type,
-    contact_key: contactKey,
-    signup_key: signupKey,
-    confirmation_queued: true as const,
-    outbox_intents: outboxDeliveryKeys(config, parsed, contactKey, signupKey),
-    message,
-  };
 
   return inTransaction(pool, async (client) => {
     const duplicate = await client.query(
@@ -90,6 +81,16 @@ export async function captureLead({
       await insertReactivationAudit(client, config, contactKey, signupKey);
     }
     await insertOutboxIntents(client, config, parsed, contactKey, signupKey, email, phone);
+    const responseBase = {
+      success: true as const,
+      duplicate_submission: false,
+      classification: parsed.audience_type,
+      contact_key: contactWrite.publicId,
+      signup_key: signupKey,
+      confirmation_queued: true as const,
+      outbox_intents: outboxDeliveryKeys(config, parsed, contactKey, signupKey),
+      message,
+    };
     await client.query(
       `INSERT INTO onetime.idempotency_records
        (account_key, product_key, idempotency_key, request_hash, response_json)
@@ -116,7 +117,7 @@ async function upsertContact(
   phone: string | null,
 ) {
   const existing = await client.query(
-    `SELECT contact_key, archived_at
+    `SELECT contact_key, public_id, archived_at
        FROM onetime.contacts
       WHERE account_key = $1
         AND product_key = $2
@@ -150,17 +151,18 @@ async function upsertContact(
         CONSENT_POLICY,
       ],
     );
-    return { reactivatedArchived: true };
+    return { reactivatedArchived: true, publicId: String(existingRow.public_id) };
   }
 
-  await client.query(
+  const publicId = randomPublicKey('contact');
+  const result = await client.query(
     `INSERT INTO onetime.contacts (
-       contact_key, account_key, product_key, display_name, family_school_classification,
+       contact_key, public_id, account_key, product_key, display_name, family_school_classification,
        family_or_school, location_text, timezone, email_normalized, phone_normalized,
        reminder_preference, consent_policy_version, consent_recorded_at, source,
        offer_version, content_version, lead_status, last_activity_at
      )
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,CASE WHEN $13 THEN now() ELSE NULL END,$14,$15,$16,'new',now())
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,CASE WHEN $14 THEN now() ELSE NULL END,$15,$16,$17,'new',now())
      ON CONFLICT (account_key, product_key, email_normalized)
      DO UPDATE SET
        display_name = EXCLUDED.display_name,
@@ -177,9 +179,11 @@ async function upsertContact(
        lead_status = CASE WHEN onetime.contacts.lead_status = 'archived' THEN 'new' ELSE onetime.contacts.lead_status END,
        last_activity_at = now(),
        version = onetime.contacts.version + 1,
-       updated_at = now()`,
+       updated_at = now()
+     RETURNING public_id`,
     [
       contactKey,
+      publicId,
       config.accountKey,
       config.productKey,
       payload.contact_name.trim(),
@@ -197,7 +201,7 @@ async function upsertContact(
       CONTENT_VERSION,
     ],
   );
-  return { reactivatedArchived: false };
+  return { reactivatedArchived: false, publicId: String(result.rows[0].public_id) };
 }
 
 async function ensureNoPhoneIdentityCollision(

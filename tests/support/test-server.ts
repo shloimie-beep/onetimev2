@@ -7,6 +7,10 @@ const config = loadConfig({
   ...process.env,
   NODE_ENV: 'test',
   PORT: process.env.PORT ?? '3100',
+  AUTH_CSRF_SECRET: process.env.AUTH_CSRF_SECRET ?? 'test-auth-csrf-secret-with-enough-entropy',
+  AUTH_MFA_ENCRYPTION_KEYS:
+    process.env.AUTH_MFA_ENCRYPTION_KEYS ?? 'v1:MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE',
+  AUTH_MFA_ACTIVE_KEY_VERSION: process.env.AUTH_MFA_ACTIVE_KEY_VERSION ?? 'v1',
 });
 const pool = createMemoryPool();
 await runMigrations(pool);

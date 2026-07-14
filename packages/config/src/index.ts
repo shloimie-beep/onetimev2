@@ -37,6 +37,10 @@ const envSchema = z.object({
   ONE_TIME_OWNER_TEST_WHATSAPP: z.string().optional(),
   ONE_TIME_OWNER_TEST_EMAIL: z.string().optional(),
   CRM_CURSOR_SECRET: z.string().min(32).optional(),
+  AUTH_CSRF_SECRET: z.string().min(32).optional(),
+  AUTH_MFA_ENCRYPTION_KEYS: z.string().optional(),
+  AUTH_MFA_ACTIVE_KEY_VERSION: z.string().optional(),
+  SESSION_LAST_SEEN_REFRESH_MS: numberFromString.default(300_000),
   AUTH_REQUIRE_VERIFIED_MFA: booleanFromString,
   ENABLE_REAL_EMAIL_TRANSPORT: booleanFromString,
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
@@ -66,6 +70,22 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('CRM_CURSOR_SECRET is required in production.');
   }
 
+  if (parsed.NODE_ENV === 'production' && !parsed.AUTH_CSRF_SECRET) {
+    throw new Error('AUTH_CSRF_SECRET is required in production.');
+  }
+
+  const mfaEncryptionKeys = parseMfaEncryptionKeys(parsed.AUTH_MFA_ENCRYPTION_KEYS);
+  const mfaActiveKeyVersion =
+    parsed.AUTH_MFA_ACTIVE_KEY_VERSION ?? Object.keys(mfaEncryptionKeys).at(0);
+  if (
+    parsed.NODE_ENV === 'production' &&
+    (!mfaActiveKeyVersion || !mfaEncryptionKeys[mfaActiveKeyVersion])
+  ) {
+    throw new Error(
+      'AUTH_MFA_ENCRYPTION_KEYS with AUTH_MFA_ACTIVE_KEY_VERSION is required in production.',
+    );
+  }
+
   return {
     nodeEnv: parsed.NODE_ENV,
     isProduction: parsed.NODE_ENV === 'production',
@@ -89,6 +109,28 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ownerTestEmail: parsed.ONE_TIME_OWNER_TEST_EMAIL,
     crmCursorSecret:
       parsed.CRM_CURSOR_SECRET ?? 'local-only-crm-cursor-secret-for-tests-and-development',
+    authCsrfSecret:
+      parsed.AUTH_CSRF_SECRET ?? 'local-only-auth-csrf-secret-for-tests-and-development',
+    mfaEncryptionKeys,
+    mfaActiveKeyVersion,
+    sessionLastSeenRefreshMs: parsed.SESSION_LAST_SEEN_REFRESH_MS,
     requireVerifiedMfa: parsed.AUTH_REQUIRE_VERIFIED_MFA,
   };
+}
+
+function parseMfaEncryptionKeys(value: string | undefined) {
+  if (!value?.trim()) return {} as Record<string, Buffer>;
+  const keys: Record<string, Buffer> = {};
+  for (const entry of value.split(',')) {
+    const [version, encodedKey] = entry.split(':');
+    if (!version?.trim() || !encodedKey?.trim()) {
+      throw new Error('AUTH_MFA_ENCRYPTION_KEYS entries must be version:base64.');
+    }
+    const key = Buffer.from(encodedKey.trim(), 'base64url');
+    if (key.length !== 32) {
+      throw new Error(`MFA encryption key ${version.trim()} must decode to 32 bytes.`);
+    }
+    keys[version.trim()] = key;
+  }
+  return keys;
 }

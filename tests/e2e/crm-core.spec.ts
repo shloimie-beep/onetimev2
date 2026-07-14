@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { login } from '../support/mfa-login.ts';
 
 test('synthetic signup appears once in authenticated CRM and opens detail on mobile', async ({
   page,
@@ -24,6 +25,9 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   await page.getByLabel('Search').fill(email);
   await page.getByRole('button', { name: 'Apply' }).click();
   await expect(page.getByRole('button', { name: /CRM Browser Parent/ })).toHaveCount(1);
+  expect(
+    requested.some((url) => url.includes(email) || url.includes(encodeURIComponent(email))),
+  ).toBe(false);
   await page.getByRole('button', { name: /CRM Browser Parent/ }).click();
   await expect(page.getByRole('heading', { name: 'CRM Browser Parent' })).toBeVisible();
   await expect(page.getByText(email)).toBeVisible();
@@ -77,11 +81,3 @@ test('CRM create and edit controls are keyboard reachable with readable names', 
   );
   expect(targetSizes.every((target) => target.height >= 44 || target.width >= 44)).toBe(true);
 });
-
-async function login(page: import('@playwright/test').Page) {
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('ot-admin@example.test');
-  await page.getByLabel('Password').fill('TestPassword!234');
-  await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForURL('**/app/crm');
-}

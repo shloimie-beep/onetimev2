@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import type { LeadPayload, ReminderPreference } from '../../../contracts/src/index.ts';
 
 export function normalizeEmail(email: string) {
@@ -29,6 +29,10 @@ export function normalizePhone(phone: string | undefined) {
 export function stableKey(prefix: string, parts: string[]) {
   const hash = createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 24);
   return `${prefix}_${hash}`;
+}
+
+export function randomPublicKey(prefix: string) {
+  return `${prefix}_${randomBytes(18).toString('base64url')}`;
 }
 
 export function requestHash(payload: LeadPayload) {
