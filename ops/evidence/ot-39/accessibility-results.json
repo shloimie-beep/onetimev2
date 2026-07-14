@@ -1,0 +1,43 @@
+[
+  {
+    "viewport": "360x800",
+    "axe_violations": 0,
+    "horizontal_overflow": false,
+    "undersized_targets": 0,
+    "search_status": "disabled_until_post_body_search"
+  },
+  {
+    "viewport": "390x844",
+    "axe_violations": 0,
+    "horizontal_overflow": false,
+    "undersized_targets": 0,
+    "search_status": "disabled_until_post_body_search"
+  },
+  {
+    "viewport": "768x1024",
+    "axe_violations": 0,
+    "horizontal_overflow": false,
+    "undersized_targets": 0,
+    "search_status": "disabled_until_post_body_search"
+  },
+  {
+    "viewport": "1440x1000",
+    "axe_violations": 0,
+    "horizontal_overflow": false,
+    "undersized_targets": 0,
+    "search_status": "disabled_until_post_body_search"
+  },
+  {
+    "mode": "reduced-motion",
+    "horizontal_overflow": false
+  },
+  {
+    "mode": "rtl-smoke",
+    "drawer_escape": true,
+    "horizontal_overflow": false
+  },
+  {
+    "mode": "200-percent-text-reflow",
+    "horizontal_overflow": false
+  }
+]
