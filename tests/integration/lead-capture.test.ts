@@ -1,7 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
-import { captureLead, processOutboxSink } from '../../packages/domain/src/index.ts';
+import {
+  LeadDuplicateIdentityError,
+  LeadIdempotencyConflictError,
+  captureLead,
+  processOutboxSink,
+  stableKey,
+} from '../../packages/domain/src/index.ts';
 import type { AppConfig } from '../../packages/config/src/index.ts';
 
 let pool: DbPool;
@@ -61,6 +67,25 @@ describe('lead capture transaction', () => {
     expect(count.rows[0].outbox).toBe(2);
   });
 
+  it('rejects idempotency key reuse with a different canonical payload without writing rows', async () => {
+    await captureLead({ pool, config, payload });
+    await expect(
+      captureLead({
+        pool,
+        config,
+        payload: {
+          ...payload,
+          email: 'different@example.test',
+        },
+      }),
+    ).rejects.toBeInstanceOf(LeadIdempotencyConflictError);
+
+    await expectCount('contacts', 1);
+    await expectCount('signup_leads', 1);
+    await expectCount('audit_events', 1);
+    await expectCount('outbox_events', 2);
+  });
+
   it('handles School classification without private class-link exposure', async () => {
     const school = await captureLead({
       pool,
@@ -87,7 +112,7 @@ describe('lead capture transaction', () => {
         ...payload,
         email: 'both@example.test',
         idempotency_key: 'idem-both-1',
-        phone: '050-111-2222',
+        phone: '+972 50-111-2222',
         reminder_preference: 'both',
       },
     });
@@ -97,6 +122,101 @@ describe('lead capture transaction', () => {
     );
     expect(rows.rowCount).toBe(1);
     expect(rows.rows[0].payload.public_recipient).toBe(true);
+  });
+
+  it('rejects same-phone different-email public signup without leaking or partially writing', async () => {
+    await captureLead({
+      pool,
+      config,
+      payload: {
+        ...payload,
+        email: 'phone-one@example.test',
+        idempotency_key: 'idem-phone-one',
+        phone: '+1 212 555 0199',
+        reminder_preference: 'email',
+      },
+    });
+
+    await expect(
+      captureLead({
+        pool,
+        config,
+        payload: {
+          ...payload,
+          email: 'phone-two@example.test',
+          idempotency_key: 'idem-phone-two',
+          phone: '001-212-555-0199',
+          reminder_preference: 'email',
+        },
+      }),
+    ).rejects.toBeInstanceOf(LeadDuplicateIdentityError);
+
+    await expectCount('contacts', 1);
+    await expectCount('signup_leads', 1);
+    await expectCount('audit_events', 1);
+    await expectCount('outbox_events', 2);
+  });
+
+  it('reactivates exact-email archived contacts while preserving CRM-owned fields', async () => {
+    const email = 'archived@example.test';
+    const contactKey = stableKey('contact', [config.accountKey, config.productKey, email]);
+    await pool.query(
+      `INSERT INTO onetime.contacts
+       (contact_key, account_key, product_key, display_name, family_school_classification,
+        family_or_school, location_text, timezone, email_normalized, phone_normalized,
+        reminder_preference, suppression_state, source, lead_status, assigned_user_key,
+        internal_note, archived_at)
+       VALUES ($1,$2,$3,'CRM Owned Name','school','CRM School','CRM Location',
+        'America/New_York',$4,'+12125550000','none','suppressed_no_consent','manual_crm',
+        'archived','user_preserve','Keep this note.',now())`,
+      [contactKey, config.accountKey, config.productKey, email],
+    );
+
+    const result = await captureLead({
+      pool,
+      config,
+      payload: {
+        ...payload,
+        email,
+        phone: '+1 212 555 0101',
+        reminder_preference: 'email',
+        reminder_consent: true,
+        idempotency_key: 'idem-archived-reactivation',
+      },
+    });
+    expect(result.contact_key).toBe(contactKey);
+
+    const row = await pool.query(
+      `SELECT display_name, family_school_classification, family_or_school, location_text,
+              timezone, phone_normalized, reminder_preference, consent_recorded_at,
+              suppression_state, source, lead_status, assigned_user_key, internal_note,
+              archived_at, version
+         FROM onetime.contacts
+        WHERE contact_key = $1`,
+      [contactKey],
+    );
+    expect(row.rows[0]).toMatchObject({
+      display_name: 'CRM Owned Name',
+      family_school_classification: 'school',
+      family_or_school: 'CRM School',
+      location_text: 'CRM Location',
+      timezone: 'America/New_York',
+      phone_normalized: '+12125550000',
+      reminder_preference: 'email',
+      suppression_state: 'active',
+      source: 'manual_crm',
+      lead_status: 'new',
+      assigned_user_key: 'user_preserve',
+      internal_note: 'Keep this note.',
+    });
+    expect(row.rows[0].archived_at).toBeNull();
+    expect(row.rows[0].consent_recorded_at).toBeTruthy();
+    expect(Number(row.rows[0].version)).toBe(2);
+
+    const audit = await pool.query(
+      "SELECT count(*)::int AS count FROM onetime.audit_events WHERE event_type = 'public_signup_reactivated_archived_contact'",
+    );
+    expect(audit.rows[0].count).toBe(1);
   });
 
   it('sink worker delivers deterministic intents without external transport', async () => {

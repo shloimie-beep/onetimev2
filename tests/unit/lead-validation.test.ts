@@ -40,8 +40,15 @@ describe('lead validation and content contracts', () => {
     expect(result.success).toBe(true);
   });
 
-  it('normalizes local Israeli phone values', () => {
-    expect(normalizePhone('050-123-4567')).toBe('+972501234567');
+  it('normalizes only explicit international phone values', () => {
+    expect(normalizePhone('+972 50-123-4567')).toBe('+972501234567');
+    expect(normalizePhone('001-212-555-0199')).toBe('+12125550199');
+    expect(() => normalizePhone('050-123-4567')).toThrow(
+      'Phone number needs an international country code.',
+    );
+    expect(() => normalizePhone('972501234567')).toThrow(
+      'Phone number needs an international country code.',
+    );
   });
 
   it('uses distinct family and school success copy', () => {
