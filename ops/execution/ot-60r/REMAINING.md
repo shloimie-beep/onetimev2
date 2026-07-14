@@ -1,14 +1,13 @@
 # OT-60R Remaining Work
 
-1. Commit and push the PR #5 / OT-35 authenticated shell checkpoint.
-2. Apply remaining authenticated shell and CRM units in order: PR #7, PR #11.
-3. Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.
-4. Apply isolated modules: PR #12, PR #15, PR #13.
-5. Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.
-6. Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.
-7. Run required verification locally where possible and record CI/disposable PostgreSQL needs honestly.
-8. Update `CANONICAL-CANDIDATE.json` to `candidate` only after final integrated commit and evidence are recorded.
-9. Push the final branch and open one draft PR against `codex/crm-core-v1`.
+1. Apply remaining authenticated shell and CRM units in order: PR #7, PR #11.
+2. Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.
+3. Apply isolated modules: PR #12, PR #15, PR #13.
+4. Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.
+5. Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.
+6. Run required verification locally where possible and record CI/disposable PostgreSQL needs honestly.
+7. Update `CANONICAL-CANDIDATE.json` to `candidate` only after final integrated commit and evidence are recorded.
+8. Push the final branch and open one draft PR against `codex/crm-core-v1`.
 
 ## Standing Prohibitions
 

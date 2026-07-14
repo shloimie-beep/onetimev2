@@ -4,7 +4,7 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "49272a7de7d774db665f85f804da7d07bcec45ee",
+  "current_head_sha": "a36ebc98fc9e82ceba9a8e2806cb9da2ba6dcbdb",
   "phase": "pr5_ot35_authenticated_shell_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
@@ -26,10 +26,10 @@
     "Adapted PR #5 browser fixtures to the current idempotent CRM create contract.",
     "Kept private POST-body CRM search and omitted blank UI filters from submitted search commands.",
     "Raised Playwright-only login budgets to avoid E2E self-throttling while preserving production defaults.",
-    "Verified OT-35 E2E, accessibility, performance, build, and auth/CRM integration checks."
+    "Verified OT-35 E2E, accessibility, performance, build, and auth/CRM integration checks.",
+    "Committed the PR #5 / OT-35 authenticated shell checkpoint at a36ebc98fc9e82ceba9a8e2806cb9da2ba6dcbdb."
   ],
   "remaining_steps": [
-    "Commit and push the PR #5 / OT-35 authenticated shell checkpoint.",
     "Apply remaining authenticated shell and CRM units in order: PR #7, PR #11.",
     "Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.",
     "Apply isolated modules: PR #12, PR #15, PR #13.",
@@ -87,5 +87,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, commit/push the PR #5 checkpoint if this file is not yet committed, then continue with PR #7 / OT-39 without repeating the completed protocol, remote audit, PR #3/#9 supersession work, or PR #5 shell integration."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #7 / OT-39 without repeating the completed protocol, remote audit, PR #3/#9 supersession work, or PR #5 shell integration."
 }

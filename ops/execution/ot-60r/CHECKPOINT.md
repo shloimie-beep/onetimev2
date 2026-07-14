@@ -28,6 +28,7 @@
 - Adapted OT-35 browser fixtures to the current idempotent contact-create contract.
 - Raised Playwright-only login budgets to keep E2E evidence from self-throttling; production defaults remain unchanged.
 - Verified with `npm run build`, focused auth/CRM integration tests, and OT-35 E2E/accessibility/performance browser specs.
+- Committed the PR #5 / OT-35 authenticated shell checkpoint at `a36ebc98fc9e82ceba9a8e2806cb9da2ba6dcbdb`.
 
 ## Last Safe Command
 
@@ -38,11 +39,9 @@ npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.
 ## Next Safe Command
 
 ```powershell
-git add apps/web/src/client/app/crm-entry.tsx apps/web/src/client/app/crm.css apps/web/src/client/app/shell/AppShell.tsx playwright.config.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/e2e/ot-35/app-shell-crm.spec.ts tests/performance/ot-35/crm-performance.spec.ts ops/execution ops/evidence
-git commit -m "feat: integrate OT-35 authenticated shell"
-git push
+git cherry-pick --no-commit c1584577780d7b5125bce4fb81d2a454c9e84096
 ```
 
-After that commit is pushed, continue PR #7 / OT-39 CRM privacy/performance integration.
+Continue PR #7 / OT-39 CRM privacy/performance integration. Resolve semantically against the current canonical auth/search/session model.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.
