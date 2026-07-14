@@ -625,6 +625,7 @@ async function seedSyntheticScale(pool: pg.Pool) {
       consent_recorded_at: index % 5 === 0 ? '2026-01-01T00:00:00.000Z' : null,
       suppression_state: index % 97 === 0 ? 'suppressed' : 'active',
       source: index % 2 === 0 ? 'one_time_public_signup' : 'manual_crm',
+      public_contact_id: `ot37-public-${contactNumber}`,
       version: 1,
       lead_status: index % 7 === 0 ? 'contacted' : 'new',
       assigned_user_key:
@@ -647,6 +648,7 @@ async function seedSyntheticScale(pool: pg.Pool) {
     'onetime.contacts',
     [
       ...contactColumnsBeforeSecondMigration(),
+      'public_contact_id',
       'version',
       'lead_status',
       'assigned_user_key',
@@ -1074,8 +1076,8 @@ async function runDuplicateContactRace(pool: pg.Pool): Promise<ConcurrencyResult
           `INSERT INTO onetime.contacts
            (contact_key, account_key, product_key, display_name, family_school_classification,
             family_or_school, location_text, timezone, email_normalized, phone_normalized,
-            reminder_preference, suppression_state, source, lead_status, internal_note, last_activity_at)
-           VALUES ($1,$2,$3,$4,'family',$4,'Synthetic City','Etc/UTC',$5,$6,'none','active','manual_crm','new','',now())`,
+            reminder_preference, suppression_state, source, public_contact_id, lead_status, internal_note, last_activity_at)
+           VALUES ($1,$2,$3,$4,'family',$4,'Synthetic City','Etc/UTC',$5,$6,'none','active','manual_crm',$7,'new','',now())`,
           [
             `ot37-race-contact-${index}`,
             PRIMARY_ACCOUNT,
@@ -1083,6 +1085,7 @@ async function runDuplicateContactRace(pool: pg.Pool): Promise<ConcurrencyResult
             'Synthetic Race Contact',
             'race-contact@example.test',
             '+9999990000000',
+            `ot37-race-public-${index}`,
           ],
         );
         await client.query('COMMIT');
