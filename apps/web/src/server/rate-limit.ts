@@ -24,7 +24,9 @@ export function leadRateLimit(config: AppConfig) {
     if (bucket.count > config.leadRateLimitMax) {
       const retryAfter = Math.ceil((bucket.resetAt - now) / 1000);
       res.setHeader('Retry-After', String(retryAfter));
-      res.status(429).json(publicError('RATE_LIMITED', 'Too many signup attempts. Please try again soon.'));
+      res
+        .status(429)
+        .json(publicError('RATE_LIMITED', 'Too many signup attempts. Please try again soon.'));
       return;
     }
 

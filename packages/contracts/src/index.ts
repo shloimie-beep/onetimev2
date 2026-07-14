@@ -33,7 +33,8 @@ export const leadPayloadSchema = z
       .default({}),
   })
   .superRefine((payload, ctx) => {
-    const needsPhone = payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
+    const needsPhone =
+      payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
     if (needsPhone && !payload.phone?.trim()) {
       ctx.addIssue({
         code: 'custom',

@@ -6,7 +6,12 @@ import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
 import { leadPayloadSchema, publicFieldErrors } from '../../../../packages/contracts/src/index.ts';
 import { captureLead } from '../../../../packages/domain/src/index.ts';
-import { publicError, traceMiddleware, withTiming, type RequestWithTrace } from '../../../../packages/observability/src/index.ts';
+import {
+  publicError,
+  traceMiddleware,
+  withTiming,
+  type RequestWithTrace,
+} from '../../../../packages/observability/src/index.ts';
 import { leadRateLimit } from './rate-limit.ts';
 
 type AppDeps = {
@@ -15,7 +20,11 @@ type AppDeps = {
   distDir?: string;
 };
 
-export function createApp({ config, pool, distDir = path.resolve(process.cwd(), 'dist/apps/web/public') }: AppDeps) {
+export function createApp({
+  config,
+  pool,
+  distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
+}: AppDeps) {
   const app = express();
   app.set('trust proxy', true);
   app.disable('x-powered-by');
@@ -38,7 +47,9 @@ export function createApp({ config, pool, distDir = path.resolve(process.cwd(), 
   app.use(traceMiddleware);
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
-  app.use(express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }));
+  app.use(
+    express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }),
+  );
 
   app.get('/health', (_req, res) => {
     res.json({ ok: true, service: 'onetime-web' });
@@ -68,7 +79,9 @@ export function createApp({ config, pool, distDir = path.resolve(process.cwd(), 
   const handleLeadPost = async (req: RequestWithTrace, res: express.Response) => {
     try {
       const payload = leadPayloadSchema.parse(req.body);
-      const result = await withTiming(req, 'lead_txn', () => captureLead({ pool, config, payload }));
+      const result = await withTiming(req, 'lead_txn', () =>
+        captureLead({ pool, config, payload }),
+      );
       res.status(200).json(result);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -81,7 +94,9 @@ export function createApp({ config, pool, distDir = path.resolve(process.cwd(), 
         });
         return;
       }
-      res.status(500).json(publicError('SERVER_ERROR', 'We could not save that signup yet.', req.traceId));
+      res
+        .status(500)
+        .json(publicError('SERVER_ERROR', 'We could not save that signup yet.', req.traceId));
     }
   };
 

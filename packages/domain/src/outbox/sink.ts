@@ -1,4 +1,4 @@
-import type { DbPool } from '../../../db/src/index.ts';
+import type { DbPool, Queryable } from '../../../db/src/index.ts';
 
 export type SinkResult = {
   delivered: number;
@@ -9,15 +9,7 @@ export async function processOutboxSink(pool: DbPool, limit = 25): Promise<SinkR
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const rows = await client.query(
-      `SELECT id, delivery_key
-         FROM onetime.outbox_events
-        WHERE status = 'pending' AND next_attempt_at <= now()
-        ORDER BY created_at ASC
-        LIMIT $1
-        FOR UPDATE SKIP LOCKED`,
-      [limit],
-    );
+    const rows = await selectPendingOutbox(client, limit);
     const deliveryKeys: string[] = [];
     for (const row of rows.rows) {
       deliveryKeys.push(row.delivery_key);
@@ -35,5 +27,29 @@ export async function processOutboxSink(pool: DbPool, limit = 25): Promise<SinkR
     throw error;
   } finally {
     client.release();
+  }
+}
+
+async function selectPendingOutbox(client: Queryable, limit: number) {
+  const lockedSql = `SELECT id, delivery_key
+         FROM onetime.outbox_events
+        WHERE status = 'pending' AND next_attempt_at <= now()
+        ORDER BY created_at ASC
+        LIMIT $1
+        FOR UPDATE SKIP LOCKED`;
+  try {
+    return await client.query(lockedSql, [limit]);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('SKIP LOCKED')) {
+      return client.query(
+        `SELECT id, delivery_key
+           FROM onetime.outbox_events
+          WHERE status = 'pending' AND next_attempt_at <= now()
+          ORDER BY created_at ASC
+          LIMIT $1`,
+        [limit],
+      );
+    }
+    throw error;
   }
 }

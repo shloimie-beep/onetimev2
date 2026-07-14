@@ -4,7 +4,8 @@ const drawer = document.querySelector<HTMLElement>('[data-drawer]');
 const drawerOverlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
 const drawerToggle = document.querySelector<HTMLButtonElement>('[data-drawer-toggle]');
 const drawerClose = document.querySelector<HTMLButtonElement>('[data-drawer-close]');
-const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+const focusableSelector =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
 
 function openDrawer() {
   if (!drawer || !drawerToggle || !drawerOverlay) return;
@@ -75,9 +76,15 @@ if (carousel) {
       button.setAttribute('aria-pressed', String(buttonIndex === index));
     });
   };
-  buttons.forEach((button, buttonIndex) => button.addEventListener('click', () => show(buttonIndex)));
-  carousel.querySelector<HTMLButtonElement>('[data-gallery-prev]')?.addEventListener('click', () => show(index - 1));
-  carousel.querySelector<HTMLButtonElement>('[data-gallery-next]')?.addEventListener('click', () => show(index + 1));
+  buttons.forEach((button, buttonIndex) =>
+    button.addEventListener('click', () => show(buttonIndex)),
+  );
+  carousel
+    .querySelector<HTMLButtonElement>('[data-gallery-prev]')
+    ?.addEventListener('click', () => show(index - 1));
+  carousel
+    .querySelector<HTMLButtonElement>('[data-gallery-next]')
+    ?.addEventListener('click', () => show(index + 1));
   show(0);
 }
 
@@ -97,8 +104,13 @@ if (form) {
     const field = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
     if (field) field.textContent = message;
   };
-  const clearErrors = () => form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((node) => (node.textContent = ''));
-  const currentReminder = () => form.querySelector<HTMLInputElement>('input[name="reminder_preference"]:checked')?.value ?? 'email';
+  const clearErrors = () =>
+    form
+      .querySelectorAll<HTMLElement>('[data-error-for]')
+      .forEach((node) => (node.textContent = ''));
+  const currentReminder = () =>
+    form.querySelector<HTMLInputElement>('input[name="reminder_preference"]:checked')?.value ??
+    'email';
 
   const syncConditionalFields = () => {
     const reminder = currentReminder();
@@ -168,7 +180,9 @@ if (form) {
       const json = await response.json();
       if (!response.ok || !json.success) {
         if (json.field_errors) {
-          Object.entries(json.field_errors as Record<string, string>).forEach(([name, message]) => setError(name, message));
+          Object.entries(json.field_errors as Record<string, string>).forEach(([name, message]) =>
+            setError(name, message),
+          );
           form.querySelector<HTMLElement>('[data-error-for]:not(:empty)')?.focus();
         } else if (status) {
           status.textContent = json.message ?? 'We could not save that signup yet.';

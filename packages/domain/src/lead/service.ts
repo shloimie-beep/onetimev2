@@ -1,8 +1,18 @@
-import { leadPayloadSchema, type LeadPayload, type LeadSuccessResponse } from '../../../contracts/src/index.ts';
+import {
+  leadPayloadSchema,
+  type LeadPayload,
+  type LeadSuccessResponse,
+} from '../../../contracts/src/index.ts';
 import type { AppConfig } from '../../../config/src/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
-import { normalizeEmail, normalizePhone, requestHash, selectedChannels, stableKey, successCopy } from './normalize.ts';
+import {
+  normalizeEmail,
+  normalizePhone,
+  requestHash,
+  stableKey,
+  successCopy,
+} from './normalize.ts';
 
 type CaptureLeadInput = {
   pool: DbPool;
@@ -21,7 +31,11 @@ const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
 const CONSENT_POLICY = 'one-time-class-reminders-v1-2026-07-14';
 
-export async function captureLead({ pool, config, payload }: CaptureLeadInput): Promise<LeadSuccessResponse> {
+export async function captureLead({
+  pool,
+  config,
+  payload,
+}: CaptureLeadInput): Promise<LeadSuccessResponse> {
   const parsed = leadPayloadSchema.parse(payload);
   const email = normalizeEmail(parsed.email);
   const phone = normalizePhone(parsed.phone);
@@ -60,7 +74,13 @@ export async function captureLead({ pool, config, payload }: CaptureLeadInput): 
       `INSERT INTO onetime.idempotency_records
        (account_key, product_key, idempotency_key, request_hash, response_json)
        VALUES ($1, $2, $3, $4, $5::jsonb)`,
-      [config.accountKey, config.productKey, parsed.idempotency_key, reqHash, JSON.stringify(responseBase)],
+      [
+        config.accountKey,
+        config.productKey,
+        parsed.idempotency_key,
+        reqHash,
+        JSON.stringify(responseBase),
+      ],
     );
 
     return responseBase;
@@ -113,7 +133,13 @@ async function upsertContact(
   );
 }
 
-async function upsertSignup(client: Queryable, config: AppConfig, payload: LeadPayload, contactKey: string, signupKey: string) {
+async function upsertSignup(
+  client: Queryable,
+  config: AppConfig,
+  payload: LeadPayload,
+  contactKey: string,
+  signupKey: string,
+) {
   await client.query(
     `INSERT INTO onetime.signup_leads (
        signup_key, contact_key, account_key, product_key, offer_version, content_version, classification, metadata
@@ -138,7 +164,13 @@ async function upsertSignup(client: Queryable, config: AppConfig, payload: LeadP
   );
 }
 
-async function insertAudit(client: Queryable, config: AppConfig, payload: LeadPayload, contactKey: string, signupKey: string) {
+async function insertAudit(
+  client: Queryable,
+  config: AppConfig,
+  payload: LeadPayload,
+  contactKey: string,
+  signupKey: string,
+) {
   const eventKey = stableKey('audit', [signupKey, 'captured']);
   await client.query(
     `INSERT INTO onetime.audit_events
@@ -194,10 +226,20 @@ async function insertOutboxIntents(
   }
 }
 
-function outboxDeliveryKeys(config: AppConfig, payload: LeadPayload, contactKey: string, signupKey: string) {
-  return outboxEvents(config, payload, contactKey, signupKey, normalizeEmail(payload.email), normalizePhone(payload.phone)).map(
-    (event) => event.deliveryKey,
-  );
+function outboxDeliveryKeys(
+  config: AppConfig,
+  payload: LeadPayload,
+  contactKey: string,
+  signupKey: string,
+) {
+  return outboxEvents(
+    config,
+    payload,
+    contactKey,
+    signupKey,
+    normalizeEmail(payload.email),
+    normalizePhone(payload.phone),
+  ).map((event) => event.deliveryKey);
 }
 
 function outboxEvents(
@@ -231,7 +273,8 @@ function outboxEvents(
     },
   ];
 
-  const wantsWhatsapp = payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
+  const wantsWhatsapp =
+    payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
   if (wantsWhatsapp && phone && payload.reminder_consent) {
     events.push({
       deliveryKey: stableKey('delivery', [signupKey, 'whatsapp_confirmation']),

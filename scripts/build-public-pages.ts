@@ -12,7 +12,11 @@ function escapeHtml(value: string) {
     .replaceAll('"', '&quot;');
 }
 
-function pageShell(title: string, body: string, options: { description?: string; app?: boolean } = {}) {
+function pageShell(
+  title: string,
+  body: string,
+  options: { description?: string; app?: boolean } = {},
+) {
   const description = options.description ?? landingContent.seo.description;
   const script = options.app ? '/assets/app-crm.js' : '/assets/public.js';
   return `<!doctype html>
@@ -39,7 +43,9 @@ ${body}
 }
 
 function header() {
-  const drawerLinks = sharedNav.map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`).join('');
+  const drawerLinks = sharedNav
+    .map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`)
+    .join('');
   return `<header class="site-header">
   <a class="brand-lockup" href="/" aria-label="One Time Mishnayos home">
     <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
@@ -98,27 +104,41 @@ function landingPage() {
       </article>`;
     })
     .join('');
-  const whoCards = landingContent.who.audiences.map((label) => `<li>${escapeHtml(label)}</li>`).join('');
-  const steps = landingContent.how.steps.map((label, index) => `<li><span>${index + 1}</span>${escapeHtml(label)}</li>`).join('');
+  const whoCards = landingContent.who.audiences
+    .map((label) => `<li>${escapeHtml(label)}</li>`)
+    .join('');
+  const steps = landingContent.how.steps
+    .map((label, index) => `<li><span>${index + 1}</span>${escapeHtml(label)}</li>`)
+    .join('');
   const slides = landingContent.gallery.slides
     .map(
-      ([title, caption, src], index) => `<figure class="gallery-slide" data-gallery-slide ${index === 0 ? '' : 'hidden'}>
+      (
+        [title, caption, src],
+        index,
+      ) => `<figure class="gallery-slide" data-gallery-slide ${index === 0 ? '' : 'hidden'}>
         <img src="${src}" alt="${escapeHtml(caption)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
         <figcaption><strong>${escapeHtml(title)}</strong><span>${escapeHtml(caption)}</span></figcaption>
       </figure>`,
     )
     .join('');
   const dots = landingContent.gallery.slides
-    .map((slide, index) => `<button type="button" data-gallery-dot aria-label="Show ${escapeHtml(slide[0])}" aria-pressed="${index === 0}"></button>`)
+    .map(
+      (slide, index) =>
+        `<button type="button" data-gallery-dot aria-label="Show ${escapeHtml(slide[0])}" aria-pressed="${index === 0}"></button>`,
+    )
     .join('');
   const press = landingContent.press
-    .map(([label, src]) => `<span><img src="${src}" alt="${escapeHtml(label)}" loading="lazy" decoding="async"></span>`)
+    .map(
+      ([label, src]) =>
+        `<span><img src="${src}" alt="${escapeHtml(label)}" loading="lazy" decoding="async"></span>`,
+    )
     .join('');
 
   return pageShell(
     landingContent.seo.title,
-    `${header()}${ticker()}
+    `${header()}
 <main>
+  ${ticker()}
   <section class="hero">
     <div class="hero-inner">
       <p class="kicker">${escapeHtml(landingContent.hero.kicker)}</p>
@@ -165,9 +185,9 @@ function landingPage() {
       <h3>${escapeHtml(landingContent.gallery.heading)}</h3>
       ${slides}
       <div class="gallery-controls">
-        <button type="button" data-gallery-prev aria-label="Previous teaching photo">‹</button>
+        <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
         <div>${dots}</div>
-        <button type="button" data-gallery-next aria-label="Next teaching photo">›</button>
+        <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
       </div>
     </div>
     <div class="press-strip" aria-label="As Seen Across the Jewish World"><p>As Seen Across the Jewish World</p><div>${press}</div></div>
@@ -210,7 +230,10 @@ function signupPage() {
 }
 
 function simplePage(title: string, heading: string, body: string, robots = 'noindex, nofollow') {
-  const html = pageShell(title, `${header()}<main class="simple-page"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p></main>${footer()}`);
+  const html = pageShell(
+    title,
+    `${header()}<main class="simple-page"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p></main>${footer()}`,
+  );
   return html.replace('index, follow', robots);
 }
 
@@ -218,15 +241,43 @@ await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
-await writeFile(path.join(outDir, 'login.html'), simplePage('Member Login | One Time Mishnayos', 'Member Login', 'Account login is reserved for the authenticated app slice.'));
-await writeFile(path.join(outDir, 'privacy.html'), simplePage('Privacy | One Time Mishnayos', 'Privacy', 'We collect only the signup information needed to respond to your One Time Mishnayos interest request.'));
-await writeFile(path.join(outDir, 'terms.html'), simplePage('Terms | One Time Mishnayos', 'Terms', 'This foundation slice does not sell access, process payments, or grant member accounts.'));
-await writeFile(path.join(outDir, '404.html'), simplePage('Not Found | One Time Mishnayos', 'Not found', 'That page is not available.', 'noindex, nofollow'));
+await writeFile(
+  path.join(outDir, 'login.html'),
+  simplePage(
+    'Member Login | One Time Mishnayos',
+    'Member Login',
+    'Account login is reserved for the authenticated app slice.',
+  ),
+);
+await writeFile(
+  path.join(outDir, 'privacy.html'),
+  simplePage(
+    'Privacy | One Time Mishnayos',
+    'Privacy',
+    'We collect only the signup information needed to respond to your One Time Mishnayos interest request.',
+  ),
+);
+await writeFile(
+  path.join(outDir, 'terms.html'),
+  simplePage(
+    'Terms | One Time Mishnayos',
+    'Terms',
+    'This foundation slice does not sell access, process payments, or grant member accounts.',
+  ),
+);
+await writeFile(
+  path.join(outDir, '404.html'),
+  simplePage(
+    'Not Found | One Time Mishnayos',
+    'Not found',
+    'That page is not available.',
+    'noindex, nofollow',
+  ),
+);
 await writeFile(
   path.join(outDir, 'app', 'crm.html'),
-  pageShell(
-    'CRM | One Time Mishnayos',
-    `${header()}<div id="crm-root"></div>${footer()}`,
-    { app: true, description: 'Reserved One Time CRM route.' },
-  ).replace('index, follow', 'noindex, nofollow'),
+  pageShell('CRM | One Time Mishnayos', `${header()}<div id="crm-root"></div>${footer()}`, {
+    app: true,
+    description: 'Reserved One Time CRM route.',
+  }).replace('index, follow', 'noindex, nofollow'),
 );

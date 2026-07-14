@@ -72,7 +72,12 @@ export const landingContent = {
   who: {
     heading: "Who It's For",
     body: 'Built for families, homeschoolers, schools, and local boys who want a clear daily Mishnayos rhythm.',
-    audiences: ['Families', 'English-speaking homeschoolers', 'Schools', 'Local boys in Ramat Beit Shemesh Alef'],
+    audiences: [
+      'Families',
+      'English-speaking homeschoolers',
+      'Schools',
+      'Local boys in Ramat Beit Shemesh Alef',
+    ],
   },
   rabbi: {
     eyebrow: 'Meet Rabbi Scheller',
@@ -82,14 +87,46 @@ export const landingContent = {
   gallery: {
     heading: 'Teaching Torah Across the Jewish World',
     slides: [
-      ['Atlanta, Georgia', 'Rabbi Scheller teaching a large student group.', '/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp'],
-      ['Baltimore, Maryland', 'Large live teaching session with students.', '/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp'],
-      ['Flatbush, New York', 'Students gathered for Torah learning.', '/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp'],
-      ['Hollywood, Florida', 'Classroom teaching with engaged boys.', '/assets/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp'],
-      ['Lakewood, New Jersey', 'Evening Torah gathering with Rabbi Scheller.', '/assets/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp'],
-      ['Miami, Florida', 'Large outdoor teaching event.', '/assets/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp'],
-      ['Philadelphia, Pennsylvania', 'Rabbi Scheller speaking to a full room.', '/assets/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp'],
-      ['Silver Spring, Maryland', 'Classroom learning with Rabbi Scheller.', '/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp'],
+      [
+        'Atlanta, Georgia',
+        'Rabbi Scheller teaching a large student group.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp',
+      ],
+      [
+        'Baltimore, Maryland',
+        'Large live teaching session with students.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp',
+      ],
+      [
+        'Flatbush, New York',
+        'Students gathered for Torah learning.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp',
+      ],
+      [
+        'Hollywood, Florida',
+        'Classroom teaching with engaged boys.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp',
+      ],
+      [
+        'Lakewood, New Jersey',
+        'Evening Torah gathering with Rabbi Scheller.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp',
+      ],
+      [
+        'Miami, Florida',
+        'Large outdoor teaching event.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp',
+      ],
+      [
+        'Philadelphia, Pennsylvania',
+        'Rabbi Scheller speaking to a full room.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp',
+      ],
+      [
+        'Silver Spring, Maryland',
+        'Classroom learning with Rabbi Scheller.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp',
+      ],
     ],
   },
   press: [

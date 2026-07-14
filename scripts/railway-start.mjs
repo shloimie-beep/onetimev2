@@ -1,7 +1,8 @@
 import { spawn } from 'node:child_process';
 
 const processType = process.env.PROCESS_TYPE || process.env.RAILWAY_PROCESS_TYPE || 'web';
-const entry = processType === 'worker' ? 'apps/worker/src/main/index.ts' : 'apps/web/src/server/index.ts';
+const entry =
+  processType === 'worker' ? 'apps/worker/src/main/index.ts' : 'apps/web/src/server/index.ts';
 const child = spawn(process.execPath, ['--import', 'tsx', entry], {
   stdio: 'inherit',
   env: process.env,
