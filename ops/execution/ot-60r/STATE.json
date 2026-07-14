@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "8ec00b4c3a3a93c94622e4e07f58f437f67661d6",
+  "current_head_sha": "8520fa15f30c889cafbf8d5ff4c0c21de37bd371",
   "phase": "pr11_ot42_crm_module_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:13:36+03:00",
+  "updated_at": "2026-07-15T02:14:41+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -37,7 +37,8 @@
     "Cherry-picked PR #11 / OT-42 CRM module without merge conflicts.",
     "Kept OT-42 as an additive module surface with injectable router/register hooks, contracts, domain helpers, migration 1000, protected client cache, lazy tab loader, and focused tests.",
     "Did not mount OT-42 router into live `/api/v1/crm/*` routes because concrete repository implementations are not included and existing PR #2/#5/#7 routes remain canonical.",
-    "Verified OT-42 focused unit/integration tests, build, typecheck, existing auth/CRM regression tests, formatting, whitespace, JSON validity, and secret scan."
+    "Verified OT-42 focused unit/integration tests, build, typecheck, existing auth/CRM regression tests, formatting, whitespace, JSON validity, and secret scan.",
+    "Committed the PR #11 / OT-42 CRM module checkpoint at 8520fa15f30c889cafbf8d5ff4c0c21de37bd371."
   ],
   "remaining_steps": [
     "Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.",

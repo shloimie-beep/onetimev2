@@ -37,6 +37,7 @@
 - Cherry-picked PR #11 / OT-42 without merge conflicts.
 - Kept OT-42 additive and unmounted from live CRM routes because it provides abstract router/register hooks and tests, not concrete production repository implementations.
 - Verified with OT-42 focused unit/integration tests, `npm run typecheck`, `npm run build`, the focused auth/CRM regression suite, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
+- Committed the PR #11 / OT-42 CRM module checkpoint at `8520fa15f30c889cafbf8d5ff4c0c21de37bd371`.
 
 ## Last Safe Command
 
