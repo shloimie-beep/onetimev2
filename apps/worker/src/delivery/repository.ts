@@ -38,11 +38,15 @@ WITH candidates AS (
        (outbox.status = 'processing' AND outbox.next_attempt_at <= $4::timestamptz)
      )
      AND (
-       (outbox.event_type = 'email_acknowledgement' AND outbox.channel = 'email')
-       OR
-       (outbox.event_type = 'whatsapp_confirmation' AND outbox.channel = 'whatsapp')
-       OR
-       (outbox.event_type = 'internal_lead_alert' AND outbox.channel = 'internal_email')
+        (outbox.event_type = 'family_signup_email_ack.v1' AND outbox.channel = 'email')
+        OR
+        (outbox.event_type = 'family_signup_whatsapp_confirmation.v1' AND outbox.channel = 'whatsapp')
+        OR
+        (outbox.event_type = 'school_signup_email_ack.v1' AND outbox.channel = 'email')
+        OR
+        (outbox.event_type = 'school_signup_whatsapp_receipt.v1' AND outbox.channel = 'whatsapp')
+        OR
+        (outbox.event_type = 'internal_lead_alert' AND outbox.channel = 'internal_email')
      )
    ORDER BY outbox.next_attempt_at ASC, outbox.created_at ASC, outbox.id ASC
    LIMIT $5
@@ -86,6 +90,7 @@ SELECT
   contact.lead_status,
   contact.archived_at,
   signup.classification AS signup_classification,
+  signup.status AS signup_status,
   signup.metadata AS signup_metadata
 FROM claimed
 LEFT JOIN onetime.contacts AS contact
@@ -186,6 +191,7 @@ function parseSignup(row: SqlRow): DeliverySignup | null {
   return {
     signupKey: asString(row.signup_key),
     classification: asString(row.signup_classification) === 'school' ? 'school' : 'family',
+    status: asString(row.signup_status),
     metadata: asObject(row.signup_metadata),
   };
 }

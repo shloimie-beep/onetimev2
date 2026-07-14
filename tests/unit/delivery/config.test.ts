@@ -22,19 +22,18 @@ describe('delivery worker config', () => {
     });
   });
 
-  it('uses canonical standalone delivery names instead of legacy target aliases', () => {
+  it('uses canonical standalone owner-alert names and ignores legacy class-link aliases', () => {
     const config = loadDeliveryWorkerConfig({
       ...baseEnv,
       ONE_TIME_DELIVERY_OWNER_ALERT_EMAIL: 'Owner.Alert@Example.Test',
-      ONE_TIME_PROTECTED_CLASS_TARGET_URL: 'https://example.test/current-class',
       ONE_TIME_OWNER_ALERT_EMAIL: 'legacy-owner@example.test',
       ONE_TIME_CURRENT_CLASS_LINK: 'https://legacy.example.test/class',
       ONE_TIME_WHATSAPP_CLASS_LINK: 'https://legacy.example.test/whatsapp',
     });
     expect(config.message).toMatchObject({
       protectedOwnerEmail: 'Owner.Alert@Example.Test',
-      currentClassLink: 'https://example.test/current-class',
     });
+    expect(config.message).not.toHaveProperty('currentClassLink');
   });
 
   it.each([

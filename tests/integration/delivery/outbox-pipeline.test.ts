@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DELIVERY_EVENT_TYPES } from '../../../packages/contracts/src/delivery/types.ts';
 import type {
   ClaimedDelivery,
   DeliveryProviderRouter,
@@ -33,7 +34,7 @@ function preferenceRows(preference: ReminderPreference): MemorySeed[] {
       claimedDelivery({
         id: `${preference}-email`,
         deliveryKey: `delivery_${preference}_email`,
-        eventType: 'email_acknowledgement',
+        eventType: DELIVERY_EVENT_TYPES.familySignupEmailAck,
         channel: 'email',
         contact,
       }),
@@ -42,7 +43,7 @@ function preferenceRows(preference: ReminderPreference): MemorySeed[] {
       claimedDelivery({
         id: `${preference}-whatsapp`,
         deliveryKey: `delivery_${preference}_whatsapp`,
-        eventType: 'whatsapp_confirmation',
+        eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
         channel: 'whatsapp',
         contact,
       }),
@@ -51,7 +52,7 @@ function preferenceRows(preference: ReminderPreference): MemorySeed[] {
       claimedDelivery({
         id: `${preference}-internal`,
         deliveryKey: `delivery_${preference}_internal`,
-        eventType: 'internal_lead_alert',
+        eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
         channel: 'internal_email',
         contact,
       }),
@@ -63,7 +64,6 @@ const messageConfig = {
   emailFrom: 'One Time <delivery@example.test>',
   emailReplyTo: 'reply@example.test',
   protectedOwnerEmail: 'owner@protected.test',
-  currentClassLink: 'https://example.test/current-class',
 };
 
 const options = {
@@ -140,7 +140,7 @@ describe('transactional delivery pipeline', () => {
           id: 'suppressed-owner',
           deliveryKey: 'delivery_suppressed_owner',
           channel: 'internal_email',
-          eventType: 'internal_lead_alert',
+          eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
           contact: suppressedContact,
         }),
       ),
@@ -160,6 +160,44 @@ describe('transactional delivery pipeline', () => {
     expect(repository.snapshot('suppressed-owner')?.status).toBe('sink_delivered');
   });
 
+  it('delivers Family immediate receipts without resolving a class URL', async () => {
+    const router = new CapturingRouter();
+    const repository = new MemoryDeliveryRepository([
+      seed(
+        claimedDelivery({
+          id: 'family-email',
+          deliveryKey: 'delivery_family_email',
+          eventType: DELIVERY_EVENT_TYPES.familySignupEmailAck,
+          channel: 'email',
+          contact: deliveryContact({ reminderPreference: 'none', consentRecordedAt: null }),
+        }),
+      ),
+      seed(
+        claimedDelivery({
+          id: 'family-whatsapp',
+          deliveryKey: 'delivery_family_whatsapp',
+          eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
+          channel: 'whatsapp',
+          contact: deliveryContact({ reminderPreference: 'whatsapp' }),
+        }),
+      ),
+    ]);
+    const { logger } = captureLogger();
+    const summary = await runDeliveryBatch({
+      repository,
+      router,
+      logger,
+      messageConfig,
+      options,
+      clock: () => BASE_TIME,
+    });
+    expect(summary).toMatchObject({ claimed: 2, skipped: 0, sinkDelivered: 2 });
+    const publicText = router.requests.map((request) => request.text).join('\n');
+    expect(publicText).toContain('free class');
+    expect(publicText).not.toContain('https://example.test/current-class');
+    expect(publicText).not.toMatch(/open the current class|class details|access|join/i);
+  });
+
   it('delivers generic School acknowledgements while preserving the owner alert', async () => {
     const schoolContact = deliveryContact({ familySchoolClassification: 'school' });
     const schoolSignup = deliverySignup({ classification: 'school' });
@@ -170,7 +208,7 @@ describe('transactional delivery pipeline', () => {
           id: 'school-email',
           deliveryKey: 'delivery_school_email',
           channel: 'email',
-          eventType: 'email_acknowledgement',
+          eventType: DELIVERY_EVENT_TYPES.schoolSignupEmailAck,
           contact: schoolContact,
           signup: schoolSignup,
         }),
@@ -180,7 +218,7 @@ describe('transactional delivery pipeline', () => {
           id: 'school-whatsapp',
           deliveryKey: 'delivery_school_whatsapp',
           channel: 'whatsapp',
-          eventType: 'whatsapp_confirmation',
+          eventType: DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt,
           contact: schoolContact,
           signup: schoolSignup,
         }),
@@ -190,7 +228,7 @@ describe('transactional delivery pipeline', () => {
           id: 'school-owner',
           deliveryKey: 'delivery_school_owner',
           channel: 'internal_email',
-          eventType: 'internal_lead_alert',
+          eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
           contact: schoolContact,
           signup: schoolSignup,
         }),
@@ -225,7 +263,7 @@ describe('transactional delivery pipeline', () => {
           id: 'missing-phone',
           deliveryKey: 'delivery_missing_phone',
           channel: 'whatsapp',
-          eventType: 'whatsapp_confirmation',
+          eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
           contact: deliveryContact({
             phoneNormalized: null,
             reminderPreference: 'whatsapp',
@@ -248,6 +286,41 @@ describe('transactional delivery pipeline', () => {
       reason: 'whatsapp_phone_missing_or_invalid',
     });
   });
+
+  it.each(['email', 'none'] as const)(
+    'skips School WhatsApp receipt when preference is %s',
+    async (preference) => {
+      const repository = new MemoryDeliveryRepository([
+        seed(
+          claimedDelivery({
+            id: `school-whatsapp-${preference}`,
+            deliveryKey: `delivery_school_whatsapp_${preference}`,
+            eventType: DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt,
+            channel: 'whatsapp',
+            contact: deliveryContact({
+              familySchoolClassification: 'school',
+              reminderPreference: preference,
+            }),
+            signup: deliverySignup({ classification: 'school' }),
+          }),
+        ),
+      ]);
+      const { logger } = captureLogger();
+      const summary = await runDeliveryBatch({
+        repository,
+        router: new SinkDeliveryRouter(),
+        logger,
+        messageConfig,
+        options,
+        clock: () => BASE_TIME,
+      });
+      expect(summary).toMatchObject({ claimed: 1, skipped: 1, sinkDelivered: 0 });
+      expect(repository.snapshot(`school-whatsapp-${preference}`)?.outcome).toMatchObject({
+        kind: 'skipped',
+        reason: 'whatsapp_preference_not_selected',
+      });
+    },
+  );
 
   it('skips an expired deliver_by row without sending', async () => {
     const router = new CapturingRouter();

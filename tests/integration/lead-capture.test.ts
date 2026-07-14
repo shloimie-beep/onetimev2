@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig } from '../../packages/config/src/index.ts';
+import { DELIVERY_EVENT_TYPES } from '../../packages/contracts/src/delivery/types.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import { captureLead, processOutboxSink } from '../../packages/domain/src/index.ts';
 import type { AppConfig } from '../../packages/config/src/index.ts';
@@ -81,8 +82,8 @@ describe('lead capture transaction', () => {
       'SELECT event_type, channel, payload FROM onetime.outbox_events ORDER BY event_type, channel',
     );
     expect(outbox.rows.map((outboxRow) => `${outboxRow.event_type}:${outboxRow.channel}`)).toEqual([
-      'email_acknowledgement:email',
-      'internal_lead_alert:internal_email',
+      `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
+      `${DELIVERY_EVENT_TYPES.schoolSignupEmailAck}:email`,
     ]);
     expect(JSON.stringify(outbox.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
   });
@@ -101,10 +102,38 @@ describe('lead capture transaction', () => {
     });
     expect(both.outbox_intents).toHaveLength(3);
     const rows = await pool.query(
-      "SELECT channel, payload FROM onetime.outbox_events WHERE channel = 'whatsapp'",
+      "SELECT event_type, channel, payload FROM onetime.outbox_events WHERE channel = 'whatsapp'",
     );
     expect(rows.rowCount).toBe(1);
+    expect(rows.rows[0].event_type).toBe(DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation);
     expect(rows.rows[0].payload.public_recipient).toBe(true);
+  });
+
+  it('queues a School WhatsApp receipt only when channel, phone, and consent allow it', async () => {
+    const school = await captureLead({
+      pool,
+      config,
+      payload: {
+        ...payload,
+        audience_type: 'school',
+        family_or_school: 'North School',
+        email: 'school-both@example.test',
+        idempotency_key: 'idem-school-both-1',
+        phone: '050-222-3333',
+        reminder_preference: 'both',
+      },
+    });
+    expect(school.outbox_intents).toHaveLength(3);
+    const rows = await pool.query(
+      'SELECT event_type, channel, payload FROM onetime.outbox_events WHERE contact_key = $1 ORDER BY event_type, channel',
+      [school.contact_key],
+    );
+    expect(rows.rows.map((row) => `${row.event_type}:${row.channel}`)).toEqual([
+      `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
+      `${DELIVERY_EVENT_TYPES.schoolSignupEmailAck}:email`,
+      `${DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt}:whatsapp`,
+    ]);
+    expect(JSON.stringify(rows.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
   });
 
   it('queues a Family email acknowledgement when reminder preference is none', async () => {
@@ -125,8 +154,8 @@ describe('lead capture transaction', () => {
       [none.contact_key],
     );
     expect(rows.rows.map((row) => `${row.event_type}:${row.channel}`)).toEqual([
-      'email_acknowledgement:email',
-      'internal_lead_alert:internal_email',
+      `${DELIVERY_EVENT_TYPES.familySignupEmailAck}:email`,
+      `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
     ]);
   });
 

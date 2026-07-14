@@ -4,6 +4,7 @@ import type {
   DeliveryContact,
   DeliverySignup,
 } from '../../../packages/contracts/src/delivery/types.ts';
+import { DELIVERY_EVENT_TYPES } from '../../../packages/contracts/src/delivery/types.ts';
 
 export const BASE_TIME = new Date('2026-07-14T12:00:00.000Z');
 
@@ -30,6 +31,7 @@ export function deliverySignup(overrides: Partial<DeliverySignup> = {}): Deliver
   return {
     signupKey: 'signup_fixture',
     classification: 'family',
+    status: 'new',
     metadata: {},
     ...overrides,
   };
@@ -58,7 +60,7 @@ export function claimedDelivery(overrides: Partial<ClaimedDelivery> = {}): Claim
 }
 
 function defaultEventForChannel(channel: DeliveryChannel): string {
-  if (channel === 'whatsapp') return 'whatsapp_confirmation';
-  if (channel === 'internal_email') return 'internal_lead_alert';
-  return 'email_acknowledgement';
+  if (channel === 'whatsapp') return DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation;
+  if (channel === 'internal_email') return DELIVERY_EVENT_TYPES.internalLeadAlert;
+  return DELIVERY_EVENT_TYPES.familySignupEmailAck;
 }

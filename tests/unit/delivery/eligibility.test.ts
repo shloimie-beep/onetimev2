@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DELIVERY_EVENT_TYPES } from '../../../packages/contracts/src/delivery/types.ts';
 import { evaluateDeliveryEligibility } from '../../../packages/domain/src/delivery/eligibility.ts';
 import {
   claimedDelivery,
@@ -14,7 +15,7 @@ describe('delivery eligibility', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         channel: 'whatsapp',
-        eventType: 'whatsapp_confirmation',
+        eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
         contact: deliveryContact({ reminderPreference: preference }),
       }),
       'owner@protected.test',
@@ -28,7 +29,7 @@ describe('delivery eligibility', () => {
       const result = evaluateDeliveryEligibility(
         claimedDelivery({
           channel: 'whatsapp',
-          eventType: 'whatsapp_confirmation',
+          eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
           contact: deliveryContact({ reminderPreference: preference }),
         }),
         'owner@protected.test',
@@ -46,7 +47,7 @@ describe('delivery eligibility', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         channel: 'whatsapp',
-        eventType: 'whatsapp_confirmation',
+        eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
         contact: deliveryContact({ consentRecordedAt: null }),
       }),
       undefined,
@@ -63,7 +64,7 @@ describe('delivery eligibility', () => {
       const result = evaluateDeliveryEligibility(
         claimedDelivery({
           channel: 'whatsapp',
-          eventType: 'whatsapp_confirmation',
+          eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
           contact: deliveryContact({ phoneNormalized: phone }),
         }),
         undefined,
@@ -92,10 +93,11 @@ describe('delivery eligibility', () => {
     },
   );
 
-  it('allows school public email acknowledgement through the generic template path', () => {
+  it('allows school public email acknowledgement through the explicit receipt event', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         contact: deliveryContact({ familySchoolClassification: 'school' }),
+        eventType: DELIVERY_EVENT_TYPES.schoolSignupEmailAck,
         signup: deliverySignup({ classification: 'school' }),
       }),
       'owner@protected.test',
@@ -108,11 +110,11 @@ describe('delivery eligibility', () => {
     });
   });
 
-  it('allows eligible school WhatsApp receipts through the generic template path', () => {
+  it('allows eligible school WhatsApp receipts through the explicit receipt event', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         channel: 'whatsapp',
-        eventType: 'whatsapp_confirmation',
+        eventType: DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt,
         contact: deliveryContact({
           familySchoolClassification: 'school',
           reminderPreference: 'both',
@@ -133,7 +135,7 @@ describe('delivery eligibility', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         channel: 'internal_email',
-        eventType: 'internal_lead_alert',
+        eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
         contact: deliveryContact({
           familySchoolClassification: 'school',
           emailNormalized: 'public@example.test',
@@ -158,10 +160,48 @@ describe('delivery eligibility', () => {
     expect(providerMode).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
 
     const mismatch = evaluateDeliveryEligibility(
-      claimedDelivery({ channel: 'email', eventType: 'whatsapp_confirmation' }),
+      claimedDelivery({
+        channel: 'email',
+        eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
+      }),
       undefined,
     );
     expect(mismatch).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
+  });
+
+  it('rejects legacy generic event names and event/audience mismatches', () => {
+    const legacy = evaluateDeliveryEligibility(
+      claimedDelivery({ channel: 'email', eventType: 'email_acknowledgement' }),
+      undefined,
+    );
+    expect(legacy).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
+
+    const audienceMismatch = evaluateDeliveryEligibility(
+      claimedDelivery({
+        channel: 'email',
+        eventType: DELIVERY_EVENT_TYPES.schoolSignupEmailAck,
+        signup: deliverySignup({ classification: 'family' }),
+      }),
+      undefined,
+    );
+    expect(audienceMismatch).toMatchObject({
+      kind: 'skipped',
+      reason: 'unsupported_event_type',
+    });
+  });
+
+  it('requires the signup row to still be committed before public dispatch', () => {
+    const result = evaluateDeliveryEligibility(
+      claimedDelivery({
+        signup: deliverySignup({ status: 'draft' }),
+      }),
+      undefined,
+    );
+    expect(result).toEqual({
+      kind: 'skipped',
+      channel: 'email',
+      reason: 'signup_not_committed',
+    });
   });
 
   it('fails closed for archived contacts before public delivery', () => {

@@ -11,7 +11,6 @@ const ALLOWED_FAILURE_CODES = new Set([
   'provider_timeout',
   'provider_unavailable',
   'provider_unclassified_failure',
-  'protected_class_link_unavailable',
   'resend_internal_server_error',
   'resend_rate_limit_exceeded',
   'resend_validation_error',

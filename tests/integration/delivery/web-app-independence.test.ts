@@ -72,7 +72,6 @@ describe('web process independence from delivery worker', () => {
       messageConfig: {
         emailFrom: 'One Time <delivery@example.test>',
         protectedOwnerEmail: 'owner@protected.test',
-        currentClassLink: 'https://example.test/current-class',
       },
       options: {
         accountKey: 'one_time',

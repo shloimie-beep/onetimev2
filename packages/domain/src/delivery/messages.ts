@@ -3,29 +3,13 @@ import type {
   DeliveryRequest,
   DeliveryTag,
 } from '../../../contracts/src/delivery/types.ts';
-import { providerError } from '../../../contracts/src/delivery/errors.ts';
 import type { DeliveryEligibility } from './eligibility.ts';
 
 export type DeliveryMessageConfig = {
   emailFrom: string;
   emailReplyTo?: string;
   protectedOwnerEmail?: string;
-  currentClassLink?: string;
 };
-
-function requireHttpsClassLink(value: string | undefined): string {
-  const candidate = value?.trim() ?? '';
-  try {
-    const url = new URL(candidate);
-    if (url.protocol === 'https:') return url.toString();
-  } catch {
-    // Converted to a retryable, redacted configuration failure below.
-  }
-  throw providerError('protected_class_link_unavailable', {
-    retryable: true,
-    provider: 'worker',
-  });
-}
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => {
@@ -49,22 +33,18 @@ function isSchoolClaim(claim: ClaimedDelivery): boolean {
   return classificationLabel(claim) === 'School';
 }
 
-function publicConfirmationText(classLink: string): string {
+function familyAcknowledgementText(): string {
   return [
-    "You're signed up for One Time Mishnayos.",
+    'We received your One Time Mishnayos signup for the free class.',
     '',
-    `Current class details: ${classLink}`,
-    '',
-    'This is a one-time transactional confirmation. Reminder delivery follows the preference and consent saved with your signup.',
+    'Our team will follow up with the next details through the preference and consent saved with your signup.',
   ].join('\n');
 }
 
-function publicConfirmationHtml(classLink: string): string {
-  const link = escapeHtml(classLink);
+function familyAcknowledgementHtml(): string {
   return [
-    "<p><strong>You're signed up for One Time Mishnayos.</strong></p>",
-    `<p><a href="${link}">Open the current class details</a></p>`,
-    '<p>This is a one-time transactional confirmation. Reminder delivery follows the preference and consent saved with your signup.</p>',
+    '<p><strong>We received your One Time Mishnayos signup for the free class.</strong></p>',
+    '<p>Our team will follow up with the next details through the preference and consent saved with your signup.</p>',
   ].join('');
 }
 
@@ -117,16 +97,14 @@ export function buildDeliveryRequest(
       subject: 'New One Time Mishnayos signup',
       text,
       html,
-      tags: emailTags(claim, 'internal_lead_alert'),
+      tags: emailTags(claim, claim.eventType),
     };
   }
 
   const school = isSchoolClaim(claim);
 
   if (eligibility.channel === 'whatsapp') {
-    const text = school
-      ? schoolAcknowledgementText()
-      : publicConfirmationText(requireHttpsClassLink(config.currentClassLink));
+    const text = school ? schoolAcknowledgementText() : familyAcknowledgementText();
     return {
       channel: 'whatsapp',
       provider: 'one_time_wapi',
@@ -134,7 +112,7 @@ export function buildDeliveryRequest(
       idempotencyKey: claim.deliveryKey,
       to: eligibility.to,
       text,
-      noLinkPreview: school,
+      noLinkPreview: true,
     };
   }
 
@@ -151,12 +129,11 @@ export function buildDeliveryRequest(
       subject: 'We received your One Time Mishnayos inquiry',
       text,
       html: schoolAcknowledgementHtml(),
-      tags: emailTags(claim, 'school_acknowledgement'),
+      tags: emailTags(claim, claim.eventType),
     };
   }
 
-  const classLink = requireHttpsClassLink(config.currentClassLink);
-  const text = publicConfirmationText(classLink);
+  const text = familyAcknowledgementText();
   return {
     channel: 'email',
     provider: 'resend',
@@ -167,7 +144,7 @@ export function buildDeliveryRequest(
     ...(config.emailReplyTo ? { replyTo: config.emailReplyTo } : {}),
     subject: "You're signed up for One Time Mishnayos",
     text,
-    html: publicConfirmationHtml(classLink),
-    tags: emailTags(claim, 'signup_confirmation'),
+    html: familyAcknowledgementHtml(),
+    tags: emailTags(claim, claim.eventType),
   };
 }
