@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "46d5c6819c232ad1845c437752e9e2622feeefee",
-  "phase": "pr7_ot39_crm_privacy_performance_integrated",
+  "current_head_sha": "8ec00b4c3a3a93c94622e4e07f58f437f67661d6",
+  "phase": "pr11_ot42_crm_module_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:01:28+03:00",
+  "updated_at": "2026-07-15T02:13:36+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -33,10 +33,13 @@
     "Preserved assignee dropdown behavior while adopting the PR #7 CRM API adapter, list cache, post-paint usability marks, and privacy/performance tests.",
     "Adapted OT-39 browser fixtures to the current body idempotency-key create contract.",
     "Verified OT-39 privacy/usability, accessibility, public performance, 30-sample CRM performance, build, and auth/CRM integration checks.",
-    "Committed the PR #7 / OT-39 CRM privacy/performance checkpoint at 46d5c6819c232ad1845c437752e9e2622feeefee."
+    "Committed the PR #7 / OT-39 CRM privacy/performance checkpoint at 46d5c6819c232ad1845c437752e9e2622feeefee.",
+    "Cherry-picked PR #11 / OT-42 CRM module without merge conflicts.",
+    "Kept OT-42 as an additive module surface with injectable router/register hooks, contracts, domain helpers, migration 1000, protected client cache, lazy tab loader, and focused tests.",
+    "Did not mount OT-42 router into live `/api/v1/crm/*` routes because concrete repository implementations are not included and existing PR #2/#5/#7 routes remain canonical.",
+    "Verified OT-42 focused unit/integration tests, build, typecheck, existing auth/CRM regression tests, formatting, whitespace, JSON validity, and secret scan."
   ],
   "remaining_steps": [
-    "Apply remaining authenticated CRM unit: PR #11.",
     "Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.",
     "Apply isolated modules: PR #12, PR #15, PR #13.",
     "Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.",
@@ -45,7 +48,7 @@
     "Open draft PR against codex/crm-core-v1 after a pushed resumable checkpoint exists."
   ],
   "blockers": [],
-  "last_safe_command": "npx playwright test tests/performance/ot-39/crm-performance.spec.ts --reporter=line",
+  "last_safe_command": "npm run secret:scan",
   "test_results": [
     {
       "command": "npm ci",
@@ -91,6 +94,31 @@
       "command": "npx playwright test tests/performance/ot-39/crm-performance.spec.ts --reporter=line",
       "status": "passed",
       "summary": "Regenerated OT-39 30-sample performance evidence with private POST-search request-count labels; 1 test passed."
+    },
+    {
+      "command": "npx vitest run tests/unit/ot42-cache.test.ts tests/unit/ot42-capabilities.test.ts tests/integration/ot42-router.test.ts",
+      "status": "passed",
+      "summary": "OT-42 focused unit/integration tests passed 11 tests."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json and CANONICAL-CANDIDATE.json successfully."
+    },
+    {
+      "command": "npx prettier --check <OT-42 and OT-60R touched files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 145 repo text files."
     }
   ],
   "external_mutation_counts": {
@@ -103,5 +131,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #11 / OT-42 without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, or PR #7 privacy/performance integration."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #4 / OT-36 delivery without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, or PR #11 CRM module integration."
 }

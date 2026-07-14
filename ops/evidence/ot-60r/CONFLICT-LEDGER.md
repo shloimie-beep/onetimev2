@@ -81,3 +81,31 @@ Verification:
 - `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
 - `npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts tests/accessibility/ot-39/crm-a11y.spec.ts tests/performance/ot-39/crm-performance.spec.ts tests/performance/public-performance.spec.ts --reporter=line`: PASS, 12 tests.
 - `npx playwright test tests/performance/ot-39/crm-performance.spec.ts --reporter=line`: PASS, 1 test.
+
+## INTEGRATION-OT60R-004 - PR #11 OT-42 Abstract CRM Module Mounting
+
+Type: semantic integration decision / no merge conflict.
+
+Affected files:
+
+- `apps/web/src/server/crm/register.ts`
+- `packages/contracts/src/crm/capabilities.ts`
+- `packages/contracts/src/crm/schemas.ts`
+- `packages/domain/src/crm/ot42-capabilities.ts`
+- `packages/domain/src/crm/ot42-protocol.ts`
+- `packages/db/migrations/1000_ot42_crm_module_v1.sql`
+- `tests/integration/ot42-router.test.ts`
+
+Resolution:
+
+- Cherry-picked PR #11 without textual conflicts.
+- Kept the OT-42 module surface additive: contracts, schemas, capabilities, protocol helpers, migration, injectable router/register hooks, protected client cache, lazy tab loader, and tests.
+- Did not mount the OT-42 router into the live `/api/v1/crm/*` app because the PR supplies abstract repository/guard hooks rather than concrete production repository implementations.
+- Preserved the existing canonical PR #2/#5/#7 live CRM routes.
+
+Verification:
+
+- `npx vitest run tests/unit/ot42-cache.test.ts tests/unit/ot42-capabilities.test.ts tests/integration/ot42-router.test.ts`: PASS, 11 tests.
+- `npm run typecheck`: PASS.
+- `npm run build`: PASS.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.

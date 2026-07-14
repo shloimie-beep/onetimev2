@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #7 / OT-39 CRM privacy/performance integrated
+- Phase: PR #11 / OT-42 CRM module integrated
 - Status: building
 
 ## Completed
@@ -34,19 +34,22 @@
 - Preserved assignee dropdown behavior and current body `idempotency_key` create contract.
 - Verified with `npm run build`, focused auth/CRM integration tests, OT-39 browser suite, and regenerated OT-39 30-sample performance evidence.
 - Committed the PR #7 / OT-39 CRM privacy/performance checkpoint at `46d5c6819c232ad1845c437752e9e2622feeefee`.
+- Cherry-picked PR #11 / OT-42 without merge conflicts.
+- Kept OT-42 additive and unmounted from live CRM routes because it provides abstract router/register hooks and tests, not concrete production repository implementations.
+- Verified with OT-42 focused unit/integration tests, `npm run typecheck`, `npm run build`, the focused auth/CRM regression suite, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
 
 ## Last Safe Command
 
 ```powershell
-npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts
+npm run secret:scan
 ```
 
 ## Next Safe Command
 
 ```powershell
-git cherry-pick --no-commit b2c159a060d8aa50ec6feb69f1cae003fd633bf3
+git cherry-pick --no-commit 61d4755fe279ca47c37e7adbe8d1e6ce8b258dae
 ```
 
-Continue PR #11 / OT-42 CRM module integration. Resolve semantically against the current canonical auth/search/session model.
+Continue PR #4 / OT-36 delivery integration. Apply its range carefully, then PR #8 delivery correction before PR #14 communications.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

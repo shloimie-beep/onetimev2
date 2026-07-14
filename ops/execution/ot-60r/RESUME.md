@@ -30,4 +30,4 @@ ops/evidence/ot-60r/FINAL-REPORT.md
 5. Maintain the prohibitions: no deployment, no production/provider mutation, no BNA modification, no production DB, no real sends, no charges, no DNS changes, no real users.
 6. After every successful unit, update `STATE.json`, `CHECKPOINT.md`, `IMPLEMENTED.md`, `REMAINING.md`, `TEST-RESULTS.md`, evidence files, commit intentionally, and push `codex/ot60r-recovery-convergence`.
 
-Current first unfinished phase after PR #7 / OT-39: continue PR #11 / OT-42 CRM module semantic integration.
+Current first unfinished phase after PR #11 / OT-42: continue PR #4 / OT-36 delivery semantic integration, followed by PR #8 delivery correction and PR #14 communications.

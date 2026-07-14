@@ -6,7 +6,7 @@
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
   "candidate_head_sha": null,
   "status": "building",
-  "updated_at": "2026-07-15T02:01:28+03:00",
+  "updated_at": "2026-07-15T02:20:00+03:00",
   "evidence": [
     "ops/evidence/ot-60r/APPLIED-DEFERRED-MATRIX.md",
     "ops/evidence/ot-60r/CONFLICT-LEDGER.md",
@@ -17,7 +17,10 @@
     "ops/evidence/ot-39/FINAL-REPORT.md",
     "ops/evidence/ot-39/accessibility-results.json",
     "ops/evidence/ot-39/performance-report.json",
-    "ops/evidence/ot-39/screenshots/"
+    "ops/evidence/ot-39/screenshots/",
+    "ops/evidence/ot-42/FINAL-REPORT.md",
+    "ops/evidence/ot-42/INTEGRATION-MANIFEST.md",
+    "ops/evidence/ot-42/PR-BODY.md"
   ],
   "notes": [
     "This control file is not deployment approval.",

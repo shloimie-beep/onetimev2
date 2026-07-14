@@ -19,6 +19,8 @@
 - Extracted authenticated CRM client API calls into `crm-api.ts` while preserving canonical POST-body search, body idempotency keys, and existing assignee behavior.
 - Added post-paint usability marks, list cache return behavior, privacy checks, OT-39 accessibility, OT-39 screenshots, and 30-sample performance evidence.
 - Converted OT-35 E2E/performance specs into supersession sentinels that point to OT-39 coverage.
+- Integrated PR #11 / OT-42 CRM module as an additive, unmounted module surface.
+- Added OT-42 CRM contracts, capability mapping, protocol helpers, migration `1000`, injectable router/register hooks, protected memory cache, lazy protected tab loader, and focused tests.
 
 ## Supersession Security Port
 

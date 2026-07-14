@@ -18,6 +18,19 @@
 - `npx prettier --check apps/web/src/client/app/crm-entry.tsx apps/web/src/client/app/crm.css apps/web/src/client/app/shell/AppShell.tsx playwright.config.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/e2e/ot-35/app-shell-crm.spec.ts tests/performance/ot-35/crm-performance.spec.ts`: PASS.
 - `git diff --check`: PASS.
 
+## OT-42 CRM Module
+
+- `npx vitest run tests/unit/ot42-cache.test.ts tests/unit/ot42-capabilities.test.ts tests/integration/ot42-router.test.ts`: PASS, 11 tests.
+- `npm run typecheck`: PASS.
+- `npm run build`: PASS.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
+- `node -e "JSON.parse(...)"`: PASS for `STATE.json` and `CANONICAL-CANDIDATE.json`.
+- `npx prettier --check <OT-42 and OT-60R touched files>`: PASS.
+- `git diff --check`: PASS.
+- `npm run secret:scan`: PASS across 145 repo text files.
+
+Note: OT-42 was integrated as an additive, unmounted module surface. The focused router tests exercise injected repositories/guards; live `/api/v1/crm/*` routes remain the canonical PR #2/#5/#7 routes until a later lane wires concrete repository implementations safely.
+
 ## Supersession Security Port
 
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.
