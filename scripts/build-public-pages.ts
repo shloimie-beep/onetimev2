@@ -94,9 +94,14 @@ function landingPage() {
     .join('');
   const gainCards = landingContent.gain.cards
     .map((card) => {
-      const visual = card.image
-        ? `<img src="${card.image}" alt="${escapeHtml(card.alt)}" loading="lazy" decoding="async">`
-        : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(card.assetBlocker ?? 'Missing assigned asset')}">Toronto.jpg pending</div>`;
+      const visualCard: {
+        image: string | null;
+        alt: string;
+        assetBlocker: string | null;
+      } = card;
+      const visual = visualCard.image
+        ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}" loading="lazy" decoding="async">`
+        : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Toronto.jpg pending</div>`;
       return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}">
         <div class="benefit-visual">${visual}</div>
         <h3>${escapeHtml(card.title)}</h3>

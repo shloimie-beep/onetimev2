@@ -36,6 +36,7 @@ and repository transaction boundaries.
 ## Verification
 
 ```bash
+npm run secret:scan
 npm run format
 npm run lint
 npm run typecheck
