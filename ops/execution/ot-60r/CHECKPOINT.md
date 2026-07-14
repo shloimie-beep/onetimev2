@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #5 / OT-35 authenticated shell integrated
+- Phase: PR #7 / OT-39 CRM privacy/performance integrated
 - Status: building
 
 ## Completed
@@ -29,6 +29,10 @@
 - Raised Playwright-only login budgets to keep E2E evidence from self-throttling; production defaults remain unchanged.
 - Verified with `npm run build`, focused auth/CRM integration tests, and OT-35 E2E/accessibility/performance browser specs.
 - Committed the PR #5 / OT-35 authenticated shell checkpoint at `a36ebc98fc9e82ceba9a8e2806cb9da2ba6dcbdb`.
+- Cherry-picked PR #7 / OT-39 and resolved conflicts in `crm-entry.tsx`, OT-35 E2E, and OT-35 performance specs.
+- Preserved the canonical private POST-body CRM search endpoint while applying PR #7 privacy/performance structure.
+- Preserved assignee dropdown behavior and current body `idempotency_key` create contract.
+- Verified with `npm run build`, focused auth/CRM integration tests, OT-39 browser suite, and regenerated OT-39 30-sample performance evidence.
 
 ## Last Safe Command
 
@@ -39,9 +43,9 @@ npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.
 ## Next Safe Command
 
 ```powershell
-git cherry-pick --no-commit c1584577780d7b5125bce4fb81d2a454c9e84096
+git cherry-pick --no-commit b2c159a060d8aa50ec6feb69f1cae003fd633bf3
 ```
 
-Continue PR #7 / OT-39 CRM privacy/performance integration. Resolve semantically against the current canonical auth/search/session model.
+Continue PR #11 / OT-42 CRM module integration. Resolve semantically against the current canonical auth/search/session model.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

@@ -15,6 +15,10 @@
 - Adapted OT-35 E2E/performance fixtures to the current idempotent contact-create contract.
 - Added Playwright-only login budgets so the local evidence suite does not rate-limit itself.
 - Refreshed OT-35 screenshot, accessibility, and performance evidence.
+- Integrated PR #7 / OT-39 CRM privacy/performance correction.
+- Extracted authenticated CRM client API calls into `crm-api.ts` while preserving canonical POST-body search, body idempotency keys, and existing assignee behavior.
+- Added post-paint usability marks, list cache return behavior, privacy checks, OT-39 accessibility, OT-39 screenshots, and 30-sample performance evidence.
+- Converted OT-35 E2E/performance specs into supersession sentinels that point to OT-39 coverage.
 
 ## Supersession Security Port
 

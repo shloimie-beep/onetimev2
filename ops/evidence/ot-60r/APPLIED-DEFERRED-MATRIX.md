@@ -6,7 +6,7 @@
 | PR #3 / OT-34 | Superseded | No merge/cherry-pick. Alternate migration/model excluded. |
 | PR #9 / OT-38 | Partially ported | Only HMAC-derived login-CSRF proof was ported intentionally with tests. Alternate migration/model excluded. |
 | PR #5 / OT-35 shell | Applied | Integrated authenticated CRM shell with canonical PR #2 auth/search, idempotent create contract, current screenshots, and E2E/accessibility/performance evidence. |
-| PR #7 / OT-39 CRM privacy/performance | Pending | Integrate after PR #5 shell. |
+| PR #7 / OT-39 CRM privacy/performance | Applied | Integrated privacy checks, post-paint usability marks, list cache, accessibility/performance proof, and OT-35 supersession sentinels; adapted search to canonical POST-body `/api/v1/crm/contacts/search`. |
 | PR #11 / OT-42 CRM module | Pending | Integrate after PR #5/#7, extending canonical `/api/v1/crm`. |
 | PR #4 / OT-36 delivery | Pending | Apply commit range in order, then PR #8 correction. |
 | PR #8 / OT-40 delivery correction | Pending | Use corrected migration/file state. |

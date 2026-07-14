@@ -51,3 +51,33 @@ Verification:
 - `npm run build`: PASS.
 - `npx playwright test tests/e2e/ot-35/app-shell-crm.spec.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/performance/ot-35/crm-performance.spec.ts --reporter=line`: PASS, 8 tests.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
+
+## CONFLICT-OT60R-003 - PR #7 Privacy/Performance Against Live POST Search
+
+Type: cherry-pick merge conflict / superseded assumption.
+
+Affected files:
+
+- `apps/web/src/client/app/crm-api.ts`
+- `apps/web/src/client/app/crm-entry.tsx`
+- `tests/e2e/ot-35/app-shell-crm.spec.ts`
+- `tests/e2e/ot-39/crm-privacy-usability.spec.ts`
+- `tests/performance/ot-35/crm-performance.spec.ts`
+- `tests/performance/ot-39/crm-performance.spec.ts`
+- `tests/accessibility/ot-39/crm-a11y.spec.ts`
+- `tests/performance/public-performance.spec.ts`
+
+Resolution:
+
+- Accepted PR #7's API helper extraction, list-cache return behavior, post-paint usability marks, OT-39 privacy/accessibility/performance proof, and OT-35 supersession sentinels.
+- Replaced PR #7's disabled-search waiting state with canonical authenticated POST-body `/api/v1/crm/contacts/search`.
+- Preserved no-GET-search privacy checks by asserting search never appears in query strings, history, storage, resource URLs, or console output.
+- Adapted manual and synthetic create flows from `Idempotency-Key` headers to the current body `idempotency_key` contract.
+- Preserved existing assignee dropdown behavior from the integrated PR #2/PR #5 surface.
+
+Verification:
+
+- `npm run build`: PASS.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
+- `npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts tests/accessibility/ot-39/crm-a11y.spec.ts tests/performance/ot-39/crm-performance.spec.ts tests/performance/public-performance.spec.ts --reporter=line`: PASS, 12 tests.
+- `npx playwright test tests/performance/ot-39/crm-performance.spec.ts --reporter=line`: PASS, 1 test.

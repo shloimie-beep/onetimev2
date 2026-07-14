@@ -12,6 +12,8 @@
 
 - `npm run build`: PASS. Cleaned `dist`, rebuilt public/app Vite bundles and static pages, then ran typecheck.
 - `npx playwright test tests/e2e/ot-35/app-shell-crm.spec.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/performance/ot-35/crm-performance.spec.ts --reporter=line`: PASS, 8 tests.
+- `npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts tests/accessibility/ot-39/crm-a11y.spec.ts tests/performance/ot-39/crm-performance.spec.ts tests/performance/public-performance.spec.ts --reporter=line`: PASS, 12 tests.
+- `npx playwright test tests/performance/ot-39/crm-performance.spec.ts --reporter=line`: PASS, 1 test; regenerated corrected 30-sample OT-39 performance evidence.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
 - `npx prettier --check apps/web/src/client/app/crm-entry.tsx apps/web/src/client/app/crm.css apps/web/src/client/app/shell/AppShell.tsx playwright.config.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/e2e/ot-35/app-shell-crm.spec.ts tests/performance/ot-35/crm-performance.spec.ts`: PASS.
 - `git diff --check`: PASS.
@@ -21,7 +23,7 @@
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.
 - `npm run typecheck`: PASS.
 - `npx prettier --check <touched supported files>`: PASS. `.env.example` is excluded because Prettier cannot infer a parser for that extension.
-- `npm run secret:scan`: PASS across 124 repo text files.
+- `npm run secret:scan`: PASS across 131 repo text files.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
 
 Full unit, full integration, full-repo E2E, and PostgreSQL assurance remain pending for later integration checkpoints.

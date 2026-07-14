@@ -9,7 +9,7 @@
 | PR  | Commit                                     | Initial Status | Integration Decision                      |
 | --- | ------------------------------------------ | -------------- | ----------------------------------------- |
 | #5  | `6ca5e568c328ea116a9413b57ea5920400f8bc14` | Audited        | Applied with semantic merge               |
-| #7  | `c1584577780d7b5125bce4fb81d2a454c9e84096` | Audited        | Pending                                   |
+| #7  | `c1584577780d7b5125bce4fb81d2a454c9e84096` | Audited        | Applied with semantic merge               |
 | #11 | `b2c159a060d8aa50ec6feb69f1cae003fd633bf3` | Audited        | Pending                                   |
 | #4  | `61d4755fe279ca47c37e7adbe8d1e6ce8b258dae` | Audited        | Pending                                   |
 | #8  | `571b18f36cdc645f757cc3be6b0519f1af3225f6` | Audited        | Pending                                   |
@@ -34,3 +34,4 @@ Result: PR #3/#9 alternate trains are superseded. Only the verified missing HMAC
 | Input         | Result                                                                                                                                                                                                                                                                                                 |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | PR #5 / OT-35 | Applied. Resolved `apps/web/src/client/app/crm-entry.tsx` against the canonical PR #2 API model, kept POST `/api/v1/crm/contacts/search`, omitted blank search filters, preserved idempotent contact creates, and kept production auth rate-limit defaults while raising Playwright-only test budgets. |
+| PR #7 / OT-39 | Applied. Kept PR #7 client API extraction, privacy tests, post-paint usability marks, list-cache return behavior, accessibility/performance evidence, and OT-35 supersession sentinels while adapting disabled-search assumptions to canonical POST-body search and body idempotency keys.             |

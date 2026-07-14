@@ -1,6 +1,6 @@
 # OT-60R Remaining Work
 
-1. Apply remaining authenticated shell and CRM units in order: PR #7, PR #11.
+1. Apply remaining authenticated CRM unit: PR #11.
 2. Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.
 3. Apply isolated modules: PR #12, PR #15, PR #13.
 4. Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.
