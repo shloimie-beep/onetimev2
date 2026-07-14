@@ -12,14 +12,14 @@ const ARGON2_TAG_LENGTH = 32;
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_MAX_FAILURES = 5;
+const DUMMY_PASSWORD_HASH =
+  'argon2id$v=19$m=19456,t=2,p=1$b3QzNC1maXhlZC1kdW1teQ$1Ep2Bkj8FE5kylMcswO1FD0dA1Si-7_RzEr2CSHtM6E';
 
-type LoginBucket = {
-  failures: number;
-  resetAt: number;
-  lockedUntil: number;
+type LoginThrottleBucket = {
+  failure_count: number;
+  window_started_at: unknown;
+  locked_until: unknown;
 };
-
-const loginBuckets = new Map<string, LoginBucket>();
 
 export type AuthenticatedSession = {
   session_key: string;
@@ -39,7 +39,7 @@ export type LoginResult =
   | { ok: false; code: AuthFailureCode; retry_after_seconds?: number };
 
 export function resetAuthRateLimitForTests() {
-  loginBuckets.clear();
+  // Durable throttling is stored in the test database; fresh memory pools isolate tests.
 }
 
 export function hashPassword(password: string) {
@@ -141,6 +141,7 @@ export async function authenticateUser({
   password,
   ip,
   userAgent,
+  testHooks,
 }: {
   pool: DbPool;
   config: AppConfig;
@@ -148,83 +149,93 @@ export async function authenticateUser({
   password: string;
   ip?: string | undefined;
   userAgent?: string | undefined;
+  testHooks?: { passwordVerificationPath?: (path: 'account' | 'dummy') => void } | undefined;
 }): Promise<LoginResult> {
   const emailNormalized = normalizeEmail(email);
-  const bucketKey = `${config.accountKey}:${config.productKey}:${emailNormalized}:${hashValue(
-    ip ?? 'unknown',
-  )}`;
-  const rateLimit = checkLoginBucket(bucketKey);
-  if (!rateLimit.allowed) {
-    await insertAuthAudit(pool, config, {
-      eventType: 'login_rate_limited',
-      success: false,
-      reason: 'RATE_LIMITED',
-      ip,
-      userAgent,
-      metadata: { email_hash: stableKey('email', [emailNormalized]) },
-    });
-    return {
-      ok: false,
-      code: 'RATE_LIMITED',
-      retry_after_seconds: Math.ceil((rateLimit.lockedUntil - Date.now()) / 1000),
-    };
-  }
+  const emailBucketHash = hashValue(emailNormalized);
+  const ipBucketHash = hashValue(ip ?? 'unknown');
 
-  const result = await pool.query(
-    `SELECT user_key, email_normalized, display_name, role, password_hash, mfa_capable, status
-       FROM onetime.account_users
-      WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3`,
-    [config.accountKey, config.productKey, emailNormalized],
-  );
-  const row = result.rows[0];
-  const valid = row ? verifyPassword(password, row.password_hash) : false;
-  if (!valid) {
-    recordFailedLogin(bucketKey);
-    await insertAuthAudit(pool, config, {
-      eventType: 'login_failed',
-      success: false,
-      reason: 'INVALID_CREDENTIALS',
-      ip,
-      userAgent,
-      metadata: { email_hash: stableKey('email', [emailNormalized]) },
-    });
-    return { ok: false, code: 'INVALID_CREDENTIALS' };
-  }
+  return inTransaction(pool, async (client) => {
+    const bucket = await lockLoginThrottleBucket(client, config, emailBucketHash, ipBucketHash);
+    const lockedUntil = asTime(bucket.locked_until);
+    if (lockedUntil && lockedUntil > Date.now()) {
+      await insertAuthAudit(client, config, {
+        eventType: 'login_rate_limited',
+        success: false,
+        reason: 'RATE_LIMITED',
+        ip,
+        userAgent,
+        metadata: { email_hash: stableKey('email', [emailNormalized]) },
+      });
+      return {
+        ok: false,
+        code: 'RATE_LIMITED',
+        retry_after_seconds: Math.ceil((lockedUntil - Date.now()) / 1000),
+      };
+    }
 
-  if (row.status !== 'active') {
-    recordFailedLogin(bucketKey);
-    await insertAuthAudit(pool, config, {
-      eventType: 'login_failed',
+    const result = await client.query(
+      `SELECT user_key, email_normalized, display_name, role, password_hash, mfa_capable, status
+         FROM onetime.account_users
+        WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3`,
+      [config.accountKey, config.productKey, emailNormalized],
+    );
+    const row = result.rows[0];
+    const passwordHash =
+      typeof row?.password_hash === 'string' ? String(row.password_hash) : DUMMY_PASSWORD_HASH;
+    const passwordVerified = verifyPassword(password, passwordHash);
+    testHooks?.passwordVerificationPath?.(row ? 'account' : 'dummy');
+    const valid = Boolean(row && passwordVerified);
+    if (!valid) {
+      await recordFailedLogin(client, config, emailBucketHash, ipBucketHash);
+      await insertAuthAudit(client, config, {
+        eventType: 'login_failed',
+        success: false,
+        reason: 'INVALID_CREDENTIALS',
+        ip,
+        userAgent,
+        metadata: { email_hash: stableKey('email', [emailNormalized]) },
+      });
+      return { ok: false, code: 'INVALID_CREDENTIALS' };
+    }
+
+    if (row.status !== 'active') {
+      await recordFailedLogin(client, config, emailBucketHash, ipBucketHash);
+      await insertAuthAudit(client, config, {
+        eventType: 'login_failed',
+        userKey: row.user_key,
+        success: false,
+        reason: 'DISABLED',
+        ip,
+        userAgent,
+      });
+      return { ok: false, code: 'DISABLED' };
+    }
+
+    if (config.requireVerifiedMfa && ['owner', 'admin'].includes(row.role)) {
+      await insertAuthAudit(client, config, {
+        eventType: 'login_blocked_mfa_required',
+        userKey: row.user_key,
+        success: false,
+        reason: 'MFA_REQUIRED',
+        ip,
+        userAgent,
+        metadata: { auth_assurance: 'password_only', mfa_verified: false },
+      });
+      return { ok: false, code: 'MFA_REQUIRED' };
+    }
+
+    await clearLoginThrottle(client, config, emailBucketHash, ipBucketHash);
+    await insertAuthAudit(client, config, {
+      eventType: 'login_succeeded',
       userKey: row.user_key,
-      success: false,
-      reason: 'DISABLED',
+      success: true,
       ip,
       userAgent,
+      metadata: { auth_assurance: 'password_only', mfa_verified: false },
     });
-    return { ok: false, code: 'DISABLED' };
-  }
-
-  if (config.isProduction && ['owner', 'admin'].includes(row.role) && !row.mfa_capable) {
-    await insertAuthAudit(pool, config, {
-      eventType: 'login_blocked_mfa_required',
-      userKey: row.user_key,
-      success: false,
-      reason: 'MFA_REQUIRED',
-      ip,
-      userAgent,
-    });
-    return { ok: false, code: 'MFA_REQUIRED' };
-  }
-
-  loginBuckets.delete(bucketKey);
-  await insertAuthAudit(pool, config, {
-    eventType: 'login_succeeded',
-    userKey: row.user_key,
-    success: true,
-    ip,
-    userAgent,
+    return { ok: true, user: rowToSessionUser(row) };
   });
-  return { ok: true, user: rowToSessionUser(row) };
 }
 
 export async function createSession({
@@ -455,31 +466,100 @@ function rowToSessionUser(row: Record<string, unknown>): SessionUser {
     role,
     role_label: roleDisplayLabel[role],
     mfa_capable: Boolean(row.mfa_capable),
+    mfa_verified: false,
+    auth_assurance: 'password_only',
   };
 }
 
-function checkLoginBucket(key: string) {
-  const now = Date.now();
-  const bucket = loginBuckets.get(key);
-  if (!bucket || bucket.resetAt < now) {
-    loginBuckets.set(key, { failures: 0, resetAt: now + LOGIN_WINDOW_MS, lockedUntil: 0 });
-    return { allowed: true, lockedUntil: 0 };
-  }
-  return { allowed: bucket.lockedUntil <= now, lockedUntil: bucket.lockedUntil };
+async function lockLoginThrottleBucket(
+  client: Queryable,
+  config: AppConfig,
+  emailBucketHash: string,
+  ipBucketHash: string,
+): Promise<LoginThrottleBucket> {
+  await client.query(
+    `INSERT INTO onetime.login_throttle_buckets
+     (account_key, product_key, email_bucket_hash, ip_bucket_hash)
+     VALUES ($1,$2,$3,$4)
+     ON CONFLICT (account_key, product_key, email_bucket_hash, ip_bucket_hash) DO NOTHING`,
+    [config.accountKey, config.productKey, emailBucketHash, ipBucketHash],
+  );
+  const result = await client.query(
+    `SELECT failure_count, window_started_at, locked_until
+       FROM onetime.login_throttle_buckets
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_bucket_hash = $3
+        AND ip_bucket_hash = $4
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, emailBucketHash, ipBucketHash],
+  );
+  return result.rows[0] as LoginThrottleBucket;
 }
 
-function recordFailedLogin(key: string) {
+async function recordFailedLogin(
+  client: Queryable,
+  config: AppConfig,
+  emailBucketHash: string,
+  ipBucketHash: string,
+) {
   const now = Date.now();
-  const bucket = loginBuckets.get(key) ?? {
-    failures: 0,
-    resetAt: now + LOGIN_WINDOW_MS,
-    lockedUntil: 0,
-  };
-  bucket.failures += 1;
-  if (bucket.failures >= LOGIN_MAX_FAILURES) {
-    bucket.lockedUntil = now + LOGIN_WINDOW_MS;
-  }
-  loginBuckets.set(key, bucket);
+  const windowCutoff = new Date(now - LOGIN_WINDOW_MS).toISOString();
+  const nextWindowStartedAt = new Date(now).toISOString();
+  const nextLockedUntil = new Date(now + LOGIN_WINDOW_MS).toISOString();
+  await client.query(
+    `UPDATE onetime.login_throttle_buckets
+        SET failure_count = CASE
+              WHEN window_started_at < $5 THEN 1
+              ELSE failure_count + 1
+            END,
+            window_started_at = CASE
+              WHEN window_started_at < $5 THEN $6
+              ELSE window_started_at
+            END,
+            locked_until = CASE
+              WHEN (CASE WHEN window_started_at < $5 THEN 1 ELSE failure_count + 1 END) >= $7
+              THEN $8
+              ELSE NULL
+            END,
+            updated_at = now()
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_bucket_hash = $3
+        AND ip_bucket_hash = $4`,
+    [
+      config.accountKey,
+      config.productKey,
+      emailBucketHash,
+      ipBucketHash,
+      windowCutoff,
+      nextWindowStartedAt,
+      LOGIN_MAX_FAILURES,
+      nextLockedUntil,
+    ],
+  );
+}
+
+async function clearLoginThrottle(
+  client: Queryable,
+  config: AppConfig,
+  emailBucketHash: string,
+  ipBucketHash: string,
+) {
+  await client.query(
+    `DELETE FROM onetime.login_throttle_buckets
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_bucket_hash = $3
+        AND ip_bucket_hash = $4`,
+    [config.accountKey, config.productKey, emailBucketHash, ipBucketHash],
+  );
+}
+
+function asTime(value: unknown) {
+  if (!value) return null;
+  const time = value instanceof Date ? value.getTime() : new Date(String(value)).getTime();
+  return Number.isFinite(time) ? time : null;
 }
 
 function token() {

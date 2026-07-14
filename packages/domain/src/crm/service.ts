@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import {
   contactListQuerySchema,
   createContactSchema,
@@ -15,6 +15,9 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { normalizeEmail, normalizePhone, stableKey } from '../lead/normalize.ts';
 import { canAssignContacts } from '../auth/service.ts';
+
+const CURSOR_VERSION = 1;
+const CURSOR_TTL_MS = 24 * 60 * 60 * 1000;
 
 export type ContactListResult = {
   contacts: ContactListItem[];
@@ -41,6 +44,18 @@ export class CrmDuplicateError extends Error {
 export class CrmVersionConflictError extends Error {
   constructor(readonly currentVersion: number) {
     super('Contact was updated by another session.');
+  }
+}
+
+export class CrmCursorError extends Error {
+  constructor() {
+    super('CRM cursor is invalid for this query.');
+  }
+}
+
+export class CrmAssigneeScopeError extends Error {
+  constructor() {
+    super('Assigned user is not active in this account and product.');
   }
 }
 
@@ -83,11 +98,12 @@ export async function listContacts({
     where.push(`contacts.source = $${params.length}`);
   }
   if (parsed.assigned_user_key) {
+    await assertActiveAssignee(pool, config, parsed.assigned_user_key);
     params.push(parsed.assigned_user_key);
     where.push(`contacts.assigned_user_key = $${params.length}`);
   }
 
-  const cursor = decodeCursor(parsed.cursor);
+  const cursor = decodeCursor(config, cursorContext(config, parsed), parsed.cursor);
   if (cursor) {
     if (parsed.sort === 'name_asc') {
       params.push(cursor.value, cursor.contact_id);
@@ -124,7 +140,11 @@ export async function listContacts({
             contacts.source, contacts.last_activity_at, contacts.updated_at, contacts.created_at,
             contacts.version, contacts.assigned_user_key, users.display_name AS assigned_name
        FROM onetime.contacts AS contacts
-       LEFT JOIN onetime.account_users AS users ON users.user_key = contacts.assigned_user_key
+       LEFT JOIN onetime.account_users AS users
+         ON users.account_key = contacts.account_key
+        AND users.product_key = contacts.product_key
+        AND users.user_key = contacts.assigned_user_key
+        AND users.status = 'active'
       WHERE ${where.join(' AND ')}
       ORDER BY ${orderBy}
       LIMIT $${params.length}`,
@@ -152,7 +172,10 @@ export async function listContacts({
     contacts: rows.map(rowToListItem),
     next_cursor:
       result.rows.length > parsed.limit && last && cursorValue
-        ? encodeCursor({ sort: parsed.sort, value: cursorValue, contact_id: last.contact_key })
+        ? encodeCursor(config, cursorContext(config, parsed), {
+            value: cursorValue,
+            contact_id: last.contact_key,
+          })
         : null,
     applied_filters: appliedFilters,
   };
@@ -171,7 +194,11 @@ export async function getContactDetail({
     `SELECT contacts.*, users.display_name AS assigned_name,
             leads.signup_key, leads.created_at AS signup_created_at
        FROM onetime.contacts AS contacts
-       LEFT JOIN onetime.account_users AS users ON users.user_key = contacts.assigned_user_key
+       LEFT JOIN onetime.account_users AS users
+         ON users.account_key = contacts.account_key
+        AND users.product_key = contacts.product_key
+        AND users.user_key = contacts.assigned_user_key
+        AND users.status = 'active'
        LEFT JOIN onetime.signup_leads AS leads ON leads.contact_key = contacts.contact_key
       WHERE contacts.account_key = $1
         AND contacts.product_key = $2
@@ -202,9 +229,11 @@ export async function createContact({
   const email = normalizeEmail(parsed.email);
   const phone = normalizePhone(parsed.phone);
   const contactKey = stableKey('contact', [config.accountKey, config.productKey, email]);
-  const assignedUserKey = canAssignContacts(actorRole) ? (parsed.assigned_user_key ?? null) : null;
 
   return inTransaction(pool, async (client) => {
+    const assignedUserKey = canAssignContacts(actorRole)
+      ? await assertActiveAssignee(client, config, parsed.assigned_user_key ?? null)
+      : null;
     const duplicate = await findDuplicate(client, config, email, phone);
     if (duplicate) throw new CrmDuplicateError('A matching contact already exists.', duplicate);
 
@@ -214,7 +243,7 @@ export async function createContact({
         family_or_school, location_text, timezone, email_normalized, phone_normalized,
         reminder_preference, suppression_state, source, lead_status, assigned_user_key,
         internal_note, last_activity_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'email','active','manual_crm',$11,$12,$13,now())
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'none','suppressed_no_consent','manual_crm',$11,$12,$13,now())
        RETURNING *`,
       [
         contactKey,
@@ -238,7 +267,7 @@ export async function createContact({
       eventType: 'crm_contact_created',
       metadata: { source: 'manual_crm', no_external_side_effects: true },
     });
-    return rowToDetail(result.rows[0]);
+    return rowToDetail(await attachAssignedName(client, config, result.rows[0]));
   });
 }
 
@@ -280,7 +309,7 @@ export async function updateContact({
     const assignedUserKey = canAssignContacts(actorRole)
       ? parsed.assigned_user_key === undefined
         ? row.assigned_user_key
-        : parsed.assigned_user_key || null
+        : await assertActiveAssignee(client, config, parsed.assigned_user_key || null)
       : row.assigned_user_key;
 
     const result = await client.query(
@@ -324,7 +353,7 @@ export async function updateContact({
         no_external_side_effects: true,
       },
     });
-    return rowToDetail(result.rows[0]);
+    return rowToDetail(await attachAssignedName(client, config, result.rows[0]));
   });
 }
 
@@ -456,23 +485,127 @@ function changedFields(
   return fields;
 }
 
-function encodeCursor(cursor: { sort: string; value: unknown; contact_id: string }) {
-  return Buffer.from(JSON.stringify(cursor), 'utf8').toString('base64url');
+async function assertActiveAssignee(
+  target: DbPool | Queryable,
+  config: AppConfig,
+  assignedUserKey: string | null,
+) {
+  if (!assignedUserKey) return null;
+  const result = await target.query(
+    `SELECT user_key
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+        AND status = 'active'
+      LIMIT 1`,
+    [config.accountKey, config.productKey, assignedUserKey],
+  );
+  if (!result.rowCount) throw new CrmAssigneeScopeError();
+  return assignedUserKey;
 }
 
-function decodeCursor(cursor?: string) {
+async function attachAssignedName(
+  target: Queryable,
+  config: AppConfig,
+  row: Record<string, unknown>,
+) {
+  if (!row.assigned_user_key) return row;
+  const result = await target.query(
+    `SELECT display_name
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+        AND status = 'active'
+      LIMIT 1`,
+    [config.accountKey, config.productKey, row.assigned_user_key],
+  );
+  return { ...row, assigned_name: result.rows[0]?.display_name ?? null };
+}
+
+function encodeCursor(
+  config: AppConfig,
+  context: Record<string, unknown>,
+  cursor: { value: unknown; contact_id: string },
+) {
+  const body = Buffer.from(
+    JSON.stringify({
+      v: CURSOR_VERSION,
+      issued_at: new Date().toISOString(),
+      context_hash: cursorContextHash(config, context),
+      value: cursor.value,
+      contact_id: cursor.contact_id,
+    }),
+    'utf8',
+  ).toString('base64url');
+  return `${body}.${signCursorBody(config, body)}`;
+}
+
+function decodeCursor(config: AppConfig, context: Record<string, unknown>, cursor?: string) {
   if (!cursor) return null;
   try {
-    const parsed = JSON.parse(Buffer.from(cursor, 'base64url').toString('utf8')) as {
-      sort?: string;
+    const [body, signature, extra] = cursor.split('.');
+    if (!body || !signature || extra !== undefined) throw new CrmCursorError();
+    if (!safeSignatureEquals(signature, signCursorBody(config, body))) {
+      throw new CrmCursorError();
+    }
+    const parsed = JSON.parse(Buffer.from(body, 'base64url').toString('utf8')) as {
+      v?: number;
+      issued_at?: string;
+      context_hash?: string;
       value?: string;
       contact_id?: string;
     };
-    if (!parsed.value || !parsed.contact_id) return null;
+    if (
+      parsed.v !== CURSOR_VERSION ||
+      parsed.context_hash !== cursorContextHash(config, context) ||
+      !parsed.value ||
+      !parsed.contact_id
+    ) {
+      throw new CrmCursorError();
+    }
+    const issuedAt = new Date(String(parsed.issued_at)).getTime();
+    if (!Number.isFinite(issuedAt) || Date.now() - issuedAt > CURSOR_TTL_MS) {
+      throw new CrmCursorError();
+    }
     return { value: parsed.value, contact_id: parsed.contact_id };
-  } catch {
-    return null;
+  } catch (error) {
+    if (error instanceof CrmCursorError) throw error;
+    throw new CrmCursorError();
   }
+}
+
+function cursorContext(config: AppConfig, query: ContactListQuery) {
+  return {
+    account_key: config.accountKey,
+    product_key: config.productKey,
+    sort: query.sort,
+    limit: query.limit,
+    search: query.search || '',
+    classification: query.classification ?? '',
+    lead_status: query.lead_status ?? '',
+    source: query.source ?? '',
+    assigned_user_key: query.assigned_user_key ?? '',
+  };
+}
+
+function cursorContextHash(config: AppConfig, context: Record<string, unknown>) {
+  return createHmac('sha256', config.crmCursorSecret)
+    .update(JSON.stringify(context))
+    .digest('base64url');
+}
+
+function signCursorBody(config: AppConfig, body: string) {
+  return createHmac('sha256', config.crmCursorSecret).update(body).digest('base64url');
+}
+
+function safeSignatureEquals(actual: string, expected: string) {
+  const actualBuffer = Buffer.from(actual);
+  const expectedBuffer = Buffer.from(expected);
+  return (
+    actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer)
+  );
 }
 
 function toIso(value: unknown) {

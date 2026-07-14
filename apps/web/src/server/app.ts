@@ -14,8 +14,13 @@ import {
   updateContactSchema,
 } from '../../../../packages/contracts/src/index.ts';
 import {
+  CrmAssigneeScopeError,
+  CrmCursorError,
   CrmDuplicateError,
   CrmVersionConflictError,
+  LeadDuplicateIdentityError,
+  LeadIdempotencyConflictError,
+  PhoneNormalizationError,
   authenticateUser,
   canEditContacts,
   captureLead,
@@ -74,6 +79,10 @@ export function createApp({
   app.use(traceMiddleware);
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+  app.use(['/login', '/api/v1/auth'], (_req, res, next) => {
+    setNoStore(res);
+    next();
+  });
 
   app.get('/health', (_req, res) => {
     res.json({ ok: true, service: 'onetime-web' });
@@ -141,6 +150,42 @@ export function createApp({
           field_errors: publicFieldErrors(error),
           request_id: req.traceId,
         });
+        return;
+      }
+      if (error instanceof PhoneNormalizationError) {
+        res.status(400).json({
+          success: false,
+          code: 'VALIDATION_ERROR',
+          message: 'Please check the signup form.',
+          field_errors: {
+            phone: 'Include the country code, such as +1 or +972, or leave phone blank.',
+          },
+          request_id: req.traceId,
+        });
+        return;
+      }
+      if (error instanceof LeadIdempotencyConflictError) {
+        res
+          .status(409)
+          .json(
+            publicError(
+              'IDEMPOTENCY_CONFLICT',
+              'This signup request key was already used for different information.',
+              req.traceId,
+            ),
+          );
+        return;
+      }
+      if (error instanceof LeadDuplicateIdentityError) {
+        res
+          .status(409)
+          .json(
+            publicError(
+              'DUPLICATE_IDENTITY',
+              'We could not save that signup automatically. Please contact the office.',
+              req.traceId,
+            ),
+          );
         return;
       }
       res
@@ -376,8 +421,7 @@ async function requireSessionCsrf(
   pool: DbPool,
   session: AuthenticatedSession,
 ) {
-  const csrfToken =
-    req.header('x-csrf-token') ?? req.body?.csrf_token ?? getCookie(req, CSRF_COOKIE);
+  const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
   const valid = await verifySessionCsrf({ pool, sessionKey: session.session_key, csrfToken });
   if (!valid) {
     res
@@ -447,6 +491,24 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof CrmCursorError) {
+    res.status(400).json({
+      success: false,
+      code: 'INVALID_CURSOR',
+      message: 'Reload the CRM list and try again.',
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof CrmAssigneeScopeError) {
+    res.status(400).json({
+      success: false,
+      code: 'INVALID_ASSIGNEE',
+      message: 'Choose an active team member for this account.',
+      request_id: req.traceId,
+    });
+    return;
+  }
   res
     .status(500)
     .json(publicError('SERVER_ERROR', 'The CRM request could not be completed.', req.traceId));
@@ -481,6 +543,10 @@ function setCsrfCookie(res: Response, config: AppConfig, csrfToken: string) {
     path: '/',
     maxAge: 8 * 60 * 60 * 1000,
   });
+}
+
+function setNoStore(res: Response) {
+  res.setHeader('Cache-Control', 'no-store');
 }
 
 function clearAuthCookies(res: Response, config: AppConfig) {
