@@ -5,6 +5,7 @@ import {
   type LeadSuccessResponse,
 } from '../../../contracts/src/index.ts';
 import type { AppConfig } from '../../../config/src/index.ts';
+import { DELIVERY_EVENT_TYPES } from '../../../contracts/src/delivery/types.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import {
@@ -31,6 +32,7 @@ type OutboxEvent = {
 const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
 const CONSENT_POLICY = 'one-time-class-reminders-v1-2026-07-14';
+const DELIVERY_POLICY_VERSION = 'ot40-immediate-receipt-v1';
 
 export class IdempotencyConflictError extends Error {
   constructor() {
@@ -270,12 +272,26 @@ function outboxEvents(
   email: string,
   phone: string | null,
 ): OutboxEvent[] {
+  const deliveryPolicy = {
+    policy_version: DELIVERY_POLICY_VERSION,
+    occurrence_id: null,
+    deliver_by: null,
+  };
   const events: OutboxEvent[] = [
     {
-      deliveryKey: stableKey('delivery', [signupKey, 'email_ack']),
-      eventType: 'email_acknowledgement',
+      deliveryKey: stableKey('delivery', [
+        signupKey,
+        payload.audience_type === 'school'
+          ? DELIVERY_EVENT_TYPES.schoolSignupEmailAck
+          : DELIVERY_EVENT_TYPES.familySignupEmailAck,
+      ]),
+      eventType:
+        payload.audience_type === 'school'
+          ? DELIVERY_EVENT_TYPES.schoolSignupEmailAck
+          : DELIVERY_EVENT_TYPES.familySignupEmailAck,
       channel: 'email',
       payload: {
+        ...deliveryPolicy,
         recipient_hash: stableKey('recipient', [email]),
         sender_configured: Boolean(config.emailFrom && config.emailReplyTo),
         classification: payload.audience_type,
@@ -283,9 +299,10 @@ function outboxEvents(
     },
     {
       deliveryKey: stableKey('delivery', [signupKey, 'internal_email_alert']),
-      eventType: 'internal_lead_alert',
+      eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
       channel: 'internal_email',
       payload: {
+        ...deliveryPolicy,
         owner_alias_configured: Boolean(config.ownerTestEmail),
         contact_key: contactKey,
         signup_key: signupKey,
@@ -296,11 +313,16 @@ function outboxEvents(
   const wantsWhatsapp =
     payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
   if (wantsWhatsapp && phone && payload.reminder_consent) {
+    const whatsappEventType =
+      payload.audience_type === 'school'
+        ? DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt
+        : DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation;
     events.push({
-      deliveryKey: stableKey('delivery', [signupKey, 'whatsapp_confirmation']),
-      eventType: 'whatsapp_confirmation',
+      deliveryKey: stableKey('delivery', [signupKey, whatsappEventType]),
+      eventType: whatsappEventType,
       channel: 'whatsapp',
       payload: {
+        ...deliveryPolicy,
         recipient_hash: stableKey('recipient', [phone]),
         suppression_checked: true,
         public_recipient: true,

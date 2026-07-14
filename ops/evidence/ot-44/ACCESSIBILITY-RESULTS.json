@@ -1,0 +1,19 @@
+{
+  "command": "npm run accessibility",
+  "result": "passed",
+  "tests": {
+    "ot44_owned": "tests/accessibility/ot-44/communications-accessibility.spec.ts passed with zero serious or critical axe violations",
+    "full_suite": "4 passed"
+  },
+  "viewports_required_for_final_integration": ["360x800", "390x844", "768x1024", "1440x1000"],
+  "screenshots": [
+    "ops/evidence/ot-44/screenshots/global-360.png",
+    "ops/evidence/ot-44/screenshots/global-390.png",
+    "ops/evidence/ot-44/screenshots/global-tablet.png",
+    "ops/evidence/ot-44/screenshots/global-desktop.png",
+    "ops/evidence/ot-44/screenshots/contact-360.png",
+    "ops/evidence/ot-44/screenshots/contact-390.png",
+    "ops/evidence/ot-44/screenshots/contact-tablet.png",
+    "ops/evidence/ot-44/screenshots/contact-desktop.png"
+  ]
+}

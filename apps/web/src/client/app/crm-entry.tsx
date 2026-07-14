@@ -1,6 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { ContactDetail, ContactListItem, SessionUser } from '@onetime/contracts';
+import {
+  communicationsRouteDescriptor,
+  contactCommunicationsTabDescriptor,
+} from './communications/route-descriptor.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   AuthExpiredError,
@@ -17,6 +21,12 @@ import {
   type QueryState,
 } from './crm-api.js';
 import './crm.css';
+
+const CommunicationsPanel = React.lazy(() =>
+  communicationsRouteDescriptor.load().then((module) => ({
+    default: module.CommunicationsFeature,
+  })),
+);
 
 type ContactFormState = {
   display_name: string;
@@ -35,6 +45,8 @@ type Notice = {
   kind: 'info' | 'success' | 'error';
   message: string;
 };
+
+type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
 
 const emptyForm: ContactFormState = {
   display_name: '',
@@ -69,6 +81,7 @@ function CrmApp() {
   const [selected, setSelected] = useState<ContactDetail | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
   const [assignees, setAssignees] = useState<Assignee[]>([]);
   const [focusContactId, setFocusContactId] = useState<string | null>(null);
   const returnFocusContactId = useRef<string | null>(null);
@@ -81,6 +94,7 @@ function CrmApp() {
   const canCreate = capabilities.contacts.create;
   const canEdit = capabilities.contacts.update;
   const canAssign = capabilities.contacts.assign;
+  const canReadCommunications = session?.user.role === 'owner' || session?.user.role === 'admin';
 
   useEffect(() => {
     void loadSession();
@@ -133,6 +147,29 @@ function CrmApp() {
 
   async function routeFromLocation() {
     if (sessionExpired) return;
+    if (location.pathname === communicationsRouteDescriptor.path) {
+      setCommunicationsMode({ kind: 'global' });
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
+    const contactCommunicationsMatch = location.pathname.match(
+      /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
+    );
+    if (contactCommunicationsMatch?.[1]) {
+      setCommunicationsMode({
+        kind: 'contact',
+        contactId: decodeURIComponent(contactCommunicationsMatch[1]),
+      });
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
+    setCommunicationsMode(null);
     const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
@@ -222,7 +259,30 @@ function CrmApp() {
     setSelected(null);
     setEditing(false);
     setCreating(true);
+    setCommunicationsMode(null);
     history.pushState({}, '', '/app/crm');
+  }
+
+  function openGlobalCommunications() {
+    history.pushState({}, '', communicationsRouteDescriptor.path);
+    setCommunicationsMode({ kind: 'global' });
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
+  }
+
+  function openContactCommunications(contactId: string) {
+    history.pushState(
+      {},
+      '',
+      `/app/crm/contacts/${encodeURIComponent(contactId)}/${contactCommunicationsTabDescriptor.id}`,
+    );
+    setCommunicationsMode({ kind: 'contact', contactId });
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
   }
 
   async function logout() {
@@ -286,6 +346,7 @@ function CrmApp() {
     setSelected(null);
     setCreating(false);
     setEditing(false);
+    setCommunicationsMode(null);
     setListLoading(false);
     setDetailLoading(false);
     setSession(null);
@@ -296,7 +357,11 @@ function CrmApp() {
   }
 
   function signIn() {
-    const returnTo = location.pathname.startsWith('/app/crm') ? location.pathname : '/app/crm';
+    const returnTo =
+      location.pathname.startsWith('/app/crm') ||
+      location.pathname === communicationsRouteDescriptor.path
+        ? location.pathname
+        : '/app/crm';
     window.location.assign(`/login?return_to=${encodeURIComponent(returnTo)}`);
   }
 
@@ -311,45 +376,78 @@ function CrmApp() {
     [query],
   );
 
-  const navItems: ShellNavItem[] = [{ id: 'crm', label: 'CRM', href: '/app/crm', current: true }];
+  const navItems: ShellNavItem[] = [
+    { id: 'crm', label: 'CRM', href: '/app/crm', current: !communicationsMode },
+    ...(canReadCommunications
+      ? [
+          {
+            id: communicationsRouteDescriptor.id,
+            label: communicationsRouteDescriptor.label,
+            href: communicationsRouteDescriptor.path,
+            current: communicationsMode?.kind === 'global',
+          },
+        ]
+      : []),
+  ];
   const shellUser = session ? shellUserFromSession(session.user) : null;
-  const pageTitle = creating
-    ? 'Add contact'
-    : editing
-      ? 'Edit contact'
-      : selected
-        ? selected.display_name
-        : 'CRM';
-  const pageDescription = creating
-    ? 'Create a One Time contact without sending messages or granting access.'
-    : editing
-      ? 'Update CRM fields backed by the One Time contact API.'
-      : selected
-        ? contactSummary(selected)
-        : 'One Time signup and contact review.';
-  const toolbar = selected ? (
-    <DetailToolbar
-      contact={selected}
-      canEdit={canEdit}
-      onBack={backToList}
-      onEdit={() => setEditing(true)}
-    />
-  ) : creating || editing ? (
-    <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
-  ) : (
-    <ListToolbar
-      query={query}
-      activeChips={activeChips}
-      canEdit={canCreate}
-      onChange={setQuery}
-      onApply={(nextQuery) => void loadList(undefined, nextQuery)}
-      onClear={() => {
-        setQuery(defaultQuery);
-        void loadList(undefined, defaultQuery);
-      }}
-      onCreate={startCreate}
-    />
-  );
+  const pageTitle = communicationsMode
+    ? 'Communications'
+    : creating
+      ? 'Add contact'
+      : editing
+        ? 'Edit contact'
+        : selected
+          ? selected.display_name
+          : 'CRM';
+  const pageDescription = communicationsMode
+    ? communicationsMode.kind === 'contact'
+      ? 'Read-only local communication intents for this contact.'
+      : 'Read-only local communication intents from the One Time outbox.'
+    : creating
+      ? 'Create a One Time contact without sending messages or granting access.'
+      : editing
+        ? 'Update CRM fields backed by the One Time contact API.'
+        : selected
+          ? contactSummary(selected)
+          : 'One Time signup and contact review.';
+  const toolbar =
+    communicationsMode?.kind === 'contact' ? (
+      <ContactCommunicationsToolbar
+        onBack={() => {
+          history.pushState(
+            {},
+            '',
+            `/app/crm/contacts/${encodeURIComponent(communicationsMode.contactId)}`,
+          );
+          setCommunicationsMode(null);
+          void loadContact(communicationsMode.contactId);
+        }}
+      />
+    ) : selected ? (
+      <DetailToolbar
+        contact={selected}
+        canEdit={canEdit}
+        canReadCommunications={canReadCommunications}
+        onBack={backToList}
+        onEdit={() => setEditing(true)}
+        onCommunications={() => openContactCommunications(selected.contact_id)}
+      />
+    ) : creating || editing ? (
+      <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
+    ) : (
+      <ListToolbar
+        query={query}
+        activeChips={activeChips}
+        canEdit={canCreate}
+        onChange={setQuery}
+        onApply={(nextQuery) => void loadList(undefined, nextQuery)}
+        onClear={() => {
+          setQuery(defaultQuery);
+          void loadList(undefined, defaultQuery);
+        }}
+        onCreate={startCreate}
+      />
+    );
 
   return (
     <AppShell
@@ -361,12 +459,29 @@ function CrmApp() {
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
         if (href === '/app/crm') void backToList();
+        if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
       }}
       onLogout={() => void logout()}
       sessionExpired={sessionExpired}
       onSignIn={signIn}
     >
-      {creating && (
+      {communicationsMode && (
+        <Suspense
+          fallback={
+            <p className="state-panel" role="status">
+              Loading Communications...
+            </p>
+          }
+        >
+          <CommunicationsPanel
+            contactId={
+              communicationsMode.kind === 'contact' ? communicationsMode.contactId : undefined
+            }
+            onProtectedStateCleared={clearProtectedState}
+          />
+        </Suspense>
+      )}
+      {!communicationsMode && creating && (
         <ContactForm
           title="Add contact"
           initial={emptyForm}
@@ -376,7 +491,8 @@ function CrmApp() {
           onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
         />
       )}
-      {selected &&
+      {!communicationsMode &&
+        selected &&
         (editing ? (
           <ContactForm
             title="Edit contact"
@@ -394,7 +510,7 @@ function CrmApp() {
             onRetry={() => void loadContact(selected.contact_id)}
           />
         ))}
-      {!creating && !selected && !editing && (
+      {!communicationsMode && !creating && !selected && !editing && (
         <ContactList
           contacts={contacts}
           loading={listLoading}
@@ -408,7 +524,7 @@ function CrmApp() {
           onCreate={startCreate}
         />
       )}
-      {!creating && !selected && !editing && detailError && (
+      {!communicationsMode && !creating && !selected && !editing && detailError && (
         <StatePanel
           kind="error"
           title="Contact not found or unavailable"
@@ -519,13 +635,17 @@ function ListToolbar({
 function DetailToolbar({
   contact,
   canEdit,
+  canReadCommunications,
   onBack,
   onEdit,
+  onCommunications,
 }: {
   contact: ContactDetail;
   canEdit: boolean;
+  canReadCommunications: boolean;
   onBack: () => void;
   onEdit: () => void;
+  onCommunications: () => void;
 }) {
   return (
     <div className="detail-toolbar">
@@ -537,11 +657,26 @@ function DetailToolbar({
         <Chip label={labelStatus(contact.lead_status)} tone="status" />
         <Chip label={sourceLabel(contact.source)} tone="source" />
       </div>
+      {canReadCommunications && (
+        <button type="button" className="button-secondary" onClick={onCommunications}>
+          Communications
+        </button>
+      )}
       {canEdit && (
         <button type="button" className="button-primary" onClick={onEdit}>
           Edit contact
         </button>
       )}
+    </div>
+  );
+}
+
+function ContactCommunicationsToolbar({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="detail-toolbar">
+      <button type="button" className="button-secondary" onClick={onBack}>
+        Back to contact
+      </button>
     </div>
   );
 }

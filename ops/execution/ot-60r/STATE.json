@@ -5,10 +5,10 @@
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
   "current_head_sha": "8520fa15f30c889cafbf8d5ff4c0c21de37bd371",
-  "phase": "pr11_ot42_crm_module_integrated",
+  "phase": "pr14_ot44_communications_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:14:41+03:00",
+  "updated_at": "2026-07-15T02:29:01+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -38,10 +38,15 @@
     "Kept OT-42 as an additive module surface with injectable router/register hooks, contracts, domain helpers, migration 1000, protected client cache, lazy tab loader, and focused tests.",
     "Did not mount OT-42 router into live `/api/v1/crm/*` routes because concrete repository implementations are not included and existing PR #2/#5/#7 routes remain canonical.",
     "Verified OT-42 focused unit/integration tests, build, typecheck, existing auth/CRM regression tests, formatting, whitespace, JSON validity, and secret scan.",
-    "Committed the PR #11 / OT-42 CRM module checkpoint at 8520fa15f30c889cafbf8d5ff4c0c21de37bd371."
+    "Committed the PR #11 / OT-42 CRM module checkpoint at 8520fa15f30c889cafbf8d5ff4c0c21de37bd371.",
+    "Applied PR #4 / OT-36 delivery foundation range in commit order: 3a9588555f9159e4c1a7a554780be66499f2d2d8 then 61d4755fe279ca47c37e7adbe8d1e6ce8b258dae.",
+    "Applied PR #8 / OT-40 delivery correction on top of OT-36, including the corrected delivery worker claim migration state.",
+    "Applied PR #14 / OT-44 communications read model after the delivery lineage.",
+    "Bound OT-44 server routes into the shared app with a read-only session scope resolver that does not update session last-seen state.",
+    "Wired the lazy Communications global route and contact Communications view into the accepted CRM shell without default CRM overview prefetch/API calls.",
+    "Verified delivery, communications, build, auth/CRM regression, OT-44 browser checks, OT-39 browser regression, delivery repository tests, formatting, whitespace, JSON validity, and secret scan."
   ],
   "remaining_steps": [
-    "Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.",
     "Apply isolated modules: PR #12, PR #15, PR #13.",
     "Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.",
     "Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.",
@@ -120,6 +125,56 @@
       "command": "npm run secret:scan",
       "status": "passed",
       "summary": "Secret scan passed across 145 repo text files."
+    },
+    {
+      "command": "npx vitest run tests/unit/delivery/config.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/delivery/loop.test.ts tests/unit/delivery/retry.test.ts tests/unit/delivery/worker.test.ts tests/unit/communications/communications-contract.test.ts tests/integration/communications/api.test.ts tests/integration/delivery/outbox-pipeline.test.ts tests/integration/delivery/web-app-independence.test.ts tests/integration/lead-capture.test.ts",
+      "status": "passed",
+      "summary": "Focused delivery/communications suite passed 74 tests across 10 files."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed with Communications emitted as a lazy app-CommunicationsFeature chunk and typecheck completed."
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot-44/communications-descriptor.spec.ts tests/accessibility/ot-44/communications-accessibility.spec.ts tests/performance/ot-44/communications-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "OT-44 descriptor, accessibility, and performance browser checks passed 4 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts",
+      "status": "passed",
+      "summary": "Auth/CRM regression suite passed 10 tests after delivery/communications integration."
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts tests/accessibility/ot-39/crm-a11y.spec.ts tests/performance/ot-39/crm-performance.spec.ts tests/performance/public-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "OT-39 browser regression suite passed 12 tests after Communications shell wiring."
+    },
+    {
+      "command": "npx vitest run tests/integration/delivery/postgres-repository.test.ts",
+      "status": "passed",
+      "summary": "Focused delivery PostgreSQL repository contract tests passed 3 tests."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json, CANONICAL-CANDIDATE.json, and OT-44 INTEGRATION-MANIFEST.json successfully."
+    },
+    {
+      "command": "npx prettier --check <delivery/communications and OT-60R touched files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 206 repo text files."
     }
   ],
   "external_mutation_counts": {
@@ -132,5 +187,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #4 / OT-36 delivery without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, or PR #11 CRM module integration."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #12 / OT-46 without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, or PR #4/#8/#14 delivery/communications integration."
 }

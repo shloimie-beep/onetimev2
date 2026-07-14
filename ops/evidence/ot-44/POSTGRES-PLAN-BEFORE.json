@@ -1,0 +1,15 @@
+{
+  "status": "integration_pending",
+  "reason": "OT44_TEST_DATABASE_URL is not configured; psql and docker are unavailable in this environment.",
+  "pg_mem_is_not_equivalent": true,
+  "required_later_command": "OT44_TEST_DATABASE_URL=<disposable-test-db> npm run test -- --run tests/integration/communications/postgres-plan.test.ts",
+  "required_fixture": {
+    "outbox_intents": 10000,
+    "scopes": "multiple account/product scopes",
+    "contacts": "multiple synthetic contacts",
+    "statuses": ["pending", "sink_delivered", "processing", "suppressed", "skipped", "dead_lettered", "unknown"],
+    "event_channel_pairs": "all audited pairs",
+    "duplicate_timestamps": true
+  },
+  "index_added": false
+}

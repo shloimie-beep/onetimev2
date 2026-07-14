@@ -21,6 +21,11 @@
 - Converted OT-35 E2E/performance specs into supersession sentinels that point to OT-39 coverage.
 - Integrated PR #11 / OT-42 CRM module as an additive, unmounted module surface.
 - Added OT-42 CRM contracts, capability mapping, protocol helpers, migration `1000`, injectable router/register hooks, protected memory cache, lazy protected tab loader, and focused tests.
+- Integrated PR #4 / OT-36 delivery foundation and PR #8 / OT-40 delivery correction.
+- Added sink/mock delivery worker configuration, repository, loop, sink router, retry/redaction/eligibility/message preparation logic, deterministic outbox intents from lead capture, corrected delivery claim migration `0004`, and delivery tests.
+- Integrated PR #14 / OT-44 communications read model.
+- Added communications contracts, cursor binding, normalization, masking, read service, PostgreSQL read adapter, route-registration hook, lazy Communications feature, and tests/evidence.
+- Wired OT-44 into the shared app with a non-mutating read-only session scope resolver, global Communications route, contact Communications view, and no default CRM overview Communications prefetch/API request.
 
 ## Supersession Security Port
 

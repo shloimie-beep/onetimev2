@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #11 / OT-42 CRM module integrated
+- Phase: PR #14 / OT-44 communications integrated
 - Status: building
 
 ## Completed
@@ -38,6 +38,10 @@
 - Kept OT-42 additive and unmounted from live CRM routes because it provides abstract router/register hooks and tests, not concrete production repository implementations.
 - Verified with OT-42 focused unit/integration tests, `npm run typecheck`, `npm run build`, the focused auth/CRM regression suite, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
 - Committed the PR #11 / OT-42 CRM module checkpoint at `8520fa15f30c889cafbf8d5ff4c0c21de37bd371`.
+- Applied PR #4 / OT-36 delivery foundation range in commit order, then PR #8 / OT-40 delivery correction.
+- Applied PR #14 / OT-44 communications read model after the delivery lineage.
+- Bound OT-44 into the shared app with a read-only session scope resolver, mounted `/app/communications`, `/api/v1/communications`, and `/api/v1/crm/contacts/:contactId/communications`, and added lazy Communications navigation/contact view wiring to the CRM shell.
+- Verified with focused delivery/communications Vitest suites, `npm run build`, focused auth/CRM regression, OT-44 browser checks, OT-39 browser regression, delivery repository contract tests, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
 
 ## Last Safe Command
 
@@ -48,9 +52,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git cherry-pick --no-commit 61d4755fe279ca47c37e7adbe8d1e6ce8b258dae
+git cherry-pick --no-commit f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899
 ```
 
-Continue PR #4 / OT-36 delivery integration. Apply its range carefully, then PR #8 delivery correction before PR #14 communications.
+Continue PR #12 / OT-46 billing foundation. Keep Stripe fixture-only/default-off semantics and do not run live charges.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

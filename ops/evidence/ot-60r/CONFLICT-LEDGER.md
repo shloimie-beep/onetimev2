@@ -109,3 +109,32 @@ Verification:
 - `npm run typecheck`: PASS.
 - `npm run build`: PASS.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
+
+## INTEGRATION-OT60R-005 - PR #14 Communications Shared App Wiring
+
+Type: semantic integration decision / no textual merge conflict.
+
+Affected files:
+
+- `apps/web/src/server/app.ts`
+- `apps/web/src/server/communications/register.ts`
+- `apps/web/src/client/app/crm-entry.tsx`
+- `apps/web/src/client/app/communications/route-descriptor.ts`
+- `apps/web/src/client/app/communications/CommunicationsFeature.tsx`
+
+Resolution:
+
+- Mounted OT-44 server routes in the shared app after the canonical CRM routes and before static/404 handling.
+- Bound `ReadOnlySessionScopePort` to a local read-only session query that mirrors session validity checks without updating `last_seen_at`.
+- Used `config.authCsrfSecret` as the local cursor-signing secret for the integrated route registration.
+- Wired a lazy global Communications route and contact Communications view into the accepted CRM shell.
+- Preserved the OT-44 invariant that default CRM overview does not import, prefetch, hidden-mount, or call Communications.
+
+Verification:
+
+- `npm run typecheck`: PASS.
+- `npm run build`: PASS.
+- `npx vitest run tests/unit/delivery/config.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/delivery/loop.test.ts tests/unit/delivery/retry.test.ts tests/unit/delivery/worker.test.ts tests/unit/communications/communications-contract.test.ts tests/integration/communications/api.test.ts tests/integration/delivery/outbox-pipeline.test.ts tests/integration/delivery/web-app-independence.test.ts tests/integration/lead-capture.test.ts`: PASS, 74 tests.
+- `npx playwright test tests/e2e/ot-44/communications-descriptor.spec.ts tests/accessibility/ot-44/communications-accessibility.spec.ts tests/performance/ot-44/communications-performance.spec.ts --reporter=line`: PASS, 4 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
+- `npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts tests/accessibility/ot-39/crm-a11y.spec.ts tests/performance/ot-39/crm-performance.spec.ts tests/performance/public-performance.spec.ts --reporter=line`: PASS, 12 tests.
