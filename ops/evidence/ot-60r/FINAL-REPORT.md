@@ -9,6 +9,7 @@ Completed so far:
 - Recorded branch absence for OT-41/OT-43 and pre-existing OT-60.
 - Built migration, overlap, and supersession matrices.
 - Ported only PR #9's missing HMAC-derived login-CSRF proof into the canonical PR #2 base.
+- Integrated PR #5 / OT-35 authenticated CRM shell with updated screenshot/accessibility/performance evidence.
 
 Current head is not a canonical integrated product candidate yet. Feature integration
-is still pending, starting with PR #5 / OT-35 authenticated shell.
+is still pending, continuing with PR #7 / OT-39 and PR #11 / OT-42.

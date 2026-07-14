@@ -8,7 +8,7 @@
 
 | PR  | Commit                                     | Initial Status | Integration Decision                      |
 | --- | ------------------------------------------ | -------------- | ----------------------------------------- |
-| #5  | `6ca5e568c328ea116a9413b57ea5920400f8bc14` | Audited        | Pending                                   |
+| #5  | `6ca5e568c328ea116a9413b57ea5920400f8bc14` | Audited        | Applied with semantic merge               |
 | #7  | `c1584577780d7b5125bce4fb81d2a454c9e84096` | Audited        | Pending                                   |
 | #11 | `b2c159a060d8aa50ec6feb69f1cae003fd633bf3` | Audited        | Pending                                   |
 | #4  | `61d4755fe279ca47c37e7adbe8d1e6ce8b258dae` | Audited        | Pending                                   |
@@ -28,3 +28,9 @@
 | PR #9 / OT-38 | Do not import alternate migration/model; port only a verified missing HMAC login-CSRF property if PR #2 lacks it. |
 
 Result: PR #3/#9 alternate trains are superseded. Only the verified missing HMAC login-CSRF property from PR #9 was ported.
+
+## Applied Units
+
+| Input         | Result                                                                                                                                                                                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| PR #5 / OT-35 | Applied. Resolved `apps/web/src/client/app/crm-entry.tsx` against the canonical PR #2 API model, kept POST `/api/v1/crm/contacts/search`, omitted blank search filters, preserved idempotent contact creates, and kept production auth rate-limit defaults while raising Playwright-only test budgets. |

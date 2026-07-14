@@ -6,8 +6,15 @@
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
   "candidate_head_sha": null,
   "status": "building",
-  "updated_at": "2026-07-15T00:00:00+03:00",
-  "evidence": [],
+  "updated_at": "2026-07-15T01:41:57+03:00",
+  "evidence": [
+    "ops/evidence/ot-60r/APPLIED-DEFERRED-MATRIX.md",
+    "ops/evidence/ot-60r/CONFLICT-LEDGER.md",
+    "ops/evidence/ot-35/FINAL-HANDOFF.md",
+    "ops/evidence/ot-35/accessibility-results.json",
+    "ops/evidence/ot-35/performance-report.json",
+    "ops/evidence/ot-35/screenshots/"
+  ],
   "notes": [
     "This control file is not deployment approval.",
     "Set status to candidate only after final integrated commit and required local/CI evidence are recorded."

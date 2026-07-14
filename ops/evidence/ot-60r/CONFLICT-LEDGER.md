@@ -27,3 +27,27 @@ Verification:
 
 - `npm run typecheck`: PASS.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
+
+## CONFLICT-OT60R-002 - PR #5 Shell Against Canonical PR #2 CRM API
+
+Type: cherry-pick merge conflict / contract drift.
+
+Affected files:
+
+- `apps/web/src/client/app/crm-entry.tsx`
+- `playwright.config.ts`
+- `tests/e2e/ot-35/app-shell-crm.spec.ts`
+- `tests/performance/ot-35/crm-performance.spec.ts`
+
+Resolution:
+
+- Resolved the `crm-entry.tsx` conflict by keeping PR #5 authenticated shell behavior while preserving canonical PR #2 session handling, assignee loading, POST-body CRM search, and private search semantics.
+- Omitted blank UI filters from submitted search commands so the client matches `contactSearchCommandSchema`.
+- Preserved idempotent CRM contact creation by adding fixture idempotency keys to OT-35 browser helpers.
+- Kept production login rate-limit defaults and raised only Playwright web-server login budgets to prevent the local evidence suite from self-throttling.
+
+Verification:
+
+- `npm run build`: PASS.
+- `npx playwright test tests/e2e/ot-35/app-shell-crm.spec.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/performance/ot-35/crm-performance.spec.ts --reporter=line`: PASS, 8 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.

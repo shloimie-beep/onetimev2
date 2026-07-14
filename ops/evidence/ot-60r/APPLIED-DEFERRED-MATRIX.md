@@ -5,7 +5,7 @@
 | Initial execution protocol | Applied | Committed and pushed at `5a3071cd8cb061ef4e58a59ed11760dec87a4203`. |
 | PR #3 / OT-34 | Superseded | No merge/cherry-pick. Alternate migration/model excluded. |
 | PR #9 / OT-38 | Partially ported | Only HMAC-derived login-CSRF proof was ported intentionally with tests. Alternate migration/model excluded. |
-| PR #5 / OT-35 shell | Pending | Next feature unit. Requires semantic integration with canonical PR #2 auth/search. |
+| PR #5 / OT-35 shell | Applied | Integrated authenticated CRM shell with canonical PR #2 auth/search, idempotent create contract, current screenshots, and E2E/accessibility/performance evidence. |
 | PR #7 / OT-39 CRM privacy/performance | Pending | Integrate after PR #5 shell. |
 | PR #11 / OT-42 CRM module | Pending | Integrate after PR #5/#7, extending canonical `/api/v1/crm`. |
 | PR #4 / OT-36 delivery | Pending | Apply commit range in order, then PR #8 correction. |

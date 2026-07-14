@@ -1,7 +1,7 @@
 # OT-60R Remaining Work
 
-1. Commit and push the supersession security port checkpoint.
-2. Apply authenticated shell and CRM units in order: PR #5, PR #7, PR #11.
+1. Commit and push the PR #5 / OT-35 authenticated shell checkpoint.
+2. Apply remaining authenticated shell and CRM units in order: PR #7, PR #11.
 3. Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.
 4. Apply isolated modules: PR #12, PR #15, PR #13.
 5. Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.

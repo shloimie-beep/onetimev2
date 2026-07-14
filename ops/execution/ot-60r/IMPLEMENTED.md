@@ -8,7 +8,13 @@
 
 ## Product Integration
 
-No broad product feature integration has been applied yet.
+- Integrated PR #5 / OT-35 authenticated CRM shell.
+- Added the app shell frame, single CRM destination, mobile drawer, skip link, session-expired state, responsive toolbar, list/detail states, and focus restoration behavior.
+- Preserved canonical PR #2 authenticated CRM API behavior instead of reverting to the older GET search model.
+- Adapted shell list loading to POST `/api/v1/crm/contacts/search` with blank filters omitted from the submitted command.
+- Adapted OT-35 E2E/performance fixtures to the current idempotent contact-create contract.
+- Added Playwright-only login budgets so the local evidence suite does not rate-limit itself.
+- Refreshed OT-35 screenshot, accessibility, and performance evidence.
 
 ## Supersession Security Port
 

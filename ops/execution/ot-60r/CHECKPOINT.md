@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: supersession security port
+- Phase: PR #5 / OT-35 authenticated shell integrated
 - Status: building
 
 ## Completed
@@ -22,7 +22,12 @@
 - Saved sanitized PR metadata under `ops/evidence/ot-60r/remote-pr-json/`.
 - Recorded remote state, migration checksums, overlap matrix, and supersession matrix.
 - Ported only PR #9's missing HMAC-derived login-CSRF proof into the canonical PR #2 base.
-- Verified with `npm ci`, `npm run typecheck`, and focused auth/CRM integration tests.
+- Committed and pushed the supersession security port checkpoint at `49272a7de7d774db665f85f804da7d07bcec45ee`.
+- Cherry-picked PR #5 / OT-35 and resolved the CRM shell merge against canonical PR #2 authenticated CRM behavior.
+- Preserved private POST-body CRM search while adapting the shell UI to omit blank filters from submitted commands.
+- Adapted OT-35 browser fixtures to the current idempotent contact-create contract.
+- Raised Playwright-only login budgets to keep E2E evidence from self-throttling; production defaults remain unchanged.
+- Verified with `npm run build`, focused auth/CRM integration tests, and OT-35 E2E/accessibility/performance browser specs.
 
 ## Last Safe Command
 
@@ -33,11 +38,11 @@ npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.
 ## Next Safe Command
 
 ```powershell
-git add .env.example apps/web/src/server/app.ts packages/config/src/index.ts packages/domain/src/auth/service.ts packages/domain/src/index.ts tests/integration/auth-crm.test.ts ops/execution ops/evidence
-git commit -m "fix: port OT-60R login CSRF proof"
+git add apps/web/src/client/app/crm-entry.tsx apps/web/src/client/app/crm.css apps/web/src/client/app/shell/AppShell.tsx playwright.config.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/e2e/ot-35/app-shell-crm.spec.ts tests/performance/ot-35/crm-performance.spec.ts ops/execution ops/evidence
+git commit -m "feat: integrate OT-35 authenticated shell"
 git push
 ```
 
-After that commit is pushed, continue PR #5 / OT-35 authenticated shell semantic integration.
+After that commit is pushed, continue PR #7 / OT-39 CRM privacy/performance integration.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

@@ -30,4 +30,4 @@ ops/evidence/ot-60r/FINAL-REPORT.md
 5. Maintain the prohibitions: no deployment, no production/provider mutation, no BNA modification, no production DB, no real sends, no charges, no DNS changes, no real users.
 6. After every successful unit, update `STATE.json`, `CHECKPOINT.md`, `IMPLEMENTED.md`, `REMAINING.md`, `TEST-RESULTS.md`, evidence files, commit intentionally, and push `codex/ot60r-recovery-convergence`.
 
-Current first unfinished phase after the supersession security port: commit/push the current checkpoint if not already pushed, then continue PR #5 / OT-35 authenticated shell semantic integration.
+Current first unfinished phase after PR #5 / OT-35: commit/push the current checkpoint if not already pushed, then continue PR #7 / OT-39 CRM privacy/performance semantic integration.

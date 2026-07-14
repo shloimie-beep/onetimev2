@@ -18,6 +18,8 @@ export default defineConfig({
       OT_TEST_DATABASE: 'memory',
       RUN_MIGRATIONS_ON_STARTUP: 'true',
       PORT: '3100',
+      LOGIN_IDENTIFIER_RATE_LIMIT_MAX: '50',
+      LOGIN_IP_RATE_LIMIT_MAX: '100',
     },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
