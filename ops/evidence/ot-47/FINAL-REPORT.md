@@ -22,10 +22,10 @@ mutation was touched.
 
 - Task: OT-47
 - Approved base SHA: a73458d1884b8fcb4843c4852425009577f59ef7
-- Final head SHA: a73458d1884b8fcb4843c4852425009577f59ef7 before stop evidence commit
+- Final head SHA: see draft PR head metadata; a commit cannot embed its own final SHA
 - Worktree: ../onetimev2-parallel-ot47-content-library
 - Branch: codex/parallel-ot47-content-library-foundation
-- Draft PR: not opened; blocked before implementation
+- Draft PR: https://github.com/webcraft-media/onetimev2/pull/10
 - Draft PR base: codex/parallel-base-a73458d
 - Provider-contract readiness: NOT_PROVEN
 - Architecture selected: signed BNA content-outcome events, local PostgreSQL persistence, existing worker hook, provider-neutral sink adapter, no polling
