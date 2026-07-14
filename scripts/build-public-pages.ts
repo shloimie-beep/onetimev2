@@ -19,6 +19,7 @@ function pageShell(
 ) {
   const description = options.description ?? landingContent.seo.description;
   const script = options.app ? '/assets/app-crm.js' : '/assets/public.js';
+  const stylesheet = options.app ? '/assets/app-crm.css' : '/assets/public.css';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -33,7 +34,7 @@ function pageShell(
   <meta property="og:type" content="website">
   <meta property="og:url" content="${escapeHtml(landingContent.seo.canonical)}">
   <meta name="theme-color" content="#050505">
-  <link rel="stylesheet" href="/assets/public.css">
+  <link rel="stylesheet" href="${stylesheet}">
 </head>
 <body>
 ${body}
@@ -276,8 +277,8 @@ await writeFile(
 );
 await writeFile(
   path.join(outDir, 'app', 'crm.html'),
-  pageShell('CRM | One Time Mishnayos', `${header()}<div id="crm-root"></div>${footer()}`, {
+  pageShell('CRM | One Time Mishnayos', `<div id="crm-root"></div>`, {
     app: true,
-    description: 'Reserved One Time CRM route.',
+    description: 'One Time authenticated CRM.',
   }).replace('index, follow', 'noindex, nofollow'),
 );

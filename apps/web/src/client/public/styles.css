@@ -651,6 +651,35 @@ small {
   text-align: center;
 }
 
+.login-page {
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-panel {
+  width: min(460px, 100%);
+  padding: clamp(20px, 5vw, 34px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(15, 18, 17, 0.9);
+  box-shadow: var(--shadow-panel);
+}
+
+.login-brand {
+  margin-bottom: 28px;
+}
+
+.login-panel h1 {
+  margin: 0 0 18px;
+  font-size: 2rem;
+}
+
+.login-form .button {
+  width: 100%;
+}
+
 .app-shell {
   width: min(860px, calc(100vw - 32px));
   margin: 76px auto;
