@@ -1,0 +1,59 @@
+{
+  "base_sha": "571b18f36cdc645f757cc3be6b0519f1af3225f6",
+  "branch": "codex/parallel-ot44-communications-v1a",
+  "pr_base_ref": "codex/parallel-base-ot40-571b18f",
+  "migration": {
+    "added": false,
+    "reason": "Real PostgreSQL plan proof unavailable; no index justified."
+  },
+  "owned_paths": [
+    "packages/contracts/src/communications/**",
+    "packages/domain/src/communications/**",
+    "apps/web/src/server/communications/**",
+    "apps/web/src/client/app/communications/**",
+    "tests/unit/communications/**",
+    "tests/integration/communications/**",
+    "tests/e2e/ot-44/**",
+    "tests/accessibility/ot-44/**",
+    "tests/performance/ot-44/**",
+    "ops/evidence/ot-44/**"
+  ],
+  "exports": {
+    "server": ["registerCommunicationsRoutes", "ReadOnlySessionScopePort"],
+    "client": ["communicationsRouteDescriptor", "contactCommunicationsTabDescriptor"],
+    "contracts": ["communicationsListResponseSchema"],
+    "domain": ["buildCommunicationsListResponse", "parseCommunicationsFilters"]
+  },
+  "later_wiring": [
+    "Bind ReadOnlySessionScopePort to a non-mutating session resolver.",
+    "Register server Communications routes from the accepted app composition point.",
+    "Register lazy global route descriptor in the authenticated shell.",
+    "Register contact Communications tab descriptor in the contact-detail shell.",
+    "Run real PostgreSQL 10k plan proof.",
+    "Run integrated 30-run performance proof after shell wiring."
+  ],
+  "verification": {
+    "passed": [
+      "npm ci",
+      "npm run typecheck",
+      "npm run lint",
+      "npm run unit",
+      "npm run integration",
+      "npm run secret:scan",
+      "npm run build",
+      "npm run e2e",
+      "npm run accessibility",
+      "npm run performance",
+      "npx playwright test tests/e2e/ot-44 tests/accessibility/ot-44 tests/performance/ot-44",
+      "npx playwright test tests/performance/ot-44",
+      "npx tsx scripts/check-bundles.ts",
+      "git diff --cached --check"
+    ],
+    "failed_pre_existing": [],
+    "integration_pending": [
+      "Real PostgreSQL 10k EXPLAIN plan proof.",
+      "Integrated Communications lazy chunk inspection.",
+      "Integrated 30-run throttled mobile Communications performance proof."
+    ]
+  }
+}
