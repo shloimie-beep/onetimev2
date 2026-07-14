@@ -1,0 +1,5 @@
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-63","event":"received","source":"OT-RUN-RECOVERY-01","detail":"Task expected by OT-RUN-RECOVERY-01 recovery prompt."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-63","event":"preserved","artifact":"ORIGINAL-PROMPT.md","sanitized_sha256":"b149ef60889e3f4aa991072c93ba159e533e7b28e34d2f70515ccb23e6639720","safe_source_ref":"codex_attachment:e0f6731a-35cf-496d-b532-ff1b634e6c42/pasted-text.txt"}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-63","event":"audited","scope":"allowed local discovery scope","result":"No populated attempt report found."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-63","event":"attempted","status":"not_confirmed","evidence":"No populated Codex attempt report located in allowed files."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-63","event":"blocked","disposition":"PAUSED_AUTHORIZATION","reason":"Prompt requires exact accepted SHAs, staging authorization, Zoom readiness/host evidence, and phase-specific authorization before implementation."}

@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-64",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_DEPENDENCY",
+  "implementation_status": "none",
+  "original_prompt_found": false,
+  "attempt_report_found": false,
+  "prompt_sha256": "363d336843346813254ea3fe94144c1944bea62d25881b29577bfc1a980b4cb9",
+  "reason": "No standalone OT-64 prompt or completed Pro output was found in the allowed discovery scope; only incidental OT-64 references appeared inside OT-63 material.",
+  "next_action": "Locate a trusted OT-64 original prompt or Pro output before any implementation.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

@@ -1,0 +1,19 @@
+{
+  "task_id": "OT-62",
+  "blockers": [
+    {
+      "id": "OT-62-B1",
+      "disposition": "PAUSED_DEPENDENCY",
+      "status": "blocked",
+      "blocker": "Prompt requires an accepted OT-60 convergence base and security-critical product authority before implementation.",
+      "blocker_owner": "future implementation owner",
+      "next_action": "Resolve structured unresolved inputs from remote branches, acceptance manifests, and nonsecret evidence before implementation.",
+      "unresolved_inputs": [
+        "accepted OT-60 convergence head",
+        "identity lifecycle authority decisions",
+        "canonical shell/route ownership",
+        "delivery and MFA policies"
+      ]
+    }
+  ]
+}

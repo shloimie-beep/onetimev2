@@ -1,0 +1,18 @@
+{
+  "task_id": "OT-64",
+  "blockers": [
+    {
+      "id": "OT-64-B1",
+      "disposition": "PAUSED_DEPENDENCY",
+      "status": "needs_operator_decision",
+      "blocker": "No standalone OT-64 prompt or completed Pro output was found in the allowed discovery scope; only incidental OT-64 references appeared inside OT-63 material.",
+      "blocker_owner": "operator or prompt registrar",
+      "next_action": "Provide or locate a trusted original prompt/Pro output for this task before implementation.",
+      "unresolved_inputs": [
+        "trusted OT-64 original prompt or Pro output",
+        "accepted OT-63 attendance fact seam",
+        "reporting requirements and migration ownership"
+      ]
+    }
+  ]
+}

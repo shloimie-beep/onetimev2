@@ -1,0 +1,29 @@
+{
+  "task_id": "OT-66",
+  "recovery_branch": "codex/recovery-blocked-ot61-ot70",
+  "recovery_base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "integration_base_branch": "codex/crm-core-v1",
+  "package_paths": [
+    "ops/codex-runs/OT-66/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/OT-66/INPUT-MANIFEST.json",
+    "ops/codex-runs/OT-66/STATE.json",
+    "ops/codex-runs/OT-66/EVENTS.jsonl",
+    "ops/codex-runs/OT-66/ATTEMPT-REPORT.md",
+    "ops/codex-runs/OT-66/CHECKPOINT.md",
+    "ops/codex-runs/OT-66/IMPLEMENTED.md",
+    "ops/codex-runs/OT-66/REMAINING.md",
+    "ops/codex-runs/OT-66/DECISIONS.md",
+    "ops/codex-runs/OT-66/BLOCKERS.json",
+    "ops/codex-runs/OT-66/COMMANDS.md",
+    "ops/codex-runs/OT-66/TESTS.md",
+    "ops/codex-runs/OT-66/INTEGRATION-MANIFEST.json",
+    "ops/codex-runs/OT-66/RESUME-PROMPT.md"
+  ],
+  "product_changes": [],
+  "external_mutations": [
+    "GitHub branch/PR publication by recovery registrar only"
+  ],
+  "ready_for_integration": false,
+  "blocked_reason": "Prompt requires accepted OT-60 plus exact accepted heads for CRM/classes/content/portals and approved helper/action-gateway scope.",
+  "created_at": "2026-07-14T22:18:04.219Z"
+}

@@ -1,0 +1,23 @@
+{
+  "task_id": "OT-65",
+  "blockers": [
+    {
+      "id": "OT-65-B1",
+      "disposition": "PAUSED_AUTHORIZATION",
+      "status": "blocked",
+      "blocker": "Prompt intentionally leaves Stripe/test-mode commercial values unresolved and forbids live Stripe action; no live charge authorization exists.",
+      "blocker_owner": "future implementation owner",
+      "next_action": "Resolve structured unresolved inputs from remote branches, acceptance manifests, and nonsecret evidence before implementation.",
+      "unresolved_inputs": [
+        "accepted OT-60 converged head",
+        "accepted OT-46 Stripe foundation head",
+        "accepted OT-52 parent portal head",
+        "director-approved OT-65 base branch/SHA",
+        "approved test Stripe account/product/price/portal/webhook identifiers",
+        "commercial decision JSON",
+        "staging public origin/target",
+        "tax/refund/cancellation/entitlement/support policies"
+      ]
+    }
+  ]
+}

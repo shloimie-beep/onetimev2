@@ -1,0 +1,20 @@
+{
+  "task_id": "OT-68",
+  "blockers": [
+    {
+      "id": "OT-68-B1",
+      "disposition": "PAUSED_DEPENDENCY",
+      "status": "blocked",
+      "blocker": "Prompt requires complete included Day-One accepted SHAs and a target base before any branch, commit, migration, seed, provider call, or GitHub write.",
+      "blocker_owner": "future implementation owner",
+      "next_action": "Resolve structured unresolved inputs from remote branches, acceptance manifests, and nonsecret evidence before implementation.",
+      "unresolved_inputs": [
+        "OT-68 target base SHA",
+        "OT-60 convergence SHA",
+        "complete included Day-One accepted SHAs",
+        "route/action inventory source",
+        "bootstrap/test environment"
+      ]
+    }
+  ]
+}

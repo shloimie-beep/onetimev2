@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-66",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_DEPENDENCY",
+  "implementation_status": "none",
+  "original_prompt_found": true,
+  "attempt_report_found": false,
+  "prompt_sha256": "adf607acdfa4fd918f54989a6df9fc116a91ee732737ba925489c2afcc6e524a",
+  "reason": "Prompt requires accepted OT-60 plus exact accepted heads for CRM/classes/content/portals and approved helper/action-gateway scope.",
+  "next_action": "Resolve unresolved inputs from remote branches and accepted manifests, then continue from OT-66 preflight gates without redoing preserved prompt recovery.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

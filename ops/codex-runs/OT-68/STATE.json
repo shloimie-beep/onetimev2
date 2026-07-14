@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-68",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_DEPENDENCY",
+  "implementation_status": "none",
+  "original_prompt_found": true,
+  "attempt_report_found": false,
+  "prompt_sha256": "ef126892185b0018a205efba888f178f60b05f5bb190708bebdf0da692ad2a70",
+  "reason": "Prompt requires complete included Day-One accepted SHAs and a target base before any branch, commit, migration, seed, provider call, or GitHub write.",
+  "next_action": "Resolve unresolved inputs from remote branches and accepted manifests, then continue from OT-68 preflight gates without redoing preserved prompt recovery.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

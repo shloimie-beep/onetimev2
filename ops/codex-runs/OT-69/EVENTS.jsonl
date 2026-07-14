@@ -1,0 +1,5 @@
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-69","event":"received","source":"OT-RUN-RECOVERY-01","detail":"Task expected by OT-RUN-RECOVERY-01 recovery prompt."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-69","event":"preserved_missing_artifact_record","artifact":"ORIGINAL-PROMPT.md","sanitized_sha256":"d156cf9aff198ce857ecb0a1e516f34b5b89eba5a36c538d2be65815cab0b133"}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-69","event":"audited","scope":"allowed local discovery scope","result":"No populated attempt report found."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-69","event":"attempted","status":"not_confirmed","evidence":"No populated Codex attempt report located in allowed files."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-69","event":"blocked","disposition":"PAUSED_DEPENDENCY","reason":"No standalone OT-69 prompt or blocked attempt report was found in the allowed discovery scope."}

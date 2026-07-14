@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-61",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_DEPENDENCY",
+  "implementation_status": "none",
+  "original_prompt_found": true,
+  "attempt_report_found": false,
+  "prompt_sha256": "8bd21e73c35e0b506f0f1d60a8e5b95b1ba46601dfa46e25e8e3636d03aac829",
+  "reason": "Prompt requires an accepted OT-60 convergence head before implementation; this recovery task preserves the packet only.",
+  "next_action": "Resolve unresolved inputs from remote branches and accepted manifests, then continue from OT-61 preflight gates without redoing preserved prompt recovery.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

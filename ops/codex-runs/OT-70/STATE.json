@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-70",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_SECURITY",
+  "implementation_status": "none",
+  "original_prompt_found": false,
+  "attempt_report_found": false,
+  "prompt_sha256": "57afafa290166a776cbcaf2e46375d0318c541178689d94ff4ceda968fc98f1a",
+  "reason": "No standalone OT-70 prompt or blocked attempt report was found; any BNA bridge requires explicit cross-repository scope and privacy authorization.",
+  "next_action": "Locate a trusted OT-70 original prompt or Pro output before any implementation.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

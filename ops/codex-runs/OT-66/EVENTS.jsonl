@@ -1,0 +1,5 @@
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-66","event":"received","source":"OT-RUN-RECOVERY-01","detail":"Task expected by OT-RUN-RECOVERY-01 recovery prompt."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-66","event":"preserved","artifact":"ORIGINAL-PROMPT.md","sanitized_sha256":"adf607acdfa4fd918f54989a6df9fc116a91ee732737ba925489c2afcc6e524a","safe_source_ref":"codex_attachment:a7056156-9615-4bc1-b561-3fadfd7190d5/pasted-text.txt"}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-66","event":"audited","scope":"allowed local discovery scope","result":"No populated attempt report found."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-66","event":"attempted","status":"not_confirmed","evidence":"No populated Codex attempt report located in allowed files."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-66","event":"blocked","disposition":"PAUSED_DEPENDENCY","reason":"Prompt requires accepted OT-60 plus exact accepted heads for CRM/classes/content/portals and approved helper/action-gateway scope."}
