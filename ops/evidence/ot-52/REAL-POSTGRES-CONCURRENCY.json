@@ -1,0 +1,4 @@
+{
+  "status": "blocked",
+  "reason": "No explicit safe Postgres target was provided. Set OT52_POSTGRES_URL and OT52_ALLOW_POSTGRES_WRITE=true to run."
+}
