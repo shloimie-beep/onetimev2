@@ -211,6 +211,13 @@ const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
 if (loginForm) {
   const status = loginForm.querySelector<HTMLElement>('[data-form-status]');
   const submit = loginForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const mfaForm = document.querySelector<HTMLFormElement>('[data-mfa-form]');
+  const mfaStatus = mfaForm?.querySelector<HTMLElement>('[data-mfa-status]');
+  const mfaEnrollment = mfaForm?.querySelector<HTMLElement>('[data-mfa-enrollment]');
+  const otpauth = mfaForm?.querySelector<HTMLTextAreaElement>('#otpauth_uri');
+  const recoveryCodes = mfaForm?.querySelector<HTMLElement>('[data-recovery-codes]');
+  const recoveryCodesText = mfaForm?.querySelector<HTMLTextAreaElement>('#recovery_codes');
+  const recoveryContinue = mfaForm?.querySelector<HTMLButtonElement>('[data-recovery-continue]');
   const setError = (name: string, message: string) => {
     const field = loginForm.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
     if (field) field.textContent = message;
@@ -255,6 +262,20 @@ if (loginForm) {
         }
         return;
       }
+      if (json.mfa_required && mfaForm) {
+        loginForm.hidden = true;
+        mfaForm.hidden = false;
+        const preAuth = mfaForm.querySelector<HTMLInputElement>('input[name="pre_auth_token"]');
+        const returnTo = mfaForm.querySelector<HTMLInputElement>('input[name="return_to"]');
+        if (preAuth) preAuth.value = String(json.pre_auth_token ?? '');
+        if (returnTo) returnTo.value = String(json.return_to ?? '/app/crm');
+        if (json.enrollment && mfaEnrollment && otpauth) {
+          mfaEnrollment.hidden = false;
+          otpauth.value = String(json.enrollment.otpauth_uri ?? '');
+        }
+        mfaForm.querySelector<HTMLInputElement>('#totp_code')?.focus();
+        return;
+      }
       window.location.assign(json.return_to ?? '/app/crm');
     } catch {
       if (status) status.textContent = 'Login is unavailable right now.';
@@ -263,6 +284,49 @@ if (loginForm) {
         submit.disabled = false;
         submit.textContent = 'Login';
       }
+    }
+  });
+
+  mfaForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = new FormData(mfaForm);
+    if (mfaStatus) mfaStatus.textContent = '';
+    try {
+      const response = await fetch('/api/v1/auth/mfa/verify', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-csrf-token': String(data.get('csrf_token') ?? ''),
+        },
+        body: JSON.stringify({
+          pre_auth_token: String(data.get('pre_auth_token') ?? ''),
+          csrf_token: String(data.get('csrf_token') ?? ''),
+          totp_code: String(data.get('totp_code') ?? '') || undefined,
+          recovery_code: String(data.get('recovery_code') ?? '') || undefined,
+          return_to: String(data.get('return_to') ?? '/app/crm'),
+        }),
+      });
+      const json = await response.json();
+      if (!response.ok || !json.success) {
+        if (mfaStatus)
+          mfaStatus.textContent = json.message ?? 'The verification code is not correct.';
+        return;
+      }
+      const finish = () => window.location.assign(json.return_to ?? '/app/crm');
+      if (Array.isArray(json.recovery_codes) && recoveryCodes && recoveryCodesText) {
+        recoveryCodes.hidden = false;
+        recoveryCodesText.value = json.recovery_codes.join('\n');
+        if (mfaStatus) mfaStatus.textContent = 'Save these recovery codes now.';
+        if (recoveryContinue) {
+          recoveryContinue.hidden = false;
+          recoveryContinue.focus();
+          recoveryContinue.addEventListener('click', finish, { once: true });
+        }
+        return;
+      }
+      finish();
+    } catch {
+      if (mfaStatus) mfaStatus.textContent = 'Verification is unavailable right now.';
     }
   });
 }

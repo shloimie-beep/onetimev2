@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { login } from '../support/mfa-login.ts';
 
 test('landing meets local performance and overflow gates', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -53,10 +54,7 @@ test('authenticated CRM list and detail stay within request and usability budget
     if (url.pathname.startsWith('/api/v1/')) apiRequests.push(url.pathname);
   });
 
-  await page.goto('/login');
-  await page.getByLabel('Email').fill('ot-admin@example.test');
-  await page.getByLabel('Password').fill('TestPassword!234');
-  await page.getByRole('button', { name: 'Login' }).click();
+  await login(page);
   const listStarted = Date.now();
   await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
   const listMs = Date.now() - listStarted;

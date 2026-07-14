@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { ZodError } from 'zod';
@@ -10,13 +9,16 @@ import {
   createContactSchema,
   leadPayloadSchema,
   loginPayloadSchema,
+  mfaVerifyPayloadSchema,
   publicFieldErrors,
   updateContactSchema,
 } from '../../../../packages/contracts/src/index.ts';
+import { contactSearchBodySchema } from '../../../../packages/contracts/src/search.ts';
 import {
   CrmAssigneeScopeError,
   CrmCursorError,
   CrmDuplicateError,
+  CrmIdempotencyConflictError,
   CrmVersionConflictError,
   LeadDuplicateIdentityError,
   LeadIdempotencyConflictError,
@@ -24,6 +26,8 @@ import {
   authenticateUser,
   canEditContacts,
   captureLead,
+  completeMfaChallenge,
+  createLoginCsrf,
   createContact,
   createSession,
   getContactDetail,
@@ -32,6 +36,7 @@ import {
   revokeSession,
   rotateSessionCsrf,
   updateContact,
+  verifyLoginCsrf,
   verifySessionCsrf,
   type AuthenticatedSession,
 } from '../../../../packages/domain/src/index.ts';
@@ -79,7 +84,7 @@ export function createApp({
   app.use(traceMiddleware);
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
-  app.use(['/login', '/api/v1/auth'], (_req, res, next) => {
+  app.use(['/login', '/api/v1/auth', '/api/v1/crm'], (_req, res, next) => {
     setNoStore(res);
     next();
   });
@@ -110,13 +115,16 @@ export function createApp({
   app.get('/rabbi-member', (_req, res) => res.redirect(301, '/login'));
 
   app.get('/login', (req, res) => {
-    const csrfToken = token();
-    setCsrfCookie(res, config, csrfToken);
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
     res
       .status(200)
       .type('html')
       .send(
-        loginPageHtml(csrfToken, safeReturnPath(String(req.query.return_to ?? '')) ?? '/app/crm'),
+        loginPageHtml(
+          csrf.csrf_token,
+          safeReturnPath(String(req.query.return_to ?? '')) ?? '/app/crm',
+        ),
       );
   });
 
@@ -200,7 +208,13 @@ export function createApp({
   app.post('/api/v1/auth/login', async (req: RequestWithTrace, res) => {
     try {
       const payload = loginPayloadSchema.parse(req.body);
-      if (!verifyCookieCsrf(req, payload.csrf_token ?? req.header('x-csrf-token'))) {
+      if (
+        !verifyLoginCsrf(
+          config,
+          getCookie(req, CSRF_COOKIE),
+          payload.csrf_token ?? req.header('x-csrf-token'),
+        )
+      ) {
         res
           .status(403)
           .json(publicError('CSRF_REQUIRED', 'Refresh the login page and try again.', req.traceId));
@@ -217,16 +231,28 @@ export function createApp({
         }),
       );
       if (!login.ok) {
+        if (login.code === 'MFA_REQUIRED' || login.code === 'MFA_ENROLLMENT_REQUIRED') {
+          res.status(200).json({
+            success: true,
+            mfa_required: true,
+            mfa_mode: login.code === 'MFA_ENROLLMENT_REQUIRED' ? 'enroll' : 'challenge',
+            pre_auth_token: login.pre_auth_token,
+            expires_at: login.expires_at,
+            enrollment: login.enrollment,
+            return_to: safeReturnPath(payload.return_to) ?? '/app/crm',
+          });
+          return;
+        }
         const status =
-          login.code === 'RATE_LIMITED' ? 429 : login.code === 'MFA_REQUIRED' ? 403 : 401;
+          login.code === 'RATE_LIMITED' ? 429 : login.code === 'MFA_CONFIG_REQUIRED' ? 503 : 401;
         if (login.retry_after_seconds)
           res.setHeader('retry-after', String(login.retry_after_seconds));
         res.status(status).json({
           success: false,
           code: login.code,
           message:
-            login.code === 'MFA_REQUIRED'
-              ? 'Administrator access needs MFA before production launch.'
+            login.code === 'MFA_CONFIG_REQUIRED'
+              ? 'Administrator login is temporarily unavailable.'
               : 'Email or password is not correct.',
           request_id: req.traceId,
         });
@@ -251,9 +277,10 @@ export function createApp({
           rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
         }),
       );
-      setAuthCookies(res, config, session.session_token, session.csrf_token);
+      setAuthCookies(res, config, session.session_token, session.csrf_cookie);
       res.status(200).json({
         success: true,
+        mfa_required: false,
         user: session.user,
         csrf_token: session.csrf_token,
         return_to: safeReturnPath(payload.return_to) ?? '/app/crm',
@@ -275,10 +302,94 @@ export function createApp({
     }
   });
 
+  app.post('/api/v1/auth/mfa/verify', async (req: RequestWithTrace, res) => {
+    try {
+      const payload = mfaVerifyPayloadSchema.parse(req.body);
+      if (
+        !verifyLoginCsrf(
+          config,
+          getCookie(req, CSRF_COOKIE),
+          payload.csrf_token ?? req.header('x-csrf-token'),
+        )
+      ) {
+        res
+          .status(403)
+          .json(publicError('CSRF_REQUIRED', 'Refresh the login page and try again.', req.traceId));
+        return;
+      }
+      const result = await withTiming(req, 'db', () =>
+        completeMfaChallenge({
+          pool,
+          config,
+          preAuthToken: payload.pre_auth_token,
+          totpCode: payload.totp_code,
+          recoveryCode: payload.recovery_code,
+          ip: req.ip,
+          userAgent: req.header('user-agent') ?? undefined,
+        }),
+      );
+      if (!result.ok) {
+        const status =
+          result.code === 'RATE_LIMITED' ? 429 : result.code === 'MFA_EXPIRED' ? 410 : 401;
+        if (result.retry_after_seconds)
+          res.setHeader('retry-after', String(result.retry_after_seconds));
+        res.status(status).json({
+          success: false,
+          code: result.code,
+          message: 'The verification code is not correct.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const rotatedFromSessionKey = await revokeSession({
+        pool,
+        config,
+        sessionToken: getCookie(req, SESSION_COOKIE),
+        reason: 'mfa_login_rotation',
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
+      });
+      const session = await withTiming(req, 'db', () =>
+        createSession({
+          pool,
+          config,
+          user: result.user,
+          ip: req.ip,
+          userAgent: req.header('user-agent') ?? undefined,
+          rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
+        }),
+      );
+      setAuthCookies(res, config, session.session_token, session.csrf_cookie);
+      res.status(200).json({
+        success: true,
+        user: session.user,
+        csrf_token: session.csrf_token,
+        recovery_codes: result.recovery_codes,
+        return_to: safeReturnPath(payload.return_to) ?? '/app/crm',
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        res.status(400).json({
+          success: false,
+          code: 'VALIDATION_ERROR',
+          message: 'Please check the verification form.',
+          field_errors: publicFieldErrors(error),
+          request_id: req.traceId,
+        });
+        return;
+      }
+      res
+        .status(500)
+        .json(
+          publicError('SERVER_ERROR', 'MFA verification is unavailable right now.', req.traceId),
+        );
+    }
+  });
+
   app.post('/api/v1/auth/logout', async (req: RequestWithTrace, res) => {
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (!(await requireSessionCsrf(req, res, pool, config, session))) return;
     await revokeSession({
       pool,
       config,
@@ -307,8 +418,27 @@ export function createApp({
   app.get('/api/v1/crm/contacts', async (req: RequestWithTrace, res) => {
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
+    if (typeof req.query.search === 'string' && req.query.search.trim()) {
+      res
+        .status(400)
+        .json(publicError('SEARCH_REQUIRES_POST', 'Use the contact search endpoint.', req.traceId));
+      return;
+    }
     try {
       const query = contactListQuerySchema.parse(req.query);
+      const result = await withTiming(req, 'db', () => listContacts({ pool, config, query }));
+      res.json({ success: true, ...result });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/crm/contacts/search', async (req: RequestWithTrace, res) => {
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, config, session))) return;
+    try {
+      const query = contactSearchBodySchema.parse(req.body);
       const result = await withTiming(req, 'db', () => listContacts({ pool, config, query }));
       res.json({ success: true, ...result });
     } catch (error) {
@@ -325,7 +455,7 @@ export function createApp({
         .json(publicError('FORBIDDEN', 'Your role can view CRM contacts only.', req.traceId));
       return;
     }
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (!(await requireSessionCsrf(req, res, pool, config, session))) return;
     try {
       const payload = createContactSchema.parse(req.body);
       const contact = await withTiming(req, 'db', () =>
@@ -366,7 +496,7 @@ export function createApp({
         .json(publicError('FORBIDDEN', 'Your role can view CRM contacts only.', req.traceId));
       return;
     }
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (!(await requireSessionCsrf(req, res, pool, config, session))) return;
     try {
       const contactId = String(req.params.contactId);
       const payload = updateContactSchema.parse(req.body);
@@ -419,10 +549,17 @@ async function requireSessionCsrf(
   req: RequestWithTrace,
   res: Response,
   pool: DbPool,
+  config: AppConfig,
   session: AuthenticatedSession,
 ) {
   const csrfToken = req.header('x-csrf-token') ?? req.body?.csrf_token;
-  const valid = await verifySessionCsrf({ pool, sessionKey: session.session_key, csrfToken });
+  const valid = await verifySessionCsrf({
+    pool,
+    config,
+    sessionKey: session.session_key,
+    csrfCookie: getCookie(req, CSRF_COOKIE),
+    csrfToken,
+  });
   if (!valid) {
     res
       .status(403)
@@ -443,21 +580,9 @@ async function ensureSessionCsrfCookie(
   config: AppConfig,
   session: AuthenticatedSession,
 ) {
-  const current = getCookie(req, CSRF_COOKIE);
-  if (
-    current &&
-    (await verifySessionCsrf({ pool, sessionKey: session.session_key, csrfToken: current }))
-  ) {
-    return current;
-  }
   const next = await rotateSessionCsrf({ pool, config, session });
-  setCsrfCookie(res, config, next);
-  return next;
-}
-
-function verifyCookieCsrf(req: Request, submitted?: string) {
-  const cookie = getCookie(req, CSRF_COOKIE);
-  return Boolean(cookie && submitted && cookie === submitted);
+  setCsrfCookie(res, config, next.csrf_cookie);
+  return next.csrf_token;
 }
 
 function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
@@ -487,6 +612,15 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
       code: 'VERSION_CONFLICT',
       message: 'This contact changed in another session. Reload before saving.',
       current_version: error.currentVersion,
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof CrmIdempotencyConflictError) {
+    res.status(409).json({
+      success: false,
+      code: 'IDEMPOTENCY_CONFLICT',
+      message: 'This create request key was already used for different information.',
       request_id: req.traceId,
     });
     return;
@@ -524,7 +658,12 @@ function getCookie(req: Request, name: string) {
   return undefined;
 }
 
-function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, csrfToken: string) {
+function setAuthCookies(
+  res: Response,
+  config: AppConfig,
+  sessionToken: string,
+  csrfCookie: string,
+) {
   res.cookie(SESSION_COOKIE, sessionToken, {
     httpOnly: true,
     secure: config.isProduction,
@@ -532,12 +671,12 @@ function setAuthCookies(res: Response, config: AppConfig, sessionToken: string, 
     path: '/',
     maxAge: 8 * 60 * 60 * 1000,
   });
-  setCsrfCookie(res, config, csrfToken);
+  setCsrfCookie(res, config, csrfCookie);
 }
 
 function setCsrfCookie(res: Response, config: AppConfig, csrfToken: string) {
   res.cookie(CSRF_COOKIE, csrfToken, {
-    httpOnly: false,
+    httpOnly: true,
     secure: config.isProduction,
     sameSite: 'strict',
     path: '/',
@@ -557,7 +696,7 @@ function clearAuthCookies(res: Response, config: AppConfig) {
     path: '/',
   });
   res.clearCookie(CSRF_COOKIE, {
-    httpOnly: false,
+    httpOnly: true,
     secure: config.isProduction,
     sameSite: 'strict',
     path: '/',
@@ -565,15 +704,30 @@ function clearAuthCookies(res: Response, config: AppConfig) {
 }
 
 function safeReturnPath(value?: string) {
-  if (!value || !value.startsWith('/') || value.startsWith('//') || value.includes('://')) {
+  if (!value || value.length > 240) return null;
+  for (const char of value) {
+    const code = char.charCodeAt(0);
+    if (char === '\\' || code <= 31 || code === 127) return null;
+  }
+  if (/%2f|%5c/i.test(value)) return null;
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(value);
+  } catch {
     return null;
   }
-  if (value.startsWith('/api/')) return null;
-  return value;
-}
-
-function token() {
-  return randomUUID().replaceAll('-', '') + randomUUID().replaceAll('-', '');
+  if (
+    !decoded.startsWith('/') ||
+    decoded.startsWith('//') ||
+    decoded.includes('://') ||
+    decoded.startsWith('/api/') ||
+    decoded === '/login' ||
+    decoded.startsWith('/login?')
+  ) {
+    return null;
+  }
+  if (!decoded.startsWith('/app/')) return '/app/crm';
+  return decoded;
 }
 
 function loginPageHtml(csrfToken: string, returnTo: string) {
@@ -610,6 +764,33 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
         </div>
         <button class="button button-primary" type="submit">Login</button>
         <p class="form-status" role="status" data-form-status></p>
+      </form>
+      <form class="login-form" data-mfa-form hidden novalidate>
+        <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
+        <input type="hidden" name="return_to" value="${escapeHtml(returnTo)}">
+        <input type="hidden" name="pre_auth_token" value="">
+        <div class="field" data-mfa-enrollment hidden>
+          <label for="otpauth_uri">Authenticator setup URI</label>
+          <textarea id="otpauth_uri" readonly rows="4"></textarea>
+          <p class="help">Add this account in your authenticator app, then enter the 6-digit code.</p>
+        </div>
+        <div class="field">
+          <label for="totp_code">Authenticator code</label>
+          <input id="totp_code" name="totp_code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}">
+          <p tabindex="-1" class="error" data-error-for="totp_code"></p>
+        </div>
+        <div class="field">
+          <label for="recovery_code">Recovery code</label>
+          <input id="recovery_code" name="recovery_code" autocomplete="one-time-code">
+          <p tabindex="-1" class="error" data-error-for="recovery_code"></p>
+        </div>
+        <button class="button button-primary" type="submit">Verify</button>
+        <p class="form-status" role="status" data-mfa-status></p>
+        <div class="field" data-recovery-codes hidden>
+          <label for="recovery_codes">Recovery codes</label>
+          <textarea id="recovery_codes" readonly rows="6"></textarea>
+        </div>
+        <button class="button button-secondary" type="button" data-recovery-continue hidden>Continue</button>
       </form>
     </section>
   </main>

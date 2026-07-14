@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import { ianaTimezoneSchema } from './timezone.ts';
+export { mfaReauthPayloadSchema, mfaVerifyPayloadSchema } from './auth.ts';
+export type { MfaReauthPayload, MfaVerifyPayload } from './auth.ts';
+export { ianaTimezoneSchema, isValidIanaTimeZone } from './timezone.ts';
 
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;
@@ -12,7 +16,7 @@ export const leadPayloadSchema = z
     family_or_school: z.string().trim().min(1).max(180),
     audience_type: audienceTypeSchema,
     location: z.string().trim().min(2).max(180),
-    timezone: z.string().trim().min(1).max(80),
+    timezone: ianaTimezoneSchema,
     browser_timezone: z.string().trim().max(80).optional(),
     email: z.string().trim().email().max(254),
     phone: z.string().trim().max(40).optional().default(''),
@@ -47,15 +51,6 @@ export const leadPayloadSchema = z
         code: 'custom',
         path: ['reminder_consent'],
         message: 'Confirm that we may send the selected class information and reminders.',
-      });
-    }
-    try {
-      new Intl.DateTimeFormat('en-US', { timeZone: payload.timezone }).format(new Date());
-    } catch {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['timezone'],
-        message: 'Enter a valid IANA time zone such as America/New_York.',
       });
     }
   });
@@ -147,13 +142,15 @@ export const contactBaseSchema = z.object({
   email: z.string().trim().email().max(254),
   phone: z.string().trim().max(40).optional().default(''),
   location: z.string().trim().min(2).max(180),
-  timezone: z.string().trim().min(1).max(80),
+  timezone: ianaTimezoneSchema,
   lead_status: leadStatusSchema.default('new'),
   assigned_user_key: optionalTrimmed(160),
   internal_note: z.string().trim().max(1000).optional().default(''),
 });
 
-export const createContactSchema = contactBaseSchema;
+export const createContactSchema = contactBaseSchema.extend({
+  idempotency_key: z.string().trim().min(8).max(160),
+});
 export type CreateContactPayload = z.infer<typeof createContactSchema>;
 
 export const updateContactSchema = contactBaseSchema.partial().extend({
@@ -180,9 +177,40 @@ export type SessionUser = {
   role: UserRole;
   role_label: string;
   mfa_capable: boolean;
-  mfa_verified: false;
-  auth_assurance: 'password_only';
+  mfa_verified: boolean;
+  auth_assurance: 'password_only' | 'mfa';
 };
+
+export const contactListItemSchema = z.object({
+  contact_id: z.string().min(8).max(80),
+  display_name: z.string(),
+  family_school_classification: audienceTypeSchema,
+  lead_status: leadStatusSchema,
+  email: z.string().email().nullable(),
+  phone: z.string().nullable(),
+  source: z.string(),
+  assigned_team_member: z.string().nullable(),
+  last_activity_at: z.string(),
+  updated_at: z.string(),
+  version: z.number().int(),
+});
+
+export const contactDetailSchema = contactListItemSchema.extend({
+  location: z.string(),
+  timezone: z.string(),
+  reminder_preference: reminderPreferenceSchema,
+  consent_state: z.enum(['recorded', 'not_recorded']),
+  suppression_state: z.string(),
+  offer_version: z.string().nullable(),
+  content_version: z.string().nullable(),
+  created_at: z.string(),
+  audit_safe_signup_provenance: z.object({
+    source: z.string(),
+    signup_key: z.string().nullable(),
+    captured_at: z.string().nullable(),
+  }),
+  internal_note: z.string(),
+});
 
 export type ContactListItem = {
   contact_id: string;

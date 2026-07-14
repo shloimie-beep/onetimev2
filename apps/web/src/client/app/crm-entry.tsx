@@ -107,7 +107,15 @@ function CrmApp() {
     });
     if (cursor) params.set('cursor', cursor);
     try {
-      const json = await api<ListResponse>(`/api/v1/crm/contacts?${params.toString()}`);
+      const body = Object.fromEntries(params.entries());
+      const json = await api<ListResponse>('/api/v1/crm/contacts/search', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(session ? { 'x-csrf-token': session.csrf_token } : {}),
+        },
+        body: JSON.stringify({ ...body, csrf_token: session?.csrf_token }),
+      });
       setContacts((current) => (cursor ? [...current, ...json.contacts] : json.contacts));
       setNextCursor(json.next_cursor);
       performance.mark('ot-crm-list-usable');
@@ -164,6 +172,7 @@ function CrmApp() {
       ...form,
       assigned_user_key: form.assigned_user_key || undefined,
       internal_note: form.internal_note || '',
+      ...(mode === 'create' ? { idempotency_key: crypto.randomUUID() } : {}),
     };
     const response = await fetch(
       mode === 'create'
@@ -593,8 +602,10 @@ function ContactForm({
   );
 }
 
-async function api<T>(path: string): Promise<T> {
-  const response = await fetch(path, { headers: { accept: 'application/json' } });
+async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  headers.set('accept', 'application/json');
+  const response = await fetch(path, { ...init, headers });
   const json = await response.json();
   if (!response.ok || json.success === false) throw new Error(json.message ?? 'Request failed.');
   return json as T;
