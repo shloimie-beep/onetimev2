@@ -1,6 +1,6 @@
 # OT-60R Remaining Work
 
-1. Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.
+1. Collect GitHub Actions OT-37 disposable PostgreSQL proof after pushing the adapted workflow, or record the CI blocker honestly.
 2. Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.
 3. Run required verification locally where possible and record CI/disposable PostgreSQL needs honestly.
 4. Update `CANONICAL-CANDIDATE.json` to `candidate` only after final integrated commit and evidence are recorded.

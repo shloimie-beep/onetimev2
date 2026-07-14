@@ -83,6 +83,18 @@ Real PostgreSQL concurrency proof remains pending for a safe disposable database
 
 Real PostgreSQL 16 proof, bot token, webhook secret, service startup, mappings, staging canary, deploy, and rollback drill remain out of scope.
 
+## OT-37 PostgreSQL Assurance Harness
+
+- `npm run typecheck`: PASS.
+- `npm run lint`: PASS.
+- `npx prettier --check .github/workflows/ot37-postgres-assurance.yml ops/evidence/ot-37/LOCAL-ENVIRONMENT-BLOCKER.md ops/evidence/ot-37/README.md scripts/postgres-assurance/README.md scripts/postgres-assurance/run.ts tests/postgres-assurance/current-base-scenarios.ts`: PASS.
+- `npm run build`: PASS.
+- `npm run secret:scan`: PASS across 297 repo text files.
+- `git diff --check`: PASS.
+- `npx tsx scripts/postgres-assurance/run.ts`: BLOCKED locally by `connect ECONNREFUSED 127.0.0.1:5432`; `docker` and `psql` are not installed, no `postgresql*` service was found, and PG/DATABASE_URL environment variables are absent.
+
+The adapted GitHub Actions workflow starts PostgreSQL 16 and is the expected safe disposable database proof after push.
+
 ## Supersession Security Port
 
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.

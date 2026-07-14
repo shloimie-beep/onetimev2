@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #13 / OT-51 Telegram mock/default-off foundation integrated
+- Phase: PR #6 / OT-37 PostgreSQL assurance harness integrated
 - Status: building
 
 ## Completed
@@ -55,6 +55,11 @@
 - Preserved mock-only transport, default-deny identity, injected application adapter boundary, no central runtime wiring, no webhook registration, no polling activation, and zero Telegram network/provider mutations.
 - Verified with OT-51 focused unit/integration tests, `npm run typecheck`, `npm run build`, touched-file formatting check, `git diff --check --cached`, and `npm run secret:scan`.
 - Committed the PR #13 / OT-51 Telegram mock foundation checkpoint at `f880c6abfacea6fa00cefa3383515ae31b914006`.
+- Applied PR #6 / OT-37 PostgreSQL assurance harness and adapted it for the OT-60R integrated migration stack.
+- Added `codex/ot60r-recovery-convergence` to the PostgreSQL 16 workflow trigger, scoped the workflow format step to OT-37 files, updated harness task metadata to the OT-60R base, and recorded the local desktop PostgreSQL blocker.
+- Verified with `npm run typecheck`, `npm run lint`, `npm run build`, scoped OT-37 formatting check, `git diff --check`, and `npm run secret:scan`.
+- Local `npx tsx scripts/postgres-assurance/run.ts` is blocked by absent local PostgreSQL/Docker/psql/service/env; disposable PostgreSQL proof is expected from GitHub Actions after push.
+- Committed the PR #6 / OT-37 PostgreSQL assurance checkpoint at `e97f6de55b050605a96d64eac07c58b753ea2976`.
 
 ## Last Safe Command
 
@@ -65,9 +70,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git show --stat --oneline --decorate --no-renames 0ea782d8551c26edd48b08d644b573e19b9835b1
+git push origin codex/ot60r-recovery-convergence
 ```
 
-Continue PR #6 / OT-37 PostgreSQL assurance. Port/adapt to the integrated schema; use only safe local/disposable database targets.
+Push the adapted workflow, then inspect the OT-37 PostgreSQL assurance GitHub Actions run. If CI proof is not available, record the blocker and continue PR #10 / OT-47 evidence-only handling.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

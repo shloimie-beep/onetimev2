@@ -16,3 +16,5 @@ Migration blob checksums are Git blob IDs at each PR head.
 | #13 | `e235af05759f` | `packages/db/migrations/1600_ot51_telegram_bot_foundation.sql` | `e0834959de620a5238d089a6f9240a43624671fd` | Applied as isolated Telegram mock/default-off migration; real PostgreSQL proof remains pending for PR #6/disposable DB lane. |
 
 No accepted migration was edited in this checkpoint. The HMAC login-CSRF port is config/domain/server/test-only and does not require a migration.
+
+PR #6 / OT-37 adds no migration. Its harness discovers and verifies the accepted migration stack, including migrations `0001`, `0002`, `0003`, `0004`, `1000`, `1300`, `1500`, and `1600`.

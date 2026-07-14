@@ -34,6 +34,9 @@
 - Integrated PR #13 / OT-51 Telegram mock/default-off foundation as an isolated module.
 - Added Telegram contracts, migration `1600`, SQL repositories, command/domain services, identity and crypto helpers, worker/lease primitives, webhook ingress hook, mock-only app entrypoint, and focused unit/integration tests.
 - Preserved no Telegram network calls, no webhook registration, no polling activation, no central runtime wiring, no provider mutation, default-deny identity, and injected application adapter boundaries.
+- Integrated PR #6 / OT-37 PostgreSQL assurance harness.
+- Added a PostgreSQL 16 GitHub Actions workflow, disposable database assurance runner, migration/query/performance/concurrency report writer, current integrated-stack scenario catalog, evidence README, and local environment blocker note.
+- Adapted the workflow to run on `codex/ot60r-recovery-convergence` and scoped its format step to OT-37 files so unrelated baseline formatting noise does not mask the PostgreSQL proof.
 
 ## Supersession Security Port
 

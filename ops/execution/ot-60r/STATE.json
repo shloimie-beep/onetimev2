@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "f880c6abfacea6fa00cefa3383515ae31b914006",
-  "phase": "pr13_ot51_telegram_integrated",
+  "current_head_sha": "e97f6de55b050605a96d64eac07c58b753ea2976",
+  "phase": "pr6_ot37_postgres_assurance_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:45:48+03:00",
+  "updated_at": "2026-07-15T02:51:58+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -57,10 +57,14 @@
     "Applied PR #13 / OT-51 Telegram mock/default-off foundation as an isolated module.",
     "Preserved OT-51 mock-only transport, default-deny identity, injected application adapter boundary, no central runtime wiring, no webhook registration, no polling activation, and zero Telegram network/provider mutations.",
     "Verified OT-51 focused unit/integration tests, typecheck, build, touched-file formatting, whitespace, and secret scan.",
-    "Committed the PR #13 / OT-51 Telegram mock foundation checkpoint at f880c6abfacea6fa00cefa3383515ae31b914006."
+    "Committed the PR #13 / OT-51 Telegram mock foundation checkpoint at f880c6abfacea6fa00cefa3383515ae31b914006.",
+    "Applied PR #6 / OT-37 PostgreSQL assurance harness and adapted it for the OT-60R integrated migration stack.",
+    "Added the recovery branch to the PostgreSQL 16 GitHub Actions workflow, scoped the workflow format step to OT-37 files to avoid unrelated baseline format noise, updated the harness task metadata to the OT-60R base, and recorded the local desktop PostgreSQL blocker.",
+    "Verified OT-37 harness typecheck, lint, build, scoped formatting, whitespace, and secret scan locally; real PostgreSQL harness execution is blocked locally by absent PostgreSQL/Docker/psql/service/env and must run in the GitHub Actions disposable PostgreSQL 16 service.",
+    "Committed the PR #6 / OT-37 PostgreSQL assurance checkpoint at e97f6de55b050605a96d64eac07c58b753ea2976."
   ],
   "remaining_steps": [
-    "Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.",
+    "Collect GitHub Actions OT-37 disposable PostgreSQL proof after pushing the adapted workflow, or record the CI blocker honestly.",
     "Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.",
     "Run required local verification and record blocked checks honestly.",
     "Open draft PR against codex/crm-core-v1 after a pushed resumable checkpoint exists."
@@ -292,6 +296,41 @@
       "command": "npm run secret:scan",
       "status": "passed",
       "summary": "Secret scan passed across 291 repo text files."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully after OT-37 harness integration."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "eslint . completed successfully after OT-37 harness integration."
+    },
+    {
+      "command": "npx prettier --check <OT-37 harness files>",
+      "status": "passed",
+      "summary": "Scoped assurance workflow/script/evidence/scenario files use Prettier code style."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed successfully after OT-37 harness integration."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 297 repo text files."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected after OT-37 harness integration."
+    },
+    {
+      "command": "npx tsx scripts/postgres-assurance/run.ts",
+      "status": "blocked",
+      "summary": "Local real PostgreSQL assurance is blocked: connect ECONNREFUSED 127.0.0.1:5432; docker and psql are not installed, no PostgreSQL service was found, and PG/DATABASE_URL environment variables are absent."
     }
   ],
   "external_mutation_counts": {
@@ -304,5 +343,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #6 / OT-37 PostgreSQL assurance without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, or PR #13 Telegram mock foundation."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then push/check the OT-37 GitHub Actions PostgreSQL proof or continue PR #10 / OT-47 evidence-only handling without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, PR #13 Telegram mock foundation, or PR #6 harness integration."
 }
