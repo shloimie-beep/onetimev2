@@ -42,6 +42,7 @@
 - Applied PR #14 / OT-44 communications read model after the delivery lineage.
 - Bound OT-44 into the shared app with a read-only session scope resolver, mounted `/app/communications`, `/api/v1/communications`, and `/api/v1/crm/contacts/:contactId/communications`, and added lazy Communications navigation/contact view wiring to the CRM shell.
 - Verified with focused delivery/communications Vitest suites, `npm run build`, focused auth/CRM regression, OT-44 browser checks, OT-39 browser regression, delivery repository contract tests, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
+- Committed the PR #4/#8/#14 delivery and communications checkpoint at `3a9772439b5fbd1a1fd0969406d2d2033bef90a0`.
 
 ## Last Safe Command
 
