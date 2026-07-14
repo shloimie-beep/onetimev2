@@ -1,4 +1,16 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, test } from '@playwright/test';
+
+async function expectLocatorInsideViewport(
+  locator: Locator,
+  viewport: { width: number; height: number },
+) {
+  const box = await locator.boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.x).toBeGreaterThanOrEqual(0);
+  expect(box!.y).toBeGreaterThanOrEqual(0);
+  expect(box!.x + box!.width).toBeLessThanOrEqual(viewport.width);
+  expect(box!.y + box!.height).toBeLessThanOrEqual(viewport.height);
+}
 
 test('landing works on required mobile viewports with visible header and hero CTAs', async ({
   page,
@@ -9,14 +21,21 @@ test('landing works on required mobile viewports with visible header and hero CT
   ]) {
     await page.setViewportSize(size);
     await page.goto('/');
-    await expect(
-      page.getByLabel('Primary').getByRole('link', { name: 'Member Login' }),
-    ).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign Up Now' }).first()).toBeVisible();
+    const brandLogo = page.locator('.brand-lockup img');
+    const memberLogin = page.getByLabel('Primary').getByRole('link', { name: 'Member Login' });
+    const headerSignup = page.getByLabel('Primary').getByRole('link', { name: 'Sign Up Now' });
+    const heroSignup = page.locator('.hero .hero-cta');
+    await expect(brandLogo).toBeVisible();
+    await expect(memberLogin).toBeVisible();
+    await expect(headerSignup).toBeVisible();
     await expect(
       page.getByRole('heading', { name: 'Give your son a love for learning Torah.' }),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Sign Up Now' }).nth(1)).toBeVisible();
+    await expect(heroSignup).toBeVisible();
+    await expectLocatorInsideViewport(brandLogo, size);
+    await expectLocatorInsideViewport(memberLogin, size);
+    await expectLocatorInsideViewport(headerSignup, size);
+    await expectLocatorInsideViewport(heroSignup, size);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
@@ -29,6 +48,24 @@ test('landing preserves exact receive structure and asset assignments', async ({
   const requests: string[] = [];
   page.on('request', (request) => requests.push(request.url()));
   await page.goto('/');
+  const sections = await page
+    .locator('main > section')
+    .evaluateAll((elements) =>
+      elements.map((element) => element.id || Array.from(element.classList).join('.')),
+    );
+  expect(sections).toEqual([
+    'hero',
+    'receive',
+    'gain',
+    'how-it-works',
+    'who',
+    'rabbi',
+    'final-cta',
+  ]);
+  await expect(
+    page.getByText('Worldwide Mishnah learning - live from Eretz Yisrael'),
+  ).toBeVisible();
+  await expect(page.getByText('Live every day at 7:00 p.m. Israel time.')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'What You Receive' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Live Daily Mishnayos' })).toBeVisible();
   await expect(page.getByText('Secure student portal')).toBeVisible();
@@ -36,6 +73,26 @@ test('landing preserves exact receive structure and asset assignments', async ({
   await expect(
     page.locator(
       'article[data-benefit="Accomplishment"] img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]',
+    ),
+  ).toBeVisible();
+  await expect(
+    page.locator('img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]'),
+  ).toHaveCount(1);
+  await expect(
+    page
+      .locator(
+        'article[data-benefit="Clarity"], article[data-benefit="Excitement for learning Torah"]',
+      )
+      .locator('img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]'),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText(
+      "One perek a day gives him a clear goal, steady progress, and a real sense of finishing each day's learning.",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      'Sign up, get the class information, and join the daily 7:00 p.m. live Mishnayos class.',
     ),
   ).toBeVisible();
   await expect(page.getByRole('heading', { name: "Who It's For" })).toBeVisible();
