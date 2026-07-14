@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "3a9772439b5fbd1a1fd0969406d2d2033bef90a0",
+  "current_head_sha": "e004161af0f7ef1873fe4b7b3e5a4b109d79b54a",
   "phase": "pr12_ot46_billing_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:35:39+03:00",
+  "updated_at": "2026-07-15T02:36:25+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -48,7 +48,8 @@
     "Committed the PR #4/#8/#14 delivery and communications checkpoint at 3a9772439b5fbd1a1fd0969406d2d2033bef90a0.",
     "Applied PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted module.",
     "Preserved OT-46 default-off and fixture-only constraints with zero Stripe network calls, zero provider mutations, and no entitlement/access grants.",
-    "Verified OT-46 focused unit/integration tests, typecheck, build, formatting, whitespace, JSON validity, and secret scan."
+    "Verified OT-46 focused unit/integration tests, typecheck, build, formatting, whitespace, JSON validity, and secret scan.",
+    "Committed the PR #12 / OT-46 fixture-only billing checkpoint at e004161af0f7ef1873fe4b7b3e5a4b109d79b54a."
   ],
   "remaining_steps": [
     "Apply isolated modules: PR #15, PR #13.",

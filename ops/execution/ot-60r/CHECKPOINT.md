@@ -46,6 +46,7 @@
 - Applied PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted module.
 - Preserved default-off billing flags, fixture-only provider adapter, no Stripe SDK/network calls, no provider mutations, and no entitlement/access grants.
 - Verified with OT-46 focused unit/integration tests, `npm run typecheck`, `npm run build`, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
+- Committed the PR #12 / OT-46 fixture-only billing checkpoint at `e004161af0f7ef1873fe4b7b3e5a4b109d79b54a`.
 
 ## Last Safe Command
 
