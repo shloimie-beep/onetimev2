@@ -33,6 +33,7 @@
 - Preserved the canonical private POST-body CRM search endpoint while applying PR #7 privacy/performance structure.
 - Preserved assignee dropdown behavior and current body `idempotency_key` create contract.
 - Verified with `npm run build`, focused auth/CRM integration tests, OT-39 browser suite, and regenerated OT-39 30-sample performance evidence.
+- Committed the PR #7 / OT-39 CRM privacy/performance checkpoint at `46d5c6819c232ad1845c437752e9e2622feeefee`.
 
 ## Last Safe Command
 

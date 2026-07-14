@@ -4,7 +4,7 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "0c13a0fc43eef75bd91f42ed947db21e7221070f",
+  "current_head_sha": "46d5c6819c232ad1845c437752e9e2622feeefee",
   "phase": "pr7_ot39_crm_privacy_performance_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
@@ -32,7 +32,8 @@
     "Adapted PR #7 from disabled pending-search semantics to the canonical POST-body CRM search endpoint.",
     "Preserved assignee dropdown behavior while adopting the PR #7 CRM API adapter, list cache, post-paint usability marks, and privacy/performance tests.",
     "Adapted OT-39 browser fixtures to the current body idempotency-key create contract.",
-    "Verified OT-39 privacy/usability, accessibility, public performance, 30-sample CRM performance, build, and auth/CRM integration checks."
+    "Verified OT-39 privacy/usability, accessibility, public performance, 30-sample CRM performance, build, and auth/CRM integration checks.",
+    "Committed the PR #7 / OT-39 CRM privacy/performance checkpoint at 46d5c6819c232ad1845c437752e9e2622feeefee."
   ],
   "remaining_steps": [
     "Apply remaining authenticated CRM unit: PR #11.",
