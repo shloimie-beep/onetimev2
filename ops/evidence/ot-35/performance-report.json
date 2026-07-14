@@ -1,0 +1,97 @@
+{
+  "profile": {
+    "samples_after_warmup": 10,
+    "network_latency_ms": 150,
+    "download_throughput_kbps": 1600,
+    "upload_throughput_kbps": 750,
+    "cpu_throttle_rate": 4,
+    "viewport": "390x844",
+    "synthetic_fixtures_only": true
+  },
+  "list_first_usable": {
+    "samples": [
+      876,
+      862,
+      886,
+      899,
+      920,
+      893,
+      882,
+      884,
+      851,
+      869
+    ],
+    "p75": 893,
+    "target_ms": 2500,
+    "pass": true
+  },
+  "detail_first_usable": {
+    "samples": [
+      877,
+      887,
+      864,
+      881,
+      872,
+      863,
+      886,
+      873,
+      857,
+      854
+    ],
+    "p75": 881,
+    "target_ms": 2500,
+    "pass": true
+  },
+  "return_to_loaded_list": {
+    "samples": [
+      326,
+      312,
+      296,
+      329,
+      306,
+      308,
+      315,
+      312,
+      302,
+      311
+    ],
+    "p75": 315,
+    "target_ms": 1500,
+    "pass": true
+  },
+  "cached_shell_transition": {
+    "samples": [
+      193,
+      171,
+      166,
+      196,
+      179,
+      169,
+      157,
+      152,
+      148,
+      179
+    ],
+    "p75": 179,
+    "target_ms": 500,
+    "pass": true
+  },
+  "web_vitals": {
+    "lcp_p75_ms": 900,
+    "cls": 0.0789,
+    "initial_long_task_over_200ms": false,
+    "long_task_max_ms": 0
+  },
+  "bundles": {
+    "app_js_gzip_bytes": 66967,
+    "app_css_gzip_bytes": 3099
+  },
+  "request_paths": [
+    "/api/v1/auth/login",
+    "/api/v1/auth/session",
+    "/api/v1/crm/contacts",
+    "/api/v1/crm/contacts/contact_da16ce3e215464d23dcf71b2"
+  ],
+  "zero_bna_operations_requests": true,
+  "public_pages_exclude_authenticated_bundle": true
+}
