@@ -2,11 +2,19 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
-import { createAccountUser, resetAuthRateLimitForTests } from '../../packages/domain/src/index.ts';
+import {
+  activateTotpEnrollment,
+  createAccountUser,
+  provisionTotpEnrollment,
+  resetAuthRateLimitForTests,
+  totpCode,
+} from '../../packages/domain/src/index.ts';
 
 let pool: DbPool;
 let server: ReturnType<ReturnType<typeof createApp>['listen']>;
 let baseUrl: string;
+let adminTotpSecret: string;
+let adminRecoveryCode: string;
 
 const config = () =>
   loadConfig({
@@ -22,15 +30,30 @@ beforeEach(async () => {
   const appConfig = config();
   await runMigrations(pool);
   resetAuthRateLimitForTests();
-  await createAccountUser({
+  const adminUserKey = await createAccountUser({
     pool,
     config: appConfig,
     email: 'admin@example.test',
     password: 'AdminPass!234',
     displayName: 'Admin User',
     role: 'admin',
-    mfaCapable: true,
+    mfaCapable: false,
   });
+  const enrollment = await provisionTotpEnrollment({
+    pool,
+    config: appConfig,
+    userKey: adminUserKey,
+  });
+  adminTotpSecret = enrollment.secret;
+  const activation = await activateTotpEnrollment({
+    pool,
+    config: appConfig,
+    enrollmentToken: enrollment.enrollmentToken,
+    code: totpCode(enrollment.secret),
+  });
+  expect(activation).not.toBe(false);
+  adminRecoveryCode = activation ? (activation.recovery_codes[0] ?? '') : '';
+  expect(adminRecoveryCode).toMatch(/^[A-Z0-9]{12}$/);
   await createAccountUser({
     pool,
     config: appConfig,
@@ -60,6 +83,32 @@ afterEach(async () => {
 });
 
 describe('standalone CRM authentication', () => {
+  it('rejects hostile return_to values and does not expose login phase timing', async () => {
+    const page = await fetch(
+      `${baseUrl}/login?return_to=${encodeURIComponent('https://evil.example/app/crm')}`,
+    );
+    const html = await page.text();
+    expect(html).toContain('name="return_to" value="/app/crm"');
+    expect(page.headers.get('cache-control')).toContain('no-store');
+
+    const csrf = await getLoginCsrf();
+    const failed = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: csrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'wrong-password',
+        csrf_token: csrf.token,
+      }),
+    });
+    expect(failed.status).toBe(401);
+    expect(failed.headers.get('server-timing')).toBeNull();
+  });
+
   it('logs in with CSRF, returns a customer-facing role label, and revokes on logout', async () => {
     const login = await loginAs('admin@example.test', 'AdminPass!234');
     expect(login.json.user.role_label).toBe('Administrator');
@@ -70,6 +119,17 @@ describe('standalone CRM authentication', () => {
       headers: { cookie: login.cookies },
     });
     expect(session.status).toBe(200);
+    expect(session.headers.get('cache-control')).toContain('no-store');
+
+    const cookieOnlyLogout = await fetch(`${baseUrl}/api/v1/auth/logout`, {
+      method: 'POST',
+      headers: {
+        cookie: login.cookies,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({}),
+    });
+    expect(cookieOnlyLogout.status).toBe(403);
 
     const logout = await fetch(`${baseUrl}/api/v1/auth/logout`, {
       method: 'POST',
@@ -116,6 +176,129 @@ describe('standalone CRM authentication', () => {
     }
     expect(status).toBe(429);
   });
+
+  it('invalidates existing sessions after a user security-version change', async () => {
+    const login = await loginAs('admin@example.test', 'AdminPass!234');
+    await pool.query(
+      `UPDATE onetime.account_users
+          SET security_version = security_version + 1,
+              security_policy_updated_at = now()
+        WHERE email_normalized = 'admin@example.test'`,
+    );
+    const after = await fetch(`${baseUrl}/api/v1/auth/session`, {
+      headers: { cookie: login.cookies },
+    });
+    expect(after.status).toBe(401);
+  });
+
+  it('rejects replayed TOTP time steps', async () => {
+    const first = await loginAs('admin@example.test', 'AdminPass!234');
+    expect(first.cookies).toContain('otcrm_session=');
+
+    const csrf = await getLoginCsrf();
+    const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: csrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'AdminPass!234',
+        csrf_token: csrf.token,
+      }),
+    });
+    expect(response.status).toBe(403);
+    const challenge = (await response.json()) as { challenge_token?: string };
+    const replay = await fetch(`${baseUrl}/api/v1/auth/mfa/challenge`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        challenge_token: challenge.challenge_token,
+        totp_code: totpCode(adminTotpSecret),
+      }),
+    });
+    expect(replay.status).toBe(401);
+  });
+
+  it('accepts each recovery code once and can replace the recovery set', async () => {
+    const csrf = await getLoginCsrf();
+    const password = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: csrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'AdminPass!234',
+        csrf_token: csrf.token,
+      }),
+    });
+    expect(password.status).toBe(403);
+    const challenge = (await password.json()) as { challenge_token?: string };
+    const recovered = await fetch(`${baseUrl}/api/v1/auth/mfa/recovery`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        challenge_token: challenge.challenge_token,
+        recovery_code: adminRecoveryCode,
+      }),
+    });
+    expect(recovered.status).toBe(200);
+    const recoveredJson = (await recovered.json()) as LoginResult['json'];
+    const recoveredCookies = mergeCookies(csrf.cookies, cookieHeader(recovered.headers));
+
+    const replace = await fetch(`${baseUrl}/api/v1/auth/mfa/recovery/replace`, {
+      method: 'POST',
+      headers: {
+        cookie: recoveredCookies,
+        'content-type': 'application/json',
+        'x-csrf-token': recoveredJson.csrf_token,
+      },
+      body: JSON.stringify({}),
+    });
+    expect(replace.status).toBe(200);
+    const replacedJson = (await replace.json()) as {
+      success: true;
+      recovery_codes: string[];
+      session_revoked: true;
+    };
+    expect(replacedJson.recovery_codes).toHaveLength(10);
+
+    const afterReplace = await fetch(`${baseUrl}/api/v1/auth/session`, {
+      headers: { cookie: recoveredCookies },
+    });
+    expect(afterReplace.status).toBe(401);
+
+    const nextCsrf = await getLoginCsrf();
+    const nextPassword = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: nextCsrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': nextCsrf.token,
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'AdminPass!234',
+        csrf_token: nextCsrf.token,
+      }),
+    });
+    expect(nextPassword.status).toBe(403);
+    const nextChallenge = (await nextPassword.json()) as { challenge_token?: string };
+    const reused = await fetch(`${baseUrl}/api/v1/auth/mfa/recovery`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        challenge_token: nextChallenge.challenge_token,
+        recovery_code: adminRecoveryCode,
+      }),
+    });
+    expect(reused.status).toBe(401);
+  });
 });
 
 describe('CRM vertical slice', () => {
@@ -128,10 +311,12 @@ describe('CRM vertical slice', () => {
     expect((await replay.json()).duplicate_submission).toBe(true);
 
     const login = await loginAs('admin@example.test', 'AdminPass!234');
-    const list = await apiGet<ListJson>(
-      '/api/v1/crm/contacts?search=lead%40example.test',
-      login.cookies,
-    );
+    const getSearch = await fetch(`${baseUrl}/api/v1/crm/contacts?search=lead%40example.test`, {
+      headers: { cookie: login.cookies },
+    });
+    expect(getSearch.status).toBe(400);
+
+    const list = await apiSearch<ListJson>({ search: 'lead@example.test' }, login);
     expect(list.contacts).toHaveLength(1);
     const first = list.contacts[0];
     if (!first) throw new Error('expected CRM contact');
@@ -162,6 +347,7 @@ describe('CRM vertical slice', () => {
       location: 'Jerusalem',
       timezone: 'Asia/Jerusalem',
       lead_status: 'new',
+      idempotency_key: 'manual-create-1',
       internal_note: 'Asked for school review.',
     });
     expect(created.contact.source).toBe('manual_crm');
@@ -181,10 +367,24 @@ describe('CRM vertical slice', () => {
         location: 'Jerusalem',
         timezone: 'Asia/Jerusalem',
         lead_status: 'new',
+        idempotency_key: 'manual-create-2',
       }),
     });
     expect(duplicate.status).toBe(409);
     expect(await duplicate.json()).toMatchObject({ code: 'DUPLICATE_CONTACT' });
+
+    const replay = await apiWrite<ContactJson>('/api/v1/crm/contacts', 'POST', login, {
+      display_name: 'Manual Contact',
+      family_school_classification: 'school',
+      email: 'manual@example.test',
+      phone: '050-222-3333',
+      location: 'Jerusalem',
+      timezone: 'Asia/Jerusalem',
+      lead_status: 'new',
+      idempotency_key: 'manual-create-1',
+      internal_note: 'Asked for school review.',
+    });
+    expect(replay.contact.contact_id).toBe(created.contact.contact_id);
 
     const updated = await apiWrite<ContactJson>(
       `/api/v1/crm/contacts/${encodeURIComponent(created.contact.contact_id)}`,
@@ -244,10 +444,7 @@ describe('CRM vertical slice', () => {
     });
     expect(denied.status).toBe(403);
 
-    const list = await apiGet<ListJson>(
-      '/api/v1/crm/contacts?search=other%40example.test',
-      viewer.cookies,
-    );
+    const list = await apiSearch<ListJson>({ search: 'other@example.test' }, viewer);
     expect(list.contacts).toHaveLength(0);
   });
 });
@@ -296,6 +493,27 @@ async function loginAs(email: string, password: string): Promise<LoginResult> {
     },
     body: JSON.stringify({ email, password, csrf_token: csrf.token }),
   });
+  if (response.status === 403) {
+    const challenge = (await response.json()) as {
+      code?: string;
+      challenge_token?: string;
+    };
+    expect(challenge.code).toBe('MFA_REQUIRED');
+    expect(challenge.challenge_token).toBeTruthy();
+    const mfa = await fetch(`${baseUrl}/api/v1/auth/mfa/challenge`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        challenge_token: challenge.challenge_token,
+        totp_code: totpCode(adminTotpSecret),
+      }),
+    });
+    expect(mfa.status).toBe(200);
+    return {
+      cookies: mergeCookies(csrf.cookies, cookieHeader(mfa.headers)),
+      json: (await mfa.json()) as LoginResult['json'],
+    };
+  }
   expect(response.status).toBe(200);
   return {
     cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
@@ -314,6 +532,21 @@ async function postLead(payload: Record<string, unknown>) {
 async function apiGet<T>(path: string, cookies: string) {
   const response = await fetch(`${baseUrl}${path}`, { headers: { cookie: cookies } });
   expect(response.status).toBe(200);
+  return (await response.json()) as T;
+}
+
+async function apiSearch<T>(body: Record<string, unknown>, login: LoginResult) {
+  const response = await fetch(`${baseUrl}/api/v1/crm/contacts/search`, {
+    method: 'POST',
+    headers: {
+      cookie: login.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': login.json.csrf_token,
+    },
+    body: JSON.stringify(body),
+  });
+  expect(response.status).toBe(200);
+  expect(response.headers.get('cache-control')).toContain('no-store');
   return (await response.json()) as T;
 }
 

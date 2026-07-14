@@ -22,6 +22,12 @@ type ContactResponse = {
   contact: ContactDetail;
 };
 
+type Assignee = {
+  user_key: string;
+  display_name: string;
+  role_label: string;
+};
+
 type ContactFormState = {
   display_name: string;
   family_school_classification: 'family' | 'school';
@@ -62,6 +68,7 @@ function CrmApp() {
   const [selected, setSelected] = useState<ContactDetail | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [assignees, setAssignees] = useState<Assignee[]>([]);
   const canEdit = session ? ['owner', 'admin', 'crm_agent'].includes(session.user.role) : false;
 
   useEffect(() => {
@@ -79,6 +86,12 @@ function CrmApp() {
     try {
       const json = await api<ApiSession>('/api/v1/auth/session');
       setSession(json);
+      if (['owner', 'admin'].includes(json.user.role)) {
+        const assigneeJson = await api<{ success: true; assignees: Assignee[] }>(
+          '/api/v1/crm/assignees',
+        );
+        setAssignees(assigneeJson.assignees);
+      }
     } catch {
       window.location.assign(`/login?return_to=${encodeURIComponent(location.pathname)}`);
     }
@@ -101,15 +114,28 @@ function CrmApp() {
   async function loadList(cursor?: string) {
     setLoading(true);
     setStatus('');
-    const params = new URLSearchParams();
-    Object.entries(query).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-    });
-    if (cursor) params.set('cursor', cursor);
+    const body = { ...query, cursor };
     try {
-      const json = await api<ListResponse>(`/api/v1/crm/contacts?${params.toString()}`);
-      setContacts((current) => (cursor ? [...current, ...json.contacts] : json.contacts));
-      setNextCursor(json.next_cursor);
+      const response = await fetch('/api/v1/crm/contacts/search', {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          'x-csrf-token': session?.csrf_token ?? '',
+        },
+        body: JSON.stringify(body),
+      });
+      const json = (await response.json()) as Partial<ListResponse> & {
+        success?: boolean;
+        message?: string;
+      };
+      if (!response.ok || json.success !== true) {
+        throw new Error(json.message ?? 'Request failed.');
+      }
+      setContacts((current) =>
+        cursor ? [...current, ...(json.contacts ?? [])] : (json.contacts ?? []),
+      );
+      setNextCursor(json.next_cursor ?? null);
       performance.mark('ot-crm-list-usable');
     } catch (error) {
       setStatus(errorMessage(error, 'CRM contacts could not load.'));
@@ -162,6 +188,7 @@ function CrmApp() {
     setStatus('');
     const payload = {
       ...form,
+      idempotency_key: mode === 'create' ? crypto.randomUUID() : undefined,
       assigned_user_key: form.assigned_user_key || undefined,
       internal_note: form.internal_note || '',
     };
@@ -250,6 +277,7 @@ function CrmApp() {
           title="Add contact"
           initial={emptyForm}
           canAssign={session?.user.role === 'owner' || session?.user.role === 'admin'}
+          assignees={assignees}
           onCancel={() => setCreating(false)}
           onSave={(form) => saveContact(form, 'create')}
         />
@@ -260,6 +288,7 @@ function CrmApp() {
             title="Edit contact"
             initial={detailToForm(selected)}
             canAssign={session?.user.role === 'owner' || session?.user.role === 'admin'}
+            assignees={assignees}
             onCancel={() => setEditing(false)}
             onSave={(form) => saveContact(form, 'edit')}
           />
@@ -460,12 +489,14 @@ function ContactForm({
   title,
   initial,
   canAssign,
+  assignees,
   onCancel,
   onSave,
 }: {
   title: string;
   initial: ContactFormState;
   canAssign: boolean;
+  assignees: Assignee[];
   onCancel: () => void;
   onSave: (form: ContactFormState) => Promise<void>;
 }) {
@@ -565,11 +596,18 @@ function ContactForm({
         </label>
         {canAssign && (
           <label>
-            <span>Assigned team member key</span>
-            <input
+            <span>Assigned team member</span>
+            <select
               value={form.assigned_user_key}
               onChange={(event) => set('assigned_user_key', event.target.value)}
-            />
+            >
+              <option value="">Unassigned</option>
+              {assignees.map((assignee) => (
+                <option key={assignee.user_key} value={assignee.user_key}>
+                  {assignee.display_name} - {assignee.role_label}
+                </option>
+              ))}
+            </select>
           </label>
         )}
         <label className="wide-field">

@@ -1,11 +1,12 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import {
-  contactListQuerySchema,
+  contactSearchCommandSchema,
   createContactSchema,
   updateContactSchema,
+  type Assignee,
   type ContactDetail,
   type ContactListItem,
-  type ContactListQuery,
+  type ContactSearchCommand,
   type CreateContactPayload,
   type UpdateContactPayload,
   type UserRole,
@@ -15,6 +16,7 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { normalizeEmail, normalizePhone, stableKey } from '../lead/normalize.ts';
 import { canAssignContacts } from '../auth/service.ts';
+import { IdempotencyConflictError } from '../lead/service.ts';
 
 export type ContactListResult = {
   contacts: ContactListItem[];
@@ -51,9 +53,9 @@ export async function listContacts({
 }: {
   pool: DbPool;
   config: AppConfig;
-  query: Partial<ContactListQuery>;
+  query: Partial<ContactSearchCommand>;
 }): Promise<ContactListResult> {
-  const parsed = contactListQuerySchema.parse(query);
+  const parsed = contactSearchCommandSchema.parse(query);
   const params: unknown[] = [config.accountKey, config.productKey];
   const where = [
     'contacts.account_key = $1',
@@ -93,33 +95,33 @@ export async function listContacts({
       params.push(cursor.value, cursor.contact_id);
       where.push(
         `(contacts.display_name > $${params.length - 1}
-          OR (contacts.display_name = $${params.length - 1} AND contacts.contact_key > $${params.length}))`,
+          OR (contacts.display_name = $${params.length - 1} AND contacts.public_contact_id > $${params.length}))`,
       );
     } else if (parsed.sort === 'created_desc') {
       params.push(cursor.value, cursor.contact_id);
       where.push(
         `(contacts.created_at < $${params.length - 1}
-          OR (contacts.created_at = $${params.length - 1} AND contacts.contact_key < $${params.length}))`,
+          OR (contacts.created_at = $${params.length - 1} AND contacts.public_contact_id < $${params.length}))`,
       );
     } else {
       params.push(cursor.value, cursor.contact_id);
       where.push(
         `(contacts.updated_at < $${params.length - 1}
-          OR (contacts.updated_at = $${params.length - 1} AND contacts.contact_key < $${params.length}))`,
+          OR (contacts.updated_at = $${params.length - 1} AND contacts.public_contact_id < $${params.length}))`,
       );
     }
   }
 
   const orderBy =
     parsed.sort === 'name_asc'
-      ? 'contacts.display_name ASC, contacts.contact_key ASC'
+      ? 'contacts.display_name ASC, contacts.public_contact_id ASC'
       : parsed.sort === 'created_desc'
-        ? 'contacts.created_at DESC, contacts.contact_key DESC'
-        : 'contacts.updated_at DESC, contacts.contact_key DESC';
+        ? 'contacts.created_at DESC, contacts.public_contact_id DESC'
+        : 'contacts.updated_at DESC, contacts.public_contact_id DESC';
 
   params.push(parsed.limit + 1);
   const result = await pool.query(
-    `SELECT contacts.contact_key, contacts.display_name, contacts.family_school_classification,
+    `SELECT contacts.contact_key, contacts.public_contact_id, contacts.display_name, contacts.family_school_classification,
             contacts.lead_status, contacts.email_normalized, contacts.phone_normalized,
             contacts.source, contacts.last_activity_at, contacts.updated_at, contacts.created_at,
             contacts.version, contacts.assigned_user_key, users.display_name AS assigned_name
@@ -152,7 +154,11 @@ export async function listContacts({
     contacts: rows.map(rowToListItem),
     next_cursor:
       result.rows.length > parsed.limit && last && cursorValue
-        ? encodeCursor({ sort: parsed.sort, value: cursorValue, contact_id: last.contact_key })
+        ? encodeCursor({
+            sort: parsed.sort,
+            value: cursorValue,
+            contact_id: last.public_contact_id,
+          })
         : null,
     applied_filters: appliedFilters,
   };
@@ -175,7 +181,7 @@ export async function getContactDetail({
        LEFT JOIN onetime.signup_leads AS leads ON leads.contact_key = contacts.contact_key
       WHERE contacts.account_key = $1
         AND contacts.product_key = $2
-        AND contacts.contact_key = $3
+        AND (contacts.public_contact_id = $3 OR contacts.contact_key = $3)
         AND contacts.archived_at IS NULL
       ORDER BY leads.created_at DESC
       LIMIT 1`,
@@ -201,23 +207,39 @@ export async function createContact({
   const parsed = createContactSchema.parse(payload);
   const email = normalizeEmail(parsed.email);
   const phone = normalizePhone(parsed.phone);
-  const contactKey = stableKey('contact', [config.accountKey, config.productKey, email]);
   const assignedUserKey = canAssignContacts(actorRole) ? (parsed.assigned_user_key ?? null) : null;
+  const idempotencyKey = `crm_create:${parsed.idempotency_key}`;
+  const reqHash = crmRequestHash(parsed);
 
   return inTransaction(pool, async (client) => {
-    const duplicate = await findDuplicate(client, config, email, phone);
-    if (duplicate) throw new CrmDuplicateError('A matching contact already exists.', duplicate);
+    await client.query('SELECT pg_advisory_xact_lock($1)', [advisoryLockValue(idempotencyKey)]);
+    const replay = await client.query(
+      `SELECT request_hash, response_json
+         FROM onetime.idempotency_records
+        WHERE account_key = $1 AND product_key = $2 AND idempotency_key = $3`,
+      [config.accountKey, config.productKey, idempotencyKey],
+    );
+    if (replay.rowCount) {
+      if (replay.rows[0].request_hash !== reqHash) throw new IdempotencyConflictError();
+      return (replay.rows[0].response_json as { contact: ContactDetail }).contact;
+    }
+
+    await assertAssignableUser(client, config, assignedUserKey);
+    const contactKey = `contact_${randomUUID()}`;
+    const publicContactId = randomUUID();
 
     const result = await client.query(
       `INSERT INTO onetime.contacts
-       (contact_key, account_key, product_key, display_name, family_school_classification,
+       (contact_key, public_contact_id, account_key, product_key, display_name, family_school_classification,
         family_or_school, location_text, timezone, email_normalized, phone_normalized,
         reminder_preference, suppression_state, source, lead_status, assigned_user_key,
         internal_note, last_activity_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'email','active','manual_crm',$11,$12,$13,now())
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'email','active','manual_crm',$12,$13,$14,now())
+       ON CONFLICT DO NOTHING
        RETURNING *`,
       [
         contactKey,
+        publicContactId,
         config.accountKey,
         config.productKey,
         parsed.display_name,
@@ -232,13 +254,24 @@ export async function createContact({
         parsed.internal_note,
       ],
     );
+    if (!result.rowCount) {
+      const duplicate = await findDuplicate(client, config, email, phone);
+      throw new CrmDuplicateError('A matching contact already exists.', duplicate ?? '/app/crm');
+    }
     await insertCrmAudit(client, config, {
       contactKey,
       actorUserKey,
       eventType: 'crm_contact_created',
       metadata: { source: 'manual_crm', no_external_side_effects: true },
     });
-    return rowToDetail(result.rows[0]);
+    const contact = rowToDetail(result.rows[0]);
+    await client.query(
+      `INSERT INTO onetime.idempotency_records
+       (account_key, product_key, idempotency_key, request_hash, response_json)
+       VALUES ($1,$2,$3,$4,$5::jsonb)`,
+      [config.accountKey, config.productKey, idempotencyKey, reqHash, JSON.stringify({ contact })],
+    );
+    return contact;
   });
 }
 
@@ -261,7 +294,10 @@ export async function updateContact({
   return inTransaction(pool, async (client) => {
     const current = await client.query(
       `SELECT * FROM onetime.contacts
-        WHERE account_key = $1 AND product_key = $2 AND contact_key = $3 AND archived_at IS NULL
+        WHERE account_key = $1
+          AND product_key = $2
+          AND (public_contact_id = $3 OR contact_key = $3)
+          AND archived_at IS NULL
         FOR UPDATE`,
       [config.accountKey, config.productKey, contactId],
     );
@@ -274,7 +310,7 @@ export async function updateContact({
     const nextEmail = parsed.email ? normalizeEmail(parsed.email) : row.email_normalized;
     const nextPhone =
       parsed.phone !== undefined ? normalizePhone(parsed.phone) : row.phone_normalized;
-    const duplicate = await findDuplicate(client, config, nextEmail, nextPhone, contactId);
+    const duplicate = await findDuplicate(client, config, nextEmail, nextPhone, row.contact_key);
     if (duplicate) throw new CrmDuplicateError('A matching contact already exists.', duplicate);
 
     const assignedUserKey = canAssignContacts(actorRole)
@@ -282,6 +318,7 @@ export async function updateContact({
         ? row.assigned_user_key
         : parsed.assigned_user_key || null
       : row.assigned_user_key;
+    await assertAssignableUser(client, config, assignedUserKey);
 
     const result = await client.query(
       `UPDATE onetime.contacts
@@ -303,7 +340,7 @@ export async function updateContact({
       [
         config.accountKey,
         config.productKey,
-        contactId,
+        row.contact_key,
         parsed.display_name ?? row.display_name,
         parsed.family_school_classification ?? row.family_school_classification,
         parsed.location ?? row.location_text,
@@ -316,7 +353,7 @@ export async function updateContact({
       ],
     );
     await insertCrmAudit(client, config, {
-      contactKey: contactId,
+      contactKey: row.contact_key,
       actorUserKey,
       eventType: 'crm_contact_updated',
       metadata: {
@@ -325,6 +362,35 @@ export async function updateContact({
       },
     });
     return rowToDetail(result.rows[0]);
+  });
+}
+
+export async function listAssignableUsers({
+  pool,
+  config,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+}): Promise<Assignee[]> {
+  const result = await pool.query(
+    `SELECT user_key, display_name, role
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND status = 'active'
+        AND role IN ('owner', 'admin', 'crm_agent')
+      ORDER BY display_name ASC, user_key ASC
+      LIMIT 50`,
+    [config.accountKey, config.productKey],
+  );
+  return result.rows.map((row) => {
+    const role = row.role as UserRole;
+    return {
+      user_key: String(row.user_key),
+      display_name: String(row.display_name),
+      role,
+      role_label: role === 'crm_agent' ? 'CRM Agent' : 'Administrator',
+    };
   });
 }
 
@@ -345,7 +411,7 @@ async function findDuplicate(
     params.push(excludeContactId);
   }
   const result = await client.query(
-    `SELECT contact_key
+    `SELECT public_contact_id
        FROM onetime.contacts
       WHERE account_key = $1
         AND product_key = $2
@@ -354,7 +420,22 @@ async function findDuplicate(
       LIMIT 1`,
     params,
   );
-  return result.rows[0]?.contact_key as string | undefined;
+  return result.rows[0]?.public_contact_id as string | undefined;
+}
+
+async function assertAssignableUser(client: Queryable, config: AppConfig, userKey: string | null) {
+  if (!userKey) return;
+  const result = await client.query(
+    `SELECT 1
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+        AND status = 'active'
+        AND role IN ('owner', 'admin', 'crm_agent')`,
+    [config.accountKey, config.productKey, userKey],
+  );
+  if (!result.rowCount) throw new CrmDuplicateError('Assignee was not found.', '/app/crm');
 }
 
 async function insertCrmAudit(
@@ -390,7 +471,7 @@ async function insertCrmAudit(
 
 function rowToListItem(row: Record<string, unknown>): ContactListItem {
   return {
-    contact_id: String(row.contact_key),
+    contact_id: String(row.public_contact_id ?? row.contact_key),
     display_name: String(row.display_name),
     family_school_classification:
       row.family_school_classification as ContactListItem['family_school_classification'],
@@ -473,6 +554,29 @@ function decodeCursor(cursor?: string) {
   } catch {
     return null;
   }
+}
+
+function crmRequestHash(payload: CreateContactPayload) {
+  return createHash('sha256')
+    .update(
+      JSON.stringify({
+        display_name: payload.display_name.trim(),
+        family_school_classification: payload.family_school_classification,
+        email: normalizeEmail(payload.email),
+        phone: normalizePhone(payload.phone),
+        location: payload.location.trim(),
+        timezone: payload.timezone,
+        lead_status: payload.lead_status,
+        assigned_user_key: payload.assigned_user_key ?? null,
+        internal_note: payload.internal_note ?? '',
+      }),
+    )
+    .digest('hex');
+}
+
+function advisoryLockValue(value: string) {
+  const digest = createHash('sha256').update(value).digest();
+  return digest.readInt32BE(0);
 }
 
 function toIso(value: unknown) {

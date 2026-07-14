@@ -16,7 +16,7 @@ await createAccountUser({
   email: process.env.OT_TEST_ADMIN_EMAIL ?? 'ot-admin@example.test',
   password: process.env.OT_TEST_ADMIN_PASSWORD ?? 'TestPassword!234',
   displayName: 'Test Admin',
-  role: 'admin',
+  role: 'crm_agent',
   mfaCapable: true,
 });
 const app = createApp({ config, pool });

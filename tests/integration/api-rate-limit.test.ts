@@ -55,13 +55,13 @@ afterAll(async () => {
 });
 
 describe('lead API rate limiting', () => {
-  it('returns a route-specific 429 after the configured threshold', async () => {
+  it('shares one durable budget across public lead aliases', async () => {
     const first = await fetch(`${baseUrl}/api/v1/leads`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(payload(1)),
     });
-    const second = await fetch(`${baseUrl}/api/v1/leads`, {
+    const second = await fetch(`${baseUrl}/api/one-time/interest`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(payload(2)),

@@ -34,7 +34,9 @@ export function createMemoryPool(): DbPool {
     implementation: () => 1,
   });
   const adapter = db.adapters.createPg();
-  return new adapter.Pool();
+  const pool = new adapter.Pool() as DbPool & { __memory?: boolean };
+  pool.__memory = true;
+  return pool;
 }
 
 export async function inTransaction<T>(
@@ -83,7 +85,8 @@ export async function runMigrations(
 
     for (const file of files) {
       const id = file.replace(/\.sql$/, '');
-      const sql = await readFile(path.join(migrationsDir, file), 'utf8');
+      const rawSql = await readFile(path.join(migrationsDir, file), 'utf8');
+      const sql = isMemoryPool(pool) ? stripPostgresOnlyBlocks(rawSql) : rawSql;
       const checksum = createHash('sha256').update(sql).digest('hex');
       const existing = await client.query(
         'SELECT checksum FROM onetime.schema_migrations WHERE id = $1',
@@ -116,4 +119,15 @@ export async function runMigrations(
 
 function defaultMigrationsDir() {
   return path.resolve(process.cwd(), 'packages/db/migrations');
+}
+
+function isMemoryPool(pool: DbPool) {
+  return Boolean((pool as DbPool & { __memory?: boolean }).__memory);
+}
+
+function stripPostgresOnlyBlocks(sql: string) {
+  return sql.replace(
+    /-- @postgres-only-begin[\s\S]*?-- @postgres-only-end/g,
+    '-- postgres-only migration block skipped by pg-mem tests',
+  );
 }

@@ -6,6 +6,15 @@ export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;
 export const audienceTypeSchema = z.enum(['family', 'school']);
 export type AudienceType = z.infer<typeof audienceTypeSchema>;
 
+function isIanaTimeZone(value: string) {
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: value }).format(new Date());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export const leadPayloadSchema = z
   .object({
     contact_name: z.string().trim().min(2).max(180),
@@ -49,9 +58,7 @@ export const leadPayloadSchema = z
         message: 'Confirm that we may send the selected class information and reminders.',
       });
     }
-    try {
-      new Intl.DateTimeFormat('en-US', { timeZone: payload.timezone }).format(new Date());
-    } catch {
+    if (!isIanaTimeZone(payload.timezone)) {
       ctx.addIssue({
         code: 'custom',
         path: ['timezone'],
@@ -78,7 +85,7 @@ export type LeadSuccessResponse = {
 
 export type LeadErrorResponse = {
   success: false;
-  code: 'VALIDATION_ERROR' | 'RATE_LIMITED' | 'SERVER_ERROR';
+  code: 'VALIDATION_ERROR' | 'RATE_LIMITED' | 'IDEMPOTENCY_CONFLICT' | 'SERVER_ERROR';
   message: string;
   request_id?: string;
   field_errors?: Record<string, string>;
@@ -136,7 +143,31 @@ export const loginPayloadSchema = z.object({
 });
 export type LoginPayload = z.infer<typeof loginPayloadSchema>;
 
-export const contactBaseSchema = z.object({
+export const mfaChallengePayloadSchema = z.object({
+  challenge_token: z.string().trim().min(32).max(200),
+  totp_code: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/),
+});
+export type MfaChallengePayload = z.infer<typeof mfaChallengePayloadSchema>;
+
+export const mfaRecoveryPayloadSchema = z.object({
+  challenge_token: z.string().trim().min(32).max(200),
+  recovery_code: z.string().trim().min(8).max(40),
+});
+export type MfaRecoveryPayload = z.infer<typeof mfaRecoveryPayloadSchema>;
+
+export const mfaEnrollmentPayloadSchema = z.object({
+  enrollment_token: z.string().trim().min(32).max(200),
+  totp_code: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/),
+});
+export type MfaEnrollmentPayload = z.infer<typeof mfaEnrollmentPayloadSchema>;
+
+const contactBaseObject = z.object({
   display_name: z.string().trim().min(2).max(180),
   family_school_classification: audienceTypeSchema,
   email: z.string().trim().email().max(254),
@@ -148,16 +179,43 @@ export const contactBaseSchema = z.object({
   internal_note: z.string().trim().max(1000).optional().default(''),
 });
 
-export const createContactSchema = contactBaseSchema;
+function validateOptionalTimezone(
+  payload: { timezone?: string | undefined },
+  ctx: z.RefinementCtx,
+) {
+  if (payload.timezone && !isIanaTimeZone(payload.timezone)) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['timezone'],
+      message: 'Enter a valid IANA time zone such as America/New_York.',
+    });
+  }
+}
+
+export const contactBaseSchema = contactBaseObject.superRefine((payload, ctx) => {
+  validateOptionalTimezone(payload, ctx);
+});
+
+export const createContactSchema = contactBaseObject
+  .extend({
+    idempotency_key: z.string().trim().min(8).max(120),
+  })
+  .superRefine((payload, ctx) => {
+    validateOptionalTimezone(payload, ctx);
+  });
 export type CreateContactPayload = z.infer<typeof createContactSchema>;
 
-export const updateContactSchema = contactBaseSchema.partial().extend({
-  version: z.coerce.number().int().min(1),
-});
+export const updateContactSchema = contactBaseObject
+  .partial()
+  .extend({
+    version: z.coerce.number().int().min(1),
+  })
+  .superRefine((payload, ctx) => {
+    validateOptionalTimezone(payload, ctx);
+  });
 export type UpdateContactPayload = z.infer<typeof updateContactSchema>;
 
 export const contactListQuerySchema = z.object({
-  search: z.string().trim().max(120).optional().default(''),
   classification: audienceTypeSchema.optional(),
   lead_status: leadStatusSchema.optional(),
   source: z.string().trim().max(80).optional(),
@@ -167,6 +225,11 @@ export const contactListQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(25).optional().default(12),
 });
 export type ContactListQuery = z.infer<typeof contactListQuerySchema>;
+
+export const contactSearchCommandSchema = contactListQuerySchema.extend({
+  search: z.string().trim().max(120).optional().default(''),
+});
+export type ContactSearchCommand = z.infer<typeof contactSearchCommandSchema>;
 
 export type SessionUser = {
   user_key: string;
@@ -191,6 +254,20 @@ export type ContactListItem = {
   version: number;
 };
 
+export const contactListItemSchema = z.object({
+  contact_id: z.string().min(1),
+  display_name: z.string().min(1),
+  family_school_classification: audienceTypeSchema,
+  lead_status: leadStatusSchema,
+  email: z.string().nullable(),
+  phone: z.string().nullable(),
+  source: z.string(),
+  assigned_team_member: z.string().nullable(),
+  last_activity_at: z.string(),
+  updated_at: z.string(),
+  version: z.number().int(),
+}) satisfies z.ZodType<ContactListItem>;
+
 export type ContactDetail = ContactListItem & {
   location: string;
   timezone: string;
@@ -207,3 +284,46 @@ export type ContactDetail = ContactListItem & {
   };
   internal_note: string;
 };
+
+export const contactDetailSchema: z.ZodType<ContactDetail> = contactListItemSchema.extend({
+  location: z.string(),
+  timezone: z.string(),
+  reminder_preference: reminderPreferenceSchema,
+  consent_state: z.enum(['recorded', 'not_recorded']),
+  suppression_state: z.string(),
+  offer_version: z.string().nullable(),
+  content_version: z.string().nullable(),
+  created_at: z.string(),
+  audit_safe_signup_provenance: z.object({
+    source: z.string(),
+    signup_key: z.string().nullable(),
+    captured_at: z.string().nullable(),
+  }),
+  internal_note: z.string(),
+});
+
+export const contactListResponseSchema = z.object({
+  success: z.literal(true),
+  contacts: z.array(contactListItemSchema),
+  next_cursor: z.string().nullable(),
+  applied_filters: z.record(z.string(), z.string().optional()),
+});
+
+export const contactResponseSchema = z.object({
+  success: z.literal(true),
+  contact: contactDetailSchema,
+});
+
+export const assigneeSchema = z.object({
+  user_key: z.string(),
+  display_name: z.string(),
+  role: userRoleSchema,
+  role_label: z.string(),
+});
+
+export type Assignee = z.infer<typeof assigneeSchema>;
+
+export const assigneeListResponseSchema = z.object({
+  success: z.literal(true),
+  assignees: z.array(assigneeSchema),
+});
