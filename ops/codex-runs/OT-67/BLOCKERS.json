@@ -1,0 +1,22 @@
+{
+  "task_id": "OT-67",
+  "blockers": [
+    {
+      "id": "OT-67-B1",
+      "disposition": "PAUSED_SECURITY",
+      "status": "blocked",
+      "blocker": "Prompt requires exact accepted SHAs and staging service/database fingerprints; it forbids provider webhook registration, sends, deployment, or provider-side operations.",
+      "blocker_owner": "future implementation owner",
+      "next_action": "Resolve structured unresolved inputs from remote branches, acceptance manifests, and nonsecret evidence before implementation.",
+      "unresolved_inputs": [
+        "accepted OT-60 convergence SHA",
+        "accepted OT-44 communications V1A SHA",
+        "accepted OT-50 live delivery provider SHA",
+        "approved staging database fingerprint",
+        "approved Railway web service fingerprint",
+        "approved Railway worker service fingerprint",
+        "webhook/canary authorization reference"
+      ]
+    }
+  ]
+}

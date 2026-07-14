@@ -1,0 +1,5 @@
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-62","event":"received","source":"OT-RUN-RECOVERY-01","detail":"Task expected by OT-RUN-RECOVERY-01 recovery prompt."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-62","event":"preserved","artifact":"ORIGINAL-PROMPT.md","sanitized_sha256":"498747d51a600a737bbbdf217b1359ab8c1b0c57d69f6c6fd8c56a69416b0630","safe_source_ref":"codex_attachment:5d0c118d-e3fa-41be-9660-d07dd4518c38/pasted-text.txt"}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-62","event":"audited","scope":"allowed local discovery scope","result":"No populated attempt report found."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-62","event":"attempted","status":"not_confirmed","evidence":"No populated Codex attempt report located in allowed files."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-62","event":"blocked","disposition":"PAUSED_DEPENDENCY","reason":"Prompt requires an accepted OT-60 convergence base and security-critical product authority before implementation."}

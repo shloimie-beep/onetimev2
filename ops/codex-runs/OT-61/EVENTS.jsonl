@@ -1,0 +1,5 @@
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-61","event":"received","source":"OT-RUN-RECOVERY-01","detail":"Task expected by OT-RUN-RECOVERY-01 recovery prompt."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-61","event":"preserved","artifact":"ORIGINAL-PROMPT.md","sanitized_sha256":"8bd21e73c35e0b506f0f1d60a8e5b95b1ba46601dfa46e25e8e3636d03aac829","safe_source_ref":"codex_attachment:9b2494ae-f14a-426c-8eac-a278e8275fe3/pasted-text.txt"}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-61","event":"audited","scope":"allowed local discovery scope","result":"No populated attempt report found."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-61","event":"attempted","status":"not_confirmed","evidence":"No populated Codex attempt report located in allowed files."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-61","event":"blocked","disposition":"PAUSED_DEPENDENCY","reason":"Prompt requires an accepted OT-60 convergence head before implementation; this recovery task preserves the packet only."}

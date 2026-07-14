@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-69",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_DEPENDENCY",
+  "implementation_status": "none",
+  "original_prompt_found": false,
+  "attempt_report_found": false,
+  "prompt_sha256": "d156cf9aff198ce857ecb0a1e516f34b5b89eba5a36c538d2be65815cab0b133",
+  "reason": "No standalone OT-69 prompt or blocked attempt report was found in the allowed discovery scope.",
+  "next_action": "Locate a trusted OT-69 original prompt or Pro output before any implementation.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

@@ -1,0 +1,20 @@
+{
+  "task_id": "OT-70",
+  "blockers": [
+    {
+      "id": "OT-70-B1",
+      "disposition": "PAUSED_SECURITY",
+      "status": "needs_operator_decision",
+      "blocker": "No standalone OT-70 prompt or blocked attempt report was found; any BNA bridge requires explicit cross-repository scope and privacy authorization.",
+      "blocker_owner": "operator or prompt registrar",
+      "next_action": "Provide or locate a trusted original prompt/Pro output for this task before implementation.",
+      "unresolved_inputs": [
+        "trusted OT-70 original prompt",
+        "explicit BNA/One Time bridge scope",
+        "workspace boundary contract",
+        "privacy/security authorization",
+        "accepted One Time integration base"
+      ]
+    }
+  ]
+}

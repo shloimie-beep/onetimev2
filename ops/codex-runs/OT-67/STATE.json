@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-67",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_SECURITY",
+  "implementation_status": "none",
+  "original_prompt_found": true,
+  "attempt_report_found": false,
+  "prompt_sha256": "a3f6378dbefef0c173375a058d3c0aafa883f5aded051e712d7b80e501de0607",
+  "reason": "Prompt requires exact accepted SHAs and staging service/database fingerprints; it forbids provider webhook registration, sends, deployment, or provider-side operations.",
+  "next_action": "Resolve unresolved inputs from remote branches and accepted manifests, then continue from OT-67 preflight gates without redoing preserved prompt recovery.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

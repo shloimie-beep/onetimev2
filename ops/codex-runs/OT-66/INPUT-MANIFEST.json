@@ -1,0 +1,74 @@
+{
+  "task_id": "OT-66",
+  "title": "Role-scoped helpers",
+  "recovery_task_id": "OT-RUN-RECOVERY-01",
+  "repository": "webcraft-media/onetimev2",
+  "recovery_base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "recovery_branch": "codex/recovery-blocked-ot61-ot70",
+  "integration_base_branch": "codex/crm-core-v1",
+  "expected_feature_branch": "codex/ot66-role-scoped-helpers-action-gateway",
+  "source": {
+    "original_prompt_status": "found",
+    "safe_source_ref": "codex_attachment:a7056156-9615-4bc1-b561-3fadfd7190d5/pasted-text.txt",
+    "local_path_policy": "Full local source paths are recorded only in the local-only discovery log outside the repository.",
+    "original_sha256_recorded_local_only": true,
+    "original_bytes": 88482,
+    "sanitized_artifact": "ORIGINAL-PROMPT.md",
+    "sanitized_sha256": "adf607acdfa4fd918f54989a6df9fc116a91ee732737ba925489c2afcc6e524a",
+    "redaction_counts": {}
+  },
+  "attempt_report": {
+    "status": "not_found",
+    "artifact": "ATTEMPT-REPORT.md",
+    "note": "No populated stop report was found; templates embedded in prompts remain part of ORIGINAL-PROMPT.md."
+  },
+  "dependencies": [
+    {
+      "name": "OT-60 convergence",
+      "resolution": "Discover from remote branches, accepted manifests, and repository evidence before implementation."
+    },
+    {
+      "name": "OT-42 CRM",
+      "resolution": "Discover from remote branches, accepted manifests, and repository evidence before implementation."
+    },
+    {
+      "name": "OT-43 classes",
+      "resolution": "Discover from remote branches, accepted manifests, and repository evidence before implementation."
+    },
+    {
+      "name": "OT-47 content/library",
+      "resolution": "Discover from remote branches, accepted manifests, and repository evidence before implementation."
+    },
+    {
+      "name": "OT-52 portals",
+      "resolution": "Discover from remote branches, accepted manifests, and repository evidence before implementation."
+    },
+    {
+      "name": "optional OT-65 billing only if accepted in base",
+      "resolution": "Discover from remote branches, accepted manifests, and repository evidence before implementation."
+    }
+  ],
+  "expected_migration_range": "Unknown until accepted task packet and migration ledger are checked; do not infer from this recovery packet.",
+  "external_policy": [
+    "No product source, migration, runtime config, package, workflow, deployment, provider, database, BNA, or production data change is authorized by this recovery packet.",
+    "GitHub branch and draft PR publication are the only permitted external mutations for this recovery branch.",
+    "Future external/irreversible actions require exact task-specific authorization."
+  ],
+  "unresolved_inputs": [
+    "accepted OT-60 converged head",
+    "accepted OT-42 CRM head",
+    "accepted OT-43 classes head",
+    "accepted OT-47 content head",
+    "accepted OT-52 portals head",
+    "director-approved OT-66 base",
+    "migration range",
+    "support/task integration decision"
+  ],
+  "discovery_summary": [
+    "Searched Codex attachments for exact OT-61 through OT-70 markers and task titles.",
+    "Searched safe text/Markdown/JSON-like Downloads candidates for exact task markers; an overly broad generated-file scan was stopped and not used as evidence.",
+    "Searched existing One Time-looking worktrees only under ops/evidence and ops/execution.",
+    "No browser credential stores, cookies, BNA production data, or unrelated private source locations were intentionally used as task evidence."
+  ],
+  "created_at": "2026-07-14T22:18:04.219Z"
+}

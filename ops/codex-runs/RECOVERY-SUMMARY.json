@@ -1,0 +1,94 @@
+{
+  "recovery_task_id": "OT-RUN-RECOVERY-01",
+  "repository": "webcraft-media/onetimev2",
+  "recovery_base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "recovery_branch": "codex/recovery-blocked-ot61-ot70",
+  "integration_base_branch": "codex/crm-core-v1",
+  "tasks": [
+    {
+      "task_id": "OT-61",
+      "title": "Rabbi owner/admin dashboard",
+      "original_prompt_found": true,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_DEPENDENCY",
+      "packet_path": "ops/codex-runs/OT-61/"
+    },
+    {
+      "task_id": "OT-62",
+      "title": "Activation and credential lifecycle",
+      "original_prompt_found": true,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_DEPENDENCY",
+      "packet_path": "ops/codex-runs/OT-62/"
+    },
+    {
+      "task_id": "OT-63",
+      "title": "Zoom/live class integration",
+      "original_prompt_found": true,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_AUTHORIZATION",
+      "packet_path": "ops/codex-runs/OT-63/"
+    },
+    {
+      "task_id": "OT-64",
+      "title": "Attendance/reports",
+      "original_prompt_found": false,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_DEPENDENCY",
+      "packet_path": "ops/codex-runs/OT-64/"
+    },
+    {
+      "task_id": "OT-65",
+      "title": "Stripe parent billing",
+      "original_prompt_found": true,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_AUTHORIZATION",
+      "packet_path": "ops/codex-runs/OT-65/"
+    },
+    {
+      "task_id": "OT-66",
+      "title": "Role-scoped helpers",
+      "original_prompt_found": true,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_DEPENDENCY",
+      "packet_path": "ops/codex-runs/OT-66/"
+    },
+    {
+      "task_id": "OT-67",
+      "title": "Communications V1B",
+      "original_prompt_found": true,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_SECURITY",
+      "packet_path": "ops/codex-runs/OT-67/"
+    },
+    {
+      "task_id": "OT-68",
+      "title": "Day-One certification",
+      "original_prompt_found": true,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_DEPENDENCY",
+      "packet_path": "ops/codex-runs/OT-68/"
+    },
+    {
+      "task_id": "OT-69",
+      "title": "Vimeo/content activation",
+      "original_prompt_found": false,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_DEPENDENCY",
+      "packet_path": "ops/codex-runs/OT-69/"
+    },
+    {
+      "task_id": "OT-70",
+      "title": "BNA control-plane bridge",
+      "original_prompt_found": false,
+      "attempt_report_found": false,
+      "disposition": "PAUSED_SECURITY",
+      "packet_path": "ops/codex-runs/OT-70/"
+    }
+  ],
+  "redaction_counts": {
+    "zoom_url": 6
+  },
+  "created_at": "2026-07-14T22:18:04.219Z",
+  "local_discovery_log": "not committed; full local paths are outside repository"
+}

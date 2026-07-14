@@ -1,0 +1,19 @@
+{
+  "task_id": "OT-69",
+  "blockers": [
+    {
+      "id": "OT-69-B1",
+      "disposition": "PAUSED_DEPENDENCY",
+      "status": "needs_operator_decision",
+      "blocker": "No standalone OT-69 prompt or blocked attempt report was found in the allowed discovery scope.",
+      "blocker_owner": "operator or prompt registrar",
+      "next_action": "Provide or locate a trusted original prompt/Pro output for this task before implementation.",
+      "unresolved_inputs": [
+        "trusted OT-69 original prompt",
+        "accepted content/library base",
+        "approved Vimeo/content activation contract",
+        "external provider authorization policy"
+      ]
+    }
+  ]
+}

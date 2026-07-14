@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-63",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_AUTHORIZATION",
+  "implementation_status": "none",
+  "original_prompt_found": true,
+  "attempt_report_found": false,
+  "prompt_sha256": "b149ef60889e3f4aa991072c93ba159e533e7b28e34d2f70515ccb23e6639720",
+  "reason": "Prompt requires exact accepted SHAs, staging authorization, Zoom readiness/host evidence, and phase-specific authorization before implementation.",
+  "next_action": "Resolve unresolved inputs from remote branches and accepted manifests, then continue from OT-63 preflight gates without redoing preserved prompt recovery.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

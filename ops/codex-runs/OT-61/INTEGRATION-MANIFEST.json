@@ -1,0 +1,29 @@
+{
+  "task_id": "OT-61",
+  "recovery_branch": "codex/recovery-blocked-ot61-ot70",
+  "recovery_base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "integration_base_branch": "codex/crm-core-v1",
+  "package_paths": [
+    "ops/codex-runs/OT-61/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/OT-61/INPUT-MANIFEST.json",
+    "ops/codex-runs/OT-61/STATE.json",
+    "ops/codex-runs/OT-61/EVENTS.jsonl",
+    "ops/codex-runs/OT-61/ATTEMPT-REPORT.md",
+    "ops/codex-runs/OT-61/CHECKPOINT.md",
+    "ops/codex-runs/OT-61/IMPLEMENTED.md",
+    "ops/codex-runs/OT-61/REMAINING.md",
+    "ops/codex-runs/OT-61/DECISIONS.md",
+    "ops/codex-runs/OT-61/BLOCKERS.json",
+    "ops/codex-runs/OT-61/COMMANDS.md",
+    "ops/codex-runs/OT-61/TESTS.md",
+    "ops/codex-runs/OT-61/INTEGRATION-MANIFEST.json",
+    "ops/codex-runs/OT-61/RESUME-PROMPT.md"
+  ],
+  "product_changes": [],
+  "external_mutations": [
+    "GitHub branch/PR publication by recovery registrar only"
+  ],
+  "ready_for_integration": false,
+  "blocked_reason": "Prompt requires an accepted OT-60 convergence head before implementation; this recovery task preserves the packet only.",
+  "created_at": "2026-07-14T22:18:04.219Z"
+}

@@ -1,0 +1,29 @@
+{
+  "task_id": "OT-67",
+  "recovery_branch": "codex/recovery-blocked-ot61-ot70",
+  "recovery_base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "integration_base_branch": "codex/crm-core-v1",
+  "package_paths": [
+    "ops/codex-runs/OT-67/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/OT-67/INPUT-MANIFEST.json",
+    "ops/codex-runs/OT-67/STATE.json",
+    "ops/codex-runs/OT-67/EVENTS.jsonl",
+    "ops/codex-runs/OT-67/ATTEMPT-REPORT.md",
+    "ops/codex-runs/OT-67/CHECKPOINT.md",
+    "ops/codex-runs/OT-67/IMPLEMENTED.md",
+    "ops/codex-runs/OT-67/REMAINING.md",
+    "ops/codex-runs/OT-67/DECISIONS.md",
+    "ops/codex-runs/OT-67/BLOCKERS.json",
+    "ops/codex-runs/OT-67/COMMANDS.md",
+    "ops/codex-runs/OT-67/TESTS.md",
+    "ops/codex-runs/OT-67/INTEGRATION-MANIFEST.json",
+    "ops/codex-runs/OT-67/RESUME-PROMPT.md"
+  ],
+  "product_changes": [],
+  "external_mutations": [
+    "GitHub branch/PR publication by recovery registrar only"
+  ],
+  "ready_for_integration": false,
+  "blocked_reason": "Prompt requires exact accepted SHAs and staging service/database fingerprints; it forbids provider webhook registration, sends, deployment, or provider-side operations.",
+  "created_at": "2026-07-14T22:18:04.219Z"
+}

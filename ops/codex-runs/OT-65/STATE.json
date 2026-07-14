@@ -1,0 +1,13 @@
+{
+  "task_id": "OT-65",
+  "lifecycle": "PRESERVED",
+  "disposition": "PAUSED_AUTHORIZATION",
+  "implementation_status": "none",
+  "original_prompt_found": true,
+  "attempt_report_found": false,
+  "prompt_sha256": "c229c2539be17d6ef1ddfe7668af35e8b829b9b6d0f67d381603c6d98375c668",
+  "reason": "Prompt intentionally leaves Stripe/test-mode commercial values unresolved and forbids live Stripe action; no live charge authorization exists.",
+  "next_action": "Resolve unresolved inputs from remote branches and accepted manifests, then continue from OT-65 preflight gates without redoing preserved prompt recovery.",
+  "can_continue_without_operator": false,
+  "updated_at": "2026-07-14T22:18:04.219Z"
+}

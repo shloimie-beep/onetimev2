@@ -1,0 +1,22 @@
+{
+  "task_id": "OT-63",
+  "blockers": [
+    {
+      "id": "OT-63-B1",
+      "disposition": "PAUSED_AUTHORIZATION",
+      "status": "blocked",
+      "blocker": "Prompt requires exact accepted SHAs, staging authorization, Zoom readiness/host evidence, and phase-specific authorization before implementation.",
+      "blocker_owner": "future implementation owner",
+      "next_action": "Resolve structured unresolved inputs from remote branches, acceptance manifests, and nonsecret evidence before implementation.",
+      "unresolved_inputs": [
+        "accepted OT-60 convergence head",
+        "accepted OT-43 class fulfillment head",
+        "accepted OT-52 portals head",
+        "director-approved OT-63 base SHA",
+        "director-approved staging SHA",
+        "Zoom readiness/host evidence",
+        "non-production PostgreSQL target"
+      ]
+    }
+  ]
+}

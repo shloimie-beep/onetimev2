@@ -1,0 +1,23 @@
+{
+  "task_id": "OT-66",
+  "blockers": [
+    {
+      "id": "OT-66-B1",
+      "disposition": "PAUSED_DEPENDENCY",
+      "status": "blocked",
+      "blocker": "Prompt requires accepted OT-60 plus exact accepted heads for CRM/classes/content/portals and approved helper/action-gateway scope.",
+      "blocker_owner": "future implementation owner",
+      "next_action": "Resolve structured unresolved inputs from remote branches, acceptance manifests, and nonsecret evidence before implementation.",
+      "unresolved_inputs": [
+        "accepted OT-60 converged head",
+        "accepted OT-42 CRM head",
+        "accepted OT-43 classes head",
+        "accepted OT-47 content head",
+        "accepted OT-52 portals head",
+        "director-approved OT-66 base",
+        "migration range",
+        "support/task integration decision"
+      ]
+    }
+  ]
+}

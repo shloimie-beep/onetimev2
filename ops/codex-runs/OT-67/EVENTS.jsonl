@@ -1,0 +1,5 @@
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-67","event":"received","source":"OT-RUN-RECOVERY-01","detail":"Task expected by OT-RUN-RECOVERY-01 recovery prompt."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-67","event":"preserved","artifact":"ORIGINAL-PROMPT.md","sanitized_sha256":"a3f6378dbefef0c173375a058d3c0aafa883f5aded051e712d7b80e501de0607","safe_source_ref":"codex_attachment:bbaffd6f-a841-4f90-8c33-2956651ac932/pasted-text.txt"}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-67","event":"audited","scope":"allowed local discovery scope","result":"No populated attempt report found."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-67","event":"attempted","status":"not_confirmed","evidence":"No populated Codex attempt report located in allowed files."}
+{"timestamp":"2026-07-14T22:18:04.219Z","task_id":"OT-67","event":"blocked","disposition":"PAUSED_SECURITY","reason":"Prompt requires exact accepted SHAs and staging service/database fingerprints; it forbids provider webhook registration, sends, deployment, or provider-side operations."}
