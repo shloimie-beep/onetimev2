@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-07-14T10:59:44.499Z",
+  "base_url": "http://127.0.0.1:64276",
+  "external_transports": "disabled: OUTBOX_TRANSPORT_MODE=sink with in-memory database",
+  "first_response": {
+    "success": true,
+    "duplicate_submission": false,
+    "classification": "family",
+    "contact_key": "contact_3e42a829dd1fb596ca078a3c",
+    "signup_key": "signup_223005623b05446a796ad227",
+    "confirmation_queued": true,
+    "outbox_intents": [
+      "delivery_857a6956ca54cb5494bbcd55",
+      "delivery_bc2b2e65d9c8a644f31ffaee",
+      "delivery_ed4032ef8501ac8bb5d1620a"
+    ],
+    "message": {
+      "heading": "You're signed up.",
+      "body": "We saved your information and will send the current class details using your selected option."
+    }
+  },
+  "duplicate_response": {
+    "success": true,
+    "duplicate_submission": true,
+    "classification": "family",
+    "contact_key": "contact_3e42a829dd1fb596ca078a3c",
+    "signup_key": "signup_223005623b05446a796ad227",
+    "confirmation_queued": true,
+    "outbox_intents": [
+      "delivery_857a6956ca54cb5494bbcd55",
+      "delivery_bc2b2e65d9c8a644f31ffaee",
+      "delivery_ed4032ef8501ac8bb5d1620a"
+    ],
+    "message": {
+      "heading": "You're signed up.",
+      "body": "We saved your information and will send the current class details using your selected option."
+    }
+  },
+  "sink_result": {
+    "delivered": 3,
+    "deliveryKeys": [
+      "delivery_857a6956ca54cb5494bbcd55",
+      "delivery_bc2b2e65d9c8a644f31ffaee",
+      "delivery_ed4032ef8501ac8bb5d1620a"
+    ]
+  },
+  "persisted_counts": {
+    "contacts": 1,
+    "signup_leads": 1,
+    "audit_events": 1,
+    "outbox_events": 3,
+    "sink_delivered": 3
+  },
+  "outbox_events": [
+    {
+      "channel": "email",
+      "status": "sink_delivered",
+      "delivery_key": "delivery_857a6956ca54cb5494bbcd55"
+    },
+    {
+      "channel": "internal_email",
+      "status": "sink_delivered",
+      "delivery_key": "delivery_bc2b2e65d9c8a644f31ffaee"
+    },
+    {
+      "channel": "whatsapp",
+      "status": "sink_delivered",
+      "delivery_key": "delivery_ed4032ef8501ac8bb5d1620a"
+    }
+  ],
+  "failing_http_responses": [],
+  "screenshots": [
+    "screenshots/landing-360x800.jpg",
+    "screenshots/landing-390x844.jpg",
+    "screenshots/landing-768x1024.jpg",
+    "screenshots/landing-1440x1000.jpg",
+    "screenshots/signup-390x844.jpg",
+    "screenshots/landing-gallery-390x844.jpg",
+    "screenshots/landing-gallery-1440x1000.jpg"
+  ]
+}

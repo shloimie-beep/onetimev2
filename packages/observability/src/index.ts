@@ -4,7 +4,14 @@ import pino from 'pino';
 export const logger = pino({
   name: 'onetime',
   redact: {
-    paths: ['req.headers.authorization', 'req.headers.cookie', 'email', 'phone', '*.email', '*.phone'],
+    paths: [
+      'req.headers.authorization',
+      'req.headers.cookie',
+      'email',
+      'phone',
+      '*.email',
+      '*.phone',
+    ],
     remove: true,
   },
 });
@@ -21,11 +28,19 @@ export function traceMiddleware(req: RequestWithTrace, res: Response, next: Next
   req.timings = [];
   res.setHeader('x-request-id', req.traceId);
   res.setHeader('Server-Timing', 'app;dur=0');
+  const writeHead = res.writeHead.bind(res);
+  res.writeHead = ((...args: Parameters<Response['writeHead']>) => {
+    const total = performance.now() - started;
+    const entries = [
+      `app;dur=${total.toFixed(1)}`,
+      ...(req.timings ?? []).map((entry) => `${entry.name};dur=${entry.durationMs.toFixed(1)}`),
+    ];
+    res.setHeader('Server-Timing', entries.join(', '));
+    return writeHead(...args);
+  }) as Response['writeHead'];
 
   res.on('finish', () => {
     const total = performance.now() - started;
-    const entries = [`app;dur=${total.toFixed(1)}`, ...(req.timings ?? []).map((entry) => `${entry.name};dur=${entry.durationMs.toFixed(1)}`)];
-    res.setHeader('Server-Timing', entries.join(', '));
     logger.info({
       trace_id: req.traceId,
       method: req.method,
@@ -38,7 +53,11 @@ export function traceMiddleware(req: RequestWithTrace, res: Response, next: Next
   next();
 }
 
-export async function withTiming<T>(req: RequestWithTrace | undefined, name: string, run: () => Promise<T>) {
+export async function withTiming<T>(
+  req: RequestWithTrace | undefined,
+  name: string,
+  run: () => Promise<T>,
+) {
   const started = performance.now();
   try {
     return await run();

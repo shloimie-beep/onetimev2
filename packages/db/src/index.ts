@@ -24,6 +24,7 @@ export function createMemoryPool(): DbPool {
   db.public.registerFunction({
     name: 'gen_random_uuid',
     returns: DataType.uuid,
+    impure: true,
     implementation: () => crypto.randomUUID(),
   });
   db.public.registerFunction({
@@ -36,7 +37,10 @@ export function createMemoryPool(): DbPool {
   return new adapter.Pool();
 }
 
-export async function inTransaction<T>(pool: DbPool, run: (client: Queryable) => Promise<T>): Promise<T> {
+export async function inTransaction<T>(
+  pool: DbPool,
+  run: (client: Queryable) => Promise<T>,
+): Promise<T> {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -57,7 +61,10 @@ export type MigrationResult = {
   status: 'applied' | 'already_applied';
 };
 
-export async function runMigrations(pool: DbPool, migrationsDir = defaultMigrationsDir()): Promise<MigrationResult[]> {
+export async function runMigrations(
+  pool: DbPool,
+  migrationsDir = defaultMigrationsDir(),
+): Promise<MigrationResult[]> {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -78,7 +85,10 @@ export async function runMigrations(pool: DbPool, migrationsDir = defaultMigrati
       const id = file.replace(/\.sql$/, '');
       const sql = await readFile(path.join(migrationsDir, file), 'utf8');
       const checksum = createHash('sha256').update(sql).digest('hex');
-      const existing = await client.query('SELECT checksum FROM onetime.schema_migrations WHERE id = $1', [id]);
+      const existing = await client.query(
+        'SELECT checksum FROM onetime.schema_migrations WHERE id = $1',
+        [id],
+      );
       if (existing.rowCount) {
         if (existing.rows[0].checksum !== checksum) {
           throw new Error(`Migration checksum mismatch for ${id}`);
@@ -87,7 +97,10 @@ export async function runMigrations(pool: DbPool, migrationsDir = defaultMigrati
         continue;
       }
       await client.query(sql);
-      await client.query('INSERT INTO onetime.schema_migrations (id, checksum) VALUES ($1, $2)', [id, checksum]);
+      await client.query('INSERT INTO onetime.schema_migrations (id, checksum) VALUES ($1, $2)', [
+        id,
+        checksum,
+      ]);
       results.push({ id, checksum, status: 'applied' });
     }
 

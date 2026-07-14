@@ -47,10 +47,9 @@ export const landingContent = {
       {
         title: 'Accomplishment',
         body: "One perek a day gives him a clear goal, steady progress, and a real sense of finishing each day's learning.",
-        image: null,
-        alt: '',
-        assetBlocker:
-          'Toronto.jpg was explicitly assigned for Accomplishment but was not present in the BNA repo or Downloads search. This card intentionally does not substitute Lakewood or another image.',
+        image: '/assets/outcomes/accomplishment-toronto-class.jpg',
+        alt: 'Rabbi Scheller smiling with boys after a Toronto One Time Torah class',
+        assetBlocker: null,
         provisionalCopy:
           'This paragraph is the currently deployed accomplishment copy preserved provisionally; it is not operator-certified final copy.',
       },
@@ -64,10 +63,20 @@ export const landingContent = {
       },
     ],
   },
+  how: {
+    heading: 'How It Works',
+    body: 'Sign up, get the class information, and join the daily 7:00 p.m. live Mishnayos class.',
+    steps: ['Sign up', 'Receive the class information', 'Enjoy the live class'],
+  },
   who: {
     heading: "Who It's For",
     body: 'Built for families, homeschoolers, schools, and local boys who want a clear daily Mishnayos rhythm.',
-    audiences: ['Families', 'English-speaking homeschoolers', 'Schools', 'Local boys in Ramat Beit Shemesh Alef'],
+    audiences: [
+      'Families',
+      'English-speaking homeschoolers',
+      'Schools',
+      'Local boys in Ramat Beit Shemesh Alef',
+    ],
   },
   rabbi: {
     eyebrow: 'Meet Rabbi Scheller',
@@ -77,17 +86,55 @@ export const landingContent = {
   gallery: {
     heading: 'Teaching Torah Across the Jewish World',
     slides: [
-      ['Atlanta, Georgia', 'Rabbi Scheller teaching a large student group.', '/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp'],
-      ['Baltimore, Maryland', 'Large live teaching session with students.', '/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp'],
-      ['Flatbush, New York', 'Students gathered for Torah learning.', '/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp'],
-      ['Hollywood, Florida', 'Classroom teaching with engaged boys.', '/assets/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp'],
-      ['Lakewood, New Jersey', 'Evening Torah gathering with Rabbi Scheller.', '/assets/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp'],
-      ['Miami, Florida', 'Large outdoor teaching event.', '/assets/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp'],
-      ['Philadelphia, Pennsylvania', 'Rabbi Scheller speaking to a full room.', '/assets/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp'],
-      ['Silver Spring, Maryland', 'Classroom learning with Rabbi Scheller.', '/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp'],
+      [
+        'Atlanta, Georgia',
+        'Rabbi Scheller teaching a large student group.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp',
+      ],
+      [
+        'Baltimore, Maryland',
+        'Large live teaching session with students.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp',
+      ],
+      [
+        'Flatbush, New York',
+        'Students gathered for Torah learning.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp',
+      ],
+      [
+        'Hollywood, Florida',
+        'Classroom teaching with engaged boys.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp',
+      ],
+      [
+        'Lakewood, New Jersey',
+        'Evening Torah gathering with Rabbi Scheller.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp',
+      ],
+      [
+        'Miami, Florida',
+        'Large outdoor teaching event.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp',
+      ],
+      [
+        'Philadelphia, Pennsylvania',
+        'Rabbi Scheller speaking to a full room.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp',
+      ],
+      [
+        'Silver Spring, Maryland',
+        'Classroom learning with Rabbi Scheller.',
+        '/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp',
+      ],
     ],
   },
-  press: ['TorahAnytime', '24Six', 'The Loop', 'NakiRadio', 'Mishpacha'],
+  press: [
+    ['TorahAnytime', '/assets/press/torah-anytime.png'],
+    ['24Six', '/assets/press/24six.png'],
+    ['The Loop', '/assets/press/the-loop.png'],
+    ['NakiRadio', '/assets/press/naki.webp'],
+    ['Mishpacha', '/assets/press/mishpacha.webp'],
+  ],
   finalCta: {
     heading: 'Ready to join the live class?',
   },
@@ -106,6 +153,7 @@ export const landingContent = {
 export const sharedNav = [
   ['What You Receive', '#receive'],
   ["What He'll Gain", '#gain'],
+  ['How It Works', '#how-it-works'],
   ["Who It's For", '#who'],
   ['Rabbi Scheller', '#rabbi'],
   ['Member Login', '/login'],
