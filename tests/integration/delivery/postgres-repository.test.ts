@@ -76,6 +76,8 @@ function databaseClaimRow(): Record<string, unknown> {
     reminder_preference: 'both',
     consent_recorded_at: new Date('2026-07-14T11:00:00.000Z'),
     suppression_state: 'active',
+    lead_status: 'new',
+    archived_at: null,
     signup_classification: 'family',
     signup_metadata: {},
   };
@@ -113,6 +115,8 @@ describe('PostgreSQL delivery repository', () => {
       contact: {
         emailNormalized: 'recipient@example.test',
         phoneNormalized: '+12025550123',
+        leadStatus: 'new',
+        archivedAt: null,
       },
     });
     expect(client.calls[0]?.text).toBe('BEGIN');

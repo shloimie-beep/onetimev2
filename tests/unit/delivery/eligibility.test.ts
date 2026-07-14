@@ -92,7 +92,7 @@ describe('delivery eligibility', () => {
     },
   );
 
-  it('terminally skips school public follow-up with a stable safe reason', () => {
+  it('allows school public email acknowledgement through the generic template path', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         contact: deliveryContact({ familySchoolClassification: 'school' }),
@@ -101,9 +101,31 @@ describe('delivery eligibility', () => {
       'owner@protected.test',
     );
     expect(result).toEqual({
-      kind: 'skipped',
+      kind: 'eligible',
       channel: 'email',
-      reason: 'school_follow_up_requires_manual_review',
+      recipientClass: 'public',
+      to: 'recipient@example.test',
+    });
+  });
+
+  it('allows eligible school WhatsApp receipts through the generic template path', () => {
+    const result = evaluateDeliveryEligibility(
+      claimedDelivery({
+        channel: 'whatsapp',
+        eventType: 'whatsapp_confirmation',
+        contact: deliveryContact({
+          familySchoolClassification: 'school',
+          reminderPreference: 'both',
+        }),
+        signup: deliverySignup({ classification: 'school' }),
+      }),
+      'owner@protected.test',
+    );
+    expect(result).toEqual({
+      kind: 'eligible',
+      channel: 'whatsapp',
+      recipientClass: 'public',
+      to: '+12025550123',
     });
   });
 
@@ -140,5 +162,22 @@ describe('delivery eligibility', () => {
       undefined,
     );
     expect(mismatch).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
+  });
+
+  it('fails closed for archived contacts before public delivery', () => {
+    const result = evaluateDeliveryEligibility(
+      claimedDelivery({
+        contact: deliveryContact({
+          leadStatus: 'archived',
+          archivedAt: new Date('2026-07-14T11:30:00.000Z'),
+        }),
+      }),
+      undefined,
+    );
+    expect(result).toEqual({
+      kind: 'skipped',
+      channel: 'email',
+      reason: 'contact_archived',
+    });
   });
 });

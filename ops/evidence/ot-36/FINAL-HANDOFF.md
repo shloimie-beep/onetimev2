@@ -24,6 +24,21 @@ Stacked base branch: `codex/crm-core-v1`
 - OT-21 noted missing Vitest config on its stale base; current base already has unit/integration config globs covering the delivery roots.
 - OT-21 used an overlapping interval in the current worker entrypoint; OT-36 replaces it with a non-overlapping polling loop and graceful signal drain.
 
+## OT-25 / OT-26 Addendum Applied
+
+Source: `ops/evidence/ot-36/OT-25-OT-26-ADDENDUM.md`
+Original local file: `C:\Users\User\Downloads\OT-36-URGENT-OT25-26-ADDENDUM.md`
+SHA-256: `21F1B8662458157607878A8A2AB9298F1FF200E23BC297768A1599774FA13F26`
+
+- School public rows are no longer terminally skipped merely because they are School.
+- Valid School email acknowledgements use generic receipt copy only: no class target, access language, join action, or reminder language.
+- Eligible School WhatsApp receipts use the same generic receipt posture and still require WhatsApp/Both, valid E.164 phone, recorded consent, active suppression state, and a non-archived contact.
+- Family email acknowledgement remains eligible even when `reminder_preference=none`.
+- Family WhatsApp confirmation still requires WhatsApp/Both, valid E.164 phone, recorded consent, active suppression state, and a non-archived contact.
+- The protected Family class target is resolved only at dispatch request build time through `ONE_TIME_PROTECTED_CLASS_TARGET_URL`; it is not stored in source fixtures, outbox JSON, CRM DTOs, logs, audit metadata, screenshots, or evidence.
+- Expired `deliver_by` metadata now produces a stable skipped outcome instead of sending.
+- OT-36 still does not implement or prove recurring reminders, the 30-minute producer, class tables, occurrence generation, recurring cron, BNA dependency, live Resend/WAPI calls, Railway services, or raw URL storage.
+
 ## Claim Predicates
 
 The PostgreSQL claim path uses:
@@ -43,10 +58,12 @@ Provider-mode rows, unsupported rows, and cross-account/product rows remain unto
 ## Family / School Matrix
 
 - Family email acknowledgement: sink-delivered when a scoped committed signup/contact is still eligible.
-- Family WhatsApp confirmation: sink-delivered only when preference is WhatsApp/Both, consent is recorded, suppression is active, and the normalized phone is valid E.164.
+- Family WhatsApp confirmation: sink-delivered only when preference is WhatsApp/Both, consent is recorded, suppression is active, the contact is non-archived, and the normalized phone is valid E.164.
 - Family public suppression: public row becomes `suppressed`; owner alert remains separate.
-- School public email/WhatsApp rows: terminal `skipped` with stable reason `school_follow_up_requires_manual_review`; the worker never builds a public class-link request for School.
+- School public email rows: sink-delivered as generic acknowledgements when the scoped committed signup/contact is still eligible; the worker never builds a public class-link request for School.
+- School public WhatsApp rows: sink-delivered as generic receipts only when preference is WhatsApp/Both, consent is recorded, suppression is active, the contact is non-archived, and the normalized phone is valid E.164.
 - School internal owner alert: remains eligible through the protected owner destination from worker config.
+- Expired `deliver_by` rows: terminal `skipped` with stable reason `delivery_window_expired`.
 
 ## Migration
 
@@ -84,6 +101,7 @@ Blocked / not run:
 - Do not run old and new code revisions as co-primary workers.
 - Future activation should run one sink worker owner against a safe non-production PostgreSQL target, then transfer process ownership in a separate release task.
 - 30-minute reminders, schedule exceptions, next-session behavior, provider activation, and real sends remain explicitly unimplemented.
+- The missing recurring reminder producer remains the next sequential class-fulfillment lane, not a small deployment setting.
 
 ## External Mutations
 

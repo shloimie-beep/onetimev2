@@ -46,13 +46,6 @@ export function supportedChannelForEvent(eventType: string): ClaimedDelivery['ch
   );
 }
 
-function isSchoolSignup(claim: ClaimedDelivery): boolean {
-  return (
-    claim.signup?.classification === 'school' ||
-    claim.contact?.familySchoolClassification === 'school'
-  );
-}
-
 export function evaluateDeliveryEligibility(
   claim: ClaimedDelivery,
   protectedOwnerEmail: string | undefined,
@@ -100,11 +93,11 @@ export function evaluateDeliveryEligibility(
     };
   }
 
-  if (isSchoolSignup(claim)) {
+  if (contact.leadStatus === 'archived' || contact.archivedAt) {
     return {
       kind: 'skipped',
       channel: claim.channel,
-      reason: 'school_follow_up_requires_manual_review',
+      reason: 'contact_archived',
     };
   }
 

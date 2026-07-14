@@ -95,12 +95,8 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
   }
 
   const emailReplyTo = optionalValue(source.ONE_TIME_EMAIL_REPLY_TO);
-  const protectedOwnerEmail =
-    optionalValue(source.ONE_TIME_OWNER_ALERT_EMAIL) ??
-    optionalValue(source.ONE_TIME_OWNER_TEST_EMAIL);
-  const currentClassLink =
-    optionalValue(source.ONE_TIME_CURRENT_CLASS_LINK) ??
-    optionalValue(source.ONE_TIME_WHATSAPP_CLASS_LINK);
+  const protectedOwnerEmail = optionalValue(source.ONE_TIME_DELIVERY_OWNER_ALERT_EMAIL);
+  const currentClassLink = optionalValue(source.ONE_TIME_PROTECTED_CLASS_TARGET_URL);
 
   return {
     appConfig,

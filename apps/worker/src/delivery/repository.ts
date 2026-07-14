@@ -3,6 +3,7 @@ import type {
   ClaimedDelivery,
   ClaimBatchInput,
   DeliveryContact,
+  DeliveryLeadStatus,
   DeliveryOutcome,
   DeliveryRepository,
   DeliverySignup,
@@ -82,6 +83,8 @@ SELECT
   contact.reminder_preference,
   contact.consent_recorded_at,
   contact.suppression_state,
+  contact.lead_status,
+  contact.archived_at,
   signup.classification AS signup_classification,
   signup.metadata AS signup_metadata
 FROM claimed
@@ -149,6 +152,7 @@ function asObject(value: unknown): Record<string, unknown> {
 function parseContact(row: SqlRow): DeliveryContact | null {
   if (row.display_name === null || row.display_name === undefined) return null;
   const reminderPreference = asString(row.reminder_preference);
+  const leadStatus = asString(row.lead_status);
   return {
     contactKey: asString(row.contact_key),
     displayName: asString(row.display_name),
@@ -167,6 +171,13 @@ function parseContact(row: SqlRow): DeliveryContact | null {
         ? null
         : asDate(row.consent_recorded_at),
     suppressionState: asString(row.suppression_state),
+    leadStatus: ['new', 'in_review', 'contacted', 'scheduled', 'closed', 'archived'].includes(
+      leadStatus,
+    )
+      ? (leadStatus as DeliveryLeadStatus)
+      : 'new',
+    archivedAt:
+      row.archived_at === null || row.archived_at === undefined ? null : asDate(row.archived_at),
   };
 }
 

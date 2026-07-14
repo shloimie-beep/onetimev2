@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type {
   ClaimedDelivery,
+  DeliveryProviderRouter,
+  DeliveryRequest,
+  ProviderReceipt,
   ReminderPreference,
 } from '../../../packages/contracts/src/delivery/types.ts';
 import { SinkDeliveryRouter } from '../../../apps/worker/src/delivery/sink-router.ts';
@@ -73,6 +76,19 @@ const options = {
   maxAttempts: 5,
 };
 
+class CapturingRouter implements DeliveryProviderRouter {
+  readonly requests: DeliveryRequest[] = [];
+
+  async send(request: DeliveryRequest): Promise<ProviderReceipt> {
+    this.requests.push(request);
+    return {
+      provider: 'sink',
+      acceptedAt: BASE_TIME,
+      sink: true,
+    };
+  }
+}
+
 describe('transactional delivery pipeline', () => {
   it.each([
     ['email', 2, 1],
@@ -144,9 +160,10 @@ describe('transactional delivery pipeline', () => {
     expect(repository.snapshot('suppressed-owner')?.status).toBe('sink_delivered');
   });
 
-  it('skips public School class-link rows while preserving the owner alert', async () => {
+  it('delivers generic School acknowledgements while preserving the owner alert', async () => {
     const schoolContact = deliveryContact({ familySchoolClassification: 'school' });
     const schoolSignup = deliverySignup({ classification: 'school' });
+    const router = new CapturingRouter();
     const repository = new MemoryDeliveryRepository([
       seed(
         claimedDelivery({
@@ -182,22 +199,23 @@ describe('transactional delivery pipeline', () => {
     const { logger } = captureLogger();
     const summary = await runDeliveryBatch({
       repository,
-      router: new SinkDeliveryRouter(),
+      router,
       logger,
       messageConfig,
       options,
       clock: () => BASE_TIME,
     });
-    expect(summary).toMatchObject({ claimed: 3, skipped: 2, sinkDelivered: 1 });
-    expect(repository.snapshot('school-email')?.outcome).toMatchObject({
-      kind: 'skipped',
-      reason: 'school_follow_up_requires_manual_review',
-    });
-    expect(repository.snapshot('school-whatsapp')?.outcome).toMatchObject({
-      kind: 'skipped',
-      reason: 'school_follow_up_requires_manual_review',
-    });
+    expect(summary).toMatchObject({ claimed: 3, skipped: 0, sinkDelivered: 3 });
+    expect(repository.snapshot('school-email')?.status).toBe('sink_delivered');
+    expect(repository.snapshot('school-whatsapp')?.status).toBe('sink_delivered');
     expect(repository.snapshot('school-owner')?.status).toBe('sink_delivered');
+    const publicText = router.requests
+      .filter((request) => request.recipientClass === 'public')
+      .map((request) => ('text' in request ? request.text : ''))
+      .join('\n');
+    expect(publicText).toContain('We received your One Time Mishnayos inquiry.');
+    expect(publicText).not.toContain('https://example.test/current-class');
+    expect(publicText).not.toMatch(/class details|reminder|access|join/i);
   });
 
   it('skips WhatsApp when normalized phone is missing without failing the batch', async () => {
@@ -228,6 +246,34 @@ describe('transactional delivery pipeline', () => {
     expect(repository.snapshot('missing-phone')?.outcome).toMatchObject({
       kind: 'skipped',
       reason: 'whatsapp_phone_missing_or_invalid',
+    });
+  });
+
+  it('skips an expired deliver_by row without sending', async () => {
+    const router = new CapturingRouter();
+    const repository = new MemoryDeliveryRepository([
+      seed(
+        claimedDelivery({
+          id: 'expired-email',
+          deliveryKey: 'delivery_expired_email',
+          payload: { deliver_by: '2026-07-14T11:59:00.000Z', policy_version: 'test' },
+        }),
+      ),
+    ]);
+    const { logger } = captureLogger();
+    const summary = await runDeliveryBatch({
+      repository,
+      router,
+      logger,
+      messageConfig,
+      options,
+      clock: () => BASE_TIME,
+    });
+    expect(summary).toMatchObject({ claimed: 1, skipped: 1, sinkDelivered: 0 });
+    expect(router.requests).toHaveLength(0);
+    expect(repository.snapshot('expired-email')?.outcome).toMatchObject({
+      kind: 'skipped',
+      reason: 'delivery_window_expired',
     });
   });
 });

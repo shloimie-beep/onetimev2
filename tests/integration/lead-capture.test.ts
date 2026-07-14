@@ -77,6 +77,14 @@ describe('lead capture transaction', () => {
     expect(JSON.stringify(school)).not.toContain('class_link');
     const row = await pool.query('SELECT family_school_classification FROM onetime.contacts');
     expect(row.rows[0].family_school_classification).toBe('school');
+    const outbox = await pool.query(
+      'SELECT event_type, channel, payload FROM onetime.outbox_events ORDER BY event_type, channel',
+    );
+    expect(outbox.rows.map((outboxRow) => `${outboxRow.event_type}:${outboxRow.channel}`)).toEqual([
+      'email_acknowledgement:email',
+      'internal_lead_alert:internal_email',
+    ]);
+    expect(JSON.stringify(outbox.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
   });
 
   it('queues public WhatsApp only when channel, phone, and consent allow it', async () => {
@@ -97,6 +105,29 @@ describe('lead capture transaction', () => {
     );
     expect(rows.rowCount).toBe(1);
     expect(rows.rows[0].payload.public_recipient).toBe(true);
+  });
+
+  it('queues a Family email acknowledgement when reminder preference is none', async () => {
+    const none = await captureLead({
+      pool,
+      config,
+      payload: {
+        ...payload,
+        email: 'none@example.test',
+        idempotency_key: 'idem-none-1',
+        reminder_preference: 'none',
+        reminder_consent: false,
+      },
+    });
+    expect(none.outbox_intents).toHaveLength(2);
+    const rows = await pool.query(
+      'SELECT event_type, channel FROM onetime.outbox_events WHERE contact_key = $1 ORDER BY event_type, channel',
+      [none.contact_key],
+    );
+    expect(rows.rows.map((row) => `${row.event_type}:${row.channel}`)).toEqual([
+      'email_acknowledgement:email',
+      'internal_lead_alert:internal_email',
+    ]);
   });
 
   it('sink worker delivers deterministic intents without external transport', async () => {

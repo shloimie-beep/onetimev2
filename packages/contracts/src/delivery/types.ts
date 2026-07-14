@@ -13,6 +13,8 @@ export type SupportedDeliveryEventType =
 export type DeliveryTransportMode = 'sink';
 export type ReminderPreference = 'email' | 'whatsapp' | 'both' | 'none';
 export type RecipientClass = 'public' | 'internal_owner';
+export type DeliveryLeadStatus =
+  'new' | 'in_review' | 'contacted' | 'scheduled' | 'closed' | 'archived';
 
 export type DeliveryOutboxStatus =
   | 'pending'
@@ -35,6 +37,8 @@ export type DeliveryContact = {
   reminderPreference: ReminderPreference;
   consentRecordedAt: Date | null;
   suppressionState: string;
+  leadStatus: DeliveryLeadStatus;
+  archivedAt: Date | null;
 };
 
 export type DeliverySignup = {
@@ -126,6 +130,8 @@ export type DeliveryTerminalReason =
   | 'whatsapp_consent_missing'
   | 'whatsapp_phone_missing_or_invalid'
   | 'contact_suppressed'
+  | 'contact_archived'
+  | 'delivery_window_expired'
   | 'protected_owner_destination_missing'
   | 'school_follow_up_requires_manual_review';
 

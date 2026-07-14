@@ -30,6 +30,7 @@ type OutboxEvent = {
 const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
 const CONSENT_POLICY = 'one-time-class-reminders-v1-2026-07-14';
+const DELIVERY_POLICY_VERSION = 'ot36-immediate-ack-v1';
 
 export async function captureLead({
   pool,
@@ -258,12 +259,18 @@ function outboxEvents(
   email: string,
   phone: string | null,
 ): OutboxEvent[] {
+  const deliveryPolicy = {
+    policy_version: DELIVERY_POLICY_VERSION,
+    occurrence_id: null,
+    deliver_by: null,
+  };
   const events: OutboxEvent[] = [
     {
       deliveryKey: stableKey('delivery', [signupKey, 'email_ack']),
       eventType: 'email_acknowledgement',
       channel: 'email',
       payload: {
+        ...deliveryPolicy,
         recipient_hash: stableKey('recipient', [email]),
         sender_configured: Boolean(config.emailFrom && config.emailReplyTo),
         classification: payload.audience_type,
@@ -274,6 +281,7 @@ function outboxEvents(
       eventType: 'internal_lead_alert',
       channel: 'internal_email',
       payload: {
+        ...deliveryPolicy,
         owner_alias_configured: Boolean(config.ownerTestEmail),
         contact_key: contactKey,
         signup_key: signupKey,
@@ -289,6 +297,7 @@ function outboxEvents(
       eventType: 'whatsapp_confirmation',
       channel: 'whatsapp',
       payload: {
+        ...deliveryPolicy,
         recipient_hash: stableKey('recipient', [phone]),
         suppression_checked: true,
         public_recipient: true,

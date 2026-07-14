@@ -20,6 +20,8 @@ export function deliveryContact(overrides: Partial<DeliveryContact> = {}): Deliv
     reminderPreference: 'both',
     consentRecordedAt: new Date('2026-07-14T11:00:00.000Z'),
     suppressionState: 'active',
+    leadStatus: 'new',
+    archivedAt: null,
     ...overrides,
   };
 }

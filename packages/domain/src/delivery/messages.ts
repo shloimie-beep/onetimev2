@@ -45,6 +45,10 @@ function classificationLabel(claim: ClaimedDelivery): string {
   return classification === 'school' ? 'School' : 'Family';
 }
 
+function isSchoolClaim(claim: ClaimedDelivery): boolean {
+  return classificationLabel(claim) === 'School';
+}
+
 function publicConfirmationText(classLink: string): string {
   return [
     "You're signed up for One Time Mishnayos.",
@@ -62,6 +66,20 @@ function publicConfirmationHtml(classLink: string): string {
     `<p><a href="${link}">Open the current class details</a></p>`,
     '<p>This is a one-time transactional confirmation. Reminder delivery follows the preference and consent saved with your signup.</p>',
   ].join('');
+}
+
+function schoolAcknowledgementText(): string {
+  return [
+    'We received your One Time Mishnayos inquiry.',
+    'Our team will review the details and follow up.',
+  ].join('\n');
+}
+
+function schoolAcknowledgementHtml(): string {
+  return schoolAcknowledgementText()
+    .split('\n')
+    .map((line) => `<p>${escapeHtml(line)}</p>`)
+    .join('');
 }
 
 function emailTags(claim: ClaimedDelivery, messageType: string): readonly DeliveryTag[] {
@@ -103,10 +121,12 @@ export function buildDeliveryRequest(
     };
   }
 
-  const classLink = requireHttpsClassLink(config.currentClassLink);
-  const text = publicConfirmationText(classLink);
+  const school = isSchoolClaim(claim);
 
   if (eligibility.channel === 'whatsapp') {
+    const text = school
+      ? schoolAcknowledgementText()
+      : publicConfirmationText(requireHttpsClassLink(config.currentClassLink));
     return {
       channel: 'whatsapp',
       provider: 'one_time_wapi',
@@ -114,10 +134,29 @@ export function buildDeliveryRequest(
       idempotencyKey: claim.deliveryKey,
       to: eligibility.to,
       text,
-      noLinkPreview: false,
+      noLinkPreview: school,
     };
   }
 
+  if (school) {
+    const text = schoolAcknowledgementText();
+    return {
+      channel: 'email',
+      provider: 'resend',
+      recipientClass: 'public',
+      idempotencyKey: claim.deliveryKey,
+      from: config.emailFrom,
+      to: eligibility.to,
+      ...(config.emailReplyTo ? { replyTo: config.emailReplyTo } : {}),
+      subject: 'We received your One Time Mishnayos inquiry',
+      text,
+      html: schoolAcknowledgementHtml(),
+      tags: emailTags(claim, 'school_acknowledgement'),
+    };
+  }
+
+  const classLink = requireHttpsClassLink(config.currentClassLink);
+  const text = publicConfirmationText(classLink);
   return {
     channel: 'email',
     provider: 'resend',
