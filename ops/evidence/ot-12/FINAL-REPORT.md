@@ -6,7 +6,7 @@
 - Base branch: `codex/foundation-landing-lead-v1`
 - Base SHA: `9d8b5b0818c788339a68070220461dada13f09b9`
 - Delivery branch: `codex/crm-core-v1`
-- Head SHA: `4fd3a6b3006284593a03dbb0db065d46499cde4a`
+- Implementation/evidence head SHA before final-report closeout: `4fd3a6b3006284593a03dbb0db065d46499cde4a`
 - Draft PR: https://github.com/webcraft-media/onetimev2/pull/2
 
 ## Commits
@@ -14,6 +14,7 @@
 - `ede6458027be12b039c3a4f345cb01543d6f361e` - `feat: add standalone One Time auth and CRM API core`
 - `bcf0680bc77c3f76b8198edc2dcb598017aff5e5` - `feat: add responsive authenticated CRM shell`
 - `4fd3a6b3006284593a03dbb0db065d46499cde4a` - `test: certify One Time CRM vertical slice`
+- Final-report closeout commit: see branch history / Codex closeout response for the latest pushed branch head.
 
 ## Migration
 
