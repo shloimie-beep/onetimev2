@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import {
   leadPayloadSchema,
   type LeadPayload,
@@ -31,6 +32,12 @@ const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
 const CONSENT_POLICY = 'one-time-class-reminders-v1-2026-07-14';
 
+export class IdempotencyConflictError extends Error {
+  constructor() {
+    super('Idempotency key was already used for a different request.');
+  }
+}
+
 export async function captureLead({
   pool,
   config,
@@ -40,33 +47,33 @@ export async function captureLead({
   const email = normalizeEmail(parsed.email);
   const phone = normalizePhone(parsed.phone);
   const reqHash = requestHash(parsed);
-  const contactKey = stableKey('contact', [config.accountKey, config.productKey, email]);
-  const signupKey = stableKey('signup', [contactKey, OFFER_VERSION, CONTENT_VERSION]);
-  const message = successCopy(parsed.audience_type);
-  const responseBase = {
-    success: true as const,
-    duplicate_submission: false,
-    classification: parsed.audience_type,
-    contact_key: contactKey,
-    signup_key: signupKey,
-    confirmation_queued: true as const,
-    outbox_intents: outboxDeliveryKeys(config, parsed, contactKey, signupKey),
-    message,
-  };
 
   return inTransaction(pool, async (client) => {
     const duplicate = await client.query(
-      `SELECT response_json
+      `SELECT request_hash, response_json
          FROM onetime.idempotency_records
         WHERE account_key = $1 AND product_key = $2 AND idempotency_key = $3`,
       [config.accountKey, config.productKey, parsed.idempotency_key],
     );
     if (duplicate.rowCount) {
+      if (duplicate.rows[0].request_hash !== reqHash) throw new IdempotencyConflictError();
       const previous = duplicate.rows[0].response_json as LeadSuccessResponse;
       return { ...previous, duplicate_submission: true };
     }
 
-    await upsertContact(client, config, parsed, contactKey, email, phone);
+    const contactKey = await upsertContact(client, config, parsed, email, phone);
+    const signupKey = stableKey('signup', [contactKey, OFFER_VERSION, CONTENT_VERSION]);
+    const message = successCopy(parsed.audience_type);
+    const responseBase = {
+      success: true as const,
+      duplicate_submission: false,
+      classification: parsed.audience_type,
+      contact_key: contactKey,
+      signup_key: signupKey,
+      confirmation_queued: true as const,
+      outbox_intents: outboxDeliveryKeys(config, parsed, contactKey, signupKey),
+      message,
+    };
     await upsertSignup(client, config, parsed, contactKey, signupKey);
     await insertAudit(client, config, parsed, contactKey, signupKey);
     await insertOutboxIntents(client, config, parsed, contactKey, signupKey, email, phone);
@@ -91,17 +98,19 @@ async function upsertContact(
   client: Queryable,
   config: AppConfig,
   payload: LeadPayload,
-  contactKey: string,
   email: string,
   phone: string | null,
 ) {
-  await client.query(
+  const contactKey = `contact_${randomUUID()}`;
+  const publicContactId = randomUUID();
+  const result = await client.query(
     `INSERT INTO onetime.contacts (
-       contact_key, account_key, product_key, display_name, family_school_classification,
+       contact_key, public_contact_id, account_key, product_key, display_name, family_school_classification,
        family_or_school, location_text, timezone, email_normalized, phone_normalized,
-       reminder_preference, consent_policy_version, consent_recorded_at, source
+       reminder_preference, consent_policy_version, consent_recorded_at, source,
+       offer_version, content_version, lead_status, last_activity_at
      )
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,CASE WHEN $13 THEN now() ELSE NULL END,$14)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,CASE WHEN $14 THEN now() ELSE NULL END,$15,$16,$17,'new',now())
      ON CONFLICT (account_key, product_key, email_normalized)
      DO UPDATE SET
        display_name = EXCLUDED.display_name,
@@ -113,9 +122,17 @@ async function upsertContact(
        reminder_preference = EXCLUDED.reminder_preference,
        consent_policy_version = EXCLUDED.consent_policy_version,
        consent_recorded_at = COALESCE(EXCLUDED.consent_recorded_at, onetime.contacts.consent_recorded_at),
-       updated_at = now()`,
+       offer_version = $15,
+       content_version = $16,
+       lead_status = CASE WHEN onetime.contacts.lead_status = 'archived' THEN 'new' ELSE onetime.contacts.lead_status END,
+       last_activity_at = now(),
+       version = onetime.contacts.version + 1,
+       identity_version = onetime.contacts.identity_version + 1,
+       updated_at = now()
+     RETURNING contact_key`,
     [
       contactKey,
+      publicContactId,
       config.accountKey,
       config.productKey,
       payload.contact_name.trim(),
@@ -129,8 +146,11 @@ async function upsertContact(
       payload.reminder_preference === 'none' ? null : CONSENT_POLICY,
       payload.reminder_consent,
       'one_time_public_signup',
+      OFFER_VERSION,
+      CONTENT_VERSION,
     ],
   );
+  return String(result.rows[0].contact_key);
 }
 
 async function upsertSignup(

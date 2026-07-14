@@ -30,3 +30,49 @@ test('signup meets local performance and layout gates', async ({ page }) => {
   expect(usableMs).toBeLessThanOrEqual(2500);
   expect(overflow).toBe(false);
 });
+
+test('authenticated CRM list and detail stay within request and usability budgets', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/signup');
+  const email = `perf-${Date.now()}@example.test`;
+  await page.getByLabel('Parent or contact name').fill('Perf Parent');
+  await page.getByLabel('Family or School').fill('Perf Family');
+  await page.getByLabel('Location').fill('Jerusalem');
+  await page.getByRole('textbox', { name: 'Email' }).fill(email);
+  await page
+    .getByLabel('Confirm that we may send the selected class information and reminders.')
+    .check();
+  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  await page.getByRole('heading', { name: "You're signed up." }).waitFor();
+
+  const apiRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.pathname.startsWith('/api/v1/')) apiRequests.push(url.pathname);
+  });
+
+  await page.goto('/login');
+  await page.getByLabel('Email').fill('ot-admin@example.test');
+  await page.getByLabel('Password').fill('TestPassword!234');
+  await page.getByRole('button', { name: 'Login' }).click();
+  const listStarted = Date.now();
+  await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
+  const listMs = Date.now() - listStarted;
+  const listApiCount = apiRequests.filter(
+    (path) => path.startsWith('/api/v1/auth') || path.startsWith('/api/v1/crm'),
+  ).length;
+  expect(listMs).toBeLessThanOrEqual(2500);
+  expect(listApiCount).toBeLessThanOrEqual(5);
+
+  await page.getByLabel('Search').fill(email);
+  await page.getByRole('button', { name: 'Apply' }).click();
+  await page.getByRole('button', { name: /Perf Parent/ }).click();
+  const detailStarted = Date.now();
+  await page.waitForFunction(() => performance.getEntriesByName('ot-crm-detail-usable').length > 0);
+  const detailMs = Date.now() - detailStarted;
+  const detailRequests = apiRequests.filter((path) => path.includes('/api/v1/crm/contacts/'));
+  expect(detailMs).toBeLessThanOrEqual(3000);
+  expect(detailRequests.length).toBeLessThanOrEqual(3);
+});

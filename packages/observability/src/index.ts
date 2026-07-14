@@ -19,6 +19,7 @@ export const logger = pino({
 export type RequestWithTrace = Request & {
   traceId?: string;
   timings?: { name: string; durationMs: number }[];
+  exposeServerTiming?: boolean;
 };
 
 export function traceMiddleware(req: RequestWithTrace, res: Response, next: NextFunction) {
@@ -27,15 +28,18 @@ export function traceMiddleware(req: RequestWithTrace, res: Response, next: Next
   req.traceId = incoming && incoming.length <= 128 ? incoming : crypto.randomUUID();
   req.timings = [];
   res.setHeader('x-request-id', req.traceId);
-  res.setHeader('Server-Timing', 'app;dur=0');
   const writeHead = res.writeHead.bind(res);
   res.writeHead = ((...args: Parameters<Response['writeHead']>) => {
     const total = performance.now() - started;
-    const entries = [
-      `app;dur=${total.toFixed(1)}`,
-      ...(req.timings ?? []).map((entry) => `${entry.name};dur=${entry.durationMs.toFixed(1)}`),
-    ];
-    res.setHeader('Server-Timing', entries.join(', '));
+    if (req.exposeServerTiming) {
+      const entries = [
+        `app;dur=${total.toFixed(1)}`,
+        ...(req.timings ?? []).map((entry) => `${entry.name};dur=${entry.durationMs.toFixed(1)}`),
+      ];
+      res.setHeader('Server-Timing', entries.join(', '));
+    } else {
+      res.removeHeader('Server-Timing');
+    }
     return writeHead(...args);
   }) as Response['writeHead'];
 
@@ -51,6 +55,10 @@ export function traceMiddleware(req: RequestWithTrace, res: Response, next: Next
   });
 
   next();
+}
+
+export function exposeServerTiming(req: RequestWithTrace) {
+  req.exposeServerTiming = true;
 }
 
 export async function withTiming<T>(

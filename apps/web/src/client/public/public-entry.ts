@@ -206,3 +206,93 @@ if (form) {
     }
   });
 }
+
+const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
+if (loginForm) {
+  const status = loginForm.querySelector<HTMLElement>('[data-form-status]');
+  const submit = loginForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const setError = (name: string, message: string) => {
+    const field = loginForm.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+    if (field) field.textContent = message;
+  };
+  const clearErrors = () =>
+    loginForm
+      .querySelectorAll<HTMLElement>('[data-error-for]')
+      .forEach((node) => (node.textContent = ''));
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearErrors();
+    if (!loginForm.reportValidity()) return;
+    const data = new FormData(loginForm);
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = 'Logging in...';
+    }
+    if (status) status.textContent = '';
+    try {
+      const response = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-csrf-token': String(data.get('csrf_token') ?? ''),
+        },
+        body: JSON.stringify({
+          email: String(data.get('email') ?? ''),
+          password: String(data.get('password') ?? ''),
+          csrf_token: String(data.get('csrf_token') ?? ''),
+          return_to: String(data.get('return_to') ?? '/app/crm'),
+        }),
+      });
+      const json = await response.json();
+      if (!response.ok || !json.success) {
+        if (json.code === 'MFA_REQUIRED' && json.challenge_token) {
+          const code = window.prompt('Enter your authenticator or recovery code.');
+          if (!code) {
+            if (status) status.textContent = 'Authenticator or recovery code is required.';
+            return;
+          }
+          const trimmedCode = code.trim();
+          const mfaResponse = await fetch(
+            /^\d{6}$/.test(trimmedCode)
+              ? '/api/v1/auth/mfa/challenge'
+              : '/api/v1/auth/mfa/recovery',
+            {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(
+                /^\d{6}$/.test(trimmedCode)
+                  ? { challenge_token: json.challenge_token, totp_code: trimmedCode }
+                  : { challenge_token: json.challenge_token, recovery_code: trimmedCode },
+              ),
+            },
+          );
+          const mfaJson = await mfaResponse.json();
+          if (!mfaResponse.ok || !mfaJson.success) {
+            if (status)
+              status.textContent = mfaJson.message ?? 'Authenticator code was not accepted.';
+            return;
+          }
+          window.location.assign(mfaJson.return_to ?? '/app/crm');
+          return;
+        }
+        if (json.field_errors) {
+          Object.entries(json.field_errors as Record<string, string>).forEach(([name, message]) =>
+            setError(name, message),
+          );
+        } else if (status) {
+          status.textContent = json.message ?? 'Email or password is not correct.';
+        }
+        return;
+      }
+      window.location.assign(json.return_to ?? '/app/crm');
+    } catch {
+      if (status) status.textContent = 'Login is unavailable right now.';
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = 'Login';
+      }
+    }
+  });
+}
