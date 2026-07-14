@@ -2,26 +2,21 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { ContactDetail, ContactListItem, SessionUser } from '@onetime/contracts';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import {
+  AuthExpiredError,
+  SEARCH_UNAVAILABLE_MESSAGE,
+  SearchUnavailableError,
+  createIdempotencyKey,
+  getContact,
+  getSession,
+  listContacts,
+  logoutSession,
+  resolveCrmCapabilities,
+  saveContactRequest,
+  type ApiSession,
+  type QueryState,
+} from './crm-api.js';
 import './crm.css';
-
-type ApiSession = {
-  authenticated: true;
-  user: SessionUser;
-  csrf_token: string;
-  expires_at: string;
-};
-
-type ListResponse = {
-  success: true;
-  contacts: ContactListItem[];
-  next_cursor: string | null;
-  applied_filters: Record<string, string | undefined>;
-};
-
-type ContactResponse = {
-  success: true;
-  contact: ContactDetail;
-};
 
 type ContactFormState = {
   display_name: string;
@@ -34,13 +29,6 @@ type ContactFormState = {
   assigned_user_key: string;
   internal_note: string;
   version?: number;
-};
-
-type QueryState = {
-  search: string;
-  classification: string;
-  lead_status: string;
-  sort: string;
 };
 
 type Notice = {
@@ -67,12 +55,6 @@ const defaultQuery: QueryState = {
   sort: 'updated_desc',
 };
 
-class AuthExpiredError extends Error {
-  constructor() {
-    super('Session expired');
-  }
-}
-
 function CrmApp() {
   const [session, setSession] = useState<ApiSession | null>(null);
   const [sessionExpired, setSessionExpired] = useState(false);
@@ -89,7 +71,15 @@ function CrmApp() {
   const [editing, setEditing] = useState(false);
   const [focusContactId, setFocusContactId] = useState<string | null>(null);
   const returnFocusContactId = useRef<string | null>(null);
-  const canEdit = session ? ['owner', 'admin', 'crm_agent'].includes(session.user.role) : false;
+  const listCache = useRef<{
+    key: string;
+    contacts: ContactListItem[];
+    nextCursor: string | null;
+  } | null>(null);
+  const capabilities = resolveCrmCapabilities(session);
+  const canCreate = capabilities.contacts.create;
+  const canEdit = capabilities.contacts.update;
+  const canAssign = capabilities.contacts.assign;
 
   useEffect(() => {
     void loadSession();
@@ -108,9 +98,23 @@ function CrmApp() {
     setFocusContactId(null);
   }, [contacts, creating, editing, focusContactId, listLoading, selected]);
 
+  useEffect(() => {
+    if (sessionExpired || selected || creating || editing || listLoading) return;
+    return markUsableAfterPaint('ot-crm-list-usable', isListUsable);
+  }, [contacts, creating, editing, listError, listLoading, selected, sessionExpired]);
+
+  useEffect(() => {
+    if (sessionExpired || !selected || editing || detailLoading || detailError) return;
+    const title = document.getElementById('page-title');
+    window.requestAnimationFrame(() => title?.focus({ preventScroll: true }));
+    return markUsableAfterPaint('ot-crm-detail-usable', () =>
+      isDetailUsable(selected.display_name),
+    );
+  }, [detailError, detailLoading, editing, selected, sessionExpired]);
+
   async function loadSession() {
     try {
-      const json = await api<ApiSession>('/api/v1/auth/session');
+      const json = await getSession();
       setSession(json);
       setSessionExpired(false);
     } catch (error) {
@@ -134,7 +138,7 @@ function CrmApp() {
       setSelected(null);
       setEditing(false);
       setCreating(false);
-      await loadList(undefined, query);
+      if (!restoreCachedList(query)) await loadList(undefined, query);
     }
   }
 
@@ -142,18 +146,24 @@ function CrmApp() {
     setListLoading(true);
     setListError('');
     setNotice(null);
-    const params = new URLSearchParams();
-    Object.entries(nextQuery).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-    });
-    if (cursor) params.set('cursor', cursor);
     try {
-      const json = await api<ListResponse>(`/api/v1/crm/contacts?${params.toString()}`);
-      setContacts((current) => (cursor ? [...current, ...json.contacts] : json.contacts));
+      const json = await listContacts(nextQuery, cursor);
+      setContacts((current) => {
+        const nextContacts = cursor ? [...current, ...json.contacts] : json.contacts;
+        listCache.current = {
+          key: listCacheKey(nextQuery),
+          contacts: nextContacts,
+          nextCursor: json.next_cursor,
+        };
+        return nextContacts;
+      });
       setNextCursor(json.next_cursor);
-      performance.mark('ot-crm-list-usable');
     } catch (error) {
       if (handleAuthError(error)) return;
+      if (error instanceof SearchUnavailableError) {
+        setListError(SEARCH_UNAVAILABLE_MESSAGE);
+        return;
+      }
       setListError(errorMessage(error, 'CRM contacts could not load.'));
     } finally {
       setListLoading(false);
@@ -165,12 +175,8 @@ function CrmApp() {
     setDetailError('');
     setNotice(null);
     try {
-      const json = await api<ContactResponse>(
-        `/api/v1/crm/contacts/${encodeURIComponent(contactId)}`,
-      );
+      const json = await getContact(contactId);
       setSelected(json.contact);
-      performance.mark('ot-crm-detail-usable');
-      window.setTimeout(() => document.getElementById('page-title')?.focus(), 0);
     } catch (error) {
       if (handleAuthError(error)) return;
       setSelected(null);
@@ -193,11 +199,22 @@ function CrmApp() {
     setSelected(null);
     setEditing(false);
     setCreating(false);
-    await loadList(undefined, query);
+    if (!restoreCachedList(query)) await loadList(undefined, query);
     const contactId = returnFocusContactId.current;
     if (contactId) {
       setFocusContactId(contactId);
     }
+  }
+
+  function restoreCachedList(nextQuery: QueryState) {
+    const cached = listCache.current;
+    if (!cached || cached.key !== listCacheKey(nextQuery)) return false;
+    setContacts(cached.contacts);
+    setNextCursor(cached.nextCursor);
+    setListError('');
+    setNotice(null);
+    setListLoading(false);
+    return true;
   }
 
   function startCreate() {
@@ -211,15 +228,15 @@ function CrmApp() {
     if (!session) return;
     const csrfToken = session.csrf_token;
     clearProtectedState();
-    await fetch('/api/v1/auth/logout', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-csrf-token': csrfToken },
-      body: JSON.stringify({ csrf_token: csrfToken }),
-    });
+    await logoutSession(csrfToken).catch(() => undefined);
     window.location.assign('/login');
   }
 
-  async function saveContact(form: ContactFormState, mode: 'create' | 'edit') {
+  async function saveContact(
+    form: ContactFormState,
+    mode: 'create' | 'edit',
+    idempotencyKey?: string,
+  ) {
     if (!session) return;
     setNotice(null);
     const payload = {
@@ -227,35 +244,31 @@ function CrmApp() {
       assigned_user_key: form.assigned_user_key || undefined,
       internal_note: form.internal_note || '',
     };
-    const response = await fetch(
-      mode === 'create'
-        ? '/api/v1/crm/contacts'
-        : `/api/v1/crm/contacts/${encodeURIComponent(selected?.contact_id ?? '')}`,
-      {
-        method: mode === 'create' ? 'POST' : 'PATCH',
-        headers: { 'content-type': 'application/json', 'x-csrf-token': session.csrf_token },
-        body: JSON.stringify(payload),
-      },
-    );
-    if (response.status === 401) {
-      clearProtectedState();
-      return;
-    }
-    const json = await response.json();
-    if (!response.ok || !json.success) {
+    try {
+      const json = await saveContactRequest({
+        csrfToken: session.csrf_token,
+        form: payload,
+        mode,
+        contactId: selected?.contact_id,
+        idempotencyKey,
+      });
+      setCreating(false);
+      setEditing(false);
+      setSelected(json.contact);
+      listCache.current = null;
+      history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(json.contact.contact_id)}`);
+      setNotice({ kind: 'success', message: 'Contact saved.' });
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      const json = error as Error & { code?: string; existing_contact_path?: string };
       if (json.code === 'DUPLICATE_CONTACT' && json.existing_contact_path) {
         setNotice({ kind: 'error', message: 'A matching contact already exists.' });
         history.pushState({}, '', json.existing_contact_path);
         await routeFromLocation();
         return;
       }
-      throw new Error(json.message ?? 'Contact could not be saved.');
+      throw error;
     }
-    setCreating(false);
-    setEditing(false);
-    setSelected(json.contact);
-    history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(json.contact.contact_id)}`);
-    setNotice({ kind: 'success', message: 'Contact saved.' });
   }
 
   function handleAuthError(error: unknown) {
@@ -267,9 +280,12 @@ function CrmApp() {
   function clearProtectedState() {
     setContacts([]);
     setNextCursor(null);
+    listCache.current = null;
     setSelected(null);
     setCreating(false);
     setEditing(false);
+    setListLoading(false);
+    setDetailLoading(false);
     setSession(null);
     setSessionExpired(true);
     setNotice(null);
@@ -285,7 +301,7 @@ function CrmApp() {
   const activeChips = useMemo(
     () =>
       Object.entries(query)
-        .filter(([, value]) => value && value !== 'updated_desc')
+        .filter(([key, value]) => key !== 'search' && value && value !== 'updated_desc')
         .map(([key, value]) => ({
           key,
           label: `${labelFor(key)}: ${displayFilterValue(key, value)}`,
@@ -322,7 +338,7 @@ function CrmApp() {
     <ListToolbar
       query={query}
       activeChips={activeChips}
-      canEdit={canEdit}
+      canEdit={canCreate}
       onChange={setQuery}
       onApply={(nextQuery) => void loadList(undefined, nextQuery)}
       onClear={() => {
@@ -352,9 +368,9 @@ function CrmApp() {
         <ContactForm
           title="Add contact"
           initial={emptyForm}
-          canAssign={session?.user.role === 'owner' || session?.user.role === 'admin'}
+          canAssign={canAssign}
           onCancel={() => setCreating(false)}
-          onSave={(form) => saveContact(form, 'create')}
+          onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
         />
       )}
       {selected &&
@@ -362,7 +378,7 @@ function CrmApp() {
           <ContactForm
             title="Edit contact"
             initial={detailToForm(selected)}
-            canAssign={session?.user.role === 'owner' || session?.user.role === 'admin'}
+            canAssign={canAssign}
             onCancel={() => setEditing(false)}
             onSave={(form) => saveContact(form, 'edit')}
           />
@@ -430,9 +446,15 @@ function ListToolbar({
         <label className={query.search ? 'is-selected' : undefined}>
           <span>Search</span>
           <input
-            value={query.search}
-            onChange={(event) => onChange({ ...query, search: event.target.value })}
+            value=""
+            disabled
+            readOnly
+            aria-describedby="crm-search-unavailable"
+            placeholder="Secure search pending"
           />
+          <small id="crm-search-unavailable" className="filter-help">
+            {SEARCH_UNAVAILABLE_MESSAGE}
+          </small>
         </label>
         <label className={query.classification ? 'is-selected' : undefined}>
           <span>Type</span>
@@ -557,7 +579,7 @@ function ContactList({
   onLoadMore: () => void;
   onCreate: () => void;
 }) {
-  const hasFilters = Boolean(query.search || query.classification || query.lead_status);
+  const hasFilters = Boolean(query.classification || query.lead_status);
   return (
     <section className="crm-list" data-usable="crm-list" aria-busy={loading}>
       {loading && <ListSkeleton />}
@@ -768,13 +790,23 @@ function ContactForm({
   initial: ContactFormState;
   canAssign: boolean;
   onCancel: () => void;
-  onSave: (form: ContactFormState) => Promise<void>;
+  onSave: (form: ContactFormState, idempotencyKey: string) => Promise<void>;
 }) {
   const [form, setForm] = useState(initial);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const idempotencyKey = useRef(createIdempotencyKey());
+  const formIntent = useRef(contactIntentFingerprint(initial));
   const set = (key: keyof ContactFormState, value: string) =>
-    setForm((current) => ({ ...current, [key]: value }));
+    setForm((current) => {
+      const next = { ...current, [key]: value };
+      const nextIntent = contactIntentFingerprint(next);
+      if (nextIntent !== formIntent.current) {
+        idempotencyKey.current = createIdempotencyKey();
+        formIntent.current = nextIntent;
+      }
+      return next;
+    });
   return (
     <section className="contact-form-shell" aria-labelledby="contact-form-title">
       <h2 id="contact-form-title">{title}</h2>
@@ -790,7 +822,7 @@ function ContactForm({
           setSaving(true);
           setError('');
           try {
-            await onSave(form);
+            await onSave(form, idempotencyKey.current);
           } catch (saveError) {
             setError(errorMessage(saveError, 'Contact could not be saved.'));
           } finally {
@@ -958,14 +990,6 @@ function Chip({ label, tone }: { label: string; tone: 'classification' | 'status
   return <span className={`semantic-chip ${tone}`}>{label}</span>;
 }
 
-async function api<T>(path: string): Promise<T> {
-  const response = await fetch(path, { headers: { accept: 'application/json' } });
-  const json = await response.json().catch(() => ({}));
-  if (response.status === 401) throw new AuthExpiredError();
-  if (!response.ok || json.success === false) throw new Error(json.message ?? 'Request failed.');
-  return json as T;
-}
-
 function detailToForm(contact: ContactDetail): ContactFormState {
   return {
     display_name: contact.display_name,
@@ -1053,6 +1077,79 @@ function errorMessage(error: unknown, fallback: string) {
 function cssEscape(value: string) {
   if ('CSS' in window && typeof CSS.escape === 'function') return CSS.escape(value);
   return value.replace(/["\\]/g, '\\$&');
+}
+
+function listCacheKey(query: QueryState) {
+  return JSON.stringify({
+    classification: query.classification,
+    lead_status: query.lead_status,
+    sort: query.sort,
+  });
+}
+
+function markUsableAfterPaint(markName: string, isReady: () => boolean) {
+  let cancelled = false;
+  const firstFrame = window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      if (!cancelled && isReady()) performance.mark(markName);
+    });
+  });
+  return () => {
+    cancelled = true;
+    window.cancelAnimationFrame(firstFrame);
+  };
+}
+
+function isListUsable() {
+  const section = document.querySelector<HTMLElement>('[data-usable="crm-list"]');
+  if (!section || section.getAttribute('aria-busy') === 'true' || !isVisible(section)) return false;
+  const apply = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+    (button) => button.textContent?.trim() === 'Apply',
+  );
+  if (!apply || apply.disabled || !isVisible(apply)) return false;
+  const contactAction = [...document.querySelectorAll<HTMLElement>('[data-contact-open]')].find(
+    isVisible,
+  );
+  const statePanel = document.querySelector<HTMLElement>('.state-panel');
+  return Boolean(contactAction || (statePanel && isVisible(statePanel)));
+}
+
+function isDetailUsable(displayName: string) {
+  const section = document.querySelector<HTMLElement>('[data-usable="crm-detail"]');
+  if (!section || section.getAttribute('aria-busy') === 'true' || !isVisible(section)) return false;
+  const heading = document.getElementById('page-title');
+  const backButton = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+    (button) => button.textContent?.trim() === 'Back to CRM',
+  );
+  return Boolean(
+    heading?.textContent?.includes(displayName) &&
+    isVisible(heading) &&
+    backButton &&
+    !backButton.disabled &&
+    isVisible(backButton),
+  );
+}
+
+function isVisible(element: Element) {
+  const rect = element.getBoundingClientRect();
+  const style = getComputedStyle(element);
+  return (
+    rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+  );
+}
+
+function contactIntentFingerprint(form: ContactFormState) {
+  return JSON.stringify({
+    display_name: form.display_name.trim(),
+    family_school_classification: form.family_school_classification,
+    email: form.email.trim(),
+    phone: form.phone.trim(),
+    location: form.location.trim(),
+    timezone: form.timezone.trim(),
+    lead_status: form.lead_status,
+    assigned_user_key: form.assigned_user_key.trim(),
+    internal_note: form.internal_note.trim(),
+  });
 }
 
 function focusVisibleContactControl(contactId: string) {

@@ -37,7 +37,8 @@ test('authenticated CRM list and detail stay within request and usability budget
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/signup');
   const email = `perf-${Date.now()}@example.test`;
-  await page.getByLabel('Parent or contact name').fill('Perf Parent');
+  const contactName = `Perf Parent ${Date.now()}`;
+  await page.getByLabel('Parent or contact name').fill(contactName);
   await page.getByLabel('Family or School').fill('Perf Family');
   await page.getByLabel('Location').fill('Jerusalem');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
@@ -66,9 +67,11 @@ test('authenticated CRM list and detail stay within request and usability budget
   expect(listMs).toBeLessThanOrEqual(2500);
   expect(listApiCount).toBeLessThanOrEqual(5);
 
-  await page.getByLabel('Search').fill(email);
+  await expect(page.getByLabel('Search')).toBeDisabled();
   await page.getByRole('button', { name: 'Apply' }).click();
-  await page.getByRole('button', { name: /Perf Parent/ }).click();
+  await expect(page.getByRole('button', { name: new RegExp(contactName) })).toBeVisible();
+  await page.evaluate(() => performance.clearMarks('ot-crm-detail-usable'));
+  await page.getByRole('button', { name: new RegExp(contactName) }).click();
   const detailStarted = Date.now();
   await page.waitForFunction(() => performance.getEntriesByName('ot-crm-detail-usable').length > 0);
   const detailMs = Date.now() - detailStarted;

@@ -484,6 +484,20 @@ textarea:focus-visible,
   padding: 10px 12px;
 }
 
+.toolbar-filters input:disabled {
+  border-color: #34464d;
+  background: #11191d;
+  color: #a5aea9;
+}
+
+.filter-help {
+  display: block;
+  color: #c8d6d9;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
 .toolbar-filters label.is-selected input,
 .toolbar-filters label.is-selected select {
   border-color: #ede518;
