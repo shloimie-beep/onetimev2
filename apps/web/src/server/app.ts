@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { ZodError } from 'zod';
@@ -28,6 +27,7 @@ import {
   canEditContacts,
   captureLead,
   createContact,
+  createLoginCsrf,
   createSession,
   getContactDetail,
   getSessionByToken,
@@ -38,6 +38,7 @@ import {
   revokeSession,
   rotateSessionCsrf,
   updateContact,
+  verifyLoginCsrf,
   verifyMfaChallenge,
   verifyMfaRecoveryChallenge,
   verifySessionCsrf,
@@ -116,15 +117,15 @@ export function createApp({
   app.get('/rabbi-member', (_req, res) => res.redirect(301, '/login'));
 
   app.get('/login', (req, res) => {
-    const csrfToken = token();
-    setCsrfCookie(res, config, csrfToken);
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
     setPrivateNoStore(res);
     res
       .status(200)
       .type('html')
       .send(
         loginPageHtml(
-          csrfToken,
+          csrf.csrf_token,
           safeReturnPath(String(req.query.return_to ?? ''), config) ?? '/app/crm',
         ),
       );
@@ -184,7 +185,13 @@ export function createApp({
     setPrivateNoStore(res);
     try {
       const payload = loginPayloadSchema.parse(req.body);
-      if (!verifyCookieCsrf(req, payload.csrf_token ?? req.header('x-csrf-token'))) {
+      if (
+        !verifyLoginCsrf(
+          config,
+          getCookie(req, CSRF_COOKIE),
+          payload.csrf_token ?? req.header('x-csrf-token'),
+        )
+      ) {
         res
           .status(403)
           .json(publicError('CSRF_REQUIRED', 'Refresh the login page and try again.', req.traceId));
@@ -692,11 +699,6 @@ async function ensureSessionCsrfCookie(
   return next;
 }
 
-function verifyCookieCsrf(req: Request, submitted?: string) {
-  const cookie = getCookie(req, CSRF_COOKIE);
-  return Boolean(cookie && submitted && cookie === submitted);
-}
-
 function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
   setPrivateNoStore(res);
   if (error instanceof ZodError) {
@@ -816,10 +818,6 @@ function safeReturnPath(value: string | undefined, config: AppConfig) {
   } catch {
     return null;
   }
-}
-
-function token() {
-  return randomUUID().replaceAll('-', '') + randomUUID().replaceAll('-', '');
 }
 
 function loginPageHtml(csrfToken: string, returnTo: string) {

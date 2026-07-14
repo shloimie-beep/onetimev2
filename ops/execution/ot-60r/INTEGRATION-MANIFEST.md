@@ -6,23 +6,25 @@
 
 ## Planned Inputs
 
-| PR | Commit | Initial Status | Integration Decision |
-| --- | --- | --- | --- |
-| #5 | `6ca5e568c328ea116a9413b57ea5920400f8bc14` | Pending audit | Pending |
-| #7 | `c1584577780d7b5125bce4fb81d2a454c9e84096` | Pending audit | Pending |
-| #11 | `b2c159a060d8aa50ec6feb69f1cae003fd633bf3` | Pending audit | Pending |
-| #4 | `61d4755fe279ca47c37e7adbe8d1e6ce8b258dae` | Pending audit | Pending |
-| #8 | `571b18f36cdc645f757cc3be6b0519f1af3225f6` | Pending audit | Pending |
-| #14 | `76cae19be515ee896f22d0da976082a09d1d25d6` | Pending audit | Pending |
-| #12 | `f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899` | Pending audit | Pending |
-| #15 | `9594c228b9ac3047f42bb9e8c804384cc45a3e40` | Pending audit | Pending |
-| #13 | `e235af05759f0a97496552c6e8aabed7ba3eee18` | Pending audit | Pending |
-| #6 | `0ea782d8551c26edd48b08d644b573e19b9835b1` | Pending audit | Pending |
-| #10 | `9444176dbc55e0c5af048ec1df2ea75ffa8dde33` | Pending audit | Evidence-only, pending registry reference |
+| PR  | Commit                                     | Initial Status | Integration Decision                      |
+| --- | ------------------------------------------ | -------------- | ----------------------------------------- |
+| #5  | `6ca5e568c328ea116a9413b57ea5920400f8bc14` | Audited        | Pending                                   |
+| #7  | `c1584577780d7b5125bce4fb81d2a454c9e84096` | Audited        | Pending                                   |
+| #11 | `b2c159a060d8aa50ec6feb69f1cae003fd633bf3` | Audited        | Pending                                   |
+| #4  | `61d4755fe279ca47c37e7adbe8d1e6ce8b258dae` | Audited        | Pending                                   |
+| #8  | `571b18f36cdc645f757cc3be6b0519f1af3225f6` | Audited        | Pending                                   |
+| #14 | `76cae19be515ee896f22d0da976082a09d1d25d6` | Audited        | Pending                                   |
+| #12 | `f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899` | Audited        | Pending                                   |
+| #15 | `9594c228b9ac3047f42bb9e8c804384cc45a3e40` | Audited        | Pending                                   |
+| #13 | `e235af05759f0a97496552c6e8aabed7ba3eee18` | Audited        | Pending                                   |
+| #6  | `0ea782d8551c26edd48b08d644b573e19b9835b1` | Audited        | Pending                                   |
+| #10 | `9444176dbc55e0c5af048ec1df2ea75ffa8dde33` | Audited        | Evidence-only, defer implementation claim |
 
 ## Supersession Inputs
 
-| Input | Rule |
-| --- | --- |
-| PR #3 / OT-34 | Do not merge blindly; compare against canonical PR #2 security model. |
+| Input         | Rule                                                                                                              |
+| ------------- | ----------------------------------------------------------------------------------------------------------------- |
+| PR #3 / OT-34 | Do not merge blindly; compare against canonical PR #2 security model.                                             |
 | PR #9 / OT-38 | Do not import alternate migration/model; port only a verified missing HMAC login-CSRF property if PR #2 lacks it. |
+
+Result: PR #3/#9 alternate trains are superseded. Only the verified missing HMAC login-CSRF property from PR #9 was ported.

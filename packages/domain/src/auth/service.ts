@@ -885,6 +885,21 @@ export function canAssignContacts(role: UserRole) {
   return role === 'owner' || role === 'admin';
 }
 
+export function createLoginCsrf(config: AppConfig) {
+  const csrfCookie = token();
+  return { csrf_cookie: csrfCookie, csrf_token: csrfProof(config, 'login', csrfCookie) };
+}
+
+export function verifyLoginCsrf(
+  config: AppConfig,
+  csrfCookie?: string | undefined,
+  submitted?: string | undefined,
+) {
+  return Boolean(
+    csrfCookie && submitted && verifyCsrfProof(config, 'login', csrfCookie, submitted),
+  );
+}
+
 export function hashValue(value: string) {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -942,6 +957,27 @@ function rowToSessionUser(row: Record<string, unknown>): SessionUser {
 
 function token() {
   return randomBytes(32).toString('base64url');
+}
+
+function csrfProof(config: AppConfig, scope: string, csrfCookie: string) {
+  const nonce = token();
+  const signature = createHmac('sha256', config.authCsrfSecret)
+    .update([scope, csrfCookie, nonce].join('\0'))
+    .digest('base64url');
+  return `${nonce}.${signature}`;
+}
+
+function verifyCsrfProof(config: AppConfig, scope: string, csrfCookie: string, submitted: string) {
+  const [nonce, signature, extra] = submitted.split('.');
+  if (!nonce || !signature || extra !== undefined) return false;
+  const expected = createHmac('sha256', config.authCsrfSecret)
+    .update([scope, csrfCookie, nonce].join('\0'))
+    .digest('base64url');
+  const actualBuffer = Buffer.from(signature);
+  const expectedBuffer = Buffer.from(expected);
+  return (
+    actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer)
+  );
 }
 
 async function replaceRecoveryCodes(client: Queryable, config: AppConfig, userKey: string) {

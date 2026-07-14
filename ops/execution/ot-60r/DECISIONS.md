@@ -15,3 +15,11 @@ Decision: create and commit the execution protocol, state files, and evidence pl
 Reason: the prompt explicitly requires a durable checkpoint before risky integration work.
 
 Status: active.
+
+## DEC-OT60R-003 - Supersede PR #3/#9 Except Login-CSRF HMAC Proof
+
+Decision: do not merge or cherry-pick PR #3 / OT-34 or PR #9 / OT-38 as branches. Preserve canonical PR #2 auth/session/MFA/CRM behavior, but port PR #9's stronger HMAC-derived login-CSRF proof because the source audit showed PR #2 still used simple cookie/submitted equality for login.
+
+Reason: the prompt explicitly warns that PR #3/#9 are older stacked security lines and allows porting only a verified missing security property.
+
+Status: active.

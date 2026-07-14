@@ -4,30 +4,63 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "phase": "protocol_installation",
+  "current_head_sha": "5a3071cd8cb061ef4e58a59ed11760dec87a4203",
+  "phase": "supersession_security_port",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T00:00:00+03:00",
+  "updated_at": "2026-07-15T01:20:00+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
     "Fetched origin and verified origin/codex/crm-core-v1 equals the requested base SHA.",
     "Verified base SHA exists and descends from foundation head 3465bd7d4c6b6829a6be6e4b4f8a003d608f3680 and common ancestor a73458d1884b8fcb4843c4852425009577f59ef7.",
     "Created fresh worktree C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence on branch codex/ot60r-recovery-convergence from the exact base SHA.",
-    "Persisted the received prompt at ops/execution/ot-60r/ORIGINAL-PROMPT.md."
+    "Persisted the received prompt at ops/execution/ot-60r/ORIGINAL-PROMPT.md.",
+    "Committed and pushed the initial execution protocol checkpoint to origin.",
+    "Audited required remote PR heads and saved sanitized PR metadata under ops/evidence/ot-60r/remote-pr-json.",
+    "Recorded remote state, overlap matrix, migration ledger, and missing OT-41/OT-43/pre-existing OT-60 branch checks.",
+    "Compared PR #3/#9 against canonical PR #2 and excluded their alternate migrations/models.",
+    "Ported only the missing HMAC-derived login-CSRF proof from PR #9 with regression tests."
   ],
   "remaining_steps": [
-    "Commit and push initial protocol checkpoint.",
-    "Audit remote PR heads, states, merge bases, changed-file sets, migrations, checksums, evidence paths, integration manifest, and overlap matrix.",
-    "Create supersession matrix for PR #3/OT-34 and PR #9/OT-38 against canonical PR #2 base.",
-    "Integrate non-superseded feature units in dependency order with checkpoints after each unit.",
+    "Commit and push the supersession security port checkpoint.",
+    "Apply authenticated shell and CRM units in order: PR #5, PR #7, PR #11.",
+    "Apply delivery and communications units in order: PR #4 feature range, PR #8, PR #14.",
+    "Apply isolated modules: PR #12, PR #15, PR #13.",
+    "Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.",
+    "Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.",
     "Run required local verification and record blocked checks honestly.",
     "Open draft PR against codex/crm-core-v1 after a pushed resumable checkpoint exists."
   ],
   "blockers": [],
-  "last_safe_command": "git status --short",
-  "test_results": [],
+  "last_safe_command": "npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts",
+  "test_results": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "summary": "Installed 348 packages from lockfile; npm reported 0 vulnerabilities."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully."
+    },
+    {
+      "command": "npx prettier --check <touched supported files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style. .env.example is excluded because Prettier cannot infer a parser for that extension."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 116 repo text files."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts",
+      "status": "passed",
+      "summary": "Focused auth/CRM integration suite passed 10 tests."
+    }
+  ],
   "external_mutation_counts": {
     "deployments": 0,
     "production_database_writes": 0,
@@ -38,5 +71,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with the first unfinished phase without repeating completed work."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #5 / OT-35 authenticated shell semantic integration without repeating the completed protocol, remote audit, or PR #3/#9 supersession work."
 }

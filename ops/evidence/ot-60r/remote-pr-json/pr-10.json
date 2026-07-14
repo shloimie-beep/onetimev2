@@ -1,0 +1,106 @@
+{
+  "number": 10,
+  "title": "OT-47 parallel secure content-library foundation",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/10",
+  "baseRefName": "codex/parallel-base-a73458d",
+  "baseRefOid": "a73458d1884b8fcb4843c4852425009577f59ef7",
+  "headRefName": "codex/parallel-ot47-content-library-foundation",
+  "headRefOid": "9444176dbc55e0c5af048ec1df2ea75ffa8dde33",
+  "mergeStateStatus": "UNSTABLE",
+  "commits": [
+    {
+      "oid": "350f977694371241064ae3943c63937bbcec4eac",
+      "messageHeadline": "docs: record ot47 postgres blocker",
+      "authoredDate": "2026-07-14T20:41:02Z",
+      "committedDate": "2026-07-14T20:41:02Z"
+    },
+    {
+      "oid": "9444176dbc55e0c5af048ec1df2ea75ffa8dde33",
+      "messageHeadline": "docs: link ot47 blocker pr",
+      "authoredDate": "2026-07-14T20:42:56Z",
+      "committedDate": "2026-07-14T20:42:56Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "ops/evidence/ot-47/ARCHITECTURE-DECISION.md",
+      "additions": 33,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/COLLISION-MAP.md",
+      "additions": 34,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/EVENT-CONTRACT.md",
+      "additions": 24,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/FINAL-REPORT.md",
+      "additions": 65,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/INTEGRATION-MANIFEST.md",
+      "additions": 103,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/PERFORMANCE.md",
+      "additions": 17,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/PREFLIGHT.md",
+      "additions": 70,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/PROVIDER-CONFIG-AUDIT.md",
+      "additions": 42,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/REAL-POSTGRESQL.md",
+      "additions": 33,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/ROLLBACK.md",
+      "additions": 17,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/SCHEMA-AND-MIGRATION.md",
+      "additions": 25,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/SECURITY-PRIVACY.md",
+      "additions": 23,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-47/TEST-RESULTS.md",
+      "additions": 25,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}

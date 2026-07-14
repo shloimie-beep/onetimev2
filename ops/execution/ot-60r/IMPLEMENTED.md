@@ -8,4 +8,12 @@
 
 ## Product Integration
 
-No product feature integration has been applied yet. This is intentional: the prompt requires an initial committed execution checkpoint before risky integration work.
+No broad product feature integration has been applied yet.
+
+## Supersession Security Port
+
+- Audited PR #3 / OT-34 and PR #9 / OT-38 against canonical PR #2 base.
+- Kept PR #2's canonical `security_version`, `public_contact_id`, MFA, session, and POST-body CRM search model.
+- Excluded PR #3/#9 alternate migrations/models.
+- Ported only the missing PR #9 HMAC-derived login-CSRF proof.
+- Added regression coverage for cookie replay and tampered proof tokens.

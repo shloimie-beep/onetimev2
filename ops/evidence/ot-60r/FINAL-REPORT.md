@@ -2,4 +2,13 @@
 
 Status: building.
 
-No product integration has been applied yet. The current checkpoint installs the resumable execution protocol and preserves the raw prompt.
+Completed so far:
+
+- Installed and pushed the resumable execution protocol.
+- Audited required remote PR heads/commits.
+- Recorded branch absence for OT-41/OT-43 and pre-existing OT-60.
+- Built migration, overlap, and supersession matrices.
+- Ported only PR #9's missing HMAC-derived login-CSRF proof into the canonical PR #2 base.
+
+Current head is not a canonical integrated product candidate yet. Feature integration
+is still pending, starting with PR #5 / OT-35 authenticated shell.

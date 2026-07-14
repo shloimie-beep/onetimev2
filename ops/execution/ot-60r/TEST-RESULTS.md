@@ -10,4 +10,12 @@
 
 ## Product Tests
 
-Not run yet. Product integration has not started.
+## Supersession Security Port
+
+- `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.
+- `npm run typecheck`: PASS.
+- `npx prettier --check <touched supported files>`: PASS. `.env.example` is excluded because Prettier cannot infer a parser for that extension.
+- `npm run secret:scan`: PASS across 116 repo text files.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts`: PASS, 10 tests.
+
+Full lint, format, unit, full integration, build, E2E, accessibility, performance, secret scan, and PostgreSQL assurance remain pending for later integration checkpoints.

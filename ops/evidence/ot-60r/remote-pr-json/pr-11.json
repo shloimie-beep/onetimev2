@@ -1,0 +1,106 @@
+{
+  "number": 11,
+  "title": "OT-42 parallel CRM module v1",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/11",
+  "baseRefName": "codex/parallel-base-ot39-c158457",
+  "baseRefOid": "c1584577780d7b5125bce4fb81d2a454c9e84096",
+  "headRefName": "codex/parallel-ot42-crm-module-v1",
+  "headRefOid": "b2c159a060d8aa50ec6feb69f1cae003fd633bf3",
+  "mergeStateStatus": "CLEAN",
+  "commits": [
+    {
+      "oid": "b2c159a060d8aa50ec6feb69f1cae003fd633bf3",
+      "messageHeadline": "feat: add OT-42 CRM module",
+      "authoredDate": "2026-07-14T20:50:22Z",
+      "committedDate": "2026-07-14T20:50:22Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/client/app/crm/ot42-cache.ts",
+      "additions": 141,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/web/src/client/app/crm/ot42-lazy-tabs.ts",
+      "additions": 47,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/web/src/server/crm/register.ts",
+      "additions": 469,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-42/FINAL-REPORT.md",
+      "additions": 77,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-42/INTEGRATION-MANIFEST.md",
+      "additions": 110,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-42/PR-BODY.md",
+      "additions": 53,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/crm/capabilities.ts",
+      "additions": 31,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/crm/schemas.ts",
+      "additions": 175,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/migrations/1000_ot42_crm_module_v1.sql",
+      "additions": 266,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/crm/ot42-capabilities.ts",
+      "additions": 26,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/crm/ot42-protocol.ts",
+      "additions": 37,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/integration/ot42-router.test.ts",
+      "additions": 163,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/ot42-cache.test.ts",
+      "additions": 44,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/ot42-capabilities.test.ts",
+      "additions": 39,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}
