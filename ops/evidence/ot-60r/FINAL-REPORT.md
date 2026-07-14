@@ -14,6 +14,7 @@ Completed so far:
 - Integrated PR #11 / OT-42 as an additive, unmounted CRM module surface with contracts, helpers, migration, protected client cache, lazy tab loader, and focused tests.
 - Integrated PR #4 / OT-36 delivery foundation range and PR #8 / OT-40 delivery correction with sink/mock guardrails and no real provider activation.
 - Integrated PR #14 / OT-44 communications read model and wired it into the shared app with read-only session scope and lazy CRM shell route/contact view.
+- Integrated PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted, default-off module with no live Stripe/provider/access mutation.
 
 Current head is not a canonical integrated product candidate yet. Feature integration
-is still pending, continuing with PR #12 / OT-46 fixture-only billing foundation.
+is still pending, continuing with PR #15 / OT-52 parent/student portals.

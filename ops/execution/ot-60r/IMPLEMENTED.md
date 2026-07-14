@@ -26,6 +26,8 @@
 - Integrated PR #14 / OT-44 communications read model.
 - Added communications contracts, cursor binding, normalization, masking, read service, PostgreSQL read adapter, route-registration hook, lazy Communications feature, and tests/evidence.
 - Wired OT-44 into the shared app with a non-mutating read-only session scope resolver, global Communications route, contact Communications view, and no default CRM overview Communications prefetch/API request.
+- Integrated PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted module.
+- Added billing contracts, disabled-by-default config parser, fixture provider adapter, network guard, return-path validation, entitlement policy, service/router hooks, repository, migration `1300`, reference UI, and focused tests.
 
 ## Supersession Security Port
 

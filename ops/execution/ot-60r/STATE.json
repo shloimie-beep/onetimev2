@@ -5,10 +5,10 @@
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
   "current_head_sha": "3a9772439b5fbd1a1fd0969406d2d2033bef90a0",
-  "phase": "pr14_ot44_communications_integrated",
+  "phase": "pr12_ot46_billing_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:30:02+03:00",
+  "updated_at": "2026-07-15T02:35:39+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -45,10 +45,13 @@
     "Bound OT-44 server routes into the shared app with a read-only session scope resolver that does not update session last-seen state.",
     "Wired the lazy Communications global route and contact Communications view into the accepted CRM shell without default CRM overview prefetch/API calls.",
     "Verified delivery, communications, build, auth/CRM regression, OT-44 browser checks, OT-39 browser regression, delivery repository tests, formatting, whitespace, JSON validity, and secret scan.",
-    "Committed the PR #4/#8/#14 delivery and communications checkpoint at 3a9772439b5fbd1a1fd0969406d2d2033bef90a0."
+    "Committed the PR #4/#8/#14 delivery and communications checkpoint at 3a9772439b5fbd1a1fd0969406d2d2033bef90a0.",
+    "Applied PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted module.",
+    "Preserved OT-46 default-off and fixture-only constraints with zero Stripe network calls, zero provider mutations, and no entitlement/access grants.",
+    "Verified OT-46 focused unit/integration tests, typecheck, build, formatting, whitespace, JSON validity, and secret scan."
   ],
   "remaining_steps": [
-    "Apply isolated modules: PR #12, PR #15, PR #13.",
+    "Apply isolated modules: PR #15, PR #13.",
     "Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.",
     "Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.",
     "Run required local verification and record blocked checks honestly.",
@@ -176,6 +179,41 @@
       "command": "npm run secret:scan",
       "status": "passed",
       "summary": "Secret scan passed across 206 repo text files."
+    },
+    {
+      "command": "npx vitest run tests/unit/ot46-billing-config-policy.test.ts tests/integration/ot46-billing-services.test.ts",
+      "status": "passed",
+      "summary": "OT-46 focused billing tests passed 26 tests across 2 files."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully after OT-46 integration."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed; billing remains unmounted and did not add a public/app bundle chunk."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json and CANONICAL-CANDIDATE.json successfully."
+    },
+    {
+      "command": "npx prettier --check <OT-46 and OT-60R touched files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 234 repo text files."
     }
   ],
   "external_mutation_counts": {
@@ -188,5 +226,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #12 / OT-46 without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, or PR #4/#8/#14 delivery/communications integration."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #15 / OT-52 without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, or PR #12 fixture-only billing integration."
 }

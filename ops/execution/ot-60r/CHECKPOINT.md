@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #14 / OT-44 communications integrated
+- Phase: PR #12 / OT-46 fixture-only billing integrated
 - Status: building
 
 ## Completed
@@ -43,6 +43,9 @@
 - Bound OT-44 into the shared app with a read-only session scope resolver, mounted `/app/communications`, `/api/v1/communications`, and `/api/v1/crm/contacts/:contactId/communications`, and added lazy Communications navigation/contact view wiring to the CRM shell.
 - Verified with focused delivery/communications Vitest suites, `npm run build`, focused auth/CRM regression, OT-44 browser checks, OT-39 browser regression, delivery repository contract tests, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
 - Committed the PR #4/#8/#14 delivery and communications checkpoint at `3a9772439b5fbd1a1fd0969406d2d2033bef90a0`.
+- Applied PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted module.
+- Preserved default-off billing flags, fixture-only provider adapter, no Stripe SDK/network calls, no provider mutations, and no entitlement/access grants.
+- Verified with OT-46 focused unit/integration tests, `npm run typecheck`, `npm run build`, formatting check, JSON parse check, `git diff --check`, and `npm run secret:scan`.
 
 ## Last Safe Command
 
@@ -53,9 +56,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git cherry-pick --no-commit f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899
+git cherry-pick --no-commit 9594c228b9ac3047f42bb9e8c804384cc45a3e40
 ```
 
-Continue PR #12 / OT-46 billing foundation. Keep Stripe fixture-only/default-off semantics and do not run live charges.
+Continue PR #15 / OT-52 parent/student portals. Preserve parent/student scope boundaries and relationship/learner isolation.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

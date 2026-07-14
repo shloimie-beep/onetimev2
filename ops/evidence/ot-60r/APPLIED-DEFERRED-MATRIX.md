@@ -11,7 +11,7 @@
 | PR #4 / OT-36 delivery | Applied | Applied both commits in order and kept sink/mock delivery worker guardrails. |
 | PR #8 / OT-40 delivery correction | Applied | Applied corrected delivery contract and final migration `0004` state. |
 | PR #14 / OT-44 communications | Applied | Applied communications read model and wired shared app/server shell with read-only session scope, lazy global route, and contact Communications view. |
-| PR #12 / OT-46 Stripe fixture-only | Pending | Default-off, no live charges. |
+| PR #12 / OT-46 Stripe fixture-only | Applied | Integrated as isolated, unmounted fixture-only billing foundation with default-off flags, no Stripe network, no provider mutation, and no entitlement/access grant. |
 | PR #15 / OT-52 portals | Pending | Relationship/learner scoped. |
 | PR #13 / OT-51 Telegram mock-only | Pending | Default-off, no live Telegram. |
 | PR #6 / OT-37 PostgreSQL assurance | Pending | Port after integrated schema exists. |

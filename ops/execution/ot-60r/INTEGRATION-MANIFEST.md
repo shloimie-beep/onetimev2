@@ -14,7 +14,7 @@
 | #4  | `61d4755fe279ca47c37e7adbe8d1e6ce8b258dae` | Audited        | Applied with range order                  |
 | #8  | `571b18f36cdc645f757cc3be6b0519f1af3225f6` | Audited        | Applied as delivery correction            |
 | #14 | `76cae19be515ee896f22d0da976082a09d1d25d6` | Audited        | Applied with shared app wiring            |
-| #12 | `f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899` | Audited        | Pending                                   |
+| #12 | `f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899` | Audited        | Applied as fixture-only isolated module   |
 | #15 | `9594c228b9ac3047f42bb9e8c804384cc45a3e40` | Audited        | Pending                                   |
 | #13 | `e235af05759f0a97496552c6e8aabed7ba3eee18` | Audited        | Pending                                   |
 | #6  | `0ea782d8551c26edd48b08d644b573e19b9835b1` | Audited        | Pending                                   |
@@ -38,3 +38,4 @@ Result: PR #3/#9 alternate trains are superseded. Only the verified missing HMAC
 | PR #11 / OT-42                  | Applied. Accepted contracts, schemas, capability/domain helpers, migration `1000_ot42_crm_module_v1.sql`, injectable CRM router/register hooks, protected client cache, lazy tab loader, and focused unit/integration tests. Did not mount the abstract router into live CRM routes because concrete repository implementations are not present. |
 | PR #4 / OT-36 and PR #8 / OT-40 | Applied. Cherry-picked the OT-36 range in order, then OT-40 correction, keeping sink/mock delivery worker semantics, deterministic outbox intents, corrected migration `0004`, and no real provider activation.                                                                                                                                  |
 | PR #14 / OT-44                  | Applied. Integrated communications contracts/domain/server/client/tests and additionally wired the shared app with a read-only session resolver plus lazy CRM shell route/contact view while preserving no default Communications prefetch from CRM overview.                                                                                    |
+| PR #12 / OT-46                  | Applied. Integrated fixture-only billing contracts/domain/db/router/reference UI/tests and kept central app wiring deferred, all feature flags default-off, and no live Stripe/provider/access mutation.                                                                                                                                         |

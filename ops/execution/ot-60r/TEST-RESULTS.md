@@ -47,6 +47,18 @@ Note: OT-42 was integrated as an additive, unmounted module surface. The focused
 
 Real disposable PostgreSQL plan proof remains pending for the later PR #6 assurance lane.
 
+## OT-46 Fixture-Only Billing
+
+- `npx vitest run tests/unit/ot46-billing-config-policy.test.ts tests/integration/ot46-billing-services.test.ts`: PASS, 26 tests across 2 files.
+- `npm run typecheck`: PASS.
+- `npm run build`: PASS. Billing remains isolated/unmounted and did not add a public/app bundle chunk.
+- `node -e "JSON.parse(...)"`: PASS for `STATE.json` and `CANONICAL-CANDIDATE.json`.
+- `npx prettier --check <OT-46 and OT-60R touched files>`: PASS.
+- `git diff --check`: PASS.
+- `npm run secret:scan`: PASS across 234 repo text files.
+
+Real PostgreSQL 16 proof remains pending; production database use and live Stripe calls remain forbidden.
+
 ## Supersession Security Port
 
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.
