@@ -1,4 +1,5 @@
 import {
+  DELIVERY_EVENT_TYPES,
   SUPPORTED_DELIVERY_EVENT_CHANNEL_PAIRS,
   type ClaimedDelivery,
   type DeliveryTerminalReason,
@@ -46,6 +47,19 @@ export function supportedChannelForEvent(eventType: string): ClaimedDelivery['ch
   );
 }
 
+function expectedPublicEventForSignup(claim: ClaimedDelivery): string | null {
+  const classification = claim.signup?.classification;
+  if (!classification || claim.channel === 'internal_email') return null;
+  if (classification === 'school') {
+    return claim.channel === 'whatsapp'
+      ? DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt
+      : DELIVERY_EVENT_TYPES.schoolSignupEmailAck;
+  }
+  return claim.channel === 'whatsapp'
+    ? DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation
+    : DELIVERY_EVENT_TYPES.familySignupEmailAck;
+}
+
 export function evaluateDeliveryEligibility(
   claim: ClaimedDelivery,
   protectedOwnerEmail: string | undefined,
@@ -90,6 +104,23 @@ export function evaluateDeliveryEligibility(
       kind: 'skipped',
       channel: claim.channel,
       reason: 'signup_missing',
+    };
+  }
+
+  if (claim.signup.status !== 'new') {
+    return {
+      kind: 'skipped',
+      channel: claim.channel,
+      reason: 'signup_not_committed',
+    };
+  }
+
+  const expectedPublicEvent = expectedPublicEventForSignup(claim);
+  if (expectedPublicEvent && expectedPublicEvent !== claim.eventType) {
+    return {
+      kind: 'skipped',
+      channel: claim.channel,
+      reason: 'unsupported_event_type',
     };
   }
 

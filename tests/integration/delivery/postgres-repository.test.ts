@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DELIVERY_EVENT_TYPES } from '../../../packages/contracts/src/delivery/types.ts';
 import type {
   DeliverySqlClient,
   DeliverySqlPool,
@@ -59,7 +60,7 @@ function databaseClaimRow(): Record<string, unknown> {
     product_key: 'one_time_mishnah_class',
     contact_key: 'contact_fixture',
     signup_key: 'signup_fixture',
-    event_type: 'email_acknowledgement',
+    event_type: DELIVERY_EVENT_TYPES.familySignupEmailAck,
     channel: 'email',
     transport_mode: 'sink',
     payload: {},
@@ -79,6 +80,7 @@ function databaseClaimRow(): Record<string, unknown> {
     lead_status: 'new',
     archived_at: null,
     signup_classification: 'family',
+    signup_status: 'new',
     signup_metadata: {},
   };
 }
@@ -89,8 +91,12 @@ describe('PostgreSQL delivery repository', () => {
     expect(CLAIM_BATCH_SQL).toContain('outbox.account_key = $1');
     expect(CLAIM_BATCH_SQL).toContain('outbox.product_key = $2');
     expect(CLAIM_BATCH_SQL).toContain('outbox.transport_mode = $3');
-    expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'email_acknowledgement'");
-    expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'whatsapp_confirmation'");
+    expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'family_signup_email_ack.v1'");
+    expect(CLAIM_BATCH_SQL).toContain(
+      "outbox.event_type = 'family_signup_whatsapp_confirmation.v1'",
+    );
+    expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'school_signup_email_ack.v1'");
+    expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'school_signup_whatsapp_receipt.v1'");
     expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'internal_lead_alert'");
     expect(CLAIM_BATCH_SQL).toContain('contact.account_key = claimed.account_key');
     expect(CLAIM_BATCH_SQL).toContain('signup.account_key = claimed.account_key');
@@ -117,6 +123,9 @@ describe('PostgreSQL delivery repository', () => {
         phoneNormalized: '+12025550123',
         leadStatus: 'new',
         archivedAt: null,
+      },
+      signup: {
+        status: 'new',
       },
     });
     expect(client.calls[0]?.text).toBe('BEGIN');

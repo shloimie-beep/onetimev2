@@ -96,7 +96,6 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
 
   const emailReplyTo = optionalValue(source.ONE_TIME_EMAIL_REPLY_TO);
   const protectedOwnerEmail = optionalValue(source.ONE_TIME_DELIVERY_OWNER_ALERT_EMAIL);
-  const currentClassLink = optionalValue(source.ONE_TIME_PROTECTED_CLASS_TARGET_URL);
 
   return {
     appConfig,
@@ -134,7 +133,6 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
         'One Time Mishnayos <delivery@onetime.invalid>',
       ...(emailReplyTo ? { emailReplyTo } : {}),
       ...(protectedOwnerEmail ? { protectedOwnerEmail } : {}),
-      ...(currentClassLink ? { currentClassLink } : {}),
     },
   };
 }

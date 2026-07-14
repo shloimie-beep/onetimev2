@@ -29,7 +29,6 @@ const messageConfig = {
   emailFrom: 'One Time <delivery@example.test>',
   emailReplyTo: 'reply@example.test',
   protectedOwnerEmail: 'owner@protected.test',
-  currentClassLink: 'https://example.test/current-class',
 };
 
 const options = {

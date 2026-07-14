@@ -1,10 +1,20 @@
 export const DELIVERY_CHANNELS = ['email', 'whatsapp', 'internal_email'] as const;
 export type DeliveryChannel = (typeof DELIVERY_CHANNELS)[number];
 
+export const DELIVERY_EVENT_TYPES = {
+  familySignupEmailAck: 'family_signup_email_ack.v1',
+  familySignupWhatsAppConfirmation: 'family_signup_whatsapp_confirmation.v1',
+  schoolSignupEmailAck: 'school_signup_email_ack.v1',
+  schoolSignupWhatsAppReceipt: 'school_signup_whatsapp_receipt.v1',
+  internalLeadAlert: 'internal_lead_alert',
+} as const;
+
 export const SUPPORTED_DELIVERY_EVENT_CHANNEL_PAIRS = [
-  { eventType: 'email_acknowledgement', channel: 'email' },
-  { eventType: 'whatsapp_confirmation', channel: 'whatsapp' },
-  { eventType: 'internal_lead_alert', channel: 'internal_email' },
+  { eventType: DELIVERY_EVENT_TYPES.familySignupEmailAck, channel: 'email' },
+  { eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation, channel: 'whatsapp' },
+  { eventType: DELIVERY_EVENT_TYPES.schoolSignupEmailAck, channel: 'email' },
+  { eventType: DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt, channel: 'whatsapp' },
+  { eventType: DELIVERY_EVENT_TYPES.internalLeadAlert, channel: 'internal_email' },
 ] as const;
 
 export type SupportedDeliveryEventType =
@@ -44,6 +54,7 @@ export type DeliveryContact = {
 export type DeliverySignup = {
   signupKey: string;
   classification: 'family' | 'school';
+  status: string;
   metadata: Readonly<Record<string, unknown>>;
 };
 
@@ -126,14 +137,14 @@ export type DeliveryTerminalReason =
   | 'signup_missing'
   | 'unsupported_event_type'
   | 'email_missing_or_invalid'
+  | 'signup_not_committed'
   | 'whatsapp_preference_not_selected'
   | 'whatsapp_consent_missing'
   | 'whatsapp_phone_missing_or_invalid'
   | 'contact_suppressed'
   | 'contact_archived'
   | 'delivery_window_expired'
-  | 'protected_owner_destination_missing'
-  | 'school_follow_up_requires_manual_review';
+  | 'protected_owner_destination_missing';
 
 export type DeliveryOutcome =
   | {
