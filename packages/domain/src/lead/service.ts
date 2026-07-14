@@ -99,9 +99,10 @@ async function upsertContact(
     `INSERT INTO onetime.contacts (
        contact_key, account_key, product_key, display_name, family_school_classification,
        family_or_school, location_text, timezone, email_normalized, phone_normalized,
-       reminder_preference, consent_policy_version, consent_recorded_at, source
+       reminder_preference, consent_policy_version, consent_recorded_at, source,
+       offer_version, content_version, lead_status, last_activity_at
      )
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,CASE WHEN $13 THEN now() ELSE NULL END,$14)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,CASE WHEN $13 THEN now() ELSE NULL END,$14,$15,$16,'new',now())
      ON CONFLICT (account_key, product_key, email_normalized)
      DO UPDATE SET
        display_name = EXCLUDED.display_name,
@@ -113,6 +114,11 @@ async function upsertContact(
        reminder_preference = EXCLUDED.reminder_preference,
        consent_policy_version = EXCLUDED.consent_policy_version,
        consent_recorded_at = COALESCE(EXCLUDED.consent_recorded_at, onetime.contacts.consent_recorded_at),
+       offer_version = $15,
+       content_version = $16,
+       lead_status = CASE WHEN onetime.contacts.lead_status = 'archived' THEN 'new' ELSE onetime.contacts.lead_status END,
+       last_activity_at = now(),
+       version = onetime.contacts.version + 1,
        updated_at = now()`,
     [
       contactKey,
@@ -129,6 +135,8 @@ async function upsertContact(
       payload.reminder_preference === 'none' ? null : CONSENT_POLICY,
       payload.reminder_consent,
       'one_time_public_signup',
+      OFFER_VERSION,
+      CONTENT_VERSION,
     ],
   );
 }
