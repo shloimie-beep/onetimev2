@@ -1,0 +1,42 @@
+{
+  "task_id": "OT-60R",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
+  "branch": "codex/ot60r-recovery-convergence",
+  "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "current_head_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "phase": "protocol_installation",
+  "status": "building",
+  "created_at": "2026-07-15T00:00:00+03:00",
+  "updated_at": "2026-07-15T00:00:00+03:00",
+  "completed_steps": [
+    "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
+    "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
+    "Fetched origin and verified origin/codex/crm-core-v1 equals the requested base SHA.",
+    "Verified base SHA exists and descends from foundation head 3465bd7d4c6b6829a6be6e4b4f8a003d608f3680 and common ancestor a73458d1884b8fcb4843c4852425009577f59ef7.",
+    "Created fresh worktree C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence on branch codex/ot60r-recovery-convergence from the exact base SHA.",
+    "Persisted the received prompt at ops/execution/ot-60r/ORIGINAL-PROMPT.md."
+  ],
+  "remaining_steps": [
+    "Commit and push initial protocol checkpoint.",
+    "Audit remote PR heads, states, merge bases, changed-file sets, migrations, checksums, evidence paths, integration manifest, and overlap matrix.",
+    "Create supersession matrix for PR #3/OT-34 and PR #9/OT-38 against canonical PR #2 base.",
+    "Integrate non-superseded feature units in dependency order with checkpoints after each unit.",
+    "Run required local verification and record blocked checks honestly.",
+    "Open draft PR against codex/crm-core-v1 after a pushed resumable checkpoint exists."
+  ],
+  "blockers": [],
+  "last_safe_command": "git status --short",
+  "test_results": [],
+  "external_mutation_counts": {
+    "deployments": 0,
+    "production_database_writes": 0,
+    "provider_mutations": 0,
+    "messages_sent": 0,
+    "payments_or_charges": 0,
+    "dns_changes": 0,
+    "real_users_created": 0,
+    "bna_repository_modifications": 0
+  },
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with the first unfinished phase without repeating completed work."
+}

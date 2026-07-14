@@ -1,0 +1,15 @@
+{
+  "task_id": "OT-60R",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ot60r-recovery-convergence",
+  "base_branch": "codex/crm-core-v1",
+  "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "candidate_head_sha": null,
+  "status": "building",
+  "updated_at": "2026-07-15T00:00:00+03:00",
+  "evidence": [],
+  "notes": [
+    "This control file is not deployment approval.",
+    "Set status to candidate only after final integrated commit and required local/CI evidence are recorded."
+  ]
+}

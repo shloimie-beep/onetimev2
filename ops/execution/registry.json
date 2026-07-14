@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "updated_at": "2026-07-15T00:00:00+03:00",
+  "tasks": [
+    {
+      "task_id": "OT-60R",
+      "title": "Recovery convergence for standalone One Time product",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot60r-recovery-convergence",
+      "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+      "state_path": "ops/execution/ot-60r/STATE.json",
+      "resume_path": "ops/execution/ot-60r/RESUME.md",
+      "status": "building",
+      "deployment_allowed": false,
+      "production_provider_mutations_allowed": false
+    }
+  ]
+}
