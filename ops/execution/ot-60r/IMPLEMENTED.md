@@ -31,6 +31,9 @@
 - Integrated PR #15 / OT-52 parent/student portals as an isolated, unmounted module.
 - Added portal contracts, migration `1500`, repository, domain services, exported routers, feature-local UI components, browser harness, screenshots, and focused router/service/UI tests.
 - Preserved parent household authorization, student single-learner isolation, three-active-learner limit, append-only reward corrections, digest-only credential lifecycle, helper unavailable by default, no-send support preview, and protected-action raw provider URL rejection.
+- Integrated PR #13 / OT-51 Telegram mock/default-off foundation as an isolated module.
+- Added Telegram contracts, migration `1600`, SQL repositories, command/domain services, identity and crypto helpers, worker/lease primitives, webhook ingress hook, mock-only app entrypoint, and focused unit/integration tests.
+- Preserved no Telegram network calls, no webhook registration, no polling activation, no central runtime wiring, no provider mutation, default-deny identity, and injected application adapter boundaries.
 
 ## Supersession Security Port
 

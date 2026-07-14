@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #15 / OT-52 parent/student portals integrated
+- Phase: PR #13 / OT-51 Telegram mock/default-off foundation integrated
 - Status: building
 
 ## Completed
@@ -51,6 +51,10 @@
 - Preserved household-authorized parent scope, actor-derived student scope, three-active-learner limit, append-only rewards, digest-only credentials, default-unavailable helper behavior, no-send support preview, and protected-action provider URL rejection.
 - Verified with OT-52 focused router/service/UI tests, `npm run typecheck`, `npm run build`, touched-file formatting check, JSON parse check, `git diff --check --cached`, and `npm run secret:scan`.
 - Committed the PR #15 / OT-52 portal checkpoint at `30df628f4eca6be2674dcdd0d59fd2e769af89da`.
+- Applied PR #13 / OT-51 Telegram mock/default-off foundation as an isolated module.
+- Preserved mock-only transport, default-deny identity, injected application adapter boundary, no central runtime wiring, no webhook registration, no polling activation, and zero Telegram network/provider mutations.
+- Verified with OT-51 focused unit/integration tests, `npm run typecheck`, `npm run build`, touched-file formatting check, `git diff --check --cached`, and `npm run secret:scan`.
+- Committed the PR #13 / OT-51 Telegram mock foundation checkpoint at `f880c6abfacea6fa00cefa3383515ae31b914006`.
 
 ## Last Safe Command
 
@@ -61,9 +65,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git cherry-pick --no-commit e235af05759f0a97496552c6e8aabed7ba3eee18
+git show --stat --oneline --decorate --no-renames 0ea782d8551c26edd48b08d644b573e19b9835b1
 ```
 
-Continue PR #13 / OT-51 Telegram mock/default-off foundation. Preserve default-off behavior and avoid live Telegram/provider mutations.
+Continue PR #6 / OT-37 PostgreSQL assurance. Port/adapt to the integrated schema; use only safe local/disposable database targets.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

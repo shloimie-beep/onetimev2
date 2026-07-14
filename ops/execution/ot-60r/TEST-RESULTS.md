@@ -72,6 +72,17 @@ Real PostgreSQL 16 proof remains pending; production database use and live Strip
 
 Real PostgreSQL concurrency proof remains pending for a safe disposable database target; `db:verify` remains blocked without `DATABASE_URL`.
 
+## OT-51 Telegram Mock Foundation
+
+- `npx vitest run tests/unit/telegram/telegram-foundation.test.ts tests/integration/telegram-db-foundation.test.ts`: PASS, 11 tests.
+- `npm run typecheck`: PASS.
+- `npm run build`: PASS. Telegram bot remains isolated from public/app bundles and central runtime wiring.
+- `npx prettier --check <OT-51 touched supported files>`: initial check failed on 11 new TypeScript files; PASS after scoped `npx prettier --write <OT-51 touched supported files>`. SQL migration excluded because this repo's Prettier config cannot parse SQL.
+- `git diff --check --cached`: PASS.
+- `npm run secret:scan`: PASS across 291 repo text files.
+
+Real PostgreSQL 16 proof, bot token, webhook secret, service startup, mappings, staging canary, deploy, and rollback drill remain out of scope.
+
 ## Supersession Security Port
 
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.

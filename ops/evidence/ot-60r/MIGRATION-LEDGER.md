@@ -13,6 +13,6 @@ Migration blob checksums are Git blob IDs at each PR head.
 | #11 | `b2c159a060d` | `packages/db/migrations/1000_ot42_crm_module_v1.sql` | `08191d11149f1afd2b046375f02a15fc1375780b` | Applied as additive OT-42 CRM module migration; real PostgreSQL assurance remains pending for PR #6. |
 | #12 | `f4e4fb1dc202` | `packages/db/migrations/1300_ot46_billing_foundation.sql` | `aac3c7a977ba29f46e8adeeaa8e62f66309c86d3` | Applied as isolated fixture-only billing migration; real PostgreSQL proof remains pending for PR #6. |
 | #15 | `9594c228b9ac` | `packages/db/migrations/1500_ot52_portal_households_learners.sql` | `fc55b59c56e37150205b1ff82bb80c74abc1f076` | Applied as isolated portal migration; real PostgreSQL concurrency proof remains pending for PR #6/disposable DB lane. |
-| #13 | `e235af05759f` | `packages/db/migrations/1600_ot51_telegram_bot_foundation.sql` | `e0834959de620a5238d089a6f9240a43624671fd` | Pending isolated Telegram mock/default-off integration. |
+| #13 | `e235af05759f` | `packages/db/migrations/1600_ot51_telegram_bot_foundation.sql` | `e0834959de620a5238d089a6f9240a43624671fd` | Applied as isolated Telegram mock/default-off migration; real PostgreSQL proof remains pending for PR #6/disposable DB lane. |
 
 No accepted migration was edited in this checkpoint. The HMAC login-CSRF port is config/domain/server/test-only and does not require a migration.

@@ -13,6 +13,6 @@
 | PR #14 / OT-44 communications | Applied | Applied communications read model and wired shared app/server shell with read-only session scope, lazy global route, and contact Communications view. |
 | PR #12 / OT-46 Stripe fixture-only | Applied | Integrated as isolated, unmounted fixture-only billing foundation with default-off flags, no Stripe network, no provider mutation, and no entitlement/access grant. |
 | PR #15 / OT-52 portals | Applied | Integrated as isolated, unmounted parent/student portals with household-authorized parent scope, single-learner student scope, learner cap, credential digest, support-preview, helper, and protected-action safeguards. |
-| PR #13 / OT-51 Telegram mock-only | Pending | Default-off, no live Telegram. |
+| PR #13 / OT-51 Telegram mock-only | Applied | Integrated as isolated mock/default-off Telegram foundation with no webhook registration, no polling activation, no real Telegram transport, no central runtime wiring, and no provider mutation. |
 | PR #6 / OT-37 PostgreSQL assurance | Pending | Port after integrated schema exists. |
 | PR #10 / OT-47 | Deferred evidence-only | Reference blocker evidence; do not claim content/library implementation. |

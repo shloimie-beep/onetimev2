@@ -6,7 +6,7 @@
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
   "candidate_head_sha": null,
   "status": "building",
-  "updated_at": "2026-07-15T02:41:13+03:00",
+  "updated_at": "2026-07-15T02:45:48+03:00",
   "evidence": [
     "ops/evidence/ot-60r/APPLIED-DEFERRED-MATRIX.md",
     "ops/evidence/ot-60r/CONFLICT-LEDGER.md",
@@ -36,7 +36,12 @@
     "ops/evidence/ot-52/TEST-RESULTS.md",
     "ops/evidence/ot-52/ROLE-CAPABILITY-MATRIX.md",
     "ops/evidence/ot-52/NEGATIVE-TEST-MATRIX.md",
-    "ops/evidence/ot-52/BROWSER-HARNESS.json"
+    "ops/evidence/ot-52/BROWSER-HARNESS.json",
+    "ops/evidence/ot-51/FINAL-HANDOFF.md",
+    "ops/evidence/ot-51/INTEGRATION-MANIFEST.md",
+    "ops/evidence/ot-51/TEST-RESULTS.md",
+    "ops/evidence/ot-51/PRIVACY-AND-NO-NETWORK.md",
+    "ops/evidence/ot-51/WEBHOOK-INGRESS-PROOF.md"
   ],
   "notes": [
     "This control file is not deployment approval.",

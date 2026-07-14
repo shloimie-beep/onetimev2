@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "30df628f4eca6be2674dcdd0d59fd2e769af89da",
-  "phase": "pr15_ot52_portals_integrated",
+  "current_head_sha": "f880c6abfacea6fa00cefa3383515ae31b914006",
+  "phase": "pr13_ot51_telegram_integrated",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:41:13+03:00",
+  "updated_at": "2026-07-15T02:45:48+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -53,10 +53,13 @@
     "Applied PR #15 / OT-52 parent/student portals as an isolated, unmounted module.",
     "Preserved OT-52 parent household authorization, student single-learner scope, three-active-learner limit, append-only rewards, digest-only credentials, default-unavailable helper, support preview no-send behavior, and raw-provider-URL rejection.",
     "Verified OT-52 focused router/service/UI tests, typecheck, build, touched-file formatting, whitespace, JSON validity, and secret scan.",
-    "Committed the PR #15 / OT-52 portal checkpoint at 30df628f4eca6be2674dcdd0d59fd2e769af89da."
+    "Committed the PR #15 / OT-52 portal checkpoint at 30df628f4eca6be2674dcdd0d59fd2e769af89da.",
+    "Applied PR #13 / OT-51 Telegram mock/default-off foundation as an isolated module.",
+    "Preserved OT-51 mock-only transport, default-deny identity, injected application adapter boundary, no central runtime wiring, no webhook registration, no polling activation, and zero Telegram network/provider mutations.",
+    "Verified OT-51 focused unit/integration tests, typecheck, build, touched-file formatting, whitespace, and secret scan.",
+    "Committed the PR #13 / OT-51 Telegram mock foundation checkpoint at f880c6abfacea6fa00cefa3383515ae31b914006."
   ],
   "remaining_steps": [
-    "Apply isolated module PR #13.",
     "Port and adapt PostgreSQL assurance from PR #6 to the integrated schema.",
     "Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.",
     "Run required local verification and record blocked checks honestly.",
@@ -259,6 +262,36 @@
       "command": "npm run secret:scan",
       "status": "passed",
       "summary": "Secret scan passed across 265 repo text files."
+    },
+    {
+      "command": "npx vitest run tests/unit/telegram/telegram-foundation.test.ts tests/integration/telegram-db-foundation.test.ts",
+      "status": "passed",
+      "summary": "OT-51 focused Telegram foundation tests passed 11 tests."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully after OT-51 integration."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed; Telegram bot remains isolated from public/app bundles and central runtime wiring."
+    },
+    {
+      "command": "npx prettier --check <OT-51 touched supported files>",
+      "status": "passed",
+      "summary": "Initial OT-51 touched-file check found 11 TypeScript files needing formatting; after scoped Prettier write, all matched files passed. SQL migration was excluded because this repo has no SQL parser."
+    },
+    {
+      "command": "git diff --check --cached",
+      "status": "passed",
+      "summary": "No staged whitespace errors detected before the OT-51 commit."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 291 repo text files."
     }
   ],
   "external_mutation_counts": {
@@ -271,5 +304,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #13 / OT-51 without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, or PR #15 parent/student portal integration."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue with PR #6 / OT-37 PostgreSQL assurance without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, or PR #13 Telegram mock foundation."
 }

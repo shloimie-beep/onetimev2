@@ -8,6 +8,10 @@ default-deny identity, deterministic command catalog, preview/confirm writes,
 webhook ingress hook, worker/lease primitives, SQL repositories, and focused
 tests.
 
+## OT-60R Convergence Note
+
+The recovery branch preserved OT-51P as an isolated, default-off foundation. No central runtime, webhook, polling loop, real Telegram transport, bot token, or production payload codec was activated.
+
 ## Branch
 
 - Branch: `codex/ot51p-isolated-telegram-bot`.

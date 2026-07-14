@@ -30,4 +30,4 @@ ops/evidence/ot-60r/FINAL-REPORT.md
 5. Maintain the prohibitions: no deployment, no production/provider mutation, no BNA modification, no production DB, no real sends, no charges, no DNS changes, no real users.
 6. After every successful unit, update `STATE.json`, `CHECKPOINT.md`, `IMPLEMENTED.md`, `REMAINING.md`, `TEST-RESULTS.md`, evidence files, commit intentionally, and push `codex/ot60r-recovery-convergence`.
 
-Current first unfinished phase after PR #15 / OT-52: continue PR #13 / OT-51 Telegram mock/default-off foundation.
+Current first unfinished phase after PR #13 / OT-51: continue PR #6 / OT-37 PostgreSQL assurance.
