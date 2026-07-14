@@ -90,4 +90,4 @@ try {
   await pool.end();
 }
 
-console.log(`wrote screenshots to ${outDir}`);
+console.warn(`wrote screenshots to ${outDir}`);
