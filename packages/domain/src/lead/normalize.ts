@@ -5,13 +5,25 @@ export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
 }
 
+export class PhoneNormalizationError extends Error {
+  constructor() {
+    super('Phone number needs an international country code.');
+  }
+}
+
 export function normalizePhone(phone: string | undefined) {
-  const digits = phone?.replace(/\D+/g, '') ?? '';
-  if (!digits) return null;
-  if (digits.startsWith('00')) return `+${digits.slice(2)}`;
-  if (digits.startsWith('972')) return `+${digits}`;
-  if (digits.startsWith('0')) return `+972${digits.slice(1)}`;
-  return `+${digits}`;
+  const trimmed = phone?.trim() ?? '';
+  if (!trimmed) return null;
+  const compact = trimmed.replace(/[\s().-]+/g, '');
+  const e164 = compact.startsWith('+')
+    ? compact
+    : compact.startsWith('00')
+      ? `+${compact.slice(2)}`
+      : null;
+  if (!e164 || !/^\+[1-9]\d{7,14}$/.test(e164)) {
+    throw new PhoneNormalizationError();
+  }
+  return e164;
 }
 
 export function stableKey(prefix: string, parts: string[]) {
@@ -28,10 +40,20 @@ export function requestHash(payload: LeadPayload) {
         audience_type: payload.audience_type,
         location: payload.location.trim(),
         timezone: payload.timezone,
+        browser_timezone: payload.browser_timezone?.trim() ?? null,
         email: normalizeEmail(payload.email),
         phone: normalizePhone(payload.phone),
         reminder_preference: payload.reminder_preference,
         reminder_consent: payload.reminder_consent,
+        attribution: {
+          landing_path: payload.attribution.landing_path?.trim() ?? null,
+          referrer: payload.attribution.referrer?.trim() ?? null,
+          utm_source: payload.attribution.utm_source?.trim() ?? null,
+          utm_medium: payload.attribution.utm_medium?.trim() ?? null,
+          utm_campaign: payload.attribution.utm_campaign?.trim() ?? null,
+          utm_term: payload.attribution.utm_term?.trim() ?? null,
+          utm_content: payload.attribution.utm_content?.trim() ?? null,
+        },
       }),
     )
     .digest('hex');

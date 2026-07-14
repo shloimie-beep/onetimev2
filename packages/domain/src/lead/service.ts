@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import {
   leadPayloadSchema,
   type LeadPayload,
@@ -31,6 +32,18 @@ const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
 const CONSENT_POLICY = 'one-time-class-reminders-v1-2026-07-14';
 
+export class LeadIdempotencyConflictError extends Error {
+  constructor() {
+    super('Idempotency key was reused with a different request.');
+  }
+}
+
+export class LeadDuplicateIdentityError extends Error {
+  constructor() {
+    super('A signup with this contact identity cannot be saved.');
+  }
+}
+
 export async function captureLead({
   pool,
   config,
@@ -56,19 +69,26 @@ export async function captureLead({
 
   return inTransaction(pool, async (client) => {
     const duplicate = await client.query(
-      `SELECT response_json
+      `SELECT request_hash, response_json
          FROM onetime.idempotency_records
         WHERE account_key = $1 AND product_key = $2 AND idempotency_key = $3`,
       [config.accountKey, config.productKey, parsed.idempotency_key],
     );
     if (duplicate.rowCount) {
+      if (duplicate.rows[0].request_hash !== reqHash) {
+        throw new LeadIdempotencyConflictError();
+      }
       const previous = duplicate.rows[0].response_json as LeadSuccessResponse;
       return { ...previous, duplicate_submission: true };
     }
 
-    await upsertContact(client, config, parsed, contactKey, email, phone);
+    await ensureNoPhoneIdentityCollision(client, config, email, phone);
+    const contactWrite = await upsertContact(client, config, parsed, contactKey, email, phone);
     await upsertSignup(client, config, parsed, contactKey, signupKey);
     await insertAudit(client, config, parsed, contactKey, signupKey);
+    if (contactWrite.reactivatedArchived) {
+      await insertReactivationAudit(client, config, contactKey, signupKey);
+    }
     await insertOutboxIntents(client, config, parsed, contactKey, signupKey, email, phone);
     await client.query(
       `INSERT INTO onetime.idempotency_records
@@ -95,6 +115,44 @@ async function upsertContact(
   email: string,
   phone: string | null,
 ) {
+  const existing = await client.query(
+    `SELECT contact_key, archived_at
+       FROM onetime.contacts
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_normalized = $3
+      FOR UPDATE`,
+    [config.accountKey, config.productKey, email],
+  );
+  const existingRow = existing.rows[0];
+  if (existingRow?.archived_at) {
+    const hasNewConsent = payload.reminder_consent && payload.reminder_preference !== 'none';
+    await client.query(
+      `UPDATE onetime.contacts
+          SET archived_at = NULL,
+              lead_status = 'new',
+              reminder_preference = CASE WHEN $4 THEN $5 ELSE reminder_preference END,
+              consent_policy_version = CASE WHEN $4 THEN $6 ELSE consent_policy_version END,
+              consent_recorded_at = CASE WHEN $4 THEN now() ELSE consent_recorded_at END,
+              suppression_state = CASE WHEN $4 THEN 'active' ELSE suppression_state END,
+              last_activity_at = now(),
+              updated_at = now(),
+              version = version + 1
+        WHERE account_key = $1
+          AND product_key = $2
+          AND contact_key = $3`,
+      [
+        config.accountKey,
+        config.productKey,
+        existingRow.contact_key,
+        hasNewConsent,
+        payload.reminder_preference,
+        CONSENT_POLICY,
+      ],
+    );
+    return { reactivatedArchived: true };
+  }
+
   await client.query(
     `INSERT INTO onetime.contacts (
        contact_key, account_key, product_key, display_name, family_school_classification,
@@ -139,6 +197,29 @@ async function upsertContact(
       CONTENT_VERSION,
     ],
   );
+  return { reactivatedArchived: false };
+}
+
+async function ensureNoPhoneIdentityCollision(
+  client: Queryable,
+  config: AppConfig,
+  email: string,
+  phone: string | null,
+) {
+  if (!phone) return;
+  const collision = await client.query(
+    `SELECT 1
+       FROM onetime.contacts
+      WHERE account_key = $1
+        AND product_key = $2
+        AND phone_normalized = $3
+        AND email_normalized <> $4
+      LIMIT 1`,
+    [config.accountKey, config.productKey, phone, email],
+  );
+  if (collision.rowCount) {
+    throw new LeadDuplicateIdentityError();
+  }
 }
 
 async function upsertSignup(
@@ -198,6 +279,33 @@ async function insertAudit(
         no_payment: true,
         no_access_grant: true,
         no_automatic_task: true,
+      }),
+    ],
+  );
+}
+
+async function insertReactivationAudit(
+  client: Queryable,
+  config: AppConfig,
+  contactKey: string,
+  signupKey: string,
+) {
+  await client.query(
+    `INSERT INTO onetime.audit_events
+     (event_key, account_key, product_key, contact_key, signup_key, event_type, metadata)
+     VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb)`,
+    [
+      stableKey('audit', [signupKey, 'public_reactivation', randomUUID()]),
+      config.accountKey,
+      config.productKey,
+      contactKey,
+      signupKey,
+      'public_signup_reactivated_archived_contact',
+      JSON.stringify({
+        source: 'one_time_public_signup',
+        preserved_crm_owned_fields: true,
+        no_payment: true,
+        no_access_grant: true,
       }),
     ],
   );

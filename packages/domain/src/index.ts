@@ -1,7 +1,12 @@
 export { campaignTicker } from './landing/campaign.ts';
 export { campaign, landingContent, sharedNav } from './landing/content.ts';
-export { captureLead } from './lead/service.ts';
 export {
+  LeadDuplicateIdentityError,
+  LeadIdempotencyConflictError,
+  captureLead,
+} from './lead/service.ts';
+export {
+  PhoneNormalizationError,
   normalizeEmail,
   normalizePhone,
   selectedChannels,
@@ -23,6 +28,8 @@ export {
   type AuthenticatedSession,
 } from './auth/service.ts';
 export {
+  CrmAssigneeScopeError,
+  CrmCursorError,
   CrmDuplicateError,
   CrmVersionConflictError,
   createContact,

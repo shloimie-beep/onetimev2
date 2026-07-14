@@ -36,6 +36,8 @@ const envSchema = z.object({
   ONE_TIME_EMAIL_REPLY_TO: z.string().optional(),
   ONE_TIME_OWNER_TEST_WHATSAPP: z.string().optional(),
   ONE_TIME_OWNER_TEST_EMAIL: z.string().optional(),
+  CRM_CURSOR_SECRET: z.string().min(32).optional(),
+  AUTH_REQUIRE_VERIFIED_MFA: booleanFromString,
   ENABLE_REAL_EMAIL_TRANSPORT: booleanFromString,
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
@@ -60,6 +62,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Production web startup cannot run migrations automatically.');
   }
 
+  if (parsed.NODE_ENV === 'production' && !parsed.CRM_CURSOR_SECRET) {
+    throw new Error('CRM_CURSOR_SECRET is required in production.');
+  }
+
   return {
     nodeEnv: parsed.NODE_ENV,
     isProduction: parsed.NODE_ENV === 'production',
@@ -81,5 +87,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     emailReplyTo: parsed.ONE_TIME_EMAIL_REPLY_TO,
     ownerTestWhatsapp: parsed.ONE_TIME_OWNER_TEST_WHATSAPP,
     ownerTestEmail: parsed.ONE_TIME_OWNER_TEST_EMAIL,
+    crmCursorSecret:
+      parsed.CRM_CURSOR_SECRET ?? 'local-only-crm-cursor-secret-for-tests-and-development',
+    requireVerifiedMfa: parsed.AUTH_REQUIRE_VERIFIED_MFA,
   };
 }

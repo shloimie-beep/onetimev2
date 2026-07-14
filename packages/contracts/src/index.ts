@@ -78,7 +78,12 @@ export type LeadSuccessResponse = {
 
 export type LeadErrorResponse = {
   success: false;
-  code: 'VALIDATION_ERROR' | 'RATE_LIMITED' | 'SERVER_ERROR';
+  code:
+    | 'VALIDATION_ERROR'
+    | 'RATE_LIMITED'
+    | 'SERVER_ERROR'
+    | 'IDEMPOTENCY_CONFLICT'
+    | 'DUPLICATE_IDENTITY';
   message: string;
   request_id?: string;
   field_errors?: Record<string, string>;
@@ -101,7 +106,7 @@ export const userRoleSchema = z.enum(['owner', 'admin', 'crm_agent', 'viewer']);
 export type UserRole = z.infer<typeof userRoleSchema>;
 
 export const roleDisplayLabel: Record<UserRole, string> = {
-  owner: 'Administrator',
+  owner: 'Owner',
   admin: 'Administrator',
   crm_agent: 'CRM Agent',
   viewer: 'Viewer',
@@ -175,6 +180,8 @@ export type SessionUser = {
   role: UserRole;
   role_label: string;
   mfa_capable: boolean;
+  mfa_verified: false;
+  auth_assurance: 'password_only';
 };
 
 export type ContactListItem = {
