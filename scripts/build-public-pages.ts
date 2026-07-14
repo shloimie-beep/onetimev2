@@ -99,6 +99,7 @@ function landingPage() {
     })
     .join('');
   const whoCards = landingContent.who.audiences.map((label) => `<li>${escapeHtml(label)}</li>`).join('');
+  const steps = landingContent.how.steps.map((label, index) => `<li><span>${index + 1}</span>${escapeHtml(label)}</li>`).join('');
   const slides = landingContent.gallery.slides
     .map(
       ([title, caption, src], index) => `<figure class="gallery-slide" data-gallery-slide ${index === 0 ? '' : 'hidden'}>
@@ -110,7 +111,9 @@ function landingPage() {
   const dots = landingContent.gallery.slides
     .map((slide, index) => `<button type="button" data-gallery-dot aria-label="Show ${escapeHtml(slide[0])}" aria-pressed="${index === 0}"></button>`)
     .join('');
-  const press = landingContent.press.map((label) => `<span>${escapeHtml(label)}</span>`).join('');
+  const press = landingContent.press
+    .map(([label, src]) => `<span><img src="${src}" alt="${escapeHtml(label)}" loading="lazy" decoding="async"></span>`)
+    .join('');
 
   return pageShell(
     landingContent.seo.title,
@@ -136,6 +139,11 @@ function landingPage() {
   <section class="section" id="gain">
     <h2>${escapeHtml(landingContent.gain.heading)}</h2>
     <div class="benefit-grid">${gainCards}</div>
+  </section>
+  <section class="section how" id="how-it-works">
+    <h2>${escapeHtml(landingContent.how.heading)}</h2>
+    <p>${escapeHtml(landingContent.how.body)}</p>
+    <ol>${steps}</ol>
   </section>
   <section class="section who" id="who">
     <div>

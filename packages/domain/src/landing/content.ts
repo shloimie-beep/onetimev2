@@ -64,6 +64,11 @@ export const landingContent = {
       },
     ],
   },
+  how: {
+    heading: 'How It Works',
+    body: 'Sign up, get the class information, and join the daily 7:00 p.m. live Mishnayos class.',
+    steps: ['Sign up', 'Receive the class information', 'Enjoy the live class'],
+  },
   who: {
     heading: "Who It's For",
     body: 'Built for families, homeschoolers, schools, and local boys who want a clear daily Mishnayos rhythm.',
@@ -87,7 +92,13 @@ export const landingContent = {
       ['Silver Spring, Maryland', 'Classroom learning with Rabbi Scheller.', '/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp'],
     ],
   },
-  press: ['TorahAnytime', '24Six', 'The Loop', 'NakiRadio', 'Mishpacha'],
+  press: [
+    ['TorahAnytime', '/assets/press/torah-anytime.png'],
+    ['24Six', '/assets/press/24six.png'],
+    ['The Loop', '/assets/press/the-loop.png'],
+    ['NakiRadio', '/assets/press/naki.webp'],
+    ['Mishpacha', '/assets/press/mishpacha.webp'],
+  ],
   finalCta: {
     heading: 'Ready to join the live class?',
   },
@@ -106,6 +117,7 @@ export const landingContent = {
 export const sharedNav = [
   ['What You Receive', '#receive'],
   ["What He'll Gain", '#gain'],
+  ['How It Works', '#how-it-works'],
   ["Who It's For", '#who'],
   ['Rabbi Scheller', '#rabbi'],
   ['Member Login', '/login'],
