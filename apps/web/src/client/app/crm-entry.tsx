@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { ContactDetail, ContactListItem, SessionUser } from '@onetime/contracts';
+import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import './crm.css';
 
 type ApiSession = {
@@ -35,6 +36,18 @@ type ContactFormState = {
   version?: number;
 };
 
+type QueryState = {
+  search: string;
+  classification: string;
+  lead_status: string;
+  sort: string;
+};
+
+type Notice = {
+  kind: 'info' | 'success' | 'error';
+  message: string;
+};
+
 const emptyForm: ContactFormState = {
   display_name: '',
   family_school_classification: 'family',
@@ -47,21 +60,35 @@ const emptyForm: ContactFormState = {
   internal_note: '',
 };
 
+const defaultQuery: QueryState = {
+  search: '',
+  classification: '',
+  lead_status: '',
+  sort: 'updated_desc',
+};
+
+class AuthExpiredError extends Error {
+  constructor() {
+    super('Session expired');
+  }
+}
+
 function CrmApp() {
   const [session, setSession] = useState<ApiSession | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [contacts, setContacts] = useState<ContactListItem[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [query, setQuery] = useState({
-    search: '',
-    classification: '',
-    lead_status: '',
-    sort: 'updated_desc',
-  });
-  const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('');
+  const [query, setQuery] = useState<QueryState>(defaultQuery);
+  const [listLoading, setListLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [listError, setListError] = useState('');
+  const [detailError, setDetailError] = useState('');
+  const [notice, setNotice] = useState<Notice | null>(null);
   const [selected, setSelected] = useState<ContactDetail | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [focusContactId, setFocusContactId] = useState<string | null>(null);
+  const returnFocusContactId = useRef<string | null>(null);
   const canEdit = session ? ['owner', 'admin', 'crm_agent'].includes(session.user.role) : false;
 
   useEffect(() => {
@@ -72,19 +99,31 @@ function CrmApp() {
   }, []);
 
   useEffect(() => {
-    if (session) void routeFromLocation();
-  }, [session]);
+    if (session && !sessionExpired) void routeFromLocation();
+  }, [session, sessionExpired]);
+
+  useEffect(() => {
+    if (!focusContactId || listLoading || selected || creating || editing) return;
+    focusVisibleContactControl(focusContactId);
+    setFocusContactId(null);
+  }, [contacts, creating, editing, focusContactId, listLoading, selected]);
 
   async function loadSession() {
     try {
       const json = await api<ApiSession>('/api/v1/auth/session');
       setSession(json);
-    } catch {
-      window.location.assign(`/login?return_to=${encodeURIComponent(location.pathname)}`);
+      setSessionExpired(false);
+    } catch (error) {
+      if (error instanceof AuthExpiredError) {
+        clearProtectedState();
+        return;
+      }
+      clearProtectedState();
     }
   }
 
   async function routeFromLocation() {
+    if (sessionExpired) return;
     const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
@@ -94,15 +133,17 @@ function CrmApp() {
     } else {
       setSelected(null);
       setEditing(false);
-      await loadList();
+      setCreating(false);
+      await loadList(undefined, query);
     }
   }
 
-  async function loadList(cursor?: string) {
-    setLoading(true);
-    setStatus('');
+  async function loadList(cursor?: string, nextQuery: QueryState = query) {
+    setListLoading(true);
+    setListError('');
+    setNotice(null);
     const params = new URLSearchParams();
-    Object.entries(query).forEach(([key, value]) => {
+    Object.entries(nextQuery).forEach(([key, value]) => {
       if (value) params.set(key, value);
     });
     if (cursor) params.set('cursor', cursor);
@@ -112,54 +153,75 @@ function CrmApp() {
       setNextCursor(json.next_cursor);
       performance.mark('ot-crm-list-usable');
     } catch (error) {
-      setStatus(errorMessage(error, 'CRM contacts could not load.'));
+      if (handleAuthError(error)) return;
+      setListError(errorMessage(error, 'CRM contacts could not load.'));
     } finally {
-      setLoading(false);
+      setListLoading(false);
     }
   }
 
   async function loadContact(contactId: string) {
-    setLoading(true);
-    setStatus('');
+    setDetailLoading(true);
+    setDetailError('');
+    setNotice(null);
     try {
       const json = await api<ContactResponse>(
         `/api/v1/crm/contacts/${encodeURIComponent(contactId)}`,
       );
       setSelected(json.contact);
       performance.mark('ot-crm-detail-usable');
+      window.setTimeout(() => document.getElementById('page-title')?.focus(), 0);
     } catch (error) {
-      setStatus(errorMessage(error, 'Contact could not load.'));
+      if (handleAuthError(error)) return;
+      setSelected(null);
+      setDetailError(errorMessage(error, 'Contact could not load.'));
     } finally {
-      setLoading(false);
+      setDetailLoading(false);
     }
   }
 
   function openContact(contactId: string) {
+    returnFocusContactId.current = contactId;
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(contactId)}`);
+    setCreating(false);
+    setEditing(false);
     void loadContact(contactId);
   }
 
-  function backToList() {
+  async function backToList() {
     history.pushState({}, '', '/app/crm');
     setSelected(null);
     setEditing(false);
     setCreating(false);
-    void loadList();
+    await loadList(undefined, query);
+    const contactId = returnFocusContactId.current;
+    if (contactId) {
+      setFocusContactId(contactId);
+    }
+  }
+
+  function startCreate() {
+    setSelected(null);
+    setEditing(false);
+    setCreating(true);
+    history.pushState({}, '', '/app/crm');
   }
 
   async function logout() {
     if (!session) return;
+    const csrfToken = session.csrf_token;
+    clearProtectedState();
     await fetch('/api/v1/auth/logout', {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-csrf-token': session.csrf_token },
-      body: JSON.stringify({ csrf_token: session.csrf_token }),
+      headers: { 'content-type': 'application/json', 'x-csrf-token': csrfToken },
+      body: JSON.stringify({ csrf_token: csrfToken }),
     });
     window.location.assign('/login');
   }
 
   async function saveContact(form: ContactFormState, mode: 'create' | 'edit') {
     if (!session) return;
-    setStatus('');
+    setNotice(null);
     const payload = {
       ...form,
       assigned_user_key: form.assigned_user_key || undefined,
@@ -175,10 +237,14 @@ function CrmApp() {
         body: JSON.stringify(payload),
       },
     );
+    if (response.status === 401) {
+      clearProtectedState();
+      return;
+    }
     const json = await response.json();
     if (!response.ok || !json.success) {
       if (json.code === 'DUPLICATE_CONTACT' && json.existing_contact_path) {
-        setStatus('A matching contact already exists.');
+        setNotice({ kind: 'error', message: 'A matching contact already exists.' });
         history.pushState({}, '', json.existing_contact_path);
         await routeFromLocation();
         return;
@@ -189,62 +255,99 @@ function CrmApp() {
     setEditing(false);
     setSelected(json.contact);
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(json.contact.contact_id)}`);
-    setStatus('Saved.');
+    setNotice({ kind: 'success', message: 'Contact saved.' });
+  }
+
+  function handleAuthError(error: unknown) {
+    if (!(error instanceof AuthExpiredError)) return false;
+    clearProtectedState();
+    return true;
+  }
+
+  function clearProtectedState() {
+    setContacts([]);
+    setNextCursor(null);
+    setSelected(null);
+    setCreating(false);
+    setEditing(false);
+    setSession(null);
+    setSessionExpired(true);
+    setNotice(null);
+    setListError('');
+    setDetailError('');
+  }
+
+  function signIn() {
+    const returnTo = location.pathname.startsWith('/app/crm') ? location.pathname : '/app/crm';
+    window.location.assign(`/login?return_to=${encodeURIComponent(returnTo)}`);
   }
 
   const activeChips = useMemo(
     () =>
       Object.entries(query)
         .filter(([, value]) => value && value !== 'updated_desc')
-        .map(([key, value]) => `${labelFor(key)}: ${value}`),
+        .map(([key, value]) => ({
+          key,
+          label: `${labelFor(key)}: ${displayFilterValue(key, value)}`,
+        })),
     [query],
   );
 
-  return (
-    <main className="crm-shell">
-      <header className="crm-header">
-        <a
-          className="crm-brand"
-          href="/app/crm"
-          onClick={(event) => {
-            event.preventDefault();
-            backToList();
-          }}
-        >
-          <img
-            src="/assets/brand/onetimelogo.webp"
-            alt=""
-            width="40"
-            height="40"
-            aria-hidden="true"
-          />
-          <span>
-            <strong>One Time</strong>
-            <small>{session?.user.role_label ?? 'CRM'}</small>
-          </span>
-        </a>
-        <nav aria-label="One Time app">
-          <a
-            aria-current="page"
-            href="/app/crm"
-            onClick={(event) => {
-              event.preventDefault();
-              backToList();
-            }}
-          >
-            CRM
-          </a>
-        </nav>
-        <button type="button" className="ghost-button" onClick={() => void logout()}>
-          Logout
-        </button>
-      </header>
+  const navItems: ShellNavItem[] = [{ id: 'crm', label: 'CRM', href: '/app/crm', current: true }];
+  const shellUser = session ? shellUserFromSession(session.user) : null;
+  const pageTitle = creating
+    ? 'Add contact'
+    : editing
+      ? 'Edit contact'
+      : selected
+        ? selected.display_name
+        : 'CRM';
+  const pageDescription = creating
+    ? 'Create a One Time contact without sending messages or granting access.'
+    : editing
+      ? 'Update CRM fields backed by the One Time contact API.'
+      : selected
+        ? contactSummary(selected)
+        : 'One Time signup and contact review.';
+  const toolbar = selected ? (
+    <DetailToolbar
+      contact={selected}
+      canEdit={canEdit}
+      onBack={backToList}
+      onEdit={() => setEditing(true)}
+    />
+  ) : creating || editing ? (
+    <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
+  ) : (
+    <ListToolbar
+      query={query}
+      activeChips={activeChips}
+      canEdit={canEdit}
+      onChange={setQuery}
+      onApply={(nextQuery) => void loadList(undefined, nextQuery)}
+      onClear={() => {
+        setQuery(defaultQuery);
+        void loadList(undefined, defaultQuery);
+      }}
+      onCreate={startCreate}
+    />
+  );
 
-      {status && (
-        <p className="crm-status" role="status">
-          {status}
-        </p>
-      )}
+  return (
+    <AppShell
+      user={shellUser}
+      navItems={navItems}
+      title={pageTitle}
+      description={pageDescription}
+      toolbar={toolbar}
+      notice={notice ? <NoticeBanner notice={notice} /> : undefined}
+      onNavigate={(href) => {
+        if (href === '/app/crm') void backToList();
+      }}
+      onLogout={() => void logout()}
+      sessionExpired={sessionExpired}
+      onSignIn={signIn}
+    >
       {creating && (
         <ContactForm
           title="Add contact"
@@ -254,8 +357,8 @@ function CrmApp() {
           onSave={(form) => saveContact(form, 'create')}
         />
       )}
-      {selected ? (
-        editing ? (
+      {selected &&
+        (editing ? (
           <ContactForm
             title="Edit contact"
             initial={detailToForm(selected)}
@@ -266,130 +369,132 @@ function CrmApp() {
         ) : (
           <ContactOverview
             contact={selected}
-            canEdit={canEdit}
-            onBack={backToList}
-            onEdit={() => setEditing(true)}
+            loading={detailLoading}
+            error={detailError}
+            onRetry={() => void loadContact(selected.contact_id)}
           />
-        )
-      ) : (
-        <section className="crm-list" data-usable="crm-list">
-          <div className="crm-title-row">
-            <div>
-              <h1>CRM</h1>
-              <p>One Time signup and contact review.</p>
-            </div>
-            {canEdit && (
-              <button type="button" className="button-primary" onClick={() => setCreating(true)}>
-                Add contact
-              </button>
-            )}
-          </div>
-          <form
-            className="filter-bar"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void loadList();
-            }}
-          >
-            <label>
-              <span>Search</span>
-              <input
-                value={query.search}
-                onChange={(event) => setQuery({ ...query, search: event.target.value })}
-              />
-            </label>
-            <label>
-              <span>Type</span>
-              <select
-                value={query.classification}
-                onChange={(event) => setQuery({ ...query, classification: event.target.value })}
-              >
-                <option value="">All</option>
-                <option value="family">Family</option>
-                <option value="school">School</option>
-              </select>
-            </label>
-            <label>
-              <span>Status</span>
-              <select
-                value={query.lead_status}
-                onChange={(event) => setQuery({ ...query, lead_status: event.target.value })}
-              >
-                <option value="">All</option>
-                <option value="new">New</option>
-                <option value="in_review">In review</option>
-                <option value="contacted">Contacted</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="closed">Closed</option>
-                <option value="archived">Archived</option>
-              </select>
-            </label>
-            <label>
-              <span>Sort</span>
-              <select
-                value={query.sort}
-                onChange={(event) => setQuery({ ...query, sort: event.target.value })}
-              >
-                <option value="updated_desc">Recently updated</option>
-                <option value="created_desc">Newest</option>
-                <option value="name_asc">Name</option>
-              </select>
-            </label>
-            <button type="submit" className="button-secondary">
-              Apply
-            </button>
-          </form>
-          {activeChips.length > 0 && (
-            <div className="filter-chips">
-              {activeChips.map((chip) => (
-                <span key={chip}>{chip}</span>
-              ))}
-            </div>
-          )}
-          {loading && <p className="crm-loading">Loading contacts...</p>}
-          {!loading && contacts.length === 0 && (
-            <p className="crm-empty">No contacts match these filters.</p>
-          )}
-          <div className="contact-list">
-            {contacts.map((contact) => (
-              <button
-                type="button"
-                className="contact-row"
-                key={contact.contact_id}
-                onClick={() => openContact(contact.contact_id)}
-              >
-                <strong>{contact.display_name}</strong>
-                <span>
-                  {capitalize(contact.family_school_classification)} ·{' '}
-                  {labelStatus(contact.lead_status)}
-                </span>
-                <span>
-                  {contact.email ?? 'No email'}
-                  {contact.phone ? ` · ${contact.phone}` : ''}
-                </span>
-                <span>
-                  {contact.source} · {contact.assigned_team_member ?? 'Unassigned'} ·{' '}
-                  {formatDate(contact.last_activity_at)}
-                </span>
-              </button>
-            ))}
-          </div>
-          {nextCursor && (
-            <button
-              type="button"
-              className="button-secondary load-more"
-              onClick={() => void loadList(nextCursor)}
-            >
-              Load more
-            </button>
-          )}
-        </section>
+        ))}
+      {!creating && !selected && !editing && (
+        <ContactList
+          contacts={contacts}
+          loading={listLoading}
+          error={listError}
+          nextCursor={nextCursor}
+          query={query}
+          canEdit={canEdit}
+          onOpen={openContact}
+          onRetry={() => void loadList(undefined, query)}
+          onLoadMore={() => void loadList(nextCursor ?? undefined, query)}
+          onCreate={startCreate}
+        />
       )}
-    </main>
+      {!creating && !selected && !editing && detailError && (
+        <StatePanel
+          kind="error"
+          title="Contact not found or unavailable"
+          body={detailError}
+          actionLabel="Back to CRM"
+          onAction={() => void backToList()}
+        />
+      )}
+    </AppShell>
   );
 }
 
-function ContactOverview({
+function ListToolbar({
+  query,
+  activeChips,
+  canEdit,
+  onChange,
+  onApply,
+  onClear,
+  onCreate,
+}: {
+  query: QueryState;
+  activeChips: { key: string; label: string }[];
+  canEdit: boolean;
+  onChange: (query: QueryState) => void;
+  onApply: (query: QueryState) => void;
+  onClear: () => void;
+  onCreate: () => void;
+}) {
+  return (
+    <form
+      className="toolbar-grid"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onApply(query);
+      }}
+    >
+      <div className="toolbar-filters" aria-label="CRM filters">
+        <label className={query.search ? 'is-selected' : undefined}>
+          <span>Search</span>
+          <input
+            value={query.search}
+            onChange={(event) => onChange({ ...query, search: event.target.value })}
+          />
+        </label>
+        <label className={query.classification ? 'is-selected' : undefined}>
+          <span>Type</span>
+          <select
+            value={query.classification}
+            onChange={(event) => onChange({ ...query, classification: event.target.value })}
+          >
+            <option value="">All</option>
+            <option value="family">Family</option>
+            <option value="school">School</option>
+          </select>
+        </label>
+        <label className={query.lead_status ? 'is-selected' : undefined}>
+          <span>Status</span>
+          <select
+            value={query.lead_status}
+            onChange={(event) => onChange({ ...query, lead_status: event.target.value })}
+          >
+            <option value="">All</option>
+            <option value="new">New</option>
+            <option value="in_review">In review</option>
+            <option value="contacted">Contacted</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="closed">Closed</option>
+            <option value="archived">Archived</option>
+          </select>
+        </label>
+        <label className={query.sort !== 'updated_desc' ? 'is-selected' : undefined}>
+          <span>Sort</span>
+          <select
+            value={query.sort}
+            onChange={(event) => onChange({ ...query, sort: event.target.value })}
+          >
+            <option value="updated_desc">Recently updated</option>
+            <option value="created_desc">Newest</option>
+            <option value="name_asc">Name</option>
+          </select>
+        </label>
+        <button type="submit" className="button-secondary">
+          Apply
+        </button>
+      </div>
+      {activeChips.length > 0 && (
+        <div className="active-filter-row" aria-label="Active filters">
+          {activeChips.map((chip) => (
+            <span key={`${chip.key}:${chip.label}`}>{chip.label}</span>
+          ))}
+          <button type="button" className="text-button" onClick={onClear}>
+            Clear filters
+          </button>
+        </div>
+      )}
+      {canEdit && (
+        <button type="button" className="button-primary toolbar-primary" onClick={onCreate}>
+          Add contact
+        </button>
+      )}
+    </form>
+  );
+}
+
+function DetailToolbar({
   contact,
   canEdit,
   onBack,
@@ -400,22 +505,213 @@ function ContactOverview({
   onBack: () => void;
   onEdit: () => void;
 }) {
+  return (
+    <div className="detail-toolbar">
+      <button type="button" className="button-secondary" onClick={onBack}>
+        Back to CRM
+      </button>
+      <div className="toolbar-summary" aria-label="Contact summary">
+        <Chip label={capitalize(contact.family_school_classification)} tone="classification" />
+        <Chip label={labelStatus(contact.lead_status)} tone="status" />
+        <Chip label={sourceLabel(contact.source)} tone="source" />
+      </div>
+      {canEdit && (
+        <button type="button" className="button-primary" onClick={onEdit}>
+          Edit contact
+        </button>
+      )}
+    </div>
+  );
+}
+
+function FormToolbar({ onCancel }: { onCancel: () => void }) {
+  return (
+    <div className="detail-toolbar">
+      <button type="button" className="button-secondary" onClick={onCancel}>
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+function ContactList({
+  contacts,
+  loading,
+  error,
+  nextCursor,
+  query,
+  canEdit,
+  onOpen,
+  onRetry,
+  onLoadMore,
+  onCreate,
+}: {
+  contacts: ContactListItem[];
+  loading: boolean;
+  error: string;
+  nextCursor: string | null;
+  query: QueryState;
+  canEdit: boolean;
+  onOpen: (contactId: string) => void;
+  onRetry: () => void;
+  onLoadMore: () => void;
+  onCreate: () => void;
+}) {
+  const hasFilters = Boolean(query.search || query.classification || query.lead_status);
+  return (
+    <section className="crm-list" data-usable="crm-list" aria-busy={loading}>
+      {loading && <ListSkeleton />}
+      {!loading && error && (
+        <StatePanel
+          kind="error"
+          title="CRM contacts could not load"
+          body={`${error} Try again when the connection is ready.`}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      )}
+      {!loading && !error && contacts.length === 0 && (
+        <StatePanel
+          kind="empty"
+          title={hasFilters ? 'No contacts match these filters' : 'No contacts yet'}
+          body={
+            hasFilters
+              ? 'Adjust search or filters to review another set of contacts.'
+              : 'Add the first CRM contact when you have a real One Time lead to record.'
+          }
+          actionLabel={!hasFilters && canEdit ? 'Add contact' : undefined}
+          onAction={!hasFilters && canEdit ? onCreate : undefined}
+        />
+      )}
+      {!loading && !error && contacts.length > 0 && (
+        <>
+          <ContactTable contacts={contacts} onOpen={onOpen} />
+          <div className="contact-card-list" aria-label="CRM contacts">
+            {contacts.map((contact) => (
+              <ContactCard key={contact.contact_id} contact={contact} onOpen={onOpen} />
+            ))}
+          </div>
+          {nextCursor && (
+            <button type="button" className="button-secondary load-more" onClick={onLoadMore}>
+              Load more
+            </button>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+function ContactTable({
+  contacts,
+  onOpen,
+}: {
+  contacts: ContactListItem[];
+  onOpen: (contactId: string) => void;
+}) {
+  return (
+    <div className="contact-table-wrap">
+      <table className="contact-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Contact</th>
+            <th scope="col">Source</th>
+            <th scope="col">Last activity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {contacts.map((contact) => (
+            <tr
+              key={contact.contact_id}
+              tabIndex={0}
+              role="button"
+              data-contact-open={contact.contact_id}
+              aria-label={`Open ${contact.display_name}`}
+              onClick={() => onOpen(contact.contact_id)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onOpen(contact.contact_id);
+                }
+              }}
+            >
+              <td>
+                <strong>{contact.display_name}</strong>
+                {contact.assigned_team_member && <small>{contact.assigned_team_member}</small>}
+              </td>
+              <td>
+                <Chip
+                  label={capitalize(contact.family_school_classification)}
+                  tone="classification"
+                />
+                <Chip label={labelStatus(contact.lead_status)} tone="status" />
+              </td>
+              <td>{contactMethod(contact)}</td>
+              <td>
+                <Chip label={sourceLabel(contact.source)} tone="source" />
+              </td>
+              <td>{formatDate(contact.last_activity_at)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ContactCard({
+  contact,
+  onOpen,
+}: {
+  contact: ContactListItem;
+  onOpen: (contactId: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="contact-card"
+      data-contact-open={contact.contact_id}
+      onClick={() => onOpen(contact.contact_id)}
+    >
+      <span className="contact-card-heading">
+        <strong>{contact.display_name}</strong>
+        <span>{formatDate(contact.last_activity_at)}</span>
+      </span>
+      <span className="chip-row">
+        <Chip label={capitalize(contact.family_school_classification)} tone="classification" />
+        <Chip label={labelStatus(contact.lead_status)} tone="status" />
+        <Chip label={sourceLabel(contact.source)} tone="source" />
+      </span>
+      <span className="contact-card-meta">
+        <span>{contactMethod(contact)}</span>
+        {contact.assigned_team_member && <span>{contact.assigned_team_member}</span>}
+      </span>
+    </button>
+  );
+}
+
+function ContactOverview({
+  contact,
+  loading,
+  error,
+  onRetry,
+}: {
+  contact: ContactDetail;
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+}) {
   const facts = [
-    ['Classification', capitalize(contact.family_school_classification)],
+    ['Family / School', capitalize(contact.family_school_classification)],
     ['Lead status', labelStatus(contact.lead_status)],
+    ['Source', sourceLabel(contact.source)],
     ['Email', contact.email ?? 'Not provided'],
     ['Phone', contact.phone ?? 'Not provided'],
-    ['Location', contact.location],
-    ['Timezone', contact.timezone],
-    ['Source', contact.source],
-    ['Offer version', contact.offer_version ?? 'Not recorded'],
-    ['Content version', contact.content_version ?? 'Not recorded'],
-    ['Reminder preference', contact.reminder_preference],
-    ['Consent', contact.consent_state],
-    ['Suppression', contact.suppression_state],
-    ['Created', formatDate(contact.created_at)],
-    ['Updated', formatDate(contact.updated_at)],
     ['Last activity', formatDate(contact.last_activity_at)],
+    ['Consent', readableState(contact.consent_state)],
+    ['Suppression', readableState(contact.suppression_state)],
     [
       'Signup provenance',
       contact.audit_safe_signup_provenance.signup_key
@@ -423,34 +719,39 @@ function ContactOverview({
         : 'Manual CRM contact',
     ],
   ];
+  if (contact.assigned_team_member) {
+    facts.splice(3, 0, ['Assigned team member', contact.assigned_team_member]);
+  }
+
   return (
-    <section className="contact-detail" data-usable="crm-detail">
-      <div className="crm-title-row">
-        <div>
-          <button type="button" className="text-button" onClick={onBack}>
-            Back
-          </button>
-          <h1>{contact.display_name}</h1>
-        </div>
-        {canEdit && (
-          <button type="button" className="button-primary" onClick={onEdit}>
-            Edit
-          </button>
-        )}
-      </div>
-      <dl className="detail-grid">
-        {facts.map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
-      {contact.internal_note && (
-        <section className="note-panel">
-          <h2>Internal note</h2>
-          <p>{contact.internal_note}</p>
-        </section>
+    <section className="contact-detail" data-usable="crm-detail" aria-busy={loading}>
+      {loading && <DetailSkeleton />}
+      {!loading && error && (
+        <StatePanel
+          kind="error"
+          title="Contact could not load"
+          body={error}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      )}
+      {!loading && !error && (
+        <>
+          <dl className="detail-grid">
+            {facts.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+          {contact.internal_note && (
+            <section className="note-panel">
+              <h2>Internal note</h2>
+              <p>{contact.internal_note}</p>
+            </section>
+          )}
+        </>
       )}
     </section>
   );
@@ -475,15 +776,10 @@ function ContactForm({
   const set = (key: keyof ContactFormState, value: string) =>
     setForm((current) => ({ ...current, [key]: value }));
   return (
-    <section className="contact-form-shell">
-      <div className="crm-title-row">
-        <h1>{title}</h1>
-        <button type="button" className="ghost-button" onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
+    <section className="contact-form-shell" aria-labelledby="contact-form-title">
+      <h2 id="contact-form-title">{title}</h2>
       {error && (
-        <p className="crm-status error-status" role="alert">
+        <p className="notice-banner error" role="alert">
           {error}
         </p>
       )}
@@ -584,7 +880,7 @@ function ContactForm({
           <button type="submit" className="button-primary" disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
           </button>
-          <button type="button" className="ghost-button" onClick={onCancel}>
+          <button type="button" className="button-secondary" onClick={onCancel}>
             Cancel
           </button>
         </div>
@@ -593,9 +889,79 @@ function ContactForm({
   );
 }
 
+function ListSkeleton() {
+  return (
+    <div className="skeleton-list" role="status" aria-label="Loading contacts">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div className="skeleton-row" key={index}>
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DetailSkeleton() {
+  return (
+    <div className="detail-grid skeleton-detail" role="status" aria-label="Loading contact detail">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div key={index}>
+          <span />
+          <strong />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StatePanel({
+  kind,
+  title,
+  body,
+  actionLabel,
+  onAction,
+}: {
+  kind: 'empty' | 'error';
+  title: string;
+  body: string;
+  actionLabel?: string | undefined;
+  onAction?: (() => void) | undefined;
+}) {
+  return (
+    <section className={`state-panel ${kind}`} aria-labelledby={`${kind}-state-title`}>
+      <h2 id={`${kind}-state-title`}>{title}</h2>
+      <p>{body}</p>
+      {actionLabel && onAction && (
+        <button type="button" className="button-primary" onClick={onAction}>
+          {actionLabel}
+        </button>
+      )}
+    </section>
+  );
+}
+
+function NoticeBanner({ notice }: { notice: Notice }) {
+  return (
+    <p
+      className={`notice-banner ${notice.kind}`}
+      role={notice.kind === 'error' ? 'alert' : 'status'}
+    >
+      {notice.message}
+    </p>
+  );
+}
+
+function Chip({ label, tone }: { label: string; tone: 'classification' | 'status' | 'source' }) {
+  return <span className={`semantic-chip ${tone}`}>{label}</span>;
+}
+
 async function api<T>(path: string): Promise<T> {
   const response = await fetch(path, { headers: { accept: 'application/json' } });
-  const json = await response.json();
+  const json = await response.json().catch(() => ({}));
+  if (response.status === 401) throw new AuthExpiredError();
   if (!response.ok || json.success === false) throw new Error(json.message ?? 'Request failed.');
   return json as T;
 }
@@ -615,6 +981,20 @@ function detailToForm(contact: ContactDetail): ContactFormState {
   };
 }
 
+function shellUserFromSession(user: SessionUser): ShellUser {
+  return {
+    displayName: user.display_name,
+    email: user.email,
+    roleLabel: roleLabel(user),
+  };
+}
+
+function roleLabel(user: SessionUser) {
+  if (user.role === 'owner') return 'Owner';
+  if (user.role === 'admin') return 'Administrator';
+  return user.role_label;
+}
+
 function labelFor(key: string) {
   return key === 'lead_status'
     ? 'Status'
@@ -625,12 +1005,39 @@ function labelFor(key: string) {
         : 'Sort';
 }
 
+function displayFilterValue(key: string, value: string) {
+  if (key === 'lead_status') return labelStatus(value);
+  if (key === 'classification') return capitalize(value);
+  if (key === 'sort')
+    return value === 'created_desc' ? 'Newest' : value === 'name_asc' ? 'Name' : value;
+  return value;
+}
+
 function labelStatus(value: string) {
+  return readableState(value);
+}
+
+function sourceLabel(value: string) {
+  return readableState(value || 'unknown');
+}
+
+function readableState(value: string) {
   return value.replaceAll('_', ' ').replace(/^\w/, (letter) => letter.toUpperCase());
 }
 
 function capitalize(value: string) {
   return value.replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
+function contactMethod(contact: ContactListItem) {
+  if (contact.email && contact.phone) return `${contact.email} / ${contact.phone}`;
+  return contact.email ?? contact.phone ?? 'No contact method';
+}
+
+function contactSummary(contact: ContactDetail) {
+  return `${capitalize(contact.family_school_classification)} contact, ${labelStatus(
+    contact.lead_status,
+  )}, last activity ${formatDate(contact.last_activity_at)}.`;
 }
 
 function formatDate(value: string) {
@@ -641,6 +1048,31 @@ function formatDate(value: string) {
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
+}
+
+function cssEscape(value: string) {
+  if ('CSS' in window && typeof CSS.escape === 'function') return CSS.escape(value);
+  return value.replace(/["\\]/g, '\\$&');
+}
+
+function focusVisibleContactControl(contactId: string) {
+  const selector = `[data-contact-open="${cssEscape(contactId)}"]`;
+  let attempts = 0;
+  const focusAfterRender = () => {
+    const target = [...document.querySelectorAll<HTMLElement>(selector)].find((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.display !== 'none';
+    });
+    if (target) {
+      target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      target.focus({ preventScroll: true });
+      if (document.activeElement === target) return;
+    }
+    attempts += 1;
+    if (attempts < 10) window.setTimeout(focusAfterRender, 50);
+  };
+  window.requestAnimationFrame(() => window.requestAnimationFrame(focusAfterRender));
 }
 
 const root = document.getElementById('crm-root');
