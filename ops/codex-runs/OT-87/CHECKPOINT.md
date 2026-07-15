@@ -28,3 +28,13 @@ Next safe step after this checkpoint is committed and pushed: audit the accepted
 - Canary status: blocked until protected TEST resources validate and the canary gate is explicitly enabled.
 
 Next safe step: push this branch, open the required blocked draft PR, then wait for protected Stripe TEST resources before canaries or reconciliation apply.
+
+## 2026-07-15T20:16:30+03:00 - Draft PR Created
+
+- Pushed branch `codex/ot87-stripe-test-entitlements`.
+- Opened draft PR: `https://github.com/webcraft-media/onetimev2/pull/30`.
+- PR target branch: `codex/ot83-household-portals-foundation`.
+- PR title: `OT-87 Stripe TEST family subscription and entitlements`.
+- Run state remains `WAITING_FOR_STRIPE_TEST_RESOURCES`.
+- External Stripe mutation count: zero.
+- Live Stripe charges authorized: no.

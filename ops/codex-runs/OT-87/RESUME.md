@@ -6,6 +6,8 @@ Local OT-87 implementation and verification are complete on branch `codex/ot87-s
 
 State is `WAITING_FOR_STRIPE_TEST_RESOURCES` because protected Stripe TEST resources are absent in this environment. No live charges, live resources, TEST charges, TEST resources, Checkout Sessions, subscriptions, refunds, disputes, or webhook deliveries were created.
 
+Draft PR: `https://github.com/webcraft-media/onetimev2/pull/30`.
+
 ## Next Safe Commands
 
 ```powershell

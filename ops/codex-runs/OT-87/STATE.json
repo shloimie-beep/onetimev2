@@ -6,7 +6,7 @@
   "source_branch": "codex/ot83-household-portals-foundation",
   "source_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
   "target_branch": "codex/ot87-stripe-test-entitlements",
-  "head_sha": "LOCAL_VERIFIED_PENDING_PUBLICATION",
+  "head_sha": "38623adc3fd450e3fe725fadef405b9f026c31c2",
   "policy_id": "ot87-family-monthly-usd-67-v1",
   "policy_version": "2026-07-15.1",
   "stripe_mode": "test",
@@ -50,8 +50,8 @@
     "reason": "Canaries require successful read-only Stripe TEST resource validation plus ONE_TIME_STRIPE_TEST_CANARY_AUTHORIZED=YES."
   },
   "draft_pr": {
-    "status": "not_created",
-    "url": null
+    "status": "created",
+    "url": "https://github.com/webcraft-media/onetimev2/pull/30"
   },
-  "updated_at": "2026-07-15T20:07:30+03:00"
+  "updated_at": "2026-07-15T20:16:30+03:00"
 }

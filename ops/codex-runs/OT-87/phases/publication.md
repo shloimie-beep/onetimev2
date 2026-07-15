@@ -1,7 +1,8 @@
 # OT-87 Phase Ledger - Publication
 
-Status: pending.
+Status: draft PR created.
 
-- Local implementation is ready to commit and push.
-- Draft PR must target `codex/ot83-household-portals-foundation` with title `OT-87 Stripe TEST family subscription and entitlements`.
-- After PR creation, update `STATE.json` with the draft PR URL.
+- Branch `codex/ot87-stripe-test-entitlements` pushed.
+- Draft PR created: `https://github.com/webcraft-media/onetimev2/pull/30`.
+- Target branch: `codex/ot83-household-portals-foundation`.
+- PR remains blocked on protected Stripe TEST resources and canary authorization.
