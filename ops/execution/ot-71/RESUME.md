@@ -29,9 +29,9 @@ ops/execution/ot-71/TEST-RESULTS.md
 ops/execution/ot-71/INTEGRATION-MANIFEST.md
 ```
 
-4. Continue at the first pending phase in `STATE.json`; after Phase 1 this is Phase 2 provider-neutral content and library.
+4. Continue at the first pending phase in `STATE.json`; after Phase 2 this is Phase 3 account and credential lifecycle integration.
 5. Do not rerun the failed OT-71 preflight that required self-referential control-file SHAs.
 6. Maintain prohibitions: no deployment, no production/provider mutation, no BNA modification, no production database, no real sends, no charges, no DNS changes, no real users.
 7. After each implementation phase, update STATE, CHECKPOINT, IMPLEMENTED, REMAINING, BLOCKERS, TEST-RESULTS, INTEGRATION-MANIFEST, and RESUME; commit intentionally; push `codex/ot71-product-core-train`.
 
-Current Phase 1 status: implemented locally and verified with `npm run test`, `npm run lint`, `npm run build`, `npm run secret:scan`, and `git diff --check`. Next phase: Phase 2 content/library, migration namespace 1400-1499, no Vimeo/provider calls.
+Current Phase 2 status: implemented locally and verified with focused content tests, `npm run typecheck`, `npm run lint`, `npm run build`, `npm run secret:scan`, `git diff --check`, and `npm run test`. Next phase: Phase 3 account and credential lifecycle integration; no real users, credential sends, or live identity-provider mutations.

@@ -18,3 +18,15 @@
 - Added owner/admin class list/detail APIs exposing readiness and fulfillment counts with `provider_unavailable` state.
 - Added portal class access adapter hooks returning protected `provider_unavailable` launch descriptors without raw Zoom/provider targets.
 - Added unit and integration coverage for DST/boundaries, replay/idempotency, school negatives, owner/admin API role gates, portal descriptors, delivery eligibility, and no provider URL leakage.
+
+## Phase 2: Provider-Neutral Content And Library
+
+- Added migration namespace `1400` for content items, content revisions, content item entitlements, content outcome idempotency records, content audit events, content redaction events, and content retention events.
+- Added content lifecycle contracts for `received`, `transcribing`, `processing`, `review_needed`, `published`, `failed`, and `superseded` states.
+- Added local asynchronous content outcome admission with deterministic idempotency replay, changed-byte idempotency conflicts, stale older revision handling, and newer revision supersession.
+- Added recursive transcript/source/review/playback metadata redaction so raw provider URLs, URL-shaped keys, credential-like keys, and provider refs are not persisted or returned.
+- Stored provider event/source refs as SHA-256 digests only.
+- Added all-active-learner entitlements for published outcomes and a portal adapter that returns only published entitled video/source library items and sheet/review items.
+- Added local protected content/review actions under app-relative paths with no Vimeo/provider URLs.
+- Added owner/admin content library list/detail APIs and a CSRF-protected local outcome admission endpoint; viewer sessions are denied.
+- Added unit and integration coverage for redaction, replay/idempotency, stale revision ordering, supersession, portal entitlement filtering, bounded lists, owner/admin APIs, CSRF, and no raw provider URL leakage.

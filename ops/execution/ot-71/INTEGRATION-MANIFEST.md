@@ -24,6 +24,22 @@
 - Raw provider URL/secret/target exposure: none; class launch descriptors return `provider_unavailable`.
 - External mutations: zero.
 
+## Phase 2
+
+- Shared OT-60R control files edited: no.
+- Shared registry edited: no.
+- OT-72 provider-owned files edited: no.
+- Provider transports, credentials, webhooks, polling, and live activation edited: no.
+- New migration: `packages/db/migrations/1400_ot71_content_library.sql`.
+- Product contracts added: `packages/contracts/src/content/index.ts`.
+- Product domain added: `packages/domain/src/content/service.ts`.
+- Existing integration points touched:
+  - `packages/contracts/src/index.ts` exports content contracts.
+  - `packages/domain/src/index.ts` exports content library admission/read/portal adapter helpers.
+  - `apps/web/src/server/app.ts` exposes owner/admin content library list/detail APIs and a CSRF-protected local outcome sink.
+- Raw provider URL/secret/target exposure: none; transcript/source/review/playback metadata is redacted, provider refs are digest-only, and portal actions are app-relative descriptors.
+- External mutations: zero.
+
 ## Future Shared Hotspots
 
 Any necessary shared hotspot changes must be small, clearly labeled, and recorded here with file paths, reason, owner boundary, tests, and rollback notes.

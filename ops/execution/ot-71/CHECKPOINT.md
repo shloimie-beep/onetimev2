@@ -7,7 +7,7 @@
 - Branch: `codex/ot71-product-core-train`
 - Immutable base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
 - Source PR ref: `origin/pr/17`
-- Phase: Phase 1 complete
+- Phase: Phase 2 complete
 - Status: building
 
 ## Completed
@@ -28,11 +28,16 @@
 - Added post-commit class fulfillment scheduling for eligible Family signups while preserving School submissions as lead-only.
 - Added provider-neutral class reminder delivery events, sink delivery support, owner/admin class APIs, and portal access adapter hooks with `provider_unavailable` descriptors.
 - Verified Phase 1 with focused and full unit/integration tests plus lint, build/typecheck, secret scan, and whitespace checks.
+- Added migration `1400_ot71_content_library.sql` for content items, revisions, entitlements, idempotent outcome records, audit events, redaction events, and retention events.
+- Added provider-neutral content contracts and domain service for local asynchronous outcome admission, lifecycle states, stale revision/supersession handling, digest-only provider refs, and recursive metadata redaction.
+- Added portal content adapter hooks returning only published entitled library/review items with local protected actions.
+- Added owner/admin content library list/detail APIs and CSRF-protected local outcome admission; viewer sessions are denied.
+- Verified Phase 2 with focused and full unit/integration tests plus typecheck, lint, build, secret scan, and whitespace checks.
 
 ## Next
 
-1. Commit and push the Phase 1 checkpoint.
-2. Start Phase 2 provider-neutral content and library in migration namespace 1400-1499 after confirming the namespace remains free.
+1. Commit and push the Phase 2 checkpoint.
+2. Start Phase 3 account and credential lifecycle integration.
 3. Keep live provider activation and all OT-72-owned transports disabled.
 
 ## Prohibitions

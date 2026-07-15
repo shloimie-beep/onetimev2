@@ -15,3 +15,12 @@
 - Treat School submissions as lead-only: no class occurrence, fulfillment intent, reminder, access target, or portal entitlement.
 - Use `provider_unavailable` protected launch descriptors until OT-72 supplies provider transports; do not expose Zoom/provider URLs or raw class targets.
 - Extend existing sink delivery contracts for class reminders instead of introducing a second delivery path.
+
+## 2026-07-15 Phase 2
+
+- Use migration namespace `1400` for OT-71 content-library tables because it was free on the Phase 2 branch state.
+- Implement content outcome admission as an authenticated local sink endpoint plus domain service, not as a live Vimeo/provider webhook.
+- Store provider event/source references only as SHA-256 digests and recursively redact URL-shaped/provider metadata before persistence or response serialization.
+- Model publication and entitlement separately: portal adapters return only items with a published revision and an active entitlement.
+- Use app-relative protected action descriptors for content/review access; do not return raw playback URLs or provider launch targets.
+- Keep content ingestion deterministic and idempotent: exact replay returns the stored response, changed-byte replay returns an idempotency conflict, older revisions are recorded as stale/superseded without changing the item head.

@@ -9,6 +9,11 @@ import {
   contactListQuerySchema,
   contactListResponseSchema,
   contactResponseSchema,
+  contentLibraryDetailResponseSchema,
+  contentLibraryListQuerySchema,
+  contentLibraryListResponseSchema,
+  contentOutcomeAdmissionResponseSchema,
+  contentOutcomePayloadSchema,
   createContactSchema,
   leadPayloadSchema,
   loginPayloadSchema,
@@ -25,8 +30,10 @@ import {
 import {
   CrmDuplicateError,
   CrmVersionConflictError,
+  ContentIdempotencyConflictError,
   IdempotencyConflictError,
   activateTotpEnrollment,
+  admitContentOutcome,
   authenticateUser,
   canEditContacts,
   captureLead,
@@ -34,9 +41,11 @@ import {
   createLoginCsrf,
   createSession,
   getClassOccurrenceDetail,
+  getContentItemDetail,
   getContactDetail,
   getSessionByToken,
   listClassOccurrences,
+  listContentLibrary,
   listAssignableUsers,
   listContacts,
   replaceMfaRecoveryCodes,
@@ -613,6 +622,72 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/content/library', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canReadContentLibrary(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot view content.', req.traceId));
+      return;
+    }
+    try {
+      const query = contentLibraryListQuerySchema.parse(req.query);
+      const items = await withTiming(req, 'db', () => listContentLibrary({ pool, config, query }));
+      res.json(contentLibraryListResponseSchema.parse({ success: true, items, next_cursor: null }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/content/library/:itemKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canReadContentLibrary(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot view content.', req.traceId));
+      return;
+    }
+    try {
+      const item = await withTiming(req, 'db', () =>
+        getContentItemDetail({ pool, config, itemKey: String(req.params.itemKey) }),
+      );
+      if (!item) {
+        res.status(404).json(publicError('NOT_FOUND', 'Content item was not found.', req.traceId));
+        return;
+      }
+      res.json(contentLibraryDetailResponseSchema.parse({ success: true, item }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/content/outcomes', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canReadContentLibrary(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot admit content.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = contentOutcomePayloadSchema.parse(req.body);
+      const outcome = await withTiming(req, 'db', () =>
+        admitContentOutcome({
+          pool,
+          config,
+          payload,
+          actorUserKey: session.user.user_key,
+        }),
+      );
+      res.status(202).json(contentOutcomeAdmissionResponseSchema.parse({ success: true, outcome }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.post('/api/v1/crm/contacts', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -847,12 +922,25 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof ContentIdempotencyConflictError) {
+    res.status(409).json({
+      success: false,
+      code: 'IDEMPOTENCY_CONFLICT',
+      message: 'This content outcome key was already used for a different request.',
+      request_id: req.traceId,
+    });
+    return;
+  }
   res
     .status(500)
     .json(publicError('SERVER_ERROR', 'The CRM request could not be completed.', req.traceId));
 }
 
 function canReadClasses(role: string) {
+  return role === 'owner' || role === 'admin';
+}
+
+function canReadContentLibrary(role: string) {
   return role === 'owner' || role === 'admin';
 }
 

@@ -19,6 +19,14 @@ export {
   scheduleClassFulfillmentForLead,
 } from './classes/service.ts';
 export {
+  ContentIdempotencyConflictError,
+  admitContentOutcome,
+  createContentPortalAccessAdapter,
+  getContentItemDetail,
+  listContentLibrary,
+  redactProviderMetadata,
+} from './content/service.ts';
+export {
   authenticateUser,
   activateTotpEnrollment,
   canAssignContacts,
