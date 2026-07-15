@@ -3,6 +3,8 @@
 ## Performed
 
 - Installed npm dependency `libphonenumber-js@1.13.8` into the isolated OT-85 worktree.
+- Pushed branch `codex/ot85-whatsapp-lead-assistant` to `webcraft-media/onetimev2`.
+- Created draft PR `#28`: `https://github.com/webcraft-media/onetimev2/pull/28`.
 
 ## Not Performed
 
@@ -17,4 +19,4 @@
 
 ## GitHub Publication
 
-Pending commit, push, and draft PR creation from branch `codex/ot85-whatsapp-lead-assistant`.
+Published branch `codex/ot85-whatsapp-lead-assistant` and opened draft PR `#28`.

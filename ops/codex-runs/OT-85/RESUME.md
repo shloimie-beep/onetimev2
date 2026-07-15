@@ -5,6 +5,7 @@
 - Branch: `codex/ot85-whatsapp-lead-assistant`.
 - Worktree: `C:\Users\User\.onetime-worktrees\ot85-whatsapp-lead-assistant`.
 - Base SHA: `a02d1d254ae0d17804fb657079a7871567260ea2`.
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/28`.
 - Checkpoint: `WAITING_FOR_WHATSAPP_CANARY_SECRET`.
 - Code, tests, and build are complete locally.
 - The remaining blocked item is the protected canary recipient secret and staging authorization.

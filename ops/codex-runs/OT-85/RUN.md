@@ -11,6 +11,8 @@
 - base pull request base branch: `codex/ot82-brand-system-foundation`
 - run start timestamp: `2026-07-15T19:22:57.8455960+03:00`
 - current checkpoint: `WAITING_FOR_WHATSAPP_CANARY_SECRET`
+- implementation commit: `733b188`
+- draft PR: `https://github.com/webcraft-media/onetimev2/pull/28`
 
 ## Base Resolution Attempts
 
@@ -25,3 +27,4 @@
 - Added migration `2000_ot85_whatsapp_assistant`.
 - Added WhatsApp contracts, domain service, provider adapters, crypto helpers, public facts, Express routes, canary readiness script, and tests.
 - No external provider mutation or canary send occurred.
+- Branch was pushed and draft PR `#28` was opened.
