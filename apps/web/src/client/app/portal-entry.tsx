@@ -20,6 +20,8 @@ import {
   getSession,
   getStudentDashboard,
   invokeProtectedAction,
+  createBillingCheckoutSession,
+  createBillingPortalSession,
   runStudentAccessOperation,
 } from './portal-api.js';
 import './crm.css';
@@ -135,6 +137,27 @@ function PortalApp() {
     }
   }
 
+  async function handleBillingAction(kind: 'checkout' | 'portal') {
+    if (!session || !parentDashboard) return;
+    try {
+      setNotice(null);
+      const principalKey = parentDashboard.household.household_key;
+      const result =
+        kind === 'checkout'
+          ? await createBillingCheckoutSession({
+              csrfToken: session.csrf_token,
+              principalKey,
+            })
+          : await createBillingPortalSession({
+              csrfToken: session.csrf_token,
+              principalKey,
+            });
+      window.location.assign(result.redirect_url);
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Billing is unavailable.') });
+    }
+  }
+
   async function handleProtectedAction(action: ProtectedActionDescriptor) {
     if (!session) return;
     try {
@@ -223,6 +246,8 @@ function PortalApp() {
           onStudentAccessAction={(learnerKey, action) =>
             void handleStudentAccessAction(learnerKey, action)
           }
+          onBillingCheckout={() => void handleBillingAction('checkout')}
+          onBillingPortal={() => void handleBillingAction('portal')}
           onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
           onPreviewSupport={() =>
             setNotice({ kind: 'info', message: 'Support preview is local-only right now.' })

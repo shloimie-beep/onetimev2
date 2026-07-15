@@ -52,17 +52,20 @@ const envSchema = z.object({
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
   ENABLE_PAYMENT_TRANSPORT: booleanFromString,
+  LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
 
 export function loadConfig(source: NodeJS.ProcessEnv) {
   const parsed = envSchema.parse(source);
+  const guardedStripeTestTransport =
+    parsed.ENABLE_PAYMENT_TRANSPORT && parsed.LIVE_STRIPE_CHARGES_AUTHORIZED === 'NO';
   const realTransportsEnabled =
     parsed.ENABLE_REAL_EMAIL_TRANSPORT ||
     parsed.ENABLE_REAL_WHATSAPP_TRANSPORT ||
     parsed.ENABLE_REAL_TELEGRAM_TRANSPORT ||
-    parsed.ENABLE_PAYMENT_TRANSPORT;
+    (parsed.ENABLE_PAYMENT_TRANSPORT && !guardedStripeTestTransport);
 
   if (parsed.NODE_ENV !== 'test' && realTransportsEnabled) {
     throw new Error('Real transports are outside this task and must remain disabled.');

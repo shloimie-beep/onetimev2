@@ -18,6 +18,7 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { stableKey } from '../lead/normalize.ts';
 import type { LearnerContentAccessAdapter } from '../portals/services.ts';
+import { householdHasLearningAccess } from '../billing/portal-access.ts';
 
 export class ContentIdempotencyConflictError extends Error {
   constructor() {
@@ -139,24 +140,46 @@ export function createContentPortalAccessAdapter(input: {
   config: AppConfig;
 }): LearnerContentAccessAdapter {
   return {
-    publishedLibraryForLearner: async ({ actor, learner }) =>
-      portalItemsForLearner({
+    publishedLibraryForLearner: async ({ actor, learner }) => {
+      if (
+        !(await householdHasLearningAccess({
+          pool: input.pool,
+          accountKey: actor.account_key,
+          productKey: actor.product_key,
+          householdKey: learner.household_key,
+        }))
+      ) {
+        return [];
+      }
+      return portalItemsForLearner({
         pool: input.pool,
         accountKey: actor.account_key,
         productKey: actor.product_key,
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['video', 'source'],
-      }),
-    reviewSheetsForLearner: async ({ actor, learner }) =>
-      portalItemsForLearner({
+      });
+    },
+    reviewSheetsForLearner: async ({ actor, learner }) => {
+      if (
+        !(await householdHasLearningAccess({
+          pool: input.pool,
+          accountKey: actor.account_key,
+          productKey: actor.product_key,
+          householdKey: learner.household_key,
+        }))
+      ) {
+        return [];
+      }
+      return portalItemsForLearner({
         pool: input.pool,
         accountKey: actor.account_key,
         productKey: actor.product_key,
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['sheet', 'review'],
-      }),
+      });
+    },
   };
 }
 

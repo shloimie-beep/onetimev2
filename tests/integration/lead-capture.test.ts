@@ -166,7 +166,7 @@ describe('lead capture transaction', () => {
   });
 
   it('sink worker delivers deterministic intents without external transport', async () => {
-    await captureLead({ pool, config, payload, now: beforeReminder });
+    await captureLead({ pool, config, payload, now: new Date('2099-07-15T12:00:00.000Z') });
     const sink = await processOutboxSink(pool);
     expect(sink.delivered).toBe(2);
     const rows = await pool.query(

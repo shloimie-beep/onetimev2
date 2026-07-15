@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "stripe_mode": "test",
+  "live_stripe_charges_authorized": false,
+  "account_validation": {
+    "status": "failed",
+    "validated_at": "2026-07-15T17:03:34.643Z",
+    "account_fingerprint": null
+  },
+  "mutations": [],
+  "live_totals": {
+    "api_calls": 0,
+    "resources_created": 0,
+    "charges": 0,
+    "subscriptions": 0,
+    "refunds": 0,
+    "disputes": 0
+  },
+  "cleanup": {
+    "status": "not_required",
+    "completed_at": null,
+    "remaining_test_resources": []
+  },
+  "notes": [
+    "Read-only Stripe TEST resource validation failed closed because protected resources are not configured.",
+    "Stripe TEST setup was run without --apply and without setup authorization/protected store; no mutation was attempted.",
+    "No Stripe resource setup, checkout, subscription, webhook delivery, refund, dispute, live call, live resource, or live charge has been performed."
+  ]
+}

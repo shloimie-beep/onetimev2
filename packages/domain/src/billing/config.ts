@@ -6,6 +6,7 @@ import {
   type BillingMode,
   type BillingOfferPriceMapping,
 } from './types.ts';
+import { OT87_PLAN_TRUTH, loadOt87CommercialPolicy } from './commercial-policy.ts';
 
 export type BillingConfigSource = Record<string, unknown>;
 
@@ -17,7 +18,10 @@ export type BillingConfigErrorCode =
   | 'MODE_MISMATCH'
   | 'MALFORMED_ORIGIN'
   | 'TRANSPORT_DISABLED'
-  | 'INVALID_OFFER_MAPPING';
+  | 'INVALID_OFFER_MAPPING'
+  | 'LIVE_GUARD_REQUIRED'
+  | 'INVALID_TEST_SECRET'
+  | 'INVALID_EMERGENCY_MODE';
 
 export class BillingConfigError extends Error {
   constructor(
@@ -53,10 +57,16 @@ export function defaultBillingFeatureConfig(): BillingFeatureConfig {
     customerPortalEnabled: false,
     webhookIntakeEnabled: false,
     reconciliationEnabled: false,
+    webhookProjectionEnabled: true,
     mode: 'test',
     canonicalPublicOrigin: null,
     expectedProviderAccountRef: null,
     offerMappings: [],
+    policyId: 'ot46-billing-policy-v1',
+    policyVersion: 'ot46-billing-policy-v1',
+    planTruth: OT87_PLAN_TRUTH,
+    entitlementEmergencyMode: 'normal',
+    providerPortalConfigurationRef: null,
     configFingerprint: fingerprint({}),
   };
 }
@@ -116,11 +126,167 @@ export function parseBillingFeatureConfig(source: BillingConfigSource): BillingF
     customerPortalEnabled,
     webhookIntakeEnabled,
     reconciliationEnabled,
+    webhookProjectionEnabled: true,
     mode,
     canonicalPublicOrigin,
     expectedProviderAccountRef,
     offerMappings,
+    policyId: 'ot46-billing-policy-v1',
+    policyVersion: 'ot46-billing-policy-v1',
+    planTruth: OT87_PLAN_TRUTH,
+    entitlementEmergencyMode: 'normal',
+    providerPortalConfigurationRef: null,
     configFingerprint: fingerprint(sanitizedSource(source)),
+  };
+}
+
+export type Ot87BillingRuntimeSecrets = {
+  secretKey: string | null;
+  webhookSecret: string | null;
+};
+
+export function parseOt87StripeTestBillingConfig(
+  source: BillingConfigSource,
+  defaults: {
+    accountKey: string;
+    productKey: string;
+    canonicalPublicOrigin: string;
+  },
+): BillingFeatureConfig {
+  const policy = loadOt87CommercialPolicy();
+  const liveGuard = text(source.LIVE_STRIPE_CHARGES_AUTHORIZED);
+  const transportEnabled = bool(source.ENABLE_PAYMENT_TRANSPORT);
+  const checkoutEnabled = bool(source.ENABLE_STRIPE_TEST_CHECKOUT);
+  const customerPortalEnabled = bool(source.ENABLE_STRIPE_TEST_PORTAL);
+  const webhookIntakeEnabled = bool(source.ENABLE_STRIPE_TEST_WEBHOOKS);
+  const reconciliationEnabled = bool(source.ENABLE_STRIPE_TEST_RECONCILIATION);
+  const webhookProjectionEnabled = !falseLike(source.ENABLE_STRIPE_TEST_WEBHOOK_PROJECTION);
+  const anyTransportSurface =
+    transportEnabled ||
+    checkoutEnabled ||
+    customerPortalEnabled ||
+    webhookIntakeEnabled ||
+    reconciliationEnabled;
+
+  if (anyTransportSurface && liveGuard !== 'NO') {
+    throw new BillingConfigError(
+      'LIVE_GUARD_REQUIRED',
+      'LIVE_STRIPE_CHARGES_AUTHORIZED must exactly equal NO before Stripe test transport is enabled.',
+    );
+  }
+  if (!transportEnabled && (checkoutEnabled || customerPortalEnabled || webhookIntakeEnabled)) {
+    throw new BillingConfigError(
+      'TRANSPORT_DISABLED',
+      'Stripe test subfeatures cannot be enabled while payment transport is disabled.',
+    );
+  }
+
+  const emergencyMode = text(source.ONE_TIME_ENTITLEMENT_EMERGENCY_MODE) ?? 'normal';
+  if (emergencyMode !== 'normal' && emergencyMode !== 'deny_all') {
+    throw new BillingConfigError(
+      'INVALID_EMERGENCY_MODE',
+      'Entitlement emergency mode must be normal or deny_all.',
+    );
+  }
+
+  const secretKey = text(source.ONE_TIME_STRIPE_TEST_SECRET_KEY);
+  if (secretKey && !/^sk_test_[A-Za-z0-9_]+$/.test(secretKey)) {
+    throw new BillingConfigError(
+      'INVALID_TEST_SECRET',
+      'Stripe test secret key must use the sk_test_ test-mode shape.',
+    );
+  }
+
+  for (const [key, value] of Object.entries(source)) {
+    if (
+      typeof value === 'string' &&
+      /_(?:live)_|\blivemode\b|pk_live_|sk_live_|rk_live_/i.test(value)
+    ) {
+      throw new BillingConfigError(
+        'LIVE_LIKE_SECRET',
+        `Stripe test billing configuration value for ${key} has a forbidden live-like shape.`,
+      );
+    }
+  }
+
+  const providerAccountRef = text(source.ONE_TIME_STRIPE_TEST_ACCOUNT_ID);
+  const providerPriceRef = text(source.ONE_TIME_STRIPE_TEST_PRICE_ID);
+  const providerPortalConfigurationRef = text(source.ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID);
+  const offerMappings =
+    providerAccountRef && providerPriceRef
+      ? [
+          {
+            account_key: defaults.accountKey,
+            product_key: defaults.productKey,
+            offer_key: policy.offer.offer_key,
+            provider: 'stripe' as const,
+            mode: 'test' as const,
+            provider_account_ref: providerAccountRef,
+            provider_price_ref: providerPriceRef,
+            currency: policy.offer.currency,
+            amount_cents: policy.offer.unit_amount_cents,
+            synthetic: false,
+          },
+        ]
+      : [];
+
+  for (const offer of offerMappings) {
+    const parsed = billingOfferPriceMappingSchema.safeParse(offer);
+    if (!parsed.success) {
+      throw new BillingConfigError(
+        'INVALID_OFFER_MAPPING',
+        'OT-87 Stripe test offer mapping failed validation.',
+      );
+    }
+  }
+
+  return {
+    foundationEnabled: anyTransportSurface || offerMappings.length > 0,
+    transportEnabled,
+    checkoutEnabled,
+    customerPortalEnabled,
+    webhookIntakeEnabled,
+    reconciliationEnabled,
+    webhookProjectionEnabled,
+    mode: 'test',
+    canonicalPublicOrigin: parseOrigin(
+      source.ONE_TIME_BILLING_CANONICAL_PUBLIC_ORIGIN ?? defaults.canonicalPublicOrigin,
+    ),
+    expectedProviderAccountRef: providerAccountRef,
+    offerMappings,
+    policyId: policy.policy_id,
+    policyVersion: policy.policy_version,
+    planTruth: policy.public_copy.checkout_and_billing_surface_truth,
+    entitlementEmergencyMode: emergencyMode,
+    providerPortalConfigurationRef,
+    configFingerprint: fingerprint(
+      sanitizedSource({
+        LIVE_STRIPE_CHARGES_AUTHORIZED: liveGuard === null ? null : liveGuard,
+        ENABLE_PAYMENT_TRANSPORT: transportEnabled,
+        ENABLE_STRIPE_TEST_CHECKOUT: checkoutEnabled,
+        ENABLE_STRIPE_TEST_PORTAL: customerPortalEnabled,
+        ENABLE_STRIPE_TEST_WEBHOOKS: webhookIntakeEnabled,
+        ENABLE_STRIPE_TEST_RECONCILIATION: reconciliationEnabled,
+        ENABLE_STRIPE_TEST_WEBHOOK_PROJECTION: webhookProjectionEnabled,
+        ONE_TIME_STRIPE_TEST_SECRET_KEY: Boolean(secretKey),
+        ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET: Boolean(
+          text(source.ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET),
+        ),
+        ONE_TIME_STRIPE_TEST_ACCOUNT_ID: Boolean(providerAccountRef),
+        ONE_TIME_STRIPE_TEST_PRICE_ID: Boolean(providerPriceRef),
+        ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID: Boolean(providerPortalConfigurationRef),
+        ONE_TIME_ENTITLEMENT_EMERGENCY_MODE: emergencyMode,
+      }),
+    ),
+  };
+}
+
+export function readOt87StripeRuntimeSecrets(
+  source: BillingConfigSource,
+): Ot87BillingRuntimeSecrets {
+  return {
+    secretKey: text(source.ONE_TIME_STRIPE_TEST_SECRET_KEY),
+    webhookSecret: text(source.ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET),
   };
 }
 
@@ -132,16 +298,25 @@ export function billingConfigSnapshot(config: BillingFeatureConfig) {
     customerPortalEnabled: config.customerPortalEnabled,
     webhookIntakeEnabled: config.webhookIntakeEnabled,
     reconciliationEnabled: config.reconciliationEnabled,
+    webhookProjectionEnabled: config.webhookProjectionEnabled,
     mode: config.mode,
     canonicalPublicOrigin: config.canonicalPublicOrigin,
     expectedProviderAccountRef: config.expectedProviderAccountRef ? 'configured' : null,
+    providerPortalConfigurationRef: config.providerPortalConfigurationRef ? 'configured' : null,
     offerCount: config.offerMappings.length,
+    policyId: config.policyId,
+    policyVersion: config.policyVersion,
+    entitlementEmergencyMode: config.entitlementEmergencyMode,
     configFingerprint: config.configFingerprint,
   };
 }
 
 function bool(value: unknown) {
   return value === true || value === 'true' || value === '1';
+}
+
+function falseLike(value: unknown) {
+  return value === false || value === 'false' || value === '0';
 }
 
 function text(value: unknown) {

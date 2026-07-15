@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://onetimeonetime.com/schemas/ot87-external-mutations.v1.json",
+  "title": "OT-87 External Mutation Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "stripe_mode",
+    "live_stripe_charges_authorized",
+    "account_validation",
+    "mutations",
+    "live_totals",
+    "cleanup",
+    "notes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "task_id": {
+      "const": "OT-87"
+    },
+    "stripe_mode": {
+      "const": "test"
+    },
+    "live_stripe_charges_authorized": {
+      "const": false
+    },
+    "account_validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "validated_at", "account_fingerprint"],
+      "properties": {
+        "status": {
+          "enum": ["not_checked", "validated_test", "failed"]
+        },
+        "validated_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "account_fingerprint": {
+          "type": ["string", "null"],
+          "maxLength": 128
+        }
+      }
+    },
+    "mutations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "mutation_key",
+          "occurred_at",
+          "resource_kind",
+          "operation",
+          "mode",
+          "count",
+          "resource_fingerprint",
+          "authorization_gate",
+          "rollback_action",
+          "cleanup_status"
+        ],
+        "properties": {
+          "mutation_key": {
+            "type": "string",
+            "pattern": "^ot87_mutation_[A-Za-z0-9_-]+$"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "resource_kind": {
+            "enum": [
+              "product",
+              "price",
+              "portal_configuration",
+              "webhook_endpoint",
+              "customer",
+              "checkout_session",
+              "subscription",
+              "test_clock",
+              "webhook_delivery",
+              "refund",
+              "dispute"
+            ]
+          },
+          "operation": {
+            "enum": [
+              "create",
+              "update",
+              "archive",
+              "disable",
+              "delete",
+              "expire",
+              "cancel",
+              "deliver",
+              "restore"
+            ]
+          },
+          "mode": {
+            "const": "test"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "resource_fingerprint": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128
+          },
+          "authorization_gate": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 120
+          },
+          "rollback_action": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 240
+          },
+          "cleanup_status": {
+            "enum": ["not_required", "pending", "completed", "failed_safe"]
+          }
+        }
+      }
+    },
+    "live_totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "api_calls",
+        "resources_created",
+        "charges",
+        "subscriptions",
+        "refunds",
+        "disputes"
+      ],
+      "properties": {
+        "api_calls": {
+          "const": 0
+        },
+        "resources_created": {
+          "const": 0
+        },
+        "charges": {
+          "const": 0
+        },
+        "subscriptions": {
+          "const": 0
+        },
+        "refunds": {
+          "const": 0
+        },
+        "disputes": {
+          "const": 0
+        }
+      }
+    },
+    "cleanup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "completed_at", "remaining_test_resources"],
+      "properties": {
+        "status": {
+          "enum": ["not_started", "not_required", "in_progress", "completed", "failed_safe"]
+        },
+        "completed_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "remaining_test_resources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "maxItems": 50
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 500
+      },
+      "maxItems": 100
+    }
+  }
+}
