@@ -70,10 +70,7 @@
       "commit": "9444176dbc55e0c5af048ec1df2ea75ffa8dde33"
     }
   ],
-  "superseded_security_inputs": [
-    "PR #3 / OT-34",
-    "PR #9 / OT-38"
-  ],
+  "superseded_security_inputs": ["PR #3 / OT-34", "PR #9 / OT-38"],
   "known_absent_inputs_to_record": [
     "OT-41 corrected-integration branch",
     "OT-43 feature branch",

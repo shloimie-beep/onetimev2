@@ -4,3 +4,4 @@ playwright-report
 test-results
 ops/audit-inputs/**
 ops/evidence/**
+ops/execution/**/ORIGINAL-PROMPT.md
