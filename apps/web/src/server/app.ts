@@ -1,5 +1,5 @@
+import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { ZodError } from 'zod';
@@ -28,6 +28,7 @@ import {
   canEditContacts,
   captureLead,
   createContact,
+  createLoginCsrf,
   createSession,
   getContactDetail,
   getSessionByToken,
@@ -38,6 +39,7 @@ import {
   revokeSession,
   rotateSessionCsrf,
   updateContact,
+  verifyLoginCsrf,
   verifyMfaChallenge,
   verifyMfaRecoveryChallenge,
   verifySessionCsrf,
@@ -50,6 +52,10 @@ import {
   withTiming,
   type RequestWithTrace,
 } from '../../../../packages/observability/src/index.ts';
+import {
+  registerCommunicationsRoutes,
+  type ReadOnlySessionScopePort,
+} from './communications/register.ts';
 import { leadRateLimit } from './rate-limit.ts';
 
 type AppDeps = {
@@ -116,15 +122,15 @@ export function createApp({
   app.get('/rabbi-member', (_req, res) => res.redirect(301, '/login'));
 
   app.get('/login', (req, res) => {
-    const csrfToken = token();
-    setCsrfCookie(res, config, csrfToken);
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
     setPrivateNoStore(res);
     res
       .status(200)
       .type('html')
       .send(
         loginPageHtml(
-          csrfToken,
+          csrf.csrf_token,
           safeReturnPath(String(req.query.return_to ?? ''), config) ?? '/app/crm',
         ),
       );
@@ -184,7 +190,13 @@ export function createApp({
     setPrivateNoStore(res);
     try {
       const payload = loginPayloadSchema.parse(req.body);
-      if (!verifyCookieCsrf(req, payload.csrf_token ?? req.header('x-csrf-token'))) {
+      if (
+        !verifyLoginCsrf(
+          config,
+          getCookie(req, CSRF_COOKIE),
+          payload.csrf_token ?? req.header('x-csrf-token'),
+        )
+      ) {
         res
           .status(403)
           .json(publicError('CSRF_REQUIRED', 'Refresh the login page and try again.', req.traceId));
@@ -620,6 +632,18 @@ export function createApp({
     }
   });
 
+  const communicationsSessionPort: ReadOnlySessionScopePort = {
+    resolve: (req) => readOnlyCommunicationsSession(req, pool, config),
+  };
+  registerCommunicationsRoutes({
+    app,
+    config,
+    pool,
+    sessionPort: communicationsSessionPort,
+    cursorSecret: config.authCsrfSecret,
+    distDir,
+  });
+
   app.use(
     express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }),
   );
@@ -692,9 +716,36 @@ async function ensureSessionCsrfCookie(
   return next;
 }
 
-function verifyCookieCsrf(req: Request, submitted?: string) {
-  const cookie = getCookie(req, CSRF_COOKIE);
-  return Boolean(cookie && submitted && cookie === submitted);
+async function readOnlyCommunicationsSession(req: Request, pool: DbPool, config: AppConfig) {
+  const sessionToken = getCookie(req, SESSION_COOKIE);
+  if (!sessionToken) return null;
+  const result = await pool.query(
+    `SELECT users.user_key, users.role
+       FROM onetime.user_sessions AS sessions
+       JOIN onetime.account_users AS users ON users.user_key = sessions.user_key
+      WHERE sessions.account_key = $1
+        AND sessions.product_key = $2
+        AND sessions.token_hash = $3
+        AND sessions.revoked_at IS NULL
+        AND sessions.expires_at > now()
+        AND sessions.security_version = users.security_version
+        AND (sessions.user_agent_hash IS NULL OR sessions.user_agent_hash = $4)
+        AND users.status = 'active'`,
+    [
+      config.accountKey,
+      config.productKey,
+      hashCookieValue(sessionToken),
+      req.header('user-agent') ? hashCookieValue(String(req.header('user-agent'))) : null,
+    ],
+  );
+  const row = result.rows[0];
+  if (!row) return null;
+  return {
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    userKey: String(row.user_key),
+    role: String(row.role),
+  };
 }
 
 function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
@@ -741,6 +792,10 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
   res
     .status(500)
     .json(publicError('SERVER_ERROR', 'The CRM request could not be completed.', req.traceId));
+}
+
+function hashCookieValue(value: string) {
+  return createHash('sha256').update(value).digest('hex');
 }
 
 function getCookie(req: Request, name: string) {
@@ -816,10 +871,6 @@ function safeReturnPath(value: string | undefined, config: AppConfig) {
   } catch {
     return null;
   }
-}
-
-function token() {
-  return randomUUID().replaceAll('-', '') + randomUUID().replaceAll('-', '');
 }
 
 function loginPageHtml(csrfToken: string, returnTo: string) {

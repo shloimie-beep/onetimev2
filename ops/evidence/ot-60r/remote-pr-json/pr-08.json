@@ -1,0 +1,124 @@
+{
+  "number": 8,
+  "title": "OT-40: lock school receipt worker contract",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/8",
+  "baseRefName": "codex/ot36-delivery-sink-foundation",
+  "baseRefOid": "61d4755fe279ca47c37e7adbe8d1e6ce8b258dae",
+  "headRefName": "codex/ot40-school-receipt-worker-correction",
+  "headRefOid": "571b18f36cdc645f757cc3be6b0519f1af3225f6",
+  "mergeStateStatus": "CLEAN",
+  "commits": [
+    {
+      "oid": "571b18f36cdc645f757cc3be6b0519f1af3225f6",
+      "messageHeadline": "fix: lock OT-40 school receipt worker contract",
+      "authoredDate": "2026-07-14T18:32:40Z",
+      "committedDate": "2026-07-14T18:32:40Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/worker/src/delivery/config.ts",
+      "additions": 0,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/worker/src/delivery/repository.ts",
+      "additions": 11,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "ops/evidence/ot-40/FINAL-REPORT.md",
+      "additions": 125,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/delivery/types.ts",
+      "additions": 16,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/db/migrations/0004_delivery_worker_claim_index.sql",
+      "additions": 6,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/delivery/eligibility.ts",
+      "additions": 31,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/delivery/messages.ts",
+      "additions": 13,
+      "deletions": 36,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/delivery/retry.ts",
+      "additions": 0,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/lead/service.ts",
+      "additions": 19,
+      "deletions": 6,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/delivery/outbox-pipeline.test.ts",
+      "additions": 82,
+      "deletions": 9,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/delivery/postgres-repository.test.ts",
+      "additions": 12,
+      "deletions": 3,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/delivery/web-app-independence.test.ts",
+      "additions": 0,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/lead-capture.test.ts",
+      "additions": 34,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/support/delivery/fixtures.ts",
+      "additions": 5,
+      "deletions": 3,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/unit/delivery/config.test.ts",
+      "additions": 2,
+      "deletions": 3,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/unit/delivery/eligibility.test.ts",
+      "additions": 49,
+      "deletions": 9,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/unit/delivery/worker.test.ts",
+      "additions": 0,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    }
+  ]
+}

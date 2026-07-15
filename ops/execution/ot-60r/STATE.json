@@ -1,0 +1,422 @@
+{
+  "task_id": "OT-60R",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
+  "branch": "codex/ot60r-recovery-convergence",
+  "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "current_head_sha": "c4acd4b1f75f33e62088a9e3508fdb6890757f96",
+  "phase": "final_verification_complete",
+  "status": "candidate",
+  "created_at": "2026-07-15T00:00:00+03:00",
+  "updated_at": "2026-07-15T03:13:58+03:00",
+  "completed_steps": [
+    "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
+    "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
+    "Fetched origin and verified origin/codex/crm-core-v1 equals the requested base SHA.",
+    "Verified base SHA exists and descends from foundation head 3465bd7d4c6b6829a6be6e4b4f8a003d608f3680 and common ancestor a73458d1884b8fcb4843c4852425009577f59ef7.",
+    "Created fresh worktree C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence on branch codex/ot60r-recovery-convergence from the exact base SHA.",
+    "Persisted the received prompt at ops/execution/ot-60r/ORIGINAL-PROMPT.md.",
+    "Committed and pushed the initial execution protocol checkpoint to origin.",
+    "Audited required remote PR heads and saved sanitized PR metadata under ops/evidence/ot-60r/remote-pr-json.",
+    "Recorded remote state, overlap matrix, migration ledger, and missing OT-41/OT-43/pre-existing OT-60 branch checks.",
+    "Compared PR #3/#9 against canonical PR #2 and excluded their alternate migrations/models.",
+    "Ported only the missing HMAC-derived login-CSRF proof from PR #9 with regression tests.",
+    "Committed and pushed the supersession security port checkpoint to origin.",
+    "Cherry-picked PR #5 / OT-35 and resolved the CRM shell merge against canonical PR #2 auth/search behavior.",
+    "Adapted PR #5 browser fixtures to the current idempotent CRM create contract.",
+    "Kept private POST-body CRM search and omitted blank UI filters from submitted search commands.",
+    "Raised Playwright-only login budgets to avoid E2E self-throttling while preserving production defaults.",
+    "Verified OT-35 E2E, accessibility, performance, build, and auth/CRM integration checks.",
+    "Committed the PR #5 / OT-35 authenticated shell checkpoint at a36ebc98fc9e82ceba9a8e2806cb9da2ba6dcbdb.",
+    "Cherry-picked PR #7 / OT-39 and resolved conflicts against the integrated OT-35 shell.",
+    "Adapted PR #7 from disabled pending-search semantics to the canonical POST-body CRM search endpoint.",
+    "Preserved assignee dropdown behavior while adopting the PR #7 CRM API adapter, list cache, post-paint usability marks, and privacy/performance tests.",
+    "Adapted OT-39 browser fixtures to the current body idempotency-key create contract.",
+    "Verified OT-39 privacy/usability, accessibility, public performance, 30-sample CRM performance, build, and auth/CRM integration checks.",
+    "Committed the PR #7 / OT-39 CRM privacy/performance checkpoint at 46d5c6819c232ad1845c437752e9e2622feeefee.",
+    "Cherry-picked PR #11 / OT-42 CRM module without merge conflicts.",
+    "Kept OT-42 as an additive module surface with injectable router/register hooks, contracts, domain helpers, migration 1000, protected client cache, lazy tab loader, and focused tests.",
+    "Did not mount OT-42 router into live `/api/v1/crm/*` routes because concrete repository implementations are not included and existing PR #2/#5/#7 routes remain canonical.",
+    "Verified OT-42 focused unit/integration tests, build, typecheck, existing auth/CRM regression tests, formatting, whitespace, JSON validity, and secret scan.",
+    "Committed the PR #11 / OT-42 CRM module checkpoint at 8520fa15f30c889cafbf8d5ff4c0c21de37bd371.",
+    "Applied PR #4 / OT-36 delivery foundation range in commit order: 3a9588555f9159e4c1a7a554780be66499f2d2d8 then 61d4755fe279ca47c37e7adbe8d1e6ce8b258dae.",
+    "Applied PR #8 / OT-40 delivery correction on top of OT-36, including the corrected delivery worker claim migration state.",
+    "Applied PR #14 / OT-44 communications read model after the delivery lineage.",
+    "Bound OT-44 server routes into the shared app with a read-only session scope resolver that does not update session last-seen state.",
+    "Wired the lazy Communications global route and contact Communications view into the accepted CRM shell without default CRM overview prefetch/API calls.",
+    "Verified delivery, communications, build, auth/CRM regression, OT-44 browser checks, OT-39 browser regression, delivery repository tests, formatting, whitespace, JSON validity, and secret scan.",
+    "Committed the PR #4/#8/#14 delivery and communications checkpoint at 3a9772439b5fbd1a1fd0969406d2d2033bef90a0.",
+    "Applied PR #12 / OT-46 fixture-only billing foundation as an isolated, unmounted module.",
+    "Preserved OT-46 default-off and fixture-only constraints with zero Stripe network calls, zero provider mutations, and no entitlement/access grants.",
+    "Verified OT-46 focused unit/integration tests, typecheck, build, formatting, whitespace, JSON validity, and secret scan.",
+    "Committed the PR #12 / OT-46 fixture-only billing checkpoint at e004161af0f7ef1873fe4b7b3e5a4b109d79b54a.",
+    "Applied PR #15 / OT-52 parent/student portals as an isolated, unmounted module.",
+    "Preserved OT-52 parent household authorization, student single-learner scope, three-active-learner limit, append-only rewards, digest-only credentials, default-unavailable helper, support preview no-send behavior, and raw-provider-URL rejection.",
+    "Verified OT-52 focused router/service/UI tests, typecheck, build, touched-file formatting, whitespace, JSON validity, and secret scan.",
+    "Committed the PR #15 / OT-52 portal checkpoint at 30df628f4eca6be2674dcdd0d59fd2e769af89da.",
+    "Applied PR #13 / OT-51 Telegram mock/default-off foundation as an isolated module.",
+    "Preserved OT-51 mock-only transport, default-deny identity, injected application adapter boundary, no central runtime wiring, no webhook registration, no polling activation, and zero Telegram network/provider mutations.",
+    "Verified OT-51 focused unit/integration tests, typecheck, build, touched-file formatting, whitespace, and secret scan.",
+    "Committed the PR #13 / OT-51 Telegram mock foundation checkpoint at f880c6abfacea6fa00cefa3383515ae31b914006.",
+    "Applied PR #6 / OT-37 PostgreSQL assurance harness and adapted it for the OT-60R integrated migration stack.",
+    "Added the recovery branch to the PostgreSQL 16 GitHub Actions workflow, scoped the workflow format step to OT-37 files to avoid unrelated baseline format noise, updated the harness task metadata to the OT-60R base, and recorded the local desktop PostgreSQL blocker.",
+    "Verified OT-37 harness typecheck, lint, build, scoped formatting, whitespace, and secret scan locally; real PostgreSQL harness execution is blocked locally by absent PostgreSQL/Docker/psql/service/env and must run in the GitHub Actions disposable PostgreSQL 16 service.",
+    "Committed the PR #6 / OT-37 PostgreSQL assurance checkpoint at e97f6de55b050605a96d64eac07c58b753ea2976.",
+    "Fixed the OT-37 synthetic scale seed to include canonical public_contact_id values after the accepted PR #2 migration made the column required.",
+    "GitHub Actions run 29377668001 passed the OT-37 PostgreSQL 16 assurance workflow and uploaded sanitized reports.",
+    "Downloaded and recorded the passing OT-37 sanitized PostgreSQL assurance reports under ops/evidence/ot-37/ci-run-29377668001.",
+    "Preserved PR #10 / OT-47 as evidence-only blocker documentation.",
+    "Marked OT-47 content/library implementation as not_implemented_environmental_gate with no product code, migration, API, worker, UI, provider, deployment, or mutation claim.",
+    "Committed the PR #10 / OT-47 evidence-only checkpoint at 9e402ab5caadc5e0a15e250967c627a9a021f25b.",
+    "Updated stale CRM core E2E expectations to the accepted OT-39 shell behavior and refreshed OT-39 performance screenshots/report.",
+    "Completed final local verification: unit/integration tests, lint, build/typecheck, JSON parse, whitespace, secret scan, E2E, accessibility, and performance/bundle checks passed.",
+    "Marked the recovery branch as a canonical candidate at code/evidence head 9e275e28a80cc8bf7fa82ade1092cd8cc21510d4.",
+    "Opened draft PR #17 against codex/crm-core-v1: https://github.com/webcraft-media/onetimev2/pull/17."
+  ],
+  "remaining_steps": [],
+  "blockers": [],
+  "last_safe_command": "npm run secret:scan",
+  "test_results": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "summary": "Installed 348 packages from lockfile; npm reported 0 vulnerabilities."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully."
+    },
+    {
+      "command": "npx prettier --check <touched supported files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style. .env.example is excluded because Prettier cannot infer a parser for that extension."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 131 repo text files."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts",
+      "status": "passed",
+      "summary": "Focused auth/CRM integration suite passed 10 tests."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Cleaned dist, rebuilt public/app Vite bundles and public pages, then completed typecheck."
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot-35/app-shell-crm.spec.ts tests/accessibility/ot-35/app-shell-a11y.spec.ts tests/performance/ot-35/crm-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "OT-35 browser evidence suite passed 8 tests across E2E, accessibility, and performance specs."
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts tests/accessibility/ot-39/crm-a11y.spec.ts tests/performance/ot-39/crm-performance.spec.ts tests/performance/public-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "OT-39 integrated browser suite passed 12 tests across privacy/usability, accessibility, CRM performance, and public performance specs."
+    },
+    {
+      "command": "npx playwright test tests/performance/ot-39/crm-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "Regenerated OT-39 30-sample performance evidence with private POST-search request-count labels; 1 test passed."
+    },
+    {
+      "command": "npx vitest run tests/unit/ot42-cache.test.ts tests/unit/ot42-capabilities.test.ts tests/integration/ot42-router.test.ts",
+      "status": "passed",
+      "summary": "OT-42 focused unit/integration tests passed 11 tests."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json and CANONICAL-CANDIDATE.json successfully."
+    },
+    {
+      "command": "npx prettier --check <OT-42 and OT-60R touched files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 145 repo text files."
+    },
+    {
+      "command": "npx vitest run tests/unit/delivery/config.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/delivery/loop.test.ts tests/unit/delivery/retry.test.ts tests/unit/delivery/worker.test.ts tests/unit/communications/communications-contract.test.ts tests/integration/communications/api.test.ts tests/integration/delivery/outbox-pipeline.test.ts tests/integration/delivery/web-app-independence.test.ts tests/integration/lead-capture.test.ts",
+      "status": "passed",
+      "summary": "Focused delivery/communications suite passed 74 tests across 10 files."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed with Communications emitted as a lazy app-CommunicationsFeature chunk and typecheck completed."
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot-44/communications-descriptor.spec.ts tests/accessibility/ot-44/communications-accessibility.spec.ts tests/performance/ot-44/communications-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "OT-44 descriptor, accessibility, and performance browser checks passed 4 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts",
+      "status": "passed",
+      "summary": "Auth/CRM regression suite passed 10 tests after delivery/communications integration."
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts tests/accessibility/ot-39/crm-a11y.spec.ts tests/performance/ot-39/crm-performance.spec.ts tests/performance/public-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "OT-39 browser regression suite passed 12 tests after Communications shell wiring."
+    },
+    {
+      "command": "npx vitest run tests/integration/delivery/postgres-repository.test.ts",
+      "status": "passed",
+      "summary": "Focused delivery PostgreSQL repository contract tests passed 3 tests."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json, CANONICAL-CANDIDATE.json, and OT-44 INTEGRATION-MANIFEST.json successfully."
+    },
+    {
+      "command": "npx prettier --check <delivery/communications and OT-60R touched files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 206 repo text files."
+    },
+    {
+      "command": "npx vitest run tests/unit/ot46-billing-config-policy.test.ts tests/integration/ot46-billing-services.test.ts",
+      "status": "passed",
+      "summary": "OT-46 focused billing tests passed 26 tests across 2 files."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully after OT-46 integration."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed; billing remains unmounted and did not add a public/app bundle chunk."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json and CANONICAL-CANDIDATE.json successfully."
+    },
+    {
+      "command": "npx prettier --check <OT-46 and OT-60R touched files>",
+      "status": "passed",
+      "summary": "All matched touched files use Prettier code style."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 234 repo text files."
+    },
+    {
+      "command": "npx vitest run tests/ot-52/portal-router.test.ts tests/ot-52/portal-services.test.ts tests/ot-52/portal-ui.test.ts",
+      "status": "passed",
+      "summary": "OT-52 focused portal router, service, and UI tests passed 15 tests."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully after OT-52 integration."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed; portals remain unmounted and did not add a public/app bundle chunk."
+    },
+    {
+      "command": "npm run format",
+      "status": "failed",
+      "summary": "Full-repo Prettier check remains baseline-noisy across pre-existing files; OT-52 touched files were formatted and checked separately."
+    },
+    {
+      "command": "npx prettier --check <OT-52 touched supported files>",
+      "status": "passed",
+      "summary": "All matched OT-52 touched files use Prettier code style; SQL migration was excluded because this repo has no SQL parser."
+    },
+    {
+      "command": "git diff --check --cached",
+      "status": "passed",
+      "summary": "No staged whitespace errors detected before the OT-52 commit."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-52 BROWSER-HARNESS.json and REAL-POSTGRES-CONCURRENCY.json successfully."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 265 repo text files."
+    },
+    {
+      "command": "npx vitest run tests/unit/telegram/telegram-foundation.test.ts tests/integration/telegram-db-foundation.test.ts",
+      "status": "passed",
+      "summary": "OT-51 focused Telegram foundation tests passed 11 tests."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully after OT-51 integration."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed; Telegram bot remains isolated from public/app bundles and central runtime wiring."
+    },
+    {
+      "command": "npx prettier --check <OT-51 touched supported files>",
+      "status": "passed",
+      "summary": "Initial OT-51 touched-file check found 11 TypeScript files needing formatting; after scoped Prettier write, all matched files passed. SQL migration was excluded because this repo has no SQL parser."
+    },
+    {
+      "command": "git diff --check --cached",
+      "status": "passed",
+      "summary": "No staged whitespace errors detected before the OT-51 commit."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 291 repo text files."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully after OT-37 harness integration."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "eslint . completed successfully after OT-37 harness integration."
+    },
+    {
+      "command": "npx prettier --check <OT-37 harness files>",
+      "status": "passed",
+      "summary": "Scoped assurance workflow/script/evidence/scenario files use Prettier code style."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Build completed successfully after OT-37 harness integration."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 297 repo text files."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected after OT-37 harness integration."
+    },
+    {
+      "command": "npx tsx scripts/postgres-assurance/run.ts",
+      "status": "blocked",
+      "summary": "Local real PostgreSQL assurance is blocked: connect ECONNREFUSED 127.0.0.1:5432; docker and psql are not installed, no PostgreSQL service was found, and PG/DATABASE_URL environment variables are absent."
+    },
+    {
+      "command": "gh run watch 29377569058 --exit-status",
+      "status": "failed",
+      "summary": "Initial OT-37 GitHub Actions run failed because synthetic post-migration contacts lacked required public_contact_id values."
+    },
+    {
+      "command": "gh run watch 29377668001 --exit-status",
+      "status": "passed",
+      "summary": "OT-37 PostgreSQL 16 assurance workflow passed; harness, secret scan, scoped format, lint, typecheck, and artifact upload all completed successfully."
+    },
+    {
+      "command": "gh run download 29377668001 -n ot37-postgres-assurance-29377668001-1",
+      "status": "passed",
+      "summary": "Downloaded sanitized OT-37 PostgreSQL assurance reports into ops/evidence/ot-37/ci-run-29377668001."
+    },
+    {
+      "command": "npx prettier --check ops/evidence/ot-47/FINAL-REPORT.md",
+      "status": "passed",
+      "summary": "OT-47 evidence-only blocker report uses Prettier code style."
+    },
+    {
+      "command": "git diff --check --cached",
+      "status": "passed",
+      "summary": "No staged whitespace errors detected before the OT-47 evidence-only commit."
+    },
+    {
+      "command": "npm run test",
+      "status": "passed",
+      "summary": "Full unit and integration suites passed: 87 unit tests and 56 integration tests."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "eslint . completed successfully during final verification."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Clean build completed, including public/app bundles, public page build, and typecheck."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json, CANONICAL-CANDIDATE.json, and OT-37 PostgreSQL report JSON successfully."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 301 repo text files."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "failed",
+      "summary": "Initial final E2E run found stale pre-OT39 crm-core.spec expectations for disabled search and ambiguous CRM link focus."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed",
+      "summary": "After aligning crm-core.spec with the accepted OT-39 shell behavior, all 16 E2E tests passed."
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "summary": "Accessibility suite passed 5 Playwright/axe tests."
+    },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "summary": "Performance suite passed 5 tests; bundle check reported public_js_bytes 6316, public_css_bytes 10626, crm_js_bytes 223677."
+    }
+  ],
+  "external_mutation_counts": {
+    "deployments": 0,
+    "production_database_writes": 0,
+    "provider_mutations": 0,
+    "messages_sent": 0,
+    "payments_or_charges": 0,
+    "dns_changes": 0,
+    "real_users_created": 0,
+    "bna_repository_modifications": 0
+  },
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then monitor draft PR #17 at https://github.com/webcraft-media/onetimev2/pull/17 without repeating completed integration or verification work."
+}

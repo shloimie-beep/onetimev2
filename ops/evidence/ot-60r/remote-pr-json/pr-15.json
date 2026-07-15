@@ -1,0 +1,232 @@
+{
+  "number": 15,
+  "title": "OT-52P isolated Parent and Student Portals V1",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/15",
+  "baseRefName": "codex/parallel-base-ot38-2456495",
+  "baseRefOid": "245649523566a7a0ace493ba70ede2a405ebdcce",
+  "headRefName": "codex/ot52p-isolated-parent-student-portals",
+  "headRefOid": "9594c228b9ac3047f42bb9e8c804384cc45a3e40",
+  "mergeStateStatus": "CLEAN",
+  "commits": [
+    {
+      "oid": "9594c228b9ac3047f42bb9e8c804384cc45a3e40",
+      "messageHeadline": "OT-52P isolated parent student portals",
+      "authoredDate": "2026-07-14T21:17:12Z",
+      "committedDate": "2026-07-14T21:17:12Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
+      "additions": 824,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/web/src/server/features/portals/routers.ts",
+      "additions": 455,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/ACCESSIBILITY-AND-RESPONSIVE.md",
+      "additions": 23,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/AUDIT-INVENTORY.md",
+      "additions": 29,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/BASE-AND-WORKTREE.md",
+      "additions": 66,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/BROWSER-HARNESS.json",
+      "additions": 21,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/CHANGED-FILES.txt",
+      "additions": 35,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/CONTENT-AND-PROVIDER-URL-LEAKAGE.md",
+      "additions": 20,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/CREDENTIAL-LIFECYCLE-ADAPTER-PROOF.md",
+      "additions": 26,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/DATA-MODEL-AND-MIGRATION.md",
+      "additions": 36,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/FINAL-HANDOFF.md",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/HELPER-SCOPE.md",
+      "additions": 14,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/INTEGRATION-MANIFEST.md",
+      "additions": 33,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/LEARNER-LIMIT-CONCURRENCY.md",
+      "additions": 20,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/NEGATIVE-TEST-MATRIX.md",
+      "additions": 29,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/PARENT-JOURNEYS.md",
+      "additions": 25,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/PERFORMANCE-AND-BUNDLES.md",
+      "additions": 22,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/REAL-POSTGRES-CONCURRENCY.json",
+      "additions": 4,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/ROLE-CAPABILITY-MATRIX.md",
+      "additions": 29,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/SIBLING-ISOLATION.md",
+      "additions": 18,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/STUDENT-JOURNEYS.md",
+      "additions": 18,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/TEST-RESULTS.md",
+      "additions": 39,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/screenshots/desktop-student.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/screenshots/mobile-parent.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/screenshots/mobile-student.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-52/screenshots/tablet-parent.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/portals/index.ts",
+      "additions": 285,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/migrations/1500_ot52_portal_households_learners.sql",
+      "additions": 229,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/src/portals/repository.ts",
+      "additions": 858,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/portals/services.ts",
+      "additions": 741,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/ot-52/portal-browser-harness.ts",
+      "additions": 260,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/ot-52/portal-router.test.ts",
+      "additions": 350,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/ot-52/portal-services.test.ts",
+      "additions": 445,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/ot-52/portal-ui.test.ts",
+      "additions": 262,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/ot-52/real-postgres-concurrency.ts",
+      "additions": 170,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}

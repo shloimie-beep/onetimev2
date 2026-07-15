@@ -7,9 +7,10 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   page.on('request', (request) => requested.push(request.url()));
   await page.setViewportSize({ width: 390, height: 844 });
   const email = `crm-${Date.now()}@example.test`;
+  const contactName = `CRM Browser Parent ${Date.now()}`;
 
   await page.goto('/signup');
-  await page.getByLabel('Parent or contact name').fill('CRM Browser Parent');
+  await page.getByLabel('Parent or contact name').fill(contactName);
   await page.getByLabel('Family or School').fill('CRM Browser Family');
   await page.getByLabel('Location').fill('Jerusalem');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
@@ -21,11 +22,12 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
 
   await login(page);
   await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+  await expect(page.getByLabel('Search')).toBeEnabled();
   await page.getByLabel('Search').fill(email);
   await page.getByRole('button', { name: 'Apply' }).click();
-  await expect(page.getByRole('button', { name: /CRM Browser Parent/ })).toHaveCount(1);
-  await page.getByRole('button', { name: /CRM Browser Parent/ }).click();
-  await expect(page.getByRole('heading', { name: 'CRM Browser Parent' })).toBeVisible();
+  await expect(page.getByRole('button', { name: new RegExp(contactName) })).toHaveCount(1);
+  await page.getByRole('button', { name: new RegExp(contactName) }).click();
+  await expect(page.getByRole('heading', { name: contactName })).toBeVisible();
   await expect(page.getByText(email)).toBeVisible();
   await expect(page.getByText('Public signup captured')).toBeVisible();
 
@@ -35,10 +37,10 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   expect(overflow).toBe(false);
   expect(requested.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
 
-  await page.getByRole('button', { name: 'Back' }).click();
+  await page.getByRole('button', { name: 'Back to CRM' }).click();
   await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
   await page.goBack();
-  await expect(page.getByRole('heading', { name: 'CRM Browser Parent' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: contactName })).toBeVisible();
 });
 
 test('CRM create and edit controls are keyboard reachable with readable names', async ({
@@ -48,7 +50,7 @@ test('CRM create and edit controls are keyboard reachable with readable names', 
   await login(page);
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('link', { name: 'CRM' })).toBeFocused();
+  await expect(page.locator('.mobile-current-link')).toBeFocused();
   await page.getByRole('button', { name: 'Add contact' }).click();
   const createForm = page.locator('.contact-form');
   await createForm.getByRole('textbox', { name: 'Name' }).fill('Keyboard Contact');
@@ -75,7 +77,7 @@ test('CRM create and edit controls are keyboard reachable with readable names', 
         return { tag: element.tagName, width: rect.width, height: rect.height };
       }),
   );
-  expect(targetSizes.every((target) => target.height >= 44 || target.width >= 44)).toBe(true);
+  expect(targetSizes.every((target) => target.height >= 44 && target.width >= 44)).toBe(true);
 });
 
 async function login(page: import('@playwright/test').Page) {
@@ -84,4 +86,5 @@ async function login(page: import('@playwright/test').Page) {
   await page.getByLabel('Password').fill('TestPassword!234');
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForURL('**/app/crm');
+  await page.waitForFunction(() => performance.getEntriesByName('ot-crm-list-usable').length > 0);
 }

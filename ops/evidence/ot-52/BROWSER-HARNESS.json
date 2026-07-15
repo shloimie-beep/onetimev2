@@ -1,0 +1,21 @@
+{
+  "status": "completed",
+  "screenshots": [
+    "C:\\Users\\User\\OneTimeOneTime-ot52p-portals\\ops\\evidence\\ot-52\\screenshots\\mobile-parent.png",
+    "C:\\Users\\User\\OneTimeOneTime-ot52p-portals\\ops\\evidence\\ot-52\\screenshots\\mobile-student.png",
+    "C:\\Users\\User\\OneTimeOneTime-ot52p-portals\\ops\\evidence\\ot-52\\screenshots\\tablet-parent.png",
+    "C:\\Users\\User\\OneTimeOneTime-ot52p-portals\\ops\\evidence\\ot-52\\screenshots\\desktop-student.png"
+  ],
+  "violations": {
+    "critical_or_serious": 0
+  },
+  "layout": {
+    "horizontal_overflow": []
+  },
+  "render_samples": {
+    "samples": 30,
+    "p50_ms": 6.821,
+    "p75_ms": 8.082,
+    "p95_ms": 9.78
+  }
+}

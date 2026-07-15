@@ -177,6 +177,44 @@ describe('standalone CRM authentication', () => {
     expect(status).toBe(429);
   });
 
+  it('rejects login CSRF cookie replay and tampered HMAC proof tokens', async () => {
+    const csrf = await getLoginCsrf();
+    const csrfCookie = cookieValue(csrf.cookies, 'otcrm_csrf');
+    expect(csrfCookie).toBeTruthy();
+    expect(csrf.token).not.toBe(csrfCookie);
+
+    const replayCookie = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: csrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': csrfCookie ?? '',
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'AdminPass!234',
+        csrf_token: csrfCookie,
+      }),
+    });
+    expect(replayCookie.status).toBe(403);
+
+    const tamperedToken = `${csrf.token.slice(0, -1)}${csrf.token.endsWith('A') ? 'B' : 'A'}`;
+    const tampered = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: csrf.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': tamperedToken,
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'AdminPass!234',
+        csrf_token: tamperedToken,
+      }),
+    });
+    expect(tampered.status).toBe(403);
+  });
+
   it('invalidates existing sessions after a user security-version change', async () => {
     const login = await loginAs('admin@example.test', 'AdminPass!234');
     await pool.query(
@@ -601,4 +639,12 @@ function mergeCookies(...headers: string[]) {
     }
   }
   return [...cookies.entries()].map(([key, value]) => `${key}=${value}`).join('; ');
+}
+
+function cookieValue(header: string, name: string) {
+  for (const part of header.split(';')) {
+    const [key, value] = part.trim().split('=');
+    if (key === name) return value;
+  }
+  return undefined;
 }

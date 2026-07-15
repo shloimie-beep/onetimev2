@@ -1,0 +1,178 @@
+{
+  "number": 13,
+  "title": "OT-51P isolated One Time Telegram bot foundation",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/13",
+  "baseRefName": "codex/parallel-base-a73458d",
+  "baseRefOid": "a73458d1884b8fcb4843c4852425009577f59ef7",
+  "headRefName": "codex/ot51p-isolated-telegram-bot",
+  "headRefOid": "e235af05759f0a97496552c6e8aabed7ba3eee18",
+  "mergeStateStatus": "CLEAN",
+  "commits": [
+    {
+      "oid": "e235af05759f0a97496552c6e8aabed7ba3eee18",
+      "messageHeadline": "OT-51P isolated One Time Telegram bot foundation",
+      "authoredDate": "2026-07-14T20:57:25Z",
+      "committedDate": "2026-07-14T20:57:25Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/telegram-bot/src/index.ts",
+      "additions": 24,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/telegram-bot/src/ingress.ts",
+      "additions": 240,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/AUDIT-INVENTORY.md",
+      "additions": 58,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/BASE-AND-WORKTREE.md",
+      "additions": 80,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/CHANGED-FILES.txt",
+      "additions": 26,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/COMMAND-CATALOG.md",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/CONFIRMATION-SECURITY.md",
+      "additions": 32,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/FINAL-HANDOFF.md",
+      "additions": 48,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/IDENTITY-AND-CAPABILITY-MATRIX.md",
+      "additions": 44,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/INBOX-LEASE-AND-IDEMPOTENCY.md",
+      "additions": 35,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/INTEGRATION-MANIFEST.md",
+      "additions": 107,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/POSTGRESQL-PROOF.md",
+      "additions": 42,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/PRIVACY-AND-NO-NETWORK.md",
+      "additions": 27,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/SERVICE-TOPOLOGY.md",
+      "additions": 34,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/TEST-RESULTS.md",
+      "additions": 37,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-51/WEBHOOK-INGRESS-PROOF.md",
+      "additions": 37,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/telegram/types.ts",
+      "additions": 324,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+      "additions": 205,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/src/telegram/repositories.ts",
+      "additions": 469,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/telegram/commands.ts",
+      "additions": 434,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/telegram/crypto.ts",
+      "additions": 39,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/telegram/identity.ts",
+      "additions": 81,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/telegram/memory.ts",
+      "additions": 357,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/telegram/worker.ts",
+      "additions": 172,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/integration/telegram-db-foundation.test.ts",
+      "additions": 210,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/telegram/telegram-foundation.test.ts",
+      "additions": 451,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}

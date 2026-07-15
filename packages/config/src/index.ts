@@ -41,6 +41,7 @@ const envSchema = z.object({
   LOGIN_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(120),
   LOGIN_GLOBAL_RATE_LIMIT_MAX: numberFromString.default(600),
   SESSION_LAST_SEEN_WRITE_INTERVAL_MS: numberFromString.default(5 * 60_000),
+  AUTH_CSRF_SECRET: z.string().min(32).optional(),
   MFA_SECRET_ENCRYPTION_KEY: z.string().optional(),
   OUTBOX_TRANSPORT_MODE: z.enum(['sink', 'mock']).default('sink'),
   ONE_TIME_EMAIL_FROM: z.string().optional(),
@@ -69,6 +70,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
     throw new Error('Production web startup cannot run migrations automatically.');
+  }
+
+  if (parsed.NODE_ENV === 'production' && !parsed.AUTH_CSRF_SECRET) {
+    throw new Error('AUTH_CSRF_SECRET is required in production.');
   }
 
   if (
@@ -105,6 +110,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     loginAccountRateLimitMax: parsed.LOGIN_ACCOUNT_RATE_LIMIT_MAX,
     loginGlobalRateLimitMax: parsed.LOGIN_GLOBAL_RATE_LIMIT_MAX,
     sessionLastSeenWriteIntervalMs: parsed.SESSION_LAST_SEEN_WRITE_INTERVAL_MS,
+    authCsrfSecret:
+      parsed.AUTH_CSRF_SECRET ?? 'local-only-auth-csrf-secret-for-tests-and-development',
     mfaSecretEncryptionKey:
       parsed.MFA_SECRET_ENCRYPTION_KEY ?? 'test-only-32-byte-mfa-key-do-not-use',
     outboxTransportMode: parsed.OUTBOX_TRANSPORT_MODE,

@@ -1,32 +1,32 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { ContactDetail, ContactListItem, SessionUser } from '@onetime/contracts';
+import {
+  communicationsRouteDescriptor,
+  contactCommunicationsTabDescriptor,
+} from './communications/route-descriptor.js';
+import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import {
+  AuthExpiredError,
+  createIdempotencyKey,
+  getAssignees,
+  getContact,
+  getSession,
+  listContacts,
+  logoutSession,
+  resolveCrmCapabilities,
+  saveContactRequest,
+  type Assignee,
+  type ApiSession,
+  type QueryState,
+} from './crm-api.js';
 import './crm.css';
 
-type ApiSession = {
-  authenticated: true;
-  user: SessionUser;
-  csrf_token: string;
-  expires_at: string;
-};
-
-type ListResponse = {
-  success: true;
-  contacts: ContactListItem[];
-  next_cursor: string | null;
-  applied_filters: Record<string, string | undefined>;
-};
-
-type ContactResponse = {
-  success: true;
-  contact: ContactDetail;
-};
-
-type Assignee = {
-  user_key: string;
-  display_name: string;
-  role_label: string;
-};
+const CommunicationsPanel = React.lazy(() =>
+  communicationsRouteDescriptor.load().then((module) => ({
+    default: module.CommunicationsFeature,
+  })),
+);
 
 type ContactFormState = {
   display_name: string;
@@ -41,6 +41,13 @@ type ContactFormState = {
   version?: number;
 };
 
+type Notice = {
+  kind: 'info' | 'success' | 'error';
+  message: string;
+};
+
+type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
+
 const emptyForm: ContactFormState = {
   display_name: '',
   family_school_classification: 'family',
@@ -53,23 +60,41 @@ const emptyForm: ContactFormState = {
   internal_note: '',
 };
 
+const defaultQuery: QueryState = {
+  search: '',
+  classification: '',
+  lead_status: '',
+  sort: 'updated_desc',
+};
+
 function CrmApp() {
   const [session, setSession] = useState<ApiSession | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
   const [contacts, setContacts] = useState<ContactListItem[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [query, setQuery] = useState({
-    search: '',
-    classification: '',
-    lead_status: '',
-    sort: 'updated_desc',
-  });
-  const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('');
+  const [query, setQuery] = useState<QueryState>(defaultQuery);
+  const [listLoading, setListLoading] = useState(true);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [listError, setListError] = useState('');
+  const [detailError, setDetailError] = useState('');
+  const [notice, setNotice] = useState<Notice | null>(null);
   const [selected, setSelected] = useState<ContactDetail | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
   const [assignees, setAssignees] = useState<Assignee[]>([]);
-  const canEdit = session ? ['owner', 'admin', 'crm_agent'].includes(session.user.role) : false;
+  const [focusContactId, setFocusContactId] = useState<string | null>(null);
+  const returnFocusContactId = useRef<string | null>(null);
+  const listCache = useRef<{
+    key: string;
+    contacts: ContactListItem[];
+    nextCursor: string | null;
+  } | null>(null);
+  const capabilities = resolveCrmCapabilities(session);
+  const canCreate = capabilities.contacts.create;
+  const canEdit = capabilities.contacts.update;
+  const canAssign = capabilities.contacts.assign;
+  const canReadCommunications = session?.user.role === 'owner' || session?.user.role === 'admin';
 
   useEffect(() => {
     void loadSession();
@@ -79,25 +104,72 @@ function CrmApp() {
   }, []);
 
   useEffect(() => {
-    if (session) void routeFromLocation();
-  }, [session]);
+    if (session && !sessionExpired) void routeFromLocation();
+  }, [session, sessionExpired]);
+
+  useEffect(() => {
+    if (!focusContactId || listLoading || selected || creating || editing) return;
+    focusVisibleContactControl(focusContactId);
+    setFocusContactId(null);
+  }, [contacts, creating, editing, focusContactId, listLoading, selected]);
+
+  useEffect(() => {
+    if (sessionExpired || selected || creating || editing || listLoading) return;
+    return markUsableAfterPaint('ot-crm-list-usable', isListUsable);
+  }, [contacts, creating, editing, listError, listLoading, selected, sessionExpired]);
+
+  useEffect(() => {
+    if (sessionExpired || !selected || editing || detailLoading || detailError) return;
+    const title = document.getElementById('page-title');
+    window.requestAnimationFrame(() => title?.focus({ preventScroll: true }));
+    return markUsableAfterPaint('ot-crm-detail-usable', () =>
+      isDetailUsable(selected.display_name),
+    );
+  }, [detailError, detailLoading, editing, selected, sessionExpired]);
 
   async function loadSession() {
     try {
-      const json = await api<ApiSession>('/api/v1/auth/session');
+      const json = await getSession();
       setSession(json);
       if (['owner', 'admin'].includes(json.user.role)) {
-        const assigneeJson = await api<{ success: true; assignees: Assignee[] }>(
-          '/api/v1/crm/assignees',
-        );
+        const assigneeJson = await getAssignees();
         setAssignees(assigneeJson.assignees);
       }
-    } catch {
-      window.location.assign(`/login?return_to=${encodeURIComponent(location.pathname)}`);
+      setSessionExpired(false);
+    } catch (error) {
+      if (error instanceof AuthExpiredError) {
+        clearProtectedState();
+        return;
+      }
+      clearProtectedState();
     }
   }
 
   async function routeFromLocation() {
+    if (sessionExpired) return;
+    if (location.pathname === communicationsRouteDescriptor.path) {
+      setCommunicationsMode({ kind: 'global' });
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
+    const contactCommunicationsMatch = location.pathname.match(
+      /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
+    );
+    if (contactCommunicationsMatch?.[1]) {
+      setCommunicationsMode({
+        kind: 'contact',
+        contactId: decodeURIComponent(contactCommunicationsMatch[1]),
+      });
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
+    setCommunicationsMode(null);
     const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
@@ -107,187 +179,325 @@ function CrmApp() {
     } else {
       setSelected(null);
       setEditing(false);
-      await loadList();
+      setCreating(false);
+      if (!restoreCachedList(query)) await loadList(undefined, query);
     }
   }
 
-  async function loadList(cursor?: string) {
-    setLoading(true);
-    setStatus('');
-    const body = { ...query, cursor };
+  async function loadList(cursor?: string, nextQuery: QueryState = query) {
+    setListLoading(true);
+    setListError('');
+    setNotice(null);
     try {
-      const response = await fetch('/api/v1/crm/contacts/search', {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'content-type': 'application/json',
-          'x-csrf-token': session?.csrf_token ?? '',
-        },
-        body: JSON.stringify(body),
+      const json = await listContacts(nextQuery, session?.csrf_token ?? '', cursor);
+      setContacts((current) => {
+        const nextContacts = cursor ? [...current, ...json.contacts] : json.contacts;
+        listCache.current = {
+          key: listCacheKey(nextQuery),
+          contacts: nextContacts,
+          nextCursor: json.next_cursor,
+        };
+        return nextContacts;
       });
-      const json = (await response.json()) as Partial<ListResponse> & {
-        success?: boolean;
-        message?: string;
-      };
-      if (!response.ok || json.success !== true) {
-        throw new Error(json.message ?? 'Request failed.');
-      }
-      setContacts((current) =>
-        cursor ? [...current, ...(json.contacts ?? [])] : (json.contacts ?? []),
-      );
-      setNextCursor(json.next_cursor ?? null);
-      performance.mark('ot-crm-list-usable');
+      setNextCursor(json.next_cursor);
     } catch (error) {
-      setStatus(errorMessage(error, 'CRM contacts could not load.'));
+      if (handleAuthError(error)) return;
+      setListError(errorMessage(error, 'CRM contacts could not load.'));
     } finally {
-      setLoading(false);
+      setListLoading(false);
     }
   }
 
   async function loadContact(contactId: string) {
-    setLoading(true);
-    setStatus('');
+    setDetailLoading(true);
+    setDetailError('');
+    setNotice(null);
     try {
-      const json = await api<ContactResponse>(
-        `/api/v1/crm/contacts/${encodeURIComponent(contactId)}`,
-      );
+      const json = await getContact(contactId);
       setSelected(json.contact);
-      performance.mark('ot-crm-detail-usable');
     } catch (error) {
-      setStatus(errorMessage(error, 'Contact could not load.'));
+      if (handleAuthError(error)) return;
+      setSelected(null);
+      setDetailError(errorMessage(error, 'Contact could not load.'));
     } finally {
-      setLoading(false);
+      setDetailLoading(false);
     }
   }
 
   function openContact(contactId: string) {
+    returnFocusContactId.current = contactId;
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(contactId)}`);
+    setCreating(false);
+    setEditing(false);
     void loadContact(contactId);
   }
 
-  function backToList() {
+  async function backToList() {
     history.pushState({}, '', '/app/crm');
     setSelected(null);
     setEditing(false);
     setCreating(false);
-    void loadList();
+    if (!restoreCachedList(query)) await loadList(undefined, query);
+    const contactId = returnFocusContactId.current;
+    if (contactId) {
+      setFocusContactId(contactId);
+    }
+  }
+
+  function restoreCachedList(nextQuery: QueryState) {
+    const cached = listCache.current;
+    if (!cached || cached.key !== listCacheKey(nextQuery)) return false;
+    setContacts(cached.contacts);
+    setNextCursor(cached.nextCursor);
+    setListError('');
+    setNotice(null);
+    setListLoading(false);
+    return true;
+  }
+
+  function startCreate() {
+    setSelected(null);
+    setEditing(false);
+    setCreating(true);
+    setCommunicationsMode(null);
+    history.pushState({}, '', '/app/crm');
+  }
+
+  function openGlobalCommunications() {
+    history.pushState({}, '', communicationsRouteDescriptor.path);
+    setCommunicationsMode({ kind: 'global' });
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
+  }
+
+  function openContactCommunications(contactId: string) {
+    history.pushState(
+      {},
+      '',
+      `/app/crm/contacts/${encodeURIComponent(contactId)}/${contactCommunicationsTabDescriptor.id}`,
+    );
+    setCommunicationsMode({ kind: 'contact', contactId });
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
   }
 
   async function logout() {
     if (!session) return;
-    await fetch('/api/v1/auth/logout', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-csrf-token': session.csrf_token },
-      body: JSON.stringify({ csrf_token: session.csrf_token }),
-    });
+    const csrfToken = session.csrf_token;
+    clearProtectedState();
+    await logoutSession(csrfToken).catch(() => undefined);
     window.location.assign('/login');
   }
 
-  async function saveContact(form: ContactFormState, mode: 'create' | 'edit') {
+  async function saveContact(
+    form: ContactFormState,
+    mode: 'create' | 'edit',
+    idempotencyKey?: string,
+  ) {
     if (!session) return;
-    setStatus('');
+    setNotice(null);
     const payload = {
       ...form,
-      idempotency_key: mode === 'create' ? crypto.randomUUID() : undefined,
       assigned_user_key: form.assigned_user_key || undefined,
       internal_note: form.internal_note || '',
     };
-    const response = await fetch(
-      mode === 'create'
-        ? '/api/v1/crm/contacts'
-        : `/api/v1/crm/contacts/${encodeURIComponent(selected?.contact_id ?? '')}`,
-      {
-        method: mode === 'create' ? 'POST' : 'PATCH',
-        headers: { 'content-type': 'application/json', 'x-csrf-token': session.csrf_token },
-        body: JSON.stringify(payload),
-      },
-    );
-    const json = await response.json();
-    if (!response.ok || !json.success) {
+    try {
+      const json = await saveContactRequest({
+        csrfToken: session.csrf_token,
+        form: payload,
+        mode,
+        contactId: selected?.contact_id,
+        idempotencyKey,
+      });
+      setCreating(false);
+      setEditing(false);
+      setSelected(json.contact);
+      listCache.current = null;
+      history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(json.contact.contact_id)}`);
+      setNotice({ kind: 'success', message: 'Contact saved.' });
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      const json = error as Error & { code?: string; existing_contact_path?: string };
       if (json.code === 'DUPLICATE_CONTACT' && json.existing_contact_path) {
-        setStatus('A matching contact already exists.');
+        setNotice({ kind: 'error', message: 'A matching contact already exists.' });
         history.pushState({}, '', json.existing_contact_path);
         await routeFromLocation();
         return;
       }
-      throw new Error(json.message ?? 'Contact could not be saved.');
+      throw error;
     }
+  }
+
+  function handleAuthError(error: unknown) {
+    if (!(error instanceof AuthExpiredError)) return false;
+    clearProtectedState();
+    return true;
+  }
+
+  function clearProtectedState() {
+    setContacts([]);
+    setNextCursor(null);
+    listCache.current = null;
+    setAssignees([]);
+    setSelected(null);
     setCreating(false);
     setEditing(false);
-    setSelected(json.contact);
-    history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(json.contact.contact_id)}`);
-    setStatus('Saved.');
+    setCommunicationsMode(null);
+    setListLoading(false);
+    setDetailLoading(false);
+    setSession(null);
+    setSessionExpired(true);
+    setNotice(null);
+    setListError('');
+    setDetailError('');
+  }
+
+  function signIn() {
+    const returnTo =
+      location.pathname.startsWith('/app/crm') ||
+      location.pathname === communicationsRouteDescriptor.path
+        ? location.pathname
+        : '/app/crm';
+    window.location.assign(`/login?return_to=${encodeURIComponent(returnTo)}`);
   }
 
   const activeChips = useMemo(
     () =>
       Object.entries(query)
-        .filter(([, value]) => value && value !== 'updated_desc')
-        .map(([key, value]) => `${labelFor(key)}: ${value}`),
+        .filter(([key, value]) => key !== 'search' && value && value !== 'updated_desc')
+        .map(([key, value]) => ({
+          key,
+          label: `${labelFor(key)}: ${displayFilterValue(key, value)}`,
+        })),
     [query],
   );
 
-  return (
-    <main className="crm-shell">
-      <header className="crm-header">
-        <a
-          className="crm-brand"
-          href="/app/crm"
-          onClick={(event) => {
-            event.preventDefault();
-            backToList();
-          }}
-        >
-          <img
-            src="/assets/brand/onetimelogo.webp"
-            alt=""
-            width="40"
-            height="40"
-            aria-hidden="true"
-          />
-          <span>
-            <strong>One Time</strong>
-            <small>{session?.user.role_label ?? 'CRM'}</small>
-          </span>
-        </a>
-        <nav aria-label="One Time app">
-          <a
-            aria-current="page"
-            href="/app/crm"
-            onClick={(event) => {
-              event.preventDefault();
-              backToList();
-            }}
-          >
-            CRM
-          </a>
-        </nav>
-        <button type="button" className="ghost-button" onClick={() => void logout()}>
-          Logout
-        </button>
-      </header>
+  const navItems: ShellNavItem[] = [
+    { id: 'crm', label: 'CRM', href: '/app/crm', current: !communicationsMode },
+    ...(canReadCommunications
+      ? [
+          {
+            id: communicationsRouteDescriptor.id,
+            label: communicationsRouteDescriptor.label,
+            href: communicationsRouteDescriptor.path,
+            current: communicationsMode?.kind === 'global',
+          },
+        ]
+      : []),
+  ];
+  const shellUser = session ? shellUserFromSession(session.user) : null;
+  const pageTitle = communicationsMode
+    ? 'Communications'
+    : creating
+      ? 'Add contact'
+      : editing
+        ? 'Edit contact'
+        : selected
+          ? selected.display_name
+          : 'CRM';
+  const pageDescription = communicationsMode
+    ? communicationsMode.kind === 'contact'
+      ? 'Read-only local communication intents for this contact.'
+      : 'Read-only local communication intents from the One Time outbox.'
+    : creating
+      ? 'Create a One Time contact without sending messages or granting access.'
+      : editing
+        ? 'Update CRM fields backed by the One Time contact API.'
+        : selected
+          ? contactSummary(selected)
+          : 'One Time signup and contact review.';
+  const toolbar =
+    communicationsMode?.kind === 'contact' ? (
+      <ContactCommunicationsToolbar
+        onBack={() => {
+          history.pushState(
+            {},
+            '',
+            `/app/crm/contacts/${encodeURIComponent(communicationsMode.contactId)}`,
+          );
+          setCommunicationsMode(null);
+          void loadContact(communicationsMode.contactId);
+        }}
+      />
+    ) : selected ? (
+      <DetailToolbar
+        contact={selected}
+        canEdit={canEdit}
+        canReadCommunications={canReadCommunications}
+        onBack={backToList}
+        onEdit={() => setEditing(true)}
+        onCommunications={() => openContactCommunications(selected.contact_id)}
+      />
+    ) : creating || editing ? (
+      <FormToolbar onCancel={() => (editing ? setEditing(false) : setCreating(false))} />
+    ) : (
+      <ListToolbar
+        query={query}
+        activeChips={activeChips}
+        canEdit={canCreate}
+        onChange={setQuery}
+        onApply={(nextQuery) => void loadList(undefined, nextQuery)}
+        onClear={() => {
+          setQuery(defaultQuery);
+          void loadList(undefined, defaultQuery);
+        }}
+        onCreate={startCreate}
+      />
+    );
 
-      {status && (
-        <p className="crm-status" role="status">
-          {status}
-        </p>
+  return (
+    <AppShell
+      user={shellUser}
+      navItems={navItems}
+      title={pageTitle}
+      description={pageDescription}
+      toolbar={toolbar}
+      notice={notice ? <NoticeBanner notice={notice} /> : undefined}
+      onNavigate={(href) => {
+        if (href === '/app/crm') void backToList();
+        if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
+      }}
+      onLogout={() => void logout()}
+      sessionExpired={sessionExpired}
+      onSignIn={signIn}
+    >
+      {communicationsMode && (
+        <Suspense
+          fallback={
+            <p className="state-panel" role="status">
+              Loading Communications...
+            </p>
+          }
+        >
+          <CommunicationsPanel
+            contactId={
+              communicationsMode.kind === 'contact' ? communicationsMode.contactId : undefined
+            }
+            onProtectedStateCleared={clearProtectedState}
+          />
+        </Suspense>
       )}
-      {creating && (
+      {!communicationsMode && creating && (
         <ContactForm
           title="Add contact"
           initial={emptyForm}
-          canAssign={session?.user.role === 'owner' || session?.user.role === 'admin'}
+          canAssign={canAssign}
           assignees={assignees}
           onCancel={() => setCreating(false)}
-          onSave={(form) => saveContact(form, 'create')}
+          onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
         />
       )}
-      {selected ? (
-        editing ? (
+      {!communicationsMode &&
+        selected &&
+        (editing ? (
           <ContactForm
             title="Edit contact"
             initial={detailToForm(selected)}
-            canAssign={session?.user.role === 'owner' || session?.user.role === 'admin'}
+            canAssign={canAssign}
             assignees={assignees}
             onCancel={() => setEditing(false)}
             onSave={(form) => saveContact(form, 'edit')}
@@ -295,156 +505,370 @@ function CrmApp() {
         ) : (
           <ContactOverview
             contact={selected}
-            canEdit={canEdit}
-            onBack={backToList}
-            onEdit={() => setEditing(true)}
+            loading={detailLoading}
+            error={detailError}
+            onRetry={() => void loadContact(selected.contact_id)}
           />
-        )
-      ) : (
-        <section className="crm-list" data-usable="crm-list">
-          <div className="crm-title-row">
-            <div>
-              <h1>CRM</h1>
-              <p>One Time signup and contact review.</p>
-            </div>
-            {canEdit && (
-              <button type="button" className="button-primary" onClick={() => setCreating(true)}>
-                Add contact
-              </button>
-            )}
-          </div>
-          <form
-            className="filter-bar"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void loadList();
-            }}
+        ))}
+      {!communicationsMode && !creating && !selected && !editing && (
+        <ContactList
+          contacts={contacts}
+          loading={listLoading}
+          error={listError}
+          nextCursor={nextCursor}
+          query={query}
+          canEdit={canEdit}
+          onOpen={openContact}
+          onRetry={() => void loadList(undefined, query)}
+          onLoadMore={() => void loadList(nextCursor ?? undefined, query)}
+          onCreate={startCreate}
+        />
+      )}
+      {!communicationsMode && !creating && !selected && !editing && detailError && (
+        <StatePanel
+          kind="error"
+          title="Contact not found or unavailable"
+          body={detailError}
+          actionLabel="Back to CRM"
+          onAction={() => void backToList()}
+        />
+      )}
+    </AppShell>
+  );
+}
+
+function ListToolbar({
+  query,
+  activeChips,
+  canEdit,
+  onChange,
+  onApply,
+  onClear,
+  onCreate,
+}: {
+  query: QueryState;
+  activeChips: { key: string; label: string }[];
+  canEdit: boolean;
+  onChange: (query: QueryState) => void;
+  onApply: (query: QueryState) => void;
+  onClear: () => void;
+  onCreate: () => void;
+}) {
+  return (
+    <form
+      className="toolbar-grid"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onApply(query);
+      }}
+    >
+      <div className="toolbar-filters" aria-label="CRM filters">
+        <label className={query.search ? 'is-selected' : undefined}>
+          <span>Search</span>
+          <input
+            value={query.search}
+            autoComplete="off"
+            placeholder="Search contacts"
+            onChange={(event) => onChange({ ...query, search: event.target.value })}
+          />
+        </label>
+        <label className={query.classification ? 'is-selected' : undefined}>
+          <span>Type</span>
+          <select
+            value={query.classification}
+            onChange={(event) => onChange({ ...query, classification: event.target.value })}
           >
-            <label>
-              <span>Search</span>
-              <input
-                value={query.search}
-                onChange={(event) => setQuery({ ...query, search: event.target.value })}
-              />
-            </label>
-            <label>
-              <span>Type</span>
-              <select
-                value={query.classification}
-                onChange={(event) => setQuery({ ...query, classification: event.target.value })}
-              >
-                <option value="">All</option>
-                <option value="family">Family</option>
-                <option value="school">School</option>
-              </select>
-            </label>
-            <label>
-              <span>Status</span>
-              <select
-                value={query.lead_status}
-                onChange={(event) => setQuery({ ...query, lead_status: event.target.value })}
-              >
-                <option value="">All</option>
-                <option value="new">New</option>
-                <option value="in_review">In review</option>
-                <option value="contacted">Contacted</option>
-                <option value="scheduled">Scheduled</option>
-                <option value="closed">Closed</option>
-                <option value="archived">Archived</option>
-              </select>
-            </label>
-            <label>
-              <span>Sort</span>
-              <select
-                value={query.sort}
-                onChange={(event) => setQuery({ ...query, sort: event.target.value })}
-              >
-                <option value="updated_desc">Recently updated</option>
-                <option value="created_desc">Newest</option>
-                <option value="name_asc">Name</option>
-              </select>
-            </label>
-            <button type="submit" className="button-secondary">
-              Apply
-            </button>
-          </form>
-          {activeChips.length > 0 && (
-            <div className="filter-chips">
-              {activeChips.map((chip) => (
-                <span key={chip}>{chip}</span>
-              ))}
-            </div>
-          )}
-          {loading && <p className="crm-loading">Loading contacts...</p>}
-          {!loading && contacts.length === 0 && (
-            <p className="crm-empty">No contacts match these filters.</p>
-          )}
-          <div className="contact-list">
+            <option value="">All</option>
+            <option value="family">Family</option>
+            <option value="school">School</option>
+          </select>
+        </label>
+        <label className={query.lead_status ? 'is-selected' : undefined}>
+          <span>Status</span>
+          <select
+            value={query.lead_status}
+            onChange={(event) => onChange({ ...query, lead_status: event.target.value })}
+          >
+            <option value="">All</option>
+            <option value="new">New</option>
+            <option value="in_review">In review</option>
+            <option value="contacted">Contacted</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="closed">Closed</option>
+            <option value="archived">Archived</option>
+          </select>
+        </label>
+        <label className={query.sort !== 'updated_desc' ? 'is-selected' : undefined}>
+          <span>Sort</span>
+          <select
+            value={query.sort}
+            onChange={(event) => onChange({ ...query, sort: event.target.value })}
+          >
+            <option value="updated_desc">Recently updated</option>
+            <option value="created_desc">Newest</option>
+            <option value="name_asc">Name</option>
+          </select>
+        </label>
+        <button type="submit" className="button-secondary">
+          Apply
+        </button>
+      </div>
+      {activeChips.length > 0 && (
+        <div className="active-filter-row" aria-label="Active filters">
+          {activeChips.map((chip) => (
+            <span key={`${chip.key}:${chip.label}`}>{chip.label}</span>
+          ))}
+          <button type="button" className="text-button" onClick={onClear}>
+            Clear filters
+          </button>
+        </div>
+      )}
+      {canEdit && (
+        <button type="button" className="button-primary toolbar-primary" onClick={onCreate}>
+          Add contact
+        </button>
+      )}
+    </form>
+  );
+}
+
+function DetailToolbar({
+  contact,
+  canEdit,
+  canReadCommunications,
+  onBack,
+  onEdit,
+  onCommunications,
+}: {
+  contact: ContactDetail;
+  canEdit: boolean;
+  canReadCommunications: boolean;
+  onBack: () => void;
+  onEdit: () => void;
+  onCommunications: () => void;
+}) {
+  return (
+    <div className="detail-toolbar">
+      <button type="button" className="button-secondary" onClick={onBack}>
+        Back to CRM
+      </button>
+      <div className="toolbar-summary" aria-label="Contact summary">
+        <Chip label={capitalize(contact.family_school_classification)} tone="classification" />
+        <Chip label={labelStatus(contact.lead_status)} tone="status" />
+        <Chip label={sourceLabel(contact.source)} tone="source" />
+      </div>
+      {canReadCommunications && (
+        <button type="button" className="button-secondary" onClick={onCommunications}>
+          Communications
+        </button>
+      )}
+      {canEdit && (
+        <button type="button" className="button-primary" onClick={onEdit}>
+          Edit contact
+        </button>
+      )}
+    </div>
+  );
+}
+
+function ContactCommunicationsToolbar({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="detail-toolbar">
+      <button type="button" className="button-secondary" onClick={onBack}>
+        Back to contact
+      </button>
+    </div>
+  );
+}
+
+function FormToolbar({ onCancel }: { onCancel: () => void }) {
+  return (
+    <div className="detail-toolbar">
+      <button type="button" className="button-secondary" onClick={onCancel}>
+        Cancel
+      </button>
+    </div>
+  );
+}
+
+function ContactList({
+  contacts,
+  loading,
+  error,
+  nextCursor,
+  query,
+  canEdit,
+  onOpen,
+  onRetry,
+  onLoadMore,
+  onCreate,
+}: {
+  contacts: ContactListItem[];
+  loading: boolean;
+  error: string;
+  nextCursor: string | null;
+  query: QueryState;
+  canEdit: boolean;
+  onOpen: (contactId: string) => void;
+  onRetry: () => void;
+  onLoadMore: () => void;
+  onCreate: () => void;
+}) {
+  const hasFilters = Boolean(query.search.trim() || query.classification || query.lead_status);
+  return (
+    <section className="crm-list" data-usable="crm-list" aria-busy={loading}>
+      {loading && <ListSkeleton />}
+      {!loading && error && (
+        <StatePanel
+          kind="error"
+          title="CRM contacts could not load"
+          body={`${error} Try again when the connection is ready.`}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      )}
+      {!loading && !error && contacts.length === 0 && (
+        <StatePanel
+          kind="empty"
+          title={hasFilters ? 'No contacts match these filters' : 'No contacts yet'}
+          body={
+            hasFilters
+              ? 'Adjust search or filters to review another set of contacts.'
+              : 'Add the first CRM contact when you have a real One Time lead to record.'
+          }
+          actionLabel={!hasFilters && canEdit ? 'Add contact' : undefined}
+          onAction={!hasFilters && canEdit ? onCreate : undefined}
+        />
+      )}
+      {!loading && !error && contacts.length > 0 && (
+        <>
+          <ContactTable contacts={contacts} onOpen={onOpen} />
+          <div className="contact-card-list" aria-label="CRM contacts">
             {contacts.map((contact) => (
-              <button
-                type="button"
-                className="contact-row"
-                key={contact.contact_id}
-                onClick={() => openContact(contact.contact_id)}
-              >
-                <strong>{contact.display_name}</strong>
-                <span>
-                  {capitalize(contact.family_school_classification)} ·{' '}
-                  {labelStatus(contact.lead_status)}
-                </span>
-                <span>
-                  {contact.email ?? 'No email'}
-                  {contact.phone ? ` · ${contact.phone}` : ''}
-                </span>
-                <span>
-                  {contact.source} · {contact.assigned_team_member ?? 'Unassigned'} ·{' '}
-                  {formatDate(contact.last_activity_at)}
-                </span>
-              </button>
+              <ContactCard key={contact.contact_id} contact={contact} onOpen={onOpen} />
             ))}
           </div>
           {nextCursor && (
-            <button
-              type="button"
-              className="button-secondary load-more"
-              onClick={() => void loadList(nextCursor)}
-            >
+            <button type="button" className="button-secondary load-more" onClick={onLoadMore}>
               Load more
             </button>
           )}
-        </section>
+        </>
       )}
-    </main>
+    </section>
+  );
+}
+
+function ContactTable({
+  contacts,
+  onOpen,
+}: {
+  contacts: ContactListItem[];
+  onOpen: (contactId: string) => void;
+}) {
+  return (
+    <div className="contact-table-wrap">
+      <table className="contact-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Contact</th>
+            <th scope="col">Source</th>
+            <th scope="col">Last activity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {contacts.map((contact) => (
+            <tr
+              key={contact.contact_id}
+              tabIndex={0}
+              role="button"
+              data-contact-open={contact.contact_id}
+              aria-label={`Open ${contact.display_name}`}
+              onClick={() => onOpen(contact.contact_id)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onOpen(contact.contact_id);
+                }
+              }}
+            >
+              <td>
+                <strong>{contact.display_name}</strong>
+                {contact.assigned_team_member && <small>{contact.assigned_team_member}</small>}
+              </td>
+              <td>
+                <Chip
+                  label={capitalize(contact.family_school_classification)}
+                  tone="classification"
+                />
+                <Chip label={labelStatus(contact.lead_status)} tone="status" />
+              </td>
+              <td>{contactMethod(contact)}</td>
+              <td>
+                <Chip label={sourceLabel(contact.source)} tone="source" />
+              </td>
+              <td>{formatDate(contact.last_activity_at)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ContactCard({
+  contact,
+  onOpen,
+}: {
+  contact: ContactListItem;
+  onOpen: (contactId: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="contact-card"
+      data-contact-open={contact.contact_id}
+      onClick={() => onOpen(contact.contact_id)}
+    >
+      <span className="contact-card-heading">
+        <strong>{contact.display_name}</strong>
+        <span>{formatDate(contact.last_activity_at)}</span>
+      </span>
+      <span className="chip-row">
+        <Chip label={capitalize(contact.family_school_classification)} tone="classification" />
+        <Chip label={labelStatus(contact.lead_status)} tone="status" />
+        <Chip label={sourceLabel(contact.source)} tone="source" />
+      </span>
+      <span className="contact-card-meta">
+        <span>{contactMethod(contact)}</span>
+        {contact.assigned_team_member && <span>{contact.assigned_team_member}</span>}
+      </span>
+    </button>
   );
 }
 
 function ContactOverview({
   contact,
-  canEdit,
-  onBack,
-  onEdit,
+  loading,
+  error,
+  onRetry,
 }: {
   contact: ContactDetail;
-  canEdit: boolean;
-  onBack: () => void;
-  onEdit: () => void;
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
 }) {
   const facts = [
-    ['Classification', capitalize(contact.family_school_classification)],
+    ['Family / School', capitalize(contact.family_school_classification)],
     ['Lead status', labelStatus(contact.lead_status)],
+    ['Source', sourceLabel(contact.source)],
     ['Email', contact.email ?? 'Not provided'],
     ['Phone', contact.phone ?? 'Not provided'],
-    ['Location', contact.location],
-    ['Timezone', contact.timezone],
-    ['Source', contact.source],
-    ['Offer version', contact.offer_version ?? 'Not recorded'],
-    ['Content version', contact.content_version ?? 'Not recorded'],
-    ['Reminder preference', contact.reminder_preference],
-    ['Consent', contact.consent_state],
-    ['Suppression', contact.suppression_state],
-    ['Created', formatDate(contact.created_at)],
-    ['Updated', formatDate(contact.updated_at)],
     ['Last activity', formatDate(contact.last_activity_at)],
+    ['Consent', readableState(contact.consent_state)],
+    ['Suppression', readableState(contact.suppression_state)],
     [
       'Signup provenance',
       contact.audit_safe_signup_provenance.signup_key
@@ -452,34 +876,39 @@ function ContactOverview({
         : 'Manual CRM contact',
     ],
   ];
+  if (contact.assigned_team_member) {
+    facts.splice(3, 0, ['Assigned team member', contact.assigned_team_member]);
+  }
+
   return (
-    <section className="contact-detail" data-usable="crm-detail">
-      <div className="crm-title-row">
-        <div>
-          <button type="button" className="text-button" onClick={onBack}>
-            Back
-          </button>
-          <h1>{contact.display_name}</h1>
-        </div>
-        {canEdit && (
-          <button type="button" className="button-primary" onClick={onEdit}>
-            Edit
-          </button>
-        )}
-      </div>
-      <dl className="detail-grid">
-        {facts.map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
-      {contact.internal_note && (
-        <section className="note-panel">
-          <h2>Internal note</h2>
-          <p>{contact.internal_note}</p>
-        </section>
+    <section className="contact-detail" data-usable="crm-detail" aria-busy={loading}>
+      {loading && <DetailSkeleton />}
+      {!loading && error && (
+        <StatePanel
+          kind="error"
+          title="Contact could not load"
+          body={error}
+          actionLabel="Retry"
+          onAction={onRetry}
+        />
+      )}
+      {!loading && !error && (
+        <>
+          <dl className="detail-grid">
+            {facts.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+          {contact.internal_note && (
+            <section className="note-panel">
+              <h2>Internal note</h2>
+              <p>{contact.internal_note}</p>
+            </section>
+          )}
+        </>
       )}
     </section>
   );
@@ -498,23 +927,28 @@ function ContactForm({
   canAssign: boolean;
   assignees: Assignee[];
   onCancel: () => void;
-  onSave: (form: ContactFormState) => Promise<void>;
+  onSave: (form: ContactFormState, idempotencyKey: string) => Promise<void>;
 }) {
   const [form, setForm] = useState(initial);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const idempotencyKey = useRef(createIdempotencyKey());
+  const formIntent = useRef(contactIntentFingerprint(initial));
   const set = (key: keyof ContactFormState, value: string) =>
-    setForm((current) => ({ ...current, [key]: value }));
+    setForm((current) => {
+      const next = { ...current, [key]: value };
+      const nextIntent = contactIntentFingerprint(next);
+      if (nextIntent !== formIntent.current) {
+        idempotencyKey.current = createIdempotencyKey();
+        formIntent.current = nextIntent;
+      }
+      return next;
+    });
   return (
-    <section className="contact-form-shell">
-      <div className="crm-title-row">
-        <h1>{title}</h1>
-        <button type="button" className="ghost-button" onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
+    <section className="contact-form-shell" aria-labelledby="contact-form-title">
+      <h2 id="contact-form-title">{title}</h2>
       {error && (
-        <p className="crm-status error-status" role="alert">
+        <p className="notice-banner error" role="alert">
           {error}
         </p>
       )}
@@ -525,7 +959,7 @@ function ContactForm({
           setSaving(true);
           setError('');
           try {
-            await onSave(form);
+            await onSave(form, idempotencyKey.current);
           } catch (saveError) {
             setError(errorMessage(saveError, 'Contact could not be saved.'));
           } finally {
@@ -622,7 +1056,7 @@ function ContactForm({
           <button type="submit" className="button-primary" disabled={saving}>
             {saving ? 'Saving...' : 'Save'}
           </button>
-          <button type="button" className="ghost-button" onClick={onCancel}>
+          <button type="button" className="button-secondary" onClick={onCancel}>
             Cancel
           </button>
         </div>
@@ -631,11 +1065,73 @@ function ContactForm({
   );
 }
 
-async function api<T>(path: string): Promise<T> {
-  const response = await fetch(path, { headers: { accept: 'application/json' } });
-  const json = await response.json();
-  if (!response.ok || json.success === false) throw new Error(json.message ?? 'Request failed.');
-  return json as T;
+function ListSkeleton() {
+  return (
+    <div className="skeleton-list" role="status" aria-label="Loading contacts">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div className="skeleton-row" key={index}>
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DetailSkeleton() {
+  return (
+    <div className="detail-grid skeleton-detail" role="status" aria-label="Loading contact detail">
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div key={index}>
+          <span />
+          <strong />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StatePanel({
+  kind,
+  title,
+  body,
+  actionLabel,
+  onAction,
+}: {
+  kind: 'empty' | 'error';
+  title: string;
+  body: string;
+  actionLabel?: string | undefined;
+  onAction?: (() => void) | undefined;
+}) {
+  return (
+    <section className={`state-panel ${kind}`} aria-labelledby={`${kind}-state-title`}>
+      <h2 id={`${kind}-state-title`}>{title}</h2>
+      <p>{body}</p>
+      {actionLabel && onAction && (
+        <button type="button" className="button-primary" onClick={onAction}>
+          {actionLabel}
+        </button>
+      )}
+    </section>
+  );
+}
+
+function NoticeBanner({ notice }: { notice: Notice }) {
+  return (
+    <p
+      className={`notice-banner ${notice.kind}`}
+      role={notice.kind === 'error' ? 'alert' : 'status'}
+    >
+      {notice.message}
+    </p>
+  );
+}
+
+function Chip({ label, tone }: { label: string; tone: 'classification' | 'status' | 'source' }) {
+  return <span className={`semantic-chip ${tone}`}>{label}</span>;
 }
 
 function detailToForm(contact: ContactDetail): ContactFormState {
@@ -653,6 +1149,20 @@ function detailToForm(contact: ContactDetail): ContactFormState {
   };
 }
 
+function shellUserFromSession(user: SessionUser): ShellUser {
+  return {
+    displayName: user.display_name,
+    email: user.email,
+    roleLabel: roleLabel(user),
+  };
+}
+
+function roleLabel(user: SessionUser) {
+  if (user.role === 'owner') return 'Owner';
+  if (user.role === 'admin') return 'Administrator';
+  return user.role_label;
+}
+
 function labelFor(key: string) {
   return key === 'lead_status'
     ? 'Status'
@@ -663,12 +1173,39 @@ function labelFor(key: string) {
         : 'Sort';
 }
 
+function displayFilterValue(key: string, value: string) {
+  if (key === 'lead_status') return labelStatus(value);
+  if (key === 'classification') return capitalize(value);
+  if (key === 'sort')
+    return value === 'created_desc' ? 'Newest' : value === 'name_asc' ? 'Name' : value;
+  return value;
+}
+
 function labelStatus(value: string) {
+  return readableState(value);
+}
+
+function sourceLabel(value: string) {
+  return readableState(value || 'unknown');
+}
+
+function readableState(value: string) {
   return value.replaceAll('_', ' ').replace(/^\w/, (letter) => letter.toUpperCase());
 }
 
 function capitalize(value: string) {
   return value.replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
+function contactMethod(contact: ContactListItem) {
+  if (contact.email && contact.phone) return `${contact.email} / ${contact.phone}`;
+  return contact.email ?? contact.phone ?? 'No contact method';
+}
+
+function contactSummary(contact: ContactDetail) {
+  return `${capitalize(contact.family_school_classification)} contact, ${labelStatus(
+    contact.lead_status,
+  )}, last activity ${formatDate(contact.last_activity_at)}.`;
 }
 
 function formatDate(value: string) {
@@ -679,6 +1216,105 @@ function formatDate(value: string) {
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
+}
+
+function cssEscape(value: string) {
+  if ('CSS' in window && typeof CSS.escape === 'function') return CSS.escape(value);
+  return value.replace(/["\\]/g, '\\$&');
+}
+
+function listCacheKey(query: QueryState) {
+  return JSON.stringify({
+    search: query.search.trim(),
+    classification: query.classification,
+    lead_status: query.lead_status,
+    sort: query.sort,
+  });
+}
+
+function markUsableAfterPaint(markName: string, isReady: () => boolean) {
+  let cancelled = false;
+  const firstFrame = window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      if (!cancelled && isReady()) performance.mark(markName);
+    });
+  });
+  return () => {
+    cancelled = true;
+    window.cancelAnimationFrame(firstFrame);
+  };
+}
+
+function isListUsable() {
+  const section = document.querySelector<HTMLElement>('[data-usable="crm-list"]');
+  if (!section || section.getAttribute('aria-busy') === 'true' || !isVisible(section)) return false;
+  const apply = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+    (button) => button.textContent?.trim() === 'Apply',
+  );
+  if (!apply || apply.disabled || !isVisible(apply)) return false;
+  const contactAction = [...document.querySelectorAll<HTMLElement>('[data-contact-open]')].find(
+    isVisible,
+  );
+  const statePanel = document.querySelector<HTMLElement>('.state-panel');
+  return Boolean(contactAction || (statePanel && isVisible(statePanel)));
+}
+
+function isDetailUsable(displayName: string) {
+  const section = document.querySelector<HTMLElement>('[data-usable="crm-detail"]');
+  if (!section || section.getAttribute('aria-busy') === 'true' || !isVisible(section)) return false;
+  const heading = document.getElementById('page-title');
+  const backButton = [...document.querySelectorAll<HTMLButtonElement>('button')].find(
+    (button) => button.textContent?.trim() === 'Back to CRM',
+  );
+  return Boolean(
+    heading?.textContent?.includes(displayName) &&
+    isVisible(heading) &&
+    backButton &&
+    !backButton.disabled &&
+    isVisible(backButton),
+  );
+}
+
+function isVisible(element: Element) {
+  const rect = element.getBoundingClientRect();
+  const style = getComputedStyle(element);
+  return (
+    rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+  );
+}
+
+function contactIntentFingerprint(form: ContactFormState) {
+  return JSON.stringify({
+    display_name: form.display_name.trim(),
+    family_school_classification: form.family_school_classification,
+    email: form.email.trim(),
+    phone: form.phone.trim(),
+    location: form.location.trim(),
+    timezone: form.timezone.trim(),
+    lead_status: form.lead_status,
+    assigned_user_key: form.assigned_user_key.trim(),
+    internal_note: form.internal_note.trim(),
+  });
+}
+
+function focusVisibleContactControl(contactId: string) {
+  const selector = `[data-contact-open="${cssEscape(contactId)}"]`;
+  let attempts = 0;
+  const focusAfterRender = () => {
+    const target = [...document.querySelectorAll<HTMLElement>(selector)].find((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width > 0 && rect.height > 0 && style.display !== 'none';
+    });
+    if (target) {
+      target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      target.focus({ preventScroll: true });
+      if (document.activeElement === target) return;
+    }
+    attempts += 1;
+    if (attempts < 10) window.setTimeout(focusAfterRender, 50);
+  };
+  window.requestAnimationFrame(() => window.requestAnimationFrame(focusAfterRender));
 }
 
 const root = document.getElementById('crm-root');

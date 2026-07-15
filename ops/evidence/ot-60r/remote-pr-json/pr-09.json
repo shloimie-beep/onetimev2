@@ -1,0 +1,172 @@
+{
+  "number": 9,
+  "title": "OT-38 real privileged MFA security correction",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/9",
+  "baseRefName": "codex/ot34-first-slice-core-hardening",
+  "baseRefOid": "87f9b315c54e32e918912cc100610e2c561b68ac",
+  "headRefName": "codex/ot38-real-mfa-security-correction",
+  "headRefOid": "245649523566a7a0ace493ba70ede2a405ebdcce",
+  "mergeStateStatus": "CLEAN",
+  "commits": [
+    {
+      "oid": "245649523566a7a0ace493ba70ede2a405ebdcce",
+      "messageHeadline": "Implement OT-38 privileged MFA security",
+      "authoredDate": "2026-07-14T18:41:48Z",
+      "committedDate": "2026-07-14T18:41:48Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/client/app/crm-entry.tsx",
+      "additions": 14,
+      "deletions": 3,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/client/public/public-entry.ts",
+      "additions": 64,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/server/app.ts",
+      "additions": 220,
+      "deletions": 39,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "ops/evidence/ot-38/FINAL-REPORT.md",
+      "additions": 117,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "additions": 42,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/contracts/src/auth.ts",
+      "additions": 38,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "additions": 42,
+      "deletions": 14,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/contracts/src/search.ts",
+      "additions": 15,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/timezone.ts",
+      "additions": 24,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/migrations/0005_privileged_mfa_security_completion.sql",
+      "additions": 123,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/auth/service.ts",
+      "additions": 813,
+      "deletions": 110,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/auth/totp.ts",
+      "additions": 150,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/crm/service.ts",
+      "additions": 123,
+      "deletions": 26,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "additions": 4,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/lead/normalize.ts",
+      "additions": 5,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/lead/service.ts",
+      "additions": 21,
+      "deletions": 17,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "playwright.config.ts",
+      "additions": 3,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/accessibility/public-a11y.spec.ts",
+      "additions": 2,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/e2e/crm-core.spec.ts",
+      "additions": 4,
+      "deletions": 8,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/auth-crm.test.ts",
+      "additions": 295,
+      "deletions": 32,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/lead-capture.test.ts",
+      "additions": 10,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/performance/public-performance.spec.ts",
+      "additions": 2,
+      "deletions": 4,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/support/mfa-login.ts",
+      "additions": 82,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/support/test-server.ts",
+      "additions": 4,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/unit/totp.test.ts",
+      "additions": 48,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}

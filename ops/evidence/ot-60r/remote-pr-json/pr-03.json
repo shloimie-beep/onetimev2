@@ -1,0 +1,106 @@
+{
+  "number": 3,
+  "title": "OT-34 first-slice core hardening",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/3",
+  "baseRefName": "codex/crm-core-v1",
+  "baseRefOid": "a73458d1884b8fcb4843c4852425009577f59ef7",
+  "headRefName": "codex/ot34-first-slice-core-hardening",
+  "headRefOid": "87f9b315c54e32e918912cc100610e2c561b68ac",
+  "mergeStateStatus": "DIRTY",
+  "commits": [
+    {
+      "oid": "930157a77d24048045be8bf9cf2ad45a0adb0ce6",
+      "messageHeadline": "fix: harden first-slice auth lead crm core",
+      "authoredDate": "2026-07-14T14:26:39Z",
+      "committedDate": "2026-07-14T14:26:39Z"
+    },
+    {
+      "oid": "87f9b315c54e32e918912cc100610e2c561b68ac",
+      "messageHeadline": "test: cover OT-34 hardening gates",
+      "authoredDate": "2026-07-14T14:26:47Z",
+      "committedDate": "2026-07-14T14:26:47Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/server/app.ts",
+      "additions": 68,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "ops/evidence/ot-34/HARDENING-REPORT.md",
+      "additions": 159,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "additions": 9,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "additions": 9,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/db/migrations/0003_first_slice_hardening.sql",
+      "additions": 24,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/auth/service.ts",
+      "additions": 173,
+      "deletions": 93,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/crm/service.ts",
+      "additions": 151,
+      "deletions": 18,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "additions": 8,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/lead/normalize.ts",
+      "additions": 28,
+      "deletions": 6,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/lead/service.ts",
+      "additions": 110,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/auth-crm.test.ts",
+      "additions": 479,
+      "deletions": 6,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/lead-capture.test.ts",
+      "additions": 122,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/unit/lead-validation.test.ts",
+      "additions": 9,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    }
+  ]
+}
