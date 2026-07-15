@@ -85,3 +85,15 @@ export {
   listContacts,
   updateContact,
 } from './crm/service.ts';
+export {
+  consumeWhatsAppAccountLink,
+  digestForTests as whatsappDigestForTests,
+  evaluateWhatsAppCanaryReadiness,
+  ingestWhatsAppProviderEvents,
+  processPendingWhatsAppInbox,
+  processQueuedWhatsAppOutbox,
+  receiveWhatsAppWebhook,
+  verifyWhatsAppWebhookChallenge,
+} from './whatsapp/service.ts';
+export { MetaWhatsAppCloudAdapter, SinkWhatsAppProviderAdapter } from './whatsapp/provider.ts';
+export { compileWhatsAppIntent } from './whatsapp/intent.ts';
