@@ -1,0 +1,63 @@
+{
+  "run_id": "OT-82",
+  "title": "One Time Brand and Shell Foundation",
+  "created_at": "2026-07-15T12:40:00Z",
+  "repository": {
+    "full_name": "webcraft-media/onetimev2",
+    "verified_origin": "https://github.com/webcraft-media/onetimev2.git",
+    "source_checkout": "C:\\Users\\User\\OneTimeOneTime",
+    "worktree": "C:\\Users\\User\\.codex\\worktrees\\webcraft-media-onetimev2\\ot82-brand-system-foundation"
+  },
+  "branches": {
+    "dependency_ref": "refs/heads/codex/ot81-dayone-certification-staging",
+    "dependency_remote_ref": "refs/remotes/origin/codex/ot81-dayone-certification-staging",
+    "dependency_branch": "codex/ot81-dayone-certification-staging",
+    "resolved_base_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
+    "product_branch": "codex/ot82-brand-system-foundation",
+    "checkpoint_branch": "codex/ot82-brand-system-foundation-checkpoint",
+    "remote_product_branch_observed": false,
+    "pre_edit_branch_head_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546"
+  },
+  "runtime": {
+    "node": "v24.13.0",
+    "npm": "11.6.2",
+    "os": "Microsoft Windows 10.0.26200"
+  },
+  "packet": {
+    "source_zip_sha256": "0D8833D415A7AA9D50B5706ACFFF48CE19DC7FC6FB240A8A21CE08D4BBF87E41",
+    "packet_dir": "ops/codex-runs/OT-82/packet",
+    "sha256sums_verified_before_repository_work": true,
+    "digests": {
+      "CODEX-PROMPT.md": "7f37ca9e7dffca349ee257fe516c8b6265223e70ba8a47d8b878615545226789",
+      "DECISIONS.json": "d01e77db41e3456f750fb4c31e4674dfcd714b941b50bc2e396893151c7c9f3c",
+      "FILE-OWNERSHIP.md": "9564bb0459ef83c6924f76c4ba1dd470d6cf1c73b10f8af2d08559304061b931",
+      "ACCEPTANCE-MATRIX.md": "6454b8ad5b6d49d5ac4a52fa6256b6eb51dd933864d8ae99703a868d48882baa",
+      "VISUAL-MATRIX.md": "338bfadcc0b8fbaf9a200d9469cb857741195cbb0ecf0d082c92986ca60ef1be",
+      "SOURCES.md": "a29aa41766771d8c7faf9474b9ae154973c72dca3846bcf3363db0376679fe2b"
+    }
+  },
+  "historical_audit_refs": {
+    "ot73": {
+      "pull_request": 19,
+      "branch": "codex/ot73-landing-intent-reconciliation",
+      "head_sha_observed": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "use": "audit provenance only"
+    },
+    "ot80": {
+      "pull_request": 23,
+      "branch": "codex/ot80-one-shot-final-convergence",
+      "head_sha_observed": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+      "product_source_candidate_sha_recorded_in_pr": "b753d50ca562c01cfa8619762254e70c90b0105f",
+      "use": "audit provenance only"
+    }
+  },
+  "safety": {
+    "secrets_recorded": false,
+    "deployment_allowed": false,
+    "provider_mutation_allowed": false,
+    "production_database_mutation_allowed": false,
+    "dns_or_railway_mutation_allowed": false,
+    "bna_repository_mutation_allowed": false,
+    "force_push_allowed": false
+  }
+}
