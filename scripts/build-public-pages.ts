@@ -288,6 +288,20 @@ await writeFile(
     description: 'One Time authenticated CRM.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
+for (const [fileName, title, description] of [
+  ['dashboard.html', 'Dashboard | One Time Mishnayos', 'One Time owner/admin dashboard.'],
+  ['classes.html', 'Classes | One Time Mishnayos', 'One Time class occurrence status.'],
+  ['content.html', 'Content Library | One Time Mishnayos', 'One Time content library status.'],
+  ['billing.html', 'Products/Billing | One Time Mishnayos', 'One Time billing status.'],
+] as const) {
+  await writeFile(
+    path.join(outDir, 'app', fileName),
+    pageShell(title, `<div id="crm-root"></div>`, {
+      app: true,
+      description,
+    }).replace('index, follow', 'noindex, nofollow'),
+  );
+}
 await writeFile(
   path.join(outDir, 'app', 'parent.html'),
   pageShell('Parent Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {

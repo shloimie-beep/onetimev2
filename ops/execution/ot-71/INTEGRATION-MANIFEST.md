@@ -74,6 +74,24 @@
 - Raw provider URL/secret/target exposure: none; class/content actions remain app-relative or `provider_unavailable`, and lifecycle operations persist only token hashes/digests.
 - External mutations: zero.
 
+## Phase 5
+
+- Shared OT-60R control files edited: no.
+- Shared registry edited: no.
+- OT-72 provider-owned files edited: no.
+- Provider transports, credentials, webhooks, polling, live identity providers, billing portal activation, support/helper sends, Studio, agent fleets, and BNA integration internals edited: no.
+- Product contracts added: `packages/contracts/src/dashboard/index.ts`.
+- Product domain added: `packages/domain/src/dashboard/service.ts`.
+- Existing integration points touched:
+  - `packages/contracts/src/index.ts` exports dashboard contracts.
+  - `packages/domain/src/index.ts` exports owner/admin dashboard and visible-action registry helpers.
+  - `apps/web/src/server/app.ts` mounts protected owner/admin shells and `/api/v1/dashboard/owner`.
+  - `apps/web/src/client/app/crm-api.ts`, `apps/web/src/client/app/crm-entry.tsx`, `apps/web/src/client/app/crm.css`, and `apps/web/src/client/app/shell/AppShell.tsx` extend the authenticated shell with dashboard, classes, content, billing status, registry, and mobile current-route behavior.
+  - `scripts/build-public-pages.ts` generates dashboard/classes/content/billing app pages.
+- Tests added: `tests/integration/dashboard/owner-dashboard.test.ts`.
+- Raw provider URL/secret/target exposure: none; dashboard responses contain bounded local statuses only, billing remains read-only, and provider transport mutation count is zero.
+- External mutations: zero.
+
 ## Future Shared Hotspots
 
 Any necessary shared hotspot changes must be small, clearly labeled, and recorded here with file paths, reason, owner boundary, tests, and rollback notes.

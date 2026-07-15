@@ -65,3 +65,16 @@
 | `npm run secret:scan`                                                                                            | Passed | Secret scan passed across 338 repo text files.                                                                       |
 | `git diff --check`                                                                                               | Passed | No whitespace errors detected. Git emitted only existing CRLF normalization warnings for tracked text files.         |
 | `npm run test`                                                                                                   | Passed | Full unit and integration suites passed: 93 unit tests and 74 integration tests.                                     |
+
+## Phase 5 Verification
+
+| Command                                                                                                     | Status | Summary                                                                                                                |
+| ----------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `npx vitest run --config vitest.integration.config.ts tests/integration/dashboard/owner-dashboard.test.ts` | Passed | 1 dashboard integration test passed for owner/admin shells, wrong-role denial, section truthfulness, registry mapping, and no provider URL/secret leakage. |
+| `npm run typecheck`                                                                                         | Passed | TypeScript completed successfully after Phase 5 changes.                                                               |
+| `npm run lint`                                                                                              | Passed | ESLint completed successfully.                                                                                         |
+| `npm run build`                                                                                             | Passed | Clean build completed, including generated dashboard/classes/content/billing app pages and typecheck.                  |
+| `npm run test`                                                                                              | Passed | Full unit and integration suites passed: 93 unit tests and 75 integration tests.                                      |
+| `npm run accessibility`                                                                                     | Passed | Build plus 5 Playwright accessibility tests passed, including CRM shell axe, 360/390/tablet/desktop reflow, RTL smoke, reduced motion, and 200% text reflow coverage. |
+| `npm run secret:scan`                                                                                       | Passed | Secret scan passed across 341 repo text files.                                                                         |
+| `git diff --check`                                                                                          | Passed | No whitespace errors detected. Git emitted only existing CRLF normalization warnings for tracked text files.           |

@@ -29,9 +29,9 @@ ops/execution/ot-71/TEST-RESULTS.md
 ops/execution/ot-71/INTEGRATION-MANIFEST.md
 ```
 
-4. Continue at the first pending phase in `STATE.json`; after Phase 4 this is Phase 5 owner/admin dashboard and ready-only shell.
+4. Continue at the first pending phase in `STATE.json`; after Phase 5 this is Phase 6 combined proof and publication.
 5. Do not rerun the failed OT-71 preflight that required self-referential control-file SHAs.
 6. Maintain prohibitions: no deployment, no production/provider mutation, no BNA modification, no production database, no real sends, no charges, no DNS changes, no real users.
 7. After each implementation phase, update STATE, CHECKPOINT, IMPLEMENTED, REMAINING, BLOCKERS, TEST-RESULTS, INTEGRATION-MANIFEST, and RESUME; commit intentionally; push `codex/ot71-product-core-train`.
 
-Current Phase 4 status: implemented locally and verified with focused portal integration tests, legacy OT-52 portal tests, `npm run typecheck`, `npm run lint`, `npm run build`, `npm run secret:scan`, `git diff --check`, and `npm run test`. Next phase: Phase 5 owner/admin dashboard and ready-only shell; include only integrated, working surfaces and keep provider transports disabled.
+Current Phase 5 status: implemented locally and verified with focused dashboard integration tests, `npm run typecheck`, `npm run lint`, `npm run build`, `npm run test`, `npm run accessibility`, `npm run secret:scan`, and `git diff --check`. Next phase: Phase 6 combined proof/publication; prove the full synthetic journey, record CI/screenshots/budgets where available, verify every visible action maps to a real capability, confirm zero BNA/provider/PII leakage, then open one draft PR to `codex/ot60r-recovery-convergence` without merging or deploying.

@@ -1,6 +1,13 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import type { ContactDetail, ContactListItem, SessionUser } from '@onetime/contracts';
+import type {
+  ClassOccurrenceSummary,
+  ContactDetail,
+  ContactListItem,
+  ContentLibraryItemSummary,
+  OwnerDashboardResponse,
+  SessionUser,
+} from '@onetime/contracts';
 import {
   communicationsRouteDescriptor,
   contactCommunicationsTabDescriptor,
@@ -10,7 +17,10 @@ import {
   AuthExpiredError,
   createIdempotencyKey,
   getAssignees,
+  getClasses,
   getContact,
+  getContentLibrary,
+  getOwnerDashboard,
   getSession,
   listContacts,
   logoutSession,
@@ -47,6 +57,11 @@ type Notice = {
 };
 
 type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
+type OwnerSurface = 'dashboard' | 'crm' | 'classes' | 'content' | 'billing';
+type AsyncPanelState = {
+  loading: boolean;
+  error: string;
+};
 
 const emptyForm: ContactFormState = {
   display_name: '',
@@ -81,7 +96,23 @@ function CrmApp() {
   const [selected, setSelected] = useState<ContactDetail | null>(null);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [surface, setSurface] = useState<OwnerSurface>('crm');
   const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
+  const [dashboard, setDashboard] = useState<OwnerDashboardResponse | null>(null);
+  const [dashboardState, setDashboardState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
+  const [classes, setClasses] = useState<ClassOccurrenceSummary[]>([]);
+  const [classesState, setClassesState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
+  const [contentItems, setContentItems] = useState<ContentLibraryItemSummary[]>([]);
+  const [contentState, setContentState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
   const [assignees, setAssignees] = useState<Assignee[]>([]);
   const [focusContactId, setFocusContactId] = useState<string | null>(null);
   const returnFocusContactId = useRef<string | null>(null);
@@ -95,6 +126,7 @@ function CrmApp() {
   const canEdit = capabilities.contacts.update;
   const canAssign = capabilities.contacts.assign;
   const canReadCommunications = session?.user.role === 'owner' || session?.user.role === 'admin';
+  const canReadOwnerShell = canReadCommunications;
 
   useEffect(() => {
     void loadSession();
@@ -147,7 +179,21 @@ function CrmApp() {
 
   async function routeFromLocation() {
     if (sessionExpired) return;
+    const ownerSurface = ownerSurfaceFromPath(location.pathname);
+    if (ownerSurface && ownerSurface !== 'crm') {
+      setSurface(ownerSurface);
+      setCommunicationsMode(null);
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      if (ownerSurface === 'dashboard' || ownerSurface === 'billing') await loadDashboard();
+      if (ownerSurface === 'classes') await loadClasses();
+      if (ownerSurface === 'content') await loadContent();
+      return;
+    }
     if (location.pathname === communicationsRouteDescriptor.path) {
+      setSurface('crm');
       setCommunicationsMode({ kind: 'global' });
       setSelected(null);
       setEditing(false);
@@ -159,6 +205,7 @@ function CrmApp() {
       /^\/app\/crm\/contacts\/([^/]+)\/communications$/,
     );
     if (contactCommunicationsMatch?.[1]) {
+      setSurface('crm');
       setCommunicationsMode({
         kind: 'contact',
         contactId: decodeURIComponent(contactCommunicationsMatch[1]),
@@ -169,6 +216,7 @@ function CrmApp() {
       setListLoading(false);
       return;
     }
+    setSurface('crm');
     setCommunicationsMode(null);
     const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
@@ -224,6 +272,54 @@ function CrmApp() {
     }
   }
 
+  async function loadDashboard() {
+    setDashboardState({ loading: true, error: '' });
+    try {
+      const json = await getOwnerDashboard();
+      setDashboard(json);
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setDashboardState({
+        loading: false,
+        error: errorMessage(error, 'Dashboard could not load.'),
+      });
+      return;
+    }
+    setDashboardState({ loading: false, error: '' });
+  }
+
+  async function loadClasses() {
+    setClassesState({ loading: true, error: '' });
+    try {
+      const json = await getClasses();
+      setClasses(json.occurrences);
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setClassesState({
+        loading: false,
+        error: errorMessage(error, 'Classes could not load.'),
+      });
+      return;
+    }
+    setClassesState({ loading: false, error: '' });
+  }
+
+  async function loadContent() {
+    setContentState({ loading: true, error: '' });
+    try {
+      const json = await getContentLibrary();
+      setContentItems(json.items);
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setContentState({
+        loading: false,
+        error: errorMessage(error, 'Content library could not load.'),
+      });
+      return;
+    }
+    setContentState({ loading: false, error: '' });
+  }
+
   function openContact(contactId: string) {
     returnFocusContactId.current = contactId;
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(contactId)}`);
@@ -234,6 +330,7 @@ function CrmApp() {
 
   async function backToList() {
     history.pushState({}, '', '/app/crm');
+    setSurface('crm');
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -256,6 +353,7 @@ function CrmApp() {
   }
 
   function startCreate() {
+    setSurface('crm');
     setSelected(null);
     setEditing(false);
     setCreating(true);
@@ -265,6 +363,7 @@ function CrmApp() {
 
   function openGlobalCommunications() {
     history.pushState({}, '', communicationsRouteDescriptor.path);
+    setSurface('crm');
     setCommunicationsMode({ kind: 'global' });
     setSelected(null);
     setEditing(false);
@@ -278,11 +377,25 @@ function CrmApp() {
       '',
       `/app/crm/contacts/${encodeURIComponent(contactId)}/${contactCommunicationsTabDescriptor.id}`,
     );
+    setSurface('crm');
     setCommunicationsMode({ kind: 'contact', contactId });
     setSelected(null);
     setEditing(false);
     setCreating(false);
     setListLoading(false);
+  }
+
+  function openOwnerSurface(nextSurface: Exclude<OwnerSurface, 'crm'>) {
+    history.pushState({}, '', ownerSurfacePath(nextSurface));
+    setSurface(nextSurface);
+    setCommunicationsMode(null);
+    setSelected(null);
+    setEditing(false);
+    setCreating(false);
+    setListLoading(false);
+    if (nextSurface === 'dashboard' || nextSurface === 'billing') void loadDashboard();
+    if (nextSurface === 'classes') void loadClasses();
+    if (nextSurface === 'content') void loadContent();
   }
 
   async function logout() {
@@ -346,7 +459,14 @@ function CrmApp() {
     setSelected(null);
     setCreating(false);
     setEditing(false);
+    setSurface('crm');
     setCommunicationsMode(null);
+    setDashboard(null);
+    setDashboardState({ loading: false, error: '' });
+    setClasses([]);
+    setClassesState({ loading: false, error: '' });
+    setContentItems([]);
+    setContentState({ loading: false, error: '' });
     setListLoading(false);
     setDetailLoading(false);
     setSession(null);
@@ -359,7 +479,8 @@ function CrmApp() {
   function signIn() {
     const returnTo =
       location.pathname.startsWith('/app/crm') ||
-      location.pathname === communicationsRouteDescriptor.path
+      location.pathname === communicationsRouteDescriptor.path ||
+      Boolean(ownerSurfaceFromPath(location.pathname))
         ? location.pathname
         : '/app/crm';
     window.location.assign(`/login?return_to=${encodeURIComponent(returnTo)}`);
@@ -377,7 +498,39 @@ function CrmApp() {
   );
 
   const navItems: ShellNavItem[] = [
-    { id: 'crm', label: 'CRM', href: '/app/crm', current: !communicationsMode },
+    ...(canReadOwnerShell
+      ? [
+          {
+            id: 'dashboard',
+            label: 'Dashboard',
+            href: '/app/dashboard',
+            current: surface === 'dashboard',
+          },
+        ]
+      : []),
+    { id: 'crm', label: 'CRM', href: '/app/crm', current: surface === 'crm' && !communicationsMode },
+    ...(canReadOwnerShell
+      ? [
+          {
+            id: 'classes',
+            label: 'Classes',
+            href: '/app/classes',
+            current: surface === 'classes',
+          },
+          {
+            id: 'content',
+            label: 'Content/Library',
+            href: '/app/content',
+            current: surface === 'content',
+          },
+          {
+            id: 'billing',
+            label: 'Products/Billing',
+            href: '/app/billing',
+            current: surface === 'billing',
+          },
+        ]
+      : []),
     ...(canReadCommunications
       ? [
           {
@@ -390,7 +543,10 @@ function CrmApp() {
       : []),
   ];
   const shellUser = session ? shellUserFromSession(session.user) : null;
-  const pageTitle = communicationsMode
+  const pageTitle =
+    surface !== 'crm'
+      ? ownerSurfaceTitle(surface)
+      : communicationsMode
     ? 'Communications'
     : creating
       ? 'Add contact'
@@ -399,7 +555,10 @@ function CrmApp() {
         : selected
           ? selected.display_name
           : 'CRM';
-  const pageDescription = communicationsMode
+  const pageDescription =
+    surface !== 'crm'
+      ? ownerSurfaceDescription(surface)
+      : communicationsMode
     ? communicationsMode.kind === 'contact'
       ? 'Read-only local communication intents for this contact.'
       : 'Read-only local communication intents from the One Time outbox.'
@@ -411,7 +570,35 @@ function CrmApp() {
           ? contactSummary(selected)
           : 'One Time signup and contact review.';
   const toolbar =
-    communicationsMode?.kind === 'contact' ? (
+    surface === 'dashboard' ? (
+      <ReadOnlyToolbar
+        label="Refresh dashboard"
+        actionId="dashboard.refresh.button"
+        loading={dashboardState.loading}
+        onRefresh={() => void loadDashboard()}
+      />
+    ) : surface === 'classes' ? (
+      <ReadOnlyToolbar
+        label="Refresh classes"
+        actionId="classes.refresh.button"
+        loading={classesState.loading}
+        onRefresh={() => void loadClasses()}
+      />
+    ) : surface === 'content' ? (
+      <ReadOnlyToolbar
+        label="Refresh content"
+        actionId="content.library.refresh.button"
+        loading={contentState.loading}
+        onRefresh={() => void loadContent()}
+      />
+    ) : surface === 'billing' ? (
+      <ReadOnlyToolbar
+        label="Refresh billing status"
+        actionId="billing.status.refresh.button"
+        loading={dashboardState.loading}
+        onRefresh={() => void loadDashboard()}
+      />
+    ) : communicationsMode?.kind === 'contact' ? (
       <ContactCommunicationsToolbar
         onBack={() => {
           history.pushState(
@@ -458,6 +645,8 @@ function CrmApp() {
       toolbar={toolbar}
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
+        const ownerSurface = ownerSurfaceFromPath(href);
+        if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface);
         if (href === '/app/crm') void backToList();
         if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
       }}
@@ -465,7 +654,45 @@ function CrmApp() {
       sessionExpired={sessionExpired}
       onSignIn={signIn}
     >
-      {communicationsMode && (
+      {surface === 'dashboard' && (
+        <DashboardPanel
+          dashboard={dashboard}
+          loading={dashboardState.loading}
+          error={dashboardState.error}
+          onRetry={() => void loadDashboard()}
+          onOpen={(href) => {
+            const ownerSurface = ownerSurfaceFromPath(href);
+            if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface);
+            if (href === '/app/crm') void backToList();
+            if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
+          }}
+        />
+      )}
+      {surface === 'classes' && (
+        <ClassesPanel
+          classes={classes}
+          loading={classesState.loading}
+          error={classesState.error}
+          onRetry={() => void loadClasses()}
+        />
+      )}
+      {surface === 'content' && (
+        <ContentPanel
+          items={contentItems}
+          loading={contentState.loading}
+          error={contentState.error}
+          onRetry={() => void loadContent()}
+        />
+      )}
+      {surface === 'billing' && (
+        <BillingPanel
+          dashboard={dashboard}
+          loading={dashboardState.loading}
+          error={dashboardState.error}
+          onRetry={() => void loadDashboard()}
+        />
+      )}
+      {surface === 'crm' && communicationsMode && (
         <Suspense
           fallback={
             <p className="state-panel" role="status">
@@ -481,7 +708,7 @@ function CrmApp() {
           />
         </Suspense>
       )}
-      {!communicationsMode && creating && (
+      {surface === 'crm' && !communicationsMode && creating && (
         <ContactForm
           title="Add contact"
           initial={emptyForm}
@@ -491,7 +718,8 @@ function CrmApp() {
           onSave={(form, idempotencyKey) => saveContact(form, 'create', idempotencyKey)}
         />
       )}
-      {!communicationsMode &&
+      {surface === 'crm' &&
+        !communicationsMode &&
         selected &&
         (editing ? (
           <ContactForm
@@ -510,7 +738,7 @@ function CrmApp() {
             onRetry={() => void loadContact(selected.contact_id)}
           />
         ))}
-      {!communicationsMode && !creating && !selected && !editing && (
+      {surface === 'crm' && !communicationsMode && !creating && !selected && !editing && (
         <ContactList
           contacts={contacts}
           loading={listLoading}
@@ -524,7 +752,7 @@ function CrmApp() {
           onCreate={startCreate}
         />
       )}
-      {!communicationsMode && !creating && !selected && !editing && detailError && (
+      {surface === 'crm' && !communicationsMode && !creating && !selected && !editing && detailError && (
         <StatePanel
           kind="error"
           title="Contact not found or unavailable"
@@ -534,6 +762,337 @@ function CrmApp() {
         />
       )}
     </AppShell>
+  );
+}
+
+function ReadOnlyToolbar({
+  label,
+  actionId,
+  loading,
+  onRefresh,
+}: {
+  label: string;
+  actionId: string;
+  loading: boolean;
+  onRefresh: () => void;
+}) {
+  return (
+    <div className="detail-toolbar">
+      <span className="toolbar-summary">Read-only, API-backed status</span>
+      <button
+        type="button"
+        className="button-secondary"
+        data-action-id={actionId}
+        disabled={loading}
+        onClick={onRefresh}
+      >
+        {loading ? 'Refreshing...' : label}
+      </button>
+    </div>
+  );
+}
+
+function DashboardPanel({
+  dashboard,
+  loading,
+  error,
+  onRetry,
+  onOpen,
+}: {
+  dashboard: OwnerDashboardResponse | null;
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+  onOpen: (href: string) => void;
+}) {
+  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading dashboard" />;
+  if (error) {
+    return (
+      <StatePanel
+        kind="error"
+        title="Dashboard could not load"
+        body={error}
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  if (!dashboard) {
+    return (
+      <StatePanel
+        kind="empty"
+        title="Dashboard unavailable"
+        body="The owner dashboard source did not return data."
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  const actionIds = new Set(dashboard.actions.map((action) => action.action_id));
+  return (
+    <section className="dashboard-surface" data-usable="owner-dashboard" aria-busy={loading}>
+      <div className="dashboard-grid">
+        {dashboard.dashboard.sections.map((section) => {
+          const href = section.href;
+          const actionId = dashboardOpenActionId(href);
+          return (
+            <article key={section.id} className={`dashboard-card state-${section.state}`}>
+              <header>
+                <h2>{section.label}</h2>
+                <Chip label={readableState(section.state)} tone="status" />
+              </header>
+              <strong>{section.value_label}</strong>
+              <p>{section.detail}</p>
+              {section.updated_at && <small>Updated {formatDate(section.updated_at)}</small>}
+              {href && actionId && actionIds.has(actionId) && (
+                <button
+                  type="button"
+                  className="button-secondary"
+                  data-action-id={actionId}
+                  onClick={() => onOpen(href)}
+                >
+                  {dashboardOpenLabel(href)}
+                </button>
+              )}
+            </article>
+          );
+        })}
+      </div>
+      <VisibleActionRegistry actions={dashboard.actions} />
+    </section>
+  );
+}
+
+function ClassesPanel({
+  classes,
+  loading,
+  error,
+  onRetry,
+}: {
+  classes: ClassOccurrenceSummary[];
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+}) {
+  if (loading && classes.length === 0) return <ReadOnlySkeleton label="Loading classes" />;
+  if (error) {
+    return (
+      <StatePanel
+        kind="error"
+        title="Classes could not load"
+        body={error}
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  if (classes.length === 0) {
+    return (
+      <StatePanel
+        kind="empty"
+        title="No class occurrences"
+        body="No bounded class occurrence records are available."
+      />
+    );
+  }
+  return (
+    <section className="readonly-list" aria-busy={loading}>
+      {classes.map((classItem) => (
+        <article className="readonly-row" key={classItem.occurrence_key}>
+          <div>
+            <h2>{classItem.title}</h2>
+            <p>{formatDate(classItem.starts_at)}</p>
+          </div>
+          <dl>
+            <div>
+              <dt>Class state</dt>
+              <dd>{readableState(classItem.status)}</dd>
+            </div>
+            <div>
+              <dt>Launch</dt>
+              <dd>{readableState(classItem.access_state)}</dd>
+            </div>
+            <div>
+              <dt>Delivery</dt>
+              <dd>{readableState(classItem.delivery_state)}</dd>
+            </div>
+          </dl>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function ContentPanel({
+  items,
+  loading,
+  error,
+  onRetry,
+}: {
+  items: ContentLibraryItemSummary[];
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+}) {
+  if (loading && items.length === 0) return <ReadOnlySkeleton label="Loading content" />;
+  if (error) {
+    return (
+      <StatePanel
+        kind="error"
+        title="Content library could not load"
+        body={error}
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  if (items.length === 0) {
+    return (
+      <StatePanel
+        kind="empty"
+        title="No content library items"
+        body="No admitted content outcomes are available."
+      />
+    );
+  }
+  return (
+    <section className="readonly-list" aria-busy={loading}>
+      {items.map((item) => (
+        <article className="readonly-row" key={item.item_key}>
+          <div>
+            <h2>{item.title}</h2>
+            <p>{item.item_key}</p>
+          </div>
+          <dl>
+            <div>
+              <dt>Type</dt>
+              <dd>{readableState(item.item_type)}</dd>
+            </div>
+            <div>
+              <dt>Lifecycle</dt>
+              <dd>{readableState(item.lifecycle_state)}</dd>
+            </div>
+            <div>
+              <dt>Updated</dt>
+              <dd>{formatDate(item.updated_at)}</dd>
+            </div>
+          </dl>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+function BillingPanel({
+  dashboard,
+  loading,
+  error,
+  onRetry,
+}: {
+  dashboard: OwnerDashboardResponse | null;
+  loading: boolean;
+  error: string;
+  onRetry: () => void;
+}) {
+  if (loading && !dashboard) return <ReadOnlySkeleton label="Loading billing status" />;
+  if (error) {
+    return (
+      <StatePanel
+        kind="error"
+        title="Billing status could not load"
+        body={error}
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  const billing = dashboard?.dashboard.sections.find((section) => section.id === 'billing_readiness');
+  if (!billing) {
+    return (
+      <StatePanel
+        kind="empty"
+        title="Billing status unavailable"
+        body="Billing readiness did not return a dashboard section."
+        actionLabel="Retry"
+        onAction={onRetry}
+      />
+    );
+  }
+  return (
+    <section className="readonly-list" aria-busy={loading}>
+      <article className={`readonly-row state-${billing.state}`}>
+        <div>
+          <h2>{billing.label}</h2>
+          <p>{billing.detail}</p>
+        </div>
+        <dl>
+          <div>
+            <dt>Status</dt>
+            <dd>{readableState(billing.state)}</dd>
+          </div>
+          <div>
+            <dt>Count</dt>
+            <dd>{billing.value_label}</dd>
+          </div>
+          <div>
+            <dt>Provider mutations</dt>
+            <dd>None</dd>
+          </div>
+        </dl>
+      </article>
+    </section>
+  );
+}
+
+function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['actions'] }) {
+  const visible = actions.filter((action) => action.roles.includes('owner'));
+  return (
+    <section className="action-registry" aria-labelledby="action-registry-title">
+      <h2 id="action-registry-title">Visible action registry</h2>
+      <div className="action-registry-grid">
+        {visible.map((action) => (
+          <article key={action.action_id}>
+            <h3>{action.label}</h3>
+            <p>{action.action_id}</p>
+            <dl>
+              <div>
+                <dt>Capability</dt>
+                <dd>{action.capability}</dd>
+              </div>
+              <div>
+                <dt>Handler</dt>
+                <dd>
+                  {action.handler.method} {action.handler.path}
+                </dd>
+              </div>
+              <div>
+                <dt>Audit</dt>
+                <dd>{action.audit.event}</dd>
+              </div>
+              <div>
+                <dt>Idempotency</dt>
+                <dd>{action.idempotency.required ? action.idempotency.key_source : 'Not required'}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ReadOnlySkeleton({ label }: { label: string }) {
+  return (
+    <div className="skeleton-list" role="status" aria-label={label}>
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div className="skeleton-row" key={index}>
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -1187,6 +1746,55 @@ function labelStatus(value: string) {
 
 function sourceLabel(value: string) {
   return readableState(value || 'unknown');
+}
+
+function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
+  if (pathname === '/app/dashboard') return 'dashboard';
+  if (pathname === '/app/classes') return 'classes';
+  if (pathname === '/app/content') return 'content';
+  if (pathname === '/app/billing') return 'billing';
+  if (pathname === '/app/crm') return 'crm';
+  return null;
+}
+
+function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
+  return `/app/${surface}`;
+}
+
+function ownerSurfaceTitle(surface: OwnerSurface) {
+  if (surface === 'dashboard') return 'Dashboard';
+  if (surface === 'classes') return 'Classes';
+  if (surface === 'content') return 'Content/Library';
+  if (surface === 'billing') return 'Products/Billing status';
+  return 'CRM';
+}
+
+function ownerSurfaceDescription(surface: OwnerSurface) {
+  if (surface === 'dashboard') {
+    return 'Bounded owner/admin status from CRM, classes, communications, content, portals and billing projections.';
+  }
+  if (surface === 'classes') return 'Read-only class occurrence status from the classes API.';
+  if (surface === 'content') return 'Read-only admitted content outcomes from the library API.';
+  if (surface === 'billing') return 'Read-only billing readiness and projection status.';
+  return 'One Time signup and contact review.';
+}
+
+function dashboardOpenActionId(href: string | null) {
+  if (href === '/app/crm') return 'dashboard.open_crm.button';
+  if (href === '/app/classes') return 'dashboard.open_classes.button';
+  if (href === communicationsRouteDescriptor.path) return 'dashboard.open_communications.button';
+  if (href === '/app/content') return 'dashboard.open_content.button';
+  if (href === '/app/billing') return 'dashboard.open_billing.button';
+  return null;
+}
+
+function dashboardOpenLabel(href: string) {
+  if (href === '/app/crm') return 'Open CRM';
+  if (href === '/app/classes') return 'Open Classes';
+  if (href === communicationsRouteDescriptor.path) return 'Open Communications';
+  if (href === '/app/content') return 'Open Content';
+  if (href === '/app/billing') return 'Open Billing';
+  return 'Open';
 }
 
 function readableState(value: string) {

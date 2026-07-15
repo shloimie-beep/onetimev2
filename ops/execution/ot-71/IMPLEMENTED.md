@@ -51,3 +51,15 @@
 - Extended portal contracts for mounted actor roles, parent learner materials, and student access setup/reset request details.
 - Updated the parent portal feature to render learner materials, review sheets, and progress from the mounted materials API.
 - Added integration coverage for protected shell redirects, parent default dashboards, cross-household denial, student access setup, raw-token non-persistence, wrong-role denial, student sibling isolation, protected class launch CSRF, and session expiry after parent suspend.
+
+## Phase 5: Owner/Admin Dashboard And Ready-Only Shell
+
+- Added dashboard contracts for owner/admin dashboard sections, section states, and a visible-action registry covering routes, buttons, and forms.
+- Added a dashboard domain service that reads bounded CRM, class, outbox communications, content, portal/account, and billing projection sources.
+- Dashboard sections return real counts when sources exist and `Needs setup` or `Unavailable` when a source is missing or not configured; no fake reports, fake health, or fabricated provider readiness is exposed.
+- Added visible actions for dashboard navigation, refresh buttons, CRM search/create/update/open, classes, content library, communications filters, billing status, and logout with role, capability, handler, idempotency, audit, and UI state metadata.
+- Mounted `/api/v1/dashboard/owner` and protected owner/admin app shells for `/app/dashboard`, `/app/classes`, `/app/content`, and `/app/billing`.
+- Extended the existing CRM app bundle with canonical owner/admin navigation, dashboard status cards, read-only Classes/Content/Billing views, and the visible-action registry.
+- Kept Studio, agent fleets, BNA internals, provider configuration/secrets, Coming Soon controls, fake reports, and task/report routes out of the usable shell.
+- Updated generated app pages for dashboard, classes, content, and billing while keeping the same authenticated app bundle.
+- Added integration coverage for owner/admin shell mounting, wrong-role denial, dashboard source truthfulness, registry uniqueness/completeness, and no provider URL/secret leakage.

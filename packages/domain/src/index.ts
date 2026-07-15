@@ -66,6 +66,7 @@ export {
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
 export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
+export { buildOwnerDashboard, ownerAdminVisibleActions } from './dashboard/service.ts';
 export {
   PortalServiceError,
   createParentPortalService,

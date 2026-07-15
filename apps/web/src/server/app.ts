@@ -16,6 +16,7 @@ import {
   contentOutcomeAdmissionResponseSchema,
   contentOutcomePayloadSchema,
   createContactSchema,
+  ownerDashboardResponseSchema,
   leadPayloadSchema,
   loginPayloadSchema,
   mfaChallengePayloadSchema,
@@ -54,10 +55,12 @@ import {
   getContentItemDetail,
   getContactDetail,
   getSessionByToken,
+  buildOwnerDashboard,
   listClassOccurrences,
   listContentLibrary,
   listAssignableUsers,
   listContacts,
+  ownerAdminVisibleActions,
   replaceMfaRecoveryCodes,
   revokeMfaFactors,
   revokeSession,
@@ -172,6 +175,30 @@ export function createApp({
         302,
         `/login?return_to=${encodeURIComponent(safeReturnPath(req.path, config) ?? '/app/crm')}`,
       );
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.sendFile(path.join(distDir, 'app', 'crm.html'));
+  });
+
+  app.get(/^\/app\/(?:dashboard|classes|content|billing)(?:\/.*)?$/, async (
+    req: RequestWithTrace,
+    res,
+  ) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(
+        302,
+        `/login?return_to=${encodeURIComponent(
+          safeReturnPath(req.path, config) ?? '/app/dashboard',
+        )}`,
+      );
+      return;
+    }
+    if (!canUseOwnerDashboard(session.user.role)) {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
       return;
     }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
@@ -554,6 +581,32 @@ export function createApp({
       csrf_token: csrfToken,
       expires_at: session.expires_at,
     });
+  });
+
+  app.get('/api/v1/dashboard/owner', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canUseOwnerDashboard(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view the dashboard.', req.traceId));
+      return;
+    }
+    try {
+      const dashboard = await withTiming(req, 'dashboard', () =>
+        buildOwnerDashboard({ pool, config, session }),
+      );
+      res.json(
+        ownerDashboardResponseSchema.parse({
+          success: true,
+          dashboard,
+          actions: ownerAdminVisibleActions(),
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
   });
 
   const portalRepository = createPortalRepository(pool);
@@ -1182,6 +1235,10 @@ function canReadContentLibrary(role: string) {
   return role === 'owner' || role === 'admin';
 }
 
+function canUseOwnerDashboard(role: string) {
+  return role === 'owner' || role === 'admin';
+}
+
 function hashCookieValue(value: string) {
   return createHash('sha256').update(value).digest('hex');
 }
@@ -1284,6 +1341,31 @@ function forbiddenAppHtml(appPage: 'parent' | 'student') {
       <h1 id="portal-forbidden-title">${escapeHtml(label)} access unavailable</h1>
       <p>This signed-in account cannot open that protected portal.</p>
       <a class="button-primary" href="/login?return_to=${encodeURIComponent(`/app/${appPage}`)}">Sign in</a>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+function forbiddenOwnerAdminHtml(requestPath: string) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Access unavailable | One Time Mishnayos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#050505">
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace">
+    <section class="state-panel error" aria-labelledby="dashboard-forbidden-title">
+      <h1 id="dashboard-forbidden-title">Owner dashboard access unavailable</h1>
+      <p>This signed-in account cannot open the owner/admin shell.</p>
+      <a class="button-primary" href="/login?return_to=${encodeURIComponent(
+        requestPath,
+      )}">Sign in</a>
     </section>
   </main>
 </body>

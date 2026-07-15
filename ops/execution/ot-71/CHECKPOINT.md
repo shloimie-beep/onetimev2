@@ -7,7 +7,7 @@
 - Branch: `codex/ot71-product-core-train`
 - Immutable base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
 - Source PR ref: `origin/pr/17`
-- Phase: Phase 4 complete
+- Phase: Phase 5 complete
 - Status: building
 
 ## Completed
@@ -44,12 +44,18 @@
 - Wired portals to class access, content access, local progress summaries, default-off support/helper seams, disabled billing summaries, and Phase 3 student credential lifecycle operations.
 - Added a Vite portal entry and generated `/app/parent` and `/app/student` pages.
 - Verified Phase 4 with focused mounted portal integration tests, legacy OT-52 portal tests, typecheck, lint, build, secret scan, whitespace checks, and full unit/integration suites.
+- Added owner/admin dashboard contracts, a dashboard domain service, `/api/v1/dashboard/owner`, protected `/app/dashboard`, `/app/classes`, `/app/content`, and `/app/billing` shells, and generated app pages.
+- Surfaced only integrated working owner/admin areas: Dashboard, CRM, Classes, Communications, Content/Library, and Products/Billing status; tasks/reports/studio/agent fleets/BNA internals/provider secrets are not exposed.
+- Added truthful dashboard states for new leads, next class, communications/delivery, content review, portal/account setup, billing readiness, and support unavailable state.
+- Added a visible-action registry mapping visible routes/buttons/forms to roles, capabilities, handlers, idempotency/audit semantics, and loading/success/error/permission/offline states.
+- Extended the existing CRM app shell with canonical owner/admin navigation, dashboard cards, read-only Classes/Content/Billing views, registry rendering, and mobile current-route labeling.
+- Verified Phase 5 with focused dashboard integration tests, typecheck, lint, build, full unit/integration suite, accessibility/reflow suite, secret scan, and whitespace checks.
 
 ## Next
 
-1. Start Phase 5 Rabbi owner/admin dashboard and ready-only shell.
-2. Surface only integrated, working owner/admin product areas using bounded APIs.
-3. Keep live provider activation and all OT-72-owned transports disabled.
+1. Start Phase 6 combined proof and publication.
+2. Produce synthetic end-to-end proof across signup, dashboard, CRM, classes, content, account lifecycle, portals, visible actions, and provider/BNA isolation.
+3. Open a draft PR to `codex/ot60r-recovery-convergence` only after proof is recorded; do not merge or deploy.
 
 ## Prohibitions
 

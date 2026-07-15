@@ -42,3 +42,12 @@
 - Use Phase 1 class and Phase 2 content adapters directly; portal launch/open actions remain protected descriptors with no raw provider URLs.
 - Map portal student access operations to Phase 3 lifecycle functions and return only digest-safe operation references.
 - Keep billing disabled by default and keep support/helper behavior local or unavailable until later owner-enabled transports exist.
+
+## 2026-07-15 Phase 5
+
+- Reuse the existing authenticated CRM app bundle for owner/admin dashboard shell routes instead of creating a separate admin frontend runtime.
+- Build dashboard status from bounded local APIs/tables and return `Needs setup` or `Unavailable` for missing/non-enabled sources instead of exposing fake reports or fabricated healthy states.
+- Include Classes, Content/Library, Communications, CRM, and Products/Billing status because those have real local bounded sources; exclude Studio, agent fleets, BNA internals, Coming Soon controls, tasks, and reports because no working source exists here.
+- Treat Products/Billing as read-only readiness/projection status; no checkout, portal activation, payment transport, charges, or provider mutation controls are exposed.
+- Make the visible-action registry a server-owned contract so routes/buttons/forms can be checked against role, capability, handler, idempotency, audit, and UI state metadata.
+- Keep portal/account setup as dashboard status only until a real owner/admin portal-account management route exists.
