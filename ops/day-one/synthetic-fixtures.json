@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "fixture_policy": {
+    "default_safe": true,
+    "production_data": false,
+    "external_mutation": false,
+    "notes": "Synthetic fixtures for future Day-One certification. Values use .test domains and fake names only."
+  },
+  "family_signup": {
+    "contact_name": "OT76 Family Parent",
+    "family_or_school": "OT76 Family",
+    "audience_type": "family",
+    "location": "Jerusalem",
+    "timezone": "Asia/Jerusalem",
+    "email": "ot76-family@example.test",
+    "phone": "",
+    "reminder_preference": "email",
+    "reminder_consent": true,
+    "idempotency_key": "ot76-family-signup"
+  },
+  "school_signup": {
+    "contact_name": "OT76 School Contact",
+    "family_or_school": "OT76 School",
+    "audience_type": "school",
+    "location": "London",
+    "timezone": "Europe/London",
+    "email": "ot76-school@example.test",
+    "phone": "",
+    "reminder_preference": "email",
+    "reminder_consent": true,
+    "idempotency_key": "ot76-school-signup"
+  },
+  "users": {
+    "owner": {
+      "email": "ot76-owner@example.test",
+      "role": "owner"
+    },
+    "admin": {
+      "email": "ot76-admin@example.test",
+      "role": "admin"
+    },
+    "viewer": {
+      "email": "ot76-viewer@example.test",
+      "role": "viewer"
+    },
+    "parent": {
+      "email": "ot76-parent@example.test",
+      "role": "parent"
+    },
+    "student": {
+      "display_name": "OT76 Student",
+      "learner_count_expected": 1
+    }
+  }
+}

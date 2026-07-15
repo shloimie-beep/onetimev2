@@ -13,6 +13,18 @@
       "status": "building",
       "deployment_allowed": false,
       "production_provider_mutations_allowed": false
+    },
+    {
+      "task_id": "OT-76",
+      "title": "Day-One certification harness",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot76-day-one-certification-harness",
+      "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "state_path": "ops/execution/ot-76/STATE.json",
+      "resume_path": "ops/execution/ot-76/RESUME.md",
+      "status": "building",
+      "deployment_allowed": false,
+      "production_provider_mutations_allowed": false
     }
   ]
 }
