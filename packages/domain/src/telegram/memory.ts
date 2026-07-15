@@ -1,4 +1,5 @@
 import type {
+  BotActionRequest,
   BotAuditEvent,
   BotAuditSink,
   BotCapability,
@@ -163,6 +164,11 @@ export class MemoryConfirmationRepository implements ConfirmationRepository {
     this.records.set(confirmationKey, { ...record, cancelledAt: now.toISOString() });
     return 'cancelled';
   }
+
+  async recordResult(confirmationKey: string, result: BotCommandResult, _now: Date) {
+    const record = this.records.get(confirmationKey);
+    if (record) this.records.set(confirmationKey, { ...record, result });
+  }
 }
 
 export class MemoryConsumerLeaseRepository implements ConsumerLeaseRepository {
@@ -246,6 +252,7 @@ export class MockBotTransportAdapter implements BotTransportAdapter {
 export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicationAdapter {
   readonly adapterId = 'fixture-onetime-bot-adapter';
   readonly writes = new Map<string, BotCommandResult>();
+  readonly events = new Map<string, unknown>();
   private readonly actor: CanonicalOneTimeActor;
   private readonly capabilities: BotCapability[];
 
@@ -262,69 +269,57 @@ export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicatio
     return this.actor;
   }
 
-  async getProductStatus() {
-    return 'One Time status: ready for internal review; public activation remains gated.';
+  async readAction(_actor: CanonicalOneTimeActor, request: BotActionRequest) {
+    switch (request.capability) {
+      case 'crm.lead.list':
+        return 'Leads: 2 scoped leads. Raw phone and email are not shown in Telegram.';
+      case 'crm.lead.read':
+      case 'crm.contact.read_redacted':
+        return `Redacted contact ${String(request.args.ref ?? 'ref')}: name fragment only, status new.`;
+      case 'crm.lead_tag.list':
+        return `Tags for lead ${String(request.args.ref ?? 'ref')}: interested, morning-class.`;
+      case 'class.schedule.read':
+        return 'Upcoming classes: 2 scheduled. Protected class links are not shown in Telegram.';
+      case 'class.status.read':
+        return `Class ${String(request.args.ref ?? 'ref')}: scheduled and provider access remains protected.`;
+      case 'content.pipeline.read':
+        return 'Content pipeline: 3 drafts, 1 needs Rabbi review. No prompts or transcripts exposed.';
+      case 'content.item.read':
+        return `Content item ${String(request.args.ref ?? 'ref')}: sanitized processing state ready_for_review.`;
+      case 'task.list':
+        return `Tasks: showing scoped ${String(request.args.filter ?? 'open')} tasks only.`;
+      case 'task.read':
+        return `Task ${String(request.args.ref ?? 'ref')}: open at revision 1.`;
+      case 'support.ticket.list':
+        return 'Support tickets: 1 open subscriber ticket, redacted subject only.';
+      case 'support.ticket.read_redacted':
+        return `Ticket ${String(request.args.ref ?? 'ref')}: redacted summary, no full body/contact.`;
+      case 'telegram.audit.read_recent':
+        return `Recent gateway audit: ${Number(request.args.count ?? 10)} sanitized entries available.`;
+      default:
+        return 'That One Time read action is not enabled here.';
+    }
   }
 
-  async listUpcomingClasses() {
-    return 'Upcoming classes: 2 scheduled. Protected class links are not shown in Telegram.';
+  async previewAction(_actor: CanonicalOneTimeActor, request: BotActionRequest) {
+    return `Preview ${request.capability}: ${previewSummary(request)}. No write has been made.`;
   }
 
-  async getContentPipelineStatus() {
-    return 'Content pipeline: 3 drafts, 1 needs Rabbi review. No prompts or transcripts exposed.';
-  }
-
-  async searchContacts(_actor: CanonicalOneTimeActor, query: string) {
-    return `Contact lookup: 1 redacted match for "${query.slice(0, 3)}..." with safe disambiguation only.`;
-  }
-
-  async lookupTasks(_actor: CanonicalOneTimeActor, query = 'open') {
-    return `Tasks: showing scoped ${query} tasks only.`;
-  }
-
-  async previewTaskCreate(_actor: CanonicalOneTimeActor, title: string) {
-    return `Preview task create: "${title}". No write has been made.`;
-  }
-
-  async createTask(
+  async executeAction(
     _actor: CanonicalOneTimeActor,
-    input: { title: string; idempotencyKey: string },
+    input: { request: BotActionRequest; idempotencyKey: string },
   ) {
     const existing = this.writes.get(input.idempotencyKey);
-    if (existing) return existing;
+    if (existing) return { ...existing, status: 'already_completed' as const };
+    const eventIds = eventIdsFor(input.request, input.idempotencyKey);
     const result: BotCommandResult = {
       status: 'completed',
-      publicMessage: `Task created: ${input.title}`,
+      publicMessage: `Completed ${input.request.capability}: ${previewSummary(input.request)}`,
       idempotencyKey: input.idempotencyKey,
+      eventIds,
     };
     this.writes.set(input.idempotencyKey, result);
-    return result;
-  }
-
-  async previewTaskUpdate(
-    _actor: CanonicalOneTimeActor,
-    input: { taskKey: string; nextStatus: 'open' | 'done' | 'blocked'; entityVersion: number },
-  ) {
-    return `Preview task update: ${input.taskKey} to ${input.nextStatus} at version ${input.entityVersion}. No write has been made.`;
-  }
-
-  async updateTask(
-    _actor: CanonicalOneTimeActor,
-    input: {
-      taskKey: string;
-      nextStatus: 'open' | 'done' | 'blocked';
-      entityVersion: number;
-      idempotencyKey: string;
-    },
-  ) {
-    const existing = this.writes.get(input.idempotencyKey);
-    if (existing) return existing;
-    const result: BotCommandResult = {
-      status: 'completed',
-      publicMessage: `Task updated: ${input.taskKey} is ${input.nextStatus}`,
-      idempotencyKey: input.idempotencyKey,
-    };
-    this.writes.set(input.idempotencyKey, result);
+    for (const id of eventIds) this.events.set(id, { id, capability: input.request.capability });
     return result;
   }
 }
@@ -354,4 +349,34 @@ type MemoryLease = {
 
 function key(...parts: Array<string | number>) {
   return parts.join('\u001f');
+}
+
+function previewSummary(request: BotActionRequest) {
+  if (request.capability === 'task.create') return String(request.args.title ?? 'new task');
+  if (request.capability === 'task.update') {
+    return `${String(request.args.task_ref ?? 'task')} -> ${String(request.args.status ?? 'updated')}`;
+  }
+  if (request.capability === 'support.ticket.assign_self') {
+    return `${String(request.args.ticket_ref ?? 'ticket')} assigned to self`;
+  }
+  if (request.capability === 'crm.lead_tag.add' || request.capability === 'crm.lead_tag.remove') {
+    return `${String(request.args.lead_ref ?? 'lead')} tag ${String(request.args.tag ?? 'tag')}`;
+  }
+  return JSON.stringify(request.args);
+}
+
+function eventIdsFor(request: BotActionRequest, idempotencyKey: string) {
+  if (request.capability === 'task.create') {
+    return [`evt_task_created_${stableDigest([idempotencyKey]).slice(0, 16)}`];
+  }
+  if (request.capability === 'task.update') {
+    return [`evt_task_updated_${stableDigest([idempotencyKey]).slice(0, 16)}`];
+  }
+  if (request.capability === 'crm.lead.create') {
+    return [`evt_lead_created_${stableDigest([idempotencyKey]).slice(0, 16)}`];
+  }
+  if (request.capability === 'class.question.select') {
+    return [`evt_question_selected_${stableDigest([idempotencyKey]).slice(0, 16)}`];
+  }
+  return [];
 }

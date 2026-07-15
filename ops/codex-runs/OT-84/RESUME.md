@@ -3,55 +3,60 @@
 ## Current Checkout
 
 - Repository: `webcraft-media/onetimev2`
-- Worktree:
-  `C:\Users\User\OneTimeOneTime-ot84-telegram-action-gateway`
+- Worktree: `C:\Users\User\OneTimeOneTime-ot84-telegram-action-gateway`
 - Branch: `codex/ot84-telegram-action-gateway`
 - Base ref: `origin/codex/ot83-household-portals-foundation`
 - Resolved base SHA: `a02d1d254ae0d17804fb657079a7871567260ea2`
-- Current head at initialization:
-  `a02d1d254ae0d17804fb657079a7871567260ea2`
+- Checkpoint: `WAITING_FOR_TELEGRAM_SECRET`
 
 ## Completed
 
-- Verified `origin` points to `https://github.com/webcraft-media/onetimev2.git`.
-- Created a clean isolated One Time worktree from the resolved OT83 base.
-- Copied the complete OT-84 Codex prompt into `PROMPT.md`; SHA-256 matches the
-  packet manifest.
-- Created initial `STATE.json`, `RESUME.md`, `FINAL.md`, and `DECISIONS.md`
-  before implementation code.
-- No BNA product code, Telegram provider mutation, real send, production data
-  write, or secret read has occurred.
+- Located `C:\Users\User\Downloads\OT84-telegram-gateway-codex-packet.zip` and
+  did not use a PRO factory file.
+- Verified the ZIP SHA-256 and every internal `SHA256SUMS` entry.
+- Restored `PROMPT.md` from the verified packet; SHA-256 is
+  `69C24AF50256230C783EB48AFE2417EC62B41708437C5EC439446572523C754B`.
+- Implemented the OT-84 action catalog, deterministic command gateway,
+  constrained natural-language compiler, opaque confirmation callbacks,
+  chat-bound identity mapping, SQL-backed adapter boundaries, durable response
+  outbox, stable event schemas/fixtures, webhook ingress, AES-GCM payload codec,
+  logging redaction, tests, synthetic canary evidence, and deployment contract.
+- No raw Telegram update, token, webhook secret, numeric Telegram ID, private
+  chat ID, full contact value, or local credential path was stored.
+- Provider mutation count is zero.
+
+## Verification Already Run
+
+- `npm run typecheck`
+- `npm run lint`
+- `npm run secret:scan`
+- `npx vitest run --config vitest.unit.config.ts tests/unit/telegram/telegram-foundation.test.ts tests/unit/telegram/ot84-action-gateway.test.ts`
+- `npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts`
+- `npm run build`
+
+`npm run db:verify` is blocked until `DATABASE_URL` is supplied. The focused
+pg-mem integration test applied the migration set through
+`2000_ot84_telegram_action_gateway` and verified durable repository behavior.
+
+## Remaining Protected Step
+
+Real Telegram canary is not safe to run from this environment. It requires all
+of the following without committing values:
+
+- protected Telegram bot token;
+- protected webhook secret;
+- exact runtime identity mapping for the intended One Time principal;
+- one allowlisted private canary chat;
+- isolated staging/canary deployment boundary using the single One Time bot
+  ownership model;
+- explicit operator approval for the narrow canary.
+
+When those prerequisites exist, run only the narrow read-only identity/scope
+round trip plus at most one reversible confirmed mutation against a dedicated
+canary record, then record redacted evidence and cleanup.
 
 ## Next Safe Action
 
-Commit the initial run artifacts, then inspect the repository architecture:
-migrations, database helpers, authorization context, CRM/tasks/classes/content
-services, outbox/worker conventions, logging/redaction, tests, and CI scripts.
-
-Then update `DECISIONS.md` and `STATE.json` before implementing the smallest
-repository-native OT-84 gateway.
-
-## Required Guardrails
-
-- Do not modify any BNA/Academy checkout for product behavior.
-- Do not print or store Telegram bot tokens, webhook secrets, numeric Telegram
-  IDs/chat IDs, raw Telegram updates, full contact values, or local credential
-  paths.
-- Do not create a second staging bot.
-- Do not use long polling in production webhook mode.
-- Do not implement BNA bot, OT88 question-provider, or OT89 subscriber-alert
-  consumer logic in this branch.
-- Missing protected Telegram secrets should checkpoint as
-  `WAITING_FOR_TELEGRAM_SECRET` only after non-secret-dependent implementation,
-  tests, synthetic canary, branch push, and draft PR are complete.
-
-## Commands To Recheck
-
-```bash
-git remote get-url origin
-git branch --show-current
-git status --short --branch
-git rev-parse refs/remotes/origin/codex/ot83-household-portals-foundation
-git merge-base --is-ancestor a02d1d254ae0d17804fb657079a7871567260ea2 HEAD
-```
-
+If resuming before publication, stage only the explicit OT-84 files listed in
+`FINAL.md`, commit, push `codex/ot84-telegram-action-gateway`, and create or
+update the draft PR targeting `codex/ot83-household-portals-foundation`.
