@@ -158,7 +158,7 @@ Verification before checkpoint:
 ## Final Local Convergence
 
 Candidate source/evidence anchor:
-`499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+`b753d50ca562c01cfa8619762254e70c90b0105f`.
 
 Full local suite:
 
@@ -187,10 +187,10 @@ Performance and bundle check:
 
 Day-One certification readout:
 
-- `node scripts/day-one-certification-harness.mjs audit --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+- `node scripts/day-one-certification-harness.mjs audit --scope-base b753d50ca562c01cfa8619762254e70c90b0105f --out-dir ops/evidence/ot-76/ot80-final-candidate` -
   PASS, result `audit_complete_not_certified`, Day-One certified `false`, 13
   gates, 3 pass, 10 blockers, zero external mutations.
-- `node scripts/day-one-certification-harness.mjs certify --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+- `node scripts/day-one-certification-harness.mjs certify --scope-base b753d50ca562c01cfa8619762254e70c90b0105f --out-dir ops/evidence/ot-76/ot80-final-candidate` -
   EXPECTED FAIL, result `failed`, Day-One certified `false`, 13 gates, 3 pass,
   10 blockers, zero external mutations.
 
@@ -205,4 +205,12 @@ candidate remains `NOT_READY`; isolated staging was not attempted.
 - PR base: `codex/ot60r-recovery-convergence`.
 - PR head at open:
   `f4352a76f6f480577657b741f363f42605c4857b`.
-- CI readback remains pending after the PR metadata handoff update.
+- Final PR head with green CI:
+  `b753d50ca562c01cfa8619762254e70c90b0105f`.
+- CI readback on final PR head - PASS:
+  - `Node 24 verify`:
+    `https://github.com/webcraft-media/onetimev2/actions/runs/29407908727/job/87327769207`
+  - `PostgreSQL 16 assurance harness`:
+    `https://github.com/webcraft-media/onetimev2/actions/runs/29407908728/job/87327768998`
+  - `Static release readiness gates`:
+    `https://github.com/webcraft-media/onetimev2/actions/runs/29407908761/job/87327769842`

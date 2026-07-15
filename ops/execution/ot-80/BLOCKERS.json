@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.ot80.blockers.v1",
-  "updated_at": "2026-07-15T13:10:00+03:00",
+  "updated_at": "2026-07-15T13:29:00+03:00",
   "global_blocked": true,
   "blockers": [
     {
@@ -14,10 +14,10 @@
     {
       "id": "BLOCK-OT80-CI-PR",
       "scope": "publication_handoff",
-      "status": "pending_ci_readback",
+      "status": "resolved",
       "owner": "codex",
       "evidence": "https://github.com/webcraft-media/onetimev2/pull/23",
-      "summary": "Draft PR is open; CI evidence remains pending until GitHub reports check results."
+      "summary": "Draft PR is open and CI readback passed on head b753d50ca562c01cfa8619762254e70c90b0105f."
     },
     {
       "id": "BLOCK-OT80-ISOLATED-STAGING",

@@ -213,7 +213,7 @@ The OT76 checkpoint was committed and pushed before final local convergence.
 ## Final Local Convergence
 
 - Candidate source/evidence anchor:
-  `499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+  `b753d50ca562c01cfa8619762254e70c90b0105f`.
 - Refreshed OT39 browser performance evidence and screenshots from the final
   local run.
 - Updated `scripts/check-bundles.ts` to read `manifest-app.json` and sum the
@@ -237,14 +237,17 @@ Final local verification:
   browser tests passed and bundle check reported public JS `6316` bytes, public
   CSS `12801` bytes, CRM JS `233126` bytes across `assets/app-crm.js` and
   `assets/app-crm2.js`.
-- `node scripts/day-one-certification-harness.mjs audit --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+- `node scripts/day-one-certification-harness.mjs audit --scope-base b753d50ca562c01cfa8619762254e70c90b0105f --out-dir ops/evidence/ot-76/ot80-final-candidate` -
   PASS, result `audit_complete_not_certified`, 13 gates, 3 pass, 10 blockers.
-- `node scripts/day-one-certification-harness.mjs certify --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+- `node scripts/day-one-certification-harness.mjs certify --scope-base b753d50ca562c01cfa8619762254e70c90b0105f --out-dir ops/evidence/ot-76/ot80-final-candidate` -
   EXPECTED FAIL, result `failed`, Day-One certified `false`, 13 gates, 3 pass,
   10 blockers.
+- Draft PR CI on head `b753d50ca562c01cfa8619762254e70c90b0105f` - PASS:
+  `Node 24 verify`, `PostgreSQL 16 assurance harness`, and
+  `Static release readiness gates`.
 
 Final status: local convergence evidence is complete, but the candidate remains
 `NOT_READY`. Draft PR #23 is open at
-`https://github.com/webcraft-media/onetimev2/pull/23`; CI readback remains
-pending. Isolated staging remains blocked until Day-One certification and
-activation gates are satisfied.
+`https://github.com/webcraft-media/onetimev2/pull/23`; CI passed. Isolated
+staging remains blocked until Day-One certification and activation gates are
+satisfied.

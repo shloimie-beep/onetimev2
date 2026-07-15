@@ -19,7 +19,7 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 - Accepted base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
 - Latest integrated source merge: `a95b4e3c2b7210f66f142322d2adcb900eb6890a`
 - Final candidate source/evidence anchor:
-  `499303de2ff8c262b15eabfb4bba9b7d4d3e740a`
+  `b753d50ca562c01cfa8619762254e70c90b0105f`
 - Integrated so far: OT-71 product core, OT-74 audience reconciliation, OT-72
   provider sandbox/default-off infrastructure, OT-73 landing intent
   reconciliation, OT-75 release/observability readiness, and OT-76 Day-One
@@ -37,9 +37,9 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 ## Next Commands
 
 Draft PR #23 is open at
-`https://github.com/webcraft-media/onetimev2/pull/23`. Wait for CI and fix only
-owned/integrated failures. Candidate remains `NOT_READY`; do not attempt
-isolated staging until gates allow it.
+`https://github.com/webcraft-media/onetimev2/pull/23`. CI passed on final PR
+head `b753d50ca562c01cfa8619762254e70c90b0105f`. Candidate remains
+`NOT_READY`; do not attempt isolated staging until gates allow it.
 
 Useful final readback commands:
 
@@ -54,7 +54,7 @@ Do not rerun the OT76 harness with the old OT76 scope base after OT80 final
 evidence/checkpoint files are added unless intentionally checking OT76-only
 scope behavior. The final OT80 Day-One readout is stored under
 `ops/evidence/ot-76/ot80-final-candidate/` and is tied to candidate SHA
-`499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+`b753d50ca562c01cfa8619762254e70c90b0105f`.
 
 ## Final Local Status
 

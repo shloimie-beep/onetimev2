@@ -1,15 +1,15 @@
 {
   "harness": "ot-76-day-one-certification-harness",
-  "generated_at": "2026-07-15T10:05:17.592Z",
+  "generated_at": "2026-07-15T10:29:22.804Z",
   "mode": "certify",
   "policy": "certify_strict",
   "repository": "webcraft-media/onetimev2",
   "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
-  "scope_base_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
+  "scope_base_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
   "manifest_path": "ops/day-one/release-manifest.example.json",
   "registry_path": "ops/day-one/day-one-capability-registry.json",
   "current_branch": "codex/ot80-one-shot-final-convergence",
-  "current_head_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
+  "current_head_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
   "external_mutation_counts": {
     "deployments": 0,
     "provider_calls": 0,
@@ -19,7 +19,8 @@
     "dns_or_railway_mutations": 0
   },
   "changed_files": [
-    "ops/evidence/ot-76/ot80-final-candidate/"
+    "ops/evidence/ot-76/ot80-final-candidate/day-one-audit-report.json",
+    "ops/evidence/ot-76/ot80-final-candidate/day-one-audit-report.md"
   ],
   "forbidden_changes": [],
   "manifest_failures": [],

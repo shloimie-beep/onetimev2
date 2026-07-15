@@ -121,7 +121,7 @@ without depending on one exact chunk filename.
 
 Final local build, lint, unit, integration, e2e, accessibility, and performance
 checks pass for candidate source/evidence anchor
-`499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+`b753d50ca562c01cfa8619762254e70c90b0105f`.
 
 Strict Day-One certify mode still fails with 10 blockers. The candidate remains
 `NOT_READY`, and isolated staging, deployment, external sends, provider calls,

@@ -5,12 +5,12 @@ Policy: `certify_strict`
 Result: `failed`
 Day-One certified: `false`
 Current branch: `codex/ot80-one-shot-final-convergence`
-Current HEAD: `499303de2ff8c262b15eabfb4bba9b7d4d3e740a`
+Current HEAD: `b753d50ca562c01cfa8619762254e70c90b0105f`
 
 ## Scope Proof
 
 - Immutable base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
-- Scope base: `499303de2ff8c262b15eabfb4bba9b7d4d3e740a`
+- Scope base: `b753d50ca562c01cfa8619762254e70c90b0105f`
 - Forbidden changed files: none
 - External mutation counts: deployments 0, provider calls 0, live sends 0, production DB writes 0, payments/access 0, DNS/Railway 0.
 

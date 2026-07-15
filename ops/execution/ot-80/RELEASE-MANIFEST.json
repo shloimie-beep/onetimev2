@@ -1,8 +1,8 @@
 {
   "schema_version": "onetime.ot80.release_manifest.v1",
-  "updated_at": "2026-07-15T13:10:00+03:00",
+  "updated_at": "2026-07-15T13:29:00+03:00",
   "candidate_status": "NOT_READY",
-  "source_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
+  "source_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
   "draft_pr": {
     "url": "https://github.com/webcraft-media/onetimev2/pull/23",
     "number": 23,
@@ -10,9 +10,27 @@
     "draft": true,
     "base": "codex/ot60r-recovery-convergence",
     "head": "codex/ot80-one-shot-final-convergence",
-    "opened_head_sha": "f4352a76f6f480577657b741f363f42605c4857b"
+    "opened_head_sha": "f4352a76f6f480577657b741f363f42605c4857b",
+    "current_head_sha": "b753d50ca562c01cfa8619762254e70c90b0105f"
   },
-  "ci_status": "pending_readback",
+  "ci_status": "passed",
+  "ci_checks": [
+    {
+      "name": "Node 24 verify",
+      "status": "passed",
+      "url": "https://github.com/webcraft-media/onetimev2/actions/runs/29407908727/job/87327769207"
+    },
+    {
+      "name": "PostgreSQL 16 assurance harness",
+      "status": "passed",
+      "url": "https://github.com/webcraft-media/onetimev2/actions/runs/29407908728/job/87327768998"
+    },
+    {
+      "name": "Static release readiness gates",
+      "status": "passed",
+      "url": "https://github.com/webcraft-media/onetimev2/actions/runs/29407908761/job/87327769842"
+    }
+  ],
   "certification_status": "local_suite_passed_day_one_audit_complete_not_certified_strict_certify_failed_10_blockers",
   "local_suite": {
     "build": "pass",
