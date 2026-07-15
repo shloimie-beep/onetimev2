@@ -21,7 +21,9 @@
   ],
   "base_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
   "branch": "codex/ot82-brand-system-foundation",
-  "branch_head_sha": "pending_final_closeout_commit",
-  "last_updated_at": "2026-07-15T13:20:00Z",
-  "next_action": "Commit and push OT82 implementation/evidence, open the stacked draft PR, and keep full certification blocked until inherited format debt is resolved."
+  "implementation_commit_sha": "0b7a2bb",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/26",
+  "branch_head_sha": "closeout_commit_after_pr_url_record",
+  "last_updated_at": "2026-07-15T13:35:00Z",
+  "next_action": "Review the draft PR and keep full certification blocked until inherited format debt is resolved."
 }

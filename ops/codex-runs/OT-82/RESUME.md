@@ -16,6 +16,8 @@ Resolved dependency SHA: `ff23c9af0c3e3de18cd991097eb6e66032b11546`
 
 Product branch: `codex/ot82-brand-system-foundation`
 
+Draft PR: `https://github.com/webcraft-media/onetimev2/pull/26`
+
 ## Completed Action
 
 - Verified packet digests before repository work.

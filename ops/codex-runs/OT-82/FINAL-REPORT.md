@@ -99,7 +99,9 @@ No deployment, DNS/Railway, provider, production database, real send, real payme
 
 ## Draft PR
 
-Pending post-commit/push.
+Draft PR opened:
+
+- `https://github.com/webcraft-media/onetimev2/pull/26`
 
 ## Remaining Blocker
 
