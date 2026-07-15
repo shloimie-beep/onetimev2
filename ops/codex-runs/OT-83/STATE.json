@@ -8,7 +8,7 @@
   "resolved_ot81_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
   "ot81_ancestor_of_ot82": true,
   "implementation_branch": "codex/ot83-household-portals-foundation",
-  "implementation_head": "pending commit",
+  "implementation_head": "3c5c39327bcc6e4e96cba9016c7d5ea65110aed4",
   "completed_phases": [
     "Phase 0 prompt preserved in portable and repo-backed run packets",
     "Phase 1 resolved OT82 base and verified OT81 ancestry",
@@ -107,5 +107,5 @@
     "Created portable run packet C:\\Users\\User\\OneTimeOneTime-run-packets\\OT-83",
     "No production database, Railway, provider, send, payment, DNS, or deployment mutation"
   ],
-  "exact_next_action": "Commit, push codex/ot83-household-portals-foundation, open a stacked draft PR against codex/ot82-brand-system-foundation, then let CI run the OT83 PostgreSQL concurrency proof."
+  "exact_next_action": "Push codex/ot83-household-portals-foundation, open a stacked draft PR against codex/ot82-brand-system-foundation, then let CI run the OT83 PostgreSQL concurrency proof."
 }

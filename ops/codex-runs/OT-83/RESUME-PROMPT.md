@@ -6,6 +6,8 @@ Worktree: `C:\Users\User\OneTimeOneTime-ot83-household-portals-foundation`
 
 Branch: `codex/ot83-household-portals-foundation`
 
+Current checkpoint commit: `3c5c39327bcc6e4e96cba9016c7d5ea65110aed4`
+
 Read first:
 
 1. `ops/codex-runs/OT-83/ORIGINAL-PROMPT.md`
@@ -21,4 +23,4 @@ Current state:
 - CI workflow `.github/workflows/ot83-postgres-concurrency.yml` can run the real PostgreSQL 16 learner-seat proof after push/PR.
 
 Exact next action:
-Commit and push the branch, open/update a stacked draft PR against `codex/ot82-brand-system-foundation`, then inspect CI for the OT83 PostgreSQL concurrency workflow result.
+Push the branch, open/update a stacked draft PR against `codex/ot82-brand-system-foundation`, then inspect CI for the OT83 PostgreSQL concurrency workflow result.

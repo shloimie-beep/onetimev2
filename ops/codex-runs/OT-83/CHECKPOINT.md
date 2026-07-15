@@ -7,6 +7,7 @@ Base:
 - OT81: `ff23c9af0c3e3de18cd991097eb6e66032b11546`
 - OT82: `a8e4109b0530855bc7a5f56c90104706b9c8cd7c`
 - Branch: `codex/ot83-household-portals-foundation`
+- Checkpoint commit: `3c5c39327bcc6e4e96cba9016c7d5ea65110aed4`
 - Worktree: `C:\Users\User\OneTimeOneTime-ot83-household-portals-foundation`
 
 Implemented in this checkpoint:
