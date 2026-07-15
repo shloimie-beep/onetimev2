@@ -15,3 +15,11 @@ It is intended for OT-80 and later integrated release candidates.
 
 The prompt forbids package/runtime composition edits, so the harness is run
 directly with Node instead of adding `package.json` scripts.
+
+## DEC-OT76-004: OT80 Conductor Scope Base
+
+On the standalone OT76 branch, file-scope safety validates changed files against
+the immutable OT60R base. In the OT80 conductor branch, earlier source lanes are
+already merged, so the harness accepts `--scope-base` / `OT76_SCOPE_BASE_SHA`.
+OT80 uses the first parent of the OT76 merge commit as scope base, preserving
+strict file-scope validation for the OT76 contribution only.

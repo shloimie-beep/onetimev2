@@ -10,15 +10,16 @@
   - `ops/execution/ot-76/INPUTS.json`
   - `ops/execution/ot-76/STATE.json`
   - `ops/execution/registry.json`
-- `node scripts/day-one-certification-harness.mjs audit` passed with exit code
-  `0` and wrote:
+- `node scripts/day-one-certification-harness.mjs audit --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` passed with exit code `0` and wrote:
   - `ops/evidence/ot-76/day-one-audit-report.json`
   - `ops/evidence/ot-76/day-one-audit-report.md`
-- `node scripts/day-one-certification-harness.mjs certify` failed with exit
-  code `1` as expected because the current manifest is not Day-One certified.
-  It wrote:
+- `node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` failed with exit code `1` as expected because the current manifest is not Day-One certified. It wrote:
   - `ops/evidence/ot-76/day-one-certify-report.json`
   - `ops/evidence/ot-76/day-one-certify-report.md`
+- Current HEAD observed by refreshed reports:
+  `a95b4e3c2b7210f66f142322d2adcb900eb6890a`.
+- Scope base used by refreshed reports:
+  `bc2bcf2c7e16b5f1885aa65a2904f07578a18169`.
 
 ## Current Harness Verdict
 

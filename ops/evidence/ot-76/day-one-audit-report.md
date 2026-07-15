@@ -4,12 +4,13 @@ Mode: `audit`
 Policy: `audit_zero_unless_harness_or_scope_failure`
 Result: `audit_complete_not_certified`
 Day-One certified: `false`
-Current branch: `codex/ot76-day-one-certification-harness`
-Current HEAD: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
+Current branch: `codex/ot80-one-shot-final-convergence`
+Current HEAD: `a95b4e3c2b7210f66f142322d2adcb900eb6890a`
 
 ## Scope Proof
 
 - Immutable base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
+- Scope base: `bc2bcf2c7e16b5f1885aa65a2904f07578a18169`
 - Forbidden changed files: none
 - External mutation counts: deployments 0, provider calls 0, live sends 0, production DB writes 0, payments/access 0, DNS/Railway 0.
 
@@ -32,9 +33,10 @@ All configured signals are present.
 
 Status: `blocker`
 
-1 configured signal(s) missing or incomplete.
+2 configured signal(s) missing or incomplete.
 
 Missing or incomplete signals:
+- `school-thank-you-test`: tests/e2e/landing-signup.spec.ts contains required text
 - `capability-school-lead-only`: capability school_signup_lead_only has allowed status
 
 ### DAYONE-03: Owner/admin login, MFA, and role denials

@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.ot80.action_route_registry.v1",
-  "updated_at": "2026-07-15T12:35:00+03:00",
+  "updated_at": "2026-07-15T12:50:00+03:00",
   "status": "partial_lane_inventory",
   "routes": [
     {
@@ -250,7 +250,33 @@
       "route_id": null,
       "guards": ["no_deploy", "no_database_migration", "no_provider_mutation", "secret_scan"],
       "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot76.day_one.audit",
+      "surface": "Day-One certification harness CLI",
+      "source": "scripts/day-one-certification-harness.mjs",
+      "status": "active_internal_static_check",
+      "route_id": null,
+      "guards": [
+        "scope_base_override_for_ot80",
+        "audit_exit_zero_unless_scope_or_harness_failure",
+        "no_external_mutation"
+      ],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot76.day_one.certify",
+      "surface": "Day-One certification harness CLI",
+      "source": "scripts/day-one-certification-harness.mjs",
+      "status": "active_internal_strict_check_failed_not_ready",
+      "route_id": null,
+      "guards": [
+        "scope_base_override_for_ot80",
+        "strict_missing_or_partial_gate_failure",
+        "no_external_mutation"
+      ],
+      "external_mutation_allowed": false
     }
   ],
-  "next_action": "Continue populating after OT76 and final mount reconciliation."
+  "next_action": "Run final OT80 certification and reconcile any remaining action/route gaps before draft PR handoff."
 }

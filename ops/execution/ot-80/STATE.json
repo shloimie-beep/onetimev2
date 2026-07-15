@@ -7,8 +7,8 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T12:35:00+03:00",
-  "status": "ot75_integrated_checkpoint_ready",
+  "updated_at": "2026-07-15T12:50:00+03:00",
+  "status": "ot76_integrated_checkpoint_ready",
   "candidate_status": "NOT_READY",
   "current_phase": "phase1_source_lane_integration",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
@@ -35,9 +35,9 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the OT-75 release/observability checkpoint records.",
-    "Integrate OT-76 strict certification harness.",
-    "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
+    "Commit and push the OT-76 certification harness checkpoint records.",
+    "Run final OT80 convergence certification and decide whether to open the draft pull request while candidate remains NOT_READY.",
+    "Keep staging, external sends, provider mutations, payments, DNS, and production database mutations blocked until all gates are satisfied and explicit authorization exists."
   ],
   "integrated_lanes": [
     {
@@ -82,6 +82,15 @@
       "status": "merged_conductor_scoped",
       "scope_base_sha": "d7bf846dda1c27aadd61f51c71aa163c70b2b871",
       "remaining_from_source": "Activation-only staging, Railway/service, database, backup/PITR, provider-state, owner/admin bootstrap, and active-source proof remain blocked until external evidence is supplied. No deployment or external mutation was performed."
+    },
+    {
+      "task": "OT-76",
+      "source_branch": "codex/ot76-day-one-certification-harness",
+      "source_head": "b9ece3146d2de6edc9f386712fad146f17b18031",
+      "merge_commit": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
+      "status": "merged_conductor_scoped",
+      "scope_base_sha": "bc2bcf2c7e16b5f1885aa65a2904f07578a18169",
+      "remaining_from_source": "Audit mode is clean but strict certify remains failed with 10 Day-One blockers. This is honest NOT_READY evidence; no deployment or external mutation was performed."
     }
   ],
   "direct_implementations": [

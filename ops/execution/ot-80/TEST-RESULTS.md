@@ -133,3 +133,24 @@ Verification before checkpoint:
 - `npm run typecheck` - PASS.
 - `npm run lint` - PASS.
 - `npx prettier --check .github/workflows/ot75-release-readiness.yml ops/release/ot75 ops/observability/ot75 scripts/ot75 tests/unit/ot75` - PASS.
+
+## OT-76 Merge Checkpoint
+
+Reconciliation:
+
+- OT76 merged as a harness-only certification layer.
+- Added conductor-aware scope-base support so file-scope checks validate only
+  the OT76 contribution.
+- Resolved the registry conflict by retaining conductor entries and adding OT76.
+- No product code, migration, runtime composition, deployment, provider,
+  database, send, payment, DNS/Railway, or BNA mutation was performed.
+
+Verification before checkpoint:
+
+- `node --check scripts/day-one-certification-harness.mjs` - PASS.
+- JSON parse for OT76 manifest, registry, fixtures, state, inputs, and
+  execution registry - PASS.
+- `node scripts/day-one-certification-harness.mjs audit --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` - PASS, result `audit_complete_not_certified`, 13 gates, 3 pass, 10 blockers.
+- `node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` - EXPECTED FAIL, result `failed`, Day-One certified `false`, 13 gates, 3 pass, 10 blockers.
+- Refreshed reports confirm forbidden changed files `0` and all external
+  mutation counts `0`.

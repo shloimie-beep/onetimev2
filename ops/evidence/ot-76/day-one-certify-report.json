@@ -1,14 +1,15 @@
 {
   "harness": "ot-76-day-one-certification-harness",
-  "generated_at": "2026-07-15T06:49:25.196Z",
+  "generated_at": "2026-07-15T09:45:03.447Z",
   "mode": "certify",
   "policy": "certify_strict",
   "repository": "webcraft-media/onetimev2",
   "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "scope_base_sha": "bc2bcf2c7e16b5f1885aa65a2904f07578a18169",
   "manifest_path": "ops/day-one/release-manifest.example.json",
   "registry_path": "ops/day-one/day-one-capability-registry.json",
-  "current_branch": "codex/ot76-day-one-certification-harness",
-  "current_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "current_branch": "codex/ot80-one-shot-final-convergence",
+  "current_head_sha": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
   "external_mutation_counts": {
     "deployments": 0,
     "provider_calls": 0,
@@ -18,10 +19,24 @@
     "dns_or_railway_mutations": 0
   },
   "changed_files": [
+    "ops/day-one/day-one-capability-registry.json",
+    "ops/day-one/release-manifest.example.json",
+    "ops/day-one/synthetic-fixtures.json",
+    "ops/evidence/ot-76/day-one-audit-report.json",
+    "ops/evidence/ot-76/day-one-audit-report.md",
+    "ops/evidence/ot-76/day-one-certify-report.json",
+    "ops/evidence/ot-76/day-one-certify-report.md",
+    "ops/execution/ot-76/CHECKPOINT.md",
+    "ops/execution/ot-76/DECISIONS.md",
+    "ops/execution/ot-76/IMPLEMENTED.md",
+    "ops/execution/ot-76/INPUTS.json",
+    "ops/execution/ot-76/INTEGRATION-MANIFEST.md",
+    "ops/execution/ot-76/ORIGINAL-PROMPT.md",
+    "ops/execution/ot-76/REMAINING.md",
+    "ops/execution/ot-76/RESUME.md",
+    "ops/execution/ot-76/STATE.json",
+    "ops/execution/ot-76/TEST-RESULTS.md",
     "ops/execution/registry.json",
-    "ops/day-one/",
-    "ops/evidence/ot-76/",
-    "ops/execution/ot-76/",
     "scripts/day-one-certification-harness.mjs"
   ],
   "forbidden_changes": [],
@@ -94,8 +109,13 @@
       "prompt_coverage": "School signup remains lead-only with no entitlement.",
       "required_for_certify": true,
       "status": "blocker",
-      "summary": "1 configured signal(s) missing or incomplete.",
+      "summary": "2 configured signal(s) missing or incomplete.",
       "missing": [
+        {
+          "id": "school-thank-you-test",
+          "type": "file_contains",
+          "message": "tests/e2e/landing-signup.spec.ts contains required text"
+        },
         {
           "id": "capability-school-lead-only",
           "type": "capability_status",
@@ -118,7 +138,7 @@
         {
           "id": "school-thank-you-test",
           "type": "file_contains",
-          "ok": true,
+          "ok": false,
           "message": "tests/e2e/landing-signup.spec.ts contains required text"
         },
         {

@@ -8,6 +8,13 @@ Run audit mode:
 node scripts/day-one-certification-harness.mjs audit
 ```
 
+From the OT80 conductor branch, include the pre-OT76 conductor head:
+
+```bash
+node scripts/day-one-certification-harness.mjs audit --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169
+node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169
+```
+
 Run strict certification mode after OT-80 provides an integrated release
 manifest:
 

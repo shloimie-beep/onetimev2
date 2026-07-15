@@ -17,10 +17,11 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 - Phase: `phase1_source_lane_integration`
 - Candidate status: `NOT_READY`
 - Accepted base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
-- Latest integrated source merge: `9ce81a9c5df4c3eb82af3954705d7b381d294c6e`
+- Latest integrated source merge: `a95b4e3c2b7210f66f142322d2adcb900eb6890a`
 - Integrated so far: OT-71 product core, OT-74 audience reconciliation, OT-72
   provider sandbox/default-off infrastructure, OT-73 landing intent
-  reconciliation, and OT-75 release/observability readiness
+  reconciliation, OT-75 release/observability readiness, and OT-76 Day-One
+  certification harness
 - Implemented directly: Day-One communications catalog from preserved audit
   archive
 - Source heads: `ops/execution/ot-80/SOURCE-HEADS.json`
@@ -33,12 +34,13 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Next Commands
 
-After the OT75 checkpoint records are committed and pushed, continue Phase 1
-with OT76:
+After the OT76 checkpoint records are committed and pushed, run final OT80
+convergence certification:
 
 ```powershell
 git fetch origin --prune
-git merge --no-ff origin/codex/ot76-day-one-certification-harness
+node scripts/day-one-certification-harness.mjs audit --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169
+node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169
 ```
 
 Update the OT80 checkpoint files after each batch before pushing the next
@@ -112,6 +114,18 @@ OT80 merged OT75 as preparation-only release and observability readiness:
   `--scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871`;
 - staging activation remains blocked on explicit external evidence listed in
   `ops/release/ot75/evidence/predeploy-gates.local.json`.
+
+## OT-76 Disposition
+
+OT80 merged the Day-One certification harness:
+
+- registry, example manifest, synthetic fixtures, evidence reports, and harness
+  script are present;
+- OT80 conductor runs use
+  `--scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169`;
+- audit mode passes with result `audit_complete_not_certified`;
+- strict certify mode fails with result `failed`, 13 gates, 3 pass, 10 blockers;
+- forbidden changed files and external mutation counts are zero.
 
 ## Guardrails
 

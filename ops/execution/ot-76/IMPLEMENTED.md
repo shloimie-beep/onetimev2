@@ -17,4 +17,7 @@ The harness supports:
   blocker.
 - Scope enforcement: changed files outside OT-76 harness/evidence paths fail
   both modes.
+- Conductor scope override: OT80 can pass `--scope-base` or
+  `OT76_SCOPE_BASE_SHA` so earlier merged lanes do not become false file-scope
+  failures.
 - Explicit external mutation counts, always zero in this implementation.

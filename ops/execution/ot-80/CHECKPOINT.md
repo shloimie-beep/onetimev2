@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T12:35:00+03:00`
+Updated: `2026-07-15T12:50:00+03:00`
 
 ## Phase 0 Status
 
@@ -185,5 +185,28 @@ Verification:
 - `npm run lint` - PASS.
 - `npx prettier --check .github/workflows/ot75-release-readiness.yml ops/release/ot75 ops/observability/ot75 scripts/ot75 tests/unit/ot75` - PASS.
 
-Next: commit and push this OT75 checkpoint, then integrate OT76 strict
-certification harness.
+## OT-76 Integration
+
+- Merged `origin/codex/ot76-day-one-certification-harness`.
+- Source head:
+  `b9ece3146d2de6edc9f386712fad146f17b18031`.
+- Merge commit:
+  `a95b4e3c2b7210f66f142322d2adcb900eb6890a`.
+- Resolved one semantic conflict in `ops/execution/registry.json` by keeping
+  existing conductor entries and adding OT76.
+- Added conductor-aware `--scope-base` / `OT76_SCOPE_BASE_SHA` support to the
+  Day-One harness so prior OT80 source lanes do not become false file-scope
+  failures.
+- Kept OT76 harness-only: no product code, migration, package/runtime
+  composition, provider call, deployment, send, payment/access, DNS/Railway, or
+  production database mutation.
+
+Verification:
+
+- `node --check scripts/day-one-certification-harness.mjs` - PASS.
+- JSON parse for OT76 manifest, registry, fixtures, state, inputs, and execution registry - PASS.
+- `node scripts/day-one-certification-harness.mjs audit --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` - PASS, audit result `audit_complete_not_certified`, 13 gates, 3 pass, 10 blockers, forbidden changed files 0, external mutations 0.
+- `node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` - EXPECTED FAIL, strict result `failed`, Day-One certified `false`, 13 gates, 3 pass, 10 blockers.
+
+Next: commit and push this OT76 checkpoint, then run final OT80 convergence
+certification and prepare the draft PR handoff if appropriate.

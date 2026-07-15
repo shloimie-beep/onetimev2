@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.ot80.migration_ledger.v1",
-  "updated_at": "2026-07-15T12:35:00+03:00",
-  "status": "ot75_integrated_no_migrations",
+  "updated_at": "2026-07-15T12:50:00+03:00",
+  "status": "ot76_integrated_no_migrations",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "known_collisions": [
     {
@@ -72,6 +72,15 @@
       "merge_commit": "9ce81a9c5df4c3eb82af3954705d7b381d294c6e",
       "retained_migrations": [],
       "notes": "OT75 added release/observability readiness artifacts only; no database migration or runtime migration command was introduced."
+    },
+    {
+      "task": "OT-76",
+      "status": "merged_no_migrations",
+      "source_branch": "codex/ot76-day-one-certification-harness",
+      "source_head": "b9ece3146d2de6edc9f386712fad146f17b18031",
+      "merge_commit": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
+      "retained_migrations": [],
+      "notes": "OT76 added certification harness artifacts only; no database migration or runtime migration command was introduced."
     }
   ]
 }

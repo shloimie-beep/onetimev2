@@ -108,3 +108,18 @@
   standalone OT75 branch.
 - Recorded OT75 release validation commands in the OT80 action registry as
   internal static checks with no external mutation allowed.
+
+## Phase 1 - OT-76 Day-One Certification Harness
+
+- Merged `origin/codex/ot76-day-one-certification-harness` into the OT80
+  conductor branch.
+- Added the Day-One capability registry, example release manifest, safe
+  synthetic fixtures, audit/certify evidence, and
+  `scripts/day-one-certification-harness.mjs`.
+- Resolved the execution-registry conflict by retaining existing conductor
+  entries and adding OT76.
+- Adapted the harness for OT80 conductor mode with `--scope-base` /
+  `OT76_SCOPE_BASE_SHA`, preserving immutable-base scope behavior for the
+  standalone OT76 branch.
+- Verified audit mode succeeds honestly while strict certify fails because the
+  candidate is not Day-One certified yet.

@@ -1,7 +1,8 @@
 # OT-80 Remaining
 
-1. Commit and push the OT-75 release/observability checkpoint records.
-2. Integrate OT-76 strict certification harness.
+1. Commit and push the OT-76 certification harness checkpoint records.
+2. Run final OT80 convergence certification and decide draft PR handoff while
+   candidate remains `NOT_READY`.
 3. Reconcile migrations, routes, app shell, public bundles, worker/outbox,
    action/route registry, and release manifest.
 4. Run strict certification and CI, then publish one draft PR.
@@ -35,3 +36,6 @@ active source SHA, migration ledger checksum, database reference drift,
 duplicate-data audit, worker isolation, provider-state readback, and
 owner/admin bootstrap. These are activation-only blockers; OT75 introduced no
 external mutation.
+
+Carried from OT-76: audit mode passes, but strict Day-One certify mode fails
+honestly with 10 blockers. The current candidate is not Day-One certified.

@@ -88,3 +88,18 @@ OT80 keeps the strict scope guard but adds an explicit `--scope-base` /
 `OT75_SCOPE_BASE_SHA` override. The conductor run uses the first parent of the
 OT75 merge commit as the scope base, validating only the OT75 contribution. The
 standalone OT75 workflow and default CLI behavior remain unchanged.
+
+## DEC-OT80-009 - OT76 Certify Failure Is Honest NOT_READY Evidence
+
+OT76 audit mode exits 0 when the harness and file scope are valid, even if the
+candidate is missing Day-One capabilities. OT80 accepts this as useful
+not-ready evidence, not as release approval.
+
+Strict certify mode must fail while any Day-One gate is missing, partial, or
+blocked. The integrated OT80 run currently reports 13 gates, 3 pass, and 10
+blockers. Candidate status therefore remains `NOT_READY`; staging, deployment,
+provider calls, sends, payments/access changes, DNS/Railway changes, and
+production database mutations remain forbidden.
+
+Like OT75, OT76 keeps immutable-base validation by default and uses an explicit
+`--scope-base` / `OT76_SCOPE_BASE_SHA` override only in the OT80 conductor.

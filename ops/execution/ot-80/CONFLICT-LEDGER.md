@@ -108,6 +108,29 @@ Verification before checkpoint:
 - `npm run lint` - PASS.
 - OT75 Prettier check - PASS.
 
+## OT-76
+
+Merged `origin/codex/ot76-day-one-certification-harness` with one registry
+conflict in `ops/execution/registry.json`.
+
+Resolved deliberately:
+
+- Kept existing OT60R, OT73, OT74, OT75, and OT80 conductor entries.
+- Added the OT76 Day-One certification harness entry.
+- Updated OT80 status to `ot76_integrated_checkpoint_ready`.
+- Added `--scope-base` / `OT76_SCOPE_BASE_SHA` support to the harness so OT80
+  can validate only the OT76 contribution while standalone OT76 keeps the
+  immutable-base default.
+
+Verification before checkpoint:
+
+- Harness syntax check - PASS.
+- OT76 JSON parse - PASS.
+- Audit mode with scope base `bc2bcf2c7e16b5f1885aa65a2904f07578a18169` -
+  PASS, 13 gates, 3 pass, 10 blockers, forbidden changed files 0.
+- Strict certify with the same scope base - EXPECTED FAIL, candidate not
+  Day-One certified.
+
 Known required collision work from the OT80 packet:
 
 - OT-75 preserved OT-72 PostgreSQL teardown guard by avoiding runtime and
