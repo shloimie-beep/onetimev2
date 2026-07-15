@@ -31,3 +31,4 @@
 - Preserved the remote `1200_ot74_audience_reconciliation.sql` migration.
 - Moved the local legacy-audience reconciliation migration to `1201_ot74_legacy_audience_reconciliation.sql` to keep the `1200-1299` namespace ordered and collision-free.
 - Post-merge validation passed: typecheck, merged OT-74 unit/integration tests, lint, secret scan, both dry-run tools, and build.
+- Committed merge-resolution checkpoint `988719d23eef3cf151be901b77d8a484f532d393`.
