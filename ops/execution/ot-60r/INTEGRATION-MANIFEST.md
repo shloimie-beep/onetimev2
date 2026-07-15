@@ -17,7 +17,7 @@
 | #12 | `f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899` | Audited        | Applied as fixture-only isolated module   |
 | #15 | `9594c228b9ac3047f42bb9e8c804384cc45a3e40` | Audited        | Applied as isolated unmounted portals     |
 | #13 | `e235af05759f0a97496552c6e8aabed7ba3eee18` | Audited        | Applied as isolated mock/default-off bot  |
-| #6  | `0ea782d8551c26edd48b08d644b573e19b9835b1` | Audited        | Applied/adapted as PostgreSQL assurance   |
+| #6  | `0ea782d8551c26edd48b08d644b573e19b9835b1` | Audited        | Applied/adapted/verified                  |
 | #10 | `9444176dbc55e0c5af048ec1df2ea75ffa8dde33` | Audited        | Evidence-only, defer implementation claim |
 
 ## Supersession Inputs
@@ -41,4 +41,4 @@ Result: PR #3/#9 alternate trains are superseded. Only the verified missing HMAC
 | PR #12 / OT-46                  | Applied. Integrated fixture-only billing contracts/domain/db/router/reference UI/tests and kept central app wiring deferred, all feature flags default-off, and no live Stripe/provider/access mutation.                                                                                                                                         |
 | PR #15 / OT-52                  | Applied. Integrated parent/student portal contracts, migration `1500_ot52_portal_households_learners.sql`, repository, domain services, routers, feature-local UI, tests, and evidence. Kept unmounted from central app/server composition pending safe auth/session and adapter wiring.                                                         |
 | PR #13 / OT-51                  | Applied. Integrated Telegram contracts, migration `1600_ot51_telegram_bot_foundation.sql`, SQL repositories, command/domain services, identity/crypto helpers, worker/lease primitives, webhook ingress hook, mock app entrypoint, tests, and evidence. Kept central runtime, webhook, polling, and real Telegram transport inactive.            |
-| PR #6 / OT-37                   | Applied/adapted. Added the PostgreSQL 16 assurance workflow, disposable database runner, scenario catalog, and evidence docs. Adapted workflow trigger/format scope and task metadata for OT-60R; local execution is blocked without PostgreSQL/Docker/psql/env and CI proof is expected after push.                                             |
+| PR #6 / OT-37                   | Applied/adapted/verified. Added the PostgreSQL 16 assurance workflow, disposable database runner, scenario catalog, and evidence docs. Fixed synthetic contacts for canonical `public_contact_id`, and GitHub Actions run `29377668001` passed with sanitized reports under `ops/evidence/ot-37/ci-run-29377668001/`.                            |

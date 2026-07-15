@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #6 / OT-37 PostgreSQL assurance harness integrated
+- Phase: PR #6 / OT-37 PostgreSQL assurance harness verified
 - Status: building
 
 ## Completed
@@ -60,6 +60,9 @@
 - Verified with `npm run typecheck`, `npm run lint`, `npm run build`, scoped OT-37 formatting check, `git diff --check`, and `npm run secret:scan`.
 - Local `npx tsx scripts/postgres-assurance/run.ts` is blocked by absent local PostgreSQL/Docker/psql/service/env; disposable PostgreSQL proof is expected from GitHub Actions after push.
 - Committed the PR #6 / OT-37 PostgreSQL assurance checkpoint at `e97f6de55b050605a96d64eac07c58b753ea2976`.
+- Fixed the OT-37 synthetic scale seed to include canonical `public_contact_id` values after the accepted PR #2 migration made the column required.
+- GitHub Actions run `29377668001` passed the OT-37 PostgreSQL 16 assurance workflow, including the harness, secret scan, scoped format, lint, typecheck, and sanitized artifact upload.
+- Downloaded sanitized reports to `ops/evidence/ot-37/ci-run-29377668001/`.
 
 ## Last Safe Command
 
@@ -70,9 +73,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git push origin codex/ot60r-recovery-convergence
+git show --stat --oneline --decorate --no-renames 9444176dbc55e0c5af048ec1df2ea75ffa8dde33
 ```
 
-Push the adapted workflow, then inspect the OT-37 PostgreSQL assurance GitHub Actions run. If CI proof is not available, record the blocker and continue PR #10 / OT-47 evidence-only handling.
+Continue PR #10 / OT-47 evidence-only handling. Do not claim content/library implementation unless a real implementation exists in this branch.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

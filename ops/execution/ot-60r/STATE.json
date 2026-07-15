@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "e97f6de55b050605a96d64eac07c58b753ea2976",
-  "phase": "pr6_ot37_postgres_assurance_integrated",
+  "current_head_sha": "d398a1956137ce72bd0dab51e5a0a5d1dd96cc7f",
+  "phase": "pr6_ot37_postgres_assurance_verified",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:51:58+03:00",
+  "updated_at": "2026-07-15T02:59:44+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -61,10 +61,12 @@
     "Applied PR #6 / OT-37 PostgreSQL assurance harness and adapted it for the OT-60R integrated migration stack.",
     "Added the recovery branch to the PostgreSQL 16 GitHub Actions workflow, scoped the workflow format step to OT-37 files to avoid unrelated baseline format noise, updated the harness task metadata to the OT-60R base, and recorded the local desktop PostgreSQL blocker.",
     "Verified OT-37 harness typecheck, lint, build, scoped formatting, whitespace, and secret scan locally; real PostgreSQL harness execution is blocked locally by absent PostgreSQL/Docker/psql/service/env and must run in the GitHub Actions disposable PostgreSQL 16 service.",
-    "Committed the PR #6 / OT-37 PostgreSQL assurance checkpoint at e97f6de55b050605a96d64eac07c58b753ea2976."
+    "Committed the PR #6 / OT-37 PostgreSQL assurance checkpoint at e97f6de55b050605a96d64eac07c58b753ea2976.",
+    "Fixed the OT-37 synthetic scale seed to include canonical public_contact_id values after the accepted PR #2 migration made the column required.",
+    "GitHub Actions run 29377668001 passed the OT-37 PostgreSQL 16 assurance workflow and uploaded sanitized reports.",
+    "Downloaded and recorded the passing OT-37 sanitized PostgreSQL assurance reports under ops/evidence/ot-37/ci-run-29377668001."
   ],
   "remaining_steps": [
-    "Collect GitHub Actions OT-37 disposable PostgreSQL proof after pushing the adapted workflow, or record the CI blocker honestly.",
     "Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.",
     "Run required local verification and record blocked checks honestly.",
     "Open draft PR against codex/crm-core-v1 after a pushed resumable checkpoint exists."
@@ -331,6 +333,21 @@
       "command": "npx tsx scripts/postgres-assurance/run.ts",
       "status": "blocked",
       "summary": "Local real PostgreSQL assurance is blocked: connect ECONNREFUSED 127.0.0.1:5432; docker and psql are not installed, no PostgreSQL service was found, and PG/DATABASE_URL environment variables are absent."
+    },
+    {
+      "command": "gh run watch 29377569058 --exit-status",
+      "status": "failed",
+      "summary": "Initial OT-37 GitHub Actions run failed because synthetic post-migration contacts lacked required public_contact_id values."
+    },
+    {
+      "command": "gh run watch 29377668001 --exit-status",
+      "status": "passed",
+      "summary": "OT-37 PostgreSQL 16 assurance workflow passed; harness, secret scan, scoped format, lint, typecheck, and artifact upload all completed successfully."
+    },
+    {
+      "command": "gh run download 29377668001 -n ot37-postgres-assurance-29377668001-1",
+      "status": "passed",
+      "summary": "Downloaded sanitized OT-37 PostgreSQL assurance reports into ops/evidence/ot-37/ci-run-29377668001."
     }
   ],
   "external_mutation_counts": {
@@ -343,5 +360,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then push/check the OT-37 GitHub Actions PostgreSQL proof or continue PR #10 / OT-47 evidence-only handling without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, PR #13 Telegram mock foundation, or PR #6 harness integration."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue PR #10 / OT-47 evidence-only handling without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, PR #13 Telegram mock foundation, or PR #6 PostgreSQL assurance."
 }

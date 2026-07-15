@@ -92,8 +92,11 @@ Real PostgreSQL 16 proof, bot token, webhook secret, service startup, mappings, 
 - `npm run secret:scan`: PASS across 297 repo text files.
 - `git diff --check`: PASS.
 - `npx tsx scripts/postgres-assurance/run.ts`: BLOCKED locally by `connect ECONNREFUSED 127.0.0.1:5432`; `docker` and `psql` are not installed, no `postgresql*` service was found, and PG/DATABASE_URL environment variables are absent.
+- GitHub Actions run `29377569058`: FAIL. PostgreSQL 16 harness reached the real database and found the OT-37 synthetic scale seed needed canonical `public_contact_id` values.
+- GitHub Actions run `29377668001`: PASS. PostgreSQL 16 harness, secret scan, scoped format, lint, typecheck, and sanitized artifact upload completed.
+- `gh run download 29377668001 -n ot37-postgres-assurance-29377668001-1 -D ops/evidence/ot-37/ci-run-29377668001`: PASS.
 
-The adapted GitHub Actions workflow starts PostgreSQL 16 and is the expected safe disposable database proof after push.
+Passing report summary: PostgreSQL 16.14, 8 migrations discovered/applied/idempotently verified, ledger checksum match `true`, 10,600 synthetic contacts, 500 signups, 500 outbox rows, reserved-domain scan passed, external mutations all false.
 
 ## Supersession Security Port
 

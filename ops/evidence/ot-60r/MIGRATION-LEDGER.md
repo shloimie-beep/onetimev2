@@ -17,4 +17,4 @@ Migration blob checksums are Git blob IDs at each PR head.
 
 No accepted migration was edited in this checkpoint. The HMAC login-CSRF port is config/domain/server/test-only and does not require a migration.
 
-PR #6 / OT-37 adds no migration. Its harness discovers and verifies the accepted migration stack, including migrations `0001`, `0002`, `0003`, `0004`, `1000`, `1300`, `1500`, and `1600`.
+PR #6 / OT-37 adds no migration. Its harness discovers and verifies the accepted migration stack, including migrations `0001`, `0002`, `0003`, `0004`, `1000`, `1300`, `1500`, and `1600`. GitHub Actions run `29377668001` verified all 8 migrations applied cleanly, all 8 were idempotently reported `already_applied`, and the migration ledger matched checksums.
