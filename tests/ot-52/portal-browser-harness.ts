@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { AxeBuilder } from '@axe-core/playwright';
 import { chromium, type Browser } from 'playwright';
@@ -11,11 +11,14 @@ import type {
 import {
   ParentPortalFeature,
   StudentPortalFeature,
-  portalFeatureStyles,
 } from '../../apps/web/src/client/features/portals/PortalFeatures.tsx';
 
 const outputDir = path.resolve(process.cwd(), 'ops/evidence/ot-52/screenshots');
 const reportPath = path.resolve(process.cwd(), 'ops/evidence/ot-52/BROWSER-HARNESS.json');
+const portalFeatureStyles = await readFile(
+  path.resolve(process.cwd(), 'packages/brand-system/src/styles/portal.css'),
+  'utf8',
+);
 
 try {
   await mkdir(outputDir, { recursive: true });

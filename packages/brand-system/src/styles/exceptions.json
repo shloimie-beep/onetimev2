@@ -1,0 +1,30 @@
+{
+  "version": "1.0.0",
+  "owner": "OT-82",
+  "exceptions": [
+    {
+      "path": "apps/web/public/assets/brand/onetimelogo.webp",
+      "rule": "raw-color-data",
+      "rationale": "Canonical raster logo asset registered in the manifest.",
+      "owner": "OT-82"
+    },
+    {
+      "path": "apps/web/public/assets/fonts/dm-serif-display-latin.woff2",
+      "rule": "font-binary",
+      "rationale": "Canonical self-hosted display font registered in the manifest.",
+      "owner": "OT-82"
+    },
+    {
+      "path": "ops/evidence/ot-82/**",
+      "rule": "screenshot-and-evidence-data",
+      "rationale": "OT82 evidence may contain captured color values and screenshots.",
+      "owner": "OT-82"
+    },
+    {
+      "path": "tests/**",
+      "rule": "test-fixture-color-data",
+      "rationale": "Non-shipping tests may assert color values and negative fixtures.",
+      "owner": "OT-82"
+    }
+  ]
+}

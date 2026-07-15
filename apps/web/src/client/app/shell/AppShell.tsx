@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Button, Drawer, Footer, Header, Logo, Toolbar } from '@onetime/brand-system/react';
 
 export type ShellUser = {
   displayName: string;
@@ -106,7 +107,7 @@ export function AppShell({
       <a className="skip-link" href="#app-main">
         Skip to main content
       </a>
-      <header className="app-header">
+      <Header>
         <a
           className="mobile-current-link"
           href={currentItem.href}
@@ -130,20 +131,13 @@ export function AppShell({
           <span aria-hidden="true" />
           <span aria-hidden="true" />
         </button>
-        <a
-          className="app-brand"
-          href="/app/crm"
+        <Logo
+          subtitle={shellUser.roleLabel}
           onClick={(event) => {
             event.preventDefault();
             onNavigate('/app/crm');
           }}
-        >
-          <img src="/assets/brand/onetimelogo.webp" width="40" height="40" alt="" aria-hidden />
-          <span>
-            <strong>One Time</strong>
-            <small>{shellUser.roleLabel}</small>
-          </span>
-        </a>
+        />
         <div className="app-context" aria-label="Current account">
           <span>{shellUser.roleLabel}</span>
         </div>
@@ -152,15 +146,15 @@ export function AppShell({
           <span>{shellUser.email}</span>
         </div>
         {sessionExpired ? (
-          <button type="button" className="button-primary compact-action" onClick={onSignIn}>
+          <Button type="button" className="button-primary compact-action" onClick={onSignIn}>
             Sign in
-          </button>
+          </Button>
         ) : (
-          <button type="button" className="button-secondary compact-action" onClick={onLogout}>
+          <Button type="button" className="button-secondary compact-action" onClick={onLogout}>
             Logout
-          </button>
+          </Button>
         )}
-      </header>
+      </Header>
 
       <div className="app-body">
         <aside className="app-sidebar" aria-label="Primary navigation">
@@ -177,29 +171,28 @@ export function AppShell({
             </div>
           </section>
           {toolbar && (
-            <section className="page-toolbar" aria-label={`${title} toolbar`} data-shell-toolbar>
+            <Toolbar aria-label={`${title} toolbar`} data-shell-toolbar>
               {toolbar}
-            </section>
+            </Toolbar>
           )}
           {notice}
           <main id="app-main" className="app-main" tabIndex={-1}>
             {sessionExpired ? <SessionExpiredState onSignIn={onSignIn} /> : children}
           </main>
-          <footer className="app-footer">
+          <Footer>
             <span>One Time Mishnayos</span>
             <a href="/privacy">Privacy</a>
             <a href="/terms">Terms</a>
-          </footer>
+          </Footer>
         </div>
       </div>
 
       {drawerOpen && (
         <>
           <div className="drawer-overlay" aria-hidden="true" onMouseDown={() => closeDrawer()} />
-          <aside
+          <Drawer
             ref={drawerRef}
             id="app-navigation-drawer"
-            className="navigation-drawer"
             role="dialog"
             aria-modal="true"
             aria-labelledby="navigation-drawer-title"
@@ -224,7 +217,7 @@ export function AppShell({
                 onNavigate(href);
               }}
             />
-          </aside>
+          </Drawer>
         </>
       )}
     </div>
@@ -263,9 +256,9 @@ function SessionExpiredState({ onSignIn }: { onSignIn?: (() => void) | undefined
     <section className="state-panel session-expired-state" aria-labelledby="session-expired-title">
       <h2 id="session-expired-title">Session expired</h2>
       <p>Protected CRM details were cleared. Sign in again to continue.</p>
-      <button type="button" className="button-primary" onClick={onSignIn}>
+      <Button type="button" variant="primary" onClick={onSignIn}>
         Sign in
-      </button>
+      </Button>
     </section>
   );
 }

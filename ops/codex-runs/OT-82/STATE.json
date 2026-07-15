@@ -1,12 +1,27 @@
 {
   "run_id": "OT-82",
-  "status": "initialized",
-  "current_phase": "baseline_audit",
-  "completed_phases": [],
-  "blocking_issues": [],
+  "status": "review_ready_with_inherited_format_blocker",
+  "current_phase": "closeout",
+  "completed_phases": [
+    "packet_verification",
+    "dependency_resolution",
+    "repository_backed_run_state",
+    "baseline_audit",
+    "brand_system_implementation",
+    "route_migration",
+    "focused_visual_evidence",
+    "validation"
+  ],
+  "blocking_issues": [
+    {
+      "id": "OT82-BLOCKER-001",
+      "status": "blocked_inherited_base",
+      "summary": "Full npm run format fails on 334 inherited non-OT82 files. OT82 changed files pass scoped Prettier."
+    }
+  ],
   "base_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
   "branch": "codex/ot82-brand-system-foundation",
-  "branch_head_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
-  "last_updated_at": "2026-07-15T12:40:00Z",
-  "next_action": "Commit initialized run state, push the product branch, then start the read-before-write brand audit."
+  "branch_head_sha": "pending_final_closeout_commit",
+  "last_updated_at": "2026-07-15T13:20:00Z",
+  "next_action": "Commit and push OT82 implementation/evidence, open the stacked draft PR, and keep full certification blocked until inherited format debt is resolved."
 }

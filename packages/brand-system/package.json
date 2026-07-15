@@ -1,0 +1,16 @@
+{
+  "name": "@onetime/brand-system",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./static": "./src/static.ts",
+    "./react": "./src/react.tsx",
+    "./tokens.css": "./src/tokens.css",
+    "./route-branding": "./src/route-branding.ts"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0"
+  }
+}

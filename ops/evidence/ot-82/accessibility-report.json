@@ -1,0 +1,14 @@
+{
+  "run_id": "OT-82",
+  "status": "pass",
+  "command": "npm run accessibility",
+  "result": "6 passed",
+  "coverage": [
+    "public landing axe check",
+    "public signup axe check",
+    "authenticated CRM axe check",
+    "OT39 authenticated CRM shell reflow and target gates",
+    "OT44 communications owned markup axe check",
+    "OT81 responsive accessibility matrix including viewport, RTL, reduced motion, keyboard, reflow, and states"
+  ]
+}

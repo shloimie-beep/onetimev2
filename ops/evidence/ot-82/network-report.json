@@ -1,0 +1,33 @@
+{
+  "run_id": "OT-82",
+  "status": "pass",
+  "evidence": [
+    {
+      "command": "CI=1 npx playwright test tests/e2e/brand-system.spec.ts --project=chromium",
+      "result": "4 passed",
+      "forbidden_request_total": 0,
+      "forbidden_patterns": [
+        "bna",
+        "operations",
+        "fonts.googleapis",
+        "fonts.gstatic",
+        "leadconnector",
+        "gohighlevel"
+      ]
+    },
+    {
+      "command": "npm run e2e",
+      "result": "22 passed",
+      "notes": "Inherited CRM/privacy suites also assert no BNA or Operations requests on authenticated shell paths."
+    }
+  ],
+  "external_mutations": {
+    "deployments": false,
+    "dns_or_railway": false,
+    "provider_mutations": false,
+    "production_database": false,
+    "real_sends": false,
+    "payments": false,
+    "account_or_access_changes": false
+  }
+}
