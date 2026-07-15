@@ -274,7 +274,11 @@ test('family and school signup submit through canonical lead endpoint', async ({
   await expect(
     page.getByRole('heading', { name: 'Thank you - we received your school inquiry.' }),
   ).toBeVisible();
-  await expect(page.getByText('does not create class access')).toBeVisible();
+  await expect(
+    page.getByText(
+      'A member of the One Time One Time team will review it and follow up personally. This inquiry does not create class access, reminders, a portal account, or Family messages.',
+    ),
+  ).toBeVisible();
 });
 
 test('public pages do not load the future React CRM bundle', async ({ page }) => {
