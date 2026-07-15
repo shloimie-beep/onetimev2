@@ -22,7 +22,8 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
 
   await login(page);
   await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
-  await expect(page.getByLabel('Search')).toBeDisabled();
+  await expect(page.getByLabel('Search')).toBeEnabled();
+  await page.getByLabel('Search').fill(email);
   await page.getByRole('button', { name: 'Apply' }).click();
   await expect(page.getByRole('button', { name: new RegExp(contactName) })).toHaveCount(1);
   await page.getByRole('button', { name: new RegExp(contactName) }).click();
@@ -49,7 +50,7 @@ test('CRM create and edit controls are keyboard reachable with readable names', 
   await login(page);
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
-  await expect(page.getByRole('link', { name: 'CRM' })).toBeFocused();
+  await expect(page.locator('.mobile-current-link')).toBeFocused();
   await page.getByRole('button', { name: 'Add contact' }).click();
   const createForm = page.locator('.contact-form');
   await createForm.getByRole('textbox', { name: 'Name' }).fill('Keyboard Contact');
