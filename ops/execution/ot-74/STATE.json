@@ -5,79 +5,29 @@
   "branch": "codex/ot74-audience-reconciliation",
   "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "target_base_branch": "codex/ot60r-recovery-convergence",
-  "current_head_sha": "988719d23eef3cf151be901b77d8a484f532d393",
-  "phase": "merge_resolution_committed_pending_push",
+  "current_head_sha": "c766b2b",
+  "phase": "pr_metadata_merge_pending_commit",
   "status": "building",
   "created_at": "2026-07-15T09:29:35+03:00",
-  "updated_at": "2026-07-15T10:04:53+03:00",
+  "updated_at": "2026-07-15T10:08:00+03:00",
   "completed_steps": [
     "Cloned clean One Time repository from https://github.com/webcraft-media/onetimev2.git under the Codex work directory.",
     "Verified immutable base dfef7de2035e08f1ee72e0133ccf656fe7a74444 exists locally.",
-    "Verified origin/codex/ot60r-recovery-convergence points at the immutable base and is the OT-60R target.",
     "Created branch codex/ot74-audience-reconciliation from the exact immutable base.",
-    "Persisted the OT-74 execution packet before implementation work.",
     "Committed and pushed initial execution packet checkpoint c776bdf84678f7e381752839e8581d02d75f54f6.",
-    "Verified migration namespace 1200-1299 was free at the immutable base.",
-    "Added local legacy-audience migration 1201_ot74_legacy_audience_reconciliation.sql after preserving the remote 1200_ot74_audience_reconciliation.sql migration.",
-    "Added local feature contracts, domain dry-run service, Postgres repository, unmounted server router, unmounted CRM panel, synthetic dry-run tool, tests, and evidence.",
     "Merged remote OT-74 implementation commits through 8dcc3db without force-pushing.",
-    "Resolved the migration namespace collision by preserving remote 1200 and moving local legacy-audience tables to 1201.",
+    "Resolved the migration namespace collision by preserving remote 1200_ot74_audience_reconciliation.sql and moving local legacy-audience tables to 1201_ot74_legacy_audience_reconciliation.sql.",
     "Completed post-merge validation: typecheck, merged OT-74 unit/integration tests, lint, secret scan, both dry-run tools, and build passed.",
-    "Committed merge-resolution checkpoint 988719d23eef3cf151be901b77d8a484f532d393."
+    "Merged remote PR metadata commit 5d87bb6 containing draft PR #22."
   ],
   "remaining_steps": [
-    "Push the merge-resolution checkpoint.",
-    "Open a draft PR against codex/ot60r-recovery-convergence.",
-    "Record final PR URL and head SHA."
+    "Commit and push the final PR-metadata merge checkpoint.",
+    "Verify draft PR #22 points at the combined branch head.",
+    "Record final head SHA after push."
   ],
   "blockers": [],
-  "last_safe_command": "npm run build",
+  "last_safe_command": "git merge origin/codex/ot74-audience-reconciliation --no-edit",
   "test_results": [
-    {
-      "command": "npm ci",
-      "status": "passed",
-      "summary": "Installed 348 packages from lockfile; npm reported 0 vulnerabilities."
-    },
-    {
-      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts",
-      "status": "passed",
-      "summary": "Pre-merge local OT-74 unit tests passed 6 tests."
-    },
-    {
-      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts",
-      "status": "passed",
-      "summary": "Pre-merge local OT-74 integration tests passed 8 tests."
-    },
-    {
-      "command": "npm run typecheck",
-      "status": "passed",
-      "summary": "Pre-merge TypeScript completed with no errors."
-    },
-    {
-      "command": "npm run lint",
-      "status": "passed",
-      "summary": "Pre-merge ESLint completed with no findings."
-    },
-    {
-      "command": "npm run secret:scan",
-      "status": "passed",
-      "summary": "Pre-merge secret scan passed across 328 repo text files."
-    },
-    {
-      "command": "npx tsx scripts/ot74/audience-dry-run.ts --rows=10000",
-      "status": "passed",
-      "summary": "Pre-merge synthetic-only dry-run tool emitted aggregate counts/reasons for 10k rows."
-    },
-    {
-      "command": "npm run build",
-      "status": "passed",
-      "summary": "Pre-merge build passed."
-    },
-    {
-      "command": "psql --version; docker --version",
-      "status": "blocked",
-      "summary": "Local PostgreSQL 16 proof is unavailable because psql and Docker are not installed in this desktop environment."
-    },
     {
       "command": "npm run typecheck",
       "status": "passed",
@@ -117,6 +67,11 @@
       "command": "npm run build",
       "status": "passed",
       "summary": "Post-merge build passed, including public/app Vite builds, public page build, and typecheck."
+    },
+    {
+      "command": "psql --version; docker --version",
+      "status": "blocked",
+      "summary": "Local PostgreSQL 16 proof is unavailable because psql and Docker are not installed in this desktop environment."
     }
   ],
   "external_mutation_counts": {
@@ -139,18 +94,14 @@
       "pushed": true
     },
     {
-      "sha": "5ce98ba73cf875543670bc789add9f21a10e5e9a",
-      "message": "ot74 legacy audience reconciliation foundation",
-      "pushed": false
-    },
-    {
-      "sha": "5886914",
-      "message": "ot74 record implementation checkpoint",
-      "pushed": false
-    },
-    {
       "sha": "8dcc3db",
       "message": "chore(ot74): record merge resolution state",
+      "pushed": true,
+      "source": "remote"
+    },
+    {
+      "sha": "5d87bb6",
+      "message": "chore(ot74): record push and draft pr",
       "pushed": true,
       "source": "remote"
     },
@@ -158,15 +109,26 @@
       "sha": "988719d23eef3cf151be901b77d8a484f532d393",
       "message": "ot74 merge audience reconciliation lines",
       "pushed": false
+    },
+    {
+      "sha": "c766b2b",
+      "message": "ot74 record merge checkpoint",
+      "pushed": false
     }
   ],
   "pushes": [
     {
       "remote": "origin",
       "branch": "codex/ot74-audience-reconciliation",
-      "head_sha": "c776bdf84678f7e381752839e8581d02d75f54f6",
-      "pushed_at": "2026-07-15T09:32:00+03:00"
+      "head_sha": "8dcc3db",
+      "source": "remote"
     }
   ],
-  "pull_request": null
+  "pull_request": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/22",
+    "number": 22,
+    "draft": true,
+    "base": "codex/ot60r-recovery-convergence",
+    "head": "codex/ot74-audience-reconciliation"
+  }
 }
