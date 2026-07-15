@@ -33,3 +33,12 @@
 - Keep lifecycle delivery default-off and sink-only for OT-71; no emails, provider identity calls, or real credential sends are performed.
 - Require privileged owner/admin invitation acceptances to complete through the existing TOTP MFA flow.
 - Treat parent management as lifecycle control over student setup/reset/suspend/restore, not as permission to retrieve student secrets or enter a student session.
+
+## 2026-07-15 Phase 4
+
+- Mount the recovered OT-52 portal module through the main web app instead of creating a parallel portal server.
+- Resolve portal subjects from durable canonical tables: guardian relationships for parents and learner identity links for students.
+- Add a default parent dashboard endpoint for the app shell while keeping household-specific deep links privacy-safe.
+- Use Phase 1 class and Phase 2 content adapters directly; portal launch/open actions remain protected descriptors with no raw provider URLs.
+- Map portal student access operations to Phase 3 lifecycle functions and return only digest-safe operation references.
+- Keep billing disabled by default and keep support/helper behavior local or unavailable until later owner-enabled transports exist.

@@ -52,3 +52,16 @@
 | `npm run secret:scan`                                                                                                    | Passed | Secret scan passed across 334 repo text files.                                                               |
 | `git diff --check`                                                                                                       | Passed | No whitespace errors detected. Git emitted only existing CRLF normalization warnings for tracked text files. |
 | `npm run test`                                                                                                           | Passed | Full unit and integration suites passed: 93 unit tests and 72 integration tests.                             |
+
+## Phase 4 Verification
+
+| Command                                                                                                          | Status | Summary                                                                                                              |
+| ---------------------------------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------- |
+| `npx vitest run --config vitest.integration.config.ts tests/integration/portals/portal-mount.test.ts`           | Passed | 2 mounted portal integration tests passed for parent shell/API boundaries and student single-learner isolation.      |
+| `npx vitest run tests/ot-52/portal-services.test.ts tests/ot-52/portal-router.test.ts tests/ot-52/portal-ui.test.ts` | Passed | Legacy recovered portal service/router/UI tests passed: 15 tests.                                                    |
+| `npm run typecheck`                                                                                              | Passed | TypeScript completed successfully after Phase 4 changes.                                                             |
+| `npm run lint`                                                                                                   | Passed | ESLint completed successfully.                                                                                       |
+| `npm run build`                                                                                                  | Passed | Clean build completed, including the new `app-portal.js` bundle and generated parent/student app pages.              |
+| `npm run secret:scan`                                                                                            | Passed | Secret scan passed across 338 repo text files.                                                                       |
+| `git diff --check`                                                                                               | Passed | No whitespace errors detected. Git emitted only existing CRLF normalization warnings for tracked text files.         |
+| `npm run test`                                                                                                   | Passed | Full unit and integration suites passed: 93 unit tests and 74 integration tests.                                     |

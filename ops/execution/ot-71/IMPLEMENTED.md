@@ -41,3 +41,13 @@
 - Added password reset requests with durable rate limits, expiring hashed single-use tokens, audit rows, and session-family invalidation.
 - Reused existing `account_users`, password hashing, MFA, session, security-version, and rate-limit runtime; no second auth system was introduced.
 - Added integration coverage for invitation replay/conflict, raw-token non-persistence, parent/student lifecycle, student session invalidation, password reset single-use behavior, and migration application.
+
+## Phase 4: Parent And Student Portals
+
+- Mounted parent and student portal APIs in the main web app under `/api/v1/portals/parent` and `/api/v1/portals/student` with canonical session cookies and session CSRF.
+- Added protected `/app/parent` and `/app/student` shells plus a Vite `portal` entry and generated app pages.
+- Resolved parent portal actors from active guardian relationships and student portal actors from active learner identity links; owner/viewer/CRM roles do not silently become portal users.
+- Wired portal services to Phase 1 class launch descriptors, Phase 2 published content/review access, local progress summaries, default-off support/helper seams, disabled billing summaries, and Phase 3 student lifecycle operations.
+- Extended portal contracts for mounted actor roles, parent learner materials, and student access setup/reset request details.
+- Updated the parent portal feature to render learner materials, review sheets, and progress from the mounted materials API.
+- Added integration coverage for protected shell redirects, parent default dashboards, cross-household denial, student access setup, raw-token non-persistence, wrong-role denial, student sibling isolation, protected class launch CSRF, and session expiry after parent suspend.

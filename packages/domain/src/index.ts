@@ -65,6 +65,15 @@ export {
   type AuthenticatedSession,
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
+export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
+export {
+  PortalServiceError,
+  createParentPortalService,
+  createRewardService,
+  createStudentPortalService,
+  fingerprint as portalFingerprint,
+  type PortalServiceDeps,
+} from './portals/services.ts';
 export {
   CrmDuplicateError,
   CrmVersionConflictError,

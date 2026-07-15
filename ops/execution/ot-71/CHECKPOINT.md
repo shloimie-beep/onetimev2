@@ -7,7 +7,7 @@
 - Branch: `codex/ot71-product-core-train`
 - Immutable base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
 - Source PR ref: `origin/pr/17`
-- Phase: Phase 3 complete
+- Phase: Phase 4 complete
 - Status: building
 
 ## Completed
@@ -39,11 +39,16 @@
 - Reused existing password hashing, account users, TOTP MFA, sessions, durable rate limits, and session invalidation primitives; no second auth runtime was created.
 - Stored no raw token material in lifecycle persistence and kept learner profiles separate from login identities.
 - Verified Phase 3 with focused account lifecycle and migration tests plus full typecheck, lint, build, secret scan, whitespace checks, and unit/integration suites.
+- Mounted parent/student portal APIs and protected app shells on canonical auth sessions.
+- Added default parent dashboard resolution from active guardian relationships and single-learner student dashboard resolution from active learner identity links.
+- Wired portals to class access, content access, local progress summaries, default-off support/helper seams, disabled billing summaries, and Phase 3 student credential lifecycle operations.
+- Added a Vite portal entry and generated `/app/parent` and `/app/student` pages.
+- Verified Phase 4 with focused mounted portal integration tests, legacy OT-52 portal tests, typecheck, lint, build, secret scan, whitespace checks, and full unit/integration suites.
 
 ## Next
 
-1. Start Phase 4 parent and student portal mounting.
-2. Preserve household and single-learner access boundaries while wiring portals to canonical auth.
+1. Start Phase 5 Rabbi owner/admin dashboard and ready-only shell.
+2. Surface only integrated, working owner/admin product areas using bounded APIs.
 3. Keep live provider activation and all OT-72-owned transports disabled.
 
 ## Prohibitions
