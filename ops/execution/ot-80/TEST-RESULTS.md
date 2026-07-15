@@ -53,3 +53,21 @@ Verification before checkpoint:
 - JSON parse for `ops/execution/registry.json`, `STATE.json`, `MIGRATION-LEDGER.json`, `RELEASE-MANIFEST.json`, and `ACTION-AND-ROUTE-REGISTRY.json` - PASS.
 - `npm run secret:scan` - PASS across 389 repo text files.
 - `git diff --check` - PASS with line-ending warnings only.
+
+## OT-72 Merge Checkpoint
+
+Collision resolution:
+
+- Renamed source-lane migration `1700_ot72_provider_truth.sql` to
+  `1800_ot72_provider_truth.sql`.
+- Reconciled the Telegram DB migration-order test so it requires OT51,
+  OT71, and OT72 migrations.
+
+Verification before checkpoint:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/ot72-provider-adapters.test.ts` - PASS, 1 file, 8 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/ot72-provider-truth.test.ts tests/integration/telegram-db-foundation.test.ts` - PASS, 2 files, 3 tests.
+- JSON parse for `ops/execution/registry.json`, `STATE.json`, `MIGRATION-LEDGER.json`, `RELEASE-MANIFEST.json`, and `ACTION-AND-ROUTE-REGISTRY.json` - PASS.
+- `npm run secret:scan` - PASS across 424 repo text files.
+- `git diff --check` - PASS with line-ending warnings only.

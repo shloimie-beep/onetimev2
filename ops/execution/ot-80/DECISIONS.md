@@ -34,3 +34,14 @@ The generic `audience` import-preview line and migration
 to avoid duplicate write paths. OT74 historical evidence remains preserved as
 provenance, but product code now exposes only the legacy audience
 reconciliation model.
+
+## DEC-OT80-005 - OT72 Provider Truth Migration Renumber
+
+OT71 already owns migration prefix `1700` through
+`1700_ot71_account_lifecycle.sql`. During OT72 integration, OT80 renamed the
+provider-truth migration from the source-lane name
+`1700_ot72_provider_truth.sql` to `1800_ot72_provider_truth.sql`.
+
+Active tests and OT72 integration references were updated to the `1800`
+identifier. The frozen OT80 source-head inventory still lists the fetched
+source-lane file name as provenance.

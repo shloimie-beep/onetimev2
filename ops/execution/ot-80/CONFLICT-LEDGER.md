@@ -34,10 +34,30 @@ Verification before checkpoint:
 - `npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts` - PASS, 8 tests.
 - `npx tsx scripts/ot74/audience-dry-run.ts --rows=10000` - PASS, counts-only output with `raw_row_contents_included: false` and `production_side_effects: false`.
 
+## OT-72
+
+Merged `origin/codex/ot72-provider-sandbox-train` with one content conflict in
+`tests/integration/telegram-db-foundation.test.ts`.
+
+Resolved deliberately:
+
+- Preserved OT71 account-lifecycle migration coverage.
+- Preserved OT72's explicit Telegram foundation migration assertion.
+- Renamed OT72 provider-truth migration from `1700_ot72_provider_truth.sql` to
+  `1800_ot72_provider_truth.sql`.
+- Updated the OT72 provider-truth test, Telegram migration-order test, and
+  OT72 integration references to `1800_ot72_provider_truth`.
+- Preserved the OT72 PostgreSQL assurance teardown guard in
+  `scripts/postgres-assurance/run.ts`.
+
+Verification before checkpoint:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/ot72-provider-adapters.test.ts` - PASS, 8 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/ot72-provider-truth.test.ts tests/integration/telegram-db-foundation.test.ts` - PASS, 3 tests.
+
 Known required collision work from the OT80 packet:
 
-- OT-71 and OT-72 both use migration prefix `1700`; provider-truth migration
-  must be renumbered to the next stable free prefix during integration.
 - OT-75 must preserve OT-72 PostgreSQL teardown guard.
 - OT-71 and OT-72 Telegram DB test overlap must be reconciled without weakening
   product isolation or provider-truth assertions.

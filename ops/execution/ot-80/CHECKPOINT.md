@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T12:08:00+03:00`
+Updated: `2026-07-15T12:18:00+03:00`
 
 ## Phase 0 Status
 
@@ -87,6 +87,25 @@ Verification after canonicalization:
 - `npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts` - PASS, 8 tests.
 - `npx tsx scripts/ot74/audience-dry-run.ts --rows=10000` - PASS, counts-only output with no production side effects.
 
-Next: commit and push this OT-74 checkpoint, then integrate OT-72 provider
-sandbox/default-off infrastructure and renumber its provider-truth migration
-away from the OT-71 `1700` prefix.
+## OT-72 Integration
+
+- Merged `origin/codex/ot72-provider-sandbox-train`.
+- Source head:
+  `62ad1d39242f1a8745ad5da5c2a016301eb276c3`.
+- Merge commit:
+  `bdddf576fc39615d9b6cb6414695651de33d331d`.
+- Resolved one conflict in `tests/integration/telegram-db-foundation.test.ts`.
+- Preserved OT72 PostgreSQL assurance teardown guard.
+- Renamed provider-truth migration from source-lane
+  `1700_ot72_provider_truth.sql` to
+  `1800_ot72_provider_truth.sql`.
+
+Verification after renumbering:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/ot72-provider-adapters.test.ts` - PASS, 8 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/ot72-provider-truth.test.ts tests/integration/telegram-db-foundation.test.ts` - PASS, 3 tests.
+
+Next: commit and push this OT-72 checkpoint, then implement Day-One
+communications directly from the preserved audit archive unless a late refetch
+discovers a safe communications implementation lane.

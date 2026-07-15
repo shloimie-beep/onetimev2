@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.ot80.action_route_registry.v1",
-  "updated_at": "2026-07-15T12:08:00+03:00",
+  "updated_at": "2026-07-15T12:18:00+03:00",
   "status": "partial_lane_inventory",
   "routes": [
     {
@@ -61,7 +61,43 @@
       "source": "apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx",
       "status": "unmounted",
       "route_id": "route.ot74.audience_reconciliation.rollback_requests"
+    },
+    {
+      "id": "action.ot72.billing.stripe_test_checkout",
+      "surface": "internal provider adapter",
+      "source": "packages/domain/src/billing/stripe-test-adapter.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["test_mode", "livemode_reject", "server_redirect_vault"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot72.delivery.resend_canary_send",
+      "surface": "worker provider router",
+      "source": "apps/worker/src/delivery/provider-router.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["feature_flag", "exact_canary_destination"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot72.provider_truth.record_redacted_event",
+      "surface": "provider truth repository",
+      "source": "packages/db/src/providers/repository.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["redacted_provider_ref", "scoped_account_product"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot72.telegram.one_time_transport",
+      "surface": "One Time Telegram transport",
+      "source": "packages/domain/src/telegram/transport.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["feature_flag", "single_consumer_gate", "exact_canary_chat"],
+      "external_mutation_allowed": false
     }
   ],
-  "next_action": "Continue populating after OT72, communications, OT73, OT75, OT76, and final mount reconciliation."
+  "next_action": "Continue populating after communications, OT73, OT75, OT76, and final mount reconciliation."
 }

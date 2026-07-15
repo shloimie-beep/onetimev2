@@ -7,8 +7,8 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T12:08:00+03:00",
-  "status": "ot74_integrated_checkpoint_ready",
+  "updated_at": "2026-07-15T12:18:00+03:00",
+  "status": "ot72_integrated_checkpoint_ready",
   "candidate_status": "NOT_READY",
   "current_phase": "phase1_source_lane_integration",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
@@ -35,8 +35,8 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the OT-74 checkpoint records.",
-    "Integrate OT-72 provider sandbox/default-off infrastructure next and resolve the 1700 migration prefix collision by renumbering provider truth to the next stable free prefix.",
+    "Commit and push the OT-72 checkpoint records.",
+    "Implement Day-One communications directly from the preserved archive unless a later source refetch discovers a safe communications implementation lane.",
     "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
   ],
   "integrated_lanes": [
@@ -56,6 +56,15 @@
       "status": "merged_canonicalized",
       "canonical_model": "legacy_audience_reconciliation",
       "remaining_from_source": "PostgreSQL 16 CI and final mounted-route certification remain pending for OT80 final certification; no production import, send, provider mutation, or contact deletion was authorized."
+    },
+    {
+      "task": "OT-72",
+      "source_branch": "codex/ot72-provider-sandbox-train",
+      "source_head": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+      "merge_commit": "bdddf576fc39615d9b6cb6414695651de33d331d",
+      "status": "merged_renumbered",
+      "provider_truth_migration": "1800_ot72_provider_truth",
+      "remaining_from_source": "Remote PostgreSQL assurance rerun remains pending after OT80 push; all provider operations remain default-off with no external mutations."
     }
   ]
 }

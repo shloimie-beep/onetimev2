@@ -44,3 +44,19 @@
   migration `1200_ot74_audience_reconciliation.sql` from the merge result.
 - Verified the merged canonical path with typecheck, focused OT74 unit tests,
   focused OT74 integration tests, and a 10k-row synthetic dry run.
+
+## Phase 1 - OT-72 Provider Sandbox
+
+- Merged `origin/codex/ot72-provider-sandbox-train` into the OT80 conductor
+  branch.
+- Brought in default-off provider seams for Stripe test billing, Resend/WAPI
+  delivery routing, Zoom readiness/launch descriptors, Vimeo playback
+  readiness, One Time Telegram transport, and redacted BNA oversight outcomes.
+- Preserved the PostgreSQL assurance teardown guard in
+  `scripts/postgres-assurance/run.ts`.
+- Resolved the Telegram DB test overlap by preserving OT71 account lifecycle
+  coverage and adding OT72 provider-truth migration coverage.
+- Renamed OT72 provider truth from `1700_ot72_provider_truth.sql` to
+  `1800_ot72_provider_truth.sql` because OT71 owns the `1700` prefix in OT80.
+- Verified the merged provider path with typecheck, focused OT72 unit tests,
+  and focused OT72/Telegram integration tests.

@@ -1,13 +1,13 @@
 {
   "schema_version": "onetime.ot80.migration_ledger.v1",
-  "updated_at": "2026-07-15T12:08:00+03:00",
-  "status": "ot74_integrated",
+  "updated_at": "2026-07-15T12:18:00+03:00",
+  "status": "ot72_integrated",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "known_collisions": [
     {
       "id": "MIGRATION-COLLISION-OT71-OT72-1700",
-      "status": "pending_integration",
-      "description": "OT-71 and OT-72 both use migration prefix 1700; OT80 must preserve dependency order, renumber provider truth to the next stable free prefix, and update checksums/tests/references."
+      "status": "resolved_in_ot80",
+      "description": "OT80 preserved OT-71 as 1700_ot71_account_lifecycle and renumbered OT-72 provider truth to 1800_ot72_provider_truth."
     },
     {
       "id": "MIGRATION-COLLISION-OT74-AUDIENCE-DUPLICATES",
@@ -40,6 +40,24 @@
         "packages/db/migrations/1200_ot74_audience_reconciliation.sql"
       ],
       "notes": "The generic audience import-preview migration and write path were removed from the merge result. The retained migration is dry-run/idempotency/audit focused and does not authorize production import, sends, provider mutations, or contact deletion."
+    },
+    {
+      "task": "OT-72",
+      "status": "merged_renumbered",
+      "source_branch": "codex/ot72-provider-sandbox-train",
+      "source_head": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+      "merge_commit": "bdddf576fc39615d9b6cb6414695651de33d331d",
+      "retained_migrations": [
+        "packages/db/migrations/1800_ot72_provider_truth.sql"
+      ],
+      "renamed_from_source": [
+        {
+          "from": "packages/db/migrations/1700_ot72_provider_truth.sql",
+          "to": "packages/db/migrations/1800_ot72_provider_truth.sql",
+          "reason": "OT-71 already occupies the 1700 prefix in OT80."
+        }
+      ],
+      "notes": "Provider truth remains default-off and redacted. No live charge, send, webhook registration, provider mutation, deployment, DNS change, or production database mutation was authorized."
     }
   ]
 }
