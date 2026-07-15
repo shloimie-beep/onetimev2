@@ -1,6 +1,42 @@
 {
   "schema_version": 1,
   "task_id": "OT-87",
-  "updated_at": "2026-07-15T19:26:10.6882207+03:00",
-  "blockers": []
+  "updated_at": "2026-07-15T20:07:30+03:00",
+  "blockers": [
+    {
+      "blocker_key": "OT87-BLOCKER-STRIPE-TEST-RESOURCES",
+      "status": "waiting_for_operator_protected_config",
+      "scope": "stripe_test_resources",
+      "summary": "Protected Stripe TEST resources are not configured in this environment.",
+      "missing_resource_kinds": [
+        "secret_key",
+        "account",
+        "product",
+        "price",
+        "portal_configuration",
+        "webhook_endpoint"
+      ],
+      "evidence": [
+        "ops/codex-runs/OT-87/stripe-test-resources-validate.json",
+        "ops/codex-runs/OT-87/stripe-test-resources-setup-dry-run.json"
+      ],
+      "blocked_work": [
+        "read-only Stripe TEST resource validation",
+        "Stripe TEST setup apply",
+        "Stripe TEST canaries",
+        "provider-backed reconciliation against real TEST resources"
+      ],
+      "safe_completed_state": "Code, migrations, fixture/local tests, operator commands, and run-state evidence are complete with zero external mutations."
+    },
+    {
+      "blocker_key": "OT87-BLOCKER-RECONCILIATION-DB",
+      "status": "waiting_for_test_database",
+      "scope": "billing_reconciliation",
+      "summary": "The reconciliation dry-run command also reported DATABASE_URL absent.",
+      "missing_resource_kinds": ["database_url"],
+      "evidence": ["ops/codex-runs/OT-87/reconciliation/dry-run.json"],
+      "blocked_work": ["database-backed reconciliation candidate scan"],
+      "safe_completed_state": "Reconciliation command is present, gated, redacted, and fails closed without Stripe or local writes."
+    }
+  ]
 }

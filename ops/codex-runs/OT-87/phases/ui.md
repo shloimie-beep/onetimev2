@@ -1,5 +1,7 @@
 # OT-87 Phase Ledger - UI
 
-Status: not started.
+Status: locally verified.
 
-- Authenticated billing surfaces and public price-regression assertions still need implementation.
+- Parent portal billing summary/action surface added with exact family plan truth.
+- Public landing remains price/trial free through brand/source checks.
+- Paid content/class access now uses local entitlement projections.

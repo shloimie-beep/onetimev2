@@ -31,31 +31,17 @@
     "account_validation": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "status",
-        "validated_at",
-        "account_fingerprint"
-      ],
+      "required": ["status", "validated_at", "account_fingerprint"],
       "properties": {
         "status": {
-          "enum": [
-            "not_checked",
-            "validated_test",
-            "failed"
-          ]
+          "enum": ["not_checked", "validated_test", "failed"]
         },
         "validated_at": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "account_fingerprint": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "maxLength": 128
         }
       }
@@ -138,12 +124,7 @@
             "maxLength": 240
           },
           "cleanup_status": {
-            "enum": [
-              "not_required",
-              "pending",
-              "completed",
-              "failed_safe"
-            ]
+            "enum": ["not_required", "pending", "completed", "failed_safe"]
           }
         }
       }
@@ -183,26 +164,13 @@
     "cleanup": {
       "type": "object",
       "additionalProperties": false,
-      "required": [
-        "status",
-        "completed_at",
-        "remaining_test_resources"
-      ],
+      "required": ["status", "completed_at", "remaining_test_resources"],
       "properties": {
         "status": {
-          "enum": [
-            "not_started",
-            "not_required",
-            "in_progress",
-            "completed",
-            "failed_safe"
-          ]
+          "enum": ["not_started", "not_required", "in_progress", "completed", "failed_safe"]
         },
         "completed_at": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "remaining_test_resources": {

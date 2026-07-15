@@ -2,7 +2,9 @@
 
 ## Current State
 
-Initial run-state checkpoint is being created on branch `codex/ot87-stripe-test-entitlements` from source SHA `a02d1d254ae0d17804fb657079a7871567260ea2`.
+Local OT-87 implementation and verification are complete on branch `codex/ot87-stripe-test-entitlements` from source SHA `a02d1d254ae0d17804fb657079a7871567260ea2`.
+
+State is `WAITING_FOR_STRIPE_TEST_RESOURCES` because protected Stripe TEST resources are absent in this environment. No live charges, live resources, TEST charges, TEST resources, Checkout Sessions, subscriptions, refunds, disputes, or webhook deliveries were created.
 
 ## Next Safe Commands
 
@@ -12,12 +14,21 @@ git status --short --branch
 git log --oneline --decorate -5
 ```
 
-After the initial checkpoint is committed and pushed, continue with current-state inspection:
+When protected Stripe TEST resources are configured outside the repo, validate without exposing values:
 
 ```powershell
-rg -n "billing|stripe|checkout|portal|entitlement|household|learner|student access|ticker|hero" packages apps tests ops -g "*.*"
-Get-ChildItem -LiteralPath packages\db\migrations -Filter *.sql | Sort-Object Name | Select-Object -Last 20 Name
+$env:LIVE_STRIPE_CHARGES_AUTHORIZED='NO'
+npm run stripe:test:resources:validate -- --output=ops/codex-runs/OT-87/stripe-test-resources-validate.json
 ```
+
+Default reconciliation dry run after a safe test database is available:
+
+```powershell
+$env:LIVE_STRIPE_CHARGES_AUTHORIZED='NO'
+npm run billing:reconcile:test -- --scope=family --dry-run --output=ops/codex-runs/OT-87/reconciliation/dry-run.json
+```
+
+Canaries remain blocked until validation succeeds and the explicit canary gate is set.
 
 ## Forbidden Without Later Gates
 

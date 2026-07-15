@@ -15,6 +15,7 @@ type BillingRouterDeps = {
   authorization: BillingAuthorizationAdapter;
   resolveActor: (req: Request) => Promise<BillingActorContext>;
   verifyCsrf: (req: Request) => Promise<boolean>;
+  includeWebhook?: boolean;
 };
 
 export function createBillingRouter(deps: BillingRouterDeps) {
@@ -60,20 +61,32 @@ export function createBillingRouter(deps: BillingRouterDeps) {
     respond(res, await services.requestReconciliation({ actor, payload: req.body }));
   });
 
-  router.post(
-    '/webhooks/provider',
-    express.raw({ type: '*/*', limit: '64kb' }),
-    async (req, res) => {
-      respond(
-        res,
-        await services.receiveWebhook({
-          rawBody: req.body,
-          signatureHeader: req.header('x-fixture-billing-signature'),
-          parsedBodyWasUsed: !Buffer.isBuffer(req.body),
-        }),
-      );
-    },
-  );
+  if (deps.includeWebhook !== false) {
+    router.post(
+      '/webhooks/provider',
+      express.raw({ type: '*/*', limit: '64kb' }),
+      async (req, res) => {
+        const contentType = req.header('content-type') ?? '';
+        if (!contentType.includes('application/json')) {
+          res.status(415).json({
+            success: false,
+            code: 'UNSUPPORTED_MEDIA_TYPE',
+            message: 'Stripe webhook content type is not accepted.',
+          });
+          return;
+        }
+        respond(
+          res,
+          await services.receiveWebhook({
+            rawBody: req.body,
+            signatureHeader:
+              req.header('stripe-signature') ?? req.header('x-fixture-billing-signature'),
+            parsedBodyWasUsed: !Buffer.isBuffer(req.body),
+          }),
+        );
+      },
+    );
+  }
 
   return router;
 }

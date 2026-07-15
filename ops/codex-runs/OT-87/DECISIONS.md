@@ -18,3 +18,11 @@
 - Use the exact resolved OT83 source SHA `a02d1d254ae0d17804fb657079a7871567260ea2`.
 - Create a new target branch because the remote OT87 target branch was absent.
 - Store run state under `ops/codex-runs/OT-87/` before protected Stripe configuration inspection.
+
+## Runtime Decisions Made During Implementation
+
+- Keep OT-46 helper defaults projection-only and make OT-87 behavior opt-in through the OT-87 config policy version so accepted OT-46 tests remain meaningful.
+- Use the accepted Stripe test adapter seam and add an official SDK client wrapper instead of creating a second provider architecture.
+- Store raw hosted Checkout and Customer Portal URLs only in `billing_redirect_vault`; browser/API responses receive local redirect handles.
+- Treat missing protected Stripe TEST resources as a terminal waiting state for provider validation/canaries, not as permission to infer or ask for secret values in chat.
+- Seed active entitlement projections in legacy portal/content/class tests that assert provider-unavailable launch behavior, because OT-87 correctly gates paid learning resources by local household entitlement.

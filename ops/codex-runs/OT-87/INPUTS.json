@@ -2,7 +2,8 @@
   "schema_version": 1,
   "task_id": "OT-87",
   "created_at": "2026-07-15T19:26:10.6882207+03:00",
-  "inspection_boundary": "Created before protected Stripe configuration inspection.",
+  "updated_at": "2026-07-15T20:07:30+03:00",
+  "inspection_boundary": "Protected configuration inventory inspected by command surface only; no values were stored.",
   "server_only": {
     "ONE_TIME_STRIPE_TEST_SECRET_KEY": false,
     "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET": false,
@@ -23,6 +24,7 @@
   },
   "notes": [
     "False means not configured in the pre-checkpoint inventory, not a request for values.",
+    "Read-only validation confirmed the resource kinds remain absent in this environment.",
     "No raw secret, provider ID, provider URL, PII, or credential value is stored here."
   ]
 }

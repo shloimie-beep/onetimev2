@@ -1,6 +1,6 @@
 const checkoutSuccessPath = '/app/billing/checkout/success';
 const checkoutCancelPath = '/app/billing/checkout/cancel';
-const portalReturnPath = '/app/billing';
+const portalReturnPath = '/app/parent';
 
 export type BillingReturnPaths = {
   checkoutSuccessUrl: string;

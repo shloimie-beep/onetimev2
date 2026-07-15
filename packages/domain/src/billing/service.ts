@@ -115,12 +115,32 @@ export function createBillingServices(deps: BillingServicesDeps) {
       if (!offer) return denied('OFFER_NOT_CONFIGURED', 'Billing offer is not configured.', 404);
       await deps.repositories.upsertProviderAccount(account.value);
       await deps.repositories.upsertOfferPrice(offer);
-      const replay = await deps.repositories.findCheckout({
+      const requestFingerprint = digest(
+        JSON.stringify({
+          principal: principal.value,
+          offer_key: parsed.data.offer_key,
+          idempotency_key: parsed.data.idempotency_key,
+          version: parsed.data.version,
+        }),
+      );
+      const started = await deps.repositories.startCheckoutSession({
         principal: principal.value,
-        offer_key: parsed.data.offer_key,
+        offer,
         idempotency_key: parsed.data.idempotency_key,
+        request_fingerprint: requestFingerprint,
       });
-      if (replay) return { ok: true as const, value: replay };
+      if (started.status === 'conflict') {
+        return denied(
+          'IDEMPOTENCY_CONFLICT',
+          'This checkout idempotency key was already used for a different request.',
+          409,
+        );
+      }
+      if (started.status === 'replayed') return { ok: true as const, value: started.checkout };
+      const providerCustomerRef = await deps.repositories.findCustomerMapping({
+        principal: principal.value,
+        providerAccount: account.value,
+      });
       let provider;
       try {
         provider = await deps.providerAdapter.createCheckoutSession({
@@ -128,6 +148,9 @@ export function createBillingServices(deps: BillingServicesDeps) {
           providerAccount: account.value,
           offer,
           idempotencyKey: parsed.data.idempotency_key,
+          localCheckoutRequestKey: started.checkoutRequestKey,
+          policyVersion: deps.config.policyVersion,
+          ...(providerCustomerRef ? { provider_customer_ref: providerCustomerRef } : {}),
           successUrl: paths.checkoutSuccessUrl,
           cancelUrl: paths.checkoutCancelUrl,
         });
@@ -183,6 +206,9 @@ export function createBillingServices(deps: BillingServicesDeps) {
           principal: principal.value,
           providerAccount: account.value,
           provider_customer_ref: providerCustomerRef,
+          ...(deps.config.providerPortalConfigurationRef
+            ? { provider_portal_configuration_ref: deps.config.providerPortalConfigurationRef }
+            : {}),
           idempotencyKey: parsed.data.idempotency_key,
           returnUrl: paths.portalReturnUrl,
         });
@@ -192,6 +218,9 @@ export function createBillingServices(deps: BillingServicesDeps) {
       if (provider.livemode || provider.mode !== deps.config.mode) {
         return denied('PROVIDER_MODE_REJECTED', 'Billing provider mode was rejected.', 502);
       }
+      await audit('billing_customer_portal_created', principal.value, {
+        entitlement_changed: false,
+      });
       return {
         ok: true as const,
         value: {
@@ -250,6 +279,14 @@ export function createBillingServices(deps: BillingServicesDeps) {
           reason: 'same_event_id_different_digest',
         });
         return disposition('digest_mismatch', 'Billing event digest mismatch.', 409);
+      }
+      if (!deps.config.webhookProjectionEnabled) {
+        await deps.repositories.recordAttempt({
+          event_key: envelope.event_key,
+          disposition: 'accepted',
+          reason: 'webhook_projection_disabled',
+        });
+        return disposition('accepted', 'Billing event ledgered without projection.', 200);
       }
       const processed = await processVerifiedEvent(envelope, verified.object_refs, account.value);
       await deps.repositories.recordAttempt({
@@ -321,11 +358,19 @@ export function createBillingServices(deps: BillingServicesDeps) {
   ): Promise<WebhookProcessResult> {
     if (
       ![
+        'checkout.session.completed',
+        'checkout.session.expired',
         'customer.subscription.created',
         'customer.subscription.updated',
         'customer.subscription.deleted',
+        'customer.subscription.paused',
+        'customer.subscription.resumed',
         'invoice.paid',
         'invoice.payment_failed',
+        'invoice.payment_action_required',
+        'charge.refunded',
+        'charge.dispute.created',
+        'charge.dispute.closed',
       ].includes(envelope.event_type)
     ) {
       return { disposition: 'unknown_event', reason: 'unknown_event_type', status: 202 };
@@ -355,6 +400,50 @@ export function createBillingServices(deps: BillingServicesDeps) {
       return { disposition: 'wrong_scope', reason: 'event_scope_mismatch', status: 202 };
     }
 
+    if (envelope.event_type === 'checkout.session.completed') {
+      if (!refs.provider_checkout_session_ref || !refs.provider_subscription_ref) {
+        return {
+          disposition: 'wrong_customer_correlation',
+          reason: 'checkout_completed_missing_required_refs',
+          status: 202,
+        };
+      }
+      const checkoutPrincipal = await deps.repositories.markCheckoutCompleted({
+        provider_checkout_session_ref: refs.provider_checkout_session_ref,
+        provider_customer_ref: refs.provider_customer_ref,
+        provider_subscription_ref: refs.provider_subscription_ref,
+      });
+      if (!checkoutPrincipal || checkoutPrincipal.principal_key !== principal.principal_key) {
+        return {
+          disposition: 'wrong_customer_correlation',
+          reason: 'checkout_completed_missing_local_request_correlation',
+          status: 202,
+        };
+      }
+      await audit('billing_checkout_completed', principal, {
+        entitlement_changed: false,
+        reason: 'checkout_completion_alone_never_grants_access',
+      });
+      return {
+        disposition: 'accepted',
+        reason: 'checkout_completed_no_entitlement_change',
+        status: 200,
+      };
+    }
+
+    if (envelope.event_type === 'checkout.session.expired') {
+      if (refs.provider_checkout_session_ref) {
+        await deps.repositories.markCheckoutExpired({
+          provider_checkout_session_ref: refs.provider_checkout_session_ref,
+        });
+      }
+      return {
+        disposition: 'accepted',
+        reason: 'checkout_expired_no_entitlement_change',
+        status: 200,
+      };
+    }
+
     if (envelope.event_type.startsWith('customer.subscription.')) {
       const subscription = subscriptionProjection(principal, envelope, refs);
       const projection = await deps.repositories.upsertSubscriptionProjection(subscription);
@@ -365,15 +454,25 @@ export function createBillingServices(deps: BillingServicesDeps) {
           status: 202,
         };
       }
-      const entitlement = evaluateBillingEntitlement({
-        principal,
-        subscription,
-        source: envelope.event_key,
-        effectiveAt: new Date(subscription.provider_updated_at),
-        evaluatedAt: clock(),
-        reconciliationConfidence: 'verified',
-      });
-      await deps.repositories.upsertEntitlementProjection(entitlement);
+      if (projection.status === 'contradictory') {
+        const entitlement = evaluateBillingEntitlement({
+          principal,
+          subscription,
+          source: envelope.event_key,
+          effectiveAt: new Date(subscription.provider_updated_at),
+          evaluatedAt: clock(),
+          reconciliationConfidence: 'contradictory',
+          policyVersion: deps.config.policyVersion,
+          emergencyMode: deps.config.entitlementEmergencyMode,
+        });
+        await deps.repositories.upsertEntitlementProjection(entitlement);
+        return {
+          disposition: 'contradictory_event',
+          reason: 'equal_time_subscription_contradiction',
+          status: 202,
+        };
+      }
+      const entitlement = await recomputeEntitlement(principal, envelope.event_key, subscription);
       await audit('billing_subscription_projected', principal, {
         event_type: envelope.event_type,
         entitlement_status: entitlement.status,
@@ -389,12 +488,19 @@ export function createBillingServices(deps: BillingServicesDeps) {
         provider_account_ref: envelope.provider_account_ref,
         provider_invoice_ref: refs.provider_invoice_ref,
         provider_subscription_ref: refs.provider_subscription_ref ?? null,
-        status: envelope.event_type === 'invoice.paid' ? 'paid' : 'payment_failed',
+        status: invoiceStatusForEvent(envelope.event_type),
         currency: (refs.currency ?? 'usd').toLowerCase(),
         amount_due_cents: refs.amount_due_cents ?? 0,
         amount_paid_cents: refs.amount_paid_cents ?? 0,
+        refunded_amount_cents: refs.refunded_amount_cents ?? 0,
+        dispute_state: refs.dispute_state ?? 'none',
         issued_at: refs.issued_at ?? envelope.provider_created_at,
         source_event_key: envelope.event_key,
+      });
+      const entitlement = await recomputeEntitlement(principal, envelope.event_key);
+      await audit('billing_invoice_projected', principal, {
+        event_type: envelope.event_type,
+        entitlement_status: entitlement.status,
       });
       return { disposition: 'accepted', reason: 'invoice_summary_updated', status: 200 };
     }
@@ -430,6 +536,40 @@ export function createBillingServices(deps: BillingServicesDeps) {
       product_key: principal.product_key,
     });
   }
+
+  async function recomputeEntitlement(
+    principal: BillingPrincipalRef,
+    source: string,
+    suppliedSubscription?: BillingSubscriptionProjection,
+  ) {
+    const subscription =
+      suppliedSubscription ?? (await deps.repositories.currentSubscription(principal));
+    const invoice = subscription
+      ? await deps.repositories.currentInvoiceForSubscription({
+          principal,
+          provider_subscription_ref: subscription.provider_subscription_ref,
+          provider_invoice_ref: subscription.latest_invoice_ref,
+        })
+      : null;
+    const effectiveAt = subscription
+      ? new Date(subscription.provider_updated_at)
+      : invoice?.issued_at
+        ? new Date(invoice.issued_at)
+        : clock();
+    const entitlement = evaluateBillingEntitlement({
+      principal,
+      subscription,
+      currentInvoice: invoice,
+      source,
+      effectiveAt,
+      evaluatedAt: clock(),
+      reconciliationConfidence: 'verified',
+      policyVersion: deps.config.policyVersion,
+      emergencyMode: deps.config.entitlementEmergencyMode,
+    });
+    await deps.repositories.upsertEntitlementProjection(entitlement);
+    return entitlement;
+  }
 }
 
 function subscriptionProjection(
@@ -446,11 +586,16 @@ function subscriptionProjection(
     provider_subscription_ref:
       refs.provider_subscription_ref ?? `unknown_${envelope.provider_event_id}`,
     status: normalizeSubscriptionStatus(refs.status),
+    current_period_start: refs.current_period_start ?? null,
     current_period_end: refs.current_period_end ?? null,
     cancel_at: refs.cancel_at ?? null,
     canceled_at: refs.canceled_at ?? null,
+    cancel_at_period_end: refs.cancel_at_period_end ?? false,
+    latest_invoice_ref: refs.latest_invoice_ref ?? null,
+    collection_state: collectionStateForSubscription(refs.status),
     provider_updated_at: envelope.provider_created_at,
     source_event_key: envelope.event_key,
+    projection_version: 1,
   };
 }
 
@@ -472,6 +617,20 @@ function normalizeSubscriptionStatus(
   return allowed.has(status ?? '')
     ? (status as BillingSubscriptionProjection['status'])
     : 'unknown';
+}
+
+function collectionStateForSubscription(status: string | undefined) {
+  if (status === 'past_due' || status === 'unpaid') return 'payment_failed' as const;
+  return 'unknown' as const;
+}
+
+function invoiceStatusForEvent(eventType: string) {
+  if (eventType === 'invoice.paid') return 'paid' as const;
+  if (eventType === 'invoice.payment_failed') return 'payment_failed' as const;
+  if (eventType === 'invoice.payment_action_required') return 'payment_action_required' as const;
+  if (eventType === 'charge.refunded') return 'refunded' as const;
+  if (eventType.startsWith('charge.dispute.')) return 'disputed' as const;
+  return 'unknown' as const;
 }
 
 function toEnvelope(

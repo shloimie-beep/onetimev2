@@ -1077,6 +1077,68 @@
       ]
     },
     {
+      "action_id": "portal.parent.billing.checkout.button",
+      "label": "Start checkout",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "billing:checkout",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/billing/checkout-sessions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "billing_checkout_created"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A bounded provider-unavailable state is shown.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "stripe_test_only_guarded",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/ot87-billing-entitlements.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.billing.portal.button",
+      "label": "Manage billing",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "billing:portal",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/billing/customer-portal-sessions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "billing_customer_portal_created"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A bounded provider-unavailable state is shown.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "stripe_test_only_guarded",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/ot87-billing-entitlements.test.ts"]
+    },
+    {
       "action_id": "portal.parent.support.preview.button",
       "label": "Technical support",
       "surface": "button",

@@ -1,5 +1,7 @@
 # OT-87 Phase Ledger - Webhook And Projection
 
-Status: not started.
+Status: locally verified.
 
-- Webhook state machine and entitlement projection still need implementation.
+- Implemented checkout, subscription, invoice, refund, and dispute event projection paths.
+- `checkout.session.completed` marks checkout completion but never grants access alone.
+- Entitlement projection grants access only with active/scheduled-end subscription truth plus paid USD 6700 invoice truth and no holds.

@@ -177,9 +177,7 @@
       "ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID",
       "ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID"
     ],
-    "browser_safe_when_required": [
-      "ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY"
-    ],
+    "browser_safe_when_required": ["ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY"],
     "operational_gates": [
       "LIVE_STRIPE_CHARGES_AUTHORIZED",
       "ONE_TIME_STRIPE_TEST_RESOURCE_SETUP_AUTHORIZED",

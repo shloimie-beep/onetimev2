@@ -1,5 +1,7 @@
 # OT-87 Phase Ledger - Adapter And Routes
 
-Status: not started.
+Status: locally verified.
 
-- Accepted adapter and route seams still need inspection.
+- Official Stripe SDK client wrapper added behind accepted adapter seam.
+- Checkout and Customer Portal routes derive principal scope server-side and return local redirect handles.
+- Webhook route is mounted before JSON parsing and preserves raw-body verification.
