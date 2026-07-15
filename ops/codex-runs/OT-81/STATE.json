@@ -1,0 +1,38 @@
+{
+  "run_id": "OT-81",
+  "status": "initialized",
+  "phase": "persist_first",
+  "updated_at": "2026-07-15T13:45:00+03:00",
+  "base_branch": "origin/codex/ot80-one-shot-final-convergence",
+  "base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+  "current_head_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+  "strict_certification": {
+    "status": "not_started_in_ot81",
+    "latest_report": null
+  },
+  "staging": {
+    "status": "not_started",
+    "url": null,
+    "external_mutations_performed": []
+  },
+  "blockers": {
+    "starting_count": 10,
+    "closed": [],
+    "open": [
+      "school_signup_lead_only_acknowledgement",
+      "crm_readonly_comms_capability_route_evidence",
+      "class_access_reminder_provider_default_off",
+      "content_review_publish_entitled_library_evidence",
+      "parent_household_student_identity_separation",
+      "provider_dependent_visible_action_readiness",
+      "visible_action_registry",
+      "responsive_accessibility_evidence",
+      "integrated_performance_measurements",
+      "release_migration_worker_rollback_evidence"
+    ]
+  },
+  "notes": [
+    "BNA worktree is not the target and was not modified for OT81.",
+    "External staging remains unauthorized until strict local/CI certification passes."
+  ]
+}
