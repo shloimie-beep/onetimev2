@@ -29,6 +29,8 @@ import {
   classOccurrenceDetailResponseSchema,
   classOccurrenceListQuerySchema,
   classOccurrenceListResponseSchema,
+  ot86bReadinessResponseSchema,
+  ot86bSocialDraftListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
 import type {
   PortalActorContext,
@@ -62,7 +64,10 @@ import {
   listAssignableUsers,
   listContacts,
   ownerAdminVisibleActions,
+  inspectOt86bBufferReadinessFromEnv,
+  listOt86bSocialDrafts,
   receiveOt86PublicationManifest,
+  receiveOt86bSocialEvent,
   replaceMfaRecoveryCodes,
   revokeMfaFactors,
   revokeSession,
@@ -140,6 +145,42 @@ export function createApp({
         return;
       }
       const result = await receiveOt86PublicationManifest({
+        pool,
+        rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
+        headers: {
+          contentType: req.header('content-type') ?? null,
+          keyId: req.header('x-ot86-key-id') ?? null,
+          timestamp: req.header('x-ot86-timestamp') ?? null,
+          deliveryId: req.header('x-ot86-delivery-id') ?? null,
+          signature: req.header('x-ot86-signature') ?? null,
+        },
+        secrets,
+      });
+      res.status(result.status).json({
+        success: result.status === 200 || result.status === 202,
+        code: result.code,
+        message: result.message,
+        receipt_state: result.receipt_state,
+        request_id: req.traceId,
+      });
+    },
+  );
+  app.post(
+    '/internal/social-publishing/v1/events',
+    express.raw({ type: 'application/json', limit: '512kb' }),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const secrets = ot86PublishSecrets(config);
+      if (secrets.length < 1) {
+        res.status(503).json({
+          success: false,
+          code: 'OT86_SOCIAL_SIGNING_UNCONFIGURED',
+          message: 'Social event intake is not configured.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const result = await receiveOt86bSocialEvent({
         pool,
         rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
         headers: {
@@ -845,6 +886,38 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/social-publishing/readiness', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canUseSocialPublishing(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot manage social publishing.', req.traceId));
+      return;
+    }
+    const readiness = inspectOt86bBufferReadinessFromEnv(ot86bBufferEnv(config));
+    res.json(ot86bReadinessResponseSchema.parse({ success: true, readiness }));
+  });
+
+  app.get('/api/v1/social-publishing/drafts', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canUseSocialPublishing(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view social drafts.', req.traceId));
+      return;
+    }
+    const drafts = await withTiming(req, 'db', () =>
+      listOt86bSocialDrafts({ pool, tenantId: config.accountKey, limit: 25 }),
+    );
+    res.json(
+      ot86bSocialDraftListResponseSchema.parse({ success: true, drafts, next_cursor: null }),
+    );
+  });
+
   app.post('/api/v1/crm/contacts', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -1288,6 +1361,10 @@ function canUseOwnerDashboard(role: string) {
   return role === 'owner' || role === 'admin';
 }
 
+function canUseSocialPublishing(role: string) {
+  return role === 'owner' || role === 'admin';
+}
+
 function ot86PublishSecrets(config: AppConfig) {
   const current =
     config.ot86PublishSigningKeyId && config.ot86PublishSigningSecret
@@ -1303,6 +1380,14 @@ function ot86PublishSecrets(config: AppConfig) {
         ]
       : [];
   return [...current, ...previous];
+}
+
+function ot86bBufferEnv(config: AppConfig): NodeJS.ProcessEnv {
+  return {
+    BUFFER_ACCESS_TOKEN: config.bufferAccessToken,
+    BUFFER_ORGANIZATION_ID: config.bufferOrganizationId,
+    BUFFER_DESTINATION_IDS: config.bufferDestinationIds,
+  };
 }
 
 function hashCookieValue(value: string) {

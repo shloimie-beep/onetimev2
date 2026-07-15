@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ot86:social-draft:v1",
+  "title": "OT86 Social Draft Revision v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "draft_id",
+    "revision_id",
+    "source_event_id",
+    "tenant_id",
+    "content_id",
+    "version_id",
+    "platform",
+    "renderer_version",
+    "text",
+    "hashtags",
+    "media",
+    "source_excerpt_ids",
+    "privacy",
+    "revision_sha256",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "draft_id": {
+      "$ref": "#/$defs/id"
+    },
+    "revision_id": {
+      "$ref": "#/$defs/id"
+    },
+    "supersedes_revision_id": {
+      "$ref": "#/$defs/id"
+    },
+    "source_event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "tenant_id": {
+      "$ref": "#/$defs/id"
+    },
+    "content_id": {
+      "$ref": "#/$defs/id"
+    },
+    "version_id": {
+      "$ref": "#/$defs/id"
+    },
+    "platform": {
+      "enum": ["linkedin", "facebook", "instagram", "x"]
+    },
+    "renderer_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000
+    },
+    "hashtags": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^#[^\\s#]{1,80}$"
+      }
+    },
+    "media": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["asset_id", "uri", "mime_type", "sha256", "subject_classification", "privacy"],
+        "properties": {
+          "asset_id": {
+            "$ref": "#/$defs/id"
+          },
+          "uri": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "mime_type": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 128
+          },
+          "sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "subject_classification": {
+            "enum": ["no_people", "rabbi_only", "graphics_only"]
+          },
+          "privacy": {
+            "$ref": "#/$defs/privacy"
+          }
+        }
+      }
+    },
+    "source_excerpt_ids": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/id"
+      }
+    },
+    "privacy": {
+      "$ref": "#/$defs/privacy"
+    },
+    "revision_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contains_learner_name",
+        "contains_learner_voice",
+        "contains_learner_face",
+        "contains_learner_question",
+        "contains_private_data",
+        "scan_status"
+      ],
+      "properties": {
+        "contains_learner_name": {
+          "const": false
+        },
+        "contains_learner_voice": {
+          "const": false
+        },
+        "contains_learner_face": {
+          "const": false
+        },
+        "contains_learner_question": {
+          "const": false
+        },
+        "contains_private_data": {
+          "const": false
+        },
+        "scan_status": {
+          "const": "passed"
+        }
+      }
+    }
+  }
+}
