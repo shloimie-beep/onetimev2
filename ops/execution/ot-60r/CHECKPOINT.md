@@ -6,8 +6,8 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #10 / OT-47 evidence-only blocker recorded
-- Status: building
+- Phase: final verification complete
+- Status: candidate
 
 ## Completed
 
@@ -66,6 +66,9 @@
 - Preserved PR #10 / OT-47 as evidence-only blocker documentation.
 - Marked content/library implementation as `not_implemented_environmental_gate`; no OT-47 product code, migration, API, UI, worker, provider adapter, deployment, or mutation is claimed.
 - Committed the PR #10 / OT-47 evidence-only checkpoint at `9e402ab5caadc5e0a15e250967c627a9a021f25b`.
+- Updated stale CRM core E2E expectations to the accepted OT-39 shell behavior and refreshed OT-39 performance evidence.
+- Final verification passed: `npm run test`, `npm run lint`, `npm run build`, JSON parse, `git diff --check`, `npm run secret:scan`, `npm run e2e`, `npm run accessibility`, and `npm run performance`.
+- Candidate code/evidence head: `9e275e28a80cc8bf7fa82ade1092cd8cc21510d4`.
 
 ## Last Safe Command
 
@@ -76,9 +79,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-npm run typecheck
+git push origin codex/ot60r-recovery-convergence
 ```
 
-Continue final verification and candidate closeout. Preserve the no-deploy/no-production/no-provider/no-send/no-payment/no-DNS/no-real-user prohibitions.
+Push the final candidate checkpoint and open one draft PR against `codex/crm-core-v1`.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

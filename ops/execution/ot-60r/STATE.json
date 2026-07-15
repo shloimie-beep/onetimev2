@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "9e402ab5caadc5e0a15e250967c627a9a021f25b",
-  "phase": "pr10_ot47_evidence_only_recorded",
-  "status": "building",
+  "current_head_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
+  "phase": "final_verification_complete",
+  "status": "candidate",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T03:04:07+03:00",
+  "updated_at": "2026-07-15T03:13:58+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -67,11 +67,13 @@
     "Downloaded and recorded the passing OT-37 sanitized PostgreSQL assurance reports under ops/evidence/ot-37/ci-run-29377668001.",
     "Preserved PR #10 / OT-47 as evidence-only blocker documentation.",
     "Marked OT-47 content/library implementation as not_implemented_environmental_gate with no product code, migration, API, worker, UI, provider, deployment, or mutation claim.",
-    "Committed the PR #10 / OT-47 evidence-only checkpoint at 9e402ab5caadc5e0a15e250967c627a9a021f25b."
+    "Committed the PR #10 / OT-47 evidence-only checkpoint at 9e402ab5caadc5e0a15e250967c627a9a021f25b.",
+    "Updated stale CRM core E2E expectations to the accepted OT-39 shell behavior and refreshed OT-39 performance screenshots/report.",
+    "Completed final local verification: unit/integration tests, lint, build/typecheck, JSON parse, whitespace, secret scan, E2E, accessibility, and performance/bundle checks passed.",
+    "Marked the recovery branch as a canonical candidate at code/evidence head 9e275e28a80cc8bf7fa82ade1092cd8cc21510d4."
   ],
   "remaining_steps": [
-    "Run required local verification and record blocked checks honestly.",
-    "Open draft PR against codex/crm-core-v1 after a pushed resumable checkpoint exists."
+    "Push the final candidate checkpoint and open one draft PR against codex/crm-core-v1."
   ],
   "blockers": [],
   "last_safe_command": "npm run secret:scan",
@@ -360,6 +362,51 @@
       "command": "git diff --check --cached",
       "status": "passed",
       "summary": "No staged whitespace errors detected before the OT-47 evidence-only commit."
+    },
+    {
+      "command": "npm run test",
+      "status": "passed",
+      "summary": "Full unit and integration suites passed: 87 unit tests and 56 integration tests."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "eslint . completed successfully during final verification."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Clean build completed, including public/app bundles, public page build, and typecheck."
+    },
+    {
+      "command": "node -e \"JSON.parse(...)\"",
+      "status": "passed",
+      "summary": "Parsed OT-60R STATE.json, CANONICAL-CANDIDATE.json, and OT-37 PostgreSQL report JSON successfully."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 301 repo text files."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "failed",
+      "summary": "Initial final E2E run found stale pre-OT39 crm-core.spec expectations for disabled search and ambiguous CRM link focus."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed",
+      "summary": "After aligning crm-core.spec with the accepted OT-39 shell behavior, all 16 E2E tests passed."
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "summary": "Accessibility suite passed 5 Playwright/axe tests."
+    },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "summary": "Performance suite passed 5 tests; bundle check reported public_js_bytes 6316, public_css_bytes 10626, crm_js_bytes 223677."
     }
   ],
   "external_mutation_counts": {
@@ -372,5 +419,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then run final verification and candidate/PR closeout without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, PR #13 Telegram mock foundation, PR #6 PostgreSQL assurance, or PR #10 evidence-only handling."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then push the final candidate checkpoint and open one draft PR against codex/crm-core-v1 without repeating completed integration or verification work."
 }

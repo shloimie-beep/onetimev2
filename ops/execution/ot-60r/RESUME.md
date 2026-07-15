@@ -30,4 +30,4 @@ ops/evidence/ot-60r/FINAL-REPORT.md
 5. Maintain the prohibitions: no deployment, no production/provider mutation, no BNA modification, no production DB, no real sends, no charges, no DNS changes, no real users.
 6. After every successful unit, update `STATE.json`, `CHECKPOINT.md`, `IMPLEMENTED.md`, `REMAINING.md`, `TEST-RESULTS.md`, evidence files, commit intentionally, and push `codex/ot60r-recovery-convergence`.
 
-Current first unfinished phase after PR #10 / OT-47: run final verification, update candidate state, push, and open the draft PR.
+Current first unfinished phase after final verification: push the final candidate checkpoint and open the draft PR.

@@ -1,6 +1,6 @@
 # OT-60R Final Report
 
-Status: building.
+Status: candidate.
 
 Completed so far:
 
@@ -19,6 +19,8 @@ Completed so far:
 - Integrated PR #13 / OT-51 Telegram mock/default-off foundation as an isolated module with no webhook, no polling activation, no real Telegram transport, no central runtime wiring, and no provider mutation.
 - Integrated/adapted/verified PR #6 / OT-37 PostgreSQL assurance harness with PostgreSQL 16 workflow, disposable database runner, scenario catalog, scoped CI formatting, local environment blocker evidence, synthetic `public_contact_id` fix, and passing GitHub Actions run `29377668001`.
 - Preserved PR #10 / OT-47 as evidence-only blocker documentation and marked content/library implementation `not_implemented_environmental_gate`.
+- Completed final verification and marked candidate head `9e275e28a80cc8bf7fa82ade1092cd8cc21510d4`.
 
-Current head is not a canonical integrated product candidate yet. Feature integration
-is complete enough for final verification and candidate closeout; OT-47 remains explicitly not implemented.
+OT-47 remains explicitly not implemented. Deployment, production database access,
+provider mutation, real sends, payments, DNS, real users, and BNA repository
+modification remain at zero.

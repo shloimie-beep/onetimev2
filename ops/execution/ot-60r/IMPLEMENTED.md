@@ -39,6 +39,7 @@
 - Adapted the workflow to run on `codex/ot60r-recovery-convergence` and scoped its format step to OT-37 files so unrelated baseline formatting noise does not mask the PostgreSQL proof.
 - Fixed OT-37 synthetic contacts for canonical `public_contact_id` requirements and collected passing GitHub Actions PostgreSQL 16 proof with sanitized reports under `ops/evidence/ot-37/ci-run-29377668001/`.
 - Preserved PR #10 / OT-47 as evidence only and explicitly left content/library implementation `not_implemented_environmental_gate`.
+- Updated stale base CRM E2E expectations to the accepted OT-39 authenticated shell/search behavior and refreshed OT-39 performance evidence during final verification.
 
 ## Supersession Security Port
 

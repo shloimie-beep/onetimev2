@@ -105,6 +105,19 @@ Passing report summary: PostgreSQL 16.14, 8 migrations discovered/applied/idempo
 
 No OT-47 product test was run because PR #10 contains evidence only and no content/library implementation is claimed.
 
+## Final Verification
+
+- `npm run test`: PASS, 87 unit tests and 56 integration tests.
+- `npm run lint`: PASS.
+- `npm run build`: PASS.
+- `node -e "JSON.parse(...)"`: PASS for OT-60R state, canonical candidate control, and OT-37 PostgreSQL report.
+- `git diff --check`: PASS.
+- `npm run secret:scan`: PASS across 301 repo text files.
+- `npm run e2e`: initial FAIL due stale pre-OT39 `crm-core.spec.ts` expectations; fixed by aligning the test with enabled private search and specific mobile focus target.
+- `npm run e2e`: PASS, 16 tests.
+- `npm run accessibility`: PASS, 5 tests.
+- `npm run performance`: PASS, 5 tests; bundle check reported `public_js_bytes=6316`, `public_css_bytes=10626`, `crm_js_bytes=223677`.
+
 ## Supersession Security Port
 
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.
