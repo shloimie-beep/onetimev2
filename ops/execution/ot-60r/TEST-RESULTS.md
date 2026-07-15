@@ -98,6 +98,13 @@ Real PostgreSQL 16 proof, bot token, webhook secret, service startup, mappings, 
 
 Passing report summary: PostgreSQL 16.14, 8 migrations discovered/applied/idempotently verified, ledger checksum match `true`, 10,600 synthetic contacts, 500 signups, 500 outbox rows, reserved-domain scan passed, external mutations all false.
 
+## OT-47 Evidence-Only Blocker
+
+- `npx prettier --check ops/evidence/ot-47/FINAL-REPORT.md`: PASS.
+- `git diff --check --cached`: PASS.
+
+No OT-47 product test was run because PR #10 contains evidence only and no content/library implementation is claimed.
+
 ## Supersession Security Port
 
 - `npm ci`: PASS; 348 packages installed from lockfile and npm reported 0 vulnerabilities.

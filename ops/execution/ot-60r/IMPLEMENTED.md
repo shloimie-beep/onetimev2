@@ -38,6 +38,7 @@
 - Added a PostgreSQL 16 GitHub Actions workflow, disposable database assurance runner, migration/query/performance/concurrency report writer, current integrated-stack scenario catalog, evidence README, and local environment blocker note.
 - Adapted the workflow to run on `codex/ot60r-recovery-convergence` and scoped its format step to OT-37 files so unrelated baseline formatting noise does not mask the PostgreSQL proof.
 - Fixed OT-37 synthetic contacts for canonical `public_contact_id` requirements and collected passing GitHub Actions PostgreSQL 16 proof with sanitized reports under `ops/evidence/ot-37/ci-run-29377668001/`.
+- Preserved PR #10 / OT-47 as evidence only and explicitly left content/library implementation `not_implemented_environmental_gate`.
 
 ## Supersession Security Port
 

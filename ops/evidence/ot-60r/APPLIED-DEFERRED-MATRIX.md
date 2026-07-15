@@ -15,4 +15,4 @@
 | PR #15 / OT-52 portals | Applied | Integrated as isolated, unmounted parent/student portals with household-authorized parent scope, single-learner student scope, learner cap, credential digest, support-preview, helper, and protected-action safeguards. |
 | PR #13 / OT-51 Telegram mock-only | Applied | Integrated as isolated mock/default-off Telegram foundation with no webhook registration, no polling activation, no real Telegram transport, no central runtime wiring, and no provider mutation. |
 | PR #6 / OT-37 PostgreSQL assurance | Applied/adapted/verified | Added PostgreSQL 16 workflow, disposable assurance runner, scenario catalog, local blocker evidence, synthetic `public_contact_id` fix, and passing GitHub Actions run `29377668001` with sanitized reports. |
-| PR #10 / OT-47 | Deferred evidence-only | Reference blocker evidence; do not claim content/library implementation. |
+| PR #10 / OT-47 | Evidence-only recorded | Preserved blocker evidence and marked content/library implementation `not_implemented_environmental_gate`; no product code, migration, API, UI, worker, provider adapter, deployment, or mutation is claimed. |

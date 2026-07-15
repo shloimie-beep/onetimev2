@@ -6,7 +6,7 @@
 - Worktree: `C:\Users\User\OneTimeOneTime-ot60r-recovery-convergence`
 - Branch: `codex/ot60r-recovery-convergence`
 - Base: `4ac288968ba24e30a5c3f8c6924f492eedf4338f`
-- Phase: PR #6 / OT-37 PostgreSQL assurance harness verified
+- Phase: PR #10 / OT-47 evidence-only blocker recorded
 - Status: building
 
 ## Completed
@@ -63,6 +63,9 @@
 - Fixed the OT-37 synthetic scale seed to include canonical `public_contact_id` values after the accepted PR #2 migration made the column required.
 - GitHub Actions run `29377668001` passed the OT-37 PostgreSQL 16 assurance workflow, including the harness, secret scan, scoped format, lint, typecheck, and sanitized artifact upload.
 - Downloaded sanitized reports to `ops/evidence/ot-37/ci-run-29377668001/`.
+- Preserved PR #10 / OT-47 as evidence-only blocker documentation.
+- Marked content/library implementation as `not_implemented_environmental_gate`; no OT-47 product code, migration, API, UI, worker, provider adapter, deployment, or mutation is claimed.
+- Committed the PR #10 / OT-47 evidence-only checkpoint at `9e402ab5caadc5e0a15e250967c627a9a021f25b`.
 
 ## Last Safe Command
 
@@ -73,9 +76,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git show --stat --oneline --decorate --no-renames 9444176dbc55e0c5af048ec1df2ea75ffa8dde33
+npm run typecheck
 ```
 
-Continue PR #10 / OT-47 evidence-only handling. Do not claim content/library implementation unless a real implementation exists in this branch.
+Continue final verification and candidate closeout. Preserve the no-deploy/no-production/no-provider/no-send/no-payment/no-DNS/no-real-user prohibitions.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

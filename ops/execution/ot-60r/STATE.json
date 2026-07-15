@@ -4,11 +4,11 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "d398a1956137ce72bd0dab51e5a0a5d1dd96cc7f",
-  "phase": "pr6_ot37_postgres_assurance_verified",
+  "current_head_sha": "9e402ab5caadc5e0a15e250967c627a9a021f25b",
+  "phase": "pr10_ot47_evidence_only_recorded",
   "status": "building",
   "created_at": "2026-07-15T00:00:00+03:00",
-  "updated_at": "2026-07-15T02:59:44+03:00",
+  "updated_at": "2026-07-15T03:04:07+03:00",
   "completed_steps": [
     "Located clean standalone repository clone at C:\\Users\\User\\OneTimeOneTime-crm-core-v1.",
     "Verified origin URL is https://github.com/webcraft-media/onetimev2.git.",
@@ -64,10 +64,12 @@
     "Committed the PR #6 / OT-37 PostgreSQL assurance checkpoint at e97f6de55b050605a96d64eac07c58b753ea2976.",
     "Fixed the OT-37 synthetic scale seed to include canonical public_contact_id values after the accepted PR #2 migration made the column required.",
     "GitHub Actions run 29377668001 passed the OT-37 PostgreSQL 16 assurance workflow and uploaded sanitized reports.",
-    "Downloaded and recorded the passing OT-37 sanitized PostgreSQL assurance reports under ops/evidence/ot-37/ci-run-29377668001."
+    "Downloaded and recorded the passing OT-37 sanitized PostgreSQL assurance reports under ops/evidence/ot-37/ci-run-29377668001.",
+    "Preserved PR #10 / OT-47 as evidence-only blocker documentation.",
+    "Marked OT-47 content/library implementation as not_implemented_environmental_gate with no product code, migration, API, worker, UI, provider, deployment, or mutation claim.",
+    "Committed the PR #10 / OT-47 evidence-only checkpoint at 9e402ab5caadc5e0a15e250967c627a9a021f25b."
   ],
   "remaining_steps": [
-    "Preserve PR #10/OT-47 as evidence-only and mark content/library implementation as not implemented/environmental gate.",
     "Run required local verification and record blocked checks honestly.",
     "Open draft PR against codex/crm-core-v1 after a pushed resumable checkpoint exists."
   ],
@@ -348,6 +350,16 @@
       "command": "gh run download 29377668001 -n ot37-postgres-assurance-29377668001-1",
       "status": "passed",
       "summary": "Downloaded sanitized OT-37 PostgreSQL assurance reports into ops/evidence/ot-37/ci-run-29377668001."
+    },
+    {
+      "command": "npx prettier --check ops/evidence/ot-47/FINAL-REPORT.md",
+      "status": "passed",
+      "summary": "OT-47 evidence-only blocker report uses Prettier code style."
+    },
+    {
+      "command": "git diff --check --cached",
+      "status": "passed",
+      "summary": "No staged whitespace errors detected before the OT-47 evidence-only commit."
     }
   ],
   "external_mutation_counts": {
@@ -360,5 +372,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then continue PR #10 / OT-47 evidence-only handling without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, PR #13 Telegram mock foundation, or PR #6 PostgreSQL assurance."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then run final verification and candidate/PR closeout without repeating the completed protocol, remote audit, PR #3/#9 supersession work, PR #5 shell integration, PR #7 privacy/performance integration, PR #11 CRM module integration, PR #4/#8/#14 delivery/communications integration, PR #12 fixture-only billing integration, PR #15 parent/student portal integration, PR #13 Telegram mock foundation, PR #6 PostgreSQL assurance, or PR #10 evidence-only handling."
 }

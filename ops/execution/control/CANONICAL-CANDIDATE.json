@@ -6,7 +6,7 @@
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
   "candidate_head_sha": null,
   "status": "building",
-  "updated_at": "2026-07-15T02:59:44+03:00",
+  "updated_at": "2026-07-15T03:04:07+03:00",
   "evidence": [
     "ops/evidence/ot-60r/APPLIED-DEFERRED-MATRIX.md",
     "ops/evidence/ot-60r/CONFLICT-LEDGER.md",
@@ -47,6 +47,7 @@
     "ops/evidence/ot-37/GITHUB-ACTIONS-PROOF.md",
     "ops/evidence/ot-37/ci-run-29377668001/latest-postgres-assurance-report.json",
     "ops/evidence/ot-37/ci-run-29377668001/latest-postgres-assurance-report.md",
+    "ops/evidence/ot-47/FINAL-REPORT.md",
     "scripts/postgres-assurance/README.md",
     "scripts/postgres-assurance/run.ts",
     ".github/workflows/ot37-postgres-assurance.yml"
