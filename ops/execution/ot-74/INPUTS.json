@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-74",
+  "inputs": [
+    {
+      "id": "INPUT-OT74-001",
+      "type": "codex_prompt",
+      "path": "C:\\Users\\User\\AppData\\Local\\Temp\\CODEX-NOW-03-OT74-AUDIENCE-IMPORT (1).md",
+      "sha256": "8C30A267E2B9A6BFFB6C6BDF6A364F8B89979ADE0B02B7FEB4B07B023ED49F54",
+      "privacy": "no secrets observed; implementation constraints only",
+      "usage": "Authoritative OT-74 scope."
+    },
+    {
+      "id": "INPUT-OT74-002",
+      "type": "repository_base",
+      "repository": "webcraft-media/onetimev2",
+      "sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "usage": "Immutable base for the OT-74 worktree."
+    }
+  ],
+  "forbidden_inputs": [
+    "Real audience spreadsheets",
+    "Production Rabbi database rows",
+    "Production contact exports",
+    "Raw private message bodies",
+    "Secrets or provider credentials"
+  ]
+}
