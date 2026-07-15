@@ -145,7 +145,9 @@ test('family and school signup submit through canonical lead endpoint', async ({
     .getByLabel('Confirm that we may send the selected class information and reminders.')
     .check();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await expect(page.getByRole('heading', { name: "You're signed up." })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+  ).toBeVisible();
 
   await page.goto('/signup');
   await page.getByLabel('Parent or contact name').fill('Playwright School');
@@ -157,8 +159,10 @@ test('family and school signup submit through canonical lead endpoint', async ({
     .getByLabel('Confirm that we may send the selected class information and reminders.')
     .check();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await expect(page.getByRole('heading', { name: 'Thank you.' })).toBeVisible();
-  await expect(page.getByText("We saved your information and we'll be in touch.")).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Thank you - we received your school inquiry.' }),
+  ).toBeVisible();
+  await expect(page.getByText('does not create class access')).toBeVisible();
 });
 
 test('public pages do not load the future React CRM bundle', async ({ page }) => {

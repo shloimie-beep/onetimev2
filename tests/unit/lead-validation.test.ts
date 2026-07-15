@@ -45,8 +45,10 @@ describe('lead validation and content contracts', () => {
   });
 
   it('uses distinct family and school success copy', () => {
-    expect(successCopy('family').heading).toBe("You're signed up.");
-    expect(successCopy('school').body).toBe("We saved your information and we'll be in touch.");
+    expect(successCopy('family').heading).toBe('Thank you - we received your Family signup.');
+    expect(successCopy('family').body).toContain('Class access and member login details');
+    expect(successCopy('school').heading).toBe('Thank you - we received your school inquiry.');
+    expect(successCopy('school').body).toContain('does not create class access');
   });
 
   it('suppresses the campaign after the Asia/Jerusalem deadline', () => {

@@ -18,7 +18,9 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
     .getByLabel('Confirm that we may send the selected class information and reminders.')
     .check();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await expect(page.getByRole('heading', { name: "You're signed up." })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+  ).toBeVisible();
 
   await login(page);
   await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();

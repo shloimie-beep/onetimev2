@@ -16,8 +16,6 @@ export const SUPPORTED_DELIVERY_EVENT_CHANNEL_PAIRS = [
   { eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation, channel: 'whatsapp' },
   { eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail, channel: 'email' },
   { eventType: DELIVERY_EVENT_TYPES.familyClassReminderWhatsApp, channel: 'whatsapp' },
-  { eventType: DELIVERY_EVENT_TYPES.schoolSignupEmailAck, channel: 'email' },
-  { eventType: DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt, channel: 'whatsapp' },
   { eventType: DELIVERY_EVENT_TYPES.internalLeadAlert, channel: 'internal_email' },
 ] as const;
 
@@ -148,6 +146,7 @@ export type DeliveryTerminalReason =
   | 'contact_suppressed'
   | 'contact_archived'
   | 'delivery_window_expired'
+  | 'protected_link_missing'
   | 'protected_owner_destination_missing';
 
 export type DeliveryOutcome =

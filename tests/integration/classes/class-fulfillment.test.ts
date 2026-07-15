@@ -137,7 +137,7 @@ describe('OT-71 class fulfillment for signup leads', () => {
       now: new Date('2026-07-15T12:00:00.000Z'),
     });
 
-    expect(school.outbox_intents).toHaveLength(2);
+    expect(school.outbox_intents).toHaveLength(1);
     await expectCount('class_occurrences', 0);
     await expectCount('class_fulfillment_intents', 0);
     const outbox = await pool.query('SELECT payload FROM onetime.outbox_events');

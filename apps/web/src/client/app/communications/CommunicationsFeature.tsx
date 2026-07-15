@@ -131,8 +131,6 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
             <option value="family_signup_whatsapp_confirmation">
               Family signup WhatsApp confirmation
             </option>
-            <option value="school_signup_email_ack">School signup email acknowledgement</option>
-            <option value="school_signup_whatsapp_receipt">School signup WhatsApp receipt</option>
             <option value="internal_lead_alert">Internal owner alert</option>
           </select>
         </label>
@@ -395,8 +393,6 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
       intent_types: [
         'family_signup_email_ack',
         'family_signup_whatsapp_confirmation',
-        'school_signup_email_ack',
-        'school_signup_whatsapp_receipt',
         'internal_lead_alert',
       ] satisfies CommunicationsIntentType[],
       local_states: [

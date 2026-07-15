@@ -314,18 +314,12 @@ function outboxEvents(
     occurrence_id: null,
     deliver_by: null,
   };
-  const events: OutboxEvent[] = [
-    {
-      deliveryKey: stableKey('delivery', [
-        signupKey,
-        payload.audience_type === 'school'
-          ? DELIVERY_EVENT_TYPES.schoolSignupEmailAck
-          : DELIVERY_EVENT_TYPES.familySignupEmailAck,
-      ]),
-      eventType:
-        payload.audience_type === 'school'
-          ? DELIVERY_EVENT_TYPES.schoolSignupEmailAck
-          : DELIVERY_EVENT_TYPES.familySignupEmailAck,
+  const events: OutboxEvent[] = [];
+
+  if (payload.audience_type === 'family') {
+    events.push({
+      deliveryKey: stableKey('delivery', [signupKey, DELIVERY_EVENT_TYPES.familySignupEmailAck]),
+      eventType: DELIVERY_EVENT_TYPES.familySignupEmailAck,
       channel: 'email',
       payload: {
         ...deliveryPolicy,
@@ -333,27 +327,25 @@ function outboxEvents(
         sender_configured: Boolean(config.emailFrom && config.emailReplyTo),
         classification: payload.audience_type,
       },
+    });
+  }
+
+  events.push({
+    deliveryKey: stableKey('delivery', [signupKey, 'internal_email_alert']),
+    eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
+    channel: 'internal_email',
+    payload: {
+      ...deliveryPolicy,
+      owner_alias_configured: Boolean(config.ownerTestEmail),
+      contact_key: contactKey,
+      signup_key: signupKey,
     },
-    {
-      deliveryKey: stableKey('delivery', [signupKey, 'internal_email_alert']),
-      eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
-      channel: 'internal_email',
-      payload: {
-        ...deliveryPolicy,
-        owner_alias_configured: Boolean(config.ownerTestEmail),
-        contact_key: contactKey,
-        signup_key: signupKey,
-      },
-    },
-  ];
+  });
 
   const wantsWhatsapp =
     payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
-  if (wantsWhatsapp && phone && payload.reminder_consent) {
-    const whatsappEventType =
-      payload.audience_type === 'school'
-        ? DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt
-        : DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation;
+  if (payload.audience_type === 'family' && wantsWhatsapp && phone && payload.reminder_consent) {
+    const whatsappEventType = DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation;
     events.push({
       deliveryKey: stableKey('delivery', [signupKey, whatsappEventType]),
       eventType: whatsappEventType,

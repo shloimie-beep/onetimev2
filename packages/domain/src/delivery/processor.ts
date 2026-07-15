@@ -3,6 +3,7 @@ import type {
   DeliveryOutcome,
   DeliveryRequest,
 } from '../../../contracts/src/delivery/types.ts';
+import { deliveryEventRequiresProtectedLink, protectedAppUrlFromPayload } from './catalog.ts';
 import { evaluateDeliveryEligibility } from './eligibility.ts';
 import { buildDeliveryRequest, type DeliveryMessageConfig } from './messages.ts';
 
@@ -55,6 +56,19 @@ export function prepareDelivery(
         kind: 'skipped',
         at: now,
         reason: eligibility.reason as Exclude<typeof eligibility.reason, 'contact_suppressed'>,
+      },
+    };
+  }
+  if (
+    deliveryEventRequiresProtectedLink(claim.eventType) &&
+    !protectedAppUrlFromPayload(claim.payload)
+  ) {
+    return {
+      kind: 'terminal',
+      outcome: {
+        kind: 'skipped',
+        at: now,
+        reason: 'protected_link_missing',
       },
     };
   }

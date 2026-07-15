@@ -46,7 +46,9 @@ test('authenticated CRM list and detail stay within request and usability budget
     .getByLabel('Confirm that we may send the selected class information and reminders.')
     .check();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
-  await page.getByRole('heading', { name: "You're signed up." }).waitFor();
+  await page
+    .getByRole('heading', { name: 'Thank you - we received your Family signup.' })
+    .waitFor();
 
   const apiRequests: string[] = [];
   page.on('request', (request) => {

@@ -4,8 +4,6 @@ export const communicationsChannels = ['email', 'whatsapp', 'internal_email'] as
 export const communicationsIntentTypes = [
   'family_signup_email_ack',
   'family_signup_whatsapp_confirmation',
-  'school_signup_email_ack',
-  'school_signup_whatsapp_receipt',
   'internal_lead_alert',
 ] as const;
 export const communicationsLocalStates = [

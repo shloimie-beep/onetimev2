@@ -44,7 +44,10 @@ describe('lead capture transaction', () => {
     const result = await captureLead({ pool, config, payload, now: beforeReminder });
     expect(result.success).toBe(true);
     expect(result.duplicate_submission).toBe(false);
-    expect(result.message.heading).toBe("You're signed up.");
+    expect(result.message.heading).toBe('Thank you - we received your Family signup.');
+    expect(result.message.body).toContain(
+      'Class access and member login details are sent separately',
+    );
     expect(result.outbox_intents).toHaveLength(3);
 
     await expectCount('contacts', 1);
@@ -76,7 +79,7 @@ describe('lead capture transaction', () => {
       },
       now: beforeReminder,
     });
-    expect(school.message.heading).toBe('Thank you.');
+    expect(school.message.heading).toBe('Thank you - we received your school inquiry.');
     expect(JSON.stringify(school)).not.toContain('class_link');
     const row = await pool.query('SELECT family_school_classification FROM onetime.contacts');
     expect(row.rows[0].family_school_classification).toBe('school');
@@ -85,7 +88,6 @@ describe('lead capture transaction', () => {
     );
     expect(outbox.rows.map((outboxRow) => `${outboxRow.event_type}:${outboxRow.channel}`)).toEqual([
       `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
-      `${DELIVERY_EVENT_TYPES.schoolSignupEmailAck}:email`,
     ]);
     expect(JSON.stringify(outbox.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
   });
@@ -113,7 +115,7 @@ describe('lead capture transaction', () => {
     expect(rows.rows[0].payload.public_recipient).toBe(true);
   });
 
-  it('queues a School WhatsApp receipt only when channel, phone, and consent allow it', async () => {
+  it('does not queue automated public School WhatsApp or email receipts', async () => {
     const school = await captureLead({
       pool,
       config,
@@ -128,15 +130,13 @@ describe('lead capture transaction', () => {
       },
       now: beforeReminder,
     });
-    expect(school.outbox_intents).toHaveLength(3);
+    expect(school.outbox_intents).toHaveLength(1);
     const rows = await pool.query(
       'SELECT event_type, channel, payload FROM onetime.outbox_events WHERE contact_key = $1 ORDER BY event_type, channel',
       [school.contact_key],
     );
     expect(rows.rows.map((row) => `${row.event_type}:${row.channel}`)).toEqual([
       `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
-      `${DELIVERY_EVENT_TYPES.schoolSignupEmailAck}:email`,
-      `${DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt}:whatsapp`,
     ]);
     expect(JSON.stringify(rows.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
   });

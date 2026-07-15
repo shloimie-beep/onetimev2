@@ -193,12 +193,12 @@ describe('transactional delivery pipeline', () => {
     });
     expect(summary).toMatchObject({ claimed: 2, skipped: 0, sinkDelivered: 2 });
     const publicText = router.requests.map((request) => request.text).join('\n');
-    expect(publicText).toContain('free class');
+    expect(publicText).toContain('Your Family signup has been saved.');
     expect(publicText).not.toContain('https://example.test/current-class');
-    expect(publicText).not.toMatch(/open the current class|class details|access|join/i);
+    expect(publicText).not.toMatch(/open the current class|class details|access is ready|join/i);
   });
 
-  it('delivers generic School acknowledgements while preserving the owner alert', async () => {
+  it('skips School public receipt rows while preserving the owner alert', async () => {
     const schoolContact = deliveryContact({ familySchoolClassification: 'school' });
     const schoolSignup = deliverySignup({ classification: 'school' });
     const router = new CapturingRouter();
@@ -243,17 +243,16 @@ describe('transactional delivery pipeline', () => {
       options,
       clock: () => BASE_TIME,
     });
-    expect(summary).toMatchObject({ claimed: 3, skipped: 0, sinkDelivered: 3 });
-    expect(repository.snapshot('school-email')?.status).toBe('sink_delivered');
-    expect(repository.snapshot('school-whatsapp')?.status).toBe('sink_delivered');
+    expect(summary).toMatchObject({ claimed: 1, skipped: 0, sinkDelivered: 1 });
+    expect(repository.snapshot('school-email')?.status).toBe('pending');
+    expect(repository.snapshot('school-whatsapp')?.status).toBe('pending');
     expect(repository.snapshot('school-owner')?.status).toBe('sink_delivered');
-    const publicText = router.requests
-      .filter((request) => request.recipientClass === 'public')
-      .map((request) => ('text' in request ? request.text : ''))
-      .join('\n');
-    expect(publicText).toContain('We received your One Time Mishnayos inquiry.');
-    expect(publicText).not.toContain('https://example.test/current-class');
-    expect(publicText).not.toMatch(/class details|reminder|access|join/i);
+    expect(router.requests.filter((request) => request.recipientClass === 'public')).toHaveLength(
+      0,
+    );
+    const internalText = router.requests.map((request) => request.text).join('\n');
+    expect(internalText).toContain('A new School lead was committed successfully.');
+    expect(internalText).not.toMatch(/class details|reminder|access|join|https?:\/\//i);
   });
 
   it('skips WhatsApp when normalized phone is missing without failing the batch', async () => {
@@ -314,13 +313,70 @@ describe('transactional delivery pipeline', () => {
         options,
         clock: () => BASE_TIME,
       });
-      expect(summary).toMatchObject({ claimed: 1, skipped: 1, sinkDelivered: 0 });
-      expect(repository.snapshot(`school-whatsapp-${preference}`)?.outcome).toMatchObject({
-        kind: 'skipped',
-        reason: 'whatsapp_preference_not_selected',
-      });
+      expect(summary).toMatchObject({ claimed: 0, skipped: 0, sinkDelivered: 0 });
+      expect(repository.snapshot(`school-whatsapp-${preference}`)?.status).toBe('pending');
     },
   );
+
+  it('skips class reminders until a protected One Time route is available', async () => {
+    const router = new CapturingRouter();
+    const repository = new MemoryDeliveryRepository([
+      seed(
+        claimedDelivery({
+          id: 'class-reminder-missing-link',
+          deliveryKey: 'delivery_class_reminder_missing_link',
+          eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail,
+          channel: 'email',
+          payload: { starts_at: '2026-07-15T16:00:00.000Z' },
+        }),
+      ),
+    ]);
+    const { logger } = captureLogger();
+    const summary = await runDeliveryBatch({
+      repository,
+      router,
+      logger,
+      messageConfig,
+      options,
+      clock: () => BASE_TIME,
+    });
+    expect(summary).toMatchObject({ claimed: 1, skipped: 1, sinkDelivered: 0 });
+    expect(router.requests).toHaveLength(0);
+    expect(repository.snapshot('class-reminder-missing-link')?.outcome).toMatchObject({
+      kind: 'skipped',
+      reason: 'protected_link_missing',
+    });
+  });
+
+  it('renders class reminders only with protected One Time routes', async () => {
+    const router = new CapturingRouter();
+    const repository = new MemoryDeliveryRepository([
+      seed(
+        claimedDelivery({
+          id: 'class-reminder-protected-link',
+          deliveryKey: 'delivery_class_reminder_protected_link',
+          eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail,
+          channel: 'email',
+          payload: {
+            starts_at: '2026-07-15T16:00:00.000Z',
+            protected_join_url: 'https://join.onetimeonetime.com/app/classes/today',
+          },
+        }),
+      ),
+    ]);
+    const { logger } = captureLogger();
+    const summary = await runDeliveryBatch({
+      repository,
+      router,
+      logger,
+      messageConfig,
+      options,
+      clock: () => BASE_TIME,
+    });
+    expect(summary).toMatchObject({ claimed: 1, skipped: 0, sinkDelivered: 1 });
+    expect(router.requests[0]?.text).toContain('https://join.onetimeonetime.com/app/classes/today');
+    expect(JSON.stringify(router.requests)).not.toMatch(/zoom|vimeo|drive|token|secret/i);
+  });
 
   it('skips an expired deliver_by row without sending', async () => {
     const router = new CapturingRouter();

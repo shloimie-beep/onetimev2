@@ -50,13 +50,7 @@ export function supportedChannelForEvent(eventType: string): ClaimedDelivery['ch
 function publicEventAllowedForSignup(claim: ClaimedDelivery): boolean {
   const classification = claim.signup?.classification;
   if (!classification || claim.channel === 'internal_email') return false;
-  if (classification === 'school') {
-    const schoolEvent =
-      claim.channel === 'whatsapp'
-        ? DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt
-        : DELIVERY_EVENT_TYPES.schoolSignupEmailAck;
-    return claim.eventType === schoolEvent;
-  }
+  if (classification === 'school') return false;
   const allowedFamilyEvents: readonly string[] =
     claim.channel === 'whatsapp'
       ? [
