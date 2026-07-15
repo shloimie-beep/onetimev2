@@ -39,17 +39,21 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
     );
     expect(first.some((migration) => migration.id === '1700_ot71_account_lifecycle')).toBe(true);
     expect(first.some((migration) => migration.id === '1800_ot72_provider_truth')).toBe(true);
-    expect(first.at(-1)?.id).toBe('1800_ot72_provider_truth');
+    expect(
+      first.some((migration) => migration.id === '1900_ot83_household_portal_foundation'),
+    ).toBe(true);
+    expect(first.at(-1)?.id).toBe('1900_ot83_household_portal_foundation');
     const applied = await pool.query(
       `SELECT checksum
          FROM onetime.schema_migrations
         WHERE id IN (
           '1600_ot51_telegram_bot_foundation',
           '1700_ot71_account_lifecycle',
-          '1800_ot72_provider_truth'
+          '1800_ot72_provider_truth',
+          '1900_ot83_household_portal_foundation'
         )`,
     );
-    expect(applied.rowCount).toBe(3);
+    expect(applied.rowCount).toBe(4);
     await expect(runMigrations(pool)).rejects.toThrow(/not supported/i);
   });
 
