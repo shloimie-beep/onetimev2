@@ -1,0 +1,282 @@
+{
+  "schema_version": "onetime.ot80.action_route_registry.v1",
+  "updated_at": "2026-07-15T12:50:00+03:00",
+  "status": "partial_lane_inventory",
+  "routes": [
+    {
+      "id": "route.ot74.audience_reconciliation.contracts",
+      "method": "GET",
+      "path": "/api/v1/audience-reconciliation/contracts",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "role:owner|admin|crm_agent|viewer"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot74.audience_reconciliation.dry_runs",
+      "method": "POST",
+      "path": "/api/v1/audience-reconciliation/dry-runs",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "csrf", "role:owner|admin|crm_agent"],
+      "side_effects": "records dry-run rows, summaries, segment snapshots, and audit events only"
+    },
+    {
+      "id": "route.ot74.audience_reconciliation.batch_read",
+      "method": "GET",
+      "path": "/api/v1/audience-reconciliation/batches/:batchKey",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "role:owner|admin|crm_agent|viewer"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot74.audience_reconciliation.rollback_requests",
+      "method": "POST",
+      "path": "/api/v1/audience-reconciliation/batches/:batchKey/rollback-requests",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "csrf", "role:owner|admin"],
+      "side_effects": "records rollback request metadata only; no contact deletion"
+    },
+    {
+      "id": "route.ot73.public.landing",
+      "method": "GET",
+      "path": "/",
+      "source": "scripts/build-public-pages.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot73.public.signup",
+      "method": "GET",
+      "path": "/signup",
+      "source": "scripts/build-public-pages.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot73.public.login",
+      "method": "GET",
+      "path": "/login",
+      "source": "scripts/build-public-pages.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot73.leads.create",
+      "method": "POST",
+      "path": "/api/v1/leads",
+      "source": "apps/web/src/server/features/leads/router.ts",
+      "mounted_in_ot80": true,
+      "guards": ["schema_validation", "idempotency", "school_no_public_send_policy"],
+      "side_effects": "creates lead/contact/audit records and sink-mode outbox intents only"
+    }
+  ],
+  "actions": [
+    {
+      "id": "action.ot74.audience_reconciliation.view_contracts",
+      "surface": "AudienceReconciliationPanel",
+      "source": "apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx",
+      "status": "unmounted",
+      "route_id": "route.ot74.audience_reconciliation.contracts"
+    },
+    {
+      "id": "action.ot74.audience_reconciliation.dry_run",
+      "surface": "AudienceReconciliationPanel",
+      "source": "apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx",
+      "status": "unmounted",
+      "route_id": "route.ot74.audience_reconciliation.dry_runs"
+    },
+    {
+      "id": "action.ot74.audience_reconciliation.record_rollback",
+      "surface": "AudienceReconciliationPanel",
+      "source": "apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx",
+      "status": "unmounted",
+      "route_id": "route.ot74.audience_reconciliation.rollback_requests"
+    },
+    {
+      "id": "action.ot72.billing.stripe_test_checkout",
+      "surface": "internal provider adapter",
+      "source": "packages/domain/src/billing/stripe-test-adapter.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["test_mode", "livemode_reject", "server_redirect_vault"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot72.delivery.resend_canary_send",
+      "surface": "worker provider router",
+      "source": "apps/worker/src/delivery/provider-router.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["feature_flag", "exact_canary_destination"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot72.provider_truth.record_redacted_event",
+      "surface": "provider truth repository",
+      "source": "packages/db/src/providers/repository.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["redacted_provider_ref", "scoped_account_product"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot72.telegram.one_time_transport",
+      "surface": "One Time Telegram transport",
+      "source": "packages/domain/src/telegram/transport.ts",
+      "status": "default_off_internal",
+      "route_id": null,
+      "guards": ["feature_flag", "single_consumer_gate", "exact_canary_chat"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.family_acknowledgement",
+      "surface": "delivery worker catalog renderer",
+      "source": "packages/domain/src/delivery/catalog.ts",
+      "status": "active_sink_mode",
+      "route_id": null,
+      "guards": ["committed_family_signup", "email_or_whatsapp_policy", "suppression_check"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.class_reminder",
+      "surface": "delivery worker catalog renderer",
+      "source": "packages/domain/src/delivery/catalog.ts",
+      "status": "active_sink_mode_requires_protected_route",
+      "route_id": null,
+      "guards": ["committed_family_signup", "protected_one_time_route", "suppression_check"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.school_public_ack",
+      "surface": "public signup success page",
+      "source": "packages/domain/src/lead/normalize.ts",
+      "status": "active_public_web_only",
+      "route_id": null,
+      "guards": ["committed_school_lead", "no_public_email", "no_public_whatsapp"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.internal_lead_alert",
+      "surface": "delivery worker catalog renderer",
+      "source": "packages/domain/src/delivery/messages.ts",
+      "status": "active_sink_mode_internal_only",
+      "route_id": null,
+      "guards": ["protected_owner_destination", "no_public_recipient"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.campaign_ticker",
+      "surface": "public landing page",
+      "source": "scripts/build-public-pages.ts",
+      "status": "active_public_link",
+      "route_id": "route.ot73.public.signup",
+      "guards": ["no_price_trial_or_no_card_copy", "deadline_hides_after_campaign"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.header_signup",
+      "surface": "public header and hero CTA",
+      "source": "scripts/build-public-pages.ts",
+      "status": "active_public_link",
+      "route_id": "route.ot73.public.signup",
+      "guards": ["anonymous_safe"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.member_login",
+      "surface": "public header/footer",
+      "source": "scripts/build-public-pages.ts",
+      "status": "active_public_link",
+      "route_id": "route.ot73.public.login",
+      "guards": ["anonymous_safe", "auth_page_only"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.signup_form_submit",
+      "surface": "public signup form",
+      "source": "apps/web/src/client/public/public-entry.ts",
+      "status": "active_sink_mode",
+      "route_id": "route.ot73.leads.create",
+      "guards": ["schema_validation", "idempotency", "communications_school_public_send_block"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.gallery_controls",
+      "surface": "public landing gallery",
+      "source": "apps/web/src/client/public/public-entry.ts",
+      "status": "active_client_only",
+      "route_id": null,
+      "guards": ["client_state_only"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.release.validate_readiness",
+      "surface": "release readiness CLI",
+      "source": "scripts/ot75/validate-release-readiness.mjs",
+      "status": "active_internal_static_check",
+      "route_id": null,
+      "guards": ["scope_base_override_for_ot80", "no_external_mutation", "secret_pattern_scan"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.release.check_predeploy_gates",
+      "surface": "release readiness CLI",
+      "source": "scripts/ot75/check-predeploy-gates.mjs",
+      "status": "active_internal_static_check",
+      "route_id": null,
+      "guards": ["print_values_false", "activation_blockers_only", "no_external_mutation"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.release.render_manifest",
+      "surface": "release readiness CLI",
+      "source": "scripts/ot75/render-release-manifest.mjs",
+      "status": "active_internal_template_renderer",
+      "route_id": null,
+      "guards": ["template_only", "ot80_fillable_placeholders"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.workflow.static_release_readiness",
+      "surface": "GitHub Actions workflow",
+      "source": ".github/workflows/ot75-release-readiness.yml",
+      "status": "manual_and_pr_static_validation_only",
+      "route_id": null,
+      "guards": ["no_deploy", "no_database_migration", "no_provider_mutation", "secret_scan"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot76.day_one.audit",
+      "surface": "Day-One certification harness CLI",
+      "source": "scripts/day-one-certification-harness.mjs",
+      "status": "active_internal_static_check",
+      "route_id": null,
+      "guards": [
+        "scope_base_override_for_ot80",
+        "audit_exit_zero_unless_scope_or_harness_failure",
+        "no_external_mutation"
+      ],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot76.day_one.certify",
+      "surface": "Day-One certification harness CLI",
+      "source": "scripts/day-one-certification-harness.mjs",
+      "status": "active_internal_strict_check_failed_not_ready",
+      "route_id": null,
+      "guards": [
+        "scope_base_override_for_ot80",
+        "strict_missing_or_partial_gate_failure",
+        "no_external_mutation"
+      ],
+      "external_mutation_allowed": false
+    }
+  ],
+  "next_action": "Run final OT80 certification and reconcile any remaining action/route gaps before draft PR handoff."
+}

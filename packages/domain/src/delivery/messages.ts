@@ -3,6 +3,16 @@ import type {
   DeliveryRequest,
   DeliveryTag,
 } from '../../../contracts/src/delivery/types.ts';
+import {
+  DAY_ONE_COMMUNICATIONS_CATALOG_VERSION,
+  escapeHtml,
+  firstNameFromDisplayName,
+  formatIsraelDateTime,
+  messageKeyForDeliveryEvent,
+  protectedAppUrlFromPayload,
+  renderParagraphHtml,
+  type ActiveDeliveryMessageKey,
+} from './catalog.ts';
 import type { DeliveryEligibility } from './eligibility.ts';
 
 export type DeliveryMessageConfig = {
@@ -11,62 +21,129 @@ export type DeliveryMessageConfig = {
   protectedOwnerEmail?: string;
 };
 
-function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, (character) => {
-    const encoded: Record<string, string> = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#39;',
-    };
-    return encoded[character] ?? character;
-  });
-}
+type RenderedDeliveryCopy = {
+  messageKey: ActiveDeliveryMessageKey;
+  subject: string;
+  text: string;
+  html: string;
+};
 
-function classificationLabel(claim: ClaimedDelivery): string {
+function classificationLabel(claim: ClaimedDelivery): 'Family' | 'School' {
   const classification = claim.signup?.classification ?? claim.contact?.familySchoolClassification;
   return classification === 'school' ? 'School' : 'Family';
 }
 
-function isSchoolClaim(claim: ClaimedDelivery): boolean {
-  return classificationLabel(claim) === 'School';
+function classificationKey(claim: ClaimedDelivery): 'family' | 'school' {
+  return classificationLabel(claim).toLowerCase() as 'family' | 'school';
 }
 
-function familyAcknowledgementText(): string {
+function emailTags(
+  claim: ClaimedDelivery,
+  messageKey: ActiveDeliveryMessageKey,
+): readonly DeliveryTag[] {
   return [
-    'We received your One Time Mishnayos signup for the free class.',
-    '',
-    'Our team will follow up with the next details through the preference and consent saved with your signup.',
-  ].join('\n');
-}
-
-function familyAcknowledgementHtml(): string {
-  return [
-    '<p><strong>We received your One Time Mishnayos signup for the free class.</strong></p>',
-    '<p>Our team will follow up with the next details through the preference and consent saved with your signup.</p>',
-  ].join('');
-}
-
-function schoolAcknowledgementText(): string {
-  return [
-    'We received your One Time Mishnayos inquiry.',
-    'Our team will review the details and follow up.',
-  ].join('\n');
-}
-
-function schoolAcknowledgementHtml(): string {
-  return schoolAcknowledgementText()
-    .split('\n')
-    .map((line) => `<p>${escapeHtml(line)}</p>`)
-    .join('');
-}
-
-function emailTags(claim: ClaimedDelivery, messageType: string): readonly DeliveryTag[] {
-  return [
-    { name: 'message_type', value: messageType },
-    { name: 'classification', value: classificationLabel(claim).toLowerCase() },
+    { name: 'message_key', value: messageKey },
+    { name: 'catalog_version', value: DAY_ONE_COMMUNICATIONS_CATALOG_VERSION },
+    { name: 'classification', value: classificationKey(claim) },
   ];
+}
+
+function familyEmailCopy(firstName: string | null): RenderedDeliveryCopy {
+  const greeting = firstName ? `Hi ${firstName},` : 'Hello,';
+  const text = [
+    greeting,
+    '',
+    'Thank you for signing up for One Time One Time with Rabbi Eli Scheller. Your Family signup has been saved.',
+    '',
+    'This message confirms receipt only. Class access and member login details will be sent separately when they are ready.',
+    '',
+    '- One Time One Time',
+  ].join('\n');
+  return {
+    messageKey: 'family.ack.email',
+    subject: 'We received your Family signup',
+    text,
+    html: renderParagraphHtml(text),
+  };
+}
+
+function familyWhatsAppCopy(firstName: string | null): RenderedDeliveryCopy {
+  const greeting = firstName ? `Hi ${firstName}` : 'Hello';
+  const text = `${greeting} - we received your Family signup for One Time One Time with Rabbi Eli Scheller. This confirms receipt only. Class access and member login details are sent separately when ready.`;
+  return {
+    messageKey: 'family.ack.whatsapp',
+    subject: '',
+    text,
+    html: renderParagraphHtml(text),
+  };
+}
+
+function classReminderCopy(claim: ClaimedDelivery): RenderedDeliveryCopy {
+  const protectedUrl = protectedAppUrlFromPayload(claim.payload);
+  if (!protectedUrl) {
+    throw new Error('Protected class URL is required before rendering a class reminder.');
+  }
+  const firstName = firstNameFromDisplayName(claim.contact?.displayName);
+  const greeting = firstName ? `Hi ${firstName},` : 'Hello,';
+  const text =
+    claim.channel === 'whatsapp'
+      ? [
+          "Reminder: tonight's live class with Rabbi Eli Scheller starts at 7:00 p.m. Israel time.",
+          `Open the secure class page: ${protectedUrl}`,
+          'Please do not forward the link.',
+        ].join('\n')
+      : [
+          greeting,
+          '',
+          "Tonight's live class with Rabbi Eli Scheller starts at 7:00 p.m. Israel time.",
+          'Use the secure link below to open the class page. Please do not forward the link.',
+          '',
+          protectedUrl,
+          '',
+          '- One Time One Time',
+        ].join('\n');
+  const messageKey =
+    claim.channel === 'whatsapp' ? 'class.reminder.t30.whatsapp' : 'class.reminder.t30.email';
+  return {
+    messageKey,
+    subject: claim.channel === 'whatsapp' ? '' : 'Live class starts at 7:00 p.m. Israel time',
+    text,
+    html: `${renderParagraphHtml(text)}<p><a href="${escapeHtml(protectedUrl)}">Open secure class page</a></p>`,
+  };
+}
+
+function internalAlertCopy(claim: ClaimedDelivery): RenderedDeliveryCopy {
+  const classification = classificationLabel(claim);
+  const submittedAt = formatIsraelDateTime(claim.createdAt);
+  const text = [
+    `A new ${classification} lead was committed successfully.`,
+    '',
+    `Reference: ${claim.signupKey ?? 'unavailable'}`,
+    `Received: ${submittedAt}`,
+    '',
+    'Review the record in the protected One Time application.',
+  ].join('\n');
+  return {
+    messageKey: classification === 'School' ? 'owner.alert.school_lead' : 'owner.alert.family_lead',
+    subject: `New ${classification} lead received`,
+    text,
+    html: renderParagraphHtml(text),
+  };
+}
+
+function renderDeliveryCopy(claim: ClaimedDelivery): RenderedDeliveryCopy {
+  const messageKey = messageKeyForDeliveryEvent(claim.eventType, classificationKey(claim));
+  if (!messageKey) throw new Error(`Unsupported delivery event type: ${claim.eventType}`);
+  if (messageKey === 'family.ack.email') {
+    return familyEmailCopy(firstNameFromDisplayName(claim.contact?.displayName));
+  }
+  if (messageKey === 'family.ack.whatsapp') {
+    return familyWhatsAppCopy(firstNameFromDisplayName(claim.contact?.displayName));
+  }
+  if (messageKey === 'class.reminder.t30.email' || messageKey === 'class.reminder.t30.whatsapp') {
+    return classReminderCopy(claim);
+  }
+  return internalAlertCopy(claim);
 }
 
 export function buildDeliveryRequest(
@@ -74,77 +151,29 @@ export function buildDeliveryRequest(
   eligibility: Extract<DeliveryEligibility, { kind: 'eligible' }>,
   config: DeliveryMessageConfig,
 ): DeliveryRequest {
-  if (eligibility.channel === 'internal_email') {
-    const text = [
-      'A new One Time Mishnayos signup was captured.',
-      `Classification: ${classificationLabel(claim)}`,
-      `Contact reference: ${claim.contactKey ?? 'unavailable'}`,
-      `Signup reference: ${claim.signupKey ?? 'unavailable'}`,
-      'Review the record in the protected One Time application.',
-    ].join('\n');
-    const html = text
-      .split('\n')
-      .map((line) => `<p>${escapeHtml(line)}</p>`)
-      .join('');
-    return {
-      channel: 'internal_email',
-      provider: 'resend',
-      recipientClass: 'internal_owner',
-      idempotencyKey: claim.deliveryKey,
-      from: config.emailFrom,
-      to: eligibility.to,
-      ...(config.emailReplyTo ? { replyTo: config.emailReplyTo } : {}),
-      subject: 'New One Time Mishnayos signup',
-      text,
-      html,
-      tags: emailTags(claim, claim.eventType),
-    };
-  }
-
-  const school = isSchoolClaim(claim);
-
+  const copy = renderDeliveryCopy(claim);
   if (eligibility.channel === 'whatsapp') {
-    const text = school ? schoolAcknowledgementText() : familyAcknowledgementText();
     return {
       channel: 'whatsapp',
       provider: 'one_time_wapi',
       recipientClass: 'public',
       idempotencyKey: claim.deliveryKey,
       to: eligibility.to,
-      text,
+      text: copy.text,
       noLinkPreview: true,
     };
   }
-
-  if (school) {
-    const text = schoolAcknowledgementText();
-    return {
-      channel: 'email',
-      provider: 'resend',
-      recipientClass: 'public',
-      idempotencyKey: claim.deliveryKey,
-      from: config.emailFrom,
-      to: eligibility.to,
-      ...(config.emailReplyTo ? { replyTo: config.emailReplyTo } : {}),
-      subject: 'We received your One Time Mishnayos inquiry',
-      text,
-      html: schoolAcknowledgementHtml(),
-      tags: emailTags(claim, claim.eventType),
-    };
-  }
-
-  const text = familyAcknowledgementText();
   return {
-    channel: 'email',
+    channel: eligibility.channel,
     provider: 'resend',
-    recipientClass: 'public',
+    recipientClass: eligibility.recipientClass,
     idempotencyKey: claim.deliveryKey,
     from: config.emailFrom,
     to: eligibility.to,
     ...(config.emailReplyTo ? { replyTo: config.emailReplyTo } : {}),
-    subject: "You're signed up for One Time Mishnayos",
-    text,
-    html: familyAcknowledgementHtml(),
-    tags: emailTags(claim, claim.eventType),
+    subject: copy.subject,
+    text: copy.text,
+    html: copy.html,
+    tags: emailTags(claim, copy.messageKey),
   };
 }

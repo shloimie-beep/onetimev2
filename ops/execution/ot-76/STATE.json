@@ -1,0 +1,22 @@
+{
+  "task_id": "OT-76",
+  "status": "merged_into_ot80_conductor",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ot76-day-one-certification-harness",
+  "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "current_head_sha": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
+  "scope_base_sha": "bc2bcf2c7e16b5f1885aa65a2904f07578a18169",
+  "updated_at": "2026-07-15T12:45:00+03:00",
+  "external_mutation_counts": {
+    "deployments": 0,
+    "provider_calls": 0,
+    "live_sends": 0,
+    "production_database_writes": 0,
+    "payment_or_access_mutations": 0,
+    "dns_or_railway_mutations": 0
+  },
+  "latest_report": "ops/evidence/ot-76/day-one-audit-report.json",
+  "strict_certify_report": "ops/evidence/ot-76/day-one-certify-report.json",
+  "candidate_note": "OT80 reran the harness with --scope-base set to the pre-OT76 conductor head. The evidence reports include the exact OT76 merge commit observed at harness runtime.",
+  "next_action": "Update OT80 checkpoint records, then run final convergence certification. Future release work should provide an integrated release manifest and run certify mode only after all Day-One gates are expected to pass."
+}

@@ -4,6 +4,7 @@ import type {
   HelperAvailability,
   LearnerProfile,
   LibraryItem,
+  ParentLearnerMaterials,
   ParentPortalDashboard,
   ProgressSummary,
   ProtectedActionDescriptor,
@@ -30,6 +31,7 @@ export type PortalViewState =
 export type ParentPortalFeatureProps = {
   viewState: PortalViewState;
   dashboard: ParentPortalDashboard | null;
+  learnerMaterials?: Record<string, ParentLearnerMaterials>;
   rewardHistory?: Record<string, RewardEvent[]>;
   selectedLearnerKey?: string | null;
   actorFingerprint: string;
@@ -62,6 +64,7 @@ export type StudentPortalFeatureProps = {
 export function ParentPortalFeature({
   viewState,
   dashboard,
+  learnerMaterials = {},
   rewardHistory = {},
   selectedLearnerKey,
   actorFingerprint,
@@ -89,6 +92,9 @@ export function ParentPortalFeature({
   const selectedAccess = selectedLearner
     ? dashboard?.student_access.find((state) => state.learner_key === selectedLearner.learner_key)
     : null;
+  const selectedMaterials = selectedLearner
+    ? learnerMaterials[selectedLearner.learner_key]
+    : undefined;
 
   if (viewState !== 'ready' && viewState !== 'success' && !dashboard) {
     return <PortalState role="parent" viewState={viewState} onRetry={onRetry} />;
@@ -207,8 +213,8 @@ export function ParentPortalFeature({
               onLaunch={onLaunchClass}
             />
             <MaterialsSummary
-              library={[]}
-              reviewSheets={[]}
+              library={selectedMaterials?.library ?? []}
+              reviewSheets={selectedMaterials?.review_sheets ?? []}
               helper={dashboard.helper}
               onPreviewSupport={() => onPreviewSupport?.(selectedLearner.learner_key)}
             />
@@ -220,6 +226,7 @@ export function ParentPortalFeature({
             <h2 id="parent-progress-heading">Progress And Rewards</h2>
             <RewardSummary
               rewards={dashboard.rewards[selectedLearner.learner_key]}
+              progress={selectedMaterials?.progress}
               history={rewardHistory[selectedLearner.learner_key] ?? []}
             />
             <UpdatesList updates={dashboard.updates[selectedLearner.learner_key] ?? []} />
@@ -547,21 +554,25 @@ function ProgressSummaryView({
 
 function RewardSummary({
   rewards,
+  progress,
   history,
 }: {
   rewards?: RewardBalance | undefined;
+  progress?: ProgressSummary | undefined;
   history: RewardEvent[];
 }) {
   if (!rewards) return <p className="ot-muted">Rewards are not loaded.</p>;
   return (
     <div className="ot-stack">
       <ProgressSummaryView
-        progress={{
-          attendance_count: 0,
-          watch_minutes: 0,
-          completed_items: 0,
-          last_activity_at: null,
-        }}
+        progress={
+          progress ?? {
+            attendance_count: 0,
+            watch_minutes: 0,
+            completed_items: 0,
+            last_activity_at: null,
+          }
+        }
         rewards={rewards}
       />
       {history.map((event) => (

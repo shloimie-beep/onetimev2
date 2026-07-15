@@ -1,0 +1,1682 @@
+{
+  "task_id": "OT-75",
+  "generated_at": "2026-07-15T09:34:29.535Z",
+  "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "scope_base_sha": "d7bf846dda1c27aadd61f51c71aa163c70b2b871",
+  "changed_files": [
+    ".github/workflows/ot75-release-readiness.yml",
+    "ops/observability/ot75/README.md",
+    "ops/observability/ot75/alerts.json",
+    "ops/observability/ot75/dashboards/release-health.dashboard.json",
+    "ops/observability/ot75/logging-metrics-traces.contract.json",
+    "ops/release/ot75/README.md",
+    "ops/release/ot75/deployment-descriptors/delivery-worker.json",
+    "ops/release/ot75/deployment-descriptors/provider-worker.json",
+    "ops/release/ot75/deployment-descriptors/telegram-worker.json",
+    "ops/release/ot75/deployment-descriptors/web.json",
+    "ops/release/ot75/environment-schema.json",
+    "ops/release/ot75/evidence/predeploy-gates.local.json",
+    "ops/release/ot75/evidence/validation-report.json",
+    "ops/release/ot75/execution/CHECKPOINT.md",
+    "ops/release/ot75/execution/DECISIONS.md",
+    "ops/release/ot75/execution/IMPLEMENTED.md",
+    "ops/release/ot75/execution/INPUTS.json",
+    "ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+    "ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+    "ops/release/ot75/execution/REMAINING.md",
+    "ops/release/ot75/execution/RESUME.md",
+    "ops/release/ot75/execution/STATE.json",
+    "ops/release/ot75/execution/TEST-RESULTS.md",
+    "ops/release/ot75/health-readiness-contracts.json",
+    "ops/release/ot75/predeploy-gates.json",
+    "ops/release/ot75/release-manifest.template.json",
+    "ops/release/ot75/release-readiness.contract.json",
+    "ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+    "ops/release/ot75/runbooks/join-domain-transition.md",
+    "ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+    "ops/release/ot75/runbooks/postgres-assurance.md",
+    "ops/release/ot75/runbooks/rollback-and-source-readback.md",
+    "ops/release/ot75/runbooks/staging-canary.md",
+    "scripts/ot75/check-predeploy-gates.mjs",
+    "scripts/ot75/render-release-manifest.mjs",
+    "scripts/ot75/validate-release-readiness.mjs",
+    "tests/unit/ot75/release-readiness.test.ts"
+  ],
+  "checks": [
+    {
+      "name": "repository is webcraft-media/onetimev2",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "deployments are forbidden",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "database mutations are forbidden",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "provider mutations are forbidden",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "runtime composition change is false",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required file exists: ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-STAGING-SERVICE",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-STAGING-DOMAIN",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-BACKUP-PITR-EVIDENCE",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-RESTORE-DRILL",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-ACTIVE-SOURCE-SHA",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-MIGRATION-LEDGER-CHECKSUM",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-DATABASE-REFERENCE-DRIFT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-DUPLICATE-DATA-AUDIT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-WORKER-ISOLATION",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-PROVIDER-STATE-CONTRACT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-OWNER-ADMIN-BOOTSTRAP",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "required gate exists: GATE-NO-RUNTIME-COMPOSITION-DRIFT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-STAGING-SERVICE",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-STAGING-DOMAIN",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-BACKUP-PITR-EVIDENCE",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-RESTORE-DRILL",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-ACTIVE-SOURCE-SHA",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-MIGRATION-LEDGER-CHECKSUM",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-DATABASE-REFERENCE-DRIFT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-DUPLICATE-DATA-AUDIT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-WORKER-ISOLATION",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-PROVIDER-STATE-CONTRACT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-OWNER-ADMIN-BOOTSTRAP",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "gate has machine check: GATE-NO-RUNTIME-COMPOSITION-DRIFT",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "changed path is OT-75-owned: .github/workflows/ot75-release-readiness.yml",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/observability/ot75/README.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/README.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/evidence/validation-report.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/CHECKPOINT.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/DECISIONS.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/IMPLEMENTED.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/INPUTS.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/REMAINING.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/RESUME.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/STATE.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/execution/TEST-RESULTS.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/release-readiness.contract.json",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: scripts/ot75/check-predeploy-gates.mjs",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: scripts/ot75/validate-release-readiness.mjs",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "changed path is OT-75-owned: tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "detail": "outside OT-75 scope"
+    },
+    {
+      "name": "forbidden runtime path untouched: apps/web/src/server/app.ts",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: apps/web/src/client/app/shell/AppShell.tsx",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: apps/web/src/server/features/",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: apps/web/src/client/app/crm",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: packages/domain/",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: packages/contracts/src/index.ts",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: apps/worker/src/main/index.ts",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: package.json",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: railway.json",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: .github/workflows/ci.yml",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "forbidden runtime path untouched: .github/workflows/ot37-postgres-assurance.yml",
+      "status": "passed",
+      "detail": "runtime path changed"
+    },
+    {
+      "name": "OT-75 workflow can be run manually",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow runs OT-75 validator",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow does not match forbidden pattern /\\brailway\\s+(up|deploy|variables|env|run)\\b/i",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow does not match forbidden pattern /\\bvercel\\s+deploy\\b/i",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow does not match forbidden pattern /\\bkubectl\\s+/i",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow does not match forbidden pattern /\\bnpm\\s+run\\s+db:migrate\\b/i",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow does not match forbidden pattern /\\bnpx\\s+tsx\\s+scripts\\/migrate\\.ts\\b/i",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow does not match forbidden pattern /\\bpsql\\s+/i",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "workflow does not match forbidden pattern /\\bcurl\\s+.*(api|webhook|telegram|stripe|send)\\b/i",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in .github/workflows/ot75-release-readiness.yml",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in .github/workflows/ot75-release-readiness.yml",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in .github/workflows/ot75-release-readiness.yml",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in .github/workflows/ot75-release-readiness.yml",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in .github/workflows/ot75-release-readiness.yml",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in .github/workflows/ot75-release-readiness.yml",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/observability/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/observability/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/observability/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/observability/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/observability/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/observability/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/observability/ot75/alerts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/observability/ot75/dashboards/release-health.dashboard.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/observability/ot75/logging-metrics-traces.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/README.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/deployment-descriptors/delivery-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/deployment-descriptors/provider-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/deployment-descriptors/telegram-worker.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/deployment-descriptors/web.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/environment-schema.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/evidence/validation-report.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/evidence/validation-report.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/evidence/validation-report.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/evidence/validation-report.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/evidence/validation-report.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/evidence/validation-report.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/CHECKPOINT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/CHECKPOINT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/CHECKPOINT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/CHECKPOINT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/CHECKPOINT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/CHECKPOINT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/DECISIONS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/DECISIONS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/DECISIONS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/DECISIONS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/DECISIONS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/DECISIONS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/IMPLEMENTED.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/IMPLEMENTED.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/IMPLEMENTED.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/IMPLEMENTED.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/IMPLEMENTED.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/IMPLEMENTED.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/INPUTS.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/INPUTS.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/INPUTS.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/INPUTS.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/INPUTS.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/INPUTS.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/INTEGRATION-MANIFEST.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/REMAINING.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/REMAINING.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/REMAINING.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/REMAINING.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/REMAINING.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/REMAINING.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/RESUME.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/RESUME.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/RESUME.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/RESUME.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/RESUME.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/RESUME.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/STATE.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/STATE.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/STATE.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/STATE.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/STATE.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/STATE.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/execution/TEST-RESULTS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/execution/TEST-RESULTS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/execution/TEST-RESULTS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/execution/TEST-RESULTS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/execution/TEST-RESULTS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/execution/TEST-RESULTS.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/health-readiness-contracts.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/predeploy-gates.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/release-manifest.template.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/release-readiness.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/release-readiness.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/release-readiness.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/release-readiness.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/release-readiness.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/release-readiness.contract.json",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/runbooks/join-domain-transition.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/runbooks/owner-admin-bootstrap.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/runbooks/postgres-assurance.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in ops/release/ot75/runbooks/staging-canary.md",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in scripts/ot75/check-predeploy-gates.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in scripts/ot75/check-predeploy-gates.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in scripts/ot75/check-predeploy-gates.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in scripts/ot75/check-predeploy-gates.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in scripts/ot75/check-predeploy-gates.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in scripts/ot75/check-predeploy-gates.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in scripts/ot75/validate-release-readiness.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in scripts/ot75/validate-release-readiness.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in scripts/ot75/validate-release-readiness.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in scripts/ot75/validate-release-readiness.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in scripts/ot75/validate-release-readiness.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in scripts/ot75/validate-release-readiness.mjs",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no private key in tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no OpenAI secret key in tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no GitHub token in tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no Stripe secret key in tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no database URL with password in tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "no bearer credential in tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "manifest remains OT-80-fillable",
+      "status": "passed",
+      "detail": ""
+    },
+    {
+      "name": "manifest records zero OT-75 deployments",
+      "status": "passed",
+      "detail": ""
+    }
+  ]
+}

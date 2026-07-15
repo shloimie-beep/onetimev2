@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-75",
+  "alerts": [
+    {
+      "id": "ALERT-SOURCE-SHA-MISMATCH",
+      "severity": "critical",
+      "condition": "release_source_sha_mismatch_total > 0 for 5 minutes",
+      "action": "stop canary or rollback before promotion"
+    },
+    {
+      "id": "ALERT-MIGRATION-CHECKSUM-MISMATCH",
+      "severity": "critical",
+      "condition": "migration_checksum_mismatch_total > 0",
+      "action": "block release and run migration ledger investigation"
+    },
+    {
+      "id": "ALERT-WORKER-LEASE-CONFLICT",
+      "severity": "warning",
+      "condition": "worker_lease_conflicts_total > 0 for 10 minutes",
+      "action": "pause worker scale-up and inspect queue isolation"
+    },
+    {
+      "id": "ALERT-PROVIDER-MUTATION-IN-STAGING-PREP",
+      "severity": "critical",
+      "condition": "provider_mutation_attempts_total > 0 while release mode is prepare_only",
+      "action": "stop worker, preserve redacted evidence, and require operator decision"
+    },
+    {
+      "id": "ALERT-HTTP-5XX-RATE",
+      "severity": "critical",
+      "condition": "5xx rate > 1 percent for 5 minutes during canary",
+      "action": "rollback canary"
+    },
+    {
+      "id": "ALERT-READINESS-FAILURE",
+      "severity": "critical",
+      "condition": "readiness failure on any release service for 2 consecutive checks",
+      "action": "block promotion"
+    }
+  ]
+}

@@ -10,6 +10,38 @@ export {
 } from './lead/normalize.ts';
 export { processOutboxSink } from './outbox/sink.ts';
 export {
+  ONE_TIME_CLASS_SERIES_KEY,
+  ONE_TIME_CLASS_TITLE,
+  createClassPortalAccessAdapter,
+  getClassOccurrenceDetail,
+  listClassOccurrences,
+  resolveDailyClassWindow,
+  scheduleClassFulfillmentForLead,
+} from './classes/service.ts';
+export {
+  ContentIdempotencyConflictError,
+  admitContentOutcome,
+  createContentPortalAccessAdapter,
+  getContentItemDetail,
+  listContentLibrary,
+  redactProviderMetadata,
+} from './content/service.ts';
+export {
+  AccountLifecycleError,
+  acceptOwnerAdminInvitation,
+  acceptParentActivation,
+  acceptStudentSetup,
+  completePasswordReset,
+  completeStudentReset,
+  createOwnerAdminInvitation,
+  createParentActivation,
+  createStudentReset,
+  createStudentSetup,
+  requestPasswordReset,
+  restoreStudentIdentity,
+  suspendStudentIdentity,
+} from './accounts/lifecycle.ts';
+export {
   authenticateUser,
   activateTotpEnrollment,
   canAssignContacts,
@@ -33,6 +65,16 @@ export {
   type AuthenticatedSession,
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
+export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
+export { buildOwnerDashboard, ownerAdminVisibleActions } from './dashboard/service.ts';
+export {
+  PortalServiceError,
+  createParentPortalService,
+  createRewardService,
+  createStudentPortalService,
+  fingerprint as portalFingerprint,
+  type PortalServiceDeps,
+} from './portals/services.ts';
 export {
   CrmDuplicateError,
   CrmVersionConflictError,

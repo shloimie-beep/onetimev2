@@ -1,6 +1,12 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { campaignTicker, landingContent, sharedNav } from '../packages/domain/src/index.ts';
+import {
+  campaign,
+  campaignTicker,
+  landingContent,
+  sharedNav,
+  successCopy,
+} from '../packages/domain/src/index.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
@@ -15,10 +21,11 @@ function escapeHtml(value: string) {
 function pageShell(
   title: string,
   body: string,
-  options: { description?: string; app?: boolean } = {},
+  options: { description?: string; app?: boolean; appEntry?: 'crm' | 'portal' } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
-  const script = options.app ? '/assets/app-crm.js' : '/assets/public.js';
+  const appEntry = options.appEntry ?? 'crm';
+  const script = options.app ? `/assets/app-${appEntry}.js` : '/assets/public.js';
   const stylesheet = options.app ? '/assets/app-crm.css' : '/assets/public.css';
   return `<!doctype html>
 <html lang="en">
@@ -69,7 +76,7 @@ function header() {
 
 function footer() {
   return `<footer class="site-footer">
-  <p>${escapeHtml(landingContent.footer.line)}</p>
+  <div class="footer-brand"><img src="/assets/brand/onetimelogo.webp" width="40" height="40" alt="" aria-hidden="true"><p>${escapeHtml(landingContent.footer.line)}</p></div>
   <nav aria-label="Footer">${landingContent.footer.links
     .map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`)
     .join('')}</nav>
@@ -79,18 +86,19 @@ function footer() {
 function ticker() {
   const copy = campaignTicker();
   if (!copy) return '';
-  return `<a class="campaign-ticker" href="/signup" data-campaign-deadline="2026-09-11"><span>${escapeHtml(copy)}</span></a>`;
+  const items = Array.from(
+    { length: 6 },
+    () => `<span class="campaign-ticker-item">${escapeHtml(copy)}</span>`,
+  ).join('');
+  return `<div class="campaign-ticker-shell" role="region" aria-label="Campaign countdown"><a class="campaign-ticker" href="/signup" aria-label="${escapeHtml(copy)}" data-campaign-deadline="${escapeHtml(campaign.deadlineDate)}"><span class="campaign-ticker-track" aria-hidden="true">${items}</span></a></div>`;
 }
 
 function landingPage() {
   const receiveBullets = landingContent.receive.bullets
-    .map((bullet) => {
-      const prefix = landingContent.receive.highlightedPrefix;
-      const copy = bullet.startsWith(prefix)
-        ? `<span class="yellow-text">${escapeHtml(prefix)}</span>${escapeHtml(bullet.slice(prefix.length))}`
-        : escapeHtml(bullet);
-      return `<li>${copy}</li>`;
-    })
+    .map(
+      (bullet) =>
+        `<li><span class="feature-marker" aria-hidden="true"></span><p><strong>${escapeHtml(bullet.lead)}</strong><span>${escapeHtml(bullet.body)}</span></p></li>`,
+    )
     .join('');
   const gainCards = landingContent.gain.cards
     .map((card) => {
@@ -111,7 +119,10 @@ function landingPage() {
     })
     .join('');
   const whoCards = landingContent.who.audiences
-    .map((label) => `<li>${escapeHtml(label)}</li>`)
+    .map(
+      (audience) =>
+        `<li><strong>${escapeHtml(audience.lead)}</strong><span>${escapeHtml(audience.body)}</span></li>`,
+    )
     .join('');
   const steps = landingContent.how.steps
     .map((label, index) => `<li><span>${index + 1}</span>${escapeHtml(label)}</li>`)
@@ -119,11 +130,11 @@ function landingPage() {
   const slides = landingContent.gallery.slides
     .map(
       (
-        [title, caption, src],
+        [title, src],
         index,
       ) => `<figure class="gallery-slide" data-gallery-slide ${index === 0 ? '' : 'hidden'}>
-        <img src="${src}" alt="${escapeHtml(caption)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
-        <figcaption><strong>${escapeHtml(title)}</strong><span>${escapeHtml(caption)}</span></figcaption>
+        <img src="${src}" alt="${escapeHtml(title)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
+        <figcaption><strong>${escapeHtml(title)}</strong></figcaption>
       </figure>`,
     )
     .join('');
@@ -142,28 +153,29 @@ function landingPage() {
 
   return pageShell(
     landingContent.seo.title,
-    `${header()}
+    `${ticker()}${header()}
 <main>
-  ${ticker()}
   <section class="hero">
     <div class="hero-inner">
-      <p class="kicker">${escapeHtml(landingContent.hero.kicker)}</p>
+      <p class="kicker">${landingContent.hero.kickerLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</p>
       <h1>${escapeHtml(landingContent.hero.heading)}</h1>
       <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
       <a class="button button-primary hero-cta" href="/signup">Sign Up Now</a>
     </div>
   </section>
   <section class="section receive" id="receive">
+    <h2 class="receive-heading">${escapeHtml(landingContent.receive.heading)}</h2>
     <div class="receive-image"><img src="/assets/students/smiley-kid.png" alt="Smiling One Time Mishnayos student" width="337" height="600"></div>
     <div class="feature-panel">
       <div class="feature-icon" aria-hidden="true">7</div>
-      <h2>${escapeHtml(landingContent.receive.heading)}</h2>
+      <p class="feature-eyebrow">${escapeHtml(landingContent.receive.eyebrow)}</p>
       <h3>${escapeHtml(landingContent.receive.title)}</h3>
       <ul>${receiveBullets}</ul>
     </div>
   </section>
   <section class="section" id="gain">
     <h2>${escapeHtml(landingContent.gain.heading)}</h2>
+    <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
     <div class="benefit-grid">${gainCards}</div>
   </section>
   <section class="section how" id="how-it-works">
@@ -174,7 +186,6 @@ function landingPage() {
   <section class="section who" id="who">
     <div>
       <h2>${escapeHtml(landingContent.who.heading)}</h2>
-      <p>${escapeHtml(landingContent.who.body)}</p>
       <ul>${whoCards}</ul>
     </div>
   </section>
@@ -204,6 +215,7 @@ function landingPage() {
 }
 
 function signupPage() {
+  const fallbackSuccess = successCopy('family');
   return pageShell(
     'Sign Up Now | One Time Mishnayos',
     `${header()}<main class="signup-page">
@@ -227,8 +239,8 @@ function signupPage() {
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
-      <h2 data-success-heading>You're signed up.</h2>
-      <p data-success-body>We saved your information and will send the current class details using your selected option.</p>
+      <h2 data-success-heading>${escapeHtml(fallbackSuccess.heading)}</h2>
+      <p data-success-body>${escapeHtml(fallbackSuccess.body)}</p>
     </div>
   </section>
 </main>${footer()}`,
@@ -285,5 +297,35 @@ await writeFile(
   pageShell('CRM | One Time Mishnayos', `<div id="crm-root"></div>`, {
     app: true,
     description: 'One Time authenticated CRM.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+for (const [fileName, title, description] of [
+  ['dashboard.html', 'Dashboard | One Time Mishnayos', 'One Time owner/admin dashboard.'],
+  ['classes.html', 'Classes | One Time Mishnayos', 'One Time class occurrence status.'],
+  ['content.html', 'Content Library | One Time Mishnayos', 'One Time content library status.'],
+  ['billing.html', 'Products/Billing | One Time Mishnayos', 'One Time billing status.'],
+] as const) {
+  await writeFile(
+    path.join(outDir, 'app', fileName),
+    pageShell(title, `<div id="crm-root"></div>`, {
+      app: true,
+      description,
+    }).replace('index, follow', 'noindex, nofollow'),
+  );
+}
+await writeFile(
+  path.join(outDir, 'app', 'parent.html'),
+  pageShell('Parent Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
+    app: true,
+    appEntry: 'portal',
+    description: 'One Time protected parent portal.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+await writeFile(
+  path.join(outDir, 'app', 'student.html'),
+  pageShell('Student Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
+    app: true,
+    appEntry: 'portal',
+    description: 'One Time protected student portal.',
   }).replace('index, follow', 'noindex, nofollow'),
 );

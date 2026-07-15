@@ -1,0 +1,30 @@
+{
+  "task_id": "OT-73",
+  "source_prompt_path": "ops/execution/ot-73/ORIGINAL-PROMPT.md",
+  "corrected_addendum_path": "ops/execution/ot-73/CORRECTED-LANDING-ADDENDUM.md",
+  "received_temp_path": "C:\\Users\\User\\AppData\\Local\\Temp\\CODEX-NOW-02-OT73-LANDING (1).md",
+  "repository": "webcraft-media/onetimev2",
+  "immutable_base": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "target_branch": "codex/ot73-landing-intent-reconciliation",
+  "pr_base_branch": "codex/ot60r-recovery-convergence",
+  "scope_allowlist": [
+    "public landing/signup content",
+    "public landing components/scripts/CSS",
+    "landing-only tests",
+    "OT-73 execution and evidence"
+  ],
+  "scope_forbidden": [
+    "BNA repository changes",
+    "deployments",
+    "production/provider/DNS mutations",
+    "authenticated AppShell",
+    "server composition",
+    "auth",
+    "CRM",
+    "portals",
+    "provider code",
+    "migrations",
+    "shared barrels",
+    "root package files"
+  ]
+}

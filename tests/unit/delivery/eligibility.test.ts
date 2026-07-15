@@ -43,6 +43,34 @@ describe('delivery eligibility', () => {
     },
   );
 
+  it('allows family class reminder events only for family signup scope', () => {
+    const email = evaluateDeliveryEligibility(
+      claimedDelivery({
+        eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail,
+      }),
+      'owner@protected.test',
+    );
+    const whatsapp = evaluateDeliveryEligibility(
+      claimedDelivery({
+        channel: 'whatsapp',
+        eventType: DELIVERY_EVENT_TYPES.familyClassReminderWhatsApp,
+      }),
+      'owner@protected.test',
+    );
+    const schoolMismatch = evaluateDeliveryEligibility(
+      claimedDelivery({
+        eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail,
+        contact: deliveryContact({ familySchoolClassification: 'school' }),
+        signup: deliverySignup({ classification: 'school' }),
+      }),
+      'owner@protected.test',
+    );
+
+    expect(email).toMatchObject({ kind: 'eligible', channel: 'email' });
+    expect(whatsapp).toMatchObject({ kind: 'eligible', channel: 'whatsapp' });
+    expect(schoolMismatch).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
+  });
+
   it('requires recorded consent for WhatsApp', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
@@ -93,7 +121,7 @@ describe('delivery eligibility', () => {
     },
   );
 
-  it('allows school public email acknowledgement through the explicit receipt event', () => {
+  it('rejects School public email rows because School gets only web ack and internal alert', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         contact: deliveryContact({ familySchoolClassification: 'school' }),
@@ -102,15 +130,10 @@ describe('delivery eligibility', () => {
       }),
       'owner@protected.test',
     );
-    expect(result).toEqual({
-      kind: 'eligible',
-      channel: 'email',
-      recipientClass: 'public',
-      to: 'recipient@example.test',
-    });
+    expect(result).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
   });
 
-  it('allows eligible school WhatsApp receipts through the explicit receipt event', () => {
+  it('rejects School WhatsApp rows because WhatsApp is not a School receipt channel', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({
         channel: 'whatsapp',
@@ -123,12 +146,7 @@ describe('delivery eligibility', () => {
       }),
       'owner@protected.test',
     );
-    expect(result).toEqual({
-      kind: 'eligible',
-      channel: 'whatsapp',
-      recipientClass: 'public',
-      to: '+12025550123',
-    });
+    expect(result).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
   });
 
   it('keeps school owner alerts eligible through the protected destination only', () => {

@@ -179,18 +179,22 @@ export type StudentCredentialLifecycleAdapter = {
   requestSetup(args: {
     actor: PortalActorContext;
     learner: LearnerProfile;
+    payload: StudentAccessOperationPayload;
   }): Promise<CredentialLifecycleResult>;
   requestReset(args: {
     actor: PortalActorContext;
     learner: LearnerProfile;
+    payload: StudentAccessOperationPayload;
   }): Promise<CredentialLifecycleResult>;
   requestSuspend(args: {
     actor: PortalActorContext;
     learner: LearnerProfile;
+    payload: StudentAccessOperationPayload;
   }): Promise<CredentialLifecycleResult>;
   requestRestore(args: {
     actor: PortalActorContext;
     learner: LearnerProfile;
+    payload: StudentAccessOperationPayload;
   }): Promise<CredentialLifecycleResult>;
 };
 
@@ -377,6 +381,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
         operationType,
         actor,
         learner,
+        payload,
       );
       assertNoCredentialLeak(adapterResult);
       await deps.repository.recordAudit({
@@ -666,11 +671,12 @@ async function runCredentialOperation(
   operationType: StudentAccessOperationType,
   actor: PortalActorContext,
   learner: LearnerProfile,
+  payload: StudentAccessOperationPayload,
 ) {
-  if (operationType === 'setup') return adapter.requestSetup({ actor, learner });
-  if (operationType === 'reset') return adapter.requestReset({ actor, learner });
-  if (operationType === 'suspend') return adapter.requestSuspend({ actor, learner });
-  return adapter.requestRestore({ actor, learner });
+  if (operationType === 'setup') return adapter.requestSetup({ actor, learner, payload });
+  if (operationType === 'reset') return adapter.requestReset({ actor, learner, payload });
+  if (operationType === 'suspend') return adapter.requestSuspend({ actor, learner, payload });
+  return adapter.requestRestore({ actor, learner, payload });
 }
 
 function assertNoCredentialLeak(result: CredentialLifecycleResult) {

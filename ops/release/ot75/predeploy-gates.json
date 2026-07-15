@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-75",
+  "gates": [
+    {
+      "id": "GATE-STAGING-SERVICE",
+      "title": "Staging services are explicitly named",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: staging service missing",
+      "machine_check": {
+        "type": "env_presence",
+        "env_names": [
+          "OT75_STAGING_WEB_SERVICE",
+          "OT75_STAGING_DELIVERY_WORKER_SERVICE",
+          "OT75_STAGING_PROVIDER_WORKER_SERVICE",
+          "OT75_STAGING_TELEGRAM_WORKER_SERVICE"
+        ],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-STAGING-DOMAIN",
+      "title": "Staging domain is present before canary",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: staging domain missing",
+      "machine_check": {
+        "type": "env_presence",
+        "env_names": ["OT75_STAGING_DOMAIN"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-BACKUP-PITR-EVIDENCE",
+      "title": "Backup and PITR evidence exists",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: backup/PITR evidence missing",
+      "machine_check": {
+        "type": "env_presence",
+        "env_names": ["OT75_BACKUP_PITR_EVIDENCE_URI"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-RESTORE-DRILL",
+      "title": "Restore drill evidence exists",
+      "severity": "hard_predeploy",
+      "blocker_source": "Release blocker: restore drill not proven",
+      "machine_check": {
+        "type": "env_presence",
+        "env_names": ["OT75_RESTORE_DRILL_EVIDENCE_URI"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-ACTIVE-SOURCE-SHA",
+      "title": "Active source SHA matches release manifest",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: exact active source SHA unknown",
+      "machine_check": {
+        "type": "git_sha_env_match",
+        "expected_env": "OT75_EXPECTED_SOURCE_SHA",
+        "actual_env": "OT75_ACTIVE_SOURCE_SHA",
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-MIGRATION-LEDGER-CHECKSUM",
+      "title": "Migration ledger and checksums are frozen",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: migration ledger/checksum uncertainty",
+      "machine_check": {
+        "type": "file_exists_and_env_presence",
+        "paths": ["ops/evidence/ot-60r/MIGRATION-LEDGER.md"],
+        "env_names": ["OT75_MIGRATION_LEDGER_SHA256"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-DATABASE-REFERENCE-DRIFT",
+      "title": "Staging and production database references are present and distinct",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: database reference drift",
+      "machine_check": {
+        "type": "env_distinct",
+        "env_names": [
+          "OT75_STAGING_DATABASE_REFERENCE_ID",
+          "OT75_PRODUCTION_DATABASE_REFERENCE_ID"
+        ],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-DUPLICATE-DATA-AUDIT",
+      "title": "Duplicate data audit is attached",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: duplicate data state unknown",
+      "machine_check": {
+        "type": "env_presence",
+        "env_names": ["OT75_DUPLICATE_DATA_AUDIT_REPORT"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-WORKER-ISOLATION",
+      "title": "Worker topology is isolated",
+      "severity": "hard_predeploy",
+      "blocker_source": "Railway inventory blocker: worker isolation not proven",
+      "machine_check": {
+        "type": "static_paths_and_env_presence",
+        "paths": [
+          "ops/release/ot75/deployment-descriptors/delivery-worker.json",
+          "ops/release/ot75/deployment-descriptors/provider-worker.json",
+          "ops/release/ot75/deployment-descriptors/telegram-worker.json"
+        ],
+        "env_names": ["OT75_WORKER_ISOLATION_APPROVED"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-PROVIDER-STATE-CONTRACT",
+      "title": "Provider state is read back without mutation",
+      "severity": "hard_predeploy",
+      "blocker_source": "Provider readiness and activation must not be inferred",
+      "machine_check": {
+        "type": "env_presence",
+        "env_names": ["OT75_PROVIDER_STATE_REPORT"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-OWNER-ADMIN-BOOTSTRAP",
+      "title": "Owner/admin bootstrap procedure completed without stored secrets",
+      "severity": "hard_predeploy",
+      "blocker_source": "Owner/admin account bootstrap requires secret-safe evidence",
+      "machine_check": {
+        "type": "env_presence",
+        "env_names": ["OT75_OWNER_ADMIN_BOOTSTRAP_REPORT"],
+        "print_values": false
+      }
+    },
+    {
+      "id": "GATE-NO-RUNTIME-COMPOSITION-DRIFT",
+      "title": "OT-75 does not change runtime composition",
+      "severity": "hard_static",
+      "blocker_source": "Prompt forbids app.ts, AppShell, root scripts, central worker startup, and provider/domain code changes",
+      "machine_check": {
+        "type": "scope_diff",
+        "contract_path": "ops/release/ot75/release-readiness.contract.json",
+        "print_values": false
+      }
+    }
+  ]
+}

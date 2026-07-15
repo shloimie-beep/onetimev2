@@ -8,6 +8,7 @@ import type { AppConfig } from '../../../config/src/index.ts';
 import { DELIVERY_EVENT_TYPES } from '../../../contracts/src/delivery/types.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
+import { scheduleClassFulfillmentForLead } from '../classes/service.ts';
 import {
   normalizeEmail,
   normalizePhone,
@@ -20,6 +21,7 @@ type CaptureLeadInput = {
   pool: DbPool;
   config: AppConfig;
   payload: LeadPayload;
+  now?: Date;
 };
 
 type OutboxEvent = {
@@ -44,13 +46,14 @@ export async function captureLead({
   pool,
   config,
   payload,
+  now,
 }: CaptureLeadInput): Promise<LeadSuccessResponse> {
   const parsed = leadPayloadSchema.parse(payload);
   const email = normalizeEmail(parsed.email);
   const phone = normalizePhone(parsed.phone);
   const reqHash = requestHash(parsed);
 
-  return inTransaction(pool, async (client) => {
+  const response = await inTransaction(pool, async (client) => {
     const duplicate = await client.query(
       `SELECT request_hash, response_json
          FROM onetime.idempotency_records
@@ -94,6 +97,40 @@ export async function captureLead({
 
     return responseBase;
   });
+
+  const classFulfillment = await scheduleClassFulfillmentAfterCommit({
+    pool,
+    config,
+    contactKey: response.contact_key,
+    signupKey: response.signup_key,
+    ...(now ? { now } : {}),
+  });
+
+  return {
+    ...response,
+    outbox_intents: uniqueIntentKeys([
+      ...response.outbox_intents,
+      ...classFulfillment.deliveryKeys,
+    ]),
+  };
+}
+
+async function scheduleClassFulfillmentAfterCommit(input: {
+  pool: DbPool;
+  config: AppConfig;
+  contactKey: string;
+  signupKey: string;
+  now?: Date;
+}) {
+  try {
+    return await scheduleClassFulfillmentForLead(input);
+  } catch {
+    return { occurrenceKey: null, deliveryKeys: [], dispatchMode: null };
+  }
+}
+
+function uniqueIntentKeys(keys: string[]) {
+  return [...new Set(keys)];
 }
 
 async function upsertContact(
@@ -277,18 +314,12 @@ function outboxEvents(
     occurrence_id: null,
     deliver_by: null,
   };
-  const events: OutboxEvent[] = [
-    {
-      deliveryKey: stableKey('delivery', [
-        signupKey,
-        payload.audience_type === 'school'
-          ? DELIVERY_EVENT_TYPES.schoolSignupEmailAck
-          : DELIVERY_EVENT_TYPES.familySignupEmailAck,
-      ]),
-      eventType:
-        payload.audience_type === 'school'
-          ? DELIVERY_EVENT_TYPES.schoolSignupEmailAck
-          : DELIVERY_EVENT_TYPES.familySignupEmailAck,
+  const events: OutboxEvent[] = [];
+
+  if (payload.audience_type === 'family') {
+    events.push({
+      deliveryKey: stableKey('delivery', [signupKey, DELIVERY_EVENT_TYPES.familySignupEmailAck]),
+      eventType: DELIVERY_EVENT_TYPES.familySignupEmailAck,
       channel: 'email',
       payload: {
         ...deliveryPolicy,
@@ -296,27 +327,25 @@ function outboxEvents(
         sender_configured: Boolean(config.emailFrom && config.emailReplyTo),
         classification: payload.audience_type,
       },
+    });
+  }
+
+  events.push({
+    deliveryKey: stableKey('delivery', [signupKey, 'internal_email_alert']),
+    eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
+    channel: 'internal_email',
+    payload: {
+      ...deliveryPolicy,
+      owner_alias_configured: Boolean(config.ownerTestEmail),
+      contact_key: contactKey,
+      signup_key: signupKey,
     },
-    {
-      deliveryKey: stableKey('delivery', [signupKey, 'internal_email_alert']),
-      eventType: DELIVERY_EVENT_TYPES.internalLeadAlert,
-      channel: 'internal_email',
-      payload: {
-        ...deliveryPolicy,
-        owner_alias_configured: Boolean(config.ownerTestEmail),
-        contact_key: contactKey,
-        signup_key: signupKey,
-      },
-    },
-  ];
+  });
 
   const wantsWhatsapp =
     payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
-  if (wantsWhatsapp && phone && payload.reminder_consent) {
-    const whatsappEventType =
-      payload.audience_type === 'school'
-        ? DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt
-        : DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation;
+  if (payload.audience_type === 'family' && wantsWhatsapp && phone && payload.reminder_consent) {
+    const whatsappEventType = DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation;
     events.push({
       deliveryKey: stableKey('delivery', [signupKey, whatsappEventType]),
       eventType: whatsappEventType,

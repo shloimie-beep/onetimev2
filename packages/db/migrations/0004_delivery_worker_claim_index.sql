@@ -17,9 +17,5 @@ CREATE INDEX IF NOT EXISTS outbox_events_delivery_worker_sink_claim_idx
       OR
       (event_type = 'family_signup_whatsapp_confirmation.v1' AND channel = 'whatsapp')
       OR
-      (event_type = 'school_signup_email_ack.v1' AND channel = 'email')
-      OR
-      (event_type = 'school_signup_whatsapp_receipt.v1' AND channel = 'whatsapp')
-      OR
       (event_type = 'internal_lead_alert' AND channel = 'internal_email')
     );

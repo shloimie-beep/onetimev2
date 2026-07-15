@@ -1,0 +1,133 @@
+{
+  "schema_version": "onetime.ot80.state.v1",
+  "task_id": "OT-80",
+  "title": "One-shot final convergence for standalone One Time product",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ot80-one-shot-final-convergence",
+  "pr_base": "codex/ot60r-recovery-convergence",
+  "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "created_at": "2026-07-15T11:48:00+03:00",
+  "updated_at": "2026-07-15T13:29:00+03:00",
+  "status": "draft_pr_open_ci_passed_not_ready",
+  "candidate_status": "NOT_READY",
+  "current_phase": "phase6_local_candidate_handoff",
+  "final_candidate_source_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
+  "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
+  "prompt_path": "ops/execution/ot-80/ORIGINAL-PROMPT.md",
+  "input_manifest_path": "ops/execution/ot-80/INPUT-MANIFEST.json",
+  "communications_decisions_path": "ops/execution/ot-80/COMMUNICATIONS-INTEGRATION-DECISIONS.md",
+  "communications_archive_path": "ops/execution/ot-80/audit-inputs/OT-DAYONE-COMMUNICATIONS-COPY-PACK.zip",
+  "communications_archive_sha256": "ba1ffe027c4f89e93133fdb3a1a4511b971e52d4441b06b758022cbd1876440d",
+  "communications_message_catalog_sha256": "865f04e7fd8d5842376485481804fb9d21595797fd9f40e8b5aa45424ae3a88a",
+  "communications_implementation_disposition": "Implemented directly from the preserved audit input as OT80 server-owned catalog commit aae879aea3ddbfce2ecdf8356c36711ef6a5e016 after no fetched remote ref or local OneTime worktree matched the communications ZIP/catalog hashes.",
+  "production_authorized": false,
+  "isolated_staging_authorized_after_gates": true,
+  "single_staging_admin_activation_email_authorized_after_gates": true,
+  "single_staging_admin_activation_recipient": "sdratler@gmail.com",
+  "external_mutations_so_far": {
+    "branch_created": true,
+    "commit_created": true,
+    "pushed": true,
+    "draft_pr_opened": true,
+    "deployment_performed": false,
+    "staging_mutation_performed": false,
+    "email_send_performed": false,
+    "provider_mutation_performed": false,
+    "production_mutation_performed": false
+  },
+  "next_actions": [
+    "Keep draft PR open while candidate remains NOT_READY.",
+    "Keep staging, external sends, provider mutations, payments, DNS, and production database mutations blocked until all gates are satisfied and explicit authorization exists."
+  ],
+  "draft_pr": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/23",
+    "number": 23,
+    "state": "open",
+    "draft": true,
+    "base": "codex/ot60r-recovery-convergence",
+    "head": "codex/ot80-one-shot-final-convergence",
+    "opened_head_sha": "f4352a76f6f480577657b741f363f42605c4857b",
+    "current_head_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
+    "ci_status": "passed"
+  },
+  "final_local_evidence": {
+    "source_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
+    "build": "passed",
+    "lint": "passed",
+    "unit": "passed_18_files_116_tests",
+    "integration": "passed_18_files_86_tests",
+    "e2e": "passed_18_browser_tests",
+    "accessibility": "passed_5_browser_tests",
+    "performance": "passed_5_browser_tests",
+    "bundle_check": "passed_manifest_chunk_sum",
+    "day_one_audit": "audit_complete_not_certified_13_total_3_pass_10_blockers",
+    "day_one_certify": "failed_expected_not_ready_13_total_3_pass_10_blockers",
+    "day_one_final_reports": "ops/evidence/ot-76/ot80-final-candidate/",
+    "ci": "passed_node24_postgresql16_ot75_static",
+    "external_mutations": "zero"
+  },
+  "integrated_lanes": [
+    {
+      "task": "OT-71",
+      "source_branch": "codex/ot71-product-core-train",
+      "source_head": "e357f5f0fa42d4087e8062113e619181226a5d57",
+      "merge_commit": "d3f60f76c15cc5c148c634bea1b6ff1066be72b4",
+      "status": "merged",
+      "remaining_from_source": "Phase 6 combined proof/publication remains pending and is intentionally carried into OT80 final certification."
+    },
+    {
+      "task": "OT-74",
+      "source_branch": "codex/ot74-audience-reconciliation",
+      "source_head": "51cd99dc4434f0354ba229620ebe89558efeb120",
+      "merge_commit": "29ab2b1888ab2f6c00892f7f353921fe5aabb638",
+      "status": "merged_canonicalized",
+      "canonical_model": "legacy_audience_reconciliation",
+      "remaining_from_source": "PostgreSQL 16 CI and final mounted-route certification remain pending for OT80 final certification; no production import, send, provider mutation, or contact deletion was authorized."
+    },
+    {
+      "task": "OT-72",
+      "source_branch": "codex/ot72-provider-sandbox-train",
+      "source_head": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+      "merge_commit": "bdddf576fc39615d9b6cb6414695651de33d331d",
+      "status": "merged_renumbered",
+      "provider_truth_migration": "1800_ot72_provider_truth",
+      "remaining_from_source": "PR PostgreSQL 16 assurance passed on the final head. All provider operations remain default-off with no external mutations."
+    },
+    {
+      "task": "OT-73",
+      "source_branch": "codex/ot73-landing-intent-reconciliation",
+      "source_head": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "merge_commit": "ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2",
+      "status": "merged_reconciled",
+      "remaining_from_source": "Final cross-lane visual/accessibility/performance proof remains pending for OT80 final certification; no deployment or production mutation was performed."
+    },
+    {
+      "task": "OT-75",
+      "source_branch": "codex/ot75-release-observability-readiness",
+      "source_head": "028a05f3e44a7b37c2395576aa3800f507dd5268",
+      "merge_commit": "9ce81a9c5df4c3eb82af3954705d7b381d294c6e",
+      "status": "merged_conductor_scoped",
+      "scope_base_sha": "d7bf846dda1c27aadd61f51c71aa163c70b2b871",
+      "remaining_from_source": "Activation-only staging, Railway/service, database, backup/PITR, provider-state, owner/admin bootstrap, and active-source proof remain blocked until external evidence is supplied. No deployment or external mutation was performed."
+    },
+    {
+      "task": "OT-76",
+      "source_branch": "codex/ot76-day-one-certification-harness",
+      "source_head": "b9ece3146d2de6edc9f386712fad146f17b18031",
+      "merge_commit": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
+      "status": "merged_conductor_scoped",
+      "scope_base_sha": "bc2bcf2c7e16b5f1885aa65a2904f07578a18169",
+      "remaining_from_source": "Audit mode is clean but strict certify remains failed with 10 Day-One blockers. This is honest NOT_READY evidence; no deployment or external mutation was performed."
+    }
+  ],
+  "direct_implementations": [
+    {
+      "task": "Day-One communications catalog",
+      "source_archive_sha256": "ba1ffe027c4f89e93133fdb3a1a4511b971e52d4441b06b758022cbd1876440d",
+      "source_message_catalog_sha256": "865f04e7fd8d5842376485481804fb9d21595797fd9f40e8b5aa45424ae3a88a",
+      "implementation_commit": "aae879aea3ddbfce2ecdf8356c36711ef6a5e016",
+      "status": "implemented",
+      "notes": "Server-owned catalog with 19 source message keys; active sends limited to Family acknowledgements, protected-link Family reminders, and internal lead alerts. School public email/WhatsApp sends are not active."
+    }
+  ]
+}

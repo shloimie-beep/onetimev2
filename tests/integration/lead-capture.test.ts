@@ -21,6 +21,7 @@ const payload = {
   idempotency_key: 'idem-family-1',
   attribution: { landing_path: '/signup' },
 };
+const beforeReminder = new Date('2026-07-15T12:00:00.000Z');
 
 beforeEach(async () => {
   config = loadConfig({
@@ -40,26 +41,29 @@ afterEach(async () => {
 
 describe('lead capture transaction', () => {
   it('writes one Family lead, contact, audit event, and deterministic outbox intents', async () => {
-    const result = await captureLead({ pool, config, payload });
+    const result = await captureLead({ pool, config, payload, now: beforeReminder });
     expect(result.success).toBe(true);
     expect(result.duplicate_submission).toBe(false);
-    expect(result.message.heading).toBe("You're signed up.");
-    expect(result.outbox_intents).toHaveLength(2);
+    expect(result.message.heading).toBe('Thank you - we received your Family signup.');
+    expect(result.message.body).toContain(
+      'Class access and member login details are sent separately',
+    );
+    expect(result.outbox_intents).toHaveLength(3);
 
     await expectCount('contacts', 1);
     await expectCount('signup_leads', 1);
     await expectCount('audit_events', 1);
-    await expectCount('outbox_events', 2);
+    await expectCount('outbox_events', 3);
   });
 
   it('replays the same idempotency key without duplicating persistence', async () => {
-    const first = await captureLead({ pool, config, payload });
-    const second = await captureLead({ pool, config, payload });
+    const first = await captureLead({ pool, config, payload, now: beforeReminder });
+    const second = await captureLead({ pool, config, payload, now: beforeReminder });
     expect(second.duplicate_submission).toBe(true);
     expect(second.contact_key).toBe(first.contact_key);
     expect(second.signup_key).toBe(first.signup_key);
     const count = await pool.query('SELECT count(*)::int AS outbox FROM onetime.outbox_events');
-    expect(count.rows[0].outbox).toBe(2);
+    expect(count.rows[0].outbox).toBe(3);
   });
 
   it('handles School classification without private class-link exposure', async () => {
@@ -73,8 +77,9 @@ describe('lead capture transaction', () => {
         email: 'school@example.test',
         idempotency_key: 'idem-school-1',
       },
+      now: beforeReminder,
     });
-    expect(school.message.heading).toBe('Thank you.');
+    expect(school.message.heading).toBe('Thank you - we received your school inquiry.');
     expect(JSON.stringify(school)).not.toContain('class_link');
     const row = await pool.query('SELECT family_school_classification FROM onetime.contacts');
     expect(row.rows[0].family_school_classification).toBe('school');
@@ -83,7 +88,6 @@ describe('lead capture transaction', () => {
     );
     expect(outbox.rows.map((outboxRow) => `${outboxRow.event_type}:${outboxRow.channel}`)).toEqual([
       `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
-      `${DELIVERY_EVENT_TYPES.schoolSignupEmailAck}:email`,
     ]);
     expect(JSON.stringify(outbox.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
   });
@@ -99,17 +103,19 @@ describe('lead capture transaction', () => {
         phone: '050-111-2222',
         reminder_preference: 'both',
       },
+      now: beforeReminder,
     });
-    expect(both.outbox_intents).toHaveLength(3);
+    expect(both.outbox_intents).toHaveLength(5);
     const rows = await pool.query(
-      "SELECT event_type, channel, payload FROM onetime.outbox_events WHERE channel = 'whatsapp'",
+      'SELECT event_type, channel, payload FROM onetime.outbox_events WHERE channel = $1 AND event_type = $2',
+      ['whatsapp', DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation],
     );
     expect(rows.rowCount).toBe(1);
     expect(rows.rows[0].event_type).toBe(DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation);
     expect(rows.rows[0].payload.public_recipient).toBe(true);
   });
 
-  it('queues a School WhatsApp receipt only when channel, phone, and consent allow it', async () => {
+  it('does not queue automated public School WhatsApp or email receipts', async () => {
     const school = await captureLead({
       pool,
       config,
@@ -122,16 +128,15 @@ describe('lead capture transaction', () => {
         phone: '050-222-3333',
         reminder_preference: 'both',
       },
+      now: beforeReminder,
     });
-    expect(school.outbox_intents).toHaveLength(3);
+    expect(school.outbox_intents).toHaveLength(1);
     const rows = await pool.query(
       'SELECT event_type, channel, payload FROM onetime.outbox_events WHERE contact_key = $1 ORDER BY event_type, channel',
       [school.contact_key],
     );
     expect(rows.rows.map((row) => `${row.event_type}:${row.channel}`)).toEqual([
       `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
-      `${DELIVERY_EVENT_TYPES.schoolSignupEmailAck}:email`,
-      `${DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt}:whatsapp`,
     ]);
     expect(JSON.stringify(rows.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
   });
@@ -147,6 +152,7 @@ describe('lead capture transaction', () => {
         reminder_preference: 'none',
         reminder_consent: false,
       },
+      now: beforeReminder,
     });
     expect(none.outbox_intents).toHaveLength(2);
     const rows = await pool.query(
@@ -160,7 +166,7 @@ describe('lead capture transaction', () => {
   });
 
   it('sink worker delivers deterministic intents without external transport', async () => {
-    await captureLead({ pool, config, payload });
+    await captureLead({ pool, config, payload, now: beforeReminder });
     const sink = await processOutboxSink(pool);
     expect(sink.delivered).toBe(2);
     const rows = await pool.query(

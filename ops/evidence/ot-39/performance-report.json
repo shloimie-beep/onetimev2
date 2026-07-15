@@ -12,338 +12,338 @@
   },
   "list_first_usable": {
     "samples": [
-      892,
-      916,
-      915,
-      924,
-      894,
-      884,
-      905,
-      916,
-      874,
-      899,
-      895,
-      918,
-      918,
-      917,
-      947,
-      907,
-      931,
-      903,
-      931,
-      912,
-      928,
-      910,
-      887,
-      923,
-      911,
-      925,
-      892,
-      924,
-      915,
-      894
+      1075,
+      1136,
+      1126,
+      1125,
+      1104,
+      1105,
+      1064,
+      1103,
+      1122,
+      1113,
+      1145,
+      1131,
+      1115,
+      1115,
+      1118,
+      1124,
+      1119,
+      1102,
+      1094,
+      1121,
+      1094,
+      1110,
+      1125,
+      1117,
+      1090,
+      1108,
+      1092,
+      1115,
+      1109,
+      1118
     ],
-    "p50": 912,
-    "p75": 923,
-    "p95": 931,
+    "p50": 1115,
+    "p75": 1122,
+    "p95": 1136,
     "target_ms": 2500,
     "pass": true
   },
   "detail_first_usable": {
     "samples": [
-      895,
-      895,
-      890,
-      876,
-      891,
-      891,
-      879,
-      870,
-      874,
-      874,
-      891,
-      876,
-      880,
-      898,
-      911,
-      899,
-      892,
-      879,
-      884,
-      861,
-      882,
-      897,
-      879,
-      865,
-      874,
-      899,
-      867,
-      895,
-      1182,
-      870
+      1082,
+      1082,
+      1080,
+      1090,
+      1126,
+      1065,
+      1096,
+      1073,
+      1116,
+      1101,
+      1101,
+      1072,
+      1097,
+      1089,
+      1082,
+      1097,
+      1057,
+      1088,
+      1084,
+      1123,
+      1052,
+      1102,
+      1109,
+      1086,
+      1108,
+      1103,
+      1076,
+      1094,
+      1080,
+      1068
     ],
-    "p50": 882,
-    "p75": 895,
-    "p95": 911,
+    "p50": 1088,
+    "p75": 1101,
+    "p95": 1123,
     "target_ms": 2500,
     "pass": true
   },
   "warm_return_to_cached_list": {
     "samples": [
-      127,
-      136,
-      136,
-      147,
-      137,
-      141,
-      127,
-      134,
-      142,
-      141,
-      131,
-      144,
-      132,
-      129,
-      150,
-      147,
-      139,
-      159,
-      141,
-      139,
-      136,
+      158,
+      156,
+      158,
+      162,
+      157,
+      157,
+      161,
+      162,
+      156,
+      152,
+      172,
+      143,
+      161,
+      153,
+      161,
+      154,
+      157,
+      164,
+      181,
+      151,
+      151,
+      148,
       146,
-      137,
-      147,
-      137,
-      125,
-      147,
-      145,
-      137,
-      126
+      148,
+      159,
+      152,
+      123,
+      142,
+      148,
+      158
     ],
-    "p50": 137,
-    "p75": 145,
-    "p95": 150,
+    "p50": 156,
+    "p75": 161,
+    "p95": 172,
     "target_ms": 1500,
     "pass": true
   },
   "cached_shell_transition": {
     "samples": [
-      134,
-      145,
-      124,
-      124,
-      135,
-      125,
-      148,
-      147,
-      143,
-      152,
-      135,
-      128,
-      150,
       181,
-      159,
-      148,
-      142,
+      164,
+      186,
+      158,
+      154,
+      162,
+      155,
+      168,
+      176,
       157,
-      152,
-      147,
-      124,
-      127,
-      149,
-      127,
-      135,
-      157,
-      144,
+      165,
+      182,
       139,
-      145,
-      155
+      161,
+      165,
+      167,
+      190,
+      163,
+      148,
+      184,
+      159,
+      185,
+      155,
+      171,
+      192,
+      165,
+      169,
+      174,
+      173,
+      161
     ],
-    "p50": 144,
-    "p75": 150,
-    "p95": 159,
+    "p50": 165,
+    "p75": 176,
+    "p95": 190,
     "target_ms": 500,
     "pass": true
   },
   "web_vitals": {
     "list_first_usable": [
       {
-        "lcp_ms": 848,
+        "lcp_ms": 1032,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 868,
+        "lcp_ms": 1092,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 868,
+        "lcp_ms": 1076,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 884,
+        "lcp_ms": 1072,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 848,
+        "lcp_ms": 1052,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1056,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 848,
+        "lcp_ms": 1024,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1056,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 832,
+        "lcp_ms": 1072,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1064,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 856,
+        "lcp_ms": 1088,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 864,
+        "lcp_ms": 1084,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 864,
+        "lcp_ms": 1068,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 860,
+        "lcp_ms": 1068,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 892,
+        "lcp_ms": 1068,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 864,
+        "lcp_ms": 1068,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 888,
+        "lcp_ms": 1072,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1056,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 880,
+        "lcp_ms": 1056,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 860,
+        "lcp_ms": 1076,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 872,
+        "lcp_ms": 1048,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 856,
+        "lcp_ms": 1056,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1076,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 872,
+        "lcp_ms": 1060,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 872,
+        "lcp_ms": 1040,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 880,
+        "lcp_ms": 1068,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 844,
+        "lcp_ms": 1056,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 876,
+        "lcp_ms": 1064,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 868,
+        "lcp_ms": 1076,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 860,
+        "lcp_ms": 1068,
         "cls": 0.0789,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
@@ -351,181 +351,181 @@
     ],
     "detail_first_usable": [
       {
-        "lcp_ms": 848,
+        "lcp_ms": 1040,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1040,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 856,
+        "lcp_ms": 1056,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 844,
+        "lcp_ms": 1044,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 840,
+        "lcp_ms": 1084,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 856,
+        "lcp_ms": 1028,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 848,
+        "lcp_ms": 1056,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1028,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 828,
+        "lcp_ms": 1080,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1060,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 844,
+        "lcp_ms": 1056,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 844,
+        "lcp_ms": 1024,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1052,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 844,
+        "lcp_ms": 1036,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 868,
+        "lcp_ms": 1052,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1048,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1028,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 844,
+        "lcp_ms": 1040,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1048,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 828,
+        "lcp_ms": 1076,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1024,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1060,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 848,
+        "lcp_ms": 1060,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1040,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1064,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1052,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 840,
+        "lcp_ms": 1040,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 852,
+        "lcp_ms": 1060,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 1128,
+        "lcp_ms": 1032,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
       },
       {
-        "lcp_ms": 836,
+        "lcp_ms": 1012,
         "cls": 0.0662,
         "long_task_over_200ms": false,
         "long_task_max_ms": 0
@@ -533,8 +533,8 @@
     ]
   },
   "bundles": {
-    "app_js_gzip_bytes": 69406,
-    "app_css_gzip_bytes": 3139
+    "app_js_gzip_bytes": 9924,
+    "app_css_gzip_bytes": 3472
   },
   "request_counts": {
     "list_first_usable": [
@@ -672,7 +672,7 @@
     "/api/v1/auth/session",
     "/api/v1/crm/contacts/search",
     "/api/v1/crm/contacts",
-    "/api/v1/crm/contacts/6122a266-cebe-42c8-a552-3ebc45dd5ed5"
+    "/api/v1/crm/contacts/6f212444-8363-46d8-857e-3c8b9919c43e"
   ],
   "zero_bna_operations_requests": true,
   "public_pages_exclude_authenticated_bundle": true

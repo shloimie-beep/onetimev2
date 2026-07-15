@@ -18,16 +18,6 @@ export const communicationsEventMap: Record<
     label: 'Family signup WhatsApp confirmation',
     channel: 'whatsapp',
   },
-  'school_signup_email_ack.v1': {
-    intentType: 'school_signup_email_ack',
-    label: 'School signup email acknowledgement',
-    channel: 'email',
-  },
-  'school_signup_whatsapp_receipt.v1': {
-    intentType: 'school_signup_whatsapp_receipt',
-    label: 'School signup WhatsApp receipt',
-    channel: 'whatsapp',
-  },
   internal_lead_alert: {
     intentType: 'internal_lead_alert',
     label: 'Internal owner alert',

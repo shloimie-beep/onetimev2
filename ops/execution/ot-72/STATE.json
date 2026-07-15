@@ -1,0 +1,69 @@
+{
+  "task_id": "OT-72",
+  "mode": "IMPLEMENT_PROVIDER_ADAPTERS_AND_TEST_STAGING_READINESS",
+  "repository": "webcraft-media/onetimev2",
+  "source_branch": "codex/ot60r-recovery-convergence",
+  "target_branch": "codex/ot72-provider-sandbox-train",
+  "status": "local_followup_manifest_and_ci_teardown_fix_verified_pending_push",
+  "created_at": "2026-07-15T09:02:00+03:00",
+  "updated_at": "2026-07-15T09:46:34+03:00",
+  "source_remote_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "candidate_control_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
+  "branch_point_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "branch_point_decision": "Use fetched source branch head because it contains the remotely checkpointed control files. Candidate code SHA is verified as an ancestor and later source-branch commits are control/format-only.",
+  "pull_request": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/18",
+    "number": 18,
+    "draft": true,
+    "base_branch": "codex/ot60r-recovery-convergence",
+    "head_branch": "codex/ot72-provider-sandbox-train",
+    "head_sha_at_creation": "b2a92917b9dd730957c55d8add6f573518506a85",
+    "head_sha_latest_verified": "4ec55d7bd6ade9ec2dd21e4557a88ac43b4ceb44",
+    "remote_ci": {
+      "node_24_verify": "passed",
+      "postgresql_16_assurance": "passed",
+      "last_checked_at": "2026-07-15T09:31:36+03:00"
+    }
+  },
+  "external_action_policy": {
+    "stripe_test_sandbox": "authorized_if_test_mode_and_canary_gate_present",
+    "live_stripe_charges": "forbidden",
+    "live_bulk_external_sends": "forbidden",
+    "deployment_dns_production_database": "forbidden",
+    "provider_mutations": "forbidden_without_exact_protected_canary_flag"
+  },
+  "phase_status": {
+    "phase_1_stripe": "implemented_local_verified_canary_pending",
+    "phase_2_email_whatsapp": "implemented_local_verified_canary_pending",
+    "phase_3_zoom": "implemented_local_verified_readiness_canary_pending",
+    "phase_4_vimeo": "implemented_local_verified_readiness_canary_pending",
+    "phase_5_telegram": "implemented_local_verified_canary_pending",
+    "phase_6_bna_oversight": "implemented_local_verified_with_bna_followup_manifest"
+  },
+  "bna_followup_manifest": {
+    "path": "ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json",
+    "status": "local_verified",
+    "runtime_wiring": "future_followup_only",
+    "synchronous_bna_call_allowed": false,
+    "bna_runtime_edit_in_ot72": false
+  },
+  "ci_harness_followup": {
+    "path": "scripts/postgres-assurance/run.ts",
+    "status": "local_verified_pending_remote_ci",
+    "scope": "test_harness_teardown_guard",
+    "reason": "Current PR head completed the PostgreSQL assurance body, then failed on an unhandled pg Pool 57P01 teardown error after ephemeral database termination."
+  },
+  "external_mutation_counts": {
+    "stripe_test_calls": 0,
+    "stripe_live_calls": 0,
+    "email_sends": 0,
+    "whatsapp_sends": 0,
+    "zoom_mutations": 0,
+    "vimeo_mutations": 0,
+    "telegram_sends": 0,
+    "webhook_registrations": 0,
+    "dns_mutations": 0,
+    "deployments": 0,
+    "production_database_mutations": 0
+  }
+}

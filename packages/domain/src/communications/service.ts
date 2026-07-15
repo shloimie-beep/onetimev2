@@ -336,8 +336,6 @@ function isIntentType(value: string): value is CommunicationsIntentType {
   return (
     value === 'family_signup_email_ack' ||
     value === 'family_signup_whatsapp_confirmation' ||
-    value === 'school_signup_email_ack' ||
-    value === 'school_signup_whatsapp_receipt' ||
     value === 'internal_lead_alert'
   );
 }

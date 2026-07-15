@@ -47,17 +47,18 @@ export function supportedChannelForEvent(eventType: string): ClaimedDelivery['ch
   );
 }
 
-function expectedPublicEventForSignup(claim: ClaimedDelivery): string | null {
+function publicEventAllowedForSignup(claim: ClaimedDelivery): boolean {
   const classification = claim.signup?.classification;
-  if (!classification || claim.channel === 'internal_email') return null;
-  if (classification === 'school') {
-    return claim.channel === 'whatsapp'
-      ? DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt
-      : DELIVERY_EVENT_TYPES.schoolSignupEmailAck;
-  }
-  return claim.channel === 'whatsapp'
-    ? DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation
-    : DELIVERY_EVENT_TYPES.familySignupEmailAck;
+  if (!classification || claim.channel === 'internal_email') return false;
+  if (classification === 'school') return false;
+  const allowedFamilyEvents: readonly string[] =
+    claim.channel === 'whatsapp'
+      ? [
+          DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation,
+          DELIVERY_EVENT_TYPES.familyClassReminderWhatsApp,
+        ]
+      : [DELIVERY_EVENT_TYPES.familySignupEmailAck, DELIVERY_EVENT_TYPES.familyClassReminderEmail];
+  return allowedFamilyEvents.includes(claim.eventType);
 }
 
 export function evaluateDeliveryEligibility(
@@ -115,8 +116,7 @@ export function evaluateDeliveryEligibility(
     };
   }
 
-  const expectedPublicEvent = expectedPublicEventForSignup(claim);
-  if (expectedPublicEvent && expectedPublicEvent !== claim.eventType) {
+  if (!publicEventAllowedForSignup(claim)) {
     return {
       kind: 'skipped',
       channel: claim.channel,

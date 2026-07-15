@@ -42,9 +42,9 @@ WITH candidates AS (
         OR
         (outbox.event_type = 'family_signup_whatsapp_confirmation.v1' AND outbox.channel = 'whatsapp')
         OR
-        (outbox.event_type = 'school_signup_email_ack.v1' AND outbox.channel = 'email')
+        (outbox.event_type = 'family_class_reminder_email.v1' AND outbox.channel = 'email')
         OR
-        (outbox.event_type = 'school_signup_whatsapp_receipt.v1' AND outbox.channel = 'whatsapp')
+        (outbox.event_type = 'family_class_reminder_whatsapp.v1' AND outbox.channel = 'whatsapp')
         OR
         (outbox.event_type = 'internal_lead_alert' AND outbox.channel = 'internal_email')
      )

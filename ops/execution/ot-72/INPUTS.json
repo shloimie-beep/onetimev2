@@ -1,0 +1,33 @@
+{
+  "task_id": "OT-72",
+  "repository": "webcraft-media/onetimev2",
+  "raw_prompt": {
+    "path": "ops/execution/ot-72/ORIGINAL-PROMPT.md",
+    "sha256": "F8CA9ABB67D1CCA0C4667427BC51D9FB9BC32A5B0F95096161E6145611BDA69D",
+    "source_attachment_path": "C:/Users/User/.codex/attachments/5748ac0e-be77-4b65-8b9d-c3660f6c9532/pasted-text.txt"
+  },
+  "source": {
+    "remote": "origin",
+    "source_branch": "codex/ot60r-recovery-convergence",
+    "source_remote_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+    "candidate_control_path": "ops/execution/control/CANONICAL-CANDIDATE.json",
+    "candidate_control_candidate_head_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
+    "candidate_control_status": "candidate",
+    "candidate_control_pr": "https://github.com/webcraft-media/onetimev2/pull/17",
+    "candidate_sha_is_ancestor_of_source_head": true,
+    "post_candidate_diff_classification": "control_and_format_only",
+    "branch_point_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444"
+  },
+  "constraints": {
+    "do_not_edit_bna": true,
+    "do_not_edit_shared_app_shell_or_central_route_wiring": true,
+    "do_not_edit_parent_student_portal_ui": true,
+    "do_not_edit_crm_ui": true,
+    "do_not_edit_shared_auth_session_logic": true,
+    "do_not_edit_public_landing_signup_ui": true,
+    "migration_namespace": "1700-1799",
+    "live_stripe_charges_authorized": false,
+    "live_or_bulk_external_sends_authorized": false,
+    "deployment_dns_production_database_authorized": false
+  }
+}

@@ -95,8 +95,10 @@ describe('PostgreSQL delivery repository', () => {
     expect(CLAIM_BATCH_SQL).toContain(
       "outbox.event_type = 'family_signup_whatsapp_confirmation.v1'",
     );
-    expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'school_signup_email_ack.v1'");
-    expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'school_signup_whatsapp_receipt.v1'");
+    expect(CLAIM_BATCH_SQL).not.toContain("outbox.event_type = 'school_signup_email_ack.v1'");
+    expect(CLAIM_BATCH_SQL).not.toContain(
+      "outbox.event_type = 'school_signup_whatsapp_receipt.v1'",
+    );
     expect(CLAIM_BATCH_SQL).toContain("outbox.event_type = 'internal_lead_alert'");
     expect(CLAIM_BATCH_SQL).toContain('contact.account_key = claimed.account_key');
     expect(CLAIM_BATCH_SQL).toContain('signup.account_key = claimed.account_key');
