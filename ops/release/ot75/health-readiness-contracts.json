@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-75",
+  "contracts": [
+    {
+      "id": "CONTRACT-LIVENESS",
+      "applies_to": ["web", "delivery-worker", "provider-worker", "telegram-worker"],
+      "required_result": "process_accepts_health_probe_without_touching_database_or_provider",
+      "evidence_shape": {
+        "service_key": "string",
+        "status": "live",
+        "source_sha": "git_sha_or_unknown",
+        "checked_at": "iso8601"
+      }
+    },
+    {
+      "id": "CONTRACT-READINESS",
+      "applies_to": ["web", "delivery-worker", "provider-worker", "telegram-worker"],
+      "required_result": "dependencies_are_present_but_secret_values_are_not_printed",
+      "evidence_shape": {
+        "service_key": "string",
+        "database_reference_present": "boolean",
+        "provider_reference_present": "boolean",
+        "migration_ledger_match": "boolean",
+        "secret_values_printed": false
+      }
+    },
+    {
+      "id": "CONTRACT-SOURCE-SHA",
+      "applies_to": ["web", "delivery-worker", "provider-worker", "telegram-worker"],
+      "required_result": "runtime_readback_sha_equals_release_manifest_source_sha",
+      "header_names": ["x-onetime-source-sha", "x-onetime-release-id"],
+      "log_fields": ["source_sha", "release_id"],
+      "forbidden": ["branch_name_only_release_proof", "latest_tag_release_proof"]
+    },
+    {
+      "id": "CONTRACT-MIGRATION-CHECKSUM",
+      "applies_to": ["web", "delivery-worker"],
+      "required_result": "schema_migrations_rows_match_repository_migration_sha256_checksums",
+      "source": "packages/db/src/index.ts runMigrations checksum ledger",
+      "evidence": "OT-37 disposable PostgreSQL assurance plus OT-75 release manifest checksum"
+    },
+    {
+      "id": "CONTRACT-WORKER-LEASE",
+      "applies_to": ["delivery-worker", "provider-worker", "telegram-worker"],
+      "required_result": "worker_claims_are_non_overlapping_and_lease_expiry_is_bounded",
+      "minimum_fields": ["worker_id", "lease_ms", "batch_size", "claimed_count", "skipped_count"],
+      "forbidden": ["multiple_workers_share_same_queue_without_isolation_label"]
+    },
+    {
+      "id": "CONTRACT-PROVIDER-STATE",
+      "applies_to": ["provider-worker", "telegram-worker"],
+      "required_result": "provider_state_readback_is_count_or_status_only_and_does_not_mutate_provider",
+      "allowed_evidence": ["configured_present", "disabled", "enabled", "count", "last_checked_at"],
+      "forbidden_evidence": ["raw_token", "raw_phone", "raw_chat_id", "raw_message_body"]
+    }
+  ]
+}

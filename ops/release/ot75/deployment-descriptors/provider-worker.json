@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "descriptor_id": "ot75-provider-worker",
+  "service_key": "provider-worker",
+  "mode": "future_descriptor_only_not_wired",
+  "current_runtime_composition_change": false,
+  "start_command_template": ["TO_BE_ADDED_BY_FUTURE_PROVIDER_PACKET"],
+  "queue_contract": {
+    "lease_required": true,
+    "provider_state_readback_required": true,
+    "source_sha_env": "OT75_EXPECTED_SOURCE_SHA",
+    "provider_mutation_default": "forbidden"
+  },
+  "required_environment_names": [
+    "OT75_STAGING_PROVIDER_WORKER_SERVICE",
+    "OT75_PROVIDER_STATE_REPORT",
+    "OT75_WORKER_ISOLATION_APPROVED"
+  ],
+  "must_not_modify": [
+    "packages/domain/",
+    "apps/web/src/server/features/",
+    "apps/worker/src/main/index.ts",
+    "package.json",
+    "railway.json"
+  ],
+  "allowed_release_outputs": [
+    "provider_enabled_count",
+    "provider_disabled_count",
+    "pending_delivery_count",
+    "mutation_count_zero"
+  ]
+}

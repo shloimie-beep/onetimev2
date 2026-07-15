@@ -1,0 +1,48 @@
+name: OT-75 Release Readiness
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/ot75-release-readiness.yml'
+      - 'ops/release/ot75/**'
+      - 'ops/observability/ot75/**'
+      - 'scripts/ot75/**'
+      - 'tests/unit/ot75/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ot75-release-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-readiness:
+    name: Static release readiness gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate OT-75 release readiness
+        run: node scripts/ot75/validate-release-readiness.mjs
+
+      - name: Run OT-75 release-only unit tests
+        run: npx vitest run --config vitest.unit.config.ts tests/unit/ot75/release-readiness.test.ts
+
+      - name: Secret scan
+        run: npm run secret:scan

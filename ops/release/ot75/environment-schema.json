@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-75",
+  "secret_policy": {
+    "print_values": false,
+    "store_values_in_git": false,
+    "allowed_evidence": [
+      "present",
+      "missing",
+      "redacted_fingerprint",
+      "same_or_different",
+      "source_sha_match",
+      "count"
+    ]
+  },
+  "environments": [
+    {
+      "name": "staging",
+      "railway_environment_name": "staging",
+      "domain_policy": "transitional_join_subdomain_only",
+      "variables": [
+        {
+          "name": "OT75_STAGING_WEB_SERVICE",
+          "kind": "service_name",
+          "required_for": ["GATE-STAGING-SERVICE"]
+        },
+        {
+          "name": "OT75_STAGING_DELIVERY_WORKER_SERVICE",
+          "kind": "service_name",
+          "required_for": ["GATE-STAGING-SERVICE", "GATE-WORKER-ISOLATION"]
+        },
+        {
+          "name": "OT75_STAGING_PROVIDER_WORKER_SERVICE",
+          "kind": "service_name",
+          "required_for": ["GATE-STAGING-SERVICE", "GATE-WORKER-ISOLATION"]
+        },
+        {
+          "name": "OT75_STAGING_TELEGRAM_WORKER_SERVICE",
+          "kind": "service_name",
+          "required_for": ["GATE-STAGING-SERVICE", "GATE-WORKER-ISOLATION"]
+        },
+        {
+          "name": "OT75_STAGING_DOMAIN",
+          "kind": "hostname",
+          "required_for": ["GATE-STAGING-DOMAIN"]
+        },
+        {
+          "name": "OT75_STAGING_DATABASE_REFERENCE_ID",
+          "kind": "opaque_database_reference",
+          "required_for": ["GATE-DATABASE-REFERENCE-DRIFT"]
+        }
+      ]
+    },
+    {
+      "name": "production",
+      "railway_environment_name": "production",
+      "domain_policy": "keep_join_onetimeonetime_com_transitional",
+      "variables": [
+        {
+          "name": "OT75_PRODUCTION_WEB_SERVICE",
+          "kind": "service_name",
+          "required_for": ["GATE-ACTIVE-SOURCE-SHA"]
+        },
+        {
+          "name": "OT75_PRODUCTION_DATABASE_REFERENCE_ID",
+          "kind": "opaque_database_reference",
+          "required_for": ["GATE-DATABASE-REFERENCE-DRIFT"]
+        },
+        {
+          "name": "OT75_BACKUP_PITR_EVIDENCE_URI",
+          "kind": "redacted_evidence_uri",
+          "required_for": ["GATE-BACKUP-PITR-EVIDENCE"]
+        },
+        {
+          "name": "OT75_RESTORE_DRILL_EVIDENCE_URI",
+          "kind": "redacted_evidence_uri",
+          "required_for": ["GATE-RESTORE-DRILL"]
+        },
+        {
+          "name": "OT75_ACTIVE_SOURCE_SHA",
+          "kind": "git_sha",
+          "required_for": ["GATE-ACTIVE-SOURCE-SHA"]
+        },
+        {
+          "name": "OT75_EXPECTED_SOURCE_SHA",
+          "kind": "git_sha",
+          "required_for": ["GATE-ACTIVE-SOURCE-SHA"]
+        }
+      ]
+    },
+    {
+      "name": "release_evidence",
+      "variables": [
+        {
+          "name": "OT75_MIGRATION_LEDGER_SHA256",
+          "kind": "sha256",
+          "required_for": ["GATE-MIGRATION-LEDGER-CHECKSUM"]
+        },
+        {
+          "name": "OT75_DUPLICATE_DATA_AUDIT_REPORT",
+          "kind": "redacted_evidence_uri",
+          "required_for": ["GATE-DUPLICATE-DATA-AUDIT"]
+        },
+        {
+          "name": "OT75_PROVIDER_STATE_REPORT",
+          "kind": "redacted_evidence_uri",
+          "required_for": ["GATE-PROVIDER-STATE-CONTRACT"]
+        },
+        {
+          "name": "OT75_OWNER_ADMIN_BOOTSTRAP_REPORT",
+          "kind": "redacted_evidence_uri",
+          "required_for": ["GATE-OWNER-ADMIN-BOOTSTRAP"]
+        },
+        {
+          "name": "OT75_WORKER_ISOLATION_APPROVED",
+          "kind": "boolean_string",
+          "required_for": ["GATE-WORKER-ISOLATION"]
+        }
+      ]
+    }
+  ]
+}

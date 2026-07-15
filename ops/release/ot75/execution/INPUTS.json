@@ -1,0 +1,18 @@
+{
+  "task_id": "OT-75",
+  "source_prompt": "ops/release/ot75/execution/ORIGINAL-PROMPT.md",
+  "repository": "webcraft-media/onetimev2",
+  "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "branch": "codex/ot75-release-observability-readiness",
+  "base_ref": "codex/ot60r-recovery-convergence",
+  "forbidden_mutations": [
+    "deployment",
+    "dns_change",
+    "database_mutation",
+    "provider_mutation",
+    "message_send",
+    "payment_or_charge",
+    "real_user_creation",
+    "bna_repository_modification"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "task": {
+    "id": "OT-75",
+    "title": "Release and observability readiness",
+    "repository": "webcraft-media/onetimev2",
+    "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+    "base_ref": "codex/ot60r-recovery-convergence",
+    "branch": "codex/ot75-release-observability-readiness",
+    "pr_base_ref": "codex/ot60r-recovery-convergence",
+    "ot60r_sha_drift_policy": "non_blocking",
+    "status": "preparation_candidate"
+  },
+  "mutation_policy": {
+    "deployments_allowed": false,
+    "dns_changes_allowed": false,
+    "database_mutations_allowed": false,
+    "provider_mutations_allowed": false,
+    "production_database_access_allowed": false,
+    "message_sends_allowed": false,
+    "payments_or_charges_allowed": false,
+    "real_user_creation_allowed": false,
+    "bna_repository_modifications_allowed": false
+  },
+  "ownership": {
+    "allowed_path_prefixes": [
+      ".github/workflows/ot75-release-readiness.yml",
+      "ops/release/ot75/",
+      "ops/observability/ot75/",
+      "scripts/ot75/",
+      "tests/unit/ot75/"
+    ],
+    "forbidden_runtime_paths": [
+      "apps/web/src/server/app.ts",
+      "apps/web/src/client/app/shell/AppShell.tsx",
+      "apps/web/src/server/features/",
+      "apps/web/src/client/app/crm",
+      "packages/domain/",
+      "packages/contracts/src/index.ts",
+      "apps/worker/src/main/index.ts",
+      "package.json",
+      "railway.json",
+      ".github/workflows/ci.yml",
+      ".github/workflows/ot37-postgres-assurance.yml"
+    ],
+    "current_runtime_composition_change": false
+  },
+  "contracts": {
+    "environment_schema": "ops/release/ot75/environment-schema.json",
+    "predeploy_gates": "ops/release/ot75/predeploy-gates.json",
+    "health_readiness": "ops/release/ot75/health-readiness-contracts.json",
+    "observability": "ops/observability/ot75/logging-metrics-traces.contract.json",
+    "alerts": "ops/observability/ot75/alerts.json",
+    "dashboard": "ops/observability/ot75/dashboards/release-health.dashboard.json",
+    "release_manifest_template": "ops/release/ot75/release-manifest.template.json"
+  },
+  "deployment_descriptors": [
+    "ops/release/ot75/deployment-descriptors/web.json",
+    "ops/release/ot75/deployment-descriptors/delivery-worker.json",
+    "ops/release/ot75/deployment-descriptors/provider-worker.json",
+    "ops/release/ot75/deployment-descriptors/telegram-worker.json"
+  ],
+  "required_gate_ids": [
+    "GATE-STAGING-SERVICE",
+    "GATE-STAGING-DOMAIN",
+    "GATE-BACKUP-PITR-EVIDENCE",
+    "GATE-RESTORE-DRILL",
+    "GATE-ACTIVE-SOURCE-SHA",
+    "GATE-MIGRATION-LEDGER-CHECKSUM",
+    "GATE-DATABASE-REFERENCE-DRIFT",
+    "GATE-DUPLICATE-DATA-AUDIT",
+    "GATE-WORKER-ISOLATION",
+    "GATE-PROVIDER-STATE-CONTRACT",
+    "GATE-OWNER-ADMIN-BOOTSTRAP",
+    "GATE-NO-RUNTIME-COMPOSITION-DRIFT"
+  ],
+  "runbooks": [
+    "ops/release/ot75/runbooks/staging-canary.md",
+    "ops/release/ot75/runbooks/rollback-and-source-readback.md",
+    "ops/release/ot75/runbooks/postgres-assurance.md",
+    "ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+    "ops/release/ot75/runbooks/join-domain-transition.md",
+    "ops/release/ot75/runbooks/owner-admin-bootstrap.md"
+  ],
+  "ci": {
+    "workflow": ".github/workflows/ot75-release-readiness.yml",
+    "allowed_behavior": "static_validation_only",
+    "forbidden_behavior": [
+      "deploy",
+      "railway_mutation",
+      "dns_mutation",
+      "database_migration_execution",
+      "provider_mutation",
+      "message_send"
+    ]
+  }
+}

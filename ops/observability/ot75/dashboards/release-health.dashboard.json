@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-75",
+  "dashboard_id": "ot75-release-health",
+  "title": "OT-75 Release Health",
+  "data_policy": "counts_rates_and_status_only",
+  "panels": [
+    {
+      "id": "source-sha",
+      "title": "Source SHA Readback",
+      "query": "count by service_key of source_sha_match status"
+    },
+    {
+      "id": "http-health",
+      "title": "HTTP Health",
+      "query": "request count, status class count, p50/p95 latency by route family"
+    },
+    {
+      "id": "worker-claims",
+      "title": "Worker Claims",
+      "query": "claimed, skipped, failed, lease conflict counts by worker queue"
+    },
+    {
+      "id": "migration-ledger",
+      "title": "Migration Ledger",
+      "query": "migration count, checksum match status, latest ledger timestamp"
+    },
+    {
+      "id": "provider-state",
+      "title": "Provider State",
+      "query": "configured/disabled/enabled counts by provider family"
+    },
+    {
+      "id": "backup-pitr",
+      "title": "Backup/PITR Evidence",
+      "query": "backup evidence present, restore drill evidence present"
+    }
+  ],
+  "forbidden_panel_data": [
+    "raw contact data",
+    "raw message body",
+    "raw destination",
+    "provider token",
+    "database URL",
+    "payment identifier"
+  ]
+}
