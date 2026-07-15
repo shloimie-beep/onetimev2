@@ -1,6 +1,7 @@
 # OT-60R Remaining Work
 
-1. Push the final candidate checkpoint and open one draft PR against `codex/crm-core-v1`.
+No remaining OT-60R local execution steps. Draft PR #17 is open:
+https://github.com/webcraft-media/onetimev2/pull/17
 
 ## Standing Prohibitions
 

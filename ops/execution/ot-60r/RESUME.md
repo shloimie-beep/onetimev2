@@ -30,4 +30,4 @@ ops/evidence/ot-60r/FINAL-REPORT.md
 5. Maintain the prohibitions: no deployment, no production/provider mutation, no BNA modification, no production DB, no real sends, no charges, no DNS changes, no real users.
 6. After every successful unit, update `STATE.json`, `CHECKPOINT.md`, `IMPLEMENTED.md`, `REMAINING.md`, `TEST-RESULTS.md`, evidence files, commit intentionally, and push `codex/ot60r-recovery-convergence`.
 
-Current first unfinished phase after final verification: push the final candidate checkpoint and open the draft PR.
+Current state after final verification: draft PR #17 is open at https://github.com/webcraft-media/onetimev2/pull/17.

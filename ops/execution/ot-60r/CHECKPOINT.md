@@ -69,6 +69,7 @@
 - Updated stale CRM core E2E expectations to the accepted OT-39 shell behavior and refreshed OT-39 performance evidence.
 - Final verification passed: `npm run test`, `npm run lint`, `npm run build`, JSON parse, `git diff --check`, `npm run secret:scan`, `npm run e2e`, `npm run accessibility`, and `npm run performance`.
 - Candidate code/evidence head: `9e275e28a80cc8bf7fa82ade1092cd8cc21510d4`.
+- Draft PR: https://github.com/webcraft-media/onetimev2/pull/17
 
 ## Last Safe Command
 
@@ -79,9 +80,9 @@ npm run secret:scan
 ## Next Safe Command
 
 ```powershell
-git push origin codex/ot60r-recovery-convergence
+gh pr view 17 --web
 ```
 
-Push the final candidate checkpoint and open one draft PR against `codex/crm-core-v1`.
+Draft PR #17 is open against `codex/crm-core-v1`.
 
 Do not deploy, mutate providers, use production databases, send messages, charge payments, modify DNS, create real users, or modify the BNA repository.

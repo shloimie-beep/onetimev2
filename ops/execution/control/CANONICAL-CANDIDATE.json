@@ -5,6 +5,7 @@
   "base_branch": "codex/crm-core-v1",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
   "candidate_head_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
+  "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/17",
   "status": "candidate",
   "updated_at": "2026-07-15T03:13:58+03:00",
   "evidence": [

@@ -4,7 +4,7 @@
   "worktree": "C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence",
   "branch": "codex/ot60r-recovery-convergence",
   "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
-  "current_head_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
+  "current_head_sha": "c4acd4b1f75f33e62088a9e3508fdb6890757f96",
   "phase": "final_verification_complete",
   "status": "candidate",
   "created_at": "2026-07-15T00:00:00+03:00",
@@ -70,11 +70,10 @@
     "Committed the PR #10 / OT-47 evidence-only checkpoint at 9e402ab5caadc5e0a15e250967c627a9a021f25b.",
     "Updated stale CRM core E2E expectations to the accepted OT-39 shell behavior and refreshed OT-39 performance screenshots/report.",
     "Completed final local verification: unit/integration tests, lint, build/typecheck, JSON parse, whitespace, secret scan, E2E, accessibility, and performance/bundle checks passed.",
-    "Marked the recovery branch as a canonical candidate at code/evidence head 9e275e28a80cc8bf7fa82ade1092cd8cc21510d4."
+    "Marked the recovery branch as a canonical candidate at code/evidence head 9e275e28a80cc8bf7fa82ade1092cd8cc21510d4.",
+    "Opened draft PR #17 against codex/crm-core-v1: https://github.com/webcraft-media/onetimev2/pull/17."
   ],
-  "remaining_steps": [
-    "Push the final candidate checkpoint and open one draft PR against codex/crm-core-v1."
-  ],
+  "remaining_steps": [],
   "blockers": [],
   "last_safe_command": "npm run secret:scan",
   "test_results": [
@@ -419,5 +418,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then push the final candidate checkpoint and open one draft PR against codex/crm-core-v1 without repeating completed integration or verification work."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence, verify git status and HEAD, read ops/execution/ot-60r/STATE.json and ops/execution/ot-60r/REMAINING.md, then monitor draft PR #17 at https://github.com/webcraft-media/onetimev2/pull/17 without repeating completed integration or verification work."
 }

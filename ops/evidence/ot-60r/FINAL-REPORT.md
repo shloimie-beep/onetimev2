@@ -20,6 +20,7 @@ Completed so far:
 - Integrated/adapted/verified PR #6 / OT-37 PostgreSQL assurance harness with PostgreSQL 16 workflow, disposable database runner, scenario catalog, scoped CI formatting, local environment blocker evidence, synthetic `public_contact_id` fix, and passing GitHub Actions run `29377668001`.
 - Preserved PR #10 / OT-47 as evidence-only blocker documentation and marked content/library implementation `not_implemented_environmental_gate`.
 - Completed final verification and marked candidate head `9e275e28a80cc8bf7fa82ade1092cd8cc21510d4`.
+- Opened draft PR #17: https://github.com/webcraft-media/onetimev2/pull/17
 
 OT-47 remains explicitly not implemented. Deployment, production database access,
 provider mutation, real sends, payments, DNS, real users, and BNA repository
