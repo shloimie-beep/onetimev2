@@ -327,7 +327,7 @@ export type ProviderVerifiedEvent = Omit<
 };
 
 export interface BillingProviderAdapter {
-  readonly adapter_name: 'fixture_billing_provider';
+  readonly adapter_name: 'fixture_billing_provider' | 'stripe_test_provider';
   createCheckoutSession(
     input: ProviderCheckoutSessionInput,
   ): Promise<ProviderCheckoutSessionOutput>;
