@@ -38,3 +38,10 @@ OT-72 will expose server-only, default-off provider adapters and typed registrat
 Any test-only composition change must be documented here before commit.
 
 No central route registration, AppShell, portal UI, CRM UI, shared auth/session logic, public landing/signup UI, webhook registration, long-lived consumer or deployment wiring was changed.
+
+## Draft PR
+
+- URL: https://github.com/webcraft-media/onetimev2/pull/18
+- Base: `codex/ot60r-recovery-convergence`
+- Head: `codex/ot72-provider-sandbox-train`
+- Draft: yes

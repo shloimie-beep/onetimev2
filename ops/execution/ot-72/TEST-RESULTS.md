@@ -28,3 +28,10 @@
 - DNS mutations: 0
 - Deployments: 0
 - Production database mutations: 0
+
+## Remote CI Snapshot
+
+- PR: https://github.com/webcraft-media/onetimev2/pull/18
+- Head at PR creation: `b2a92917b9dd730957c55d8add6f573518506a85`
+- PostgreSQL 16 assurance harness: PASS
+- Node 24 verify: IN_PROGRESS at latest readback

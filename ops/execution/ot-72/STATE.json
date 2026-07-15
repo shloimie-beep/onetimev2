@@ -4,13 +4,21 @@
   "repository": "webcraft-media/onetimev2",
   "source_branch": "codex/ot60r-recovery-convergence",
   "target_branch": "codex/ot72-provider-sandbox-train",
-  "status": "implemented_local_verified",
+  "status": "draft_pr_open",
   "created_at": "2026-07-15T09:02:00+03:00",
-  "updated_at": "2026-07-15T09:18:00+03:00",
+  "updated_at": "2026-07-15T09:23:00+03:00",
   "source_remote_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "candidate_control_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
   "branch_point_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "branch_point_decision": "Use fetched source branch head because it contains the remotely checkpointed control files. Candidate code SHA is verified as an ancestor and later source-branch commits are control/format-only.",
+  "pull_request": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/18",
+    "number": 18,
+    "draft": true,
+    "base_branch": "codex/ot60r-recovery-convergence",
+    "head_branch": "codex/ot72-provider-sandbox-train",
+    "head_sha_at_creation": "b2a92917b9dd730957c55d8add6f573518506a85"
+  },
   "external_action_policy": {
     "stripe_test_sandbox": "authorized_if_test_mode_and_canary_gate_present",
     "live_stripe_charges": "forbidden",
