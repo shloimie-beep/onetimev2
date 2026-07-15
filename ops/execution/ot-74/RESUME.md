@@ -26,9 +26,15 @@ Rules:
 - Keep OT-74 APIs/components feature-local and unmounted. OT-80 will wire them.
 - Update `ops/execution/ot-74/STATE.json` after phases, blockers, tests, commits, push, and PR creation.
 
+Implemented:
+
+- Migration `1200_ot74_legacy_audience_reconciliation.sql`.
+- Feature-local contracts, domain dry-run service, Postgres repository, unmounted router, unmounted CRM panel, synthetic dry-run tool, tests, and evidence.
+- Validation: focused unit/integration tests, typecheck, lint, secret scan, scoped formatting, synthetic 10k dry run, and build all pass.
+- Local PostgreSQL 16 proof is unavailable because `psql` and Docker are not installed.
+
 Next steps:
 
-1. Verify migration namespace `1200-1299` is free.
-2. Implement feature-local legacy audience reconciliation schema/domain/import dry-run foundation.
-3. Add synthetic fixtures/tests/evidence and OT-80 wiring instructions.
-4. Commit and push phase checkpoints, then open a draft PR against `codex/ot60r-recovery-convergence`.
+1. Commit and push the validated implementation checkpoint.
+2. Open a draft PR against `codex/ot60r-recovery-convergence`.
+3. Record final head SHA and PR URL in `ops/execution/ot-74/STATE.json`.
