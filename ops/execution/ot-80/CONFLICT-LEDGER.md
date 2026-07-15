@@ -79,9 +79,39 @@ Verification before checkpoint:
 - `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/communications/api.test.ts` - PASS, 14 tests.
 - `npx playwright test tests/e2e/landing-signup.spec.ts --reporter=line` - PASS, 7 tests.
 
+## OT-75
+
+Merged `origin/codex/ot75-release-observability-readiness` without textual
+conflicts.
+
+Resolved deliberately after validation:
+
+- OT75's original scope validator compared `dfef7de...HEAD`, which is correct
+  for the standalone OT75 branch but invalid for the OT80 conductor after
+  earlier lanes are merged.
+- Added `--scope-base` / `OT75_SCOPE_BASE_SHA` support to the validator and
+  predeploy no-runtime-composition drift gate.
+- Used scope base `d7bf846dda1c27aadd61f51c71aa163c70b2b871`, the first parent
+  of the OT75 merge commit, to validate only the OT75 contribution.
+- Preserved the standalone OT75 default of validating against immutable OT60R
+  when no override is provided.
+
+Verification before checkpoint:
+
+- Unscoped conductor validator - EXPECTED FAIL due prior lane files.
+- Scoped validator - PASS, 327 checks.
+- Scoped predeploy gate checker - PASS in non-failing mode, 11
+  activation-only blockers, no-runtime-composition drift passed, zero external
+  mutations.
+- Release-only unit test - PASS, 6 tests.
+- `npm run typecheck` - PASS.
+- `npm run lint` - PASS.
+- OT75 Prettier check - PASS.
+
 Known required collision work from the OT80 packet:
 
-- OT-75 must preserve OT-72 PostgreSQL teardown guard.
+- OT-75 preserved OT-72 PostgreSQL teardown guard by avoiding runtime and
+  assurance-script changes.
 - OT-71 and OT-72 Telegram DB test overlap must be reconciled without weakening
   product isolation or provider-truth assertions.
 - OT-71 and OT-73 public-page build changes were reconciled for this checkpoint;

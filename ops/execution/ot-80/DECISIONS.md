@@ -75,3 +75,16 @@ and delivery semantics. Family and School success copy stays domain-owned in
 internal alert only. OT73 may change public presentation, but it cannot
 reintroduce School public email/WhatsApp sends or imply immediate class access,
 reminders, portal accounts, or Family messages for School inquiries.
+
+## DEC-OT80-008 - OT75 Scope Validation Is Conductor-Aware
+
+OT75's release validator is intentionally strict: on the standalone OT75 branch
+it validates every changed file since the immutable OT60R base and rejects
+runtime composition drift. In the OT80 conductor branch, that same comparison
+includes already-merged OT71, OT72, OT73, OT74, and communications changes, so
+an unscoped run is an expected false failure.
+
+OT80 keeps the strict scope guard but adds an explicit `--scope-base` /
+`OT75_SCOPE_BASE_SHA` override. The conductor run uses the first parent of the
+OT75 merge commit as the scope base, validating only the OT75 contribution. The
+standalone OT75 workflow and default CLI behavior remain unchanged.

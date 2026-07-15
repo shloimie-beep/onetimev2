@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.ot80.action_route_registry.v1",
-  "updated_at": "2026-07-15T12:31:00+03:00",
+  "updated_at": "2026-07-15T12:35:00+03:00",
   "status": "partial_lane_inventory",
   "routes": [
     {
@@ -214,7 +214,43 @@
       "route_id": null,
       "guards": ["client_state_only"],
       "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.release.validate_readiness",
+      "surface": "release readiness CLI",
+      "source": "scripts/ot75/validate-release-readiness.mjs",
+      "status": "active_internal_static_check",
+      "route_id": null,
+      "guards": ["scope_base_override_for_ot80", "no_external_mutation", "secret_pattern_scan"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.release.check_predeploy_gates",
+      "surface": "release readiness CLI",
+      "source": "scripts/ot75/check-predeploy-gates.mjs",
+      "status": "active_internal_static_check",
+      "route_id": null,
+      "guards": ["print_values_false", "activation_blockers_only", "no_external_mutation"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.release.render_manifest",
+      "surface": "release readiness CLI",
+      "source": "scripts/ot75/render-release-manifest.mjs",
+      "status": "active_internal_template_renderer",
+      "route_id": null,
+      "guards": ["template_only", "ot80_fillable_placeholders"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot75.workflow.static_release_readiness",
+      "surface": "GitHub Actions workflow",
+      "source": ".github/workflows/ot75-release-readiness.yml",
+      "status": "manual_and_pr_static_validation_only",
+      "route_id": null,
+      "guards": ["no_deploy", "no_database_migration", "no_provider_mutation", "secret_scan"],
+      "external_mutation_allowed": false
     }
   ],
-  "next_action": "Continue populating after OT75, OT76, and final mount reconciliation."
+  "next_action": "Continue populating after OT76 and final mount reconciliation."
 }

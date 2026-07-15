@@ -1,6 +1,6 @@
 {
   "task_id": "OT-75",
-  "generated_at": "2026-07-15T06:43:59.558Z",
+  "generated_at": "2026-07-15T09:34:29.563Z",
   "print_values": false,
   "blocked_count": 11,
   "gates": [
@@ -84,6 +84,7 @@
       "id": "GATE-NO-RUNTIME-COMPOSITION-DRIFT",
       "status": "passed",
       "summary": "changed files stay inside OT-75-owned paths",
+      "scope_base_sha": "d7bf846dda1c27aadd61f51c71aa163c70b2b871",
       "changed_file_count": 37,
       "forbidden_changed_files": []
     }

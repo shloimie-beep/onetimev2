@@ -1,8 +1,7 @@
 # OT-80 Remaining
 
-1. Commit and push the OT-73 landing checkpoint records.
-2. Integrate OT-75 release/observability tooling and OT-76 strict
-   certification harness.
+1. Commit and push the OT-75 release/observability checkpoint records.
+2. Integrate OT-76 strict certification harness.
 3. Reconcile migrations, routes, app shell, public bundles, worker/outbox,
    action/route registry, and release manifest.
 4. Run strict certification and CI, then publish one draft PR.
@@ -29,3 +28,10 @@ provider paths are real and tested.
 Carried from OT-73: final cross-lane screenshot/accessibility/performance proof
 remains pending until OT80 final certification. Public landing and signup
 behavior is merged, and no deployment was performed.
+
+Carried from OT-75: staging activation remains blocked on explicit external
+evidence for Railway/service names, staging domain, backup/PITR, restore drill,
+active source SHA, migration ledger checksum, database reference drift,
+duplicate-data audit, worker isolation, provider-state readback, and
+owner/admin bootstrap. These are activation-only blockers; OT75 introduced no
+external mutation.

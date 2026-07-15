@@ -17,10 +17,10 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 - Phase: `phase1_source_lane_integration`
 - Candidate status: `NOT_READY`
 - Accepted base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
-- Latest integrated source merge: `ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2`
+- Latest integrated source merge: `9ce81a9c5df4c3eb82af3954705d7b381d294c6e`
 - Integrated so far: OT-71 product core, OT-74 audience reconciliation, OT-72
-  provider sandbox/default-off infrastructure, and OT-73 landing intent
-  reconciliation
+  provider sandbox/default-off infrastructure, OT-73 landing intent
+  reconciliation, and OT-75 release/observability readiness
 - Implemented directly: Day-One communications catalog from preserved audit
   archive
 - Source heads: `ops/execution/ot-80/SOURCE-HEADS.json`
@@ -33,12 +33,12 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Next Commands
 
-After the OT73 checkpoint records are committed and pushed, continue Phase 1
-with OT75, then OT76:
+After the OT75 checkpoint records are committed and pushed, continue Phase 1
+with OT76:
 
 ```powershell
 git fetch origin --prune
-git merge --no-ff origin/codex/ot75-release-observability-readiness
+git merge --no-ff origin/codex/ot76-day-one-certification-harness
 ```
 
 Update the OT80 checkpoint files after each batch before pushing the next
@@ -97,6 +97,21 @@ OT80 merged the corrected landing addendum:
 - generated signup fallback copy now uses the domain `successCopy('family')`;
 - School submissions still do not create class access, reminders, portal
   accounts, or public email/WhatsApp sends.
+
+## OT-75 Disposition
+
+OT80 merged OT75 as preparation-only release and observability readiness:
+
+- release contracts, environment-name schema, predeploy gates, runbooks,
+  deployment descriptors, observability contracts, alerts, dashboards, scripts,
+  tests, and workflow are present;
+- no runtime composition, provider code, migration, deployment, DNS, database,
+  message, payment, real-user, or BNA mutation was performed;
+- standalone OT75 validation still defaults to the immutable OT60R base;
+- OT80 conductor validation uses
+  `--scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871`;
+- staging activation remains blocked on explicit external evidence listed in
+  `ops/release/ot75/evidence/predeploy-gates.local.json`.
 
 ## Guardrails
 

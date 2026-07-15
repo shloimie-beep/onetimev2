@@ -8,8 +8,7 @@ const GATES_PATH = 'ops/release/ot75/predeploy-gates.json';
 function main() {
   const json = process.argv.includes('--json');
   const failOnBlocked = process.argv.includes('--fail-on-blocked');
-  const outIndex = process.argv.indexOf('--out');
-  const outPath = outIndex === -1 ? null : process.argv[outIndex + 1];
+  const outPath = argValue('--out');
   const gates = readJson(GATES_PATH).gates;
   const results = gates.map(evaluateGate);
   const blocked = results.filter((result) => result.status !== 'passed');
@@ -52,6 +51,16 @@ function main() {
   if (failOnBlocked && blocked.length > 0) {
     process.exitCode = 2;
   }
+}
+
+function argValue(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return null;
+  const value = process.argv[index + 1];
+  if (!value || value.startsWith('--')) {
+    throw new Error(`${name} requires a value.`);
+  }
+  return value;
 }
 
 function assertSafeOutputPath(filePath) {
@@ -166,7 +175,9 @@ function gitShaEnvMatch(gate, expectedEnv, actualEnv) {
 
 function scopeDiff(gate, contractPath) {
   const contract = readJson(contractPath);
-  const changed = changedFiles(contract.task.immutable_base_sha);
+  const scopeBaseSha =
+    argValue('--scope-base') ?? process.env.OT75_SCOPE_BASE_SHA ?? contract.task.immutable_base_sha;
+  const changed = changedFiles(scopeBaseSha);
   const bad = changed.filter(
     (filePath) => !isAllowedPath(filePath, contract.ownership.allowed_path_prefixes),
   );
@@ -177,6 +188,7 @@ function scopeDiff(gate, contractPath) {
       bad.length === 0
         ? 'changed files stay inside OT-75-owned paths'
         : 'changed files include forbidden paths',
+    scope_base_sha: scopeBaseSha,
     changed_file_count: changed.length,
     forbidden_changed_files: bad,
   };

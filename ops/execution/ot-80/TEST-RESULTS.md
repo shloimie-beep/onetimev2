@@ -109,3 +109,27 @@ Verification before checkpoint:
   generation, and typecheck.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/communications/api.test.ts` - PASS, 2 files, 14 tests.
 - `npx playwright test tests/e2e/landing-signup.spec.ts --reporter=line` - PASS, 7 tests.
+
+## OT-75 Merge Checkpoint
+
+Reconciliation:
+
+- OT75 merged as preparation-only release/observability assets.
+- Added conductor-aware scope-base support to OT75 scripts so OT80 can validate
+  only the OT75 merge contribution while preserving standalone OT75 default
+  behavior.
+- No deployment, DNS, database, provider, message, payment, real-user, or BNA
+  mutation was performed.
+
+Verification before checkpoint:
+
+- `node scripts/ot75/validate-release-readiness.mjs --write-report` - EXPECTED FAIL in unscoped OT80 conductor mode because prior OT80 lanes are outside OT75-owned paths.
+- `node scripts/ot75/validate-release-readiness.mjs --scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871 --write-report` - PASS, 327 checks.
+- `node scripts/ot75/check-predeploy-gates.mjs --scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871 --json --out ops/release/ot75/evidence/predeploy-gates.local.json` - PASS in non-failing mode, 11 activation-only blockers, zero external mutations.
+- `node --check scripts/ot75/validate-release-readiness.mjs` - PASS.
+- `node --check scripts/ot75/check-predeploy-gates.mjs` - PASS.
+- `node --check scripts/ot75/render-release-manifest.mjs` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/ot75/release-readiness.test.ts` - PASS, 1 file, 6 tests.
+- `npm run typecheck` - PASS.
+- `npm run lint` - PASS.
+- `npx prettier --check .github/workflows/ot75-release-readiness.yml ops/release/ot75 ops/observability/ot75 scripts/ot75 tests/unit/ot75` - PASS.

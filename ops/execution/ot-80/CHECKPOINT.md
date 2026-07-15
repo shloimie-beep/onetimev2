@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T12:31:00+03:00`
+Updated: `2026-07-15T12:35:00+03:00`
 
 ## Phase 0 Status
 
@@ -19,14 +19,14 @@ Updated: `2026-07-15T12:31:00+03:00`
 
 ## Frozen Source Heads
 
-| Task | Branch | Head | Descends from OT60R |
-|---|---|---|---|
-| OT-71 | `codex/ot71-product-core-train` | `e357f5f0fa42d4087e8062113e619181226a5d57` | yes |
-| OT-72 | `codex/ot72-provider-sandbox-train` | `62ad1d39242f1a8745ad5da5c2a016301eb276c3` | yes |
-| OT-73 | `codex/ot73-landing-intent-reconciliation` | `ed2074254863468b4a70a0a3304490486ab2b71e` | yes |
-| OT-74 | `codex/ot74-audience-reconciliation` | `51cd99dc4434f0354ba229620ebe89558efeb120` | yes |
-| OT-75 | `codex/ot75-release-observability-readiness` | `028a05f3e44a7b37c2395576aa3800f507dd5268` | yes |
-| OT-76 | `codex/ot76-day-one-certification-harness` | `b9ece3146d2de6edc9f386712fad146f17b18031` | yes |
+| Task  | Branch                                       | Head                                       | Descends from OT60R |
+| ----- | -------------------------------------------- | ------------------------------------------ | ------------------- |
+| OT-71 | `codex/ot71-product-core-train`              | `e357f5f0fa42d4087e8062113e619181226a5d57` | yes                 |
+| OT-72 | `codex/ot72-provider-sandbox-train`          | `62ad1d39242f1a8745ad5da5c2a016301eb276c3` | yes                 |
+| OT-73 | `codex/ot73-landing-intent-reconciliation`   | `ed2074254863468b4a70a0a3304490486ab2b71e` | yes                 |
+| OT-74 | `codex/ot74-audience-reconciliation`         | `51cd99dc4434f0354ba229620ebe89558efeb120` | yes                 |
+| OT-75 | `codex/ot75-release-observability-readiness` | `028a05f3e44a7b37c2395576aa3800f507dd5268` | yes                 |
+| OT-76 | `codex/ot76-day-one-certification-harness`   | `b9ece3146d2de6edc9f386712fad146f17b18031` | yes                 |
 
 Exact merge bases, commit counts, and changed-file lists are in
 `SOURCE-HEADS.json`.
@@ -155,5 +155,35 @@ Verification:
 - `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/communications/api.test.ts` - PASS, 14 tests.
 - `npx playwright test tests/e2e/landing-signup.spec.ts --reporter=line` - PASS, 7 tests.
 
-Next: commit and push this OT73 checkpoint, then integrate OT75 release and
-observability readiness.
+## OT-75 Integration
+
+- Merged `origin/codex/ot75-release-observability-readiness`.
+- Source head:
+  `028a05f3e44a7b37c2395576aa3800f507dd5268`.
+- Merge commit:
+  `9ce81a9c5df4c3eb82af3954705d7b381d294c6e`.
+- OT75 remained preparation-only: release contracts, observability contracts,
+  runbooks, deployment descriptors, validation scripts, release-only unit test,
+  and a unique static GitHub workflow.
+- Added conductor-aware `--scope-base` / `OT75_SCOPE_BASE_SHA` support to the
+  validator and no-runtime-composition drift gate. The default standalone OT75
+  behavior still validates against the immutable OT60R base.
+- No runtime wiring, database migration, provider code, package script, root
+  deployment descriptor, deployment, send, payment, or real-user mutation was
+  performed.
+
+Verification:
+
+- Initial unscoped `node scripts/ot75/validate-release-readiness.mjs --write-report` - EXPECTED FAIL in OT80 conductor mode because prior OT80 lanes are outside OT75-owned paths.
+- `node scripts/ot75/validate-release-readiness.mjs --scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871 --write-report` - PASS, 327 checks.
+- `node scripts/ot75/check-predeploy-gates.mjs --scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871 --json --out ops/release/ot75/evidence/predeploy-gates.local.json` - PASS in non-failing mode; 11 activation-only blockers, no-runtime-composition drift passed, zero external mutations.
+- `node --check scripts/ot75/validate-release-readiness.mjs` - PASS.
+- `node --check scripts/ot75/check-predeploy-gates.mjs` - PASS.
+- `node --check scripts/ot75/render-release-manifest.mjs` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/ot75/release-readiness.test.ts` - PASS, 6 tests.
+- `npm run typecheck` - PASS.
+- `npm run lint` - PASS.
+- `npx prettier --check .github/workflows/ot75-release-readiness.yml ops/release/ot75 ops/observability/ot75 scripts/ot75 tests/unit/ot75` - PASS.
+
+Next: commit and push this OT75 checkpoint, then integrate OT76 strict
+certification harness.

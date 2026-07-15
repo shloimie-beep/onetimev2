@@ -32,11 +32,14 @@ function main() {
   const writeReport = process.argv.includes('--write-report');
   const contract = readJson(CONTRACT_PATH);
   const gates = readJson(contract.contracts.predeploy_gates);
-  const changedFiles = changedFilesForScope(contract.task.immutable_base_sha);
+  const scopeBaseSha =
+    argValue('--scope-base') ?? process.env.OT75_SCOPE_BASE_SHA ?? contract.task.immutable_base_sha;
+  const changedFiles = changedFilesForScope(scopeBaseSha);
   const report = {
     task_id: contract.task.id,
     generated_at: new Date().toISOString(),
     base_sha: contract.task.immutable_base_sha,
+    scope_base_sha: scopeBaseSha,
     changed_files: changedFiles,
     checks: [],
   };
@@ -94,6 +97,16 @@ function main() {
 
 function readJson(filePath) {
   return JSON.parse(readFileSync(resolvePath(filePath), 'utf8'));
+}
+
+function argValue(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return null;
+  const value = process.argv[index + 1];
+  if (!value || value.startsWith('--')) {
+    throw new Error(`${name} requires a value.`);
+  }
+  return value;
 }
 
 function resolvePath(filePath) {

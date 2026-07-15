@@ -1,7 +1,8 @@
 {
   "task_id": "OT-75",
-  "generated_at": "2026-07-15T06:47:52.283Z",
+  "generated_at": "2026-07-15T09:34:29.535Z",
   "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "scope_base_sha": "d7bf846dda1c27aadd61f51c71aa163c70b2b871",
   "changed_files": [
     ".github/workflows/ot75-release-readiness.yml",
     "ops/observability/ot75/README.md",

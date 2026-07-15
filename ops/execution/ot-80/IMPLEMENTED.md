@@ -92,3 +92,19 @@
 - Updated generated signup fallback copy to come from `successCopy('family')`.
 - Added OT73 public route/action entries for landing, signup, login, lead form
   submit, campaign ticker, header CTA, Member Login, and gallery controls.
+
+## Phase 1 - OT-75 Release And Observability Readiness
+
+- Merged `origin/codex/ot75-release-observability-readiness` into the OT80
+  conductor branch.
+- Added release readiness contracts, predeploy gate catalog, environment-name
+  schema, deployment descriptors, observability contracts, dashboards, alerts,
+  runbooks, and a unique static GitHub workflow.
+- Kept OT75 preparation-only with no runtime composition, root package script,
+  migration, provider, deployment, database, payment, message, real-user, or
+  BNA mutation.
+- Adapted OT75 validation for OT80 conductor mode with `--scope-base` /
+  `OT75_SCOPE_BASE_SHA`, preserving the original immutable-base default for the
+  standalone OT75 branch.
+- Recorded OT75 release validation commands in the OT80 action registry as
+  internal static checks with no external mutation allowed.

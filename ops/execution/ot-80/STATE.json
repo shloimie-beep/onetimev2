@@ -7,8 +7,8 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T12:31:00+03:00",
-  "status": "ot73_integrated_checkpoint_ready",
+  "updated_at": "2026-07-15T12:35:00+03:00",
+  "status": "ot75_integrated_checkpoint_ready",
   "candidate_status": "NOT_READY",
   "current_phase": "phase1_source_lane_integration",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
@@ -35,8 +35,8 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the OT-73 landing checkpoint records.",
-    "Integrate OT-75 release/observability tooling, then OT-76 strict certification harness.",
+    "Commit and push the OT-75 release/observability checkpoint records.",
+    "Integrate OT-76 strict certification harness.",
     "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
   ],
   "integrated_lanes": [
@@ -73,6 +73,15 @@
       "merge_commit": "ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2",
       "status": "merged_reconciled",
       "remaining_from_source": "Final cross-lane visual/accessibility/performance proof remains pending for OT80 final certification; no deployment or production mutation was performed."
+    },
+    {
+      "task": "OT-75",
+      "source_branch": "codex/ot75-release-observability-readiness",
+      "source_head": "028a05f3e44a7b37c2395576aa3800f507dd5268",
+      "merge_commit": "9ce81a9c5df4c3eb82af3954705d7b381d294c6e",
+      "status": "merged_conductor_scoped",
+      "scope_base_sha": "d7bf846dda1c27aadd61f51c71aa163c70b2b871",
+      "remaining_from_source": "Activation-only staging, Railway/service, database, backup/PITR, provider-state, owner/admin bootstrap, and active-source proof remain blocked until external evidence is supplied. No deployment or external mutation was performed."
     }
   ],
   "direct_implementations": [

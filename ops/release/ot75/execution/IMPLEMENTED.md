@@ -12,3 +12,5 @@
   owner/admin bootstrap.
 - Static validator, predeploy gate checker, and release manifest renderer.
 - Release-only unit test and uniquely named OT-75 static workflow.
+- OT80 conductor scope-base override for the static validator and predeploy
+  no-runtime-composition drift gate.

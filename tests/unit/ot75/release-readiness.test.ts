@@ -63,4 +63,19 @@ describe('OT-75 release readiness contract', () => {
     expect(workflow).not.toMatch(/\bnpm\s+run\s+db:migrate\b/i);
     expect(workflow).not.toMatch(/\bpsql\s+/i);
   });
+
+  it('allows OT80 to validate OT75 scope from the OT75 merge parent', () => {
+    const validator = readFileSync(
+      path.resolve(root, 'scripts/ot75/validate-release-readiness.mjs'),
+      'utf8',
+    );
+    const gates = readFileSync(
+      path.resolve(root, 'scripts/ot75/check-predeploy-gates.mjs'),
+      'utf8',
+    );
+    expect(validator).toContain('--scope-base');
+    expect(validator).toContain('OT75_SCOPE_BASE_SHA');
+    expect(gates).toContain('--scope-base');
+    expect(gates).toContain('OT75_SCOPE_BASE_SHA');
+  });
 });
