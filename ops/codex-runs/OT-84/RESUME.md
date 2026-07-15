@@ -7,6 +7,7 @@
 - Branch: `codex/ot84-telegram-action-gateway`
 - Base ref: `origin/codex/ot83-household-portals-foundation`
 - Resolved base SHA: `a02d1d254ae0d17804fb657079a7871567260ea2`
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/29`
 - Checkpoint: `WAITING_FOR_TELEGRAM_SECRET`
 
 ## Completed
@@ -24,6 +25,7 @@
 - No raw Telegram update, token, webhook secret, numeric Telegram ID, private
   chat ID, full contact value, or local credential path was stored.
 - Provider mutation count is zero.
+- Draft PR #29 was created against `codex/ot83-household-portals-foundation`.
 
 ## Verification Already Run
 
@@ -57,6 +59,6 @@ canary record, then record redacted evidence and cleanup.
 
 ## Next Safe Action
 
-If resuming before publication, stage only the explicit OT-84 files listed in
-`FINAL.md`, commit, push `codex/ot84-telegram-action-gateway`, and create or
-update the draft PR targeting `codex/ot83-household-portals-foundation`.
+If resuming after this publication evidence update, verify the current PR head
+on GitHub, keep the PR draft, and continue only with the protected real canary
+when the prerequisites above are available.

@@ -1,6 +1,6 @@
 # OT-84 Final Report
 
-Status: local implementation complete; branch push and draft PR pending.
+Status: local implementation complete; branch pushed; draft PR created.
 Checkpoint: `WAITING_FOR_TELEGRAM_SECRET`.
 
 ## Exact Base And Head
@@ -9,8 +9,8 @@ Checkpoint: `WAITING_FOR_TELEGRAM_SECRET`.
 - Base branch: `codex/ot83-household-portals-foundation`
 - Resolved base SHA: `a02d1d254ae0d17804fb657079a7871567260ea2`
 - Head branch: `codex/ot84-telegram-action-gateway`
-- Final head SHA: pending publication commit
-- Draft PR: pending
+- PR creation head SHA: `a9864a103c36140f261f7f38e2078bc1542d8092`
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/29`
 
 ## Worktree Proof
 
@@ -144,8 +144,8 @@ performed.
 - `DATABASE_URL` is required for `npm run db:verify`.
 - Protected Telegram runtime secrets and explicit approval are required for the
   real canary.
-- Draft PR publication remains pending until git commit/push/PR creation
-  completes.
+- Final live canary remains gated on protected runtime Telegram configuration
+  and explicit operator approval.
 
 ## Rollback Summary
 

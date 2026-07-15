@@ -32,3 +32,11 @@
 
 None. No Telegram webhook registration, provider send, production data, BNA bot,
 payment, DNS, or account mutation was performed.
+
+## Publication
+
+- Draft PR: https://github.com/webcraft-media/onetimev2/pull/29
+- Base: `codex/ot83-household-portals-foundation`
+- Head: `codex/ot84-telegram-action-gateway`
+- PR creation head SHA:
+  `a9864a103c36140f261f7f38e2078bc1542d8092`

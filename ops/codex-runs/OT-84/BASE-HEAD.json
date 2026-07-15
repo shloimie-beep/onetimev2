@@ -5,10 +5,14 @@
   "base_branch": "codex/ot83-household-portals-foundation",
   "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
   "head_branch": "codex/ot84-telegram-action-gateway",
-  "head_sha": "pending-publication-commit",
+  "head_sha": "a9864a103c36140f261f7f38e2078bc1542d8092",
+  "head_sha_context": "PR creation head before publication evidence commit",
   "merge_base_before_publication": "a02d1d254ae0d17804fb657079a7871567260ea2",
   "base_is_ancestor": true,
-  "pr_url": null,
-  "pr_status": "not_created",
-  "verified_at": "2026-07-15T19:53:17+03:00"
+  "pr_url": "https://github.com/webcraft-media/onetimev2/pull/29",
+  "pr_number": 29,
+  "pr_status": "draft",
+  "pr_base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "pr_head_sha_at_creation": "a9864a103c36140f261f7f38e2078bc1542d8092",
+  "verified_at": "2026-07-15T20:03:09+03:00"
 }

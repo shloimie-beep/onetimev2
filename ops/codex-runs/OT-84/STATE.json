@@ -5,10 +5,11 @@
   "base_branch": "codex/ot83-household-portals-foundation",
   "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
   "head_branch": "codex/ot84-telegram-action-gateway",
-  "head_sha": "pending-publication-commit",
+  "head_sha": "a9864a103c36140f261f7f38e2078bc1542d8092",
+  "head_sha_context": "PR creation head before publication evidence commit",
   "phase": "LOCAL_IMPLEMENTATION_VERIFIED",
   "checkpoint": "WAITING_FOR_TELEGRAM_SECRET",
-  "status": "ready_for_branch_push_and_draft_pr",
+  "status": "draft_pr_created_waiting_for_telegram_secret",
   "worktree": {
     "target_repo_verified": true,
     "path": "C:\\Users\\User\\OneTimeOneTime-ot84-telegram-action-gateway",
@@ -55,20 +56,25 @@
   },
   "provider_mutation_count": 0,
   "pr": {
-    "status": "not_created",
-    "url": null,
+    "status": "draft_created",
+    "url": "https://github.com/webcraft-media/onetimev2/pull/29",
+    "number": 29,
     "base": "codex/ot83-household-portals-foundation",
-    "head": "codex/ot84-telegram-action-gateway"
+    "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+    "head": "codex/ot84-telegram-action-gateway",
+    "head_sha_at_creation": "a9864a103c36140f261f7f38e2078bc1542d8092",
+    "draft": true
   },
-  "next_safe_action": "Stage only the explicit OT-84 paths, commit, push codex/ot84-telegram-action-gateway, open a draft PR to codex/ot83-household-portals-foundation, then update PR evidence.",
+  "next_safe_action": "Provide protected Telegram bot token, webhook secret, exact runtime identity mapping, one allowlisted private canary chat, isolated canary deployment boundary, and explicit operator canary approval before running the real canary.",
   "created_at": "2026-07-15T19:25:00+03:00",
-  "updated_at": "2026-07-15T20:01:00+03:00",
+  "updated_at": "2026-07-15T20:03:09+03:00",
   "notes": [
     "PROMPT.md was restored from the verified packet and matches SHA-256 69C24AF50256230C783EB48AFE2417EC62B41708437C5EC439446572523C754B.",
     "No Telegram setWebhook/deleteWebhook/sendMessage/getUpdates call was made.",
     "No BNA bot, BNA provider, payment provider, DNS, account, or production data mutation was made.",
     "bash ops/codex-runs/OT-84/canary.sh passed and exited with NOT_RUN_WAITING_FOR_TELEGRAM_SECRET for the protected live canary.",
     "npm run format passed after preserving the repository's existing ignore rules and adding an OT-84 markdown artifact exception for the verbatim prompt.",
+    "Draft PR #29 was created against codex/ot83-household-portals-foundation with PR creation head a9864a103c36140f261f7f38e2078bc1542d8092.",
     "Real canary is intentionally blocked until protected runtime secrets, exact identity mapping, an allowlisted private canary chat, and explicit operator canary approval are available."
   ]
 }
