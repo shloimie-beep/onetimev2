@@ -40,9 +40,8 @@ ops/execution/ot-74/INTEGRATION-MANIFEST.md
 
 ## Current Resume Point
 
-The implementation candidate is locally verified. Remaining steps are commit,
-push, and draft PR against `codex/ot60r-recovery-convergence` if GitHub auth
-allows it.
+The implementation candidate is locally verified, pushed, and opened as draft
+PR #22: `https://github.com/webcraft-media/onetimev2/pull/22`.
 
 Before committing, rerun or inspect:
 

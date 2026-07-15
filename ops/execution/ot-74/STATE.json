@@ -9,10 +9,10 @@
   "base_head_observed_at_start": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "prompt_source_path": "C:\\Users\\User\\AppData\\Local\\Temp\\CODEX-NOW-03-OT74-AUDIENCE-IMPORT (1).md",
   "prompt_sha256": "8C30A267E2B9A6BFFB6C6BDF6A364F8B89979ADE0B02B7FEB4B07B023ED49F54",
-  "phase": "tests_and_evidence",
-  "status": "building",
+  "phase": "draft_pr_opened",
+  "status": "candidate",
   "created_at": "2026-07-15T09:34:16+03:00",
-  "updated_at": "2026-07-15T09:58:00+03:00",
+  "updated_at": "2026-07-15T10:03:00+03:00",
   "completed_steps": [
     "Read OT-74 prompt from the temp handoff file.",
     "Verified repository identity through C:\\Users\\User\\OneTimeOneTime origin https://github.com/webcraft-media/onetimev2.git.",
@@ -25,7 +25,9 @@
     "Added feature-local audience contracts, parser, reconciliation dry-run domain, 1200 migration, unmounted API router, unmounted React preview component, synthetic fixtures, dry-run CLI, focused tests, and counts-only evidence.",
     "Generated ops/evidence/ot-74/dry-run-report.md and .json from 10000 synthetic rows.",
     "Verified no deployment, production database write, provider mutation, message send, payment, DNS change, real user creation, BNA repository modification, or real spreadsheet ingestion was performed.",
-    "Merged remote OT74 initial packet registration at af55e46 without overwriting the local verified packet/evidence files; preserved the remote ops/execution/registry.json OT74 entry."
+    "Merged remote OT74 initial packet registration at af55e46 without overwriting the local verified packet/evidence files; preserved the remote ops/execution/registry.json OT74 entry.",
+    "Pushed codex/ot74-audience-reconciliation to origin at 8dcc3db.",
+    "Opened draft PR https://github.com/webcraft-media/onetimev2/pull/22 against codex/ot60r-recovery-convergence."
   ],
   "phase_matrix": {
     "initial_execution_packet": "done",
@@ -34,9 +36,9 @@
     "parser_mapper_dry_run": "done",
     "feature_local_api_and_components": "done",
     "tests_and_evidence": "done",
-    "push_and_draft_pr": "pending"
+    "push_and_draft_pr": "done"
   },
-  "last_safe_command": "git commit -m \"merge remote OT74 packet registration\"",
+  "last_safe_command": "gh pr create --draft --base codex/ot60r-recovery-convergence --head codex/ot74-audience-reconciliation --title \"OT74: legacy audience reconciliation foundation\"",
   "commits": [
     {
       "sha": "4b21442",
@@ -49,8 +51,26 @@
     {
       "sha": "af55e46",
       "message": "merge remote OT74 packet registration"
+    },
+    {
+      "sha": "8dcc3db",
+      "message": "chore(ot74): record merge resolution state"
     }
   ],
+  "pushes": [
+    {
+      "remote": "origin",
+      "branch": "codex/ot74-audience-reconciliation",
+      "head_sha": "8dcc3db"
+    }
+  ],
+  "pull_request": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/22",
+    "number": 22,
+    "draft": true,
+    "base": "codex/ot60r-recovery-convergence",
+    "head": "codex/ot74-audience-reconciliation"
+  },
   "external_mutation_counts": {
     "deployments": 0,
     "production_database_writes": 0,
