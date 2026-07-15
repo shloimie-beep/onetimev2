@@ -1,8 +1,67 @@
 {
   "schema_version": "onetime.ot80.action_route_registry.v1",
-  "updated_at": "2026-07-15T11:48:00+03:00",
-  "status": "not_integrated",
-  "routes": [],
-  "actions": [],
-  "next_action": "Populate after source lane integration and final route/action reconciliation."
+  "updated_at": "2026-07-15T12:08:00+03:00",
+  "status": "partial_lane_inventory",
+  "routes": [
+    {
+      "id": "route.ot74.audience_reconciliation.contracts",
+      "method": "GET",
+      "path": "/api/v1/audience-reconciliation/contracts",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "role:owner|admin|crm_agent|viewer"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot74.audience_reconciliation.dry_runs",
+      "method": "POST",
+      "path": "/api/v1/audience-reconciliation/dry-runs",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "csrf", "role:owner|admin|crm_agent"],
+      "side_effects": "records dry-run rows, summaries, segment snapshots, and audit events only"
+    },
+    {
+      "id": "route.ot74.audience_reconciliation.batch_read",
+      "method": "GET",
+      "path": "/api/v1/audience-reconciliation/batches/:batchKey",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "role:owner|admin|crm_agent|viewer"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot74.audience_reconciliation.rollback_requests",
+      "method": "POST",
+      "path": "/api/v1/audience-reconciliation/batches/:batchKey/rollback-requests",
+      "source": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "mounted_in_ot80": false,
+      "guards": ["session", "csrf", "role:owner|admin"],
+      "side_effects": "records rollback request metadata only; no contact deletion"
+    }
+  ],
+  "actions": [
+    {
+      "id": "action.ot74.audience_reconciliation.view_contracts",
+      "surface": "AudienceReconciliationPanel",
+      "source": "apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx",
+      "status": "unmounted",
+      "route_id": "route.ot74.audience_reconciliation.contracts"
+    },
+    {
+      "id": "action.ot74.audience_reconciliation.dry_run",
+      "surface": "AudienceReconciliationPanel",
+      "source": "apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx",
+      "status": "unmounted",
+      "route_id": "route.ot74.audience_reconciliation.dry_runs"
+    },
+    {
+      "id": "action.ot74.audience_reconciliation.record_rollback",
+      "surface": "AudienceReconciliationPanel",
+      "source": "apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx",
+      "status": "unmounted",
+      "route_id": "route.ot74.audience_reconciliation.rollback_requests"
+    }
+  ],
+  "next_action": "Continue populating after OT72, communications, OT73, OT75, OT76, and final mount reconciliation."
 }

@@ -35,3 +35,21 @@ Earlier Phase 0 hygiene:
 
 - `npm run secret:scan` - PASS across 358 repo text files after Phase 0.
 - `git diff --check` - PASS after Phase 0.
+
+## OT-74 Merge Checkpoint
+
+Canonicalization:
+
+- Retained `audience-reconciliation` as the single audience model.
+- Removed the duplicate generic `audience` import-preview code and migration
+  from the merge result.
+
+Verification before checkpoint:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts` - PASS, 2 files, 6 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts` - PASS, 2 files, 8 tests.
+- `npx tsx scripts/ot74/audience-dry-run.ts --rows=10000` - PASS. Output was counts-only and reported `raw_row_contents_included: false` and `production_side_effects: false`.
+- JSON parse for `ops/execution/registry.json`, `STATE.json`, `MIGRATION-LEDGER.json`, `RELEASE-MANIFEST.json`, and `ACTION-AND-ROUTE-REGISTRY.json` - PASS.
+- `npm run secret:scan` - PASS across 389 repo text files.
+- `git diff --check` - PASS with line-ending warnings only.

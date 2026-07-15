@@ -27,3 +27,20 @@
   belongs to OT80 final certification.
 - Verified the merged state with typecheck and focused OT-71 unit/integration
   tests.
+
+## Phase 1 - OT-74 Audience Reconciliation
+
+- Merged `origin/codex/ot74-audience-reconciliation` into the OT80 conductor
+  branch.
+- Resolved the execution-registry conflict by retaining OT60R/OT80 entries and
+  adding OT74.
+- Chose `audience-reconciliation` as the canonical OT74 audience model for
+  OT80.
+- Kept the legacy audience contracts, dry-run service, Postgres repository,
+  unmounted server router, unmounted React panel, synthetic dry-run script, and
+  focused OT74 tests.
+- Kept migration `1201_ot74_legacy_audience_reconciliation.sql`.
+- Removed the parallel generic `audience` import-preview implementation and
+  migration `1200_ot74_audience_reconciliation.sql` from the merge result.
+- Verified the merged canonical path with typecheck, focused OT74 unit tests,
+  focused OT74 integration tests, and a 10k-row synthetic dry run.

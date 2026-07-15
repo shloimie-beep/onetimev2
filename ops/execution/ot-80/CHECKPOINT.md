@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T11:55:00+03:00`
+Updated: `2026-07-15T12:08:00+03:00`
 
 ## Phase 0 Status
 
@@ -67,5 +67,26 @@ Verification after merge:
 - `npm run secret:scan` - PASS after Phase 0 and before OT-71 merge.
 - `git diff --check` - PASS after Phase 0 and before OT-71 merge.
 
-Next: commit and push this OT-71 checkpoint, then integrate OT-74 audience
-reconciliation.
+## OT-74 Integration
+
+- Merged `origin/codex/ot74-audience-reconciliation`.
+- Source head:
+  `51cd99dc4434f0354ba229620ebe89558efeb120`.
+- Merge commit:
+  `29ab2b1888ab2f6c00892f7f353921fe5aabb638`.
+- Resolved one conflict in `ops/execution/registry.json`.
+- Chose the legacy `audience-reconciliation` path as canonical.
+- Retained `1201_ot74_legacy_audience_reconciliation.sql`.
+- Removed duplicate generic `audience` import-preview product code and
+  migration `1200_ot74_audience_reconciliation.sql` from the merge result.
+
+Verification after canonicalization:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts` - PASS, 6 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts` - PASS, 8 tests.
+- `npx tsx scripts/ot74/audience-dry-run.ts --rows=10000` - PASS, counts-only output with no production side effects.
+
+Next: commit and push this OT-74 checkpoint, then integrate OT-72 provider
+sandbox/default-off infrastructure and renumber its provider-truth migration
+away from the OT-71 `1700` prefix.

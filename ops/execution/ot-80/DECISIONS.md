@@ -20,3 +20,17 @@ The input manifest authorizes isolated One Time staging after candidate gates.
 It does not authorize production, root-domain DNS, live Stripe charges,
 bulk/audience sends, real family/school/legacy sends, or real legacy-data
 mutation.
+
+## DEC-OT80-004 - OT74 Canonical Audience Path
+
+OT74 arrived with two parallel audience implementations. OT80 keeps the
+feature-local `audience-reconciliation` line as canonical because it includes
+the legacy audience contracts, Postgres repository, dry-run idempotency,
+rollback records, audit events, segment contracts, and explicit no-send
+semantics needed for the final One Time convergence.
+
+The generic `audience` import-preview line and migration
+`1200_ot74_audience_reconciliation.sql` were rejected during OT80 integration
+to avoid duplicate write paths. OT74 historical evidence remains preserved as
+provenance, but product code now exposes only the legacy audience
+reconciliation model.

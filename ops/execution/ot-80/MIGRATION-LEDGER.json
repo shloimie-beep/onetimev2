@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.ot80.migration_ledger.v1",
-  "updated_at": "2026-07-15T11:55:00+03:00",
-  "status": "ot71_integrated",
+  "updated_at": "2026-07-15T12:08:00+03:00",
+  "status": "ot74_integrated",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "known_collisions": [
     {
@@ -11,8 +11,8 @@
     },
     {
       "id": "MIGRATION-COLLISION-OT74-AUDIENCE-DUPLICATES",
-      "status": "pending_integration",
-      "description": "OT-74 contains two audience/reconciliation migrations and parallel implementations; OT80 must choose or consolidate one canonical model."
+      "status": "resolved_in_ot80",
+      "description": "OT80 retained the legacy audience-reconciliation migration and rejected the duplicate generic audience import migration/write path."
     }
   ],
   "applied_in_ot80": [
@@ -25,6 +25,21 @@
         "packages/db/migrations/1700_ot71_account_lifecycle.sql"
       ],
       "notes": "Merged without conflicts. The 1700 prefix is now occupied by OT-71; OT-72 provider-truth migration must be renumbered during its integration."
+    },
+    {
+      "task": "OT-74",
+      "status": "merged_canonicalized",
+      "source_branch": "codex/ot74-audience-reconciliation",
+      "source_head": "51cd99dc4434f0354ba229620ebe89558efeb120",
+      "merge_commit": "29ab2b1888ab2f6c00892f7f353921fe5aabb638",
+      "canonical_model": "legacy_audience_reconciliation",
+      "retained_migrations": [
+        "packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql"
+      ],
+      "rejected_migrations": [
+        "packages/db/migrations/1200_ot74_audience_reconciliation.sql"
+      ],
+      "notes": "The generic audience import-preview migration and write path were removed from the merge result. The retained migration is dry-run/idempotency/audit focused and does not authorize production import, sends, provider mutations, or contact deletion."
     }
   ]
 }

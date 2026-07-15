@@ -7,8 +7,8 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T11:55:00+03:00",
-  "status": "ot71_integrated_checkpoint_ready",
+  "updated_at": "2026-07-15T12:08:00+03:00",
+  "status": "ot74_integrated_checkpoint_ready",
   "candidate_status": "NOT_READY",
   "current_phase": "phase1_source_lane_integration",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
@@ -35,8 +35,8 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the OT-71 integration checkpoint.",
-    "Integrate OT-74 audience reconciliation next, preserving provenance and resolving its duplicate audience implementations.",
+    "Commit and push the OT-74 checkpoint records.",
+    "Integrate OT-72 provider sandbox/default-off infrastructure next and resolve the 1700 migration prefix collision by renumbering provider truth to the next stable free prefix.",
     "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
   ],
   "integrated_lanes": [
@@ -47,6 +47,15 @@
       "merge_commit": "d3f60f76c15cc5c148c634bea1b6ff1066be72b4",
       "status": "merged",
       "remaining_from_source": "Phase 6 combined proof/publication remains pending and is intentionally carried into OT80 final certification."
+    },
+    {
+      "task": "OT-74",
+      "source_branch": "codex/ot74-audience-reconciliation",
+      "source_head": "51cd99dc4434f0354ba229620ebe89558efeb120",
+      "merge_commit": "29ab2b1888ab2f6c00892f7f353921fe5aabb638",
+      "status": "merged_canonicalized",
+      "canonical_model": "legacy_audience_reconciliation",
+      "remaining_from_source": "PostgreSQL 16 CI and final mounted-route certification remain pending for OT80 final certification; no production import, send, provider mutation, or contact deletion was authorized."
     }
   ]
 }
