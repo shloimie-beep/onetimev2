@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T12:50:00+03:00`
+Updated: `2026-07-15T13:05:00+03:00`
 
 ## Phase 0 Status
 
@@ -208,5 +208,42 @@ Verification:
 - `node scripts/day-one-certification-harness.mjs audit --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` - PASS, audit result `audit_complete_not_certified`, 13 gates, 3 pass, 10 blockers, forbidden changed files 0, external mutations 0.
 - `node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` - EXPECTED FAIL, strict result `failed`, Day-One certified `false`, 13 gates, 3 pass, 10 blockers.
 
-Next: commit and push this OT76 checkpoint, then run final OT80 convergence
-certification and prepare the draft PR handoff if appropriate.
+The OT76 checkpoint was committed and pushed before final local convergence.
+
+## Final Local Convergence
+
+- Candidate source/evidence anchor:
+  `499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+- Refreshed OT39 browser performance evidence and screenshots from the final
+  local run.
+- Updated `scripts/check-bundles.ts` to read `manifest-app.json` and sum the
+  CRM entry chunk plus imported CRM JavaScript chunks. This preserves the
+  public-bundle separation check after Vite split CRM output into
+  `assets/app-crm.js` and `assets/app-crm2.js`.
+- No migrations were added after OT76.
+- No deployment, isolated staging mutation, provider call, send, payment/access
+  mutation, DNS/Railway mutation, production database mutation, or BNA mutation
+  was performed.
+
+Final local verification:
+
+- `npm run build` - PASS.
+- `npm run lint` - PASS.
+- `npm run unit` - PASS, 18 files, 116 tests.
+- `npm run integration` - PASS, 18 files, 86 tests.
+- `npm run e2e` - PASS, 18 browser tests.
+- `npm run accessibility` - PASS, 5 browser tests.
+- `npm run performance` - PASS after the manifest-aware CRM chunk update; 5
+  browser tests passed and bundle check reported public JS `6316` bytes, public
+  CSS `12801` bytes, CRM JS `233126` bytes across `assets/app-crm.js` and
+  `assets/app-crm2.js`.
+- `node scripts/day-one-certification-harness.mjs audit --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+  PASS, result `audit_complete_not_certified`, 13 gates, 3 pass, 10 blockers.
+- `node scripts/day-one-certification-harness.mjs certify --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+  EXPECTED FAIL, result `failed`, Day-One certified `false`, 13 gates, 3 pass,
+  10 blockers.
+
+Final status: local convergence evidence is complete, but the candidate remains
+`NOT_READY`. Draft PR publication and CI evidence are the next handoff steps;
+isolated staging remains blocked until Day-One certification and activation
+gates are satisfied.

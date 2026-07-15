@@ -103,3 +103,28 @@ production database mutations remain forbidden.
 
 Like OT75, OT76 keeps immutable-base validation by default and uses an explicit
 `--scope-base` / `OT76_SCOPE_BASE_SHA` override only in the OT80 conductor.
+
+## DEC-OT80-010 - CRM Bundle Detection Uses Manifest Chunk Sum
+
+The final performance run showed that Vite can split the authenticated CRM app
+into `assets/app-crm.js` plus imported CRM chunks such as
+`assets/app-crm2.js`. A single-file size check is no longer a reliable signal
+that the CRM bundle remains separate from public pages.
+
+OT80 updates `scripts/check-bundles.ts` to read `manifest-app.json`, locate the
+CRM entry `apps/web/src/client/app/crm-entry.tsx`, sum the entry chunk and its
+JavaScript imports, and continue checking that public HTML does not include any
+`app-crm*.js` file. This preserves the original public-bundle isolation intent
+without depending on one exact chunk filename.
+
+## DEC-OT80-011 - Local Pass Does Not Override NOT_READY
+
+Final local build, lint, unit, integration, e2e, accessibility, and performance
+checks pass for candidate source/evidence anchor
+`499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+
+Strict Day-One certify mode still fails with 10 blockers. The candidate remains
+`NOT_READY`, and isolated staging, deployment, external sends, provider calls,
+payment/access mutations, DNS/Railway mutations, production database mutations,
+and BNA mutations remain blocked until certification and activation gates are
+satisfied.

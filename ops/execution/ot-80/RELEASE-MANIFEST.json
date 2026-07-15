@@ -1,10 +1,46 @@
 {
   "schema_version": "onetime.ot80.release_manifest.v1",
-  "updated_at": "2026-07-15T12:50:00+03:00",
+  "updated_at": "2026-07-15T13:05:00+03:00",
   "candidate_status": "NOT_READY",
-  "source_sha": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
+  "source_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
   "draft_pr": null,
   "ci_status": "not_started",
-  "certification_status": "ot71_ot74_ot72_communications_ot73_ot75_focused_checks_passed_ot76_audit_passed_certify_failed_not_ready",
+  "certification_status": "local_suite_passed_day_one_audit_complete_not_certified_strict_certify_failed_10_blockers",
+  "local_suite": {
+    "build": "pass",
+    "lint": "pass",
+    "unit": "pass_18_files_116_tests",
+    "integration": "pass_18_files_86_tests",
+    "e2e": "pass_18_browser_tests",
+    "accessibility": "pass_5_browser_tests",
+    "performance": "pass_5_browser_tests",
+    "bundle_check": {
+      "status": "pass",
+      "public_js_bytes": 6316,
+      "public_css_bytes": 12801,
+      "crm_js_bytes": 233126,
+      "crm_js_files": ["assets/app-crm.js", "assets/app-crm2.js"]
+    }
+  },
+  "day_one_certification": {
+    "audit_report": "ops/evidence/ot-76/ot80-final-candidate/day-one-audit-report.json",
+    "certify_report": "ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json",
+    "audit_result": "audit_complete_not_certified",
+    "certify_result": "failed",
+    "day_one_certified": false,
+    "gate_summary": {
+      "total": 13,
+      "pass": 3,
+      "blocker": 10
+    },
+    "external_mutation_counts": {
+      "deployments": 0,
+      "provider_calls": 0,
+      "live_sends": 0,
+      "production_database_writes": 0,
+      "payment_or_access_mutations": 0,
+      "dns_or_railway_mutations": 0
+    }
+  },
   "isolated_staging_status": "not_started"
 }

@@ -154,3 +154,46 @@ Verification before checkpoint:
 - `node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169` - EXPECTED FAIL, result `failed`, Day-One certified `false`, 13 gates, 3 pass, 10 blockers.
 - Refreshed reports confirm forbidden changed files `0` and all external
   mutation counts `0`.
+
+## Final Local Convergence
+
+Candidate source/evidence anchor:
+`499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+
+Full local suite:
+
+- `npm run build` - PASS.
+- `npm run lint` - PASS.
+- `npm run unit` - PASS, 18 files, 116 tests.
+- `npm run integration` - PASS, 18 files, 86 tests.
+- `npm run e2e` - PASS, 18 browser tests.
+- `npm run accessibility` - PASS, 5 browser tests.
+
+Performance and bundle check:
+
+- Initial `npm run performance` - FAIL after the browser performance tests
+  passed because `scripts/check-bundles.ts` expected a single
+  `assets/app-crm.js` chunk and Vite produced CRM code across
+  `assets/app-crm.js` plus `assets/app-crm2.js`.
+- `npx prettier --write scripts/check-bundles.ts` - PASS after updating the
+  checker to read `manifest-app.json` and sum CRM entry/import chunks.
+- `npx tsx scripts/check-bundles.ts` - PASS:
+  - public JS bytes: `6316`;
+  - public CSS bytes: `12801`;
+  - CRM JS bytes: `233126`;
+  - CRM JS files: `assets/app-crm.js`, `assets/app-crm2.js`.
+- Final `npm run performance` - PASS, including build/typecheck, 5 browser
+  performance tests, and the manifest-aware bundle check.
+
+Day-One certification readout:
+
+- `node scripts/day-one-certification-harness.mjs audit --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+  PASS, result `audit_complete_not_certified`, Day-One certified `false`, 13
+  gates, 3 pass, 10 blockers, zero external mutations.
+- `node scripts/day-one-certification-harness.mjs certify --scope-base 499303de2ff8c262b15eabfb4bba9b7d4d3e740a --out-dir ops/evidence/ot-76/ot80-final-candidate` -
+  EXPECTED FAIL, result `failed`, Day-One certified `false`, 13 gates, 3 pass,
+  10 blockers, zero external mutations.
+
+Conclusion: local build, lint, unit, integration, e2e, accessibility, and
+performance checks passed, but strict Day-One certification did not. The
+candidate remains `NOT_READY`; isolated staging was not attempted.

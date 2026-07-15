@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.ot80.migration_ledger.v1",
-  "updated_at": "2026-07-15T12:50:00+03:00",
-  "status": "ot76_integrated_no_migrations",
+  "updated_at": "2026-07-15T13:05:00+03:00",
+  "status": "final_convergence_no_new_migrations",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "known_collisions": [
     {

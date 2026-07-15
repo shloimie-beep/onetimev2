@@ -1,8 +1,8 @@
 {
   "schema_version": "onetime.ot80.staging_result.v1",
-  "updated_at": "2026-07-15T12:50:00+03:00",
+  "updated_at": "2026-07-15T13:05:00+03:00",
   "status": "not_attempted",
-  "reason": "OT80 candidate is NOT_READY; isolated staging may run only after candidate gates allow it.",
+  "reason": "OT80 candidate is NOT_READY after final local convergence. Strict Day-One certify failed with 10 blockers, so isolated staging, deployment, provider calls, sends, payments/access changes, DNS/Railway changes, and production database mutations remain blocked.",
   "deployment_performed": false,
   "staging_mutation_performed": false,
   "activation_email_sent": false

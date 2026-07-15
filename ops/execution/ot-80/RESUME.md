@@ -14,10 +14,12 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Current State
 
-- Phase: `phase1_source_lane_integration`
+- Phase: `phase6_local_candidate_handoff`
 - Candidate status: `NOT_READY`
 - Accepted base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
 - Latest integrated source merge: `a95b4e3c2b7210f66f142322d2adcb900eb6890a`
+- Final candidate source/evidence anchor:
+  `499303de2ff8c262b15eabfb4bba9b7d4d3e740a`
 - Integrated so far: OT-71 product core, OT-74 audience reconciliation, OT-72
   provider sandbox/default-off infrastructure, OT-73 landing intent
   reconciliation, OT-75 release/observability readiness, and OT-76 Day-One
@@ -34,17 +36,41 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Next Commands
 
-After the OT76 checkpoint records are committed and pushed, run final OT80
-convergence certification:
+After final evidence/checkpoint records are committed and pushed, open one draft
+PR to `codex/ot60r-recovery-convergence`, wait for CI, and fix only
+owned/integrated failures. Candidate remains `NOT_READY`; do not attempt
+isolated staging until gates allow it.
+
+Useful final readback commands:
 
 ```powershell
-git fetch origin --prune
-node scripts/day-one-certification-harness.mjs audit --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169
-node scripts/day-one-certification-harness.mjs certify --scope-base bc2bcf2c7e16b5f1885aa65a2904f07578a18169
+git status --short --branch
+Get-Content ops/execution/ot-80/RELEASE-MANIFEST.json
+Get-Content ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json
 ```
 
-Update the OT80 checkpoint files after each batch before pushing the next
-checkpoint.
+Do not rerun the OT76 harness with the old OT76 scope base after OT80 final
+evidence/checkpoint files are added unless intentionally checking OT76-only
+scope behavior. The final OT80 Day-One readout is stored under
+`ops/evidence/ot-76/ot80-final-candidate/` and is tied to candidate SHA
+`499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
+
+## Final Local Status
+
+- `npm run build` - PASS.
+- `npm run lint` - PASS.
+- `npm run unit` - PASS, 18 files, 116 tests.
+- `npm run integration` - PASS, 18 files, 86 tests.
+- `npm run e2e` - PASS, 18 browser tests.
+- `npm run accessibility` - PASS, 5 browser tests.
+- `npm run performance` - PASS, including manifest-aware CRM bundle check.
+- Final bundle check reported public JS `6316` bytes, public CSS `12801`
+  bytes, and CRM JS `233126` bytes across `assets/app-crm.js` and
+  `assets/app-crm2.js`.
+- Final Day-One audit result:
+  `audit_complete_not_certified`, 13 gates, 3 pass, 10 blockers.
+- Final strict Day-One certify result: `failed`, Day-One certified `false`, 13
+  gates, 3 pass, 10 blockers.
 
 ## OT-74 Disposition
 

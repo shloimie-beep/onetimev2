@@ -123,3 +123,20 @@
   standalone OT76 branch.
 - Verified audit mode succeeds honestly while strict certify fails because the
   candidate is not Day-One certified yet.
+
+## Final Local Evidence
+
+- Refreshed browser performance evidence and CRM screenshots from the final
+  local OT80 run.
+- Updated the bundle checker to sum manifest-declared CRM chunks so public page
+  bundle isolation remains detectable after Vite split CRM code into two
+  JavaScript files.
+- Ran the final local build, lint, unit, integration, e2e, accessibility, and
+  performance suite successfully.
+- Generated final OT80 Day-One audit/certify reports under
+  `ops/evidence/ot-76/ot80-final-candidate/`.
+- Preserved candidate status as `NOT_READY` because strict Day-One certify mode
+  still fails with 10 blockers.
+- Left isolated staging, deployment, external sends, provider calls,
+  payment/access mutations, DNS/Railway mutations, production database
+  mutations, and BNA mutations unperformed.

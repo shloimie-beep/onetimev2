@@ -1,6 +1,31 @@
 {
   "schema_version": "onetime.ot80.blockers.v1",
-  "updated_at": "2026-07-15T12:50:00+03:00",
-  "global_blocked": false,
-  "blockers": []
+  "updated_at": "2026-07-15T13:05:00+03:00",
+  "global_blocked": true,
+  "blockers": [
+    {
+      "id": "BLOCK-OT80-DAYONE-CERTIFICATION",
+      "scope": "release_certification",
+      "status": "blocked",
+      "owner": "codex_or_next_operator",
+      "evidence": "ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json",
+      "summary": "Strict Day-One certify mode fails honestly: 13 gates, 3 pass, 10 blockers. Candidate remains NOT_READY."
+    },
+    {
+      "id": "BLOCK-OT80-CI-PR",
+      "scope": "publication_handoff",
+      "status": "pending",
+      "owner": "codex",
+      "evidence": "ops/execution/ot-80/RELEASE-MANIFEST.json",
+      "summary": "Draft PR and CI evidence remain pending until final handoff records are committed and pushed."
+    },
+    {
+      "id": "BLOCK-OT80-ISOLATED-STAGING",
+      "scope": "isolated_staging",
+      "status": "blocked",
+      "owner": "operator_after_gates",
+      "evidence": "ops/execution/ot-80/STAGING-RESULT.json",
+      "summary": "Isolated staging was not attempted because the candidate is NOT_READY and activation gates are not satisfied."
+    }
+  ]
 }

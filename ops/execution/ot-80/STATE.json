@@ -7,10 +7,11 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T12:50:00+03:00",
-  "status": "ot76_integrated_checkpoint_ready",
+  "updated_at": "2026-07-15T13:05:00+03:00",
+  "status": "final_local_convergence_complete_not_ready",
   "candidate_status": "NOT_READY",
-  "current_phase": "phase1_source_lane_integration",
+  "current_phase": "phase6_local_candidate_handoff",
+  "final_candidate_source_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
   "prompt_path": "ops/execution/ot-80/ORIGINAL-PROMPT.md",
   "input_manifest_path": "ops/execution/ot-80/INPUT-MANIFEST.json",
@@ -35,10 +36,26 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the OT-76 certification harness checkpoint records.",
-    "Run final OT80 convergence certification and decide whether to open the draft pull request while candidate remains NOT_READY.",
+    "Commit and push the final OT80 convergence evidence and handoff records.",
+    "Open one draft pull request to codex/ot60r-recovery-convergence while candidate remains NOT_READY.",
+    "Wait for CI, then fix only owned/integrated failures.",
     "Keep staging, external sends, provider mutations, payments, DNS, and production database mutations blocked until all gates are satisfied and explicit authorization exists."
   ],
+  "final_local_evidence": {
+    "source_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
+    "build": "passed",
+    "lint": "passed",
+    "unit": "passed_18_files_116_tests",
+    "integration": "passed_18_files_86_tests",
+    "e2e": "passed_18_browser_tests",
+    "accessibility": "passed_5_browser_tests",
+    "performance": "passed_5_browser_tests",
+    "bundle_check": "passed_manifest_chunk_sum",
+    "day_one_audit": "audit_complete_not_certified_13_total_3_pass_10_blockers",
+    "day_one_certify": "failed_expected_not_ready_13_total_3_pass_10_blockers",
+    "day_one_final_reports": "ops/evidence/ot-76/ot80-final-candidate/",
+    "external_mutations": "zero"
+  },
   "integrated_lanes": [
     {
       "task": "OT-71",

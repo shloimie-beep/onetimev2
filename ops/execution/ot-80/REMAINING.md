@@ -1,20 +1,35 @@
 # OT-80 Remaining
 
-1. Commit and push the OT-76 certification harness checkpoint records.
-2. Run final OT80 convergence certification and decide draft PR handoff while
-   candidate remains `NOT_READY`.
-3. Reconcile migrations, routes, app shell, public bundles, worker/outbox,
-   action/route registry, and release manifest.
-4. Run strict certification and CI, then publish one draft PR.
-5. Attempt isolated staging only after gates allow it.
+Final local convergence is complete for candidate source/evidence anchor
+`499303de2ff8c262b15eabfb4bba9b7d4d3e740a`.
 
-Carried from OT-71: combined proof, CI evidence, screenshots, draft PR, and
-publication handoff remain pending until final OT80 convergence.
+## Open Handoff Items
+
+1. Commit and push the final OT80 evidence/checkpoint records.
+2. Open one draft PR to `codex/ot60r-recovery-convergence`.
+3. Wait for CI and fix only owned/integrated failures.
+4. Keep candidate status as `NOT_READY` until strict Day-One certification
+   passes.
+5. Attempt isolated staging only after candidate gates allow it.
+
+## Remaining Blockers
+
+- Strict Day-One certification fails honestly: 13 gates, 3 pass, 10 blockers.
+  Evidence:
+  `ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json`.
+- Draft PR URL and CI evidence remain pending until final handoff push.
+- Isolated staging remains blocked because the candidate is `NOT_READY` and
+  activation gates are not satisfied.
+
+## Carried Forward
+
+Carried from OT-71: publication/CI handoff evidence remains pending until the
+OT80 draft PR is opened and CI is observed.
 
 Carried from OT-74: PostgreSQL 16 CI and final mounted-route certification
-remain pending until final OT80 convergence. The canonical audience path is
-dry-run only and does not authorize production imports, sends, provider
-mutations, or contact deletion.
+remain pending for PR/CI. The canonical audience path is dry-run only and does
+not authorize production imports, sends, provider mutations, or contact
+deletion.
 
 Carried from OT-72: remote PostgreSQL assurance rerun remains pending after
 OT80 push. Provider integrations remain default-off and no live charge, send,
@@ -26,9 +41,9 @@ MFA recovery, support, and delayed-access protected-route sends remain dormant
 until their state machines, routes, authorization, expiry/revocation rules, and
 provider paths are real and tested.
 
-Carried from OT-73: final cross-lane screenshot/accessibility/performance proof
-remains pending until OT80 final certification. Public landing and signup
-behavior is merged, and no deployment was performed.
+Carried from OT-73: final local screenshot/accessibility/performance proof was
+captured, but PR/CI publication evidence remains pending. Public landing and
+signup behavior is merged, and no deployment was performed.
 
 Carried from OT-75: staging activation remains blocked on explicit external
 evidence for Railway/service names, staging domain, backup/PITR, restore drill,
@@ -37,5 +52,6 @@ duplicate-data audit, worker isolation, provider-state readback, and
 owner/admin bootstrap. These are activation-only blockers; OT75 introduced no
 external mutation.
 
-Carried from OT-76: audit mode passes, but strict Day-One certify mode fails
-honestly with 10 blockers. The current candidate is not Day-One certified.
+Carried from OT-76: audit mode can produce a clean not-certified readout, but
+strict Day-One certify mode fails with 10 blockers. The current candidate is
+not Day-One certified.
