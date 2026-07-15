@@ -95,6 +95,7 @@ img {
 
 .header-actions {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 10px;
 }
@@ -191,25 +192,8 @@ img {
   text-decoration: none;
 }
 
-.campaign-ticker {
-  display: block;
-  min-height: 36px;
-  overflow: hidden;
-  color: #111;
-  background: var(--color-yellow);
-  font-weight: 900;
-  text-decoration: none;
-}
-
-.campaign-ticker span {
-  display: inline-block;
-  min-width: 100%;
-  padding: 8px 18px;
-  text-align: center;
-}
-
 .hero {
-  min-height: calc(100svh - 108px);
+  min-height: calc(100svh - 72px);
   display: grid;
   align-items: start;
   padding: clamp(46px, 8vh, 92px) clamp(18px, 6vw, 72px);
@@ -325,11 +309,6 @@ img {
   align-items: center;
   padding-left: 18px;
   border-left: 4px solid rgba(126, 215, 232, 0.7);
-}
-
-.yellow-text {
-  color: var(--color-yellow-soft);
-  font-weight: 900;
 }
 
 .benefit-grid {
@@ -553,9 +532,31 @@ img {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  min-height: 172px;
   padding: 34px clamp(16px, 5vw, 64px);
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  color: var(--color-muted);
+  color: var(--color-ink);
+  background: #050505;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-brand p {
+  max-width: 320px;
+  margin: 0;
+  color: var(--color-ink);
+  line-height: 1.45;
+}
+
+.footer-logo {
+  width: 112px;
+  max-width: 32vw;
+  height: auto;
+  object-fit: contain;
 }
 
 .site-footer nav {
@@ -711,29 +712,32 @@ small {
 
 @media (max-width: 520px) {
   .site-header {
-    min-height: 64px;
+    min-height: 66px;
     gap: 6px;
-    padding: 8px 8px;
+    padding: 8px 6px;
   }
 
   .brand-lockup {
-    grid-template-columns: 38px minmax(48px, 66px);
-    gap: 6px;
+    grid-template-columns: 36px minmax(70px, 86px);
+    gap: 5px;
   }
 
   .brand-lockup img {
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
   }
 
   .brand-lockup strong {
-    font-size: 0.78rem;
+    font-size: 0.68rem;
     white-space: normal;
-    line-height: 1.05;
+    line-height: 1.03;
   }
 
   .brand-lockup small {
-    display: none;
+    display: block;
+    font-size: 0.5rem;
+    line-height: 1.05;
+    white-space: normal;
   }
 
   .header-actions {
@@ -741,13 +745,13 @@ small {
   }
 
   .text-link {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
   }
 
   .button {
     min-height: 44px;
-    padding: 0 10px;
-    font-size: 0.82rem;
+    padding: 0 7px;
+    font-size: 0.74rem;
   }
 
   .icon-button {
@@ -756,7 +760,7 @@ small {
   }
 
   .hero {
-    min-height: calc(100svh - 100px);
+    min-height: calc(100svh - 66px);
     padding: 38px 16px;
   }
 
@@ -777,23 +781,56 @@ small {
   }
 
   .site-footer {
+    flex-direction: column;
     justify-content: center;
     text-align: center;
+  }
+
+  .footer-brand {
+    flex-direction: column;
+  }
+
+  .site-footer nav {
+    justify-content: center;
   }
 }
 
 @media (max-width: 380px) {
-  .brand-lockup {
-    grid-template-columns: 38px;
+  .site-header {
+    gap: 4px;
+    padding-right: 5px;
+    padding-left: 5px;
   }
 
-  .brand-lockup span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
+  .brand-lockup {
+    grid-template-columns: 34px minmax(62px, 74px);
+    gap: 4px;
+  }
+
+  .brand-lockup img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .brand-lockup strong {
+    font-size: 0.62rem;
+  }
+
+  .brand-lockup small {
+    font-size: 0.46rem;
+  }
+
+  .header-actions {
+    gap: 4px;
+  }
+
+  .text-link {
+    font-size: 0.64rem;
+  }
+
+  .button {
+    padding: 0 6px;
+    font-size: 0.68rem;
   }
 }
 

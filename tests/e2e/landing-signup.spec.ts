@@ -22,20 +22,36 @@ test('landing works on required mobile viewports with visible header and hero CT
     await page.setViewportSize(size);
     await page.goto('/');
     const brandLogo = page.locator('.brand-lockup img');
+    const brandTitle = page.locator('.brand-lockup strong', { hasText: 'One Time Mishnayos' });
+    const brandSubtitle = page.locator('.brand-lockup small', {
+      hasText: 'Worldwide Mishnah Learning',
+    });
     const memberLogin = page.getByLabel('Primary').getByRole('link', { name: 'Member Login' });
     const headerSignup = page.getByLabel('Primary').getByRole('link', { name: 'Sign Up Now' });
+    const hamburger = page.getByLabel('Primary').getByRole('button', { name: 'Open navigation' });
     const heroSignup = page.locator('.hero .hero-cta');
     await expect(brandLogo).toBeVisible();
+    await expect(brandTitle).toBeVisible();
+    await expect(brandSubtitle).toBeVisible();
     await expect(memberLogin).toBeVisible();
     await expect(headerSignup).toBeVisible();
+    await expect(hamburger).toBeVisible();
     await expect(
       page.getByRole('heading', { name: 'Give your son a love for learning Torah.' }),
     ).toBeVisible();
     await expect(heroSignup).toBeVisible();
     await expectLocatorInsideViewport(brandLogo, size);
+    await expectLocatorInsideViewport(brandTitle, size);
+    await expectLocatorInsideViewport(brandSubtitle, size);
     await expectLocatorInsideViewport(memberLogin, size);
     await expectLocatorInsideViewport(headerSignup, size);
+    await expectLocatorInsideViewport(hamburger, size);
     await expectLocatorInsideViewport(heroSignup, size);
+    const headerBox = await page.locator('.site-header').boundingBox();
+    const heroBox = await page.locator('.hero').boundingBox();
+    expect(headerBox).not.toBeNull();
+    expect(heroBox).not.toBeNull();
+    expect(Math.round(heroBox!.y)).toBe(Math.round(headerBox!.y + headerBox!.height));
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
@@ -66,9 +82,28 @@ test('landing preserves exact receive structure and asset assignments', async ({
     page.getByText('Worldwide Mishnah learning - live from Eretz Yisrael'),
   ).toBeVisible();
   await expect(page.getByText('Live every day at 7:00 p.m. Israel time.')).toBeVisible();
+  await expect(page.locator('.hero p')).toHaveText([
+    'Worldwide Mishnah learning - live from Eretz Yisrael',
+    'Live every day at 7:00 p.m. Israel time.',
+  ]);
+  await expect(page.locator('.campaign-ticker')).toHaveCount(0);
+  await expect(page.locator('[data-campaign-deadline]')).toHaveCount(0);
+  const bodyText = await page.locator('body').innerText();
+  expect(bodyText).not.toMatch(/JOIN FREE|ROSH HASHANAH|\$67|free until/i);
+  const publicScript = await (await page.request.get('/assets/public.js')).text();
+  expect(publicScript).not.toContain('data-campaign-deadline');
+  expect(publicScript).not.toContain('JOIN FREE');
   await expect(page.getByRole('heading', { name: 'What You Receive' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Live Daily Mishnayos' })).toBeVisible();
-  await expect(page.getByText('Secure student portal')).toBeVisible();
+  const securePortalBullet = page.locator('.feature-panel li', {
+    hasText: 'Secure student portal',
+  });
+  await expect(securePortalBullet).toBeVisible();
+  await expect(securePortalBullet.locator('.yellow-text')).toHaveCount(0);
+  const securePortalColor = await securePortalBullet.evaluate(
+    (element) => getComputedStyle(element).color,
+  );
+  expect(['rgb(255, 210, 31)', 'rgb(255, 230, 128)']).not.toContain(securePortalColor);
   await expect(page.getByText('Toronto.jpg pending')).toHaveCount(0);
   await expect(
     page.locator(
@@ -90,12 +125,34 @@ test('landing preserves exact receive structure and asset assignments', async ({
       "One perek a day gives him a clear goal, steady progress, and a real sense of finishing each day's learning.",
     ),
   ).toBeVisible();
+  await expect(page.locator('article[data-benefit="Accomplishment"] small')).toHaveCount(0);
+  await expect(page.getByText('operator-certified final copy')).toHaveCount(0);
   await expect(
     page.getByText(
       'Sign up, get the class information, and join the daily 7:00 p.m. live Mishnayos class.',
     ),
   ).toBeVisible();
   await expect(page.getByRole('heading', { name: "Who It's For" })).toBeVisible();
+  const signupCtas = await page
+    .locator('a.button-primary', { hasText: 'Sign Up Now' })
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+  expect(signupCtas).toEqual(['/signup', '/signup', '/signup']);
+  await expect(page.locator('.footer-logo')).toBeVisible();
+  await expect(
+    page.locator('.site-footer').getByText('One Time Mishnayos with Rabbi Eli Scheller.'),
+  ).toBeVisible();
+  const footerLinks = await page
+    .locator('.site-footer nav a')
+    .evaluateAll((links) =>
+      links.map((link) => [link.textContent?.trim(), link.getAttribute('href')]),
+    );
+  expect(footerLinks).toEqual([
+    ['Home', '/'],
+    ['Sign Up Now', '/signup'],
+    ['Privacy', '/privacy'],
+    ['Terms', '/terms'],
+    ['Member Login', '/login'],
+  ]);
   expect(requests.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
   const html = await page.content();
   expect(html).not.toContain('Monitored platform');

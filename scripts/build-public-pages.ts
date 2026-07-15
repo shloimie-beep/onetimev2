@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { campaignTicker, landingContent, sharedNav } from '../packages/domain/src/index.ts';
+import { landingContent, sharedNav } from '../packages/domain/src/index.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
@@ -69,28 +69,19 @@ function header() {
 
 function footer() {
   return `<footer class="site-footer">
-  <p>${escapeHtml(landingContent.footer.line)}</p>
+  <div class="footer-brand">
+    <a href="/" aria-label="One Time Mishnayos home"><img class="footer-logo" src="/assets/brand/onetimelogo.webp" width="112" height="70" alt="One Time" loading="lazy" decoding="async"></a>
+    <p>${escapeHtml(landingContent.footer.line)}</p>
+  </div>
   <nav aria-label="Footer">${landingContent.footer.links
     .map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`)
     .join('')}</nav>
 </footer>`;
 }
 
-function ticker() {
-  const copy = campaignTicker();
-  if (!copy) return '';
-  return `<a class="campaign-ticker" href="/signup" data-campaign-deadline="2026-09-11"><span>${escapeHtml(copy)}</span></a>`;
-}
-
 function landingPage() {
   const receiveBullets = landingContent.receive.bullets
-    .map((bullet) => {
-      const prefix = landingContent.receive.highlightedPrefix;
-      const copy = bullet.startsWith(prefix)
-        ? `<span class="yellow-text">${escapeHtml(prefix)}</span>${escapeHtml(bullet.slice(prefix.length))}`
-        : escapeHtml(bullet);
-      return `<li>${copy}</li>`;
-    })
+    .map((bullet) => `<li>${escapeHtml(bullet)}</li>`)
     .join('');
   const gainCards = landingContent.gain.cards
     .map((card) => {
@@ -144,7 +135,6 @@ function landingPage() {
     landingContent.seo.title,
     `${header()}
 <main>
-  ${ticker()}
   <section class="hero">
     <div class="hero-inner">
       <p class="kicker">${escapeHtml(landingContent.hero.kicker)}</p>

@@ -50,18 +50,6 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-const campaign = document.querySelector<HTMLElement>('[data-campaign-deadline]');
-if (campaign) {
-  const deadline = campaign.dataset.campaignDeadline;
-  const today = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Jerusalem',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
-  if (deadline && today >= deadline) campaign.hidden = true;
-}
-
 const carousel = document.querySelector<HTMLElement>('[data-gallery]');
 if (carousel) {
   const slides = [...carousel.querySelectorAll<HTMLElement>('[data-gallery-slide]')];

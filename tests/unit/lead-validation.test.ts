@@ -49,11 +49,10 @@ describe('lead validation and content contracts', () => {
     expect(successCopy('school').body).toBe("We saved your information and we'll be in touch.");
   });
 
-  it('suppresses the campaign after the Asia/Jerusalem deadline', () => {
-    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toContain(
-      'JOIN FREE UNTIL ROSH HASHANAH',
-    );
+  it('does not expose the retired Rosh Hashanah campaign ticker', () => {
+    expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toBeNull();
     expect(campaignTicker(new Date('2026-09-11T00:01:00+03:00'))).toBeNull();
+    expect(JSON.stringify(landingContent)).not.toContain('JOIN FREE UNTIL ROSH HASHANAH');
   });
 
   it('keeps the receive panel exact and scoped', () => {

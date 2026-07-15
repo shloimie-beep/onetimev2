@@ -1,8 +1,6 @@
 export const campaign = {
-  id: 'free-until-rosh-hashanah-2026',
-  timezone: 'Asia/Jerusalem',
-  deadlineDate: '2026-09-11',
-  label: 'JOIN FREE UNTIL ROSH HASHANAH',
+  id: 'retired-rosh-hashanah-2026',
+  active: false,
 };
 
 export const landingContent = {
@@ -31,7 +29,6 @@ export const landingContent = {
       'Weekly review sheets',
       'Daily reminders - stay in the loop and up to date',
     ],
-    highlightedPrefix: 'Secure student portal',
   },
   gain: {
     heading: "What He'll Gain",
@@ -50,8 +47,7 @@ export const landingContent = {
         image: '/assets/outcomes/accomplishment-toronto-class.jpg',
         alt: 'Rabbi Scheller smiling with boys after a Toronto One Time Torah class',
         assetBlocker: null,
-        provisionalCopy:
-          'This paragraph is the currently deployed accomplishment copy preserved provisionally; it is not operator-certified final copy.',
+        provisionalCopy: null,
       },
       {
         title: 'Excitement for learning Torah',
