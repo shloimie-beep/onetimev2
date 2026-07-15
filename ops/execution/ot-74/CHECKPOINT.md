@@ -15,3 +15,8 @@
 - Dry-run reports contain aggregate counts/reasons and row fingerprints only; no raw row contents are printed by the tool or returned by the router.
 - Local PostgreSQL 16 proof is unavailable because `psql` and Docker are not installed; the migration is covered by the repository integration harness and ready for PostgreSQL 16 CI.
 - Production import, send, deployment, provider mutation, and production database writes remain zero.
+
+## 2026-07-15T09:54:26+03:00 - Implementation Commit
+
+- Committed implementation checkpoint `5ce98ba73cf875543670bc789add9f21a10e5e9a`.
+- Push and draft PR remain pending.

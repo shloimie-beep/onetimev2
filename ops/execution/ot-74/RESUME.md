@@ -35,6 +35,6 @@ Implemented:
 
 Next steps:
 
-1. Commit and push the validated implementation checkpoint.
+1. Push the validated implementation checkpoint.
 2. Open a draft PR against `codex/ot60r-recovery-convergence`.
 3. Record final head SHA and PR URL in `ops/execution/ot-74/STATE.json`.
