@@ -56,13 +56,37 @@ Verification before checkpoint:
 - `npx vitest run --config vitest.unit.config.ts tests/unit/ot72-provider-adapters.test.ts` - PASS, 8 tests.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/ot72-provider-truth.test.ts tests/integration/telegram-db-foundation.test.ts` - PASS, 3 tests.
 
+## OT-73
+
+Merged `origin/codex/ot73-landing-intent-reconciliation` without textual
+conflicts.
+
+Resolved deliberately after auto-merge review:
+
+- Preserved OT73's corrected-addendum ticker, self-hosted font, and public
+  landing layout/copy changes.
+- Kept the Day-One communications success-copy policy for Family and School.
+- Updated the generated signup fallback panel to call `successCopy('family')`
+  instead of using stale hardcoded class-details copy.
+- Confirmed no School public email/WhatsApp send path or class-access promise
+  was reintroduced.
+
+Verification before checkpoint:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/lead-validation.test.ts tests/unit/delivery/catalog.test.ts` - PASS, 10 tests.
+- `npm run build` - PASS.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/communications/api.test.ts` - PASS, 14 tests.
+- `npx playwright test tests/e2e/landing-signup.spec.ts --reporter=line` - PASS, 7 tests.
+
 Known required collision work from the OT80 packet:
 
 - OT-75 must preserve OT-72 PostgreSQL teardown guard.
 - OT-71 and OT-72 Telegram DB test overlap must be reconciled without weakening
   product isolation or provider-truth assertions.
-- OT-71 and OT-73 public-page build changes must be reconciled so public,
-  Parent, and Student pages build as isolated entries.
+- OT-71 and OT-73 public-page build changes were reconciled for this checkpoint;
+  final certification must still rerun cross-lane public, Parent, and Student
+  isolated-entry proof.
 - Execution registry entries from OT-73, OT-74, and OT-76 must be merged
   semantically.
 - OT80 must retain one auth/session/CSRF/MFA/capability system, one CRM API,

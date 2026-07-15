@@ -89,3 +89,23 @@ Verification before checkpoint:
 - `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/delivery/outbox-pipeline.test.ts tests/integration/delivery/postgres-repository.test.ts tests/integration/classes/class-fulfillment.test.ts tests/integration/communications/api.test.ts` - PASS, 5 files, 38 tests.
 - `npm run secret:scan` - PASS across 426 repo text files.
 - `git diff --check` - PASS with line-ending warnings only.
+
+## OT-73 Merge Checkpoint
+
+Reconciliation:
+
+- Preserved the OT73 corrected-addendum ticker, self-hosted font, public landing
+  layout/copy, and footer behavior.
+- Reconciled the generated signup fallback success panel with the Day-One
+  communications domain copy.
+- Kept School submissions as public web acknowledgement plus internal alert
+  only; no School public email/WhatsApp send path was reintroduced.
+
+Verification before checkpoint:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/lead-validation.test.ts tests/unit/delivery/catalog.test.ts` - PASS, 2 files, 10 tests.
+- `npm run build` - PASS, including clean, public/app Vite builds, page
+  generation, and typecheck.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/communications/api.test.ts` - PASS, 2 files, 14 tests.
+- `npx playwright test tests/e2e/landing-signup.spec.ts --reporter=line` - PASS, 7 tests.

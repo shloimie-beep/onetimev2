@@ -7,8 +7,8 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T12:30:00+03:00",
-  "status": "communications_integrated_checkpoint_ready",
+  "updated_at": "2026-07-15T12:31:00+03:00",
+  "status": "ot73_integrated_checkpoint_ready",
   "candidate_status": "NOT_READY",
   "current_phase": "phase1_source_lane_integration",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
@@ -35,8 +35,8 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the Day-One communications checkpoint records.",
-    "Integrate OT-73 landing corrections, then OT-75 release/observability tooling, then OT-76 strict certification harness.",
+    "Commit and push the OT-73 landing checkpoint records.",
+    "Integrate OT-75 release/observability tooling, then OT-76 strict certification harness.",
     "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
   ],
   "integrated_lanes": [
@@ -65,6 +65,14 @@
       "status": "merged_renumbered",
       "provider_truth_migration": "1800_ot72_provider_truth",
       "remaining_from_source": "Remote PostgreSQL assurance rerun remains pending after OT80 push; all provider operations remain default-off with no external mutations."
+    },
+    {
+      "task": "OT-73",
+      "source_branch": "codex/ot73-landing-intent-reconciliation",
+      "source_head": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "merge_commit": "ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2",
+      "status": "merged_reconciled",
+      "remaining_from_source": "Final cross-lane visual/accessibility/performance proof remains pending for OT80 final certification; no deployment or production mutation was performed."
     }
   ],
   "direct_implementations": [

@@ -5,6 +5,7 @@ import {
   campaignTicker,
   landingContent,
   sharedNav,
+  successCopy,
 } from '../packages/domain/src/index.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
@@ -214,6 +215,7 @@ function landingPage() {
 }
 
 function signupPage() {
+  const fallbackSuccess = successCopy('family');
   return pageShell(
     'Sign Up Now | One Time Mishnayos',
     `${header()}<main class="signup-page">
@@ -237,8 +239,8 @@ function signupPage() {
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
-      <h2 data-success-heading>You're signed up.</h2>
-      <p data-success-body>We saved your information and will send the current class details using your selected option.</p>
+      <h2 data-success-heading>${escapeHtml(fallbackSuccess.heading)}</h2>
+      <p data-success-body>${escapeHtml(fallbackSuccess.body)}</p>
     </div>
   </section>
 </main>${footer()}`,

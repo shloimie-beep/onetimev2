@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.ot80.action_route_registry.v1",
-  "updated_at": "2026-07-15T12:30:00+03:00",
+  "updated_at": "2026-07-15T12:31:00+03:00",
   "status": "partial_lane_inventory",
   "routes": [
     {
@@ -38,6 +38,42 @@
       "mounted_in_ot80": false,
       "guards": ["session", "csrf", "role:owner|admin"],
       "side_effects": "records rollback request metadata only; no contact deletion"
+    },
+    {
+      "id": "route.ot73.public.landing",
+      "method": "GET",
+      "path": "/",
+      "source": "scripts/build-public-pages.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot73.public.signup",
+      "method": "GET",
+      "path": "/signup",
+      "source": "scripts/build-public-pages.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot73.public.login",
+      "method": "GET",
+      "path": "/login",
+      "source": "scripts/build-public-pages.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.ot73.leads.create",
+      "method": "POST",
+      "path": "/api/v1/leads",
+      "source": "apps/web/src/server/features/leads/router.ts",
+      "mounted_in_ot80": true,
+      "guards": ["schema_validation", "idempotency", "school_no_public_send_policy"],
+      "side_effects": "creates lead/contact/audit records and sink-mode outbox intents only"
     }
   ],
   "actions": [
@@ -133,7 +169,52 @@
       "route_id": null,
       "guards": ["protected_owner_destination", "no_public_recipient"],
       "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.campaign_ticker",
+      "surface": "public landing page",
+      "source": "scripts/build-public-pages.ts",
+      "status": "active_public_link",
+      "route_id": "route.ot73.public.signup",
+      "guards": ["no_price_trial_or_no_card_copy", "deadline_hides_after_campaign"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.header_signup",
+      "surface": "public header and hero CTA",
+      "source": "scripts/build-public-pages.ts",
+      "status": "active_public_link",
+      "route_id": "route.ot73.public.signup",
+      "guards": ["anonymous_safe"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.member_login",
+      "surface": "public header/footer",
+      "source": "scripts/build-public-pages.ts",
+      "status": "active_public_link",
+      "route_id": "route.ot73.public.login",
+      "guards": ["anonymous_safe", "auth_page_only"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.signup_form_submit",
+      "surface": "public signup form",
+      "source": "apps/web/src/client/public/public-entry.ts",
+      "status": "active_sink_mode",
+      "route_id": "route.ot73.leads.create",
+      "guards": ["schema_validation", "idempotency", "communications_school_public_send_block"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot73.public.gallery_controls",
+      "surface": "public landing gallery",
+      "source": "apps/web/src/client/public/public-entry.ts",
+      "status": "active_client_only",
+      "route_id": null,
+      "guards": ["client_state_only"],
+      "external_mutation_allowed": false
     }
   ],
-  "next_action": "Continue populating after OT73, OT75, OT76, and final mount reconciliation."
+  "next_action": "Continue populating after OT75, OT76, and final mount reconciliation."
 }

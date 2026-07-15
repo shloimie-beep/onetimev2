@@ -76,3 +76,19 @@
 - Added/updated tests for catalog coverage, protected-link rejection, School
   no-public-send behavior, communications filters, lead capture, delivery
   pipeline, class fulfillment, and browser/performance success-copy assertions.
+
+## Phase 1 - OT-73 Landing Intent Reconciliation
+
+- Merged `origin/codex/ot73-landing-intent-reconciliation` into the OT80
+  conductor branch.
+- Preserved the corrected-addendum moving campaign ticker with no price, trial,
+  or no-card hero/ticker copy.
+- Added the self-hosted DM Serif Display font assets and updated public landing
+  typography, receive/gain/who/gallery copy, and footer presentation.
+- Kept `/login` as the canonical Member Login route.
+- Preserved Day-One communications signup semantics by keeping domain-owned
+  Family and School success copy and preventing School submissions from
+  promising public sends or immediate class access.
+- Updated generated signup fallback copy to come from `successCopy('family')`.
+- Added OT73 public route/action entries for landing, signup, login, lead form
+  submit, campaign ticker, header CTA, Member Login, and gallery controls.

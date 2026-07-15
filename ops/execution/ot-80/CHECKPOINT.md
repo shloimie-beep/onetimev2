@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T12:30:00+03:00`
+Updated: `2026-07-15T12:31:00+03:00`
 
 ## Phase 0 Status
 
@@ -128,5 +128,32 @@ Verification:
 - `npm run secret:scan` - PASS across 426 repo text files.
 - `git diff --check` - PASS with line-ending warnings only.
 
-Next: commit and push this communications checkpoint, then integrate OT73
-landing corrections.
+## OT-73 Integration
+
+- Merged `origin/codex/ot73-landing-intent-reconciliation`.
+- Source head:
+  `ed2074254863468b4a70a0a3304490486ab2b71e`.
+- Merge commit:
+  `ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2`.
+- Preserved the corrected-addendum campaign ticker and removed stale price,
+  trial, and no-card promotional copy from public landing surfaces.
+- Retained local/self-hosted DM Serif Display assets and the OT73 public-page
+  layout/copy changes.
+- Reconciled signup success behavior with the Day-One communications catalog:
+  Family and School success copy remain domain-owned; School submissions do
+  not promise class access, reminders, portal accounts, or public email/WhatsApp
+  sends.
+- Updated the generated signup fallback success panel to use
+  `successCopy('family')` instead of stale hardcoded class-details copy.
+- Added OT73 public route/action coverage to the OT80 action-route registry.
+
+Verification:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/lead-validation.test.ts tests/unit/delivery/catalog.test.ts` - PASS, 10 tests.
+- `npm run build` - PASS, including public/app Vite builds, public page generation, and typecheck.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/communications/api.test.ts` - PASS, 14 tests.
+- `npx playwright test tests/e2e/landing-signup.spec.ts --reporter=line` - PASS, 7 tests.
+
+Next: commit and push this OT73 checkpoint, then integrate OT75 release and
+observability readiness.

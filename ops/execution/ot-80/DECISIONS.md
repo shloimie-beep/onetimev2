@@ -61,3 +61,17 @@ receipt filters/sends were removed from active delivery surfaces.
 Class reminders now require a protected One Time application route. Missing or
 unsafe protected links skip the delivery rather than leaking a raw provider URL
 or making a false access-ready claim.
+
+## DEC-OT80-007 - OT73 Landing Addendum Preserved With Communications Copy
+
+The newer OT73 corrected addendum restores the moving free-until-Rosh-Hashanah
+ticker and removes the separate hero price/trial/no-card promotion. OT80 keeps
+that direction, including self-hosted DM Serif Display assets and the public
+landing copy/layout changes.
+
+The Day-One communications decision remains authoritative for signup success
+and delivery semantics. Family and School success copy stays domain-owned in
+`successCopy()`, and School submissions remain public web acknowledgement plus
+internal alert only. OT73 may change public presentation, but it cannot
+reintroduce School public email/WhatsApp sends or imply immediate class access,
+reminders, portal accounts, or Family messages for School inquiries.

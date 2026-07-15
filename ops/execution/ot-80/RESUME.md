@@ -17,9 +17,10 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 - Phase: `phase1_source_lane_integration`
 - Candidate status: `NOT_READY`
 - Accepted base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
-- Latest implementation head: `aae879aea3ddbfce2ecdf8356c36711ef6a5e016`
-- Integrated so far: OT-71 product core, OT-74 audience reconciliation, and
-  OT-72 provider sandbox/default-off infrastructure
+- Latest integrated source merge: `ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2`
+- Integrated so far: OT-71 product core, OT-74 audience reconciliation, OT-72
+  provider sandbox/default-off infrastructure, and OT-73 landing intent
+  reconciliation
 - Implemented directly: Day-One communications catalog from preserved audit
   archive
 - Source heads: `ops/execution/ot-80/SOURCE-HEADS.json`
@@ -32,12 +33,12 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Next Commands
 
-After the Day-One communications checkpoint records are committed and pushed,
-continue Phase 1 with OT73, then OT75, then OT76:
+After the OT73 checkpoint records are committed and pushed, continue Phase 1
+with OT75, then OT76:
 
 ```powershell
 git fetch origin --prune
-git merge --no-ff origin/codex/ot73-landing-intent-reconciliation
+git merge --no-ff origin/codex/ot75-release-observability-readiness
 ```
 
 Update the OT80 checkpoint files after each batch before pushing the next
@@ -84,6 +85,18 @@ OT80 implemented the preserved communications archive directly:
 - School submissions get public web acknowledgement copy plus internal alert
   only; School public email/WhatsApp sends and filters are not active;
 - class reminders skip unless a protected One Time app route is present.
+
+## OT-73 Disposition
+
+OT80 merged the corrected landing addendum:
+
+- campaign ticker is active and removes stale price/trial/no-card hero copy;
+- DM Serif Display is self-hosted under `apps/web/public/assets/fonts/`;
+- receive/gain/who/gallery/footer public landing updates are present;
+- `/login` remains the canonical Member Login route;
+- generated signup fallback copy now uses the domain `successCopy('family')`;
+- School submissions still do not create class access, reminders, portal
+  accounts, or public email/WhatsApp sends.
 
 ## Guardrails
 

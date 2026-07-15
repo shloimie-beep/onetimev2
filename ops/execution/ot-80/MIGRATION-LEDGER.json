@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.ot80.migration_ledger.v1",
-  "updated_at": "2026-07-15T12:18:00+03:00",
-  "status": "ot72_integrated",
+  "updated_at": "2026-07-15T12:31:00+03:00",
+  "status": "ot73_integrated_no_migrations",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "known_collisions": [
     {
@@ -58,6 +58,15 @@
         }
       ],
       "notes": "Provider truth remains default-off and redacted. No live charge, send, webhook registration, provider mutation, deployment, DNS change, or production database mutation was authorized."
+    },
+    {
+      "task": "OT-73",
+      "status": "merged_no_migrations",
+      "source_branch": "codex/ot73-landing-intent-reconciliation",
+      "source_head": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "merge_commit": "ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2",
+      "retained_migrations": [],
+      "notes": "OT73 changed public landing/page-generation assets and tests only; no database migration was introduced."
     }
   ]
 }
