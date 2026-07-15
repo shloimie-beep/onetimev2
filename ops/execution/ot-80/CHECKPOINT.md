@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T12:18:00+03:00`
+Updated: `2026-07-15T12:30:00+03:00`
 
 ## Phase 0 Status
 
@@ -106,6 +106,27 @@ Verification after renumbering:
 - `npx vitest run --config vitest.unit.config.ts tests/unit/ot72-provider-adapters.test.ts` - PASS, 8 tests.
 - `npx vitest run --config vitest.integration.config.ts tests/integration/ot72-provider-truth.test.ts tests/integration/telegram-db-foundation.test.ts` - PASS, 3 tests.
 
-Next: commit and push this OT-72 checkpoint, then implement Day-One
-communications directly from the preserved audit archive unless a late refetch
-discovers a safe communications implementation lane.
+## Day-One Communications Integration
+
+- Implemented directly from preserved archive
+  `ops/execution/ot-80/audit-inputs/OT-DAYONE-COMMUNICATIONS-COPY-PACK.zip`.
+- Product commit:
+  `aae879aea3ddbfce2ecdf8356c36711ef6a5e016`.
+- Added server-owned catalog source metadata and 19 source message keys.
+- Replaced active delivery copy for Family acknowledgement, Family class
+  reminder, and internal lead-alert paths.
+- Removed active School public email/WhatsApp receipt paths from lead capture,
+  delivery supported pairs, worker claim predicates, Communications filters,
+  and visible UI options.
+- Required protected One Time app route before class reminder delivery.
+
+Verification:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/delivery/catalog.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/lead-validation.test.ts tests/unit/communications/communications-contract.test.ts` - PASS, 37 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/delivery/outbox-pipeline.test.ts tests/integration/delivery/postgres-repository.test.ts tests/integration/classes/class-fulfillment.test.ts tests/integration/communications/api.test.ts` - PASS, 38 tests.
+- `npm run secret:scan` - PASS across 426 repo text files.
+- `git diff --check` - PASS with line-ending warnings only.
+
+Next: commit and push this communications checkpoint, then integrate OT73
+landing corrections.

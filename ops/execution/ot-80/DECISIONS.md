@@ -45,3 +45,19 @@ provider-truth migration from the source-lane name
 Active tests and OT72 integration references were updated to the `1800`
 identifier. The frozen OT80 source-head inventory still lists the fetched
 source-lane file name as provenance.
+
+## DEC-OT80-006 - Server-Owned Day-One Communications Catalog
+
+No source branch contained the Day-One communications archive or message-catalog
+hashes, so OT80 implemented a server-owned catalog directly from the preserved
+audit input.
+
+Active delivery rendering is limited to committed Family acknowledgements,
+consented Family WhatsApp acknowledgements, protected-link class reminders, and
+internal owner/admin lead alerts. School submissions keep the public web
+acknowledgement and internal lead alert only; School public email and WhatsApp
+receipt filters/sends were removed from active delivery surfaces.
+
+Class reminders now require a protected One Time application route. Missing or
+unsafe protected links skip the delivery rather than leaking a raw provider URL
+or making a false access-ready claim.

@@ -17,9 +17,11 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 - Phase: `phase1_source_lane_integration`
 - Candidate status: `NOT_READY`
 - Accepted base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
-- Latest source merge head: `bdddf576fc39615d9b6cb6414695651de33d331d`
+- Latest implementation head: `aae879aea3ddbfce2ecdf8356c36711ef6a5e016`
 - Integrated so far: OT-71 product core, OT-74 audience reconciliation, and
   OT-72 provider sandbox/default-off infrastructure
+- Implemented directly: Day-One communications catalog from preserved audit
+  archive
 - Source heads: `ops/execution/ot-80/SOURCE-HEADS.json`
 - Immutable prompt: `ops/execution/ot-80/ORIGINAL-PROMPT.md`
 - Input manifest: `ops/execution/ot-80/INPUT-MANIFEST.json`
@@ -30,15 +32,16 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Next Commands
 
-After the OT-72 checkpoint records are committed and pushed, continue with the
-Day-One communications implementation from the preserved audit archive:
+After the Day-One communications checkpoint records are committed and pushed,
+continue Phase 1 with OT73, then OT75, then OT76:
 
-- `ops/execution/ot-80/audit-inputs/OT-DAYONE-COMMUNICATIONS-COPY-PACK.zip`
-- `ops/execution/ot-80/COMMUNICATIONS-INTEGRATION-DECISIONS.md`
-- `ops/execution/ot-80/ORIGINAL-PROMPT.md`
+```powershell
+git fetch origin --prune
+git merge --no-ff origin/codex/ot73-landing-intent-reconciliation
+```
 
-Then integrate OT73, OT75, and OT76, updating the OT80 checkpoint files after
-each batch before pushing the next checkpoint.
+Update the OT80 checkpoint files after each batch before pushing the next
+checkpoint.
 
 ## OT-74 Disposition
 
@@ -67,6 +70,20 @@ OT80 kept OT72's provider work default-off:
 
 No live charge, send, webhook registration, provider mutation, deployment, DNS
 change, or production database mutation is authorized.
+
+## Day-One Communications Disposition
+
+OT80 implemented the preserved communications archive directly:
+
+- catalog source hash:
+  `865f04e7fd8d5842376485481804fb9d21595797fd9f40e8b5aa45424ae3a88a`;
+- implementation commit:
+  `aae879aea3ddbfce2ecdf8356c36711ef6a5e016`;
+- active delivery copy is limited to Family acknowledgements, protected-link
+  Family reminders, and internal owner/admin lead alerts;
+- School submissions get public web acknowledgement copy plus internal alert
+  only; School public email/WhatsApp sends and filters are not active;
+- class reminders skip unless a protected One Time app route is present.
 
 ## Guardrails
 

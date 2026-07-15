@@ -60,3 +60,19 @@
   `1800_ot72_provider_truth.sql` because OT71 owns the `1700` prefix in OT80.
 - Verified the merged provider path with typecheck, focused OT72 unit tests,
   and focused OT72/Telegram integration tests.
+
+## Phase 1 - Day-One Communications Catalog
+
+- Added an OT80 server-owned Day-One communications catalog with 19 preserved
+  archive message keys, source archive hash, and source catalog hash.
+- Replaced placeholder delivery copy with reconciled Family acknowledgement,
+  Family class reminder, and internal lead-alert copy.
+- Required protected One Time app routes before class reminder delivery.
+- Removed active School public email/WhatsApp receipt support from lead capture,
+  delivery supported pairs, worker claim predicates, Communications filters, and
+  visible UI options.
+- Updated public signup success copy for Family and School to match the
+  reconciled catalog.
+- Added/updated tests for catalog coverage, protected-link rejection, School
+  no-public-send behavior, communications filters, lead capture, delivery
+  pipeline, class fulfillment, and browser/performance success-copy assertions.

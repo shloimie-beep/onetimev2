@@ -7,8 +7,8 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T12:18:00+03:00",
-  "status": "ot72_integrated_checkpoint_ready",
+  "updated_at": "2026-07-15T12:30:00+03:00",
+  "status": "communications_integrated_checkpoint_ready",
   "candidate_status": "NOT_READY",
   "current_phase": "phase1_source_lane_integration",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
@@ -18,7 +18,7 @@
   "communications_archive_path": "ops/execution/ot-80/audit-inputs/OT-DAYONE-COMMUNICATIONS-COPY-PACK.zip",
   "communications_archive_sha256": "ba1ffe027c4f89e93133fdb3a1a4511b971e52d4441b06b758022cbd1876440d",
   "communications_message_catalog_sha256": "865f04e7fd8d5842376485481804fb9d21595797fd9f40e8b5aa45424ae3a88a",
-  "communications_implementation_disposition": "No fetched remote ref or local OneTime worktree evidence matched the communications ZIP/catalog hashes during Phase 0; implement directly from the preserved audit input unless a later source refetch discovers a safe descendant lane.",
+  "communications_implementation_disposition": "Implemented directly from the preserved audit input as OT80 server-owned catalog commit aae879aea3ddbfce2ecdf8356c36711ef6a5e016 after no fetched remote ref or local OneTime worktree matched the communications ZIP/catalog hashes.",
   "production_authorized": false,
   "isolated_staging_authorized_after_gates": true,
   "single_staging_admin_activation_email_authorized_after_gates": true,
@@ -35,8 +35,8 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the OT-72 checkpoint records.",
-    "Implement Day-One communications directly from the preserved archive unless a later source refetch discovers a safe communications implementation lane.",
+    "Commit and push the Day-One communications checkpoint records.",
+    "Integrate OT-73 landing corrections, then OT-75 release/observability tooling, then OT-76 strict certification harness.",
     "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
   ],
   "integrated_lanes": [
@@ -65,6 +65,16 @@
       "status": "merged_renumbered",
       "provider_truth_migration": "1800_ot72_provider_truth",
       "remaining_from_source": "Remote PostgreSQL assurance rerun remains pending after OT80 push; all provider operations remain default-off with no external mutations."
+    }
+  ],
+  "direct_implementations": [
+    {
+      "task": "Day-One communications catalog",
+      "source_archive_sha256": "ba1ffe027c4f89e93133fdb3a1a4511b971e52d4441b06b758022cbd1876440d",
+      "source_message_catalog_sha256": "865f04e7fd8d5842376485481804fb9d21595797fd9f40e8b5aa45424ae3a88a",
+      "implementation_commit": "aae879aea3ddbfce2ecdf8356c36711ef6a5e016",
+      "status": "implemented",
+      "notes": "Server-owned catalog with 19 source message keys; active sends limited to Family acknowledgements, protected-link Family reminders, and internal lead alerts. School public email/WhatsApp sends are not active."
     }
   ]
 }

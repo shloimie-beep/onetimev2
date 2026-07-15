@@ -1,10 +1,10 @@
 {
   "schema_version": "onetime.ot80.release_manifest.v1",
-  "updated_at": "2026-07-15T12:18:00+03:00",
+  "updated_at": "2026-07-15T12:30:00+03:00",
   "candidate_status": "NOT_READY",
-  "source_sha": "bdddf576fc39615d9b6cb6414695651de33d331d",
+  "source_sha": "aae879aea3ddbfce2ecdf8356c36711ef6a5e016",
   "draft_pr": null,
   "ci_status": "not_started",
-  "certification_status": "ot71_ot74_ot72_focused_checks_passed",
+  "certification_status": "ot71_ot74_ot72_communications_focused_checks_passed",
   "isolated_staging_status": "not_started"
 }

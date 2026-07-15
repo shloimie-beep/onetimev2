@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.ot80.action_route_registry.v1",
-  "updated_at": "2026-07-15T12:18:00+03:00",
+  "updated_at": "2026-07-15T12:30:00+03:00",
   "status": "partial_lane_inventory",
   "routes": [
     {
@@ -97,7 +97,43 @@
       "route_id": null,
       "guards": ["feature_flag", "single_consumer_gate", "exact_canary_chat"],
       "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.family_acknowledgement",
+      "surface": "delivery worker catalog renderer",
+      "source": "packages/domain/src/delivery/catalog.ts",
+      "status": "active_sink_mode",
+      "route_id": null,
+      "guards": ["committed_family_signup", "email_or_whatsapp_policy", "suppression_check"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.class_reminder",
+      "surface": "delivery worker catalog renderer",
+      "source": "packages/domain/src/delivery/catalog.ts",
+      "status": "active_sink_mode_requires_protected_route",
+      "route_id": null,
+      "guards": ["committed_family_signup", "protected_one_time_route", "suppression_check"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.school_public_ack",
+      "surface": "public signup success page",
+      "source": "packages/domain/src/lead/normalize.ts",
+      "status": "active_public_web_only",
+      "route_id": null,
+      "guards": ["committed_school_lead", "no_public_email", "no_public_whatsapp"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.ot80.communications.internal_lead_alert",
+      "surface": "delivery worker catalog renderer",
+      "source": "packages/domain/src/delivery/messages.ts",
+      "status": "active_sink_mode_internal_only",
+      "route_id": null,
+      "guards": ["protected_owner_destination", "no_public_recipient"],
+      "external_mutation_allowed": false
     }
   ],
-  "next_action": "Continue populating after communications, OT73, OT75, OT76, and final mount reconciliation."
+  "next_action": "Continue populating after OT73, OT75, OT76, and final mount reconciliation."
 }

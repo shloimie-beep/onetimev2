@@ -71,3 +71,21 @@ Verification before checkpoint:
 - JSON parse for `ops/execution/registry.json`, `STATE.json`, `MIGRATION-LEDGER.json`, `RELEASE-MANIFEST.json`, and `ACTION-AND-ROUTE-REGISTRY.json` - PASS.
 - `npm run secret:scan` - PASS across 424 repo text files.
 - `git diff --check` - PASS with line-ending warnings only.
+
+## Day-One Communications Checkpoint
+
+Implementation:
+
+- Added server-owned catalog source metadata and 19 message keys from the
+  preserved archive.
+- Updated active delivery copy/policy for Family acknowledgements, class
+  reminders, internal lead alerts, and School no-public-send behavior.
+- Required protected One Time app routes before class reminder delivery.
+
+Verification before checkpoint:
+
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/delivery/catalog.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/lead-validation.test.ts tests/unit/communications/communications-contract.test.ts` - PASS, 4 files, 37 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/delivery/outbox-pipeline.test.ts tests/integration/delivery/postgres-repository.test.ts tests/integration/classes/class-fulfillment.test.ts tests/integration/communications/api.test.ts` - PASS, 5 files, 38 tests.
+- `npm run secret:scan` - PASS across 426 repo text files.
+- `git diff --check` - PASS with line-ending warnings only.
