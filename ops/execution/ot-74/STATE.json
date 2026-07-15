@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-74",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot74-audience-reconciliation",
+  "branch": "codex/ot74-audience-reconciliation",
+  "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "base_remote_ref": "origin/codex/ot60r-recovery-convergence",
+  "base_head_observed_at_start": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "prompt_source_path": "C:\\Users\\User\\AppData\\Local\\Temp\\CODEX-NOW-03-OT74-AUDIENCE-IMPORT (1).md",
+  "prompt_sha256": "8C30A267E2B9A6BFFB6C6BDF6A364F8B89979ADE0B02B7FEB4B07B023ED49F54",
+  "phase": "initial_execution_packet",
+  "status": "building",
+  "created_at": "2026-07-15T09:34:16+03:00",
+  "updated_at": "2026-07-15T09:34:16+03:00",
+  "completed_steps": [
+    "Read OT-74 prompt from the temp handoff file.",
+    "Verified repository identity through C:\\Users\\User\\OneTimeOneTime origin https://github.com/webcraft-media/onetimev2.git.",
+    "Verified immutable base dfef7de2035e08f1ee72e0133ccf656fe7a74444 exists locally and is origin/codex/ot60r-recovery-convergence.",
+    "Verified branch codex/ot74-audience-reconciliation was absent locally/remotely before creation.",
+    "Created clean worktree C:\\Users\\User\\OneTimeOneTime-ot74-audience-reconciliation from the exact immutable base.",
+    "Read One Time AGENTS.md and ops/execution/PROTOCOL.md."
+  ],
+  "phase_matrix": {
+    "initial_execution_packet": "in_progress",
+    "namespace_and_current_state": "pending",
+    "audience_domain_and_migration_contract": "pending",
+    "parser_mapper_dry_run": "pending",
+    "feature_local_api_and_components": "pending",
+    "tests_and_evidence": "pending",
+    "push_and_draft_pr": "pending"
+  },
+  "last_safe_command": "git status --short --branch",
+  "external_mutation_counts": {
+    "deployments": 0,
+    "production_database_writes": 0,
+    "provider_mutations": 0,
+    "messages_sent": 0,
+    "payments_or_charges": 0,
+    "dns_changes": 0,
+    "real_users_created": 0,
+    "bna_repository_modifications": 0,
+    "real_spreadsheets_ingested": 0
+  },
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot74-audience-reconciliation, verify origin/branch/head/status, read ops/execution/ot-74/STATE.json and RESUME.md, then continue the first pending phase without touching BNA or running deployment/import/send commands."
+}
