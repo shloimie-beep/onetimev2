@@ -1,0 +1,20 @@
+{
+  "task_id": "OT-76",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ot76-day-one-certification-harness",
+  "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot76-day-one-certification-harness",
+  "prompt_path": "C:\\Users\\User\\AppData\\Local\\Temp\\CODEX-NOW-05-OT76-DAYONE-QA.md",
+  "scope": {
+    "product_code_allowed": false,
+    "deployment_allowed": false,
+    "external_mutation_allowed": false,
+    "allowed_change_paths": [
+      "scripts/day-one-certification-harness.mjs",
+      "ops/day-one/",
+      "ops/evidence/ot-76/",
+      "ops/execution/ot-76/",
+      "ops/execution/registry.json"
+    ]
+  }
+}

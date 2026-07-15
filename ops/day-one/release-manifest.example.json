@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "manifest_id": "OT-76-current-audit-manifest",
+  "repository": "webcraft-media/onetimev2",
+  "source": {
+    "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+    "base_branch": "codex/ot60r-recovery-convergence",
+    "notes": "Current audit manifest for the OT-76 harness. Future integrated releases should copy this shape and replace current-audit gaps with release evidence."
+  },
+  "permissions": {
+    "product_code_change_allowed": false,
+    "deployment_allowed": false,
+    "external_mutation_allowed": false,
+    "production_database_access_allowed": false
+  },
+  "audit_policy": {
+    "audit_exit_policy": "audit exits 0 when the harness is valid and scoped, even if capabilities are missing",
+    "certify_exit_policy": "certify exits nonzero for every missing Day-One release blocker",
+    "no_fake_passes": true
+  },
+  "static_scan_files": [
+    "apps/web/src/server/app.ts",
+    "apps/web/src/client/public/public-entry.ts",
+    "apps/web/src/client/app/crm-entry.tsx",
+    "apps/worker/src/main/index.ts"
+  ],
+  "routes": [
+    {
+      "id": "landing",
+      "method": "GET",
+      "path": "/",
+      "source_files": [
+        "scripts/build-public-pages.ts",
+        "apps/web/src/client/public/public-entry.ts"
+      ],
+      "source_patterns": ["index.html"]
+    },
+    {
+      "id": "signup",
+      "method": "GET",
+      "path": "/signup",
+      "source_files": [
+        "scripts/build-public-pages.ts",
+        "apps/web/src/client/public/public-entry.ts"
+      ],
+      "source_patterns": ["signup.html"]
+    },
+    {
+      "id": "lead_post",
+      "method": "POST",
+      "path": "/api/v1/leads",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/leads'"]
+    },
+    {
+      "id": "interest_compat_post",
+      "method": "POST",
+      "path": "/api/one-time/interest",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/one-time/interest'"]
+    },
+    {
+      "id": "login",
+      "method": "GET",
+      "path": "/login",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/login'"]
+    },
+    {
+      "id": "auth_login",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/login'"]
+    },
+    {
+      "id": "mfa_challenge",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/challenge",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/mfa/challenge'"]
+    },
+    {
+      "id": "mfa_recovery_replace",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/recovery/replace",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/mfa/recovery/replace'"]
+    },
+    {
+      "id": "mfa_revoke",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/revoke",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/mfa/revoke'"]
+    },
+    {
+      "id": "crm_app",
+      "method": "GET",
+      "path": "/app/crm",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get(/^\\/app\\/crm"]
+    },
+    {
+      "id": "crm_contacts",
+      "method": "GET",
+      "path": "/api/v1/crm/contacts",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/crm/contacts'"]
+    },
+    {
+      "id": "crm_contacts_search",
+      "method": "POST",
+      "path": "/api/v1/crm/contacts/search",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/crm/contacts/search'"]
+    },
+    {
+      "id": "crm_contact_detail",
+      "method": "GET",
+      "path": "/api/v1/crm/contacts/:contactId",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/crm/contacts/:contactId'"]
+    },
+    {
+      "id": "communications_threads",
+      "method": "GET",
+      "path": "/api/v1/communications",
+      "source_files": ["apps/web/src/server/communications/register.ts"],
+      "source_patterns": ["app.get('/api/v1/communications'"]
+    }
+  ],
+  "commands": {
+    "secret_scan": {
+      "command": "npm run secret:scan",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "format": {
+      "command": "npm run format",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "lint": {
+      "command": "npm run lint",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "unit": {
+      "command": "npm run unit",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "integration": {
+      "command": "npm run integration",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "e2e": {
+      "command": "npm run e2e",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    },
+    "accessibility": {
+      "command": "npm run accessibility",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    },
+    "performance": {
+      "command": "npm run performance",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    },
+    "db_verify": {
+      "command": "npm run db:verify",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    }
+  },
+  "capabilities": {
+    "family_signup_atomic_crm": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/e2e/crm-core.spec.ts",
+        "tests/integration/auth-crm.test.ts"
+      ]
+    },
+    "school_signup_lead_only": {
+      "status": "partial",
+      "evidence_paths": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/lead-capture.test.ts"
+      ],
+      "gap": "Current audit finds lead-only behavior evidence, but release manifest does not yet prove entitlement absence through the full Day-One registry."
+    },
+    "owner_admin_mfa_role_denials": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": ["tests/integration/auth-crm.test.ts"]
+    },
+    "crm_search_cards_tags_detail_communications": {
+      "status": "partial",
+      "evidence_paths": [
+        "tests/e2e/crm-core.spec.ts",
+        "tests/integration/communications/api.test.ts"
+      ],
+      "gap": "Tag and communications evidence is not consolidated into a Day-One manifest yet."
+    },
+    "class_reminder_provider_off_launch": {
+      "status": "missing_current_release_evidence",
+      "gap": "Class/reminder boundary and protected provider-off launch are not certified by current manifest."
+    },
+    "content_review_publish_entitled_library": {
+      "status": "missing_current_release_evidence",
+      "gap": "Content review/publish and entitled library are not exposed by current release manifest."
+    },
+    "parent_household_student_exactly_one_learner": {
+      "status": "partial",
+      "evidence_paths": [
+        "tests/ot-52/portal-router.test.ts",
+        "tests/ot-52/portal-services.test.ts",
+        "ops/evidence/ot-52/LEARNER-LIMIT-CONCURRENCY.md"
+      ],
+      "gap": "Existing OT-52 evidence is present, but Day-One integrated release wiring is not certified here."
+    },
+    "provider_default_off_no_dead_action": {
+      "status": "partial",
+      "gap": "Provider unavailable/default-off evidence is not represented in a visible action registry."
+    },
+    "visible_action_registry_handler_audit": {
+      "status": "missing_current_release_evidence",
+      "gap": "No integrated visible action registry and handler/audit mapping was found in this manifest."
+    },
+    "responsive_a11y_rtl_reflow_reduced_motion": {
+      "status": "partial",
+      "evidence_paths": [
+        "tests/accessibility/public-a11y.spec.ts",
+        "tests/e2e/landing-signup.spec.ts"
+      ],
+      "gap": "RTL, 200 percent reflow, and reduced-motion gates need explicit Day-One evidence."
+    },
+    "performance_30_sample_budgets": {
+      "status": "partial",
+      "evidence_paths": [
+        "tests/performance/public-performance.spec.ts",
+        "ops/evidence/ot-44/PERFORMANCE-30-RUN.json"
+      ],
+      "gap": "Current performance commands exist, but a fresh 30-sample integrated Day-One run is not attached."
+    },
+    "secret_pii_provider_url_bna_leakage": {
+      "status": "present_with_static_and_command_evidence",
+      "evidence_paths": [
+        "scripts/secret-scan.mjs",
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/e2e/crm-core.spec.ts"
+      ]
+    },
+    "source_migrations_readiness_worker_rollback": {
+      "status": "partial",
+      "gap": "Source SHA, migrations, and worker files exist; rollback evidence is not Day-One complete."
+    }
+  },
+  "budgets": {
+    "responsive_matrix": {
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "requires_no_horizontal_overflow": true
+    },
+    "performance": {
+      "sample_count": 30,
+      "lcp_ms_max": 2500,
+      "cls_max": 0.1,
+      "public_js_raw_bytes_max": 45000,
+      "public_css_raw_bytes_max": 35000
+    },
+    "accessibility": {
+      "axe_violations_max": 0,
+      "keyboard_required": true,
+      "rtl_required": true,
+      "reflow_200_percent_required": true,
+      "reduced_motion_required": true
+    }
+  },
+  "migrations": [
+    { "id": "0001", "path": "packages/db/migrations/0001_onetime_lead_slice.sql" },
+    { "id": "0002", "path": "packages/db/migrations/0002_crm_auth_core.sql" },
+    { "id": "0003", "path": "packages/db/migrations/0003_ot27_security_crm_repair.sql" },
+    { "id": "0004", "path": "packages/db/migrations/0004_delivery_worker_claim_index.sql" },
+    { "id": "1000", "path": "packages/db/migrations/1000_ot42_crm_module_v1.sql" },
+    { "id": "1300", "path": "packages/db/migrations/1300_ot46_billing_foundation.sql" },
+    { "id": "1500", "path": "packages/db/migrations/1500_ot52_portal_households_learners.sql" },
+    { "id": "1600", "path": "packages/db/migrations/1600_ot51_telegram_bot_foundation.sql" }
+  ],
+  "worker": {
+    "entrypoint": "apps/worker/src/main/index.ts",
+    "safe_mode_expected": "sink_or_mock_for_day_one_qa"
+  },
+  "rollback": {
+    "status": "missing_current_release_evidence",
+    "required_for_certify": true
+  }
+}
