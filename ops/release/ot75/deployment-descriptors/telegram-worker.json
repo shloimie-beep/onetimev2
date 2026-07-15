@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "descriptor_id": "ot75-telegram-worker",
+  "service_key": "telegram-worker",
+  "mode": "descriptor_only_not_deployed",
+  "current_runtime_composition_change": false,
+  "start_command_template": ["node", "--import", "tsx", "apps/telegram-bot/src/index.ts"],
+  "queue_contract": {
+    "polling_or_webhook_activation_requires_later_packet": true,
+    "source_sha_env": "OT75_EXPECTED_SOURCE_SHA",
+    "provider_mutation_default": "forbidden",
+    "raw_chat_id_evidence_forbidden": true
+  },
+  "required_environment_names": [
+    "OT75_STAGING_TELEGRAM_WORKER_SERVICE",
+    "OT75_PROVIDER_STATE_REPORT",
+    "OT75_WORKER_ISOLATION_APPROVED"
+  ],
+  "must_not_modify": [
+    "apps/telegram-bot/src/index.ts",
+    "apps/telegram-bot/src/ingress.ts",
+    "apps/worker/src/main/index.ts",
+    "package.json",
+    "railway.json"
+  ],
+  "allowed_release_outputs": [
+    "webhook_configured_present",
+    "polling_enabled_status",
+    "pending_update_count",
+    "mutation_count_zero"
+  ]
+}
