@@ -5,9 +5,10 @@ Final local convergence is complete for candidate source/evidence anchor
 
 ## Open Handoff Items
 
-1. Commit and push the final OT80 evidence/checkpoint records.
-2. Open one draft PR to `codex/ot60r-recovery-convergence`.
-3. Wait for CI and fix only owned/integrated failures.
+1. Commit and push the PR metadata handoff record.
+2. Wait for CI on draft PR
+   `https://github.com/webcraft-media/onetimev2/pull/23`.
+3. Fix only owned/integrated CI failures.
 4. Keep candidate status as `NOT_READY` until strict Day-One certification
    passes.
 5. Attempt isolated staging only after candidate gates allow it.
@@ -17,14 +18,15 @@ Final local convergence is complete for candidate source/evidence anchor
 - Strict Day-One certification fails honestly: 13 gates, 3 pass, 10 blockers.
   Evidence:
   `ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json`.
-- Draft PR URL and CI evidence remain pending until final handoff push.
+- Draft PR is open at `https://github.com/webcraft-media/onetimev2/pull/23`;
+  CI readback remains pending.
 - Isolated staging remains blocked because the candidate is `NOT_READY` and
   activation gates are not satisfied.
 
 ## Carried Forward
 
-Carried from OT-71: publication/CI handoff evidence remains pending until the
-OT80 draft PR is opened and CI is observed.
+Carried from OT-71: publication handoff is complete through draft PR #23; CI
+evidence remains pending until GitHub reports check results.
 
 Carried from OT-74: PostgreSQL 16 CI and final mounted-route certification
 remain pending for PR/CI. The canonical audience path is dry-run only and does

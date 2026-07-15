@@ -36,8 +36,8 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Next Commands
 
-After final evidence/checkpoint records are committed and pushed, open one draft
-PR to `codex/ot60r-recovery-convergence`, wait for CI, and fix only
+Draft PR #23 is open at
+`https://github.com/webcraft-media/onetimev2/pull/23`. Wait for CI and fix only
 owned/integrated failures. Candidate remains `NOT_READY`; do not attempt
 isolated staging until gates allow it.
 
@@ -45,6 +45,7 @@ Useful final readback commands:
 
 ```powershell
 git status --short --branch
+gh pr checks 23 --watch
 Get-Content ops/execution/ot-80/RELEASE-MANIFEST.json
 Get-Content ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json
 ```

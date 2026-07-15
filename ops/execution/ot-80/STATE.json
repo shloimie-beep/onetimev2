@@ -7,8 +7,8 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T13:05:00+03:00",
-  "status": "final_local_convergence_complete_not_ready",
+  "updated_at": "2026-07-15T13:10:00+03:00",
+  "status": "draft_pr_open_not_ready",
   "candidate_status": "NOT_READY",
   "current_phase": "phase6_local_candidate_handoff",
   "final_candidate_source_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
@@ -28,7 +28,7 @@
     "branch_created": true,
     "commit_created": true,
     "pushed": true,
-    "draft_pr_opened": false,
+    "draft_pr_opened": true,
     "deployment_performed": false,
     "staging_mutation_performed": false,
     "email_send_performed": false,
@@ -36,11 +36,18 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the final OT80 convergence evidence and handoff records.",
-    "Open one draft pull request to codex/ot60r-recovery-convergence while candidate remains NOT_READY.",
-    "Wait for CI, then fix only owned/integrated failures.",
+    "Wait for draft PR CI, then fix only owned/integrated failures.",
     "Keep staging, external sends, provider mutations, payments, DNS, and production database mutations blocked until all gates are satisfied and explicit authorization exists."
   ],
+  "draft_pr": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/23",
+    "number": 23,
+    "state": "open",
+    "draft": true,
+    "base": "codex/ot60r-recovery-convergence",
+    "head": "codex/ot80-one-shot-final-convergence",
+    "opened_head_sha": "f4352a76f6f480577657b741f363f42605c4857b"
+  },
   "final_local_evidence": {
     "source_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
     "build": "passed",

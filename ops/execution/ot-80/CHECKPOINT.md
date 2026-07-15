@@ -244,6 +244,7 @@ Final local verification:
   10 blockers.
 
 Final status: local convergence evidence is complete, but the candidate remains
-`NOT_READY`. Draft PR publication and CI evidence are the next handoff steps;
-isolated staging remains blocked until Day-One certification and activation
-gates are satisfied.
+`NOT_READY`. Draft PR #23 is open at
+`https://github.com/webcraft-media/onetimev2/pull/23`; CI readback remains
+pending. Isolated staging remains blocked until Day-One certification and
+activation gates are satisfied.

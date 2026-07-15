@@ -197,3 +197,12 @@ Day-One certification readout:
 Conclusion: local build, lint, unit, integration, e2e, accessibility, and
 performance checks passed, but strict Day-One certification did not. The
 candidate remains `NOT_READY`; isolated staging was not attempted.
+
+## Draft PR Handoff
+
+- Draft PR #23 opened:
+  `https://github.com/webcraft-media/onetimev2/pull/23`.
+- PR base: `codex/ot60r-recovery-convergence`.
+- PR head at open:
+  `f4352a76f6f480577657b741f363f42605c4857b`.
+- CI readback remains pending after the PR metadata handoff update.

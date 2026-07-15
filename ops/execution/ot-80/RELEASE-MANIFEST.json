@@ -1,10 +1,18 @@
 {
   "schema_version": "onetime.ot80.release_manifest.v1",
-  "updated_at": "2026-07-15T13:05:00+03:00",
+  "updated_at": "2026-07-15T13:10:00+03:00",
   "candidate_status": "NOT_READY",
   "source_sha": "499303de2ff8c262b15eabfb4bba9b7d4d3e740a",
-  "draft_pr": null,
-  "ci_status": "not_started",
+  "draft_pr": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/23",
+    "number": 23,
+    "state": "open",
+    "draft": true,
+    "base": "codex/ot60r-recovery-convergence",
+    "head": "codex/ot80-one-shot-final-convergence",
+    "opened_head_sha": "f4352a76f6f480577657b741f363f42605c4857b"
+  },
+  "ci_status": "pending_readback",
   "certification_status": "local_suite_passed_day_one_audit_complete_not_certified_strict_certify_failed_10_blockers",
   "local_suite": {
     "build": "pass",
