@@ -1,0 +1,48 @@
+{
+  "run_id": "OT-84",
+  "repository": "webcraft-media/onetimev2",
+  "base_ref": "origin/codex/ot83-household-portals-foundation",
+  "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "head_branch": "codex/ot84-telegram-action-gateway",
+  "head_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "phase": "RUN_ARTIFACTS_INITIALIZED",
+  "checkpoint": "INITIAL_RUN_ARTIFACTS_BEFORE_IMPLEMENTATION_CODE",
+  "status": "in_progress",
+  "worktree": {
+    "target_repo_verified": true,
+    "is_clean": false,
+    "base_is_ancestor": true,
+    "bna_untouched": true,
+    "path_class": "isolated One Time worktree at C:\\Users\\User\\OneTimeOneTime-ot84-telegram-action-gateway"
+  },
+  "secrets": {
+    "telegram_bot_token_available": false,
+    "webhook_secret_available": false,
+    "identity_mapping_available": false,
+    "natural_language_provider_available": false
+  },
+  "tests": {
+    "status": "not_run",
+    "summary": "Initial run artifacts only; implementation tests have not run."
+  },
+  "canary": {
+    "synthetic": "not_run",
+    "real": "not_run"
+  },
+  "provider_mutation_count": 0,
+  "pr": {
+    "status": "not_created",
+    "url": null,
+    "base": "codex/ot83-household-portals-foundation",
+    "head": "codex/ot84-telegram-action-gateway"
+  },
+  "next_safe_action": "Commit these initial run artifacts, then perform repository reconnaissance and implement OT-84 without modifying BNA or exposing protected Telegram values.",
+  "created_at": "2026-07-15T19:25:00+03:00",
+  "updated_at": "2026-07-15T19:25:00+03:00",
+  "notes": [
+    "Origin verified as https://github.com/webcraft-media/onetimev2.git.",
+    "Remote OT83 base resolved to a02d1d254ae0d17804fb657079a7871567260ea2.",
+    "PROMPT.md was copied verbatim from the verified packet and matches SHA-256 69C24AF50256230C783EB48AFE2417EC62B41708437C5EC439446572523C754B.",
+    "No Telegram provider mutation has been performed."
+  ]
+}
