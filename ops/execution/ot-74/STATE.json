@@ -1,0 +1,44 @@
+{
+  "task_id": "OT-74",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\Documents\\Codex\\2026-07-15\\files-mentioned-by-the-user-codex-3\\work\\onetimev2-ot74",
+  "branch": "codex/ot74-audience-reconciliation",
+  "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "target_base_branch": "codex/ot60r-recovery-convergence",
+  "current_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "phase": "initial_packet",
+  "status": "building",
+  "created_at": "2026-07-15T09:29:35+03:00",
+  "updated_at": "2026-07-15T09:29:35+03:00",
+  "completed_steps": [
+    "Cloned clean One Time repository from https://github.com/webcraft-media/onetimev2.git under the Codex work directory.",
+    "Verified immutable base dfef7de2035e08f1ee72e0133ccf656fe7a74444 exists locally.",
+    "Verified origin/codex/ot60r-recovery-convergence points at the immutable base and is the OT-60R target.",
+    "Created branch codex/ot74-audience-reconciliation from the exact immutable base.",
+    "Persisted the OT-74 execution packet before implementation work."
+  ],
+  "remaining_steps": [
+    "Verify migration namespace 1200-1299 is free.",
+    "Implement feature-local legacy audience reconciliation schema, domain, import/dry-run tooling, contracts, components, and tests.",
+    "Record evidence, validation results, OT-80 wiring instructions, commits, push, and draft PR."
+  ],
+  "blockers": [],
+  "last_safe_command": "git checkout -b codex/ot74-audience-reconciliation dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "test_results": [],
+  "external_mutation_counts": {
+    "production_imports": 0,
+    "production_sends": 0,
+    "production_deployments": 0,
+    "provider_network_calls": 0,
+    "production_database_writes": 0
+  },
+  "safety_constraints": [
+    "Production import, send, deployment, provider mutation, and production database writes are forbidden.",
+    "Use only synthetic fixtures; do not ingest real spreadsheets or print row contents.",
+    "Feature-local APIs and components remain unmounted for OT-80.",
+    "Do not edit app.ts, AppShell, central CRM entry, shared barrels, root packages, provider workers, or OT-71/OT-72 paths."
+  ],
+  "commits": [],
+  "pushes": [],
+  "pull_request": null
+}

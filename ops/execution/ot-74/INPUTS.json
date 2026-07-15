@@ -1,0 +1,21 @@
+{
+  "task_id": "OT-74",
+  "repository": "webcraft-media/onetimev2",
+  "prompt_file": "ops/execution/ot-74/ORIGINAL-PROMPT.md",
+  "received_prompt_source": "C:\\Users\\User\\AppData\\Local\\Temp\\CODEX-NOW-03-OT74-AUDIENCE-IMPORT.md",
+  "immutable_base": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "target_branch": "codex/ot74-audience-reconciliation",
+  "pr_base": "codex/ot60r-recovery-convergence",
+  "allowed_inputs": [
+    "Synthetic CSV-shaped normalized fixtures",
+    "Synthetic XLSX-shaped normalized fixtures",
+    "Repository-local existing schema/contracts/tests"
+  ],
+  "forbidden_inputs": [
+    "Real spreadsheets",
+    "Raw production database rows",
+    "Provider payloads",
+    "Campaign send lists",
+    "Secrets or destination values"
+  ]
+}
