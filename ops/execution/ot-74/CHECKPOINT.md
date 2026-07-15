@@ -30,3 +30,13 @@ and migration patterns, then implement only feature-local OT-74 files.
 - Generated counts-only evidence under `ops/evidence/ot-74/`.
 - Product central wiring edited: no.
 - External mutations: zero.
+
+## 2026-07-15 Remote Registration Merge
+
+- Remote branch `origin/codex/ot74-audience-reconciliation` contained a
+  separate initial packet commit `c776bdf`.
+- Merged that branch as `af55e46`.
+- Resolved duplicate packet-file conflicts by keeping the local verified
+  implementation packet/evidence.
+- Preserved the remote `ops/execution/registry.json` OT74 entry.
+- Force push avoided.

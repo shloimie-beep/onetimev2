@@ -12,7 +12,7 @@
   "phase": "tests_and_evidence",
   "status": "building",
   "created_at": "2026-07-15T09:34:16+03:00",
-  "updated_at": "2026-07-15T09:50:00+03:00",
+  "updated_at": "2026-07-15T09:58:00+03:00",
   "completed_steps": [
     "Read OT-74 prompt from the temp handoff file.",
     "Verified repository identity through C:\\Users\\User\\OneTimeOneTime origin https://github.com/webcraft-media/onetimev2.git.",
@@ -24,7 +24,8 @@
     "Verified migration namespace 1200-1299 is free in the immutable base.",
     "Added feature-local audience contracts, parser, reconciliation dry-run domain, 1200 migration, unmounted API router, unmounted React preview component, synthetic fixtures, dry-run CLI, focused tests, and counts-only evidence.",
     "Generated ops/evidence/ot-74/dry-run-report.md and .json from 10000 synthetic rows.",
-    "Verified no deployment, production database write, provider mutation, message send, payment, DNS change, real user creation, BNA repository modification, or real spreadsheet ingestion was performed."
+    "Verified no deployment, production database write, provider mutation, message send, payment, DNS change, real user creation, BNA repository modification, or real spreadsheet ingestion was performed.",
+    "Merged remote OT74 initial packet registration at af55e46 without overwriting the local verified packet/evidence files; preserved the remote ops/execution/registry.json OT74 entry."
   ],
   "phase_matrix": {
     "initial_execution_packet": "done",
@@ -35,7 +36,21 @@
     "tests_and_evidence": "done",
     "push_and_draft_pr": "pending"
   },
-  "last_safe_command": "npx prettier --check apps/web/src/client/app/audience/AudienceImportPreview.tsx apps/web/src/client/app/audience/audience-import-preview.css apps/web/src/server/features/audience/router.ts ops/evidence/ot-74/dry-run-report.json ops/evidence/ot-74/dry-run-report.md packages/contracts/src/audience/schemas.ts packages/domain/src/audience/dry-run.ts packages/domain/src/audience/parser.ts packages/domain/src/audience/reconciliation.ts scripts/audience-reconciliation-dry-run.ts scripts/support/audience-synthetic-fixtures.ts tests/integration/audience/audience-migration.test.ts tests/unit/audience/audience-reconciliation.test.ts",
+  "last_safe_command": "git commit -m \"merge remote OT74 packet registration\"",
+  "commits": [
+    {
+      "sha": "4b21442",
+      "message": "chore(ot74): record audience reconciliation packet"
+    },
+    {
+      "sha": "9a3cf12",
+      "message": "feat(ot74): add audience reconciliation foundation"
+    },
+    {
+      "sha": "af55e46",
+      "message": "merge remote OT74 packet registration"
+    }
+  ],
   "external_mutation_counts": {
     "deployments": 0,
     "production_database_writes": 0,
