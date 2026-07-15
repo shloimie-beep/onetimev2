@@ -1,0 +1,56 @@
+{
+  "run_id": "OT-81",
+  "created_at": "2026-07-15T13:45:00+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot81-dayone-certification-and-staging",
+  "branch": "codex/ot81-dayone-certification-and-staging",
+  "prompt_source": {
+    "path": "ops/codex-runs/OT-81/ORIGINAL-PROMPT.md",
+    "sha256": "8307ABF28DC5E6045945BB401FA38033D5D315A88A47665047196311168E2234",
+    "byte_count": 25520,
+    "verbatim_copy_required": true
+  },
+  "source": {
+    "base_branch": "origin/codex/ot80-one-shot-final-convergence",
+    "resolved_base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+    "recorded_product_anchor_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
+    "anchor_contained_in_resolved_base": true,
+    "pr_number": 23,
+    "pr_url": "https://github.com/webcraft-media/onetimev2/pull/23",
+    "pr_head_branch": "codex/ot80-one-shot-final-convergence",
+    "pr_base_branch": "codex/ot60r-recovery-convergence",
+    "pr_was_draft_at_intake": true,
+    "pr_merge_state_at_intake": "CLEAN"
+  },
+  "starting_certification": {
+    "report_path": "ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json",
+    "expected_start_status": "not certified with ten blockers"
+  },
+  "required_inspection_paths": [
+    "ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json",
+    "ops/day-one/day-one-capability-registry.json",
+    "ops/day-one/release-manifest.example.json",
+    "ops/execution/ot-80/RELEASE-MANIFEST.json",
+    "ops/execution/ot-80/BLOCKERS.json",
+    "ops/execution/ot-80/RESUME.md",
+    "ops/release/ot75"
+  ],
+  "external_action_permissions": {
+    "authorized_after_strict_local_ci_certification": [
+      "deploy exact OT81 SHA to isolated One Time staging if Railway credentials and resources exist",
+      "apply migrations only to isolated One Time staging database if configured",
+      "bootstrap protected activation for one_time_owner and one_time_admin without committing secrets"
+    ],
+    "forbidden": [
+      "production deployment",
+      "production DNS or root domain changes",
+      "BNA project/service changes",
+      "production or legacy contact reads or mutations",
+      "live Stripe charge",
+      "broad real email send",
+      "broad real WhatsApp send",
+      "broad real Telegram send",
+      "committing passwords, tokens, activation URLs, recovery emails, phone numbers, or secret values"
+    ]
+  }
+}

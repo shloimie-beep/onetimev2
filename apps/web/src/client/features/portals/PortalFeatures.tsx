@@ -107,7 +107,13 @@ export function ParentPortalFeature({
         <div className="ot-empty">
           <h2>No learners yet</h2>
           <p>Add a learner to begin protected class access, progress, and updates.</p>
-          <button type="button" className="ot-button ot-button-primary" onClick={onCreateLearner}>
+          <button
+            type="button"
+            className="ot-button ot-button-primary"
+            disabled={!onCreateLearner}
+            title={onCreateLearner ? 'Add learner' : 'Learner creation is unavailable in V1'}
+            onClick={onCreateLearner}
+          >
             Add learner
           </button>
         </div>
@@ -135,7 +141,7 @@ export function ParentPortalFeature({
               className="ot-icon-button"
               aria-label="Add learner"
               title="Add learner"
-              disabled={dashboard.household.learner_limit_reached}
+              disabled={dashboard.household.learner_limit_reached || !onCreateLearner}
               onClick={onCreateLearner}
             >
               +
@@ -179,6 +185,8 @@ export function ParentPortalFeature({
                 <button
                   type="button"
                   className="ot-button"
+                  disabled={!onEditLearner}
+                  title={onEditLearner ? 'Edit learner' : 'Learner editing is unavailable in V1'}
                   onClick={() => onEditLearner?.(selectedLearner.learner_key)}
                 >
                   Edit
@@ -187,6 +195,10 @@ export function ParentPortalFeature({
                   <button
                     type="button"
                     className="ot-button"
+                    disabled={!onRestoreLearner}
+                    title={
+                      onRestoreLearner ? 'Restore learner' : 'Learner restore is unavailable in V1'
+                    }
                     onClick={() => onRestoreLearner?.(selectedLearner.learner_key)}
                   >
                     Restore
@@ -195,6 +207,10 @@ export function ParentPortalFeature({
                   <button
                     type="button"
                     className="ot-button"
+                    disabled={!onArchiveLearner}
+                    title={
+                      onArchiveLearner ? 'Archive learner' : 'Learner archive is unavailable in V1'
+                    }
                     onClick={() => onArchiveLearner?.(selectedLearner.learner_key)}
                   >
                     Archive
@@ -409,6 +425,8 @@ function StudentAccessControls({
             type="button"
             className={action === 'suspend' ? 'ot-button ot-button-danger' : 'ot-button'}
             key={action}
+            disabled={!onAction}
+            title={onAction ? label(action) : 'Student access action is unavailable'}
             onClick={() => onAction?.(learner.learner_key, action)}
           >
             {label(action)}
@@ -449,6 +467,8 @@ function ClassSummary({
             <button
               type="button"
               className="ot-button ot-button-primary"
+              disabled={!onLaunch}
+              title={onLaunch ? item.launch_action.label : 'Class launch is unavailable'}
               onClick={() => {
                 if (!item.launch_action || !onLaunch) return;
                 if (learner) {
@@ -486,7 +506,13 @@ function MaterialsSummary({
       <h3 id="materials-heading">Materials</h3>
       <ContentList items={[...library, ...reviewSheets]} />
       <HelperState helper={helper} />
-      <button type="button" className="ot-button" onClick={onPreviewSupport}>
+      <button
+        type="button"
+        className="ot-button"
+        disabled={!onPreviewSupport}
+        title={onPreviewSupport ? 'Technical support' : 'Technical support is unavailable'}
+        onClick={onPreviewSupport}
+      >
         Technical support
       </button>
     </section>
@@ -512,7 +538,13 @@ function ContentList({
               <span>{label(item.item_type)}</span>
             </div>
             {action && (
-              <button type="button" className="ot-button" onClick={() => onOpen?.(action)}>
+              <button
+                type="button"
+                className="ot-button"
+                disabled={!onOpen}
+                title={onOpen ? action.label : 'Content opening is unavailable'}
+                onClick={() => onOpen?.(action)}
+              >
                 Open
               </button>
             )}

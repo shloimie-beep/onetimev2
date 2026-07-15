@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-07-15T12:09:26.669Z",
+  "sample_count": 15,
+  "results": [
+    {
+      "label": "landing-360x800",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "signup-360x800",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "landing-390x844",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "signup-390x844",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "landing-768x1024",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "signup-768x1024",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "landing-1440x1000",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "signup-1440x1000",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "landing-reduced-motion",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "crm-mobile",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "crm-rtl-drawer-keyboard",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "crm-200-percent-reflow",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "parent-portal-ready",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "student-portal-ready",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    },
+    {
+      "label": "crm-error-state",
+      "axe_violations": 0,
+      "horizontal_overflow": false,
+      "undersized_targets": 0
+    }
+  ]
+}

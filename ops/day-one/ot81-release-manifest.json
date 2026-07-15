@@ -1,0 +1,485 @@
+{
+  "version": 1,
+  "manifest_id": "OT-81-day-one-release-manifest",
+  "repository": "webcraft-media/onetimev2",
+  "source": {
+    "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+    "base_branch": "codex/ot80-one-shot-final-convergence",
+    "resolved_base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+    "product_anchor_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
+    "candidate_branch": "codex/ot81-dayone-certification-and-staging",
+    "notes": "OT81 release manifest. Product changes are scoped to Day-One certification closure; deployment and external mutation remain forbidden until strict certification passes."
+  },
+  "format_preservation": {
+    "verbatim_prompt_path": "ops/codex-runs/OT-81/ORIGINAL-PROMPT.md",
+    "prompt_sha256": "8307ABF28DC5E6045945BB401FA38033D5D315A88A47665047196311168E2234",
+    "prettierignore_entry": "ops/codex-runs/**/ORIGINAL-PROMPT.md",
+    "reason": "OT-81 requires ORIGINAL-PROMPT.md to preserve the full source prompt verbatim; CI format must ignore only these prompt-source files instead of rewriting provenance."
+  },
+  "permissions": {
+    "product_code_change_allowed": true,
+    "deployment_allowed": false,
+    "external_mutation_allowed": false,
+    "production_database_access_allowed": false
+  },
+  "audit_policy": {
+    "audit_exit_policy": "audit exits 0 when the harness is valid and scoped, even if capabilities are missing",
+    "certify_exit_policy": "certify exits nonzero for every missing Day-One release blocker",
+    "no_fake_passes": true
+  },
+  "static_scan_files": [
+    "apps/web/src/server/app.ts",
+    "apps/web/src/client/public/public-entry.ts",
+    "apps/web/src/client/app/crm-entry.tsx",
+    "apps/worker/src/main/index.ts"
+  ],
+  "routes": [
+    {
+      "id": "landing",
+      "method": "GET",
+      "path": "/",
+      "source_files": [
+        "scripts/build-public-pages.ts",
+        "apps/web/src/client/public/public-entry.ts"
+      ],
+      "source_patterns": ["index.html"]
+    },
+    {
+      "id": "signup",
+      "method": "GET",
+      "path": "/signup",
+      "source_files": [
+        "scripts/build-public-pages.ts",
+        "apps/web/src/client/public/public-entry.ts"
+      ],
+      "source_patterns": ["signup.html"]
+    },
+    {
+      "id": "lead_post",
+      "method": "POST",
+      "path": "/api/v1/leads",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/leads'"]
+    },
+    {
+      "id": "interest_compat_post",
+      "method": "POST",
+      "path": "/api/one-time/interest",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/one-time/interest'"]
+    },
+    {
+      "id": "login",
+      "method": "GET",
+      "path": "/login",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/login'"]
+    },
+    {
+      "id": "auth_login",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/login'"]
+    },
+    {
+      "id": "mfa_challenge",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/challenge",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/mfa/challenge'"]
+    },
+    {
+      "id": "mfa_recovery_replace",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/recovery/replace",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/mfa/recovery/replace'"]
+    },
+    {
+      "id": "mfa_revoke",
+      "method": "POST",
+      "path": "/api/v1/auth/mfa/revoke",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/auth/mfa/revoke'"]
+    },
+    {
+      "id": "crm_app",
+      "method": "GET",
+      "path": "/app/crm",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get(/^\\/app\\/crm"]
+    },
+    {
+      "id": "crm_contacts",
+      "method": "GET",
+      "path": "/api/v1/crm/contacts",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/crm/contacts'"]
+    },
+    {
+      "id": "crm_contacts_search",
+      "method": "POST",
+      "path": "/api/v1/crm/contacts/search",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/crm/contacts/search'"]
+    },
+    {
+      "id": "crm_contact_detail",
+      "method": "GET",
+      "path": "/api/v1/crm/contacts/:contactId",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/crm/contacts/:contactId'"]
+    },
+    {
+      "id": "communications_threads",
+      "method": "GET",
+      "path": "/api/v1/communications",
+      "source_files": ["apps/web/src/server/communications/register.ts"],
+      "source_patterns": ["app.get('/api/v1/communications'"]
+    },
+    {
+      "id": "classes_list",
+      "method": "GET",
+      "path": "/api/v1/classes",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/classes'"]
+    },
+    {
+      "id": "class_detail",
+      "method": "GET",
+      "path": "/api/v1/classes/:occurrenceKey",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/classes/:occurrenceKey'"]
+    },
+    {
+      "id": "content_library",
+      "method": "GET",
+      "path": "/api/v1/content/library",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/content/library'"]
+    },
+    {
+      "id": "content_library_detail",
+      "method": "GET",
+      "path": "/api/v1/content/library/:itemKey",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.get('/api/v1/content/library/:itemKey'"]
+    },
+    {
+      "id": "content_outcomes",
+      "method": "POST",
+      "path": "/api/v1/content/outcomes",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["app.post('/api/v1/content/outcomes'"]
+    },
+    {
+      "id": "parent_portal_shell",
+      "method": "GET",
+      "path": "/app/parent",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["/^\\/app\\/parent"]
+    },
+    {
+      "id": "student_portal_shell",
+      "method": "GET",
+      "path": "/app/student",
+      "source_files": ["apps/web/src/server/app.ts"],
+      "source_patterns": ["/^\\/app\\/student"]
+    },
+    {
+      "id": "parent_portal_dashboard",
+      "method": "GET",
+      "path": "/api/v1/portals/parent/dashboard",
+      "source_files": ["apps/web/src/server/features/portals/routers.ts"],
+      "source_patterns": ["'/dashboard'"]
+    },
+    {
+      "id": "student_portal_dashboard",
+      "method": "GET",
+      "path": "/api/v1/portals/student/dashboard",
+      "source_files": ["apps/web/src/server/features/portals/routers.ts"],
+      "source_patterns": ["'/dashboard'"]
+    },
+    {
+      "id": "student_class_launch",
+      "method": "POST",
+      "path": "/api/v1/portals/student/classes/:classKey/launch",
+      "source_files": ["apps/web/src/server/features/portals/routers.ts"],
+      "source_patterns": ["'/classes/:classKey/launch'"]
+    }
+  ],
+  "commands": {
+    "secret_scan": {
+      "command": "npm run secret:scan",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "format": {
+      "command": "npm run format",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "lint": {
+      "command": "npm run lint",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "unit": {
+      "command": "npm run unit",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "integration": {
+      "command": "npm run integration",
+      "safe_in_modes": ["audit", "certify"],
+      "external_mutation": false
+    },
+    "e2e": {
+      "command": "npm run e2e",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    },
+    "accessibility": {
+      "command": "npm run accessibility",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    },
+    "performance": {
+      "command": "npm run performance",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    },
+    "db_verify": {
+      "command": "npm run db:verify",
+      "safe_in_modes": ["certify"],
+      "external_mutation": false
+    }
+  },
+  "capabilities": {
+    "family_signup_atomic_crm": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/e2e/crm-core.spec.ts",
+        "tests/integration/auth-crm.test.ts"
+      ]
+    },
+    "school_signup_lead_only": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/lead-capture.test.ts",
+        "tests/integration/classes/class-fulfillment.test.ts",
+        "ops/evidence/ot-81/blocker-dispositions.json"
+      ]
+    },
+    "owner_admin_mfa_role_denials": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": ["tests/integration/auth-crm.test.ts"]
+    },
+    "crm_search_cards_tags_detail_communications": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/e2e/crm-core.spec.ts",
+        "tests/integration/communications/api.test.ts",
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "ops/evidence/ot-44/READ-ONLY-PROOF.md"
+      ]
+    },
+    "class_reminder_provider_off_launch": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/integration/classes/class-fulfillment.test.ts",
+        "tests/integration/delivery/outbox-pipeline.test.ts",
+        "ops/execution/ot-80/COMMUNICATIONS-INTEGRATION-DECISIONS.md"
+      ]
+    },
+    "content_review_publish_entitled_library": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/integration/content/content-library.test.ts",
+        "packages/domain/src/content/service.ts"
+      ]
+    },
+    "parent_household_student_exactly_one_learner": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/ot-52/portal-router.test.ts",
+        "tests/ot-52/portal-services.test.ts",
+        "ops/evidence/ot-52/LEARNER-LIMIT-CONCURRENCY.md",
+        "ops/evidence/ot-52/SIBLING-ISOLATION.md"
+      ]
+    },
+    "provider_default_off_no_dead_action": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "ops/day-one/visible-action-registry.json",
+        "tests/unit/ot72-provider-adapters.test.ts",
+        "tests/integration/ot72-provider-truth.test.ts",
+        "tests/ot-52/portal-ui.test.ts",
+        "packages/domain/src/billing/network-guard.ts"
+      ]
+    },
+    "visible_action_registry_handler_audit": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "ops/day-one/visible-action-registry.json",
+        "tests/unit/day-one/visible-action-registry.test.ts",
+        "tests/integration/dashboard/owner-dashboard.test.ts"
+      ]
+    },
+    "responsive_a11y_rtl_reflow_reduced_motion": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/accessibility/ot81-day-one-matrix.spec.ts",
+        "ops/evidence/ot-81/responsive-accessibility-matrix.json",
+        "tests/accessibility/public-a11y.spec.ts"
+      ]
+    },
+    "performance_30_sample_budgets": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "tests/performance/ot81-day-one-performance.spec.ts",
+        "ops/evidence/ot-81/performance-30-sample.json",
+        "scripts/check-bundles.ts"
+      ]
+    },
+    "secret_pii_provider_url_bna_leakage": {
+      "status": "present_with_static_and_command_evidence",
+      "evidence_paths": [
+        "scripts/secret-scan.mjs",
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/e2e/crm-core.spec.ts"
+      ]
+    },
+    "source_migrations_readiness_worker_rollback": {
+      "status": "present_with_existing_test_evidence",
+      "evidence_paths": [
+        "ops/evidence/ot-81/migration-ledger.json",
+        "ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+        "ops/release/ot75/runbooks/rollback-and-source-readback.md",
+        "ops/release/ot75/runbooks/staging-canary.md",
+        "apps/worker/src/main/index.ts"
+      ]
+    }
+  },
+  "budgets": {
+    "responsive_matrix": {
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "requires_no_horizontal_overflow": true
+    },
+    "performance": {
+      "sample_count": 30,
+      "lcp_ms_max": 2500,
+      "cls_max": 0.1,
+      "public_js_raw_bytes_max": 45000,
+      "public_css_raw_bytes_max": 35000
+    },
+    "accessibility": {
+      "axe_violations_max": 0,
+      "keyboard_required": true,
+      "rtl_required": true,
+      "reflow_200_percent_required": true,
+      "reduced_motion_required": true
+    }
+  },
+  "migrations": [
+    {
+      "id": "0001",
+      "path": "packages/db/migrations/0001_onetime_lead_slice.sql"
+    },
+    {
+      "id": "0002",
+      "path": "packages/db/migrations/0002_crm_auth_core.sql"
+    },
+    {
+      "id": "0003",
+      "path": "packages/db/migrations/0003_ot27_security_crm_repair.sql"
+    },
+    {
+      "id": "0004",
+      "path": "packages/db/migrations/0004_delivery_worker_claim_index.sql"
+    },
+    {
+      "id": "1000",
+      "path": "packages/db/migrations/1000_ot42_crm_module_v1.sql"
+    },
+    {
+      "id": "1100",
+      "path": "packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql"
+    },
+    {
+      "id": "1201",
+      "path": "packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql"
+    },
+    {
+      "id": "1300",
+      "path": "packages/db/migrations/1300_ot46_billing_foundation.sql"
+    },
+    {
+      "id": "1400",
+      "path": "packages/db/migrations/1400_ot71_content_library.sql"
+    },
+    {
+      "id": "1500",
+      "path": "packages/db/migrations/1500_ot52_portal_households_learners.sql"
+    },
+    {
+      "id": "1600",
+      "path": "packages/db/migrations/1600_ot51_telegram_bot_foundation.sql"
+    },
+    {
+      "id": "1700",
+      "path": "packages/db/migrations/1700_ot71_account_lifecycle.sql"
+    },
+    {
+      "id": "1800",
+      "path": "packages/db/migrations/1800_ot72_provider_truth.sql"
+    }
+  ],
+  "worker": {
+    "entrypoint": "apps/worker/src/main/index.ts",
+    "safe_mode_expected": "sink_or_mock_for_day_one_qa",
+    "provider_default_off": true
+  },
+  "rollback": {
+    "status": "present_with_existing_test_evidence",
+    "evidence_paths": [
+      "ops/release/ot75/runbooks/rollback-and-source-readback.md",
+      "ops/evidence/ot-81/day-one-release-evidence.json"
+    ],
+    "required_for_certify": true
+  },
+  "change_scope": {
+    "product_code_changes_are_release_scoped": true,
+    "scope_base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+    "allowed_paths": [
+      "apps/web/src/client/features/portals/PortalFeatures.tsx",
+      "ops/codex-runs/OT-81/",
+      "ops/day-one/",
+      "ops/evidence/ot-81/",
+      ".prettierignore",
+      "scripts/day-one-certification-harness.mjs",
+      "scripts/ot81/",
+      "tests/accessibility/ot81-day-one-matrix.spec.ts",
+      "tests/e2e/landing-signup.spec.ts",
+      "tests/ot-52/portal-ui.test.ts",
+      "tests/performance/ot81-day-one-performance.spec.ts",
+      "tests/support/test-server.ts",
+      "tests/unit/day-one/"
+    ],
+    "forbidden_paths": [
+      "railway.json",
+      ".github/workflows/ci.yml",
+      ".github/workflows/ot37-postgres-assurance.yml",
+      "packages/db/migrations/"
+    ]
+  }
+}

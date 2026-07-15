@@ -1,0 +1,72 @@
+{
+  "schema_version": "onetime.ot81.migration_ledger.v1",
+  "generated_at": "2026-07-15T11:50:43.723Z",
+  "source_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+  "migrations": [
+    {
+      "id": "0001",
+      "path": "packages/db/migrations/0001_onetime_lead_slice.sql",
+      "sha256": "c6290bffe0fd832332d6c72f44c7499bf4ab56155e70875ff1d2c76d9fa667c0"
+    },
+    {
+      "id": "0002",
+      "path": "packages/db/migrations/0002_crm_auth_core.sql",
+      "sha256": "be47978a67c11f058bea4e2216305ca76e3eeb4e52af4cf2e931b3d9b7c3b09c"
+    },
+    {
+      "id": "0003",
+      "path": "packages/db/migrations/0003_ot27_security_crm_repair.sql",
+      "sha256": "e80cd02df3d28ecf6a2882850e2e96628191bf87734de4365be7141d321eef24"
+    },
+    {
+      "id": "0004",
+      "path": "packages/db/migrations/0004_delivery_worker_claim_index.sql",
+      "sha256": "ad0dd9dbf9c1b13b6fc40e1458d182ee8f9ab81fad5c4d1639793cf8fd706099"
+    },
+    {
+      "id": "1000",
+      "path": "packages/db/migrations/1000_ot42_crm_module_v1.sql",
+      "sha256": "8ed8b4961afe2debb59b70d72a3bff9189e426a52be3d500de499293ba614634"
+    },
+    {
+      "id": "1100",
+      "path": "packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+      "sha256": "d39b53cd17305b69e48f42ed77cc2e85914f18679b99a4ec1bbcf5c9e3e652bf"
+    },
+    {
+      "id": "1201",
+      "path": "packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+      "sha256": "d6de3ff23508af19f3194dd5fb4443d8b1830a4061caaefcd7598263fb447d01"
+    },
+    {
+      "id": "1300",
+      "path": "packages/db/migrations/1300_ot46_billing_foundation.sql",
+      "sha256": "f9085cd37713f827b991cde7cebcb3dd2f4624ca5a7298b5a59be4394e7f1be9"
+    },
+    {
+      "id": "1400",
+      "path": "packages/db/migrations/1400_ot71_content_library.sql",
+      "sha256": "16f8ae193d84c3767eab4e4d182dc47c1ded6593ea7c43261b6b4d04d2397dad"
+    },
+    {
+      "id": "1500",
+      "path": "packages/db/migrations/1500_ot52_portal_households_learners.sql",
+      "sha256": "850799158f4d9eeb2b7a23fc816e6697b73d8f1ce6d580893e3cd4992be4f0c8"
+    },
+    {
+      "id": "1600",
+      "path": "packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+      "sha256": "0a2b4955ddeb2f196cdbc265f5e883d8942e1943a4705afb14bfb871f20812d4"
+    },
+    {
+      "id": "1700",
+      "path": "packages/db/migrations/1700_ot71_account_lifecycle.sql",
+      "sha256": "54883ebabedd88534d07abaff0375f6a68c92853902a8ed840cef47cda6a0423"
+    },
+    {
+      "id": "1800",
+      "path": "packages/db/migrations/1800_ot72_provider_truth.sql",
+      "sha256": "be3106d84bf12fd9833cbe9a528ae731670a86294e3b468292c6241c4ecc1586"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "run_id": "OT-81",
+  "status": "READY_FOR_STAGING_AUTH",
+  "phase": "strict_certified_staging_auth_blocked",
+  "updated_at": "2026-07-15T14:52:34+03:00",
+  "base_branch": "origin/codex/ot80-one-shot-final-convergence",
+  "base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+  "current_head_sha": "pending_final_commit",
+  "strict_certification": {
+    "status": "certified",
+    "latest_report": "ops/evidence/ot-81/certification/day-one-certify-report.json",
+    "latest_markdown_report": "ops/evidence/ot-81/certification/day-one-certify-report.md",
+    "gate_summary": {
+      "total": 13,
+      "pass": 13,
+      "missing_capability": 0,
+      "blocker": 0
+    }
+  },
+  "staging": {
+    "status": "READY_FOR_STAGING_AUTH",
+    "url": null,
+    "external_mutations_performed": [],
+    "blockers": [
+      "Railway CLI is linked to production context, not an isolated staging project/environment.",
+      "No OT75/OT81 staging environment variable names are present in this shell.",
+      "No local PostgreSQL DATABASE_URL is present for npm run db:verify.",
+      "No local PostgreSQL admin listener was available at 127.0.0.1:5432 for the OT-37 assurance harness."
+    ],
+    "checklist": "ops/evidence/ot-81/STAGING-AUTH-CHECKLIST.md"
+  },
+  "blockers": {
+    "starting_count": 10,
+    "closed": [
+      "school_signup_lead_only_acknowledgement",
+      "crm_readonly_comms_capability_route_evidence",
+      "class_access_reminder_provider_default_off",
+      "content_review_publish_entitled_library_evidence",
+      "parent_household_student_identity_separation",
+      "provider_dependent_visible_action_readiness",
+      "visible_action_registry",
+      "responsive_accessibility_evidence",
+      "integrated_performance_measurements",
+      "release_migration_worker_rollback_evidence"
+    ],
+    "open": []
+  },
+  "verification": {
+    "passed": [
+      "npm run secret:scan",
+      "npx prettier --check <OT81 touched files>",
+      "npm run lint",
+      "npm run typecheck",
+      "npm run unit",
+      "npm run integration",
+      "npx vitest run tests/ot-52/portal-ui.test.ts",
+      "npm run e2e",
+      "npm run accessibility",
+      "npm run performance",
+      "git diff --check",
+      "node scripts/day-one-certification-harness.mjs certify --manifest ops/day-one/ot81-release-manifest.json --scope-base 741af0c08ee1d43be4e220b7c6e4c77a2330adc2 --out-dir ops/evidence/ot-81/certification"
+    ],
+    "blocked": [
+      "npm run format: inherited repository-wide Prettier baseline reports 340 files outside OT81 scope.",
+      "npm run db:verify: DATABASE_URL is not present.",
+      "npx tsx scripts/postgres-assurance/run.ts: local PostgreSQL refused 127.0.0.1:5432."
+    ]
+  },
+  "notes": [
+    "BNA worktree is not the target and was not modified for OT81.",
+    "Strict local Day-One certification passed.",
+    "No production, DNS, provider, payment, live-send, Railway mutation, or production database mutation was performed.",
+    "Final Git head SHA is recorded in the assistant closeout after commit/push because a committed file cannot self-reference its own commit SHA."
+  ]
+}
