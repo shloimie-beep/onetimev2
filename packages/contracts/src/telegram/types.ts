@@ -126,7 +126,7 @@ export type BotReply = {
 };
 
 export type BotTransportAdapter = {
-  mode: 'mock';
+  mode: 'mock' | 'telegram';
   sendReply(reply: BotReply): Promise<void>;
 };
 

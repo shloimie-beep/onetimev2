@@ -29,6 +29,7 @@ type DbContext = {
   adminConfig: pg.PoolConfig;
   databaseName: string;
   pool: pg.Pool;
+  markTeardownStarted: () => void;
 };
 
 type PlanNodeSummary = {
@@ -211,6 +212,7 @@ async function main() {
     );
   } finally {
     for (const context of databaseContexts.reverse()) {
+      context.markTeardownStarted();
       await context.pool.end();
       await dropEphemeralDatabase(adminPool, context.databaseName);
     }
@@ -269,7 +271,22 @@ async function createEphemeralDatabase(
     idleTimeoutMillis: 5_000,
     statement_timeout: 30_000,
   });
-  return { adminConfig, databaseName, pool };
+  let teardownStarted = false;
+  pool.on('error', (error: unknown) => {
+    if (teardownStarted && isPgCode(error, '57P01')) return;
+    process.stderr.write(
+      `OT-37 PostgreSQL assurance pool error (${databaseName}): ${errorMessage(error)}\n`,
+    );
+    process.exitCode = 1;
+  });
+  return {
+    adminConfig,
+    databaseName,
+    pool,
+    markTeardownStarted: () => {
+      teardownStarted = true;
+    },
+  };
 }
 
 async function dropEphemeralDatabase(adminPool: pg.Pool, databaseName: string) {
