@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "state_root": "ops/codex-runs/OT-87/",
+  "allowed_statuses": [
+    "INITIALIZED",
+    "IMPLEMENTING",
+    "LOCAL_VERIFIED",
+    "WAITING_FOR_STRIPE_TEST_RESOURCES",
+    "CANARY_VERIFIED",
+    "CANARY_FAILED_SAFE",
+    "PUBLISHED_DRAFT_PR",
+    "BLOCKED_BASE_REF_MISSING",
+    "BLOCKED_TEST_DATABASE",
+    "BLOCKED_SECURITY_GUARD"
+  ],
+  "required_files": [
+    "ORIGINAL-PROMPT.md",
+    "STATE.json",
+    "BASE-RESOLUTION.json",
+    "INPUTS.json",
+    "CHECKPOINT.md",
+    "DECISIONS.md",
+    "IMPLEMENTED.md",
+    "REMAINING.md",
+    "BLOCKERS.json",
+    "TEST-RESULTS.md",
+    "MIGRATION-CHECKSUMS.json",
+    "EXTERNAL-MUTATIONS.json",
+    "CANARY-RESULTS.json",
+    "RESUME.md"
+  ],
+  "state_required_fields": [
+    "schema_version",
+    "task_id",
+    "status",
+    "repository",
+    "source_branch",
+    "source_sha",
+    "target_branch",
+    "head_sha",
+    "policy_id",
+    "policy_version",
+    "stripe_mode",
+    "live_stripe_charges_authorized",
+    "resource_validation",
+    "local_verification",
+    "canary_status",
+    "draft_pr",
+    "updated_at"
+  ],
+  "state_fixed_values": {
+    "repository": "webcraft-media/onetimev2",
+    "source_branch": "codex/ot83-household-portals-foundation",
+    "target_branch": "codex/ot87-stripe-test-entitlements",
+    "policy_id": "ot87-family-monthly-usd-67-v1",
+    "policy_version": "2026-07-15.1",
+    "stripe_mode": "test",
+    "live_stripe_charges_authorized": false
+  },
+  "redaction_rules": [
+    "No Stripe secret, webhook secret, raw Stripe ID, raw Stripe URL, webhook body, payment details, or customer PII.",
+    "Configuration inventory records names plus configured/not-configured only.",
+    "Provider evidence uses one-way fingerprints or categorical status.",
+    "Resume commands reference protected configuration names, never values."
+  ],
+  "checkpoint_minimums": [
+    "initial run packet before provider inspection",
+    "before and after each external TEST mutation group",
+    "after schema and migration verification",
+    "after local full-suite verification",
+    "after canaries or waiting-state decision",
+    "before push and after draft PR creation"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "created_at": "2026-07-15T19:26:10.6882207+03:00",
+  "inspection_boundary": "Created before protected Stripe configuration inspection.",
+  "server_only": {
+    "ONE_TIME_STRIPE_TEST_SECRET_KEY": false,
+    "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET": false,
+    "ONE_TIME_STRIPE_TEST_ACCOUNT_ID": false,
+    "ONE_TIME_STRIPE_TEST_PRODUCT_ID": false,
+    "ONE_TIME_STRIPE_TEST_PRICE_ID": false,
+    "ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID": false,
+    "ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID": false
+  },
+  "browser_safe_when_required": {
+    "ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY": false
+  },
+  "operational_gates": {
+    "LIVE_STRIPE_CHARGES_AUTHORIZED": false,
+    "ONE_TIME_STRIPE_TEST_RESOURCE_SETUP_AUTHORIZED": false,
+    "ONE_TIME_STRIPE_TEST_CANARY_AUTHORIZED": false,
+    "ONE_TIME_STRIPE_TEST_RECONCILIATION_APPLY_AUTHORIZED": false
+  },
+  "notes": [
+    "False means not configured in the pre-checkpoint inventory, not a request for values.",
+    "No raw secret, provider ID, provider URL, PII, or credential value is stored here."
+  ]
+}

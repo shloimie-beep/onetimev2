@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "status": "INITIALIZED",
+  "repository": "webcraft-media/onetimev2",
+  "source_branch": "codex/ot83-household-portals-foundation",
+  "source_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "target_branch": "codex/ot87-stripe-test-entitlements",
+  "head_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "policy_id": "ot87-family-monthly-usd-67-v1",
+  "policy_version": "2026-07-15.1",
+  "stripe_mode": "test",
+  "live_stripe_charges_authorized": false,
+  "resource_validation": {
+    "status": "not_checked",
+    "checked_at": null,
+    "reason": "Initial repo-backed checkpoint created before protected Stripe configuration inspection."
+  },
+  "local_verification": {
+    "status": "not_started",
+    "commands": []
+  },
+  "canary_status": {
+    "status": "not_started",
+    "reason": "Canaries require green local verification, resource validation, and explicit TEST-only gates."
+  },
+  "draft_pr": {
+    "status": "not_created",
+    "url": null
+  },
+  "updated_at": "2026-07-15T19:26:10.6882207+03:00"
+}

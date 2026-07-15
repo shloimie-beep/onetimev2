@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "status": "not_started",
+  "updated_at": "2026-07-15T19:26:10.6882207+03:00",
+  "live_stripe_charges_authorized": false,
+  "cases": [],
+  "notes": [
+    "Canaries require green local tests, read-only resource validation, TEST-only gates, and checkpoint push before each external mutation group."
+  ]
+}
