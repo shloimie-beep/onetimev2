@@ -14,7 +14,7 @@
 
 ## Resume Steps
 
-1. Confirm worktree: `C:\Users\User\OneTimeOneTime-ot81-dayone-certification-staging`.
+1. Confirm worktree: `C:\Users\User\OneTimeOneTime-ot81-dayone-certification-and-staging`.
 2. Review `FINAL-REPORT.md` and `ops/evidence/ot-81/STAGING-AUTH-CHECKLIST.md`.
 3. Provide or link a separate One Time Railway staging project, staging services, and staging PostgreSQL resource. Do not use the current production Railway context.
 4. Populate the missing env names listed in the checklist without committing values.

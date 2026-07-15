@@ -1,6 +1,6 @@
-# OT-81 Final Report
+# OT-81 — Final Report
 
-Status: `READY_FOR_STAGING_AUTH`.
+Status: `OT-81 CODE/CERTIFICATION COMPLETE - WAITING FOR ISOLATED STAGING`.
 
 ## Source
 
@@ -8,8 +8,10 @@ Status: `READY_FOR_STAGING_AUTH`.
 - Base SHA: `741af0c08ee1d43be4e220b7c6e4c77a2330adc2`
 - Draft PR #23: <https://github.com/webcraft-media/onetimev2/pull/23>
 - Recorded product anchor: `b753d50ca562c01cfa8619762254e70c90b0105f`
-- Final branch: `codex/ot81-dayone-certification-staging`
-- Final head SHA: recorded in the Codex closeout after commit/push.
+- Final branch: `codex/ot81-dayone-certification-and-staging`
+- Final head SHA: recorded in the Codex closeout and PR readback after the
+  final commit/push, because a committed file cannot self-reference its own
+  commit SHA without changing that SHA.
 
 ## Certification
 

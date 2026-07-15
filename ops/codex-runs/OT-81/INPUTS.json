@@ -2,8 +2,14 @@
   "run_id": "OT-81",
   "created_at": "2026-07-15T13:45:00+03:00",
   "repository": "webcraft-media/onetimev2",
-  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot81-dayone-certification-staging",
-  "branch": "codex/ot81-dayone-certification-staging",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot81-dayone-certification-and-staging",
+  "branch": "codex/ot81-dayone-certification-and-staging",
+  "prompt_source": {
+    "path": "ops/codex-runs/OT-81/ORIGINAL-PROMPT.md",
+    "sha256": "8307ABF28DC5E6045945BB401FA38033D5D315A88A47665047196311168E2234",
+    "byte_count": 25520,
+    "verbatim_copy_required": true
+  },
   "source": {
     "base_branch": "origin/codex/ot80-one-shot-final-convergence",
     "resolved_base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",

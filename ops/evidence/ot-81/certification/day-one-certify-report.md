@@ -4,8 +4,8 @@ Mode: `certify`
 Policy: `certify_strict`
 Result: `certified`
 Day-One certified: `true`
-Current branch: `codex/ot81-dayone-certification-staging`
-Current HEAD: `5644db81304048cc5c45700fb4340302193ac0af`
+Current branch: `codex/ot81-dayone-certification-and-staging`
+Current HEAD: `ff23c9af0c3e3de18cd991097eb6e66032b11546`
 
 ## Scope Proof
 

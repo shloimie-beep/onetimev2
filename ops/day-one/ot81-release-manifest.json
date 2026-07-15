@@ -7,8 +7,14 @@
     "base_branch": "codex/ot80-one-shot-final-convergence",
     "resolved_base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
     "product_anchor_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
-    "candidate_branch": "codex/ot81-dayone-certification-staging",
+    "candidate_branch": "codex/ot81-dayone-certification-and-staging",
     "notes": "OT81 release manifest. Product changes are scoped to Day-One certification closure; deployment and external mutation remain forbidden until strict certification passes."
+  },
+  "format_preservation": {
+    "verbatim_prompt_path": "ops/codex-runs/OT-81/ORIGINAL-PROMPT.md",
+    "prompt_sha256": "8307ABF28DC5E6045945BB401FA38033D5D315A88A47665047196311168E2234",
+    "prettierignore_entry": "ops/codex-runs/**/ORIGINAL-PROMPT.md",
+    "reason": "OT-81 requires ORIGINAL-PROMPT.md to preserve the full source prompt verbatim; CI format must ignore only these prompt-source files instead of rewriting provenance."
   },
   "permissions": {
     "product_code_change_allowed": true,
@@ -459,6 +465,7 @@
       "ops/codex-runs/OT-81/",
       "ops/day-one/",
       "ops/evidence/ot-81/",
+      ".prettierignore",
       "scripts/day-one-certification-harness.mjs",
       "scripts/ot81/",
       "tests/accessibility/ot81-day-one-matrix.spec.ts",
