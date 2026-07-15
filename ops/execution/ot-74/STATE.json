@@ -5,11 +5,11 @@
   "branch": "codex/ot74-audience-reconciliation",
   "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "target_base_branch": "codex/ot60r-recovery-convergence",
-  "current_head_sha": "5ce98ba73cf875543670bc789add9f21a10e5e9a",
-  "phase": "implementation_committed_pending_push",
+  "current_head_sha": "5886914",
+  "phase": "merge_resolution_validated_pending_commit",
   "status": "building",
   "created_at": "2026-07-15T09:29:35+03:00",
-  "updated_at": "2026-07-15T09:54:26+03:00",
+  "updated_at": "2026-07-15T10:03:14+03:00",
   "completed_steps": [
     "Cloned clean One Time repository from https://github.com/webcraft-media/onetimev2.git under the Codex work directory.",
     "Verified immutable base dfef7de2035e08f1ee72e0133ccf656fe7a74444 exists locally.",
@@ -17,15 +17,15 @@
     "Created branch codex/ot74-audience-reconciliation from the exact immutable base.",
     "Persisted the OT-74 execution packet before implementation work.",
     "Committed and pushed initial execution packet checkpoint c776bdf84678f7e381752839e8581d02d75f54f6.",
-    "Verified migration namespace 1200-1299 is free at the immutable base.",
-    "Added migration 1200_ot74_legacy_audience_reconciliation.sql for dry-run batches, row fingerprints, candidate matches, segment snapshots, rollback records, and feature-local audit events.",
-    "Added feature-local legacy audience contracts, dry-run parser/mapper/reconciliation service, Postgres repository, unmounted server router, unmounted CRM panel, and synthetic dry-run tool.",
-    "Added synthetic unit/integration coverage for duplicates, conflicting identities, same-name-only rows, missing email with phone normalization, replay, rollback, cross-account isolation, archived and suppressed contacts, school handling, and 10k rows.",
-    "Recorded OT-80 wiring instructions and local PostgreSQL 16 proof blocker evidence.",
-    "Committed implementation checkpoint 5ce98ba73cf875543670bc789add9f21a10e5e9a."
+    "Verified migration namespace 1200-1299 was free at the immutable base.",
+    "Added local legacy-audience migration 1201_ot74_legacy_audience_reconciliation.sql after preserving the remote 1200_ot74_audience_reconciliation.sql migration.",
+    "Added local feature contracts, domain dry-run service, Postgres repository, unmounted server router, unmounted CRM panel, synthetic dry-run tool, tests, and evidence.",
+    "Merged remote OT-74 implementation commits through 8dcc3db without force-pushing.",
+    "Resolved the migration namespace collision by preserving remote 1200 and moving local legacy-audience tables to 1201.",
+    "Completed post-merge validation: typecheck, merged OT-74 unit/integration tests, lint, secret scan, both dry-run tools, and build passed."
   ],
   "remaining_steps": [
-    "Push the validated implementation checkpoint.",
+    "Commit and push the merge-resolution checkpoint.",
     "Open a draft PR against codex/ot60r-recovery-convergence.",
     "Record final PR URL and head SHA."
   ],
@@ -40,47 +40,82 @@
     {
       "command": "npx vitest run --config vitest.unit.config.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts",
       "status": "passed",
-      "summary": "OT-74 unit tests passed 6 tests, including the 10k synthetic dry-run case and panel rendering."
+      "summary": "Pre-merge local OT-74 unit tests passed 6 tests."
     },
     {
       "command": "npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts",
       "status": "passed",
-      "summary": "OT-74 integration tests passed 8 tests through the migration harness, repository replay/rollback paths, and unmounted router guards."
+      "summary": "Pre-merge local OT-74 integration tests passed 8 tests."
     },
     {
       "command": "npm run typecheck",
       "status": "passed",
-      "summary": "TypeScript completed with no errors."
+      "summary": "Pre-merge TypeScript completed with no errors."
     },
     {
       "command": "npm run lint",
       "status": "passed",
-      "summary": "ESLint completed with no findings."
+      "summary": "Pre-merge ESLint completed with no findings."
     },
     {
       "command": "npm run secret:scan",
       "status": "passed",
-      "summary": "Secret scan passed across 323 repo text files."
-    },
-    {
-      "command": "npx prettier --check --ignore-unknown <OT-74 supported files>",
-      "status": "passed",
-      "summary": "All matched OT-74 supported files use Prettier code style. SQL migration was excluded because this repo has no SQL parser."
+      "summary": "Pre-merge secret scan passed across 328 repo text files."
     },
     {
       "command": "npx tsx scripts/ot74/audience-dry-run.ts --rows=10000",
       "status": "passed",
-      "summary": "Synthetic-only dry-run tool emitted aggregate counts/reasons for 10k rows with raw_row_contents_included=false and production_side_effects=false."
+      "summary": "Pre-merge synthetic-only dry-run tool emitted aggregate counts/reasons for 10k rows."
     },
     {
       "command": "npm run build",
       "status": "passed",
-      "summary": "Cleaned dist, built public/app Vite bundles and public pages, then completed typecheck."
+      "summary": "Pre-merge build passed."
     },
     {
       "command": "psql --version; docker --version",
       "status": "blocked",
       "summary": "Local PostgreSQL 16 proof is unavailable because psql and Docker are not installed in this desktop environment."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "Post-merge TypeScript completed with no errors."
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/audience/audience-reconciliation.test.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts",
+      "status": "passed",
+      "summary": "Post-merge merged OT-74 unit suites passed 17 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/audience/audience-migration.test.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts",
+      "status": "passed",
+      "summary": "Post-merge merged OT-74 integration suites passed 10 tests."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "Post-merge ESLint completed with no findings."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Post-merge secret scan passed across 360 repo text files."
+    },
+    {
+      "command": "npx tsx scripts/audience-reconciliation-dry-run.ts",
+      "status": "passed",
+      "summary": "Remote synthetic dry-run tool emitted summary JSON with zero production database writes, sends, provider mutations, and real spreadsheet ingestion."
+    },
+    {
+      "command": "npx tsx scripts/ot74/audience-dry-run.ts --rows=10000",
+      "status": "passed",
+      "summary": "Local synthetic-only dry-run tool emitted aggregate counts/reasons for 10k rows with raw_row_contents_included=false and production_side_effects=false."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Post-merge build passed, including public/app Vite builds, public page build, and typecheck."
     }
   ],
   "external_mutation_counts": {
@@ -106,6 +141,17 @@
       "sha": "5ce98ba73cf875543670bc789add9f21a10e5e9a",
       "message": "ot74 legacy audience reconciliation foundation",
       "pushed": false
+    },
+    {
+      "sha": "5886914",
+      "message": "ot74 record implementation checkpoint",
+      "pushed": false
+    },
+    {
+      "sha": "8dcc3db",
+      "message": "chore(ot74): record merge resolution state",
+      "pushed": true,
+      "source": "remote"
     }
   ],
   "pushes": [

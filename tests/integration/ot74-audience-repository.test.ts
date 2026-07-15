@@ -21,7 +21,7 @@ beforeEach(async () => {
 });
 
 describe('OT-74 legacy audience PostgreSQL repository', () => {
-  it('applies migration 1200 and records dry-run rows without mutating contacts', async () => {
+  it('applies migration 1201 and records dry-run rows without mutating contacts', async () => {
     const request = dryRunRequest([
       row({ source_row_number: 2, email: 'match@example.test', active_legacy_user: true }),
       row({ source_row_number: 3, email: 'new@example.test', active_legacy_user: true }),
@@ -48,7 +48,7 @@ describe('OT-74 legacy audience PostgreSQL repository', () => {
     expect(report.summary.do_not_contact_rows).toBe(1);
 
     await expectScalar(
-      "SELECT COUNT(*) FROM onetime.schema_migrations WHERE id = '1200_ot74_legacy_audience_reconciliation'",
+      "SELECT COUNT(*) FROM onetime.schema_migrations WHERE id = '1201_ot74_legacy_audience_reconciliation'",
       '1',
     );
     await expectScalar('SELECT COUNT(*) FROM onetime.legacy_audience_import_batches', '1');

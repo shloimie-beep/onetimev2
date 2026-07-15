@@ -21,7 +21,7 @@ OT-74 leaves all hooks unmounted by design.
 
 ## Database
 
-Run migration `1200_ot74_legacy_audience_reconciliation.sql` through the existing migration runner in a non-production test or CI environment before mounting.
+Run migrations `1200_ot74_audience_reconciliation.sql` and `1201_ot74_legacy_audience_reconciliation.sql` through the existing migration runner in a non-production test or CI environment before mounting.
 
 ## Must Not Do In OT-80 Without Separate Approval
 

@@ -1,5 +1,15 @@
 # OT-74 Original Prompt
 
+Source file:
+
+`C:\Users\User\AppData\Local\Temp\CODEX-NOW-03-OT74-AUDIENCE-IMPORT (1).md`
+
+Source SHA-256:
+
+`8C30A267E2B9A6BFFB6C6BDF6A364F8B89979ADE0B02B7FEB4B07B023ED49F54`
+
+Captured at: `2026-07-15T09:34:16+03:00`
+
 ```text
 TASK: Build the safe legacy-audience reconciliation foundation.
 REPOSITORY: webcraft-media/onetimev2

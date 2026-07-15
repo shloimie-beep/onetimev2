@@ -11,4 +11,4 @@ Impact:
 
 - This blocks only local PostgreSQL 16 proof, as allowed by the OT-74 prompt.
 - The migration is covered locally by `runMigrations` through the repository integration suite using the existing PostgreSQL-compatible test harness.
-- PostgreSQL 16 CI should run the same migration stack with `1200_ot74_legacy_audience_reconciliation.sql` included.
+- PostgreSQL 16 CI should run the same migration stack with `1200_ot74_audience_reconciliation.sql` and `1201_ot74_legacy_audience_reconciliation.sql` included.

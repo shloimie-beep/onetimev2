@@ -1,6 +1,6 @@
 # OT-74 Remaining
 
-- Push the validated implementation checkpoint.
+- Commit and push the merge-resolution checkpoint.
 - Open a draft PR against `codex/ot60r-recovery-convergence`.
 - Record final head SHA, PR URL, and final validation summary.
 
