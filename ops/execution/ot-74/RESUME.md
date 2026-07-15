@@ -37,3 +37,20 @@ ops/execution/ot-74/INTEGRATION-MANIFEST.md
    send messages, create charges, create real users, or connect to the
    production Rabbi database.
 7. Keep OT74 feature-local and unmounted; OT80 owns central wiring.
+
+## Current Resume Point
+
+The implementation candidate is locally verified. Remaining steps are commit,
+push, and draft PR against `codex/ot60r-recovery-convergence` if GitHub auth
+allows it.
+
+Before committing, rerun or inspect:
+
+```powershell
+npm run unit -- tests/unit/audience/audience-reconciliation.test.ts
+npm run integration -- tests/integration/audience/audience-migration.test.ts
+npm run typecheck
+npm run secret:scan
+```
+
+OT80 wiring instructions are in `ops/execution/ot-74/INTEGRATION-MANIFEST.md`.
