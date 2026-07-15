@@ -147,7 +147,7 @@ describe('OT-46 fixture checkout, portal, webhook, and public signup isolation',
     });
     await expectCount('contacts', 1);
     await expectCount('signup_leads', 1);
-    await expectCount('outbox_events', 2);
+    await expectCount('outbox_events', 3);
     await expectCount('billing_checkout_sessions', 0);
     expect(adapter.invocationCounts.createCheckoutSession).toBe(0);
   });

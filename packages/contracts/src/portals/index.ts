@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
-export const portalActorRoleSchema = z.enum(['parent', 'student', 'owner', 'admin', 'support']);
+export const portalActorRoleSchema = z.enum([
+  'parent',
+  'student',
+  'owner',
+  'admin',
+  'crm_agent',
+  'viewer',
+  'support',
+]);
 export type PortalActorRole = z.infer<typeof portalActorRoleSchema>;
 
 export const portalCapabilitySchema = z.enum([
@@ -204,6 +212,16 @@ export const parentPortalDashboardSchema = z.object({
 });
 export type ParentPortalDashboard = z.infer<typeof parentPortalDashboardSchema>;
 
+export const parentLearnerMaterialsSchema = z.object({
+  learner: learnerProfileSchema,
+  library: z.array(libraryItemSchema),
+  review_sheets: z.array(libraryItemSchema),
+  progress: progressSummarySchema,
+  rewards: rewardBalanceSchema,
+  updates: z.array(administrativeUpdateSchema),
+});
+export type ParentLearnerMaterials = z.infer<typeof parentLearnerMaterialsSchema>;
+
 export const studentPortalDashboardSchema = z.object({
   learner: learnerProfileSchema,
   upcoming_classes: z.array(upcomingClassSummarySchema),
@@ -234,6 +252,8 @@ export type UpdateLearnerPayload = z.infer<typeof updateLearnerPayloadSchema>;
 
 export const studentAccessOperationPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
+  email: z.string().trim().email().max(254).optional(),
+  display_name: z.string().trim().min(1).max(180).optional(),
 });
 export type StudentAccessOperationPayload = z.infer<typeof studentAccessOperationPayloadSchema>;
 

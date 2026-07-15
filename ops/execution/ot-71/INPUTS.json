@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-71R",
+  "received_zip": "C:\\Users\\User\\Downloads\\OT71-SELF-HEALING-CODEX-PROMPT-PACK.zip",
+  "received_zip_length_bytes": 8306,
+  "received_zip_last_write_time": "2026-07-15T09:09:43+03:00",
+  "manifest": {
+    "schema_version": 1,
+    "task_id": "OT-71R",
+    "repository": "webcraft-media/onetimev2",
+    "source_pr": 17,
+    "source_branch": "codex/ot60r-recovery-convergence",
+    "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+    "target_branch": "codex/ot71-product-core-train",
+    "target_worktree": "C:\\Users\\User\\OneTimeOneTime-ot71-product-core-train",
+    "parallel_lane": "OT-72 provider sandbox train"
+  },
+  "archive_entries": [
+    {
+      "path": "OT71-SELF-HEALING-START-HERE.md",
+      "length_bytes": 739,
+      "sha256": "e16bdb5381ee631f097788772c356a3baf6cd6171adf21872188ab2f95af0f60"
+    },
+    {
+      "path": "OT71-INPUT-MANIFEST.json",
+      "length_bytes": 831,
+      "sha256": "e9989d0bff490925b27a911cc436f4482eb14f3167f836bf82b1a0fd4e2e27aa"
+    },
+    {
+      "path": "OT71-SELF-HEALING-CODEX-PROMPT.md",
+      "length_bytes": 14827,
+      "sha256": "922367af50ae7fe9deccfe3ed025ea4bf8e0c4d62bfca4fa83c082c72b65e2b6"
+    },
+    {
+      "path": "OT71-SHA256SUMS.txt",
+      "length_bytes": 289
+    }
+  ],
+  "sha256_validation": "passed",
+  "external_actions_forbidden": {
+    "deploy": false,
+    "production_database": false,
+    "provider_mutation": false,
+    "external_send": false,
+    "live_payment": false,
+    "dns": false
+  }
+}

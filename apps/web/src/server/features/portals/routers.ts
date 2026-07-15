@@ -1,15 +1,12 @@
 import express, { type Request, type Response } from 'express';
 import { ZodError, z } from 'zod';
 import {
-  administrativeUpdateSchema,
   createLearnerPayloadSchema,
   helperQueryPayloadSchema,
   learnerProfileSchema,
-  libraryItemSchema,
+  parentLearnerMaterialsSchema,
   parentPortalDashboardSchema,
-  progressSummarySchema,
   protectedActionDescriptorSchema,
-  rewardBalanceSchema,
   studentAccessOperationPayloadSchema,
   studentAccessStateSchema,
   studentPortalDashboardSchema,
@@ -118,18 +115,28 @@ const helperAnswerSchema = z.object({
   answer: z.string().trim().min(1).max(2400),
   source_refs: z.array(z.string().trim().min(1).max(180)).max(20),
 });
-const parentMaterialsSchema = z.object({
-  learner: learnerProfileSchema,
-  library: z.array(libraryItemSchema),
-  review_sheets: z.array(libraryItemSchema),
-  progress: progressSummarySchema,
-  rewards: rewardBalanceSchema,
-  updates: z.array(administrativeUpdateSchema),
-});
-
 export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
   const router = express.Router();
   router.use(noStore);
+
+  router.get(
+    '/dashboard',
+    asyncRoute(async (req, res) => {
+      const actor = await requireActor(req, res, deps.resolveActor);
+      if (!actor) return;
+      const householdKey = firstParentHousehold(actor);
+      if (!householdKey) {
+        sendError(
+          res.status(403),
+          'FORBIDDEN',
+          'This portal action requires a parent household.',
+          req.traceId,
+        );
+        return;
+      }
+      sendData(res, parentPortalDashboardSchema, await deps.service.dashboard(actor, householdKey));
+    }),
+  );
 
   router.get(
     '/households/:householdKey/dashboard',
@@ -252,7 +259,7 @@ export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
       const learnerKey = parseParam(req.params.learnerKey);
       sendData(
         res,
-        parentMaterialsSchema,
+        parentLearnerMaterialsSchema,
         await deps.service.learnerMaterials(actor, householdKey, learnerKey),
       );
     }),
@@ -382,6 +389,14 @@ async function requireWriteActor(
 
 function parseParam(value: string | string[] | undefined) {
   return portalRouteParamSchema.parse(Array.isArray(value) ? undefined : value);
+}
+
+function firstParentHousehold(actor: PortalActorContext) {
+  if (actor.actor_role !== 'parent') return null;
+  return (
+    actor.authorized_households.find((subject) => subject.authority !== 'support_only')
+      ?.household_key ?? null
+  );
 }
 
 function sendData<T extends z.ZodTypeAny>(res: Response, schema: T, data: unknown) {

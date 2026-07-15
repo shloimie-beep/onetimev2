@@ -1,4 +1,11 @@
-import type { ContactDetail, ContactListItem, SessionUser } from '@onetime/contracts';
+import type {
+  ClassOccurrenceSummary,
+  ContactDetail,
+  ContactListItem,
+  ContentLibraryItemSummary,
+  OwnerDashboardResponse,
+  SessionUser,
+} from '@onetime/contracts';
 
 export type ApiSession = {
   authenticated: true;
@@ -28,6 +35,18 @@ export type ListResponse = {
 export type ContactResponse = {
   success: true;
   contact: ContactDetail;
+};
+
+export type ClassListResponse = {
+  success: true;
+  occurrences: ClassOccurrenceSummary[];
+  next_cursor: null;
+};
+
+export type ContentListResponse = {
+  success: true;
+  items: ContentLibraryItemSummary[];
+  next_cursor: null;
 };
 
 export type Assignee = {
@@ -180,6 +199,18 @@ export async function getContact(contactId: string) {
 
 export async function getAssignees() {
   return authenticatedJson<AssigneeListResponse>('/api/v1/crm/assignees');
+}
+
+export async function getOwnerDashboard() {
+  return authenticatedJson<OwnerDashboardResponse>('/api/v1/dashboard/owner');
+}
+
+export async function getClasses() {
+  return authenticatedJson<ClassListResponse>('/api/v1/classes?limit=10');
+}
+
+export async function getContentLibrary() {
+  return authenticatedJson<ContentListResponse>('/api/v1/content/library?limit=10');
 }
 
 export async function saveContactRequest({

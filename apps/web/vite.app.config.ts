@@ -12,6 +12,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         crm: path.resolve(process.cwd(), 'apps/web/src/client/app/crm-entry.tsx'),
+        portal: path.resolve(process.cwd(), 'apps/web/src/client/app/portal-entry.tsx'),
       },
       output: {
         entryFileNames: 'assets/app-[name].js',

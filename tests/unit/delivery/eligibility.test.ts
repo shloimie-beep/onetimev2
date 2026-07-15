@@ -43,6 +43,34 @@ describe('delivery eligibility', () => {
     },
   );
 
+  it('allows family class reminder events only for family signup scope', () => {
+    const email = evaluateDeliveryEligibility(
+      claimedDelivery({
+        eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail,
+      }),
+      'owner@protected.test',
+    );
+    const whatsapp = evaluateDeliveryEligibility(
+      claimedDelivery({
+        channel: 'whatsapp',
+        eventType: DELIVERY_EVENT_TYPES.familyClassReminderWhatsApp,
+      }),
+      'owner@protected.test',
+    );
+    const schoolMismatch = evaluateDeliveryEligibility(
+      claimedDelivery({
+        eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail,
+        contact: deliveryContact({ familySchoolClassification: 'school' }),
+        signup: deliverySignup({ classification: 'school' }),
+      }),
+      'owner@protected.test',
+    );
+
+    expect(email).toMatchObject({ kind: 'eligible', channel: 'email' });
+    expect(whatsapp).toMatchObject({ kind: 'eligible', channel: 'whatsapp' });
+    expect(schoolMismatch).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
+  });
+
   it('requires recorded consent for WhatsApp', () => {
     const result = evaluateDeliveryEligibility(
       claimedDelivery({

@@ -106,7 +106,7 @@ describe('web process independence from delivery worker', () => {
     expect(signup.status).toBe(200);
     const json = (await signup.json()) as { success: boolean; outbox_intents: string[] };
     expect(json.success).toBe(true);
-    expect(json.outbox_intents).toHaveLength(2);
+    expect(json.outbox_intents).toHaveLength(3);
 
     const healthAfter = await fetch(`${baseUrl}/health`);
     expect(healthAfter.status).toBe(200);

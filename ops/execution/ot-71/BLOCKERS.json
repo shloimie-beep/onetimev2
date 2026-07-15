@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-71R",
+  "updated_at": "2026-07-15T10:58:09+03:00",
+  "blockers": [],
+  "deferred_live_only_proof": [
+    {
+      "area": "provider transports",
+      "reason": "Live provider activation and provider transports belong to OT-72 and external mutations are forbidden for OT-71.",
+      "disposition": "Use provider-neutral descriptors and deterministic unavailable/mock states."
+    },
+    {
+      "area": "deployment",
+      "reason": "Deployment is explicitly forbidden by the prompt.",
+      "disposition": "Record local and CI proof only."
+    }
+  ]
+}

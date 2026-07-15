@@ -95,6 +95,10 @@ export function AppShell({
     email: 'Session expired',
     roleLabel: sessionExpired ? 'Session expired' : 'Checking session',
   };
+  const currentItem = navItems.find((item) => item.current) ?? navItems[0] ?? {
+    href: '/app/crm',
+    label: 'CRM',
+  };
 
   return (
     <div className="app-shell">
@@ -104,13 +108,13 @@ export function AppShell({
       <header className="app-header">
         <a
           className="mobile-current-link"
-          href="/app/crm"
+          href={currentItem.href}
           onClick={(event) => {
             event.preventDefault();
-            onNavigate('/app/crm');
+            onNavigate(currentItem.href);
           }}
         >
-          CRM
+          {currentItem.label}
         </a>
         <button
           ref={menuButtonRef}

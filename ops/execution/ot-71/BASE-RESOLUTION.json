@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-71R",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot71-product-core-train",
+  "target_branch": "codex/ot71-product-core-train",
+  "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "source_remote_ref": "origin/pr/17",
+  "source_remote_head_observed_at_start": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "source_pr_number": 17,
+  "source_pr_url": "https://github.com/webcraft-media/onetimev2/pull/17",
+  "base_object_type": "commit",
+  "base_relationship_to_source_ref": "source_ref_head",
+  "branch_created_from_immutable_base": true,
+  "created_at": "2026-07-15T09:13:20+03:00",
+  "inherited_control_values": {
+    "canonical_candidate_candidate_head_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
+    "ot60r_state_current_head_sha": "c4acd4b1f75f33e62088a9e3508fdb6890757f96",
+    "registry_ot60r_status": "building",
+    "registry_ot60r_branch": "codex/ot60r-recovery-convergence",
+    "registry_ot60r_updated_at": "2026-07-15T01:20:00+03:00"
+  },
+  "control_drift_disposition": "accepted_non_blocking_metadata_drift",
+  "shared_control_files_edited": false,
+  "notes": [
+    "The immutable base was verified through the fetched pull request ref origin/pr/17.",
+    "The stale OT-60R control values are recorded for evidence only and are not blocking gates for OT-71.",
+    "The shared registry/control files were intentionally left untouched to avoid colliding with parallel OT-72 work."
+  ]
+}

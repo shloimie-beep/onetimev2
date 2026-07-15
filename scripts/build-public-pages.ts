@@ -15,10 +15,11 @@ function escapeHtml(value: string) {
 function pageShell(
   title: string,
   body: string,
-  options: { description?: string; app?: boolean } = {},
+  options: { description?: string; app?: boolean; appEntry?: 'crm' | 'portal' } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
-  const script = options.app ? '/assets/app-crm.js' : '/assets/public.js';
+  const appEntry = options.appEntry ?? 'crm';
+  const script = options.app ? `/assets/app-${appEntry}.js` : '/assets/public.js';
   const stylesheet = options.app ? '/assets/app-crm.css' : '/assets/public.css';
   return `<!doctype html>
 <html lang="en">
@@ -285,5 +286,35 @@ await writeFile(
   pageShell('CRM | One Time Mishnayos', `<div id="crm-root"></div>`, {
     app: true,
     description: 'One Time authenticated CRM.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+for (const [fileName, title, description] of [
+  ['dashboard.html', 'Dashboard | One Time Mishnayos', 'One Time owner/admin dashboard.'],
+  ['classes.html', 'Classes | One Time Mishnayos', 'One Time class occurrence status.'],
+  ['content.html', 'Content Library | One Time Mishnayos', 'One Time content library status.'],
+  ['billing.html', 'Products/Billing | One Time Mishnayos', 'One Time billing status.'],
+] as const) {
+  await writeFile(
+    path.join(outDir, 'app', fileName),
+    pageShell(title, `<div id="crm-root"></div>`, {
+      app: true,
+      description,
+    }).replace('index, follow', 'noindex, nofollow'),
+  );
+}
+await writeFile(
+  path.join(outDir, 'app', 'parent.html'),
+  pageShell('Parent Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
+    app: true,
+    appEntry: 'portal',
+    description: 'One Time protected parent portal.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+await writeFile(
+  path.join(outDir, 'app', 'student.html'),
+  pageShell('Student Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
+    app: true,
+    appEntry: 'portal',
+    description: 'One Time protected student portal.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
