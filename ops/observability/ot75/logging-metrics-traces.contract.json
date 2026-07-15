@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-75",
+  "logs": {
+    "format": "structured_json",
+    "required_fields": [
+      "timestamp",
+      "level",
+      "service_key",
+      "release_id",
+      "source_sha",
+      "trace_id",
+      "event_name"
+    ],
+    "redaction_required": true,
+    "forbidden_fields": [
+      "authorization",
+      "cookie",
+      "database_url",
+      "provider_token",
+      "raw_email",
+      "raw_phone",
+      "raw_chat_id",
+      "raw_message_body",
+      "password",
+      "mfa_secret"
+    ]
+  },
+  "metrics": [
+    {
+      "name": "http_requests_total",
+      "type": "counter",
+      "labels": ["service_key", "route_family", "status_class"]
+    },
+    {
+      "name": "http_request_duration_ms",
+      "type": "histogram",
+      "labels": ["service_key", "route_family"]
+    },
+    {
+      "name": "worker_claims_total",
+      "type": "counter",
+      "labels": ["service_key", "queue", "claim_result"]
+    },
+    {
+      "name": "worker_lease_conflicts_total",
+      "type": "counter",
+      "labels": ["service_key", "queue"]
+    },
+    {
+      "name": "provider_mutation_attempts_total",
+      "type": "counter",
+      "labels": ["service_key", "provider_family", "mode"]
+    },
+    {
+      "name": "migration_checksum_mismatch_total",
+      "type": "counter",
+      "labels": ["environment", "database_reference"]
+    },
+    {
+      "name": "release_source_sha_mismatch_total",
+      "type": "counter",
+      "labels": ["environment", "service_key"]
+    }
+  ],
+  "traces": {
+    "required_span_attributes": [
+      "service_key",
+      "release_id",
+      "source_sha",
+      "route_family",
+      "worker_queue",
+      "provider_family"
+    ],
+    "forbidden_span_attributes": [
+      "raw_url_query",
+      "request_body",
+      "response_body",
+      "raw_email",
+      "raw_phone",
+      "raw_message_body",
+      "provider_token"
+    ]
+  },
+  "retention": {
+    "staging_days": 14,
+    "production_days": 30,
+    "high_cardinality_personal_data_allowed": false
+  }
+}

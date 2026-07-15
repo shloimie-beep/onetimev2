@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "descriptor_id": "ot75-web",
+  "service_key": "web",
+  "mode": "descriptor_only_not_deployed",
+  "current_runtime_composition_change": false,
+  "start_command_template": ["node", "--import", "tsx", "apps/web/src/server/index.ts"],
+  "health": {
+    "liveness_path": "/healthz",
+    "readiness_path": "/readyz",
+    "source_sha_header": "x-onetime-source-sha",
+    "release_id_header": "x-onetime-release-id"
+  },
+  "required_environment_names": [
+    "OT75_STAGING_WEB_SERVICE",
+    "OT75_STAGING_DOMAIN",
+    "OT75_EXPECTED_SOURCE_SHA"
+  ],
+  "must_not_modify": [
+    "apps/web/src/server/app.ts",
+    "apps/web/src/client/app/shell/AppShell.tsx",
+    "package.json",
+    "railway.json"
+  ],
+  "allowed_release_outputs": [
+    "source_sha_readback",
+    "health_status",
+    "readiness_status",
+    "request_count",
+    "error_count",
+    "latency_bucket"
+  ]
+}

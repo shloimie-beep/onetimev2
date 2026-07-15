@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-75",
+  "release_id": "OT-80_TO_FILL",
+  "repository": "webcraft-media/onetimev2",
+  "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "integrated_heads": {
+    "web": "TO_BE_FILLED_BY_OT80",
+    "delivery_worker": "TO_BE_FILLED_BY_OT80",
+    "provider_worker": "TO_BE_FILLED_BY_OT80",
+    "telegram_worker": "TO_BE_FILLED_BY_OT80"
+  },
+  "source_readback": {
+    "expected_source_sha": "TO_BE_FILLED_BY_OT80",
+    "staging_readback_sha": "TO_BE_FILLED_BY_OT80",
+    "production_readback_sha_before_cutover": "TO_BE_FILLED_BY_OT80"
+  },
+  "database": {
+    "migration_ledger_sha256": "TO_BE_FILLED_BY_OT80",
+    "backup_pitr_evidence": "TO_BE_FILLED_BY_OT80_REDACTED_URI",
+    "restore_drill_evidence": "TO_BE_FILLED_BY_OT80_REDACTED_URI",
+    "duplicate_data_audit": "TO_BE_FILLED_BY_OT80_REDACTED_URI"
+  },
+  "domains": {
+    "transitional_join_onetimeonetime_com": "unchanged_until_explicit_cutover_packet",
+    "root_domain_cutover": "forbidden_in_ot75"
+  },
+  "provider_state": {
+    "email": "TO_BE_FILLED_BY_OT80_STATUS_ONLY",
+    "telegram": "TO_BE_FILLED_BY_OT80_STATUS_ONLY",
+    "payment": "TO_BE_FILLED_BY_OT80_STATUS_ONLY"
+  },
+  "external_mutation_counts": {
+    "deployments": 0,
+    "dns_changes": 0,
+    "database_mutations": 0,
+    "provider_mutations": 0,
+    "messages_sent": 0,
+    "payments_or_charges": 0,
+    "real_users_created": 0
+  }
+}
