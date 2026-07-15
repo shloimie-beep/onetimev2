@@ -33,4 +33,5 @@
 
 - Merged remote PR metadata commit `5d87bb6`.
 - Draft PR remains #22 against `codex/ot60r-recovery-convergence`.
-- Final push of the combined branch remains pending.
+- Pushed combined branch head `964dc409d2c3bc76d9de849f34fffabdaa766713`.
+- Verified draft PR #22 is open: `https://github.com/webcraft-media/onetimev2/pull/22`.

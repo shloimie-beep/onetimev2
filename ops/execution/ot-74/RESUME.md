@@ -37,8 +37,8 @@ Implemented:
 - Local PostgreSQL 16 proof is unavailable because `psql` and Docker are not installed.
 - Draft PR #22 is open.
 
-Next steps:
+Current status:
 
-1. Commit and push the final PR-metadata merge checkpoint.
-2. Verify PR #22 points at the combined branch head.
-3. Record final head SHA in `ops/execution/ot-74/STATE.json`.
+- Candidate pushed to `codex/ot74-audience-reconciliation`.
+- Draft PR #22 is open against `codex/ot60r-recovery-convergence`.
+- No production import, send, deployment, provider mutation, or production database write was performed.

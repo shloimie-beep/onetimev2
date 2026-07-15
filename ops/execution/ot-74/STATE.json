@@ -5,11 +5,11 @@
   "branch": "codex/ot74-audience-reconciliation",
   "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "target_base_branch": "codex/ot60r-recovery-convergence",
-  "current_head_sha": "c766b2b",
-  "phase": "pr_metadata_merge_pending_commit",
-  "status": "building",
+  "current_head_sha": "964dc409d2c3bc76d9de849f34fffabdaa766713",
+  "phase": "draft_pr_opened",
+  "status": "candidate",
   "created_at": "2026-07-15T09:29:35+03:00",
-  "updated_at": "2026-07-15T10:08:00+03:00",
+  "updated_at": "2026-07-15T10:09:16+03:00",
   "completed_steps": [
     "Cloned clean One Time repository from https://github.com/webcraft-media/onetimev2.git under the Codex work directory.",
     "Verified immutable base dfef7de2035e08f1ee72e0133ccf656fe7a74444 exists locally.",
@@ -18,15 +18,13 @@
     "Merged remote OT-74 implementation commits through 8dcc3db without force-pushing.",
     "Resolved the migration namespace collision by preserving remote 1200_ot74_audience_reconciliation.sql and moving local legacy-audience tables to 1201_ot74_legacy_audience_reconciliation.sql.",
     "Completed post-merge validation: typecheck, merged OT-74 unit/integration tests, lint, secret scan, both dry-run tools, and build passed.",
-    "Merged remote PR metadata commit 5d87bb6 containing draft PR #22."
+    "Merged remote PR metadata commit 5d87bb6 containing draft PR #22.",
+    "Pushed combined branch head 964dc409d2c3bc76d9de849f34fffabdaa766713 to origin.",
+    "Verified draft PR #22 is open against codex/ot60r-recovery-convergence with head codex/ot74-audience-reconciliation."
   ],
-  "remaining_steps": [
-    "Commit and push the final PR-metadata merge checkpoint.",
-    "Verify draft PR #22 points at the combined branch head.",
-    "Record final head SHA after push."
-  ],
+  "remaining_steps": [],
   "blockers": [],
-  "last_safe_command": "git merge origin/codex/ot74-audience-reconciliation --no-edit",
+  "last_safe_command": "gh pr view 22 --json number,title,state,isDraft,baseRefName,headRefName,headRefOid,url",
   "test_results": [
     {
       "command": "npm run typecheck",
@@ -114,6 +112,11 @@
       "sha": "c766b2b",
       "message": "ot74 record merge checkpoint",
       "pushed": false
+    },
+    {
+      "sha": "964dc409d2c3bc76d9de849f34fffabdaa766713",
+      "message": "ot74 merge draft pr metadata",
+      "pushed": true
     }
   ],
   "pushes": [
@@ -122,6 +125,12 @@
       "branch": "codex/ot74-audience-reconciliation",
       "head_sha": "8dcc3db",
       "source": "remote"
+    },
+    {
+      "remote": "origin",
+      "branch": "codex/ot74-audience-reconciliation",
+      "head_sha": "964dc409d2c3bc76d9de849f34fffabdaa766713",
+      "pushed_at": "2026-07-15T10:09:16+03:00"
     }
   ],
   "pull_request": {
