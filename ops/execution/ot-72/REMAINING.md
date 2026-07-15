@@ -31,5 +31,6 @@
 
 ## Publication
 
-- Commit and push implementation checkpoints.
-- Open one draft PR targeting `codex/ot60r-recovery-convergence`.
+- Draft PR #18 is open targeting `codex/ot60r-recovery-convergence`.
+- Remote CI passed for checked head `4ec55d7bd6ade9ec2dd21e4557a88ac43b4ceb44`.
+- Keep the PR draft until OT-71/OT-72/OT-80 convergence review accepts the adapter seams.

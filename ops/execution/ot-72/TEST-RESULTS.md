@@ -11,9 +11,11 @@
 - `git diff --check` PASS with Windows line-ending warnings only.
 - `npm run build` PASS.
 
-## Known Verification Caveat
+## Known Verification Note
 
-- `npm run format` FAILS on the source-branch baseline with 183 files. OT-72 changed TS/JSON/MD files were formatted by scoped `npx prettier --write`; SQL was skipped because this repo has no SQL parser configured.
+- An earlier local handoff recorded a source-branch Prettier baseline failure. The latest remote Node 24 verify run for checked head `4ec55d7bd6ade9ec2dd21e4557a88ac43b4ceb44` passed the `npm run format` step.
+- A fresh Windows checkout rerun of full `npm run format` still reports the broader source baseline; OT-72 packet files changed in the CI handoff update were formatted with scoped `npx prettier --write`.
+- The SQL migration remains manually reviewed because this repo has no SQL parser configured.
 
 ## External Mutation Counts
 
@@ -33,5 +35,7 @@
 
 - PR: https://github.com/webcraft-media/onetimev2/pull/18
 - Head at PR creation: `b2a92917b9dd730957c55d8add6f573518506a85`
+- Latest checked head: `4ec55d7bd6ade9ec2dd21e4557a88ac43b4ceb44`
 - PostgreSQL 16 assurance harness: PASS
-- Node 24 verify: IN_PROGRESS at latest readback
+- Node 24 verify: PASS
+- Node 24 verify covered secret scan, format, lint, typecheck, unit, integration, build, Playwright e2e, Playwright accessibility, Playwright performance and bundle gates.

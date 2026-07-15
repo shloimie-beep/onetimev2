@@ -4,13 +4,12 @@ Branch: `codex/ot72-provider-sandbox-train`
 
 Base/source branch: `codex/ot60r-recovery-convergence`
 
-Current state: OT-72 provider adapters, provider truth migration, descriptor seams, Telegram transport wrapper and oversight producer contract implemented, locally verified, pushed, and opened as draft PR https://github.com/webcraft-media/onetimev2/pull/18.
+Current state: OT-72 provider adapters, provider truth migration, descriptor seams, Telegram transport wrapper and oversight producer contract implemented, locally verified, pushed, opened as draft PR https://github.com/webcraft-media/onetimev2/pull/18, and remote CI green for checked head `4ec55d7bd6ade9ec2dd21e4557a88ac43b4ceb44`.
 
 Next action:
 
-1. Monitor PR #18 remote CI; PostgreSQL 16 assurance had passed and Node 24 verify was still in progress at latest readback.
-2. When protected canary config exists, run each provider subphase verification separately with before/after checkpoints.
-3. Keep PR draft until OT-71/OT-72/OT-80 convergence review accepts the adapter seams.
+1. When protected canary config exists, run each provider subphase verification separately with before/after checkpoints.
+2. Keep PR draft until OT-71/OT-72/OT-80 convergence review accepts the adapter seams.
 
 Do not:
 

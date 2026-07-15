@@ -4,9 +4,9 @@
   "repository": "webcraft-media/onetimev2",
   "source_branch": "codex/ot60r-recovery-convergence",
   "target_branch": "codex/ot72-provider-sandbox-train",
-  "status": "draft_pr_open",
+  "status": "draft_pr_ci_green",
   "created_at": "2026-07-15T09:02:00+03:00",
-  "updated_at": "2026-07-15T09:23:00+03:00",
+  "updated_at": "2026-07-15T09:31:36+03:00",
   "source_remote_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "candidate_control_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
   "branch_point_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
@@ -17,7 +17,13 @@
     "draft": true,
     "base_branch": "codex/ot60r-recovery-convergence",
     "head_branch": "codex/ot72-provider-sandbox-train",
-    "head_sha_at_creation": "b2a92917b9dd730957c55d8add6f573518506a85"
+    "head_sha_at_creation": "b2a92917b9dd730957c55d8add6f573518506a85",
+    "head_sha_latest_verified": "4ec55d7bd6ade9ec2dd21e4557a88ac43b4ceb44",
+    "remote_ci": {
+      "node_24_verify": "passed",
+      "postgresql_16_assurance": "passed",
+      "last_checked_at": "2026-07-15T09:31:36+03:00"
+    }
   },
   "external_action_policy": {
     "stripe_test_sandbox": "authorized_if_test_mode_and_canary_gate_present",
