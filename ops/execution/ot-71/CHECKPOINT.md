@@ -7,7 +7,7 @@
 - Branch: `codex/ot71-product-core-train`
 - Immutable base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
 - Source PR ref: `origin/pr/17`
-- Phase: initial execution packet
+- Phase: Phase 1 complete
 - Status: building
 
 ## Completed
@@ -22,12 +22,18 @@
 - Created `C:\Users\User\OneTimeOneTime-ot71-product-core-train` from the exact immutable base.
 - Recorded inherited OT-60R metadata drift as accepted and non-blocking.
 - Left shared OT-60R registry/control files untouched.
+- Committed and pushed the initial execution packet at `de10f7c`.
+- Added migration `1100_ot71_class_occurrence_fulfillment.sql` for class series, occurrences, fulfillment intents, attendance marks, access requests, and class reminder sink claim indexing.
+- Added DST-aware 19:00 Asia/Jerusalem class occurrence targeting and 18:30 T-30 reminder scheduling.
+- Added post-commit class fulfillment scheduling for eligible Family signups while preserving School submissions as lead-only.
+- Added provider-neutral class reminder delivery events, sink delivery support, owner/admin class APIs, and portal access adapter hooks with `provider_unavailable` descriptors.
+- Verified Phase 1 with focused and full unit/integration tests plus lint, build/typecheck, secret scan, and whitespace checks.
 
 ## Next
 
-1. Commit and push the initial OT-71 execution packet.
-2. Audit class/delivery/outbox contracts.
-3. Start Phase 1 canonical class occurrence and fulfillment implementation in migration namespace 1100-1199 after confirming the namespace is free.
+1. Commit and push the Phase 1 checkpoint.
+2. Start Phase 2 provider-neutral content and library in migration namespace 1400-1499 after confirming the namespace remains free.
+3. Keep live provider activation and all OT-72-owned transports disabled.
 
 ## Prohibitions
 

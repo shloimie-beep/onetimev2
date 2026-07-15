@@ -10,6 +10,15 @@ export {
 } from './lead/normalize.ts';
 export { processOutboxSink } from './outbox/sink.ts';
 export {
+  ONE_TIME_CLASS_SERIES_KEY,
+  ONE_TIME_CLASS_TITLE,
+  createClassPortalAccessAdapter,
+  getClassOccurrenceDetail,
+  listClassOccurrences,
+  resolveDailyClassWindow,
+  scheduleClassFulfillmentForLead,
+} from './classes/service.ts';
+export {
   authenticateUser,
   activateTotpEnrollment,
   canAssignContacts,

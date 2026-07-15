@@ -4,6 +4,8 @@ export type DeliveryChannel = (typeof DELIVERY_CHANNELS)[number];
 export const DELIVERY_EVENT_TYPES = {
   familySignupEmailAck: 'family_signup_email_ack.v1',
   familySignupWhatsAppConfirmation: 'family_signup_whatsapp_confirmation.v1',
+  familyClassReminderEmail: 'family_class_reminder_email.v1',
+  familyClassReminderWhatsApp: 'family_class_reminder_whatsapp.v1',
   schoolSignupEmailAck: 'school_signup_email_ack.v1',
   schoolSignupWhatsAppReceipt: 'school_signup_whatsapp_receipt.v1',
   internalLeadAlert: 'internal_lead_alert',
@@ -12,6 +14,8 @@ export const DELIVERY_EVENT_TYPES = {
 export const SUPPORTED_DELIVERY_EVENT_CHANNEL_PAIRS = [
   { eventType: DELIVERY_EVENT_TYPES.familySignupEmailAck, channel: 'email' },
   { eventType: DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation, channel: 'whatsapp' },
+  { eventType: DELIVERY_EVENT_TYPES.familyClassReminderEmail, channel: 'email' },
+  { eventType: DELIVERY_EVENT_TYPES.familyClassReminderWhatsApp, channel: 'whatsapp' },
   { eventType: DELIVERY_EVENT_TYPES.schoolSignupEmailAck, channel: 'email' },
   { eventType: DELIVERY_EVENT_TYPES.schoolSignupWhatsAppReceipt, channel: 'whatsapp' },
   { eventType: DELIVERY_EVENT_TYPES.internalLeadAlert, channel: 'internal_email' },

@@ -8,6 +8,7 @@ import type { AppConfig } from '../../../config/src/index.ts';
 import { DELIVERY_EVENT_TYPES } from '../../../contracts/src/delivery/types.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
+import { scheduleClassFulfillmentForLead } from '../classes/service.ts';
 import {
   normalizeEmail,
   normalizePhone,
@@ -20,6 +21,7 @@ type CaptureLeadInput = {
   pool: DbPool;
   config: AppConfig;
   payload: LeadPayload;
+  now?: Date;
 };
 
 type OutboxEvent = {
@@ -44,13 +46,14 @@ export async function captureLead({
   pool,
   config,
   payload,
+  now,
 }: CaptureLeadInput): Promise<LeadSuccessResponse> {
   const parsed = leadPayloadSchema.parse(payload);
   const email = normalizeEmail(parsed.email);
   const phone = normalizePhone(parsed.phone);
   const reqHash = requestHash(parsed);
 
-  return inTransaction(pool, async (client) => {
+  const response = await inTransaction(pool, async (client) => {
     const duplicate = await client.query(
       `SELECT request_hash, response_json
          FROM onetime.idempotency_records
@@ -94,6 +97,40 @@ export async function captureLead({
 
     return responseBase;
   });
+
+  const classFulfillment = await scheduleClassFulfillmentAfterCommit({
+    pool,
+    config,
+    contactKey: response.contact_key,
+    signupKey: response.signup_key,
+    ...(now ? { now } : {}),
+  });
+
+  return {
+    ...response,
+    outbox_intents: uniqueIntentKeys([
+      ...response.outbox_intents,
+      ...classFulfillment.deliveryKeys,
+    ]),
+  };
+}
+
+async function scheduleClassFulfillmentAfterCommit(input: {
+  pool: DbPool;
+  config: AppConfig;
+  contactKey: string;
+  signupKey: string;
+  now?: Date;
+}) {
+  try {
+    return await scheduleClassFulfillmentForLead(input);
+  } catch {
+    return { occurrenceKey: null, deliveryKeys: [], dispatchMode: null };
+  }
+}
+
+function uniqueIntentKeys(keys: string[]) {
+  return [...new Set(keys)];
 }
 
 async function upsertContact(

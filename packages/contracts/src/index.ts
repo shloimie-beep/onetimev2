@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export * from './classes/index.ts';
+
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;
 

@@ -18,6 +18,9 @@ import {
   publicFieldErrors,
   updateContactSchema,
   assigneeListResponseSchema,
+  classOccurrenceDetailResponseSchema,
+  classOccurrenceListQuerySchema,
+  classOccurrenceListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
 import {
   CrmDuplicateError,
@@ -30,8 +33,10 @@ import {
   createContact,
   createLoginCsrf,
   createSession,
+  getClassOccurrenceDetail,
   getContactDetail,
   getSessionByToken,
+  listClassOccurrences,
   listAssignableUsers,
   listContacts,
   replaceMfaRecoveryCodes,
@@ -555,6 +560,59 @@ export function createApp({
     res.json(assigneeListResponseSchema.parse({ success: true, assignees }));
   });
 
+  app.get('/api/v1/classes', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canReadClasses(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot view classes.', req.traceId));
+      return;
+    }
+    try {
+      const query = classOccurrenceListQuerySchema.parse(req.query);
+      const occurrences = await withTiming(req, 'db', () =>
+        listClassOccurrences({ pool, config, limit: query.limit }),
+      );
+      res.json(
+        classOccurrenceListResponseSchema.parse({
+          success: true,
+          occurrences,
+          next_cursor: null,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/classes/:occurrenceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canReadClasses(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot view classes.', req.traceId));
+      return;
+    }
+    try {
+      const occurrence = await withTiming(req, 'db', () =>
+        getClassOccurrenceDetail({
+          pool,
+          config,
+          occurrenceKey: String(req.params.occurrenceKey),
+        }),
+      );
+      if (!occurrence) {
+        res
+          .status(404)
+          .json(publicError('NOT_FOUND', 'Class occurrence was not found.', req.traceId));
+        return;
+      }
+      res.json(classOccurrenceDetailResponseSchema.parse({ success: true, occurrence }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.post('/api/v1/crm/contacts', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -792,6 +850,10 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
   res
     .status(500)
     .json(publicError('SERVER_ERROR', 'The CRM request could not be completed.', req.traceId));
+}
+
+function canReadClasses(role: string) {
+  return role === 'owner' || role === 'admin';
 }
 
 function hashCookieValue(value: string) {
