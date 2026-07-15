@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-07-15T11:48:00+03:00",
+  "updated_at": "2026-07-15T11:55:00+03:00",
   "tasks": [
     {
       "task_id": "OT-60R",
@@ -22,7 +22,7 @@
       "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
       "state_path": "ops/execution/ot-80/STATE.json",
       "resume_path": "ops/execution/ot-80/RESUME.md",
-      "status": "phase0_checkpoint_ready",
+      "status": "ot71_integrated_checkpoint_ready",
       "candidate_status": "NOT_READY",
       "deployment_allowed": false,
       "isolated_staging_allowed_after_gates": true,

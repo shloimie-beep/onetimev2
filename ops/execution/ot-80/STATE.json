@@ -7,10 +7,10 @@
   "pr_base": "codex/ot60r-recovery-convergence",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "created_at": "2026-07-15T11:48:00+03:00",
-  "updated_at": "2026-07-15T11:48:00+03:00",
-  "status": "phase0_checkpoint_ready",
+  "updated_at": "2026-07-15T11:55:00+03:00",
+  "status": "ot71_integrated_checkpoint_ready",
   "candidate_status": "NOT_READY",
-  "current_phase": "phase0_freeze_and_persist",
+  "current_phase": "phase1_source_lane_integration",
   "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
   "prompt_path": "ops/execution/ot-80/ORIGINAL-PROMPT.md",
   "input_manifest_path": "ops/execution/ot-80/INPUT-MANIFEST.json",
@@ -25,8 +25,8 @@
   "single_staging_admin_activation_recipient": "sdratler@gmail.com",
   "external_mutations_so_far": {
     "branch_created": true,
-    "commit_created": false,
-    "pushed": false,
+    "commit_created": true,
+    "pushed": true,
     "draft_pr_opened": false,
     "deployment_performed": false,
     "staging_mutation_performed": false,
@@ -35,8 +35,18 @@
     "production_mutation_performed": false
   },
   "next_actions": [
-    "Commit and push the Phase 0 packet persistence checkpoint.",
-    "Integrate OT-71 product core first, preserving provenance and recording collisions.",
+    "Commit and push the OT-71 integration checkpoint.",
+    "Integrate OT-74 audience reconciliation next, preserving provenance and resolving its duplicate audience implementations.",
     "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
+  ],
+  "integrated_lanes": [
+    {
+      "task": "OT-71",
+      "source_branch": "codex/ot71-product-core-train",
+      "source_head": "e357f5f0fa42d4087e8062113e619181226a5d57",
+      "merge_commit": "d3f60f76c15cc5c148c634bea1b6ff1066be72b4",
+      "status": "merged",
+      "remaining_from_source": "Phase 6 combined proof/publication remains pending and is intentionally carried into OT80 final certification."
+    }
   ]
 }

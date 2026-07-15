@@ -1,6 +1,6 @@
 # OT-80 Checkpoint
 
-Updated: `2026-07-15T11:48:00+03:00`
+Updated: `2026-07-15T11:55:00+03:00`
 
 ## Phase 0 Status
 
@@ -41,7 +41,31 @@ Exact merge bases, commit counts, and changed-file lists are in
   matches.
 - `git worktree add -b codex/ot80-one-shot-final-convergence ...` - passed.
 
-## Next
+## Phase 0 Closeout
 
-Commit and push this Phase 0 checkpoint, then begin Phase 1 by integrating
-OT-71 into the conductor branch.
+Phase 0 checkpoint was committed as `b90f481` and pushed to
+`origin/codex/ot80-one-shot-final-convergence`.
+
+## OT-71 Integration
+
+- Merged `origin/codex/ot71-product-core-train` without conflicts.
+- Source head:
+  `e357f5f0fa42d4087e8062113e619181226a5d57`.
+- Merge commit:
+  `d3f60f76c15cc5c148c634bea1b6ff1066be72b4`.
+- OT-71 source evidence says Phase 6 combined proof/publication remains
+  pending; OT80 will complete that after all lanes converge.
+
+Verification after merge:
+
+- `npm ci` - PASS, 348 packages installed, 0 vulnerabilities.
+- Initial checks before `npm ci` failed because the fresh worktree lacked
+  `node_modules`; after install, the checks below passed.
+- `npm run typecheck` - PASS.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/classes/schedule.test.ts tests/unit/content/redaction.test.ts tests/unit/delivery/eligibility.test.ts` - PASS, 25 tests.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/accounts/account-lifecycle.test.ts tests/integration/classes/class-fulfillment.test.ts tests/integration/content/content-library.test.ts tests/integration/dashboard/owner-dashboard.test.ts tests/integration/portals/portal-mount.test.ts tests/integration/lead-capture.test.ts tests/integration/telegram-db-foundation.test.ts` - PASS, 28 tests.
+- `npm run secret:scan` - PASS after Phase 0 and before OT-71 merge.
+- `git diff --check` - PASS after Phase 0 and before OT-71 merge.
+
+Next: commit and push this OT-71 checkpoint, then integrate OT-74 audience
+reconciliation.

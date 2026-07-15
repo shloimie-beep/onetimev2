@@ -15,3 +15,15 @@
 - Generated source-head and changed-file inventory.
 - Registered the communications implementation disposition: no pushed/local
   hash-matching implementation lane found; direct implementation is required.
+
+## Phase 1 - OT-71 Product Core
+
+- Merged `origin/codex/ot71-product-core-train` into the OT80 conductor branch.
+- No merge conflicts occurred.
+- Brought in OT-71 class occurrence fulfillment, content library,
+  account lifecycle, parent/student portal mount, and owner/admin dashboard
+  code and evidence.
+- Recorded that OT-71 Phase 6 combined proof/publication is still pending and
+  belongs to OT80 final certification.
+- Verified the merged state with typecheck and focused OT-71 unit/integration
+  tests.

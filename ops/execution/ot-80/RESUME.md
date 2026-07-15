@@ -14,9 +14,11 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Current State
 
-- Phase: `phase0_freeze_and_persist`
+- Phase: `phase1_source_lane_integration`
 - Candidate status: `NOT_READY`
 - Accepted base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
+- Latest local head: `d3f60f76c15cc5c148c634bea1b6ff1066be72b4`
+- Integrated so far: OT-71 product core
 - Source heads: `ops/execution/ot-80/SOURCE-HEADS.json`
 - Immutable prompt: `ops/execution/ot-80/ORIGINAL-PROMPT.md`
 - Input manifest: `ops/execution/ot-80/INPUT-MANIFEST.json`
@@ -27,10 +29,12 @@ Expected branch: `codex/ot80-one-shot-final-convergence`.
 
 ## Next Commands
 
-After the Phase 0 checkpoint is committed and pushed, start Phase 1:
+After the OT-71 checkpoint is committed and pushed, continue Phase 1 with
+OT-74:
 
 ```powershell
-git merge --no-ff origin/codex/ot71-product-core-train
+git fetch origin --prune
+git merge --no-ff origin/codex/ot74-audience-reconciliation
 ```
 
 If conflicts occur, resolve them deliberately and update:

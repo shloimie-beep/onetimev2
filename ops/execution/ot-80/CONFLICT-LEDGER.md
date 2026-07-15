@@ -1,6 +1,16 @@
 # OT-80 Conflict Ledger
 
-No source lane code has been integrated yet.
+## OT-71
+
+Merged `origin/codex/ot71-product-core-train` without conflicts.
+
+Carried forward:
+
+- OT-71 migration `1700_ot71_account_lifecycle.sql` is now present.
+- OT-72 also has a `1700` provider-truth migration; OT80 must renumber the
+  provider-truth migration during OT-72 integration.
+- OT-71 Phase 6 combined proof/publication is pending and will be completed
+  after all lanes converge.
 
 Known required collision work from the OT80 packet:
 

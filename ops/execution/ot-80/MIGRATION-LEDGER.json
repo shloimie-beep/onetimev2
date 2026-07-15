@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.ot80.migration_ledger.v1",
-  "updated_at": "2026-07-15T11:48:00+03:00",
-  "status": "not_integrated",
+  "updated_at": "2026-07-15T11:55:00+03:00",
+  "status": "ot71_integrated",
   "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "known_collisions": [
     {
@@ -15,5 +15,16 @@
       "description": "OT-74 contains two audience/reconciliation migrations and parallel implementations; OT80 must choose or consolidate one canonical model."
     }
   ],
-  "applied_in_ot80": []
+  "applied_in_ot80": [
+    {
+      "task": "OT-71",
+      "status": "merged",
+      "migrations": [
+        "packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "packages/db/migrations/1400_ot71_content_library.sql",
+        "packages/db/migrations/1700_ot71_account_lifecycle.sql"
+      ],
+      "notes": "Merged without conflicts. The 1700 prefix is now occupied by OT-71; OT-72 provider-truth migration must be renumbered during its integration."
+    }
+  ]
 }
