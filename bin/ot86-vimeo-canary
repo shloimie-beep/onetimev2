@@ -1,0 +1,131 @@
+#!/usr/bin/env node
+
+import { createHash } from 'node:crypto';
+
+const args = new Set(process.argv.slice(2));
+const modeArg = process.argv.find((arg) => arg.startsWith('--mode='));
+const mode = modeArg ? modeArg.slice('--mode='.length) : readModeFromSplitArgs();
+const json = args.has('--json');
+
+function readModeFromSplitArgs() {
+  const index = process.argv.indexOf('--mode');
+  return index >= 0 ? process.argv[index + 1] : 'read-only';
+}
+
+function result(status, extra = {}) {
+  return {
+    packet_id: 'OT-86A',
+    provider: 'vimeo',
+    mode,
+    status,
+    writes_performed: false,
+    ...extra,
+  };
+}
+
+function print(payload) {
+  if (json) {
+    process.stdout.write(`${JSON.stringify(payload)}\n`);
+    return;
+  }
+  process.stdout.write(`OT-86A Vimeo canary: ${payload.status}\n`);
+  for (const capability of payload.capabilities ?? []) {
+    process.stdout.write(`- ${capability}\n`);
+  }
+  for (const missing of payload.missing_capability_classes ?? []) {
+    process.stdout.write(`missing: ${missing}\n`);
+  }
+}
+
+function missingConfig() {
+  return [
+    ['VIMEO_ACCESS_TOKEN', 'access_token'],
+    ['VIMEO_CLIENT_ID', 'client_id'],
+    ['VIMEO_CLIENT_SECRET', 'client_secret'],
+    ['VIMEO_WEBHOOK_SECRET', 'webhook_secret'],
+    ['VIMEO_ACCOUNT_ID', 'account_id'],
+  ].filter(([key]) => !process.env[key]);
+}
+
+main().catch((error) => {
+  print(
+    result('canary_failed', {
+      missing_capability_classes: ['unexpected_canary_error'],
+      error_code: sanitizeError(error),
+    }),
+  );
+  process.exit(2);
+});
+
+async function main() {
+  if (!['read-only', 'upload-private-fixture'].includes(mode)) {
+    print(result('invalid_mode', { missing_capability_classes: ['valid_mode'] }));
+    process.exit(2);
+  }
+
+  if (mode === 'upload-private-fixture' && process.env.OT86_ALLOW_VIMEO_CANARY_UPLOAD !== '1') {
+    print(
+      result('upload_gate_absent', {
+        missing_capability_classes: ['explicit_upload_private_fixture_gate'],
+      }),
+    );
+    process.exit(2);
+  }
+
+  const missing = missingConfig();
+  if (missing.length > 0) {
+    print(
+      result('unconfigured', {
+        capabilities: ['manual_approved_reference'],
+        missing_capability_classes: missing.map(([, label]) => label),
+      }),
+    );
+    process.exit(2);
+  }
+
+  if (mode === 'upload-private-fixture') {
+    print(
+      result('upload_not_implemented_by_canary_without_authorized_provider_client', {
+        missing_capability_classes: ['authorized_private_upload_client'],
+      }),
+    );
+    process.exit(2);
+  }
+
+  const response = await fetch('https://api.vimeo.com/me', {
+    headers: {
+      authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
+      accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    print(
+      result('auth_invalid', {
+        capabilities: ['configuration_present'],
+        missing_capability_classes: ['valid_access_token_or_account_permission'],
+        http_status: response.status,
+      }),
+    );
+    process.exit(2);
+  }
+
+  const body = await response.json();
+  const accountDigest = digest(String(body.uri ?? body.resource_key ?? body.name ?? 'vimeo'));
+  print(
+    result('ready_read_only', {
+      capabilities: ['account_identity_read', 'manual_approved_reference', 'webhook_secret_configured'],
+      account_fingerprint: accountDigest.slice(0, 16),
+    }),
+  );
+}
+
+function digest(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function sanitizeError(error) {
+  return String(error && error.message ? error.message : error)
+    .replace(/[A-Za-z0-9_-]{24,}/g, '[redacted-token]')
+    .slice(0, 120);
+}

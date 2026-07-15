@@ -1,0 +1,84 @@
+{
+  "packet_id": "OT-86A",
+  "generated_at": "2026-07-15T17:15:06.224Z",
+  "fixture": {
+    "item_count": 1000,
+    "section_count": 10000,
+    "search_document_count": 50000,
+    "samples": 30,
+    "bna_network_dependency": false,
+    "load_mode": "pg-mem performance schema using production serving table names and serving indexes"
+  },
+  "serving_indexes": {
+    "ot86_published_content_versions": [
+      {
+        "name": "ot86_published_versions_active_idx",
+        "expressions": ["tenant_id", "active_state", "published_at"],
+        "unique": false
+      },
+      {
+        "name": "ot86_published_versions_content_idx",
+        "expressions": ["tenant_id", "content_id", "active_state"],
+        "unique": false
+      }
+    ],
+    "ot86_published_sections": [
+      {
+        "name": "ot86_published_sections_content_idx",
+        "expressions": ["tenant_id", "content_id", "version_id", "ordinal"],
+        "unique": false
+      },
+      {
+        "name": "ot86_published_sections_deep_link_idx",
+        "expressions": ["tenant_id", "section_id", "active"],
+        "unique": false
+      }
+    ],
+    "ot86_search_documents": [
+      {
+        "name": "ot86_search_documents_lookup_idx",
+        "expressions": ["tenant_id", "active", "content_id", "version_id"],
+        "unique": false
+      }
+    ],
+    "ot86_publication_inbox_receipts": [
+      {
+        "name": "ot86_publication_inbox_message_idx",
+        "expressions": ["message_id", "raw_body_sha256"],
+        "unique": false
+      }
+    ]
+  },
+  "measurements": {
+    "library_list": {
+      "samples": 30,
+      "median_ms": 23.874,
+      "p95_ms": 58.106,
+      "max_ms": 77.31690000000003
+    },
+    "content_detail": {
+      "samples": 30,
+      "median_ms": 5.625,
+      "p95_ms": 8.505,
+      "max_ms": 13.116700000000037
+    },
+    "deep_link": {
+      "samples": 30,
+      "median_ms": 1,
+      "p95_ms": 2.507,
+      "max_ms": 3.3000999999999294
+    },
+    "retrieval_rank": {
+      "samples": 30,
+      "median_ms": 20.297,
+      "p95_ms": 24.319,
+      "max_ms": 31.14910000000009
+    },
+    "duplicate_ack_lookup": {
+      "samples": 30,
+      "median_ms": 0.174,
+      "p95_ms": 0.355,
+      "max_ms": 1.1745999999998276
+    }
+  }
+}

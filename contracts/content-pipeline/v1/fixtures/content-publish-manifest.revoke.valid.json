@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "event_type": "content.publication_manifest",
+  "message_id": "22222222-2222-4222-8222-222222222222",
+  "idempotency_key": "tenant_demo_001:cnt_01J00000000000000000000000:2:revoke",
+  "action": "revoke",
+  "tenant_id": "tenant_demo_001",
+  "content_id": "cnt_01J00000000000000000000000",
+  "version_id": "ver_01J00000000000000000000000",
+  "sequence": 2,
+  "occurred_at": "2026-01-03T03:04:05Z",
+  "approval": {
+    "approval_id": "approval_01J0000000000000000000",
+    "approved_by_actor_id": "actor_rabbi_001",
+    "approved_at": "2026-01-02T03:00:00Z",
+    "policy_version": "ot86-privacy-v1"
+  },
+  "source": {
+    "source_kind": "rabbi_class",
+    "bna_record_id": "bna_class_0001",
+    "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "vimeo_reference": {
+      "provider": "vimeo",
+      "video_id": "987654321",
+      "reference_mode": "manual_approved_reference"
+    }
+  },
+  "artifacts": [],
+  "sections": [],
+  "search_documents": [],
+  "privacy": {
+    "source_scope": "approved_rabbi_content",
+    "contains_learner_name": false,
+    "contains_learner_voice": false,
+    "contains_learner_face": false,
+    "contains_learner_question": false,
+    "contains_private_data": false,
+    "approved_for_student_kb": true
+  },
+  "checksum_algorithm": "sha256",
+  "manifest_sha256": "51aa7171737a1d64b5094d060065286dc03f993dfe782a1d945e716b9772f3cf"
+}

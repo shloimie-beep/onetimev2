@@ -62,6 +62,7 @@ import {
   listAssignableUsers,
   listContacts,
   ownerAdminVisibleActions,
+  receiveOt86PublicationManifest,
   replaceMfaRecoveryCodes,
   revokeMfaFactors,
   revokeSession,
@@ -123,6 +124,42 @@ export function createApp({
     }),
   );
   app.use(traceMiddleware);
+  app.post(
+    '/internal/content-publications/v1/manifests',
+    express.raw({ type: 'application/json', limit: '2mb' }),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const secrets = ot86PublishSecrets(config);
+      if (secrets.length < 1) {
+        res.status(503).json({
+          success: false,
+          code: 'OT86_PUBLISH_SIGNING_UNCONFIGURED',
+          message: 'Content publication intake is not configured.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const result = await receiveOt86PublicationManifest({
+        pool,
+        rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
+        headers: {
+          contentType: req.header('content-type') ?? null,
+          keyId: req.header('x-ot86-key-id') ?? null,
+          timestamp: req.header('x-ot86-timestamp') ?? null,
+          deliveryId: req.header('x-ot86-delivery-id') ?? null,
+          signature: req.header('x-ot86-signature') ?? null,
+        },
+        secrets,
+      });
+      res.status(result.status).json({
+        success: result.status === 200 || result.status === 202,
+        code: result.code,
+        message: result.message,
+        receipt_state: result.receipt_state,
+        request_id: req.traceId,
+      });
+    },
+  );
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
@@ -1249,6 +1286,23 @@ function canReadContentLibrary(role: string) {
 
 function canUseOwnerDashboard(role: string) {
   return role === 'owner' || role === 'admin';
+}
+
+function ot86PublishSecrets(config: AppConfig) {
+  const current =
+    config.ot86PublishSigningKeyId && config.ot86PublishSigningSecret
+      ? [{ keyId: config.ot86PublishSigningKeyId, secret: config.ot86PublishSigningSecret }]
+      : [];
+  const previous =
+    config.ot86PreviousPublishSigningKeyId && config.ot86PreviousPublishSigningSecret
+      ? [
+          {
+            keyId: config.ot86PreviousPublishSigningKeyId,
+            secret: config.ot86PreviousPublishSigningSecret,
+          },
+        ]
+      : [];
+  return [...current, ...previous];
 }
 
 function hashCookieValue(value: string) {

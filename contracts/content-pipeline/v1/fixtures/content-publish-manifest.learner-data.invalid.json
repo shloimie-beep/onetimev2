@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "event_type": "content.publication_manifest",
+  "message_id": "11111111-1111-4111-8111-111111111111",
+  "idempotency_key": "tenant_demo_001:cnt_01J00000000000000000000000:1:publish",
+  "action": "publish",
+  "tenant_id": "tenant_demo_001",
+  "content_id": "cnt_01J00000000000000000000000",
+  "version_id": "ver_01J00000000000000000000000",
+  "sequence": 1,
+  "occurred_at": "2026-01-02T03:04:05Z",
+  "canonical_path": "/library/classes/cnt_01J00000000000000000000000",
+  "approval": {
+    "approval_id": "approval_01J0000000000000000000",
+    "approved_by_actor_id": "actor_rabbi_001",
+    "approved_at": "2026-01-02T03:00:00Z",
+    "policy_version": "ot86-privacy-v1"
+  },
+  "source": {
+    "source_kind": "rabbi_class",
+    "bna_record_id": "bna_class_0001",
+    "source_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "vimeo_reference": {
+      "provider": "vimeo",
+      "video_id": "987654321",
+      "reference_mode": "manual_approved_reference"
+    }
+  },
+  "artifacts": [
+    {
+      "artifact_id": "artifact_video_001",
+      "kind": "video",
+      "uri": "https://objects.example.invalid/ot86/video-001",
+      "mime_type": "video/mp4",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "byte_length": 1048576,
+      "privacy": {
+        "source_scope": "approved_rabbi_content",
+        "contains_learner_name": false,
+        "contains_learner_voice": false,
+        "contains_learner_face": false,
+        "contains_learner_question": false,
+        "contains_private_data": false,
+        "approved_for_student_kb": true
+      }
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "section_001",
+      "title": "Opening idea",
+      "ordinal": 0,
+      "start_ms": 0,
+      "end_ms": 90000,
+      "canonical_path": "/library/classes/cnt_01J00000000000000000000000",
+      "deep_link": "/library/classes/cnt_01J00000000000000000000000#section-section_001",
+      "text_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    }
+  ],
+  "search_documents": [
+    {
+      "document_id": "document_001",
+      "section_id": "section_001",
+      "title": "Opening idea",
+      "body": "A deterministic approved Rabbi class excerpt used only as a schema fixture.",
+      "token_count": 13,
+      "sha256": "5a66331a84c068b11897540b284d8a91d71843ac21b41f8f4fe9f78021358587"
+    }
+  ],
+  "privacy": {
+    "source_scope": "approved_rabbi_content",
+    "contains_learner_name": true,
+    "contains_learner_voice": false,
+    "contains_learner_face": false,
+    "contains_learner_question": false,
+    "contains_private_data": false,
+    "approved_for_student_kb": true
+  },
+  "checksum_algorithm": "sha256",
+  "manifest_sha256": "037e582bba34c505cbd1d3799ed12fefdde2f01dc03fcb0885fc4d10f1b6afe4"
+}
