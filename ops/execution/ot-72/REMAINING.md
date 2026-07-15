@@ -2,36 +2,34 @@
 
 ## Phase 1 - Stripe Test-Mode Checkout And Parent Billing Adapter
 
-- Server-only test/live fail-closed Stripe adapter.
-- Offer policy gate with synthetic test fixtures and no live charges.
-- Raw-body webhook verification, immutable event ledger, replay protection, ordered reconciliation and safe DTOs.
+- Canary/sandbox verification remains pending because no protected Stripe test credential/product/price/portal canary gate was checked or used.
+- Commercial offer policy remains gated; no exact real commercial policy record was selected.
 
 ## Phase 2 - Resend Email And WAPI/WhatsApp Provider Truth
 
-- Server-only deny-by-default adapters.
-- Provider acknowledgement/state truth and authenticated webhook ingestion.
-- Dispatch consent/suppression checks, retry/dead-letter and contact-local projections.
+- Canary verification remains pending because no protected canary email/WhatsApp destination gate was checked or used.
+- Public WhatsApp auto-reply remains unmounted and unavailable until explicit protected policy/canary gates exist.
 
 ## Phase 3 - Zoom Protected Live-Class Adapter
 
-- Server-only adapter for OT-71 class contract.
-- Schedule/DST, host ownership, protected launch, occurrence references and provider readiness states.
+- Read-only provider verification remains pending behind an approved readiness gate.
+- Meeting creation/edit/webhook registration/live mutation remains forbidden without a separate exact canary flag.
 
 ## Phase 4 - Vimeo Protected Playback/Outcome Adapter
 
-- Server-only metadata/readiness adapter.
-- Short-lived playback descriptor seam and redacted async outcome support.
+- Read-only provider verification remains pending behind an approved readiness gate.
+- Upload/edit/delete/privacy/folder/webhook/publication mutation remains forbidden without a separate exact canary flag.
 
 ## Phase 5 - Separate One Time Telegram Transport
 
-- Distinct One Time bot transport adapter, webhook ingress and default-off worker ownership.
+- Real token ownership/mapping/single-consumer/canary verification remains pending behind protected config.
+- Webhook registration, long-lived consumer startup and Telegram sends remain unperformed.
 
 ## Phase 6 - Asynchronous BNA Oversight Contract
 
-- One Time producer-side redacted asynchronous control-plane outcome contract and BNA follow-up manifest.
+- Future BNA consumer/runtime integration remains a separate follow-up. This branch only produces the One Time-side schema/builder/outbox seam.
 
 ## Publication
 
-- Run focused verification.
-- Commit and push each phase checkpoint.
+- Commit and push implementation checkpoints.
 - Open one draft PR targeting `codex/ot60r-recovery-convergence`.

@@ -4,14 +4,13 @@ Branch: `codex/ot72-provider-sandbox-train`
 
 Base/source branch: `codex/ot60r-recovery-convergence`
 
-Current state: initial execution packet created; first checkpoint commit/push pending.
+Current state: OT-72 provider adapters, provider truth migration, descriptor seams, Telegram transport wrapper and oversight producer contract implemented and locally verified. Implementation commits/push and draft PR remain pending.
 
 Next action:
 
-1. Commit and push the initialized OT-72 packet.
-2. Inspect repository manifests, migrations and existing provider seams.
-3. Verify migration namespace `1700-1799` is free.
-4. Start Phase 1 Stripe adapter implementation.
+1. Stage, commit and push scoped implementation/checkpoint changes.
+2. Open one draft PR from `codex/ot72-provider-sandbox-train` to `codex/ot60r-recovery-convergence`.
+3. When protected canary config exists, run each provider subphase verification separately with before/after checkpoints.
 
 Do not:
 

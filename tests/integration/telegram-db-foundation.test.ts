@@ -34,7 +34,10 @@ afterEach(async () => {
 describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
   it('applies all migrations and documents pg-mem no-op rerun limitation', async () => {
     const first = await runMigrations(pool);
-    expect(first.at(-1)?.id).toBe('1600_ot51_telegram_bot_foundation');
+    expect(first.some((migration) => migration.id === '1600_ot51_telegram_bot_foundation')).toBe(
+      true,
+    );
+    expect(first.at(-1)?.id).toBe('1700_ot72_provider_truth');
     const applied = await pool.query(
       "SELECT checksum FROM onetime.schema_migrations WHERE id = '1600_ot51_telegram_bot_foundation'",
     );

@@ -6,14 +6,25 @@ OT-72 will expose server-only, default-off provider adapters and typed registrat
 
 ## Planned Provider Surfaces
 
-| Phase | Provider | Planned Surface | Default |
-| --- | --- | --- | --- |
-| 1 | Stripe | Test-mode billing adapter, webhook/event truth, safe billing DTOs | Off |
-| 2 | Resend/WAPI | Deny-by-default dispatch adapters, provider truth ingestion, sink fixtures | Off |
-| 3 | Zoom | Protected live-class readiness/launch adapter seam | Off |
-| 4 | Vimeo | Protected playback/readiness/outcome adapter seam | Off |
-| 5 | Telegram | Separate One Time bot transport and webhook ingress | Off |
-| 6 | BNA oversight | Redacted asynchronous producer-side outcome contract | Off |
+| Phase | Provider      | Planned Surface                                                            | Default |
+| ----- | ------------- | -------------------------------------------------------------------------- | ------- |
+| 1     | Stripe        | Test-mode billing adapter, webhook/event truth, safe billing DTOs          | Off     |
+| 2     | Resend/WAPI   | Deny-by-default dispatch adapters, provider truth ingestion, sink fixtures | Off     |
+| 3     | Zoom          | Protected live-class readiness/launch adapter seam                         | Off     |
+| 4     | Vimeo         | Protected playback/readiness/outcome adapter seam                          | Off     |
+| 5     | Telegram      | Separate One Time bot transport and webhook ingress                        | Off     |
+| 6     | BNA oversight | Redacted asynchronous producer-side outcome contract                       | Off     |
+
+## Implemented Direct Paths
+
+- Stripe test adapter: `packages/domain/src/billing/stripe-test-adapter.ts`
+- Delivery provider config/router/webhooks: `apps/worker/src/delivery/provider-config.ts`, `apps/worker/src/delivery/provider-router.ts`, `apps/worker/src/delivery/provider-webhooks.ts`
+- Provider event contracts/helpers/repository: `packages/contracts/src/providers/events.ts`, `packages/domain/src/providers/provider-events.ts`, `packages/db/src/providers/repository.ts`
+- Zoom seam: `packages/domain/src/providers/zoom.ts`
+- Vimeo seam: `packages/domain/src/providers/vimeo.ts`
+- Telegram config/transport: `packages/domain/src/telegram/config.ts`, `packages/domain/src/telegram/transport.ts`
+- Oversight contract/builder: `packages/contracts/src/providers/oversight.ts`, `packages/domain/src/providers/oversight.ts`
+- Migration: `packages/db/migrations/1700_ot72_provider_truth.sql`
 
 ## Collision Boundaries
 
@@ -25,3 +36,5 @@ OT-72 will expose server-only, default-off provider adapters and typed registrat
 - No public landing/signup UI edits.
 
 Any test-only composition change must be documented here before commit.
+
+No central route registration, AppShell, portal UI, CRM UI, shared auth/session logic, public landing/signup UI, webhook registration, long-lived consumer or deployment wiring was changed.

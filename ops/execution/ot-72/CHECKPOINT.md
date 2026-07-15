@@ -13,3 +13,29 @@
 - Branch point decision: use fetched source branch head so OT-72 inherits checkpoint/control files, while recording the candidate code SHA separately.
 
 No provider readiness checks, credential reads, network provider calls, sends, deployments, DNS changes, production database mutations, or provider mutations have been performed.
+
+## 2026-07-15T09:18:00+03:00 - Local Implementation Verified
+
+- Phase 1 Stripe: added server-only test-mode adapter behind `BillingProviderAdapter`; no Stripe SDK dependency was added because the accepted dependency policy only required the future SDK adapter to remain behind the interface. The adapter accepts an SDK-shaped injected client, rejects live-mode objects/references, verifies raw webhook input through the injected SDK seam, and returns local redirect handles while storing raw provider URLs only in an injected server vault.
+- Phase 2 Resend/WAPI: added default-off provider config, canary-gated delivery router, signed webhook normalization, and provider-event truth helpers. Real sends require matching protected canary destinations; none were configured or attempted.
+- Phase 3 Zoom: added protected readiness and short-lived launch descriptor seams for the daily 19:00 Asia/Jerusalem class contract. No meeting creation/edit/webhook registration path was mounted or run.
+- Phase 4 Vimeo: added metadata/readiness and short-lived playback descriptor seams. No upload/edit/delete/privacy/folder/webhook/publish mutation path was mounted or run.
+- Phase 5 Telegram: added separate One Time Telegram transport config and canary-gated real transport wrapper. No webhook registration, polling consumer, or Telegram send was run.
+- Phase 6 BNA oversight: added redacted async producer-side outcome schema/builder and repository outbox support. No BNA runtime code was edited.
+- Added `1700_ot72_provider_truth.sql` for provider event truth, readiness snapshots, oversight outbox, and local billing redirect handles.
+- Updated the stale OT-51 migration integration assertion to recognize OT-72's new 1700 migration while preserving OT-51 coverage.
+
+Verification:
+
+- `npm run typecheck` PASS.
+- `npx vitest run tests/unit/ot72-provider-adapters.test.ts tests/integration/ot72-provider-truth.test.ts` PASS 8/8.
+- `npm run unit` PASS 94/94.
+- `npm run integration` PASS 57/57.
+- `npm run lint` PASS.
+- `npm run secret:scan` PASS across 335 repo text files.
+- `git diff --check` PASS with Windows line-ending warnings only.
+- `npm run build` PASS.
+
+Full `npm run format` remains a source-branch baseline blocker: Prettier reports 183 pre-existing files. OT-72 changed files were formatted with `npx prettier --write`; the SQL migration was skipped because no SQL parser is configured.
+
+External mutation counts remain zero: no Stripe test call, live Stripe charge, Resend send, WhatsApp send, Zoom mutation, Vimeo mutation, Telegram send, webhook registration, DNS mutation, deployment, or production database mutation.

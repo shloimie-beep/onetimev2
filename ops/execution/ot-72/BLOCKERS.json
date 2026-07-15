@@ -1,6 +1,6 @@
 {
   "task_id": "OT-72",
-  "updated_at": "2026-07-15T09:02:00+03:00",
+  "updated_at": "2026-07-15T09:18:00+03:00",
   "blockers": [
     {
       "id": "BLK-OT72-001",
@@ -10,6 +10,26 @@
       "details": "Candidate control recorded 9e275e28a80cc8bf7fa82ade1092cd8cc21510d4 while fetched source branch head was dfef7de2035e08f1ee72e0133ccf656fe7a74444. Candidate SHA is an ancestor and post-candidate diff was classified as control/format-only.",
       "owner": "Codex",
       "resolution": "Branch from fetched source head and record candidate code SHA separately in INPUTS/STATE/DECISIONS.",
+      "external_action_required": false
+    },
+    {
+      "id": "BLK-OT72-002",
+      "scope": "provider_canaries",
+      "status": "pending_external_config",
+      "summary": "No protected provider canary flags or disposable provider resources were checked or used.",
+      "details": "Adapters, signed webhook normalizers, readiness seams and sink/fixture tests are implemented. Actual Stripe sandbox calls, Resend sends, WhatsApp sends, Zoom/Vimeo read-only checks or mutations, Telegram sends, webhook registration and long-lived consumers require exact protected config gates. No secret values were requested or printed.",
+      "owner": "Shloimie / protected runtime configuration owner",
+      "resolution": "Configure exact protected canary gates and disposable test resources outside chat, then run the relevant provider subphase verification.",
+      "external_action_required": true
+    },
+    {
+      "id": "BLK-OT72-003",
+      "scope": "format_baseline",
+      "status": "source_branch_baseline",
+      "summary": "Full repo Prettier check is not currently useful because the source branch reports 183 pre-existing files.",
+      "details": "OT-72 changed files were formatted with Prettier where supported. The SQL migration was not formatted because no SQL parser is configured.",
+      "owner": "Source branch formatting owner",
+      "resolution": "Keep OT-72 scoped formatting clean and do not reformat unrelated source-branch files in this provider branch.",
       "external_action_required": false
     }
   ]
