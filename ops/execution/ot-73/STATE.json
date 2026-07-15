@@ -1,0 +1,95 @@
+{
+  "task_id": "OT-73",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot73-landing-intent-reconciliation",
+  "branch": "codex/ot73-landing-intent-reconciliation",
+  "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "current_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "phase": "verification_complete_pending_commit_push_pr",
+  "status": "candidate",
+  "created_at": "2026-07-15T09:35:40+03:00",
+  "updated_at": "2026-07-15T10:12:13+03:00",
+  "completed_steps": [
+    "Read the BNA start chain only to identify that the attached task explicitly forbids BNA work.",
+    "Stopped BNA work after identifying the OT-73 prompt as a standalone onetimev2 task.",
+    "Located clean standalone repository worktree at C:\\Users\\User\\OneTimeOneTime-ot60r-recovery-convergence.",
+    "Fetched origin and verified origin/codex/ot60r-recovery-convergence equals dfef7de2035e08f1ee72e0133ccf656fe7a74444.",
+    "Created isolated worktree C:\\Users\\User\\OneTimeOneTime-ot73-landing-intent-reconciliation on branch codex/ot73-landing-intent-reconciliation from the exact immutable base.",
+    "Persisted the received prompt under ops/execution/ot-73/ORIGINAL-PROMPT.md.",
+    "Persisted the corrected addendum under ops/execution/ot-73/CORRECTED-LANDING-ADDENDUM.md.",
+    "Patched the dirty OT-73 worktree forward without reset after the corrected addendum superseded the earlier ticker-removal instruction.",
+    "Restored the moving countdown ticker using the existing campaign configuration.",
+    "Implemented the corrected public landing/signup content, public page builder, public enhancement script, CSS, local font asset, landing tests, and OT-73 evidence updates.",
+    "Captured required landing screenshots at 360x800, 390x844, 768x1024, and 1440x900 under ops/evidence/ot-73/screenshots.",
+    "Completed focused local verification for unit, build/typecheck, landing E2E, accessibility, performance, bundle, secret scan, screenshot assertions, and whitespace."
+  ],
+  "remaining_steps": [
+    "Commit and push codex/ot73-landing-intent-reconciliation.",
+    "Open a draft PR to codex/ot60r-recovery-convergence."
+  ],
+  "blockers": [],
+  "last_safe_command": "git status --short",
+  "test_results": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "summary": "Installed 348 packages from lockfile; npm reported 0 vulnerabilities."
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/lead-validation.test.ts",
+      "status": "passed",
+      "summary": "Focused lead/content contract suite passed 7 tests."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Clean build, public/app Vite bundles, public page generation, and typecheck passed."
+    },
+    {
+      "command": "npx playwright test tests/e2e/landing-signup.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "Corrected landing/signup suite passed 7 tests, including ticker, reduced motion, mobile header/CTA, gallery keyboard, footer, Toronto asset, lead behavior, and bundle separation checks."
+    },
+    {
+      "command": "npx playwright test tests/accessibility/public-a11y.spec.ts tests/performance/public-performance.spec.ts --reporter=line",
+      "status": "passed",
+      "summary": "Public accessibility/performance suite passed 6 tests after wrapping the ticker in a labelled region."
+    },
+    {
+      "command": "node ops/evidence/ot-73/capture-landing-screenshots.mjs",
+      "status": "passed",
+      "summary": "Captured 4 screenshots and asserted ticker, reduced motion, hero, receive/gain/who/gallery, footer, no stale price/no-card copy, no overlap, and no horizontal overflow."
+    },
+    {
+      "command": "npx tsx scripts/check-bundles.ts",
+      "status": "passed",
+      "summary": "Bundle check reported public_js_bytes=6316, public_css_bytes=12801, crm_js_bytes=223677."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 317 repo text files."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected; Git reported only expected CRLF working-copy warnings."
+    },
+    {
+      "command": "tsx scripts/check-bundles.ts",
+      "status": "failed",
+      "summary": "Direct PowerShell invocation failed because tsx is not on PATH; rerun through npx passed."
+    }
+  ],
+  "external_mutation_counts": {
+    "deployments": 0,
+    "production_database_writes": 0,
+    "provider_mutations": 0,
+    "messages_sent": 0,
+    "payments_or_charges": 0,
+    "dns_changes": 0,
+    "real_users_created": 0,
+    "bna_repository_modifications": 0
+  },
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot73-landing-intent-reconciliation, read ops/execution/ot-73/STATE.json and ops/execution/ot-73/RESUME.md, then continue at the first remaining step without deployment or production/provider mutation."
+}
