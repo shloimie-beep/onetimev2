@@ -1,4 +1,4 @@
-# OT-73 Original Prompt
+# DIRECT CODEX PROMPT - OT-73 LANDING INTENT RECONCILIATION
 
 ```text
 TASK: Implement the high-confidence One Time landing corrections now.

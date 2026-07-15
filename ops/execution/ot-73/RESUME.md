@@ -1,37 +1,30 @@
-# OT-73 Resume Packet
+# Resume OT-73 Landing Intent Reconciliation
 
-## State
+You are resuming OT-73 for `webcraft-media/onetimev2`.
 
-- Repository: `webcraft-media/onetimev2`
-- Base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
-- Branch: `codex/ot73-landing-intent-reconciliation`
-- Target PR base: `codex/ot60r-recovery-convergence`
-- Deployment/provider/DNS: not touched.
+1. Open `C:\Users\User\OneTimeOneTime-ot73-landing-intent-reconciliation`.
+2. Verify:
 
-## Implemented
+```powershell
+git remote get-url origin
+git branch --show-current
+git rev-parse HEAD
+git status --short
+```
 
-- Removed the public Rosh Hashanah campaign band from generated landing HTML.
-- Removed the public client deadline listener and campaign ticker CSS.
-- Updated hero height so the header flows directly into the hero with no reserved ticker space.
-- Preserved exact hero copy and three large landing CTAs.
-- Replaced mobile brand text hiding with a compact visible title/subtitle lockup.
-- Removed yellow styling from the `Secure student portal` bullet.
-- Removed the public Accomplishment internal disclaimer while preserving the Toronto image.
-- Added the shared logo footer for landing/signup with the canonical line and link order.
-- Added focused browser/unit assertions and OT-73 screenshot evidence.
+Expected origin: `https://github.com/webcraft-media/onetimev2.git`.
 
-## Validation
+Expected branch: `codex/ot73-landing-intent-reconciliation`.
 
-See `ops/execution/ot-73/TEST-RESULTS.md`.
+3. Read:
 
-## Evidence
+```text
+ops/execution/ot-73/STATE.json
+ops/execution/ot-73/REMAINING.md
+ops/execution/ot-73/CHECKPOINT.md
+ops/execution/ot-73/TEST-RESULTS.md
+ops/evidence/ot-73/COPY-AND-PLACEMENT-LEDGER.md
+```
 
-- Ledger: `ops/execution/ot-73/COPY-PLACEMENT-LEDGER.md`
-- Prompt: `ops/execution/ot-73/ORIGINAL-PROMPT.md`
-- Screenshot harness: `ops/evidence/ot-73/capture-landing-screenshots.mjs`
-- Screenshots: `ops/evidence/ot-73/screenshots/`
-
-## Pending
-
-- Exact operator-certified replacement copy for the Accomplishment paragraph remains unrecovered.
-- No replacement campaign/offer copy was supplied; the campaign band is removed rather than replaced.
+4. Continue at the first remaining step. Current expected remaining work is commit, push, and draft PR only.
+5. Do not deploy, mutate production/provider/DNS state, send messages, create real users, change BNA, or edit forbidden authenticated/server/provider/root surfaces.

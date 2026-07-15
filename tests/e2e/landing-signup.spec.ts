@@ -21,15 +21,19 @@ test('landing works on required mobile viewports with visible header and hero CT
   ]) {
     await page.setViewportSize(size);
     await page.goto('/');
+    const ticker = page.locator('.campaign-ticker');
     const brandLogo = page.locator('.brand-lockup img');
-    const brandTitle = page.locator('.brand-lockup strong', { hasText: 'One Time Mishnayos' });
-    const brandSubtitle = page.locator('.brand-lockup small', {
-      hasText: 'Worldwide Mishnah Learning',
-    });
+    const brandTitle = page.locator('.brand-lockup strong');
+    const brandSubtitle = page.locator('.brand-lockup small');
     const memberLogin = page.getByLabel('Primary').getByRole('link', { name: 'Member Login' });
     const headerSignup = page.getByLabel('Primary').getByRole('link', { name: 'Sign Up Now' });
-    const hamburger = page.getByLabel('Primary').getByRole('button', { name: 'Open navigation' });
+    const hamburger = page.getByRole('button', { name: 'Open navigation' });
     const heroSignup = page.locator('.hero .hero-cta');
+    await expect(ticker).toBeVisible();
+    await expect(ticker).toHaveAttribute(
+      'aria-label',
+      /JOIN NOW — FREE UNTIL ROSH HASHANAH — \d+ DAYS? TO ROSH HASHANAH/,
+    );
     await expect(brandLogo).toBeVisible();
     await expect(brandTitle).toBeVisible();
     await expect(brandSubtitle).toBeVisible();
@@ -47,11 +51,18 @@ test('landing works on required mobile viewports with visible header and hero CT
     await expectLocatorInsideViewport(headerSignup, size);
     await expectLocatorInsideViewport(hamburger, size);
     await expectLocatorInsideViewport(heroSignup, size);
-    const headerBox = await page.locator('.site-header').boundingBox();
-    const heroBox = await page.locator('.hero').boundingBox();
-    expect(headerBox).not.toBeNull();
-    expect(heroBox).not.toBeNull();
-    expect(Math.round(heroBox!.y)).toBe(Math.round(headerBox!.y + headerBox!.height));
+    const logoStyles = await brandLogo.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      return {
+        borderTopWidth: style.borderTopWidth,
+        width: box.width,
+        height: box.height,
+      };
+    });
+    expect(logoStyles.borderTopWidth).toBe('0px');
+    expect(logoStyles.width).toBeGreaterThanOrEqual(44);
+    expect(logoStyles.height).toBeGreaterThanOrEqual(44);
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
     );
@@ -64,6 +75,17 @@ test('landing preserves exact receive structure and asset assignments', async ({
   const requests: string[] = [];
   page.on('request', (request) => requests.push(request.url()));
   await page.goto('/');
+  const ticker = page.locator('.campaign-ticker');
+  await expect(ticker).toBeVisible();
+  await expect(ticker).toHaveAttribute('data-campaign-deadline', '2026-09-11');
+  await expect(ticker.locator('.campaign-ticker-item')).toHaveCount(6);
+  await expect(ticker).toHaveCSS('height', '32px');
+  await expect(page.locator('.yellow-text')).toHaveCount(0);
+  await expect(page.locator('a.button-primary[href="/signup"]')).toHaveCount(3);
+  await expect(
+    page.getByText(/ROSH HASHANAH SPECIAL|\$67|month afterward|No card today|trial/i),
+  ).toHaveCount(0);
+  await expect(page.locator('.hero').getByText(/FREE UNTIL ROSH HASHANAH/i)).toHaveCount(0);
   const sections = await page
     .locator('main > section')
     .evaluateAll((elements) =>
@@ -78,36 +100,31 @@ test('landing preserves exact receive structure and asset assignments', async ({
     'rabbi',
     'final-cta',
   ]);
-  await expect(
-    page.getByText('Worldwide Mishnah learning - live from Eretz Yisrael'),
-  ).toBeVisible();
-  await expect(page.getByText('Live every day at 7:00 p.m. Israel time.')).toBeVisible();
-  await expect(page.locator('.hero p')).toHaveText([
-    'Worldwide Mishnah learning - live from Eretz Yisrael',
-    'Live every day at 7:00 p.m. Israel time.',
+  await expect(page.locator('.hero .kicker span')).toHaveText([
+    'WORLDWIDE MISHNAH LEARNING',
+    'LIVE FROM ERETZ YISRAEL',
   ]);
-  await expect(page.locator('.campaign-ticker')).toHaveCount(0);
-  await expect(page.locator('[data-campaign-deadline]')).toHaveCount(0);
-  const bodyText = await page.locator('body').innerText();
-  expect(bodyText).not.toMatch(/JOIN FREE|ROSH HASHANAH|\$67|free until/i);
-  const publicScript = await (await page.request.get('/assets/public.js')).text();
-  expect(publicScript).not.toContain('data-campaign-deadline');
-  expect(publicScript).not.toContain('JOIN FREE');
-  await expect(page.getByRole('heading', { name: 'What You Receive' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Live Daily Mishnayos' })).toBeVisible();
-  const securePortalBullet = page.locator('.feature-panel li', {
-    hasText: 'Secure student portal',
-  });
-  await expect(securePortalBullet).toBeVisible();
-  await expect(securePortalBullet.locator('.yellow-text')).toHaveCount(0);
-  const securePortalColor = await securePortalBullet.evaluate(
-    (element) => getComputedStyle(element).color,
-  );
-  expect(['rgb(255, 210, 31)', 'rgb(255, 230, 128)']).not.toContain(securePortalColor);
+  await expect(page.getByText('Live every day at 7:00 p.m. Israel time.')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Everything He Needs to Learn, Review, and Remember' }),
+  ).toBeVisible();
+  await expect(page.getByText('A COMPLETE DIGITAL TORAH-LEARNING EXPERIENCE')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'Live Daily Mishnayos—plus the tools to make it stick.' }),
+  ).toBeVisible();
+  await expect(page.locator('.feature-panel li strong')).toHaveText([
+    'LIVE EVERY DAY',
+    'REVIEW ANYTIME',
+    'REMEMBER THE LEARNING',
+    'STAY ON TRACK',
+    'STUDENT PORTAL',
+    'PARENT PORTAL',
+  ]);
+  await expect(page.getByText(/not operator-certified final copy/i)).toHaveCount(0);
   await expect(page.getByText('Toronto.jpg pending')).toHaveCount(0);
   await expect(
     page.locator(
-      'article[data-benefit="Accomplishment"] img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]',
+      'article[data-benefit="Progress"] img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]',
     ),
   ).toBeVisible();
   await expect(
@@ -116,47 +133,76 @@ test('landing preserves exact receive structure and asset assignments', async ({
   await expect(
     page
       .locator(
-        'article[data-benefit="Clarity"], article[data-benefit="Excitement for learning Torah"]',
+        'article[data-benefit="Clarity"], article[data-benefit="Retention"], article[data-benefit="A Love of Learning"]',
       )
       .locator('img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]'),
   ).toHaveCount(0);
+  await expect(page.locator('.benefit-card h3')).toHaveText([
+    'Clarity',
+    'Retention',
+    'Progress',
+    'A Love of Learning',
+  ]);
   await expect(
     page.getByText(
-      "One perek a day gives him a clear goal, steady progress, and a real sense of finishing each day's learning.",
+      'Real understanding. Stronger memory. Steady progress. A genuine love for learning.',
     ),
   ).toBeVisible();
-  await expect(page.locator('article[data-benefit="Accomplishment"] small')).toHaveCount(0);
-  await expect(page.getByText('operator-certified final copy')).toHaveCount(0);
   await expect(
     page.getByText(
       'Sign up, get the class information, and join the daily 7:00 p.m. live Mishnayos class.',
     ),
   ).toBeVisible();
-  await expect(page.getByRole('heading', { name: "Who It's For" })).toBeVisible();
-  const signupCtas = await page
-    .locator('a.button-primary', { hasText: 'Sign Up Now' })
-    .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-  expect(signupCtas).toEqual(['/signup', '/signup', '/signup']);
-  await expect(page.locator('.footer-logo')).toBeVisible();
   await expect(
-    page.locator('.site-footer').getByText('One Time Mishnayos with Rabbi Eli Scheller.'),
+    page.getByRole('heading', {
+      name: 'A Ready-to-Run Mishnayos Class—Wherever Your Son Learns',
+    }),
   ).toBeVisible();
-  const footerLinks = await page
-    .locator('.site-footer nav a')
-    .evaluateAll((links) =>
-      links.map((link) => [link.textContent?.trim(), link.getAttribute('href')]),
-    );
-  expect(footerLinks).toEqual([
-    ['Home', '/'],
-    ['Sign Up Now', '/signup'],
-    ['Privacy', '/privacy'],
-    ['Terms', '/terms'],
-    ['Member Login', '/login'],
+  await expect(page.locator('.who li strong')).toHaveText([
+    'FAMILIES',
+    'HOMESCHOOLERS',
+    'SCHOOLS',
+    'LOCAL STUDENTS',
   ]);
+  await expect(page.getByText(/teacher replacement|absent-rebbe|substitute/i)).toHaveCount(0);
+  await expect(page.locator('.gallery')).toBeVisible();
+  await expect(page.locator('.gallery-slide').first().locator('figcaption')).toHaveText(
+    'Atlanta, Georgia',
+  );
+  await expect(page.getByText('Rabbi Scheller teaching a large student group.')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Next teaching photo' }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.gallery-slide').nth(1)).toBeVisible();
+  await expect(page.locator('.gallery-slide').nth(1).locator('figcaption')).toHaveText(
+    'Baltimore, Maryland',
+  );
   expect(requests.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
   const html = await page.content();
   expect(html).not.toContain('Monitored platform');
   expect(html).not.toContain('View as Rabbi');
+  expect(html).not.toContain('$67');
+});
+
+test('landing and signup use the approved footer contract', async ({ page }) => {
+  const expectedLinks = ['Home', 'Sign Up Now', 'Privacy', 'Terms', 'Member Login'];
+  for (const path of ['/', '/signup']) {
+    await page.goto(path);
+    const footer = page.locator('.site-footer');
+    await expect(footer.locator('img[src="/assets/brand/onetimelogo.webp"]')).toBeVisible();
+    await expect(footer.getByText('One Time Mishnayos with Rabbi Eli Scheller.')).toBeVisible();
+    await expect(footer.getByRole('link')).toHaveText(expectedLinks);
+    await expect(footer.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
+    await expect(footer.getByRole('link', { name: 'Sign Up Now' })).toHaveAttribute(
+      'href',
+      '/signup',
+    );
+    await expect(footer.getByRole('link', { name: 'Privacy' })).toHaveAttribute('href', '/privacy');
+    await expect(footer.getByRole('link', { name: 'Terms' })).toHaveAttribute('href', '/terms');
+    await expect(footer.getByRole('link', { name: 'Member Login' })).toHaveAttribute(
+      'href',
+      '/login',
+    );
+  }
 });
 
 test('Toronto accomplishment image keeps its crop across required viewports', async ({ page }) => {
@@ -168,7 +214,7 @@ test('Toronto accomplishment image keeps its crop across required viewports', as
   ]) {
     await page.setViewportSize(size);
     await page.goto('/');
-    const card = page.locator('article[data-benefit="Accomplishment"]');
+    const card = page.locator('article[data-benefit="Progress"]');
     const image = card.locator('img');
     await card.scrollIntoViewIfNeeded();
     await expect(image).toBeVisible();
@@ -186,10 +232,19 @@ test('Toronto accomplishment image keeps its crop across required viewports', as
     });
     expect(metrics.naturalWidth).toBeGreaterThanOrEqual(1000);
     expect(metrics.naturalHeight).toBeGreaterThanOrEqual(700);
-    expect(metrics.ratio).toBeGreaterThan(1.55);
-    expect(metrics.ratio).toBeLessThan(1.65);
+    expect(metrics.ratio).toBeGreaterThan(1.3);
+    expect(metrics.ratio).toBeLessThan(1.36);
     expect(metrics.objectPosition).toBe('50% 48%');
   }
+});
+
+test('landing ticker has a readable reduced-motion state', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+  const firstTickerItem = page.locator('.campaign-ticker-item').first();
+  await expect(firstTickerItem).toBeVisible();
+  await expect(firstTickerItem).toContainText('JOIN NOW — FREE UNTIL ROSH HASHANAH');
+  await expect(page.locator('.campaign-ticker-track')).toHaveCSS('animation-name', 'none');
 });
 
 test('family and school signup submit through canonical lead endpoint', async ({ page }) => {

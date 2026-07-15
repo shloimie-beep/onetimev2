@@ -3,6 +3,18 @@
   "updated_at": "2026-07-15T01:20:00+03:00",
   "tasks": [
     {
+      "task_id": "OT-73",
+      "title": "Landing intent reconciliation",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot73-landing-intent-reconciliation",
+      "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "state_path": "ops/execution/ot-73/STATE.json",
+      "resume_path": "ops/execution/ot-73/RESUME.md",
+      "status": "building",
+      "deployment_allowed": false,
+      "production_provider_mutations_allowed": false
+    },
+    {
       "task_id": "OT-60R",
       "title": "Recovery convergence for standalone One Time product",
       "repository": "webcraft-media/onetimev2",
