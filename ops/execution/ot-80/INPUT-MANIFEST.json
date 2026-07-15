@@ -1,0 +1,136 @@
+{
+  "schema_version": "onetime.ot80.input_manifest.v1",
+  "task_id": "OT-80",
+  "generated_on": "2026-07-15",
+  "repository": "webcraft-media/onetimev2",
+  "accepted_base": {
+    "ref": "codex/ot60r-recovery-convergence",
+    "sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+    "pr": 17
+  },
+  "target": {
+    "branch": "codex/ot80-one-shot-final-convergence",
+    "pr_base": "codex/ot60r-recovery-convergence"
+  },
+  "source_lanes": [
+    {
+      "task": "OT-71",
+      "branch": "codex/ot71-product-core-train",
+      "observed_sha": "e357f5f0fa42d4087e8062113e619181226a5d57",
+      "observed_state": "product phases through owner/admin dashboard implemented; combined proof/publication pending",
+      "pr": null
+    },
+    {
+      "task": "OT-72",
+      "branch": "codex/ot72-provider-sandbox-train",
+      "observed_sha": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+      "observed_state": "published provider sandbox/default-off lane",
+      "pr": 18
+    },
+    {
+      "task": "OT-73",
+      "branch": "codex/ot73-landing-intent-reconciliation",
+      "observed_sha": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "observed_state": "published corrected landing lane",
+      "pr": 19
+    },
+    {
+      "task": "OT-74",
+      "branch": "codex/ot74-audience-reconciliation",
+      "observed_sha": "51cd99dc4434f0354ba229620ebe89558efeb120",
+      "observed_state": "published audience reconciliation lane; feature is not yet centrally mounted",
+      "pr": 22
+    },
+    {
+      "task": "OT-75",
+      "branch": "codex/ot75-release-observability-readiness",
+      "observed_sha": "028a05f3e44a7b37c2395576aa3800f507dd5268",
+      "observed_state": "published release/observability lane; PostgreSQL teardown flake must inherit OT-72 guard",
+      "pr": 20
+    },
+    {
+      "task": "OT-76",
+      "branch": "codex/ot76-day-one-certification-harness",
+      "observed_sha": "b9ece3146d2de6edc9f386712fad146f17b18031",
+      "observed_state": "published certification harness; strict mode is expected to fail until convergence",
+      "pr": 21
+    }
+  ],
+  "head_policy": {
+    "authority": "fetched origin branch head at OT-80 freeze time",
+    "observed_sha_is_advisory": true,
+    "stale_state_or_registry_is_not_a_stop_gate": true,
+    "late_lane_refetch_before_certification": true
+  },
+  "communications_input": {
+    "relative_path": "inputs/OT-DAYONE-COMMUNICATIONS-COPY-PACK.zip",
+    "sha256": "ba1ffe027c4f89e93133fdb3a1a4511b971e52d4441b06b758022cbd1876440d",
+    "message_catalog_sha256": "865f04e7fd8d5842376485481804fb9d21595797fd9f40e8b5aa45424ae3a88a",
+    "catalog_records": 19,
+    "implementation_lane_discovery": "search fetched remote refs and execution evidence for either the ZIP hash or message-catalog hash; use a safe descendant lane if present, otherwise implement directly from this archive",
+    "integration_policy": "immutable audit input plus server-owned versioned catalog; adapt to existing outbox and worker"
+  },
+  "binding_product_decisions": {
+    "public_brand": "One Time Mishnayos",
+    "internal_project_name": "OneTimeOneTime",
+    "visual_brand": "black white yellow with restrained ice-blue accents",
+    "public_language": "English",
+    "transition_domain": "join.onetimeonetime.com",
+    "family_signup": "commit contact and Family lead first; receipt is provider-independent; grant free-promotion access only after successful persistence and eligibility",
+    "school_signup": "commit School lead for human follow-up only; never grant class access, reminder, portal, or Family messaging",
+    "class_time": "19:00 Asia/Jerusalem",
+    "reminder_time": "18:30 Asia/Jerusalem",
+    "reminder_display_phrase": "Israel time",
+    "class_access": "One Time protected application route only; never raw Zoom/provider URL",
+    "owner": "Rabbi Eli Scheller",
+    "administrator": "Shloimie Dratler",
+    "impersonation": "forbidden",
+    "parent_student_identity": "separate accounts and separate scopes; parent manages linked learner access without entering the learner session",
+    "stripe": "test/sandbox only; no live charges; Stripe is entitlement/billing input and never authentication",
+    "sms": "disabled",
+    "studio_and_agent_prompt_configuration": "BNA-only for now; do not expose it in the Rabbi product",
+    "runtime_bna_dependency": "forbidden; asynchronous redacted oversight envelope only"
+  },
+  "landing_invariants": {
+    "moving_top_ticker": "keep Join now — free until Rosh Hashanah and its live countdown",
+    "hero_price_line": "remove the small yellow $67/month/no-card paragraph from the hero",
+    "hero_cta_mobile": "Sign Up Now must be visible in the initial 360x800 and 390x844 viewport",
+    "logo": "larger and borderless",
+    "member_login": "route to real login when activation is ready; truthful holding state only otherwise",
+    "what_you_receive": "icon above heading; yellow result/date-style line; concise yellow bullets; no overlapping circular child treatment",
+    "who_its_for": "include Families and Schools, with Schools framed as live Rabbi class or instructional support, not automatic access",
+    "gallery": "centered, color images, place-only captions",
+    "coverage_copy": "omit coverage claims",
+    "hero_kicker_lines": [
+      "Worldwide Mishnah Learning",
+      "Live from Eretz Yisrael"
+    ],
+    "forbidden_price_copy": "$67/month afterward"
+  },
+  "staging_authorization": {
+    "isolated_onetime_railway_staging_create_or_update": true,
+    "isolated_staging_postgres_create_or_migrate": true,
+    "synthetic_demo_seed": true,
+    "single_admin_activation_recipient": "sdratler@gmail.com",
+    "single_admin_activation_send": true,
+    "admin_activation_channel": "email only",
+    "provider_mode": "sink or test only",
+    "production_environment": false,
+    "production_database": false,
+    "root_domain_or_dns_change": false,
+    "live_stripe_charge": false,
+    "bulk_or_audience_send": false,
+    "real_family_school_or_legacy_send": false,
+    "real_legacy_import_mutation": false
+  },
+  "launch_priority": [
+    "fast corrected public landing",
+    "atomic Family and School lead capture",
+    "owner/admin login and useful Rabbi dashboard",
+    "fast searchable CRM with clear tags and contact detail",
+    "truthful communications history and secure class-access flow",
+    "classes/content and protected provider seams",
+    "Parent and Student portal foundations",
+    "release evidence and isolated staging"
+  ]
+}

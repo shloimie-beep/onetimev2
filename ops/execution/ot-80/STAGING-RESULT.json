@@ -1,0 +1,9 @@
+{
+  "schema_version": "onetime.ot80.staging_result.v1",
+  "updated_at": "2026-07-15T11:48:00+03:00",
+  "status": "not_attempted",
+  "reason": "OT80 candidate is NOT_READY; isolated staging may run only after candidate gates allow it.",
+  "deployment_performed": false,
+  "staging_mutation_performed": false,
+  "activation_email_sent": false
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": "onetime.ot80.state.v1",
+  "task_id": "OT-80",
+  "title": "One-shot final convergence for standalone One Time product",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ot80-one-shot-final-convergence",
+  "pr_base": "codex/ot60r-recovery-convergence",
+  "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "created_at": "2026-07-15T11:48:00+03:00",
+  "updated_at": "2026-07-15T11:48:00+03:00",
+  "status": "phase0_checkpoint_ready",
+  "candidate_status": "NOT_READY",
+  "current_phase": "phase0_freeze_and_persist",
+  "source_heads_path": "ops/execution/ot-80/SOURCE-HEADS.json",
+  "prompt_path": "ops/execution/ot-80/ORIGINAL-PROMPT.md",
+  "input_manifest_path": "ops/execution/ot-80/INPUT-MANIFEST.json",
+  "communications_decisions_path": "ops/execution/ot-80/COMMUNICATIONS-INTEGRATION-DECISIONS.md",
+  "communications_archive_path": "ops/execution/ot-80/audit-inputs/OT-DAYONE-COMMUNICATIONS-COPY-PACK.zip",
+  "communications_archive_sha256": "ba1ffe027c4f89e93133fdb3a1a4511b971e52d4441b06b758022cbd1876440d",
+  "communications_message_catalog_sha256": "865f04e7fd8d5842376485481804fb9d21595797fd9f40e8b5aa45424ae3a88a",
+  "communications_implementation_disposition": "No fetched remote ref or local OneTime worktree evidence matched the communications ZIP/catalog hashes during Phase 0; implement directly from the preserved audit input unless a later source refetch discovers a safe descendant lane.",
+  "production_authorized": false,
+  "isolated_staging_authorized_after_gates": true,
+  "single_staging_admin_activation_email_authorized_after_gates": true,
+  "single_staging_admin_activation_recipient": "sdratler@gmail.com",
+  "external_mutations_so_far": {
+    "branch_created": true,
+    "commit_created": false,
+    "pushed": false,
+    "draft_pr_opened": false,
+    "deployment_performed": false,
+    "staging_mutation_performed": false,
+    "email_send_performed": false,
+    "provider_mutation_performed": false,
+    "production_mutation_performed": false
+  },
+  "next_actions": [
+    "Commit and push the Phase 0 packet persistence checkpoint.",
+    "Integrate OT-71 product core first, preserving provenance and recording collisions.",
+    "After each source lane, update checkpoint, source heads, conflict ledger, migration ledger, test results, and resume instructions before pushing another checkpoint."
+  ]
+}

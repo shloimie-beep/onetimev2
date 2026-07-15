@@ -1,0 +1,8 @@
+{
+  "schema_version": "onetime.ot80.action_route_registry.v1",
+  "updated_at": "2026-07-15T11:48:00+03:00",
+  "status": "not_integrated",
+  "routes": [],
+  "actions": [],
+  "next_action": "Populate after source lane integration and final route/action reconciliation."
+}
