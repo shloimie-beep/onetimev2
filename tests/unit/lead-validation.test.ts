@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { leadPayloadSchema } from '../../packages/contracts/src/index.ts';
 import {
+  campaign,
   campaignTicker,
   landingContent,
   normalizePhone,
@@ -51,29 +52,48 @@ describe('lead validation and content contracts', () => {
     expect(successCopy('school').body).toContain('does not create class access');
   });
 
-  it('suppresses the campaign after the Asia/Jerusalem deadline', () => {
+  it('keeps the approved campaign countdown without stale pricing copy', () => {
+    const publicCopy = JSON.stringify({ campaign, landingContent });
+    expect(campaign.id).toBe('free-until-rosh-hashanah-2026');
+    expect(campaign.deadlineDate).toBe('2026-09-11');
+    expect(campaign.timezone).toBe('Asia/Jerusalem');
     expect(campaignTicker(new Date('2026-09-10T20:59:00Z'))).toContain(
-      'JOIN FREE UNTIL ROSH HASHANAH',
+      'JOIN NOW — FREE UNTIL ROSH HASHANAH',
     );
     expect(campaignTicker(new Date('2026-09-11T00:01:00+03:00'))).toBeNull();
+    expect(publicCopy).not.toMatch(/\$67|monthly price|No card today|trial/i);
   });
 
   it('keeps the receive panel exact and scoped', () => {
-    expect(landingContent.receive.title).toBe('Live Daily Mishnayos');
-    expect(landingContent.receive.bullets).toContain(
-      'Secure student portal - gamified access to Rabbi Scheller and student-scoped updates',
+    expect(landingContent.receive.heading).toBe(
+      'Everything He Needs to Learn, Review, and Remember',
     );
+    expect(landingContent.receive.title).toBe(
+      'Live Daily Mishnayos—plus the tools to make it stick.',
+    );
+    expect(landingContent.receive.bullets.map((bullet) => bullet.lead)).toEqual([
+      'LIVE EVERY DAY',
+      'REVIEW ANYTIME',
+      'REMEMBER THE LEARNING',
+      'STAY ON TRACK',
+      'STUDENT PORTAL',
+      'PARENT PORTAL',
+    ]);
     expect(JSON.stringify(landingContent)).not.toContain('Monitored platform');
     expect(JSON.stringify(landingContent)).not.toContain('Questions with Rabbi Scheller');
   });
 
   it('assigns the approved Toronto accomplishment asset without substituting Lakewood', () => {
-    const accomplishment = landingContent.gain.cards.find(
-      (card) => card.title === 'Accomplishment',
-    );
-    expect(accomplishment?.image).toBe('/assets/outcomes/accomplishment-toronto-class.jpg');
-    expect(accomplishment?.alt).toContain('Toronto');
-    expect(accomplishment?.assetBlocker).toBeNull();
+    const progress = landingContent.gain.cards.find((card) => card.title === 'Progress');
+    expect(progress?.image).toBe('/assets/outcomes/accomplishment-toronto-class.jpg');
+    expect(progress?.alt).toContain('Toronto');
+    expect(progress?.assetBlocker).toBeNull();
+    expect(landingContent.gain.cards.map((card) => card.title)).toEqual([
+      'Clarity',
+      'Retention',
+      'Progress',
+      'A Love of Learning',
+    ]);
     expect(landingContent.gain.cards.some((card) => card.image?.includes('lakewood'))).toBe(false);
   });
 });
