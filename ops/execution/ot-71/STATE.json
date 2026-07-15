@@ -8,10 +8,10 @@
   "source_pr": 17,
   "source_remote_ref": "origin/pr/17",
   "source_remote_head_observed_at_start": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
-  "phase": "phase_2_complete",
+  "phase": "phase_3_complete",
   "status": "building",
   "created_at": "2026-07-15T09:13:20+03:00",
-  "updated_at": "2026-07-15T09:59:23+03:00",
+  "updated_at": "2026-07-15T10:19:17+03:00",
   "completed_steps": [
     "Received OT-71R self-healing prompt pack from C:\\Users\\User\\Downloads\\OT71-SELF-HEALING-CODEX-PROMPT-PACK.zip.",
     "Listed archive contents and verified the prompt pack includes START-HERE, manifest, main prompt, and SHA256 sums.",
@@ -36,13 +36,19 @@
     "Added provider-neutral content domain service with idempotent local outcome admission, stale revision handling, supersession, recursive provider metadata redaction, digest-only provider refs, audit rows, and all-active-learner entitlements for published outcomes.",
     "Added portal content access adapter that returns only published entitled items and review sheets with local protected actions and no raw provider URLs.",
     "Added owner/admin content library list/detail APIs and a CSRF-protected local content outcome sink; viewer sessions are denied.",
-    "Verified Phase 2 with focused content tests, typecheck, lint, build/typecheck, secret scan, git diff whitespace checks, and full unit/integration suite."
+    "Verified Phase 2 with focused content tests, typecheck, lint, build/typecheck, secret scan, git diff whitespace checks, and full unit/integration suite.",
+    "Implemented Phase 3 migration 1700 for account lifecycle tokens, local delivery intents, idempotency records, audit events, session invalidations, learner identity links, and parent/student account roles.",
+    "Added account lifecycle contracts for invitations, parent activation, student setup/reset, password reset, lifecycle token completion, delivery summaries, and student state responses.",
+    "Added canonical-auth account lifecycle service for default-off owner/admin invitations, parent activation, parent-managed student setup/reset/suspend/restore, and password reset with hashed expiring single-use tokens.",
+    "Reused existing auth/MFA/session tables and helpers so privileged owner/admin invitations require TOTP MFA, learner profiles remain distinct from login identities, and parent flows cannot retrieve student secrets or enter student sessions.",
+    "Added durable idempotency, local sink delivery intents without raw token persistence, rate-limited password reset requests, lifecycle audit rows, and session-family invalidation on security-sensitive changes.",
+    "Verified Phase 3 with focused account lifecycle and migration tests, typecheck, lint, build/typecheck, secret scan, git diff whitespace checks, and full unit/integration suite."
   ],
   "current_phase_matrix": {
     "initial_packet": "completed",
     "phase_1_class_occurrence_fulfillment": "completed",
     "phase_2_content_library": "completed",
-    "phase_3_account_lifecycle": "pending",
+    "phase_3_account_lifecycle": "completed",
     "phase_4_parent_student_portals": "pending",
     "phase_5_owner_admin_dashboard": "pending",
     "phase_6_combined_proof_publication": "pending"
@@ -58,5 +64,5 @@
     "real_users_created": 0,
     "bna_repository_modifications": 0
   },
-  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot71-product-core-train, verify origin/branch/head/status, read ops/execution/ot-71/STATE.json and RESUME.md, then continue at the first pending phase without rerunning the failed OT-71 preflight."
+  "resume_instruction": "Open C:\\Users\\User\\OneTimeOneTime-ot71-product-core-train, verify origin/branch/head/status, read ops/execution/ot-71/STATE.json and RESUME.md, then continue at Phase 4 parent/student portals without rerunning the failed OT-71 preflight."
 }

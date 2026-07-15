@@ -24,3 +24,12 @@
 - Model publication and entitlement separately: portal adapters return only items with a published revision and an active entitlement.
 - Use app-relative protected action descriptors for content/review access; do not return raw playback URLs or provider launch targets.
 - Keep content ingestion deterministic and idempotent: exact replay returns the stored response, changed-byte replay returns an idempotency conflict, older revisions are recorded as stale/superseded without changing the item head.
+
+## 2026-07-15 Phase 3
+
+- Reuse canonical account, password hashing, TOTP MFA, session, security-version, and durable rate-limit primitives instead of introducing a second auth runtime.
+- Model lifecycle links separately from learner profiles so a learner profile can be connected to a distinct canonical student login identity.
+- Persist only SHA-256 token hashes and safe delivery metadata; proof-mode raw tokens are returned only from the immediate local service response.
+- Keep lifecycle delivery default-off and sink-only for OT-71; no emails, provider identity calls, or real credential sends are performed.
+- Require privileged owner/admin invitation acceptances to complete through the existing TOTP MFA flow.
+- Treat parent management as lifecycle control over student setup/reset/suspend/restore, not as permission to retrieve student secrets or enter a student session.

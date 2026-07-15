@@ -7,7 +7,7 @@
 - Branch: `codex/ot71-product-core-train`
 - Immutable base: `dfef7de2035e08f1ee72e0133ccf656fe7a74444`
 - Source PR ref: `origin/pr/17`
-- Phase: Phase 2 complete
+- Phase: Phase 3 complete
 - Status: building
 
 ## Completed
@@ -33,11 +33,17 @@
 - Added portal content adapter hooks returning only published entitled library/review items with local protected actions.
 - Added owner/admin content library list/detail APIs and CSRF-protected local outcome admission; viewer sessions are denied.
 - Verified Phase 2 with focused and full unit/integration tests plus typecheck, lint, build, secret scan, and whitespace checks.
+- Added migration `1700_ot71_account_lifecycle.sql` for hashed lifecycle tokens, local delivery intents, idempotency records, audit events, session invalidations, learner identity links, and parent/student roles.
+- Added account lifecycle contracts for owner/admin invitations, parent activation, student setup/reset, password reset, token completion, delivery summaries, and student state responses.
+- Added canonical-auth account lifecycle service for default-off invitations, parent activation, parent-managed student setup/reset/suspend/restore, and password reset.
+- Reused existing password hashing, account users, TOTP MFA, sessions, durable rate limits, and session invalidation primitives; no second auth runtime was created.
+- Stored no raw token material in lifecycle persistence and kept learner profiles separate from login identities.
+- Verified Phase 3 with focused account lifecycle and migration tests plus full typecheck, lint, build, secret scan, whitespace checks, and unit/integration suites.
 
 ## Next
 
-1. Commit and push the Phase 2 checkpoint.
-2. Start Phase 3 account and credential lifecycle integration.
+1. Start Phase 4 parent and student portal mounting.
+2. Preserve household and single-learner access boundaries while wiring portals to canonical auth.
 3. Keep live provider activation and all OT-72-owned transports disabled.
 
 ## Prohibitions

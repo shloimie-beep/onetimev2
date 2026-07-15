@@ -27,6 +27,21 @@ export {
   redactProviderMetadata,
 } from './content/service.ts';
 export {
+  AccountLifecycleError,
+  acceptOwnerAdminInvitation,
+  acceptParentActivation,
+  acceptStudentSetup,
+  completePasswordReset,
+  completeStudentReset,
+  createOwnerAdminInvitation,
+  createParentActivation,
+  createStudentReset,
+  createStudentSetup,
+  requestPasswordReset,
+  restoreStudentIdentity,
+  suspendStudentIdentity,
+} from './accounts/lifecycle.ts';
+export {
   authenticateUser,
   activateTotpEnrollment,
   canAssignContacts,

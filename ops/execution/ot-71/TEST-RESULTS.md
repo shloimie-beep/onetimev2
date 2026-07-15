@@ -39,3 +39,16 @@
 | `npm run secret:scan`                                                                                    | Passed | Secret scan passed across 330 repo text files.                                                               |
 | `git diff --check`                                                                                       | Passed | No whitespace errors detected. Git emitted only existing CRLF normalization warnings for tracked text files. |
 | `npm run test`                                                                                           | Passed | Full unit and integration suites passed: 93 unit tests and 69 integration tests.                             |
+
+## Phase 3 Verification
+
+| Command                                                                                                                  | Status | Summary                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------ |
+| `npx vitest run --config vitest.integration.config.ts tests/integration/accounts/account-lifecycle.test.ts`              | Passed | 3 account lifecycle integration tests passed for invitations, parent/student lifecycle, and password resets. |
+| `npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts`                  | Passed | Migration foundation verification passed with latest migration `1700_ot71_account_lifecycle`.                |
+| `npm run typecheck`                                                                                                      | Passed | TypeScript completed successfully after Phase 3 changes.                                                     |
+| `npm run lint`                                                                                                           | Passed | ESLint completed successfully.                                                                               |
+| `npm run build`                                                                                                          | Passed | Clean build completed, including public/app Vite bundles, public page build, and typecheck.                  |
+| `npm run secret:scan`                                                                                                    | Passed | Secret scan passed across 334 repo text files.                                                               |
+| `git diff --check`                                                                                                       | Passed | No whitespace errors detected. Git emitted only existing CRLF normalization warnings for tracked text files. |
+| `npm run test`                                                                                                           | Passed | Full unit and integration suites passed: 93 unit tests and 72 integration tests.                             |

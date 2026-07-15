@@ -30,3 +30,14 @@
 - Added local protected content/review actions under app-relative paths with no Vimeo/provider URLs.
 - Added owner/admin content library list/detail APIs and a CSRF-protected local outcome admission endpoint; viewer sessions are denied.
 - Added unit and integration coverage for redaction, replay/idempotency, stale revision ordering, supersession, portal entitlement filtering, bounded lists, owner/admin APIs, CSRF, and no raw provider URL leakage.
+
+## Phase 3: Account And Credential Lifecycle
+
+- Added migration namespace `1700` for account lifecycle tokens, local delivery intents, idempotency records, audit events, session invalidations, learner identity links, and expanded parent/student canonical account roles.
+- Added account lifecycle contracts for owner/admin invitation, parent activation, student setup/reset, password reset, token completion, delivery summaries, and student state responses.
+- Added default-off local sink lifecycle delivery intents that persist only token digests and safe metadata; direct tests receive proof tokens only from the immediate service response.
+- Added owner/admin invitation acceptance through canonical users with required privileged TOTP MFA lifecycle.
+- Added parent activation and parent-managed student setup/reset/suspend/restore while keeping learner profiles separate from login identities.
+- Added password reset requests with durable rate limits, expiring hashed single-use tokens, audit rows, and session-family invalidation.
+- Reused existing `account_users`, password hashing, MFA, session, security-version, and rate-limit runtime; no second auth system was introduced.
+- Added integration coverage for invitation replay/conflict, raw-token non-persistence, parent/student lifecycle, student session invalidation, password reset single-use behavior, and migration application.

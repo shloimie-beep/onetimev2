@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export * from './classes/index.ts';
 export * from './content/index.ts';
+export * from './accounts/index.ts';
 
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;
@@ -107,7 +108,14 @@ export function publicFieldErrors(error: z.ZodError): Record<string, string> {
   return output;
 }
 
-export const userRoleSchema = z.enum(['owner', 'admin', 'crm_agent', 'viewer']);
+export const userRoleSchema = z.enum([
+  'owner',
+  'admin',
+  'crm_agent',
+  'viewer',
+  'parent',
+  'student',
+]);
 export type UserRole = z.infer<typeof userRoleSchema>;
 
 export const roleDisplayLabel: Record<UserRole, string> = {
@@ -115,6 +123,8 @@ export const roleDisplayLabel: Record<UserRole, string> = {
   admin: 'Administrator',
   crm_agent: 'CRM Agent',
   viewer: 'Viewer',
+  parent: 'Parent',
+  student: 'Student',
 };
 
 export const leadStatusSchema = z.enum([
