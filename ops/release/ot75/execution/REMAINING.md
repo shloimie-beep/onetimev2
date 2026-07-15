@@ -2,7 +2,8 @@
 
 Local preparation:
 
-- Commit, push, and open a draft PR against `codex/ot60r-recovery-convergence`.
+- None. Draft PR #20 is open at
+  `https://github.com/webcraft-media/onetimev2/pull/20`.
 
 Activation-only blockers for OT-80:
 

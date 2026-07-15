@@ -32,3 +32,9 @@ npm run secret:scan
 
 Do not deploy or mutate Railway, DNS, databases, providers, payments, messages,
 real users, or BNA.
+
+Draft PR:
+
+```text
+https://github.com/webcraft-media/onetimev2/pull/20
+```
