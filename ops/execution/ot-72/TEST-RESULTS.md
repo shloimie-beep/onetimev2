@@ -50,3 +50,12 @@
 - `npm run unit` PASS, 12 files, 95 tests.
 - `npm run integration` PASS, 11 files, 57 tests.
 - `git diff --check` PASS with Windows line-ending warnings only.
+
+## 2026-07-15 PostgreSQL Assurance Teardown Guard Verification
+
+- `npm run typecheck` PASS.
+- `npm run lint` PASS.
+- `npx vitest run tests/unit/ot72-provider-adapters.test.ts` PASS, 1 file, 8 tests.
+- `npm run secret:scan` PASS across 336 repo text files.
+- `git diff --check` PASS with Windows line-ending warnings only.
+- Remote PostgreSQL assurance rerun is pending after push.

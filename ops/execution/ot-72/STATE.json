@@ -4,9 +4,9 @@
   "repository": "webcraft-media/onetimev2",
   "source_branch": "codex/ot60r-recovery-convergence",
   "target_branch": "codex/ot72-provider-sandbox-train",
-  "status": "local_followup_manifest_verified_pending_push",
+  "status": "local_followup_manifest_and_ci_teardown_fix_verified_pending_push",
   "created_at": "2026-07-15T09:02:00+03:00",
-  "updated_at": "2026-07-15T09:40:09+03:00",
+  "updated_at": "2026-07-15T09:46:34+03:00",
   "source_remote_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "candidate_control_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
   "branch_point_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
@@ -46,6 +46,12 @@
     "runtime_wiring": "future_followup_only",
     "synchronous_bna_call_allowed": false,
     "bna_runtime_edit_in_ot72": false
+  },
+  "ci_harness_followup": {
+    "path": "scripts/postgres-assurance/run.ts",
+    "status": "local_verified_pending_remote_ci",
+    "scope": "test_harness_teardown_guard",
+    "reason": "Current PR head completed the PostgreSQL assurance body, then failed on an unhandled pg Pool 57P01 teardown error after ephemeral database termination."
   },
   "external_mutation_counts": {
     "stripe_test_calls": 0,

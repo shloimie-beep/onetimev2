@@ -44,6 +44,11 @@ The BNA oversight follow-up manifest is a producer-side contract fixture only.
 It allows a future asynchronous BNA consumer packet but forbids synchronous BNA
 calls and confirms no BNA runtime files are edited by OT-72.
 
+Test-only harness repair: `scripts/postgres-assurance/run.ts` now marks
+ephemeral database teardown before closing fixture pools and suppresses only the
+expected PostgreSQL `57P01` pool error emitted during that teardown. It does not
+change migrations, provider runtime, route wiring, or production database code.
+
 ## Draft PR
 
 - URL: https://github.com/webcraft-media/onetimev2/pull/18

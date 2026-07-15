@@ -67,3 +67,10 @@ No external provider calls, sends, webhook registrations, deployment, DNS change
 - Extended `tests/unit/ot72-provider-adapters.test.ts` to validate the manifest as async-only, future-follow-up-only, no synchronous BNA call, and no OT-72 BNA runtime edit.
 - Local verification passed: focused OT-72 unit test, full unit suite, full integration suite, typecheck, lint, secret scan, scoped Prettier check, and `git diff --check`.
 - No external provider calls, sends, webhook registrations, deployment, DNS change, production database mutation, BNA script execution, or BNA edits were performed.
+
+## 2026-07-15T09:46:34+03:00 - PostgreSQL Assurance Teardown Guard
+
+- Current PR head `b8e6f2f3684e473744c2068112cae8992c73ba67` completed the PostgreSQL assurance body, then failed on an unhandled `pg.Pool` `57P01` error during ephemeral database teardown.
+- Added a narrow test-harness guard in `scripts/postgres-assurance/run.ts`: mark teardown before closing each ephemeral pool and suppress only expected PostgreSQL `57P01` pool errors after teardown has started.
+- This changes no migrations, provider runtime, central route wiring, deployments, production database code, sends, or provider calls.
+- Local verification passed: `npm run typecheck`, `npm run lint`, `npx vitest run tests/unit/ot72-provider-adapters.test.ts`, `npm run secret:scan`, and `git diff --check`.
