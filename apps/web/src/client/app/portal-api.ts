@@ -49,7 +49,7 @@ export async function runStudentAccessOperation(input: {
   csrfToken: string;
   householdKey: string;
   learnerKey: string;
-  operation: 'setup' | 'reset' | 'suspend' | 'restore';
+  operation: 'setup' | 'reset' | 'suspend' | 'restore' | 'revoke_sessions';
   email?: string | undefined;
   displayName?: string | undefined;
 }) {

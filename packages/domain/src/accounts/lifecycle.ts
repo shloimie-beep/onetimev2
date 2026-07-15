@@ -513,6 +513,53 @@ export async function restoreStudentIdentity(input: {
   });
 }
 
+export async function revokeStudentIdentitySessions(input: {
+  pool: DbPool;
+  config: AppConfig;
+  actor: LifecycleActor;
+  learnerKey: string;
+  now?: Date;
+}): Promise<AccountLifecycleStudentState> {
+  requireParentOrOwnerAdmin(input.actor);
+  const now = input.now ?? new Date();
+  return inTransaction(input.pool, async (client) => {
+    const state = await getStudentStateForUpdate(client, input.config, input.learnerKey);
+    if (!state?.student_user_ref) {
+      throw new AccountLifecycleError('NOT_FOUND', 'Student access is not active yet.');
+    }
+    const studentUserKey = String(state.student_user_ref);
+    const sessionsInvalidated = await invalidateUserSessions(client, input.config, {
+      userKey: studentUserKey,
+      actorUserKey: input.actor.userKey,
+      reason: 'student_sessions_revoked',
+      now,
+    });
+    await client.query(
+      `UPDATE onetime.portal_student_access_state
+          SET last_operation_type = 'revoke_sessions',
+              last_operation_at = $4,
+              version = version + 1,
+              updated_at = $4
+        WHERE account_key = $1
+          AND product_key = $2
+          AND learner_key = $3`,
+      [input.config.accountKey, input.config.productKey, input.learnerKey, now],
+    );
+    await audit(client, input.config, {
+      actionType: 'student_sessions_revoked',
+      actorUserKey: input.actor.userKey,
+      subjectUserKey: studentUserKey,
+      metadata: { learner_key: input.learnerKey, sessions_invalidated: sessionsInvalidated },
+    });
+    return {
+      learner_key: input.learnerKey,
+      user_key: studentUserKey,
+      access_status: state.status as AccountLifecycleStudentState['access_status'],
+      sessions_invalidated: sessionsInvalidated,
+    };
+  });
+}
+
 async function idempotentIssue(input: {
   pool: DbPool;
   config: AppConfig;

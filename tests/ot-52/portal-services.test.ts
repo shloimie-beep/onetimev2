@@ -265,13 +265,28 @@ describe('OT-52P parent and student portal services', () => {
     expect(state.status).toBe('setup_requested');
     expect(replay).toEqual(state);
 
+    const revoked = await parentService.studentAccessOperation(
+      parentActor,
+      householdKey,
+      learner.learner_key,
+      'revoke_sessions',
+      { idempotency_key: 'student-access-revoke-sessions-001' },
+    );
+    expect(revoked.status).toBe('active');
+    expect(revoked.last_operation_type).toBe('revoke_sessions');
+
     const operationRows = await pool.query(
-      `SELECT adapter_operation_ref_digest, proof_digest
+      `SELECT operation_type, adapter_operation_ref_digest, proof_digest
          FROM onetime.portal_student_access_operations
-        WHERE learner_key = $1`,
+        WHERE learner_key = $1
+        ORDER BY created_at ASC`,
       [learner.learner_key],
     );
-    expect(operationRows.rows).toHaveLength(1);
+    expect(operationRows.rows).toHaveLength(2);
+    expect(operationRows.rows.map((row) => row.operation_type)).toEqual([
+      'setup',
+      'revoke_sessions',
+    ]);
     expect(operationRows.rows[0].adapter_operation_ref_digest).toMatch(/^[a-f0-9]{64}$/);
     expect(operationRows.rows[0].adapter_operation_ref_digest).not.toBe('op_setup_1');
     expect(JSON.stringify(operationRows.rows)).not.toContain('op_setup_1');
@@ -432,6 +447,7 @@ function credentialAdapter(overrides?: {
     requestReset: async () => result('reset'),
     requestSuspend: async () => result('suspend'),
     requestRestore: async () => result('restore'),
+    requestRevokeSessions: async () => result('revoke_sessions'),
   };
 }
 
@@ -441,5 +457,6 @@ function statusForOperation(
   if (operationType === 'setup') return 'setup_requested';
   if (operationType === 'reset') return 'reset_requested';
   if (operationType === 'suspend') return 'suspended';
+  if (operationType === 'revoke_sessions') return 'active';
   return 'active';
 }

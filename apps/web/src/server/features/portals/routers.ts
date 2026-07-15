@@ -7,6 +7,7 @@ import {
   parentLearnerMaterialsSchema,
   parentPortalDashboardSchema,
   protectedActionDescriptorSchema,
+  studentAccessOperationTypeSchema,
   studentAccessOperationPayloadSchema,
   studentAccessStateSchema,
   studentPortalDashboardSchema,
@@ -110,7 +111,7 @@ export type StudentPortalRouterDeps = {
 };
 
 const portalRouteParamSchema = z.string().trim().min(3).max(180);
-const studentAccessOperationSchema = z.enum(['setup', 'reset', 'suspend', 'restore']);
+const studentAccessOperationSchema = studentAccessOperationTypeSchema;
 const helperAnswerSchema = z.object({
   answer: z.string().trim().min(1).max(2400),
   source_refs: z.array(z.string().trim().min(1).max(180)).max(20),

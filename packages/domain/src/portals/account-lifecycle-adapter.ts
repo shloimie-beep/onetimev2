@@ -6,6 +6,7 @@ import {
   AccountLifecycleError,
   createStudentReset,
   createStudentSetup,
+  revokeStudentIdentitySessions,
   restoreStudentIdentity,
   suspendStudentIdentity,
 } from '../accounts/lifecycle.ts';
@@ -73,6 +74,23 @@ export function createAccountLifecycleCredentialAdapter(input: {
           learnerKey: learner.learner_key,
         });
         return stateResult('restore', learner, 0);
+      }),
+    requestRevokeSessions: async ({ actor, learner }) =>
+      mapLifecycleErrors(async () => {
+        const state = await revokeStudentIdentitySessions({
+          pool: input.pool,
+          config: input.config,
+          actor: lifecycleActor(actor),
+          learnerKey: learner.learner_key,
+        });
+        return {
+          operation_ref: `student_revoke_sessions_${digest(
+            [learner.learner_key, String(state.sessions_invalidated)].join(':'),
+          ).slice(0, 24)}`,
+          status: state.access_status,
+          expires_at: null,
+          delivery_hint: null,
+        };
       }),
   };
 }

@@ -104,7 +104,7 @@ function PortalApp() {
 
   async function handleStudentAccessAction(
     learnerKey: string,
-    action: 'setup' | 'reset' | 'suspend' | 'restore',
+    action: 'setup' | 'reset' | 'suspend' | 'restore' | 'revoke_sessions',
   ) {
     if (!session || !parentDashboard) return;
     const learner = parentDashboard.learners.find((entry) => entry.learner_key === learnerKey);

@@ -17,6 +17,7 @@ import {
   getSessionByToken,
   requestPasswordReset,
   restoreStudentIdentity,
+  revokeStudentIdentitySessions,
   suspendStudentIdentity,
 } from '../../../packages/domain/src/index.ts';
 
@@ -219,6 +220,26 @@ describe('OT-71 account lifecycle', () => {
       learnerKey,
     });
     expect(restored).toMatchObject({ access_status: 'active' });
+
+    const postRestoreLogin = await authenticateUser({
+      pool,
+      config,
+      email: 'student@example.test',
+      password: 'StudentPass!234',
+    });
+    if (!postRestoreLogin.ok)
+      throw new Error(`Expected student login, got ${postRestoreLogin.code}`);
+    const postRestoreSession = await createSession({ pool, config, user: postRestoreLogin.user });
+    const revoked = await revokeStudentIdentitySessions({
+      pool,
+      config,
+      actor: parentActor,
+      learnerKey,
+    });
+    expect(revoked).toMatchObject({ access_status: 'active', sessions_invalidated: 1 });
+    expect(
+      await getSessionByToken({ pool, config, sessionToken: postRestoreSession.session_token }),
+    ).toBeNull();
 
     const resetIssue = await createStudentReset({
       pool,

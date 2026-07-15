@@ -43,7 +43,7 @@ export type ParentPortalFeatureProps = {
   onRestoreLearner?: (learnerKey: string) => void;
   onStudentAccessAction?: (
     learnerKey: string,
-    action: 'setup' | 'reset' | 'suspend' | 'restore',
+    action: 'setup' | 'reset' | 'suspend' | 'restore' | 'revoke_sessions',
   ) => void;
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onPreviewSupport?: (learnerKey?: string) => void;
@@ -405,13 +405,17 @@ function StudentAccessControls({
   learner: LearnerProfile;
   access: StudentAccessState | null;
   onAction?:
-    ((learnerKey: string, action: 'setup' | 'reset' | 'suspend' | 'restore') => void) | undefined;
+    | ((
+        learnerKey: string,
+        action: 'setup' | 'reset' | 'suspend' | 'restore' | 'revoke_sessions',
+      ) => void)
+    | undefined;
 }) {
   const status = access?.status ?? 'not_configured';
   const actions = useMemo(() => {
     if (status === 'not_configured' || status === 'disabled') return ['setup'] as const;
     if (status === 'suspended') return ['restore', 'reset'] as const;
-    return ['reset', 'suspend'] as const;
+    return ['reset', 'revoke_sessions', 'suspend'] as const;
   }, [status]);
   return (
     <section className="ot-subsection" aria-labelledby="student-access-heading">

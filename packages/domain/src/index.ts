@@ -39,6 +39,7 @@ export {
   createStudentSetup,
   requestPasswordReset,
   restoreStudentIdentity,
+  revokeStudentIdentitySessions,
   suspendStudentIdentity,
 } from './accounts/lifecycle.ts';
 export {
