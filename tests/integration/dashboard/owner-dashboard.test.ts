@@ -3,15 +3,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
-import {
-  loadConfig,
-  type AppConfig,
-} from '../../../packages/config/src/index.ts';
-import {
-  createMemoryPool,
-  runMigrations,
-  type DbPool,
-} from '../../../packages/db/src/index.ts';
+import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
+import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
   activateTotpEnrollment,
   captureLead,

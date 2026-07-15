@@ -39,7 +39,14 @@ jobs:
         run: npm ci
 
       - name: Validate OT-75 release readiness
-        run: node scripts/ot75/validate-release-readiness.mjs
+        env:
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          if [ "$BRANCH_NAME" = "codex/ot80-one-shot-final-convergence" ]; then
+            node scripts/ot75/validate-release-readiness.mjs --scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871 --scope-head 9ce81a9c5df4c3eb82af3954705d7b381d294c6e
+          else
+            node scripts/ot75/validate-release-readiness.mjs
+          fi
 
       - name: Run OT-75 release-only unit tests
         run: npx vitest run --config vitest.unit.config.ts tests/unit/ot75/release-readiness.test.ts

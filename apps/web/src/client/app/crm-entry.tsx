@@ -508,7 +508,12 @@ function CrmApp() {
           },
         ]
       : []),
-    { id: 'crm', label: 'CRM', href: '/app/crm', current: surface === 'crm' && !communicationsMode },
+    {
+      id: 'crm',
+      label: 'CRM',
+      href: '/app/crm',
+      current: surface === 'crm' && !communicationsMode,
+    },
     ...(canReadOwnerShell
       ? [
           {
@@ -547,28 +552,28 @@ function CrmApp() {
     surface !== 'crm'
       ? ownerSurfaceTitle(surface)
       : communicationsMode
-    ? 'Communications'
-    : creating
-      ? 'Add contact'
-      : editing
-        ? 'Edit contact'
-        : selected
-          ? selected.display_name
-          : 'CRM';
+        ? 'Communications'
+        : creating
+          ? 'Add contact'
+          : editing
+            ? 'Edit contact'
+            : selected
+              ? selected.display_name
+              : 'CRM';
   const pageDescription =
     surface !== 'crm'
       ? ownerSurfaceDescription(surface)
       : communicationsMode
-    ? communicationsMode.kind === 'contact'
-      ? 'Read-only local communication intents for this contact.'
-      : 'Read-only local communication intents from the One Time outbox.'
-    : creating
-      ? 'Create a One Time contact without sending messages or granting access.'
-      : editing
-        ? 'Update CRM fields backed by the One Time contact API.'
-        : selected
-          ? contactSummary(selected)
-          : 'One Time signup and contact review.';
+        ? communicationsMode.kind === 'contact'
+          ? 'Read-only local communication intents for this contact.'
+          : 'Read-only local communication intents from the One Time outbox.'
+        : creating
+          ? 'Create a One Time contact without sending messages or granting access.'
+          : editing
+            ? 'Update CRM fields backed by the One Time contact API.'
+            : selected
+              ? contactSummary(selected)
+              : 'One Time signup and contact review.';
   const toolbar =
     surface === 'dashboard' ? (
       <ReadOnlyToolbar
@@ -752,15 +757,20 @@ function CrmApp() {
           onCreate={startCreate}
         />
       )}
-      {surface === 'crm' && !communicationsMode && !creating && !selected && !editing && detailError && (
-        <StatePanel
-          kind="error"
-          title="Contact not found or unavailable"
-          body={detailError}
-          actionLabel="Back to CRM"
-          onAction={() => void backToList()}
-        />
-      )}
+      {surface === 'crm' &&
+        !communicationsMode &&
+        !creating &&
+        !selected &&
+        !editing &&
+        detailError && (
+          <StatePanel
+            kind="error"
+            title="Contact not found or unavailable"
+            body={detailError}
+            actionLabel="Back to CRM"
+            onAction={() => void backToList()}
+          />
+        )}
     </AppShell>
   );
 }
@@ -1006,7 +1016,9 @@ function BillingPanel({
       />
     );
   }
-  const billing = dashboard?.dashboard.sections.find((section) => section.id === 'billing_readiness');
+  const billing = dashboard?.dashboard.sections.find(
+    (section) => section.id === 'billing_readiness',
+  );
   if (!billing) {
     return (
       <StatePanel
@@ -1071,7 +1083,9 @@ function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['a
               </div>
               <div>
                 <dt>Idempotency</dt>
-                <dd>{action.idempotency.required ? action.idempotency.key_source : 'Not required'}</dd>
+                <dd>
+                  {action.idempotency.required ? action.idempotency.key_source : 'Not required'}
+                </dd>
               </div>
             </dl>
           </article>

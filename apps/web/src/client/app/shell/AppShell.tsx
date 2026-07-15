@@ -95,10 +95,11 @@ export function AppShell({
     email: 'Session expired',
     roleLabel: sessionExpired ? 'Session expired' : 'Checking session',
   };
-  const currentItem = navItems.find((item) => item.current) ?? navItems[0] ?? {
-    href: '/app/crm',
-    label: 'CRM',
-  };
+  const currentItem = navItems.find((item) => item.current) ??
+    navItems[0] ?? {
+      href: '/app/crm',
+      label: 'CRM',
+    };
 
   return (
     <div className="app-shell">

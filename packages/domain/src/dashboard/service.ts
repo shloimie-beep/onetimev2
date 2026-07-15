@@ -33,66 +33,90 @@ export function ownerAdminVisibleActions(): VisibleAction[] {
       audit: ['local_read', 'dashboard_read'],
       states: readStates,
     }),
-    action('dashboard.refresh.button', 'Refresh dashboard', 'button', '/app/dashboard', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'dashboard:read',
-      handler: ['GET', '/api/v1/dashboard/owner'],
-      idempotency: [false, null],
-      audit: ['local_read', 'dashboard_read'],
-      states: readStates,
-    }),
-    action('dashboard.open_crm.button', 'Open CRM', 'button', '/app/dashboard', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'crm:contacts:read',
-      handler: ['GET', '/api/v1/crm/contacts'],
-      idempotency: [false, null],
-      audit: ['local_read', 'crm_contacts_read'],
-      states: readStates,
-    }),
-    action('dashboard.open_classes.button', 'Open Classes', 'button', '/app/dashboard', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'classes:read',
-      handler: ['GET', '/api/v1/classes'],
-      idempotency: [false, null],
-      audit: ['local_read', 'classes_read'],
-      states: readStates,
-    }),
-    action('dashboard.open_communications.button', 'Open Communications', 'button', '/app/dashboard', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'communications:read',
-      handler: ['GET', '/api/v1/communications'],
-      idempotency: [false, null],
-      audit: ['local_read', 'communications_read'],
-      states: readStates,
-    }),
-    action('dashboard.open_content.button', 'Open Content Library', 'button', '/app/dashboard', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'content:library:read',
-      handler: ['GET', '/api/v1/content/library'],
-      idempotency: [false, null],
-      audit: ['local_read', 'content_library_read'],
-      states: readStates,
-    }),
-    action('dashboard.open_billing.button', 'Open Billing status', 'button', '/app/dashboard', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'billing:status:read',
-      handler: ['GET', '/api/v1/dashboard/owner'],
-      idempotency: [false, null],
-      audit: ['local_read', 'billing_status_read'],
-      states: readStates,
-    }),
+    action(
+      'dashboard.refresh.button',
+      'Refresh dashboard',
+      'button',
+      '/app/dashboard',
+      ['owner', 'admin'],
+      {
+        capability: 'dashboard:read',
+        handler: ['GET', '/api/v1/dashboard/owner'],
+        idempotency: [false, null],
+        audit: ['local_read', 'dashboard_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'dashboard.open_crm.button',
+      'Open CRM',
+      'button',
+      '/app/dashboard',
+      ['owner', 'admin'],
+      {
+        capability: 'crm:contacts:read',
+        handler: ['GET', '/api/v1/crm/contacts'],
+        idempotency: [false, null],
+        audit: ['local_read', 'crm_contacts_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'dashboard.open_classes.button',
+      'Open Classes',
+      'button',
+      '/app/dashboard',
+      ['owner', 'admin'],
+      {
+        capability: 'classes:read',
+        handler: ['GET', '/api/v1/classes'],
+        idempotency: [false, null],
+        audit: ['local_read', 'classes_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'dashboard.open_communications.button',
+      'Open Communications',
+      'button',
+      '/app/dashboard',
+      ['owner', 'admin'],
+      {
+        capability: 'communications:read',
+        handler: ['GET', '/api/v1/communications'],
+        idempotency: [false, null],
+        audit: ['local_read', 'communications_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'dashboard.open_content.button',
+      'Open Content Library',
+      'button',
+      '/app/dashboard',
+      ['owner', 'admin'],
+      {
+        capability: 'content:library:read',
+        handler: ['GET', '/api/v1/content/library'],
+        idempotency: [false, null],
+        audit: ['local_read', 'content_library_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'dashboard.open_billing.button',
+      'Open Billing status',
+      'button',
+      '/app/dashboard',
+      ['owner', 'admin'],
+      {
+        capability: 'billing:status:read',
+        handler: ['GET', '/api/v1/dashboard/owner'],
+        idempotency: [false, null],
+        audit: ['local_read', 'billing_status_read'],
+        states: readStates,
+      },
+    ),
     action(
       'crm.contacts.view.route',
       'CRM',
@@ -170,76 +194,104 @@ export function ownerAdminVisibleActions(): VisibleAction[] {
       audit: ['local_read', 'classes_read'],
       states: readStates,
     }),
-    action('classes.refresh.button', 'Refresh classes', 'button', '/app/classes', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'classes:read',
-      handler: ['GET', '/api/v1/classes'],
-      idempotency: [false, null],
-      audit: ['local_read', 'classes_read'],
-      states: readStates,
-    }),
-    action('content.library.view.route', 'Content Library', 'route', '/app/content', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'content:library:read',
-      handler: ['GET', '/api/v1/content/library'],
-      idempotency: [false, null],
-      audit: ['local_read', 'content_library_read'],
-      states: readStates,
-    }),
-    action('content.library.refresh.button', 'Refresh content', 'button', '/app/content', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'content:library:read',
-      handler: ['GET', '/api/v1/content/library'],
-      idempotency: [false, null],
-      audit: ['local_read', 'content_library_read'],
-      states: readStates,
-    }),
-    action('communications.view.route', 'Communications', 'route', '/app/communications', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'communications:read',
-      handler: ['GET', '/api/v1/communications'],
-      idempotency: [false, null],
-      audit: ['local_read', 'communications_read'],
-      states: readStates,
-    }),
-    action('communications.filters.form', 'Filter communications', 'form', '/app/communications', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'communications:read',
-      handler: ['GET', '/api/v1/communications'],
-      idempotency: [false, null],
-      audit: ['local_read', 'communications_read'],
-      states: readStates,
-    }),
-    action('billing.status.view.route', 'Products/Billing status', 'route', '/app/billing', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'billing:status:read',
-      handler: ['GET', '/api/v1/dashboard/owner'],
-      idempotency: [false, null],
-      audit: ['local_read', 'billing_status_read'],
-      states: readStates,
-    }),
-    action('billing.status.refresh.button', 'Refresh billing status', 'button', '/app/billing', [
-      'owner',
-      'admin',
-    ], {
-      capability: 'billing:status:read',
-      handler: ['GET', '/api/v1/dashboard/owner'],
-      idempotency: [false, null],
-      audit: ['local_read', 'billing_status_read'],
-      states: readStates,
-    }),
+    action(
+      'classes.refresh.button',
+      'Refresh classes',
+      'button',
+      '/app/classes',
+      ['owner', 'admin'],
+      {
+        capability: 'classes:read',
+        handler: ['GET', '/api/v1/classes'],
+        idempotency: [false, null],
+        audit: ['local_read', 'classes_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'content.library.view.route',
+      'Content Library',
+      'route',
+      '/app/content',
+      ['owner', 'admin'],
+      {
+        capability: 'content:library:read',
+        handler: ['GET', '/api/v1/content/library'],
+        idempotency: [false, null],
+        audit: ['local_read', 'content_library_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'content.library.refresh.button',
+      'Refresh content',
+      'button',
+      '/app/content',
+      ['owner', 'admin'],
+      {
+        capability: 'content:library:read',
+        handler: ['GET', '/api/v1/content/library'],
+        idempotency: [false, null],
+        audit: ['local_read', 'content_library_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'communications.view.route',
+      'Communications',
+      'route',
+      '/app/communications',
+      ['owner', 'admin'],
+      {
+        capability: 'communications:read',
+        handler: ['GET', '/api/v1/communications'],
+        idempotency: [false, null],
+        audit: ['local_read', 'communications_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'communications.filters.form',
+      'Filter communications',
+      'form',
+      '/app/communications',
+      ['owner', 'admin'],
+      {
+        capability: 'communications:read',
+        handler: ['GET', '/api/v1/communications'],
+        idempotency: [false, null],
+        audit: ['local_read', 'communications_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'billing.status.view.route',
+      'Products/Billing status',
+      'route',
+      '/app/billing',
+      ['owner', 'admin'],
+      {
+        capability: 'billing:status:read',
+        handler: ['GET', '/api/v1/dashboard/owner'],
+        idempotency: [false, null],
+        audit: ['local_read', 'billing_status_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'billing.status.refresh.button',
+      'Refresh billing status',
+      'button',
+      '/app/billing',
+      ['owner', 'admin'],
+      {
+        capability: 'billing:status:read',
+        handler: ['GET', '/api/v1/dashboard/owner'],
+        idempotency: [false, null],
+        audit: ['local_read', 'billing_status_read'],
+        states: readStates,
+      },
+    ),
     action(
       'auth.logout.button',
       'Logout',
@@ -264,21 +316,15 @@ export async function buildOwnerDashboard(input: {
   now?: Date;
 }): Promise<OwnerDashboard> {
   const now = input.now ?? new Date();
-  const [
-    newLeads,
-    nextClass,
-    communications,
-    content,
-    portalAccounts,
-    billingReadiness,
-  ] = await Promise.all([
-    newLeadsSection(input.pool, input.config),
-    nextClassSection(input.pool, input.config, now),
-    communicationsSection(input.pool, input.config),
-    contentReviewSection(input.pool, input.config),
-    portalAccountSection(input.pool, input.config),
-    billingSection(input.pool, input.config),
-  ]);
+  const [newLeads, nextClass, communications, content, portalAccounts, billingReadiness] =
+    await Promise.all([
+      newLeadsSection(input.pool, input.config),
+      nextClassSection(input.pool, input.config, now),
+      communicationsSection(input.pool, input.config),
+      contentReviewSection(input.pool, input.config),
+      portalAccountSection(input.pool, input.config),
+      billingSection(input.pool, input.config),
+    ]);
   return {
     generated_at: now.toISOString(),
     account_key: input.config.accountKey,
@@ -440,7 +486,8 @@ async function contentReviewSection(
         AND retention_state = 'active'`,
     [config.accountKey, config.productKey],
   );
-  if (!row) return unavailable('content_review', 'Content review', 'Content library is unavailable.');
+  if (!row)
+    return unavailable('content_review', 'Content review', 'Content library is unavailable.');
   const total = numberValue(row.total_count);
   const review = numberValue(row.review_count);
   const published = numberValue(row.published_count);
@@ -493,7 +540,11 @@ async function portalAccountSection(
   return section({
     id: 'portal_account_setup',
     label: 'Portal/account setup',
-    state: needsSetup ? 'needs_setup' : setup > 0 || pendingDelivery > 0 ? 'action_required' : 'ready',
+    state: needsSetup
+      ? 'needs_setup'
+      : setup > 0 || pendingDelivery > 0
+        ? 'action_required'
+        : 'ready',
     value: setup + pendingDelivery,
     valueLabel: `${setup + pendingDelivery} setup items`,
     detail:

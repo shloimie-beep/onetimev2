@@ -84,10 +84,7 @@ import {
   registerCommunicationsRoutes,
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
-import {
-  createParentPortalRouter,
-  createStudentPortalRouter,
-} from './features/portals/routers.ts';
+import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
 import { leadRateLimit } from './rate-limit.ts';
 
 type AppDeps = {
@@ -182,29 +179,29 @@ export function createApp({
     res.sendFile(path.join(distDir, 'app', 'crm.html'));
   });
 
-  app.get(/^\/app\/(?:dashboard|classes|content|billing)(?:\/.*)?$/, async (
-    req: RequestWithTrace,
-    res,
-  ) => {
-    const session = await sessionFromRequest(req, pool, config);
-    if (!session) {
-      res.redirect(
-        302,
-        `/login?return_to=${encodeURIComponent(
-          safeReturnPath(req.path, config) ?? '/app/dashboard',
-        )}`,
-      );
-      return;
-    }
-    if (!canUseOwnerDashboard(session.user.role)) {
+  app.get(
+    /^\/app\/(?:dashboard|classes|content|billing)(?:\/.*)?$/,
+    async (req: RequestWithTrace, res) => {
+      const session = await sessionFromRequest(req, pool, config);
+      if (!session) {
+        res.redirect(
+          302,
+          `/login?return_to=${encodeURIComponent(
+            safeReturnPath(req.path, config) ?? '/app/dashboard',
+          )}`,
+        );
+        return;
+      }
+      if (!canUseOwnerDashboard(session.user.role)) {
+        setPrivateNoStore(res);
+        res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+        return;
+      }
+      await ensureSessionCsrfCookie(req, res, pool, config, session);
       setPrivateNoStore(res);
-      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
-      return;
-    }
-    await ensureSessionCsrfCookie(req, res, pool, config, session);
-    setPrivateNoStore(res);
-    res.sendFile(path.join(distDir, 'app', 'crm.html'));
-  });
+      res.sendFile(path.join(distDir, 'app', 'crm.html'));
+    },
+  );
 
   app.get(/^\/app\/parent(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     await serveProtectedAppShell(req, res, {

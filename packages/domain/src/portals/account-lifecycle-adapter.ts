@@ -100,10 +100,9 @@ function stateResult(
   sessionsInvalidated: number,
 ): CredentialLifecycleResult {
   return {
-    operation_ref: `student_${operationType}_${digest([
-      learner.learner_key,
-      String(sessionsInvalidated),
-    ].join(':')).slice(0, 24)}`,
+    operation_ref: `student_${operationType}_${digest(
+      [learner.learner_key, String(sessionsInvalidated)].join(':'),
+    ).slice(0, 24)}`,
     status: operationType === 'suspend' ? 'suspended' : 'active',
     expires_at: null,
     delivery_hint: null,

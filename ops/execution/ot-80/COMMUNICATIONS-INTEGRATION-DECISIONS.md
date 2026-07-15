@@ -69,4 +69,3 @@ not live-send authority. Its ZIP SHA-256 is
 - Archived contacts and expired delivery windows fail closed.
 - User-facing `Sent` or `Delivered` labels appear only for matching persisted
   provider truth; sink/queued/processed is not delivery.
-

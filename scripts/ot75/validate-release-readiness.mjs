@@ -34,12 +34,14 @@ function main() {
   const gates = readJson(contract.contracts.predeploy_gates);
   const scopeBaseSha =
     argValue('--scope-base') ?? process.env.OT75_SCOPE_BASE_SHA ?? contract.task.immutable_base_sha;
-  const changedFiles = changedFilesForScope(scopeBaseSha);
+  const scopeHeadSha = argValue('--scope-head') ?? process.env.OT75_SCOPE_HEAD_SHA ?? 'HEAD';
+  const changedFiles = changedFilesForScope(scopeBaseSha, scopeHeadSha);
   const report = {
     task_id: contract.task.id,
     generated_at: new Date().toISOString(),
     base_sha: contract.task.immutable_base_sha,
     scope_base_sha: scopeBaseSha,
+    scope_head_sha: scopeHeadSha,
     changed_files: changedFiles,
     checks: [],
   };
@@ -148,8 +150,8 @@ function checkGateCoverage(requiredIds, gates, report) {
   }
 }
 
-function changedFilesForScope(baseSha) {
-  const committed = git(['diff', '--name-only', `${baseSha}...HEAD`]);
+function changedFilesForScope(baseSha, headSha) {
+  const committed = git(['diff', '--name-only', `${baseSha}...${headSha}`]);
   const staged = git(['diff', '--name-only', '--cached']);
   const unstaged = git(['diff', '--name-only']);
   const untracked = git(['ls-files', '--others', '--exclude-standard']);

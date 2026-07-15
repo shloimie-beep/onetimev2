@@ -115,7 +115,7 @@ function PortalApp() {
       action === 'setup'
         ? window.prompt('Student email')?.trim()
         : action === 'reset'
-          ? (window.prompt('Student email')?.trim() || undefined)
+          ? window.prompt('Student email')?.trim() || undefined
           : undefined;
     if (action === 'setup' && !email) return;
     try {

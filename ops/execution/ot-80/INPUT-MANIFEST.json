@@ -101,10 +101,7 @@
     "who_its_for": "include Families and Schools, with Schools framed as live Rabbi class or instructional support, not automatic access",
     "gallery": "centered, color images, place-only captions",
     "coverage_copy": "omit coverage claims",
-    "hero_kicker_lines": [
-      "Worldwide Mishnah Learning",
-      "Live from Eretz Yisrael"
-    ],
+    "hero_kicker_lines": ["Worldwide Mishnah Learning", "Live from Eretz Yisrael"],
     "forbidden_price_copy": "$67/month afterward"
   },
   "staging_authorization": {
