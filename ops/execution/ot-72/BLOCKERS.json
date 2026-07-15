@@ -1,0 +1,16 @@
+{
+  "task_id": "OT-72",
+  "updated_at": "2026-07-15T09:02:00+03:00",
+  "blockers": [
+    {
+      "id": "BLK-OT72-001",
+      "scope": "source_control",
+      "status": "resolved_by_documented_decision",
+      "summary": "Canonical candidate control file SHA did not equal fetched source branch head.",
+      "details": "Candidate control recorded 9e275e28a80cc8bf7fa82ade1092cd8cc21510d4 while fetched source branch head was dfef7de2035e08f1ee72e0133ccf656fe7a74444. Candidate SHA is an ancestor and post-candidate diff was classified as control/format-only.",
+      "owner": "Codex",
+      "resolution": "Branch from fetched source head and record candidate code SHA separately in INPUTS/STATE/DECISIONS.",
+      "external_action_required": false
+    }
+  ]
+}

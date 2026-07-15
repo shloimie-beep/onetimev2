@@ -1,0 +1,42 @@
+{
+  "task_id": "OT-72",
+  "mode": "IMPLEMENT_PROVIDER_ADAPTERS_AND_TEST_STAGING_READINESS",
+  "repository": "webcraft-media/onetimev2",
+  "source_branch": "codex/ot60r-recovery-convergence",
+  "target_branch": "codex/ot72-provider-sandbox-train",
+  "status": "initialized",
+  "created_at": "2026-07-15T09:02:00+03:00",
+  "updated_at": "2026-07-15T09:02:00+03:00",
+  "source_remote_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "candidate_control_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
+  "branch_point_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "branch_point_decision": "Use fetched source branch head because it contains the remotely checkpointed control files. Candidate code SHA is verified as an ancestor and later source-branch commits are control/format-only.",
+  "external_action_policy": {
+    "stripe_test_sandbox": "authorized_if_test_mode_and_canary_gate_present",
+    "live_stripe_charges": "forbidden",
+    "live_bulk_external_sends": "forbidden",
+    "deployment_dns_production_database": "forbidden",
+    "provider_mutations": "forbidden_without_exact_protected_canary_flag"
+  },
+  "phase_status": {
+    "phase_1_stripe": "not_started",
+    "phase_2_email_whatsapp": "not_started",
+    "phase_3_zoom": "not_started",
+    "phase_4_vimeo": "not_started",
+    "phase_5_telegram": "not_started",
+    "phase_6_bna_oversight": "not_started"
+  },
+  "external_mutation_counts": {
+    "stripe_test_calls": 0,
+    "stripe_live_calls": 0,
+    "email_sends": 0,
+    "whatsapp_sends": 0,
+    "zoom_mutations": 0,
+    "vimeo_mutations": 0,
+    "telegram_sends": 0,
+    "webhook_registrations": 0,
+    "dns_mutations": 0,
+    "deployments": 0,
+    "production_database_mutations": 0
+  }
+}
