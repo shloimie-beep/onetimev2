@@ -4,9 +4,9 @@
   "repository": "webcraft-media/onetimev2",
   "source_branch": "codex/ot60r-recovery-convergence",
   "target_branch": "codex/ot72-provider-sandbox-train",
-  "status": "draft_pr_ci_green",
+  "status": "local_followup_manifest_verified_pending_push",
   "created_at": "2026-07-15T09:02:00+03:00",
-  "updated_at": "2026-07-15T09:31:36+03:00",
+  "updated_at": "2026-07-15T09:40:09+03:00",
   "source_remote_head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "candidate_control_sha": "9e275e28a80cc8bf7fa82ade1092cd8cc21510d4",
   "branch_point_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
@@ -38,7 +38,14 @@
     "phase_3_zoom": "implemented_local_verified_readiness_canary_pending",
     "phase_4_vimeo": "implemented_local_verified_readiness_canary_pending",
     "phase_5_telegram": "implemented_local_verified_canary_pending",
-    "phase_6_bna_oversight": "implemented_local_verified"
+    "phase_6_bna_oversight": "implemented_local_verified_with_bna_followup_manifest"
+  },
+  "bna_followup_manifest": {
+    "path": "ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json",
+    "status": "local_verified",
+    "runtime_wiring": "future_followup_only",
+    "synchronous_bna_call_allowed": false,
+    "bna_runtime_edit_in_ot72": false
   },
   "external_mutation_counts": {
     "stripe_test_calls": 0,

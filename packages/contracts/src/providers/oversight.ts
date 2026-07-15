@@ -25,3 +25,46 @@ export const oversightOutcomeSchema = z
   })
   .strict();
 export type OversightOutcome = z.infer<typeof oversightOutcomeSchema>;
+
+export const bnaOversightFollowupManifestSchema = z
+  .object({
+    schema_version: z.literal(1),
+    producer: z
+      .object({
+        repository: z.literal('webcraft-media/onetimev2'),
+        branch: z.string().min(1).max(160),
+        account_key: z.string().min(1).max(120),
+        product_key: z.string().min(1).max(120),
+      })
+      .strict(),
+    consumer: z
+      .object({
+        repository_hint: z.string().min(1).max(120),
+        runtime_wiring: z.literal('future_followup_only'),
+        synchronous_call_allowed: z.literal(false),
+        bna_runtime_edit_in_ot72: z.literal(false),
+      })
+      .strict(),
+    transport: z
+      .object({
+        pattern: z.literal('asynchronous_outbox'),
+        required_controls: z
+          .array(
+            z.enum([
+              'signature_ref',
+              'idempotency_key',
+              'replay_protection',
+              'dead_letter',
+              'staleness_window',
+            ]),
+          )
+          .min(1),
+      })
+      .strict(),
+    allowed_categories: z.array(oversightOutcomeCategorySchema).min(1),
+    allowed_summary_keys: z.array(z.string().min(1).max(80)).min(1),
+    forbidden_payload_terms: z.array(z.string().min(1).max(120)).min(1),
+    activation_requirements: z.array(z.string().min(1).max(280)).min(1),
+  })
+  .strict();
+export type BnaOversightFollowupManifest = z.infer<typeof bnaOversightFollowupManifestSchema>;

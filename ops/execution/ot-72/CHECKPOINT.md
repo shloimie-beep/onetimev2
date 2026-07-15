@@ -59,3 +59,11 @@ No external provider calls, sends, webhook registrations, deployment, DNS change
 - Node 24 verify: PASS, including secret scan, format, lint, typecheck, unit, integration, build, Playwright e2e, Playwright accessibility, Playwright performance, and bundle gates.
 
 No external provider calls, sends, webhook registrations, deployment, DNS change, production database mutation, BNA script execution, or BNA edits were performed while monitoring CI.
+
+## 2026-07-15T09:40:09+03:00 - BNA Follow-Up Manifest Added
+
+- Added the missing separate BNA follow-up manifest requested by Phase 6 at `ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json`.
+- Added a typed manifest schema in `packages/contracts/src/providers/oversight.ts`.
+- Extended `tests/unit/ot72-provider-adapters.test.ts` to validate the manifest as async-only, future-follow-up-only, no synchronous BNA call, and no OT-72 BNA runtime edit.
+- Local verification passed: focused OT-72 unit test, full unit suite, full integration suite, typecheck, lint, secret scan, scoped Prettier check, and `git diff --check`.
+- No external provider calls, sends, webhook registrations, deployment, DNS change, production database mutation, BNA script execution, or BNA edits were performed.

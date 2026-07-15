@@ -39,3 +39,14 @@
 - PostgreSQL 16 assurance harness: PASS
 - Node 24 verify: PASS
 - Node 24 verify covered secret scan, format, lint, typecheck, unit, integration, build, Playwright e2e, Playwright accessibility, Playwright performance and bundle gates.
+
+## 2026-07-15 BNA Follow-Up Manifest Local Verification
+
+- `npx vitest run tests/unit/ot72-provider-adapters.test.ts` PASS, 1 file, 8 tests.
+- `npm run typecheck` PASS.
+- `npm run lint` PASS.
+- `npm run secret:scan` PASS across 336 repo text files.
+- `npx prettier --check packages/contracts/src/providers/oversight.ts tests/unit/ot72-provider-adapters.test.ts ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json` PASS.
+- `npm run unit` PASS, 12 files, 95 tests.
+- `npm run integration` PASS, 11 files, 57 tests.
+- `git diff --check` PASS with Windows line-ending warnings only.

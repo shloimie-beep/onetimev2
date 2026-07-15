@@ -38,6 +38,9 @@
 ## Phase 6 - BNA Oversight
 
 - Added redacted async oversight outcome schema/builder and repository outbox persistence.
+- Added a typed BNA follow-up manifest schema in `packages/contracts/src/providers/oversight.ts`.
+- Added `ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json` as the separate future-consumer manifest requested by the prompt.
+- Extended OT-72 unit coverage to validate that the manifest remains async-only, forbids OT-72 BNA runtime edits, and excludes forbidden private payload terms from allowed summary keys.
 - No BNA runtime code was edited.
 
 ## Migration And Verification

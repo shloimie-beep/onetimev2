@@ -24,6 +24,7 @@ OT-72 will expose server-only, default-off provider adapters and typed registrat
 - Vimeo seam: `packages/domain/src/providers/vimeo.ts`
 - Telegram config/transport: `packages/domain/src/telegram/config.ts`, `packages/domain/src/telegram/transport.ts`
 - Oversight contract/builder: `packages/contracts/src/providers/oversight.ts`, `packages/domain/src/providers/oversight.ts`
+- BNA follow-up manifest fixture: `ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json`
 - Migration: `packages/db/migrations/1700_ot72_provider_truth.sql`
 
 ## Collision Boundaries
@@ -38,6 +39,10 @@ OT-72 will expose server-only, default-off provider adapters and typed registrat
 Any test-only composition change must be documented here before commit.
 
 No central route registration, AppShell, portal UI, CRM UI, shared auth/session logic, public landing/signup UI, webhook registration, long-lived consumer or deployment wiring was changed.
+
+The BNA oversight follow-up manifest is a producer-side contract fixture only.
+It allows a future asynchronous BNA consumer packet but forbids synchronous BNA
+calls and confirms no BNA runtime files are edited by OT-72.
 
 ## Draft PR
 

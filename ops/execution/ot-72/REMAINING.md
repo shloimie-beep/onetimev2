@@ -27,7 +27,8 @@
 
 ## Phase 6 - Asynchronous BNA Oversight Contract
 
-- Future BNA consumer/runtime integration remains a separate follow-up. This branch only produces the One Time-side schema/builder/outbox seam.
+- Future BNA consumer/runtime integration remains a separate follow-up. This branch only produces the One Time-side schema/builder/outbox seam and the separate async BNA follow-up manifest at `ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json`.
+- No synchronous BNA call, BNA runtime edit, or BNA repository modification is authorized by this manifest.
 
 ## Publication
 

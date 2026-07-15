@@ -1,10 +1,13 @@
 import { createHmac } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   type BillingProviderAccountRef,
   type ProviderCheckoutSessionInput,
 } from '../../packages/contracts/src/billing/index.ts';
 import { asChatRef } from '../../packages/contracts/src/telegram/types.ts';
+import { bnaOversightFollowupManifestSchema } from '../../packages/contracts/src/providers/oversight.ts';
 import { createStripeTestBillingProviderAdapter } from '../../packages/domain/src/billing/stripe-test-adapter.ts';
 import {
   buildProviderEventRecord,
@@ -337,5 +340,23 @@ describe('OT-72 Zoom, Vimeo, Telegram, and oversight seams', () => {
     expect(providerEvent.provider_event_ref_hash).not.toContain('raw-provider-event-id');
     expect(oversight.schema_version).toBe(1);
     expect(JSON.stringify(oversight)).not.toMatch(/contact|message|invoice|token/i);
+  });
+
+  it('validates the separate async BNA follow-up manifest', () => {
+    const manifest = bnaOversightFollowupManifestSchema.parse(
+      JSON.parse(
+        readFileSync(join(process.cwd(), 'ops/execution/ot-72/BNA-FOLLOWUP-MANIFEST.json'), 'utf8'),
+      ),
+    );
+
+    expect(manifest.consumer.runtime_wiring).toBe('future_followup_only');
+    expect(manifest.consumer.synchronous_call_allowed).toBe(false);
+    expect(manifest.consumer.bna_runtime_edit_in_ot72).toBe(false);
+    expect(manifest.transport.required_controls).toEqual(
+      expect.arrayContaining(['signature_ref', 'idempotency_key', 'replay_protection']),
+    );
+    expect(JSON.stringify(manifest.allowed_summary_keys)).not.toMatch(
+      /contact|message_body|student|household|transcript|class_link|invoice|payment_method|provider_id|credential|raw_log/i,
+    );
   });
 });
