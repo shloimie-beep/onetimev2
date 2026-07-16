@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "task_id": "OPS-05",
+  "checkpoint": "ready_for_observability_configuration",
+  "log_contract": {
+    "format": "structured_json",
+    "required_fields": [
+      "service_key",
+      "event_name",
+      "trace_id",
+      "source_sha",
+      "release_id",
+      "config_mode"
+    ],
+    "allowed_context_fields": [
+      "route_family",
+      "status_class",
+      "duration_ms",
+      "worker_queue",
+      "provider_family",
+      "provider_mode",
+      "funnel_step",
+      "outcome",
+      "synthetic_check_id",
+      "bna_support_mode"
+    ],
+    "forbidden_fields": [
+      "authorization",
+      "cookie",
+      "database_url",
+      "provider_token",
+      "raw_url",
+      "raw_email",
+      "raw_phone",
+      "raw_chat_id",
+      "raw_message_body",
+      "child_name",
+      "learner_name",
+      "student_name",
+      "payment_identifier",
+      "password",
+      "mfa_secret"
+    ]
+  },
+  "metrics": [
+    {
+      "name": "onetime_http_requests_total",
+      "type": "counter",
+      "labels": ["service_key", "route_family", "status_class", "config_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_http_request_duration_ms",
+      "type": "histogram",
+      "labels": ["service_key", "route_family", "config_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_signup_funnel_total",
+      "type": "counter",
+      "labels": ["funnel_step", "outcome", "config_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_outbox_queue_depth",
+      "type": "gauge",
+      "labels": ["worker_queue", "outcome", "transport_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_outbox_delivery_attempts_total",
+      "type": "counter",
+      "labels": ["worker_queue", "provider_family", "outcome", "provider_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_auth_failures_total",
+      "type": "counter",
+      "labels": ["auth_step", "failure_class", "config_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_portal_readiness_state",
+      "type": "gauge",
+      "labels": ["portal_surface", "readiness_state", "config_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_provider_status",
+      "type": "gauge",
+      "labels": ["provider_family", "provider_mode", "readiness_state"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_support_bridge_events_total",
+      "type": "counter",
+      "labels": ["support_state", "bna_support_mode", "outcome"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_content_pipeline_items_total",
+      "type": "counter",
+      "labels": ["pipeline_stage", "content_state", "provider_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_backup_restore_status",
+      "type": "gauge",
+      "labels": ["service_key", "readiness_state", "config_mode"],
+      "sensitive_data_allowed": false
+    },
+    {
+      "name": "onetime_source_sha_mismatch_total",
+      "type": "counter",
+      "labels": ["service_key", "config_mode"],
+      "sensitive_data_allowed": false
+    }
+  ],
+  "route_families": [
+    "public_signup",
+    "auth",
+    "crm",
+    "parent_portal",
+    "student_portal",
+    "classes",
+    "content",
+    "billing",
+    "communications",
+    "social_publishing",
+    "internal_intake",
+    "health",
+    "readiness",
+    "version",
+    "static_asset",
+    "other"
+  ],
+  "provider_families": [
+    "email",
+    "whatsapp",
+    "telegram",
+    "vimeo",
+    "buffer",
+    "stripe_test",
+    "zoom",
+    "bna_support_bridge"
+  ],
+  "retention": {
+    "development_days": 7,
+    "staging_days": 14,
+    "production_days": 30,
+    "incident_timeline_days": 90,
+    "high_cardinality_personal_data_allowed": false
+  },
+  "ordinary_routes_bna_dependency": "forbidden",
+  "bna_support_allowed_mode": "asynchronous_redacted_receipts_only"
+}

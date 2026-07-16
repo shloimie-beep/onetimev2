@@ -81,6 +81,8 @@ import {
   type PortalServiceDeps,
 } from '../../../../packages/domain/src/index.ts';
 import {
+  applyRuntimeReadbackHeaders,
+  buildRuntimeReadback,
   exposeServerTiming,
   publicError,
   traceMiddleware,
@@ -204,24 +206,40 @@ export function createApp({
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
-  app.get('/health', (_req, res) => {
-    res.json({ ok: true, service: 'onetime-web' });
-  });
+  const handleHealth = (_req: RequestWithTrace, res: Response) => {
+    const readback = webRuntimeReadback(config);
+    applyRuntimeReadbackHeaders(res, readback);
+    res.json(readback);
+  };
+  app.get('/health', handleHealth);
+  app.get('/healthz', handleHealth);
 
-  app.get('/ready', async (req: RequestWithTrace, res) => {
+  const handleReady = async (req: RequestWithTrace, res: Response) => {
+    const readback = webRuntimeReadback(config);
+    applyRuntimeReadbackHeaders(res, readback);
     try {
       await withTiming(req, 'db', () => pool.query('SELECT 1'));
-      res.json({ ok: true });
+      res.json({ ...readback, database_reference_present: Boolean(config.databaseUrl) });
     } catch {
-      res.status(503).json({ ok: false });
+      res
+        .status(503)
+        .json({ ...readback, ok: false, database_reference_present: Boolean(config.databaseUrl) });
     }
-  });
+  };
+  app.get('/ready', handleReady);
+  app.get('/readyz', handleReady);
 
   app.get('/version', (_req, res) => {
+    const readback = webRuntimeReadback(config);
+    applyRuntimeReadbackHeaders(res, readback);
     res.json({
       version: config.appVersion,
       commit_sha: config.commitSha,
       target_app: 'one-time',
+      source_sha: readback.source_sha,
+      release_id: readback.release_id,
+      config_mode: readback.config_mode,
+      provider_mode: readback.provider_mode,
     });
   });
 
@@ -1388,6 +1406,17 @@ function ot86bBufferEnv(config: AppConfig): NodeJS.ProcessEnv {
     BUFFER_ORGANIZATION_ID: config.bufferOrganizationId,
     BUFFER_DESTINATION_IDS: config.bufferDestinationIds,
   };
+}
+
+function webRuntimeReadback(config: AppConfig) {
+  return buildRuntimeReadback({
+    serviceKey: 'onetime-web',
+    appVersion: config.appVersion,
+    commitSha: config.commitSha,
+    nodeEnv: config.nodeEnv,
+    providerMode: config.outboxTransportMode,
+    bnaSupportMode: 'async_only',
+  });
 }
 
 function hashCookieValue(value: string) {

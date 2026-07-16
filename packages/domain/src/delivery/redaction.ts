@@ -32,7 +32,7 @@ export function redactText(value: string): string {
     .replace(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi, '[email]')
     .replace(/https?:\/\/\S+/gi, '[url]')
     .replace(/\+?\d[\d\s().-]{6,}\d/g, '[phone]')
-    .replace(/\b(?:token|secret|api[_-]?key)\s*[:=]\s*\S+/gi, '$1=[redacted]')
+    .replace(/\b(token|secret|api[_-]?key)\s*[:=]\s*\S+/gi, '$1=[redacted]')
     .slice(0, 200);
 }
 

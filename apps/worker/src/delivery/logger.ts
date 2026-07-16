@@ -1,6 +1,9 @@
 import type { DeliveryLogger } from '../../../../packages/contracts/src/delivery/types.ts';
 import { safeLogFields } from '../../../../packages/domain/src/delivery/redaction.ts';
-import { logger as baseLogger } from '../../../../packages/observability/src/index.ts';
+import {
+  logger as baseLogger,
+  sanitizeTelemetryFields,
+} from '../../../../packages/observability/src/index.ts';
 
 type PinoLikeLogger = {
   info(fields: Record<string, unknown>, message: string): void;
@@ -11,13 +14,13 @@ type PinoLikeLogger = {
 export function createDeliveryLogger(logger: PinoLikeLogger = baseLogger): DeliveryLogger {
   return {
     info(event, fields = {}) {
-      logger.info(safeLogFields(fields), event);
+      logger.info(sanitizeTelemetryFields(safeLogFields(fields)), event);
     },
     warn(event, fields = {}) {
-      logger.warn(safeLogFields(fields), event);
+      logger.warn(sanitizeTelemetryFields(safeLogFields(fields)), event);
     },
     error(event, fields = {}) {
-      logger.error(safeLogFields(fields), event);
+      logger.error(sanitizeTelemetryFields(safeLogFields(fields)), event);
     },
   };
 }

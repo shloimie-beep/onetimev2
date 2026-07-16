@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "task_id": "OPS-05",
+  "dedupe": {
+    "window_seconds": 900,
+    "key_fields": ["alert_id", "service_key", "route_family", "provider_family"],
+    "repeat_summary_after_seconds": 3600
+  },
+  "alerts": [
+    {
+      "id": "OPS05-PUBLIC-LANDING-SIGNUP-DOWN",
+      "severity": "critical",
+      "slo": "Public landing and signup p95 <= 2500 ms, success rate >= 99 percent over 5 minutes",
+      "condition": "synthetic public_landing or signup_submit_provider_off fails twice or 5xx rate > 1 percent for 5 minutes",
+      "owner": "one_time_operator",
+      "runbook": "runbooks/operator-runbooks.md#public-landing-or-signup-down"
+    },
+    {
+      "id": "OPS05-CRM-REGRESSION",
+      "severity": "critical",
+      "slo": "CRM list first usable rows p75 <= 2500 ms and detail header p75 <= 1200 ms",
+      "condition": "crm synthetic fails twice or p95 exceeds SLO for 10 minutes",
+      "owner": "one_time_operator",
+      "runbook": "runbooks/operator-runbooks.md#crm-list-or-detail-regression"
+    },
+    {
+      "id": "OPS05-MIGRATION-SCHEMA-DRIFT",
+      "severity": "critical",
+      "slo": "Repository migration checksums match runtime ledger before promotion",
+      "condition": "migration checksum mismatch or expected migration missing",
+      "owner": "release_owner",
+      "runbook": "runbooks/operator-runbooks.md#migration-failure-or-schema-drift"
+    },
+    {
+      "id": "OPS05-OUTBOX-BACKLOG",
+      "severity": "warning",
+      "slo": "Pending outbox age p95 <= 10 minutes in sink/test mode and dead letters are zero unless explicitly acknowledged",
+      "condition": "queue age > 10 minutes, duplicate attempts increase, or dead letters > 0 for 10 minutes",
+      "owner": "one_time_operator",
+      "runbook": "runbooks/operator-runbooks.md#outbox-backlog-duplicates-or-dead-letters"
+    },
+    {
+      "id": "OPS05-PROVIDER-DEGRADED",
+      "severity": "warning",
+      "slo": "Provider status checks are configured, disabled, or degraded with no hidden unknown state",
+      "condition": "telegram, whatsapp, email, vimeo, buffer, stripe_test, or zoom provider status is degraded for 15 minutes",
+      "owner": "one_time_operator",
+      "runbook": "runbooks/operator-runbooks.md#provider-degradation"
+    },
+    {
+      "id": "OPS05-AUTH-DENIAL-ANOMALY",
+      "severity": "critical",
+      "slo": "Auth failure spikes, MFA failures, session revocations, and cross-scope denials stay under baseline",
+      "condition": "auth failure rate doubles from 24 hour baseline or cross-scope denial count > expected synthetic baseline",
+      "owner": "security_owner",
+      "runbook": "runbooks/operator-runbooks.md#auth-mfa-session-or-cross-scope-anomaly"
+    },
+    {
+      "id": "OPS05-CLASS-LAUNCH-REMINDER-FAILURE",
+      "severity": "critical",
+      "slo": "Class launch readiness and reminder sink delivery are green before class window",
+      "condition": "class launch readiness is unavailable or reminder outbox misses delivery window",
+      "owner": "one_time_operator",
+      "runbook": "runbooks/operator-runbooks.md#class-launch-or-reminder-failure"
+    },
+    {
+      "id": "OPS05-BNA-SUPPORT-CONSUMER-UNAVAILABLE",
+      "severity": "warning",
+      "slo": "One Time local support receipts continue while async BNA support consumer is unavailable",
+      "condition": "support bridge cached state unavailable while local receipt count continues",
+      "owner": "support_owner",
+      "runbook": "runbooks/operator-runbooks.md#bna-support-consumer-unavailable"
+    },
+    {
+      "id": "OPS05-BACKUP-RESTORE-FAILURE",
+      "severity": "critical",
+      "slo": "Backup, PITR, and restore drill evidence is current and passing",
+      "condition": "backup evidence stale, PITR disabled, or restore drill failed",
+      "owner": "release_owner",
+      "runbook": "runbooks/operator-runbooks.md#backup-pitr-or-restore-failure"
+    },
+    {
+      "id": "OPS05-SOURCE-SHA-OR-MODE-MISMATCH",
+      "severity": "critical",
+      "slo": "Runtime source SHA and config/provider mode match release manifest",
+      "condition": "source SHA mismatch, config_mode mismatch, or provider mode not expected",
+      "owner": "release_owner",
+      "runbook": "runbooks/operator-runbooks.md#wrong-source-sha-or-provider-mode"
+    }
+  ]
+}

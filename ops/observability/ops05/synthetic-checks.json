@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "task_id": "OPS-05",
+  "default_mode": "provider_off_no_external_writes",
+  "checks": [
+    {
+      "id": "synthetic_public_landing",
+      "surface": "public_signup",
+      "method": "GET",
+      "path": "/",
+      "expected": ["status_2xx", "primary_signup_action_visible", "source_sha_header_present"],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_signup_submit_provider_off",
+      "surface": "public_signup",
+      "method": "POST",
+      "path": "/api/v1/leads",
+      "fixture": "example_invalid_family_or_school_contact",
+      "expected": [
+        "lead_captured",
+        "crm_contact_written",
+        "sink_outbox_queued",
+        "no_provider_send"
+      ],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_health_readiness",
+      "surface": "health",
+      "method": "GET",
+      "path": "/healthz and /readyz",
+      "expected": [
+        "source_sha_header_present",
+        "config_mode_present",
+        "readiness_database_check_bounded"
+      ],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_crm_list_detail",
+      "surface": "crm",
+      "method": "GET",
+      "path": "/app/crm plus bounded API reads",
+      "expected": ["first_rows_usable", "detail_header_usable", "no_cross_scope_rows"],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_outbox_worker_sink",
+      "surface": "worker",
+      "method": "worker_once",
+      "path": "outbox:sink",
+      "expected": [
+        "lease_non_overlap",
+        "sink_delivered_or_skipped",
+        "dead_letter_zero_unless_fixture"
+      ],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_auth_negative",
+      "surface": "auth",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "expected": ["safe_error", "no_account_enumeration", "auth_failure_metric_increment"],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_parent_student_scope",
+      "surface": "portal",
+      "method": "GET",
+      "path": "/app/parent and /app/student",
+      "expected": ["role_gate_enforced", "cross_scope_denial_counted", "no_child_name_in_logs"],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_class_launch_readiness",
+      "surface": "classes",
+      "method": "GET",
+      "path": "/app/classes",
+      "expected": [
+        "readiness_state_truthful",
+        "provider_unavailable_state_visible",
+        "no_raw_zoom_url"
+      ],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_content_pipeline",
+      "surface": "content",
+      "method": "contract_read",
+      "path": "contracts/content-pipeline/v1",
+      "expected": ["pipeline_state_counted", "provider_off_safe", "no_raw_vimeo_url"],
+      "external_write_allowed": false
+    },
+    {
+      "id": "synthetic_support_bridge_async",
+      "surface": "support",
+      "method": "contract_read",
+      "path": "async BNA support bridge projection",
+      "expected": [
+        "local_receipt_kept",
+        "bna_consumer_unavailable_cached",
+        "ordinary_route_no_bna_call"
+      ],
+      "external_write_allowed": false
+    }
+  ]
+}

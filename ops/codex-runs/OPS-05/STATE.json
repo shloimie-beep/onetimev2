@@ -1,0 +1,73 @@
+{
+  "task_id": "OPS-05",
+  "status": "ready_for_observability_configuration",
+  "started_at_utc": "2026-07-16T05:21:51Z",
+  "repository": {
+    "root": "C:\\Users\\User\\onetimev2",
+    "worktree": "C:\\Users\\User\\.ops05-worktrees\\OPS-05",
+    "origin": "https://github.com/webcraft-media/onetimev2.git",
+    "identified_by": [
+      "origin remote https://github.com/webcraft-media/onetimev2.git",
+      "One Time package markers in package.json and AGENTS.md"
+    ]
+  },
+  "branch": {
+    "name": "codex/ops05-observability-runbooks",
+    "base_ref": "origin/codex/ot86b-buffer-social",
+    "base_commit": "97fa0c91758888f4e9de0af17d70002a0124669f"
+  },
+  "packet_search": {
+    "requested_archive": "OPS-05-CODEX-PACKET.zip",
+    "trusted_archive_found": false,
+    "search_scope": [
+      "C:\\Users\\User\\Downloads",
+      "C:\\Users\\User recursive filename search",
+      "recent ZIP manifest scan for PACKET.json task_id"
+    ],
+    "found_factory_prompts": [
+      {
+        "path": "C:\\Users\\User\\Downloads\\OPS-05-OBSERVABILITY-RUNBOOKS-FACTORY.md",
+        "sha256": "51FD6161ECEF2E6EEF75CE973A1F184204446713E1545B74362CBA9BB0C104D7"
+      },
+      {
+        "path": "C:\\Users\\User\\Downloads\\OPS-05-OBSERVABILITY-RUNBOOKS-FACTORY (1).md",
+        "sha256": "51FD6161ECEF2E6EEF75CE973A1F184204446713E1545B74362CBA9BB0C104D7"
+      }
+    ],
+    "validation_result": "blocked_missing_trusted_ops05_codex_packet_zip",
+    "notes": [
+      "No local ZIP had PACKET.json with task_id OPS-05 and SHA256SUMS.txt.",
+      "ONETIME-NEXT-WAVE-2026-07-15.zip contains the OPS-05 factory prompt only, not a Codex-ready OPS-05 packet."
+    ]
+  },
+  "ot99_status": {
+    "packet_path": "C:\\Users\\User\\Downloads\\OT-99-CODEX-PACKET.zip",
+    "packet_sha256": "B00B4C5FA4859D3569BF52489C088455C173BBD6AE22A7A6FA4E6D0A81962A3D",
+    "remote_branch_available": false,
+    "local_ref_search": "no origin/codex/ot99* remote branch after git fetch origin --prune",
+    "fallback_mode": "implement reusable OPS-05 observability contracts and checkpoint"
+  },
+  "guardrails": {
+    "deploy": false,
+    "provider_calls": false,
+    "external_sends": false,
+    "payments": false,
+    "dns_changes": false,
+    "production_data_access": false,
+    "pii_or_secret_logging": false,
+    "synchronous_bna_calls_from_app_routes": false
+  },
+  "checkpoint_target": "ready_for_observability_configuration",
+  "checkpoints": [
+    {
+      "at_utc": "2026-07-16T05:21:51Z",
+      "status": "STATE_PERSISTED",
+      "summary": "OPS-05 trusted packet ZIP was unavailable. Created clean worktree from current eligible non-OT99 base origin/codex/ot86b-buffer-social and recorded fallback to reusable telemetry contracts, privacy-safe metrics, alerts, runbooks, synthetic checks, and tests."
+    },
+    {
+      "at_utc": "2026-07-16T05:36:00Z",
+      "status": "READY_FOR_OBSERVABILITY_CONFIGURATION",
+      "summary": "Implemented reusable OPS-05 observability contracts, runtime readback headers, health aliases, shared telemetry sanitization, SLO alerts, dashboards, synthetic checks, runbooks, protected config steps, and focused tests. No deploy, provider call, external send, payment, DNS change, production data access, or PII/secret logging was performed."
+    }
+  ]
+}

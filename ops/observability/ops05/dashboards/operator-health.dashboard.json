@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "task_id": "OPS-05",
+  "dashboard_id": "ops05-operator-health",
+  "title": "One Time Operator Health",
+  "data_policy": "counts_rates_statuses_and_latency_buckets_only",
+  "panels": [
+    {
+      "id": "runtime-readback",
+      "title": "Runtime Source And Mode",
+      "query": "latest source_sha, release_id, config_mode, provider_mode by service_key; alert on mismatch"
+    },
+    {
+      "id": "public-funnel",
+      "title": "Public Landing And Signup Funnel",
+      "query": "p50/p75/p95 http duration by public_signup plus signup_funnel_total by funnel_step and outcome"
+    },
+    {
+      "id": "crm-health",
+      "title": "CRM List And Detail",
+      "query": "p50/p95 http duration by crm route_family, status_class counts, synthetic CRM result state"
+    },
+    {
+      "id": "outbox",
+      "title": "Outbox Queue And Delivery",
+      "query": "queue depth, oldest pending age bucket, retry count, dead letter count by worker_queue and provider_family"
+    },
+    {
+      "id": "auth-portals",
+      "title": "Auth, MFA, Parent, Student, And Class Launch",
+      "query": "auth_failures_total by auth_step and failure_class; portal_readiness_state by portal_surface"
+    },
+    {
+      "id": "providers",
+      "title": "Provider Status",
+      "query": "provider_status by provider_family, provider_mode, readiness_state"
+    },
+    {
+      "id": "content-social",
+      "title": "Content Pipeline And Social Publishing",
+      "query": "content_pipeline_items_total by pipeline_stage, content_state, provider_mode"
+    },
+    {
+      "id": "support-bridge",
+      "title": "Async BNA Support Bridge",
+      "query": "support_bridge_events_total by support_state, bna_support_mode, outcome; cached consumer state"
+    },
+    {
+      "id": "backup-restore",
+      "title": "Backup, PITR, Restore",
+      "query": "backup_restore_status by service_key, readiness_state, config_mode"
+    }
+  ],
+  "forbidden_panel_data": [
+    "raw contact text",
+    "child data",
+    "raw message body",
+    "raw email",
+    "raw phone",
+    "raw URL",
+    "provider token",
+    "database URL",
+    "payment identifier"
+  ]
+}
