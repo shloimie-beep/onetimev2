@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ot86:content-approved-for-social:v1",
+  "title": "OT86 Approved For Social Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_type",
+    "origin",
+    "event_id",
+    "idempotency_key",
+    "tenant_id",
+    "content_id",
+    "version_id",
+    "sequence",
+    "occurred_at",
+    "approval",
+    "content",
+    "privacy",
+    "payload_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "event_type": {
+      "const": "content.approved_for_social"
+    },
+    "origin": {
+      "const": "ot86a-content-pipeline"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "tenant_id": {
+      "$ref": "#/$defs/id"
+    },
+    "content_id": {
+      "$ref": "#/$defs/id"
+    },
+    "version_id": {
+      "$ref": "#/$defs/id"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "approval_id",
+        "approved_for_social",
+        "approved_by_actor_id",
+        "approved_at",
+        "policy_version"
+      ],
+      "properties": {
+        "approval_id": {
+          "$ref": "#/$defs/id"
+        },
+        "approved_for_social": {
+          "const": true
+        },
+        "approved_by_actor_id": {
+          "$ref": "#/$defs/id"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical_title", "canonical_url", "summary", "approved_excerpts", "media"],
+      "properties": {
+        "canonical_title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "canonical_url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "approved_excerpts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["excerpt_id", "section_id", "text", "deep_link", "text_sha256"],
+            "properties": {
+              "excerpt_id": {
+                "$ref": "#/$defs/id"
+              },
+              "section_id": {
+                "$ref": "#/$defs/id"
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 5000
+              },
+              "deep_link": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "text_sha256": {
+                "$ref": "#/$defs/sha256"
+              }
+            }
+          }
+        },
+        "media": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "asset_id",
+              "kind",
+              "uri",
+              "mime_type",
+              "sha256",
+              "subject_classification",
+              "privacy"
+            ],
+            "properties": {
+              "asset_id": {
+                "$ref": "#/$defs/id"
+              },
+              "kind": {
+                "enum": ["clip", "thumbnail", "graphic", "caption_file"]
+              },
+              "uri": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "mime_type": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 128
+              },
+              "sha256": {
+                "$ref": "#/$defs/sha256"
+              },
+              "subject_classification": {
+                "enum": ["no_people", "rabbi_only", "graphics_only"]
+              },
+              "privacy": {
+                "$ref": "#/$defs/privacy"
+              }
+            }
+          }
+        }
+      }
+    },
+    "privacy": {
+      "$ref": "#/$defs/privacy"
+    },
+    "payload_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contains_learner_name",
+        "contains_learner_voice",
+        "contains_learner_face",
+        "contains_learner_question",
+        "contains_private_data"
+      ],
+      "properties": {
+        "contains_learner_name": {
+          "const": false
+        },
+        "contains_learner_voice": {
+          "const": false
+        },
+        "contains_learner_face": {
+          "const": false
+        },
+        "contains_learner_question": {
+          "const": false
+        },
+        "contains_private_data": {
+          "const": false
+        }
+      }
+    }
+  }
+}

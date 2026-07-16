@@ -48,6 +48,10 @@ const envSchema = z.object({
   ONE_TIME_EMAIL_REPLY_TO: z.string().optional(),
   ONE_TIME_OWNER_TEST_WHATSAPP: z.string().optional(),
   ONE_TIME_OWNER_TEST_EMAIL: z.string().optional(),
+  OT86_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
+  OT86_PUBLISH_SIGNING_SECRET: z.string().optional(),
+  OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
+  OT86_PREVIOUS_PUBLISH_SIGNING_SECRET: z.string().optional(),
   ENABLE_REAL_EMAIL_TRANSPORT: booleanFromString,
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
@@ -119,5 +123,9 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     emailReplyTo: parsed.ONE_TIME_EMAIL_REPLY_TO,
     ownerTestWhatsapp: parsed.ONE_TIME_OWNER_TEST_WHATSAPP,
     ownerTestEmail: parsed.ONE_TIME_OWNER_TEST_EMAIL,
+    ot86PublishSigningKeyId: parsed.OT86_PUBLISH_SIGNING_KEY_ID,
+    ot86PublishSigningSecret: parsed.OT86_PUBLISH_SIGNING_SECRET,
+    ot86PreviousPublishSigningKeyId: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID,
+    ot86PreviousPublishSigningSecret: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_SECRET,
   };
 }
