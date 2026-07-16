@@ -199,6 +199,43 @@ export const helperAvailabilitySchema = z.object({
 });
 export type HelperAvailability = z.infer<typeof helperAvailabilitySchema>;
 
+export const helperCitationSchema = z
+  .object({
+    content_id: opaqueIdSchema,
+    version_id: opaqueIdSchema,
+    section_id: opaqueIdSchema,
+    section_title: z.string().trim().min(1).max(240),
+    deep_link: z.string().trim().regex(/^\//).max(768),
+    section_sha256: z
+      .string()
+      .trim()
+      .regex(/^[a-f0-9]{64}$/),
+  })
+  .strict();
+export type HelperCitation = z.infer<typeof helperCitationSchema>;
+
+export const helperAnswerSchema = z
+  .object({
+    answer: z.string().trim().min(1).max(2400),
+    source_refs: z.array(z.string().trim().min(1).max(180)).max(20),
+    citations: z.array(helperCitationSchema).max(10),
+    abstained: z.boolean(),
+    safe_reason_code: z.string().trim().min(1).max(80),
+    private_question_available: z.literal(true),
+    policy: z.literal('ot107-student-class-helper-v1'),
+  })
+  .strict()
+  .superRefine((answer, ctx) => {
+    if (!answer.abstained && answer.citations.length < 1) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['citations'],
+        message: 'Class Helper answers require at least one approved citation.',
+      });
+    }
+  });
+export type HelperAnswer = z.infer<typeof helperAnswerSchema>;
+
 export const supportPreviewSchema = z.object({
   preview_key: opaqueIdSchema,
   subject: z.string().trim().min(1).max(160),
@@ -339,6 +376,7 @@ export const portalErrorCodeSchema = z.enum([
   'NOT_FOUND',
   'CSRF_REQUIRED',
   'VALIDATION_ERROR',
+  'RATE_LIMITED',
   'IDEMPOTENCY_CONFLICT',
   'VERSION_CONFLICT',
   'LEARNER_LIMIT_REACHED',

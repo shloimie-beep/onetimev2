@@ -28,6 +28,7 @@ import {
   runStudentAccessOperation,
   setParentLearnerArchived,
   submitClassroomQuestion,
+  queryStudentHelper,
   submitStudentQuestion,
   updateParentLearner,
 } from './portal-api.js';
@@ -360,6 +361,23 @@ function PortalApp() {
     }
   }
 
+  async function handleStudentHelper(question: string) {
+    if (!session || portalRole !== 'student') {
+      throw new Error('Class Helper is unavailable.');
+    }
+    try {
+      return await queryStudentHelper({
+        csrfToken: session.csrf_token,
+        question,
+      });
+    } catch (error) {
+      if (handleAuthError(error)) throw error;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Class Helper is unavailable.') });
+      setViewState(stateForError(error));
+      throw error;
+    }
+  }
+
   async function handleClassroomQuestion(occurrenceKey: string, body: string) {
     if (!session || portalRole !== 'student') return;
     try {
@@ -467,6 +485,7 @@ function PortalApp() {
           actorFingerprint={actorFingerprint}
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
+          onQueryHelper={(question) => handleStudentHelper(question)}
           onSubmitQuestion={(question, classKey) => void handleStudentQuestion(question, classKey)}
           onSubmitClassroomQuestion={(occurrenceKey, body) =>
             void handleClassroomQuestion(occurrenceKey, body)

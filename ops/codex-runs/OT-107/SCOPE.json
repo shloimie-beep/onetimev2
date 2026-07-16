@@ -1,0 +1,28 @@
+{
+  "task_id": "OT-107",
+  "mission": "Add a bounded student-facing Class Helper and governed private-question workflow.",
+  "in_scope": [
+    "server-derived learner/account/session authorization",
+    "approved and entitled class-material retrieval",
+    "stateless helper query service with citations and refusals",
+    "deterministic provider sink for tests",
+    "student portal panel and private-question preview/confirm/status",
+    "additive migration only if canonical storage is insufficient",
+    "focused privacy, scope, retrieval, provider, rate-limit, UI, and workflow tests"
+  ],
+  "out_of_scope": [
+    "live AI provider canary without credentials and explicit approval",
+    "production database mutation",
+    "email, WhatsApp, Telegram, payment, access-grant, deployment, DNS, or provider writes",
+    "new identity system, new vector database, persistent chat memory, or general chatbot",
+    "cross-workspace or sibling enumeration",
+    "landing, billing, provider delivery, Telegram, BNA app, global token, or unrelated UX edits"
+  ],
+  "privacy_contract": {
+    "provider_student_pii": "forbidden",
+    "raw_question_answer_persistence": "forbidden",
+    "conversation_browser_storage": "forbidden",
+    "citations": "must re-authorize against the request retrieval set",
+    "private_question_submission": "requires preview and explicit confirmation"
+  }
+}

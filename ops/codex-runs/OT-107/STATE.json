@@ -1,0 +1,33 @@
+{
+  "task_id": "OT-107",
+  "status": "draft_pr_open",
+  "branch": "codex/ot107-student-ai-class-helper",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "base_sha_required": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "initial_head": "b34eb0bf54c7583fff0ded11551cfbea7c33fc78",
+  "verified_head": "current_branch_head_after_commit",
+  "started_at": "2026-07-16T22:20:00+03:00",
+  "last_updated_at": "2026-07-16T22:45:00+03:00",
+  "pushed_branch": "origin/codex/ot107-student-ai-class-helper",
+  "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/44",
+  "live_ai_credentials_status": "not_checked_live_provider_canary_blocked",
+  "deployment_status": "not_deployed",
+  "migration_status": "no_new_migration_required",
+  "verification": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "format": "passed",
+    "unit": "passed",
+    "focused_portal_tests": "passed",
+    "focused_integration_tests": "passed",
+    "secret_scan": "passed"
+  },
+  "guardrails": {
+    "production_database_mutation_performed": false,
+    "provider_mutation_performed": false,
+    "real_send_performed": false,
+    "payment_or_access_mutation_performed": false,
+    "credential_mutation_performed": false,
+    "deployment_performed": false
+  }
+}
