@@ -397,11 +397,7 @@ export function StudentPortalFeature({
                 }}
               />
               <div className="ot-action-row">
-                <button
-                  type="submit"
-                  className="ot-button"
-                  disabled={!onSubmitClassroomQuestion}
-                >
+                <button type="submit" className="ot-button" disabled={!onSubmitClassroomQuestion}>
                   Send question
                 </button>
                 {questionState !== 'idle' && (

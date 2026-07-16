@@ -58,9 +58,7 @@
         "source_branch": "codex/ot86a-vimeo-content-kb",
         "source_sha": "ffc38539dcaea351ac001b1a1f45d848f5d69cc9",
         "decision": "merged",
-        "evidence": [
-          "Merged content pipeline with raw route ordering preserved."
-        ]
+        "evidence": ["Merged content pipeline with raw route ordering preserved."]
       },
       {
         "task": "OT-86B",
@@ -85,9 +83,7 @@
       "pr_24_head": "e04fc61b5d153f7979c7acbe7f2a30e86c735f06",
       "pr_25_head": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf",
       "merge_both_histories": false,
-      "unique_delta_commits": [
-        "809480bb5581c4104f64c4c04a5c92fff8aaa7cf"
-      ],
+      "unique_delta_commits": ["809480bb5581c4104f64c4c04a5c92fff8aaa7cf"],
       "incorporated_commits": [],
       "evidence": [
         "artifacts/OT-99/preflight/candidate-adjudication.json selected the PR #24 descendant lineage and rejected blind double-merge of #24/#25 histories.",
@@ -209,31 +205,21 @@
       "category": "unit",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run unit"
-      ],
-      "evidence": [
-        "27 files, 152 tests passed on the integrated candidate."
-      ]
+      "commands": ["npm run unit"],
+      "evidence": ["27 files, 152 tests passed on the integrated candidate."]
     },
     {
       "category": "integration",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run integration"
-      ],
-      "evidence": [
-        "25 files, 128 tests passed after lead-capture and fixture repairs."
-      ]
+      "commands": ["npm run integration"],
+      "evidence": ["25 files, 128 tests passed after lead-capture and fixture repairs."]
     },
     {
       "category": "browser",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["CI=1 npm run e2e"],
       "evidence": [
         "32 Playwright browser tests passed with isolated OT-83R/OT-88 student fixtures."
       ]
@@ -242,34 +228,21 @@
       "category": "accessibility",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run accessibility"
-      ],
-      "evidence": [
-        "9 accessibility tests passed."
-      ]
+      "commands": ["CI=1 npm run accessibility"],
+      "evidence": ["9 accessibility tests passed."]
     },
     {
       "category": "security",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run secret:scan",
-        "npm run lint",
-        "npm run typecheck"
-      ],
-      "evidence": [
-        "Secret scan, lint, and typecheck passed after removing unused preview imports."
-      ]
+      "commands": ["npm run secret:scan", "npm run lint", "npm run typecheck"],
+      "evidence": ["Secret scan, lint, and typecheck passed after removing unused preview imports."]
     },
     {
       "category": "privacy",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run integration",
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
       "evidence": [
         "Subscriber/household/sibling tests passed; sibling launch injection returns strict-schema rejection without provider URL leak."
       ]
@@ -278,21 +251,14 @@
       "category": "secret",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run secret:scan"
-      ],
-      "evidence": [
-        "No committed secrets detected."
-      ]
+      "commands": ["npm run secret:scan"],
+      "evidence": ["No committed secrets detected."]
     },
     {
       "category": "pii",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run integration",
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
       "evidence": [
         "Portal/support/browser journeys exercise scoped fixtures only and no production data access occurred."
       ]
@@ -301,9 +267,7 @@
       "category": "provider_url",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["CI=1 npm run e2e"],
       "evidence": [
         "Sibling protected-launch negative journey asserts no sibling key/provider URL leak."
       ]
@@ -312,9 +276,7 @@
       "category": "bundle",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run performance"
-      ],
+      "commands": ["CI=1 npm run performance"],
       "evidence": [
         "Bundle check passed: public_js 6316 raw/2226 gzip, public_css 14855 raw/4038 gzip, crm_js 233983 raw, portal_js 229096 raw."
       ]
@@ -323,10 +285,7 @@
       "category": "request",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run e2e",
-        "CI=1 npm run performance"
-      ],
+      "commands": ["CI=1 npm run e2e", "CI=1 npm run performance"],
       "evidence": [
         "Provider-off synthetic routes and local test server handled the exercised requests without external provider contact."
       ]
@@ -335,9 +294,7 @@
       "category": "performance",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run performance"
-      ],
+      "commands": ["CI=1 npm run performance"],
       "evidence": [
         "Full performance suite passed on rerun after one noisy isolated LCP sample also passed in focused retry."
       ]
@@ -346,10 +303,7 @@
       "category": "concurrency",
       "result": "blocked",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run db:verify",
-        "npx tsx scripts/postgres-assurance/run.ts"
-      ],
+      "commands": ["npm run db:verify", "npx tsx scripts/postgres-assurance/run.ts"],
       "evidence": [
         "Local PostgreSQL unavailable; canonical PR PostgreSQL 16 checks must supply the exact-SHA concurrency verdict."
       ]
@@ -358,10 +312,7 @@
       "category": "role",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run integration",
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
       "evidence": [
         "Parent, student, active subscriber, and unauthorized role flows passed through integrated suites."
       ]
@@ -370,21 +321,14 @@
       "category": "account",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run integration",
-        "CI=1 npm run e2e"
-      ],
-      "evidence": [
-        "Account/session-scoped portal and support journeys passed."
-      ]
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
+      "evidence": ["Account/session-scoped portal and support journeys passed."]
     },
     {
       "category": "household",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["CI=1 npm run e2e"],
       "evidence": [
         "Household billing entitlement fixture enables parent protected-content access without leaking sibling/provider data."
       ]
@@ -393,9 +337,7 @@
       "category": "sibling",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["CI=1 npm run e2e"],
       "evidence": [
         "Sibling class launch injection rejected by strict schema and no sibling provider details surfaced."
       ]
@@ -404,11 +346,7 @@
       "category": "every_visible_action",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run integration",
-        "CI=1 npm run e2e",
-        "CI=1 npm run accessibility"
-      ],
+      "commands": ["npm run integration", "CI=1 npm run e2e", "CI=1 npm run accessibility"],
       "evidence": [
         "Integrated routed browser journeys cover visible portal/support/classroom actions touched by OT-99."
       ]
@@ -417,10 +355,7 @@
       "category": "provider_outage",
       "result": "passed",
       "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
-      "commands": [
-        "npm run integration",
-        "CI=1 npm run e2e"
-      ],
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
       "evidence": [
         "Provider-off sink/fail-closed support, classroom, and delivery behaviors remained covered locally."
       ]
@@ -459,9 +394,7 @@
       "canary_passed": "not_applicable",
       "staging_accepted": "not_run",
       "production_live": "no",
-      "evidence": [
-        "Lead-capture integration test passed after due reminder fixture repair."
-      ]
+      "evidence": ["Lead-capture integration test passed after due reminder fixture repair."]
     },
     {
       "component": "crm",
@@ -471,9 +404,7 @@
       "canary_passed": "not_applicable",
       "staging_accepted": "not_run",
       "production_live": "no",
-      "evidence": [
-        "CRM bundle/performance checks passed in CI=1 npm run performance."
-      ]
+      "evidence": ["CRM bundle/performance checks passed in CI=1 npm run performance."]
     },
     {
       "component": "portals",
@@ -555,9 +486,7 @@
       "canary_passed": "not_configured",
       "staging_accepted": "not_run",
       "production_live": "no",
-      "evidence": [
-        "OT-86A content pipeline merged; live Vimeo account canary not authorized."
-      ]
+      "evidence": ["OT-86A content pipeline merged; live Vimeo account canary not authorized."]
     },
     {
       "component": "buffer_ot_86b",
