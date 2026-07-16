@@ -1,0 +1,78 @@
+[
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.0137,
+    "heading": "Give your son a love for learning Torah.",
+    "horizontalOverflow": false,
+    "lcp": 136,
+    "name": "mobile-360",
+    "publicBundleRequests": [
+      "http://127.0.0.1:3107/assets/public.css",
+      "http://127.0.0.1:3107/assets/public.js"
+    ],
+    "studentImageCount": 1,
+    "usableMs": 1130,
+    "viewport": {
+      "height": 800,
+      "width": 360
+    }
+  },
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.0118,
+    "heading": "Give your son a love for learning Torah.",
+    "horizontalOverflow": false,
+    "lcp": 120,
+    "name": "mobile-390",
+    "publicBundleRequests": [
+      "http://127.0.0.1:3107/assets/public.css",
+      "http://127.0.0.1:3107/assets/public.js"
+    ],
+    "studentImageCount": 1,
+    "usableMs": 1133,
+    "viewport": {
+      "height": 844,
+      "width": 390
+    }
+  },
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.0191,
+    "heading": "Give your son a love for learning Torah.",
+    "horizontalOverflow": false,
+    "lcp": 140,
+    "name": "tablet",
+    "publicBundleRequests": [
+      "http://127.0.0.1:3107/assets/public.css",
+      "http://127.0.0.1:3107/assets/public.js"
+    ],
+    "studentImageCount": 1,
+    "usableMs": 1198,
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.0074,
+    "heading": "Give your son a love for learning Torah.",
+    "horizontalOverflow": false,
+    "lcp": 140,
+    "name": "desktop",
+    "publicBundleRequests": [
+      "http://127.0.0.1:3107/assets/public.css",
+      "http://127.0.0.1:3107/assets/public.js"
+    ],
+    "studentImageCount": 1,
+    "usableMs": 1056,
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  }
+]

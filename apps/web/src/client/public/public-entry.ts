@@ -66,15 +66,34 @@ const carousel = document.querySelector<HTMLElement>('[data-gallery]');
 if (carousel) {
   const slides = [...carousel.querySelectorAll<HTMLElement>('[data-gallery-slide]')];
   const buttons = [...carousel.querySelectorAll<HTMLButtonElement>('[data-gallery-dot]')];
+  const viewport = carousel.querySelector<HTMLElement>('[data-gallery-viewport]');
+  const status = carousel.querySelector<HTMLElement>('[data-gallery-status]');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let index = 0;
+  let pointerStartX: number | null = null;
   const show = (next: number) => {
     index = (next + slides.length) % slides.length;
     slides.forEach((slide, slideIndex) => {
-      slide.hidden = slideIndex !== index;
+      const active = slideIndex === index;
+      if (active) {
+        slide.setAttribute('data-active', 'true');
+      } else {
+        slide.removeAttribute('data-active');
+      }
+      slide.setAttribute('aria-hidden', String(!active));
+      slide.tabIndex = active ? 0 : -1;
     });
     buttons.forEach((button, buttonIndex) => {
       button.setAttribute('aria-pressed', String(buttonIndex === index));
     });
+    const current = slides[index];
+    current?.scrollIntoView({
+      block: 'nearest',
+      inline: 'center',
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
+    const caption = current?.querySelector('figcaption')?.textContent?.trim();
+    if (status && caption) status.textContent = `Showing ${caption}`;
   };
   buttons.forEach((button, buttonIndex) =>
     button.addEventListener('click', () => show(buttonIndex)),
@@ -85,6 +104,31 @@ if (carousel) {
   carousel
     .querySelector<HTMLButtonElement>('[data-gallery-next]')
     ?.addEventListener('click', () => show(index + 1));
+  carousel.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      show(index - 1);
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      show(index + 1);
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      show(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      show(slides.length - 1);
+    }
+  });
+  viewport?.addEventListener('pointerdown', (event) => {
+    pointerStartX = event.clientX;
+  });
+  viewport?.addEventListener('pointerup', (event) => {
+    if (pointerStartX === null) return;
+    const delta = event.clientX - pointerStartX;
+    pointerStartX = null;
+    if (Math.abs(delta) < 36) return;
+    show(index + (delta < 0 ? 1 : -1));
+  });
   show(0);
 }
 

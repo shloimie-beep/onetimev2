@@ -58,22 +58,23 @@ export const landingContent = {
       {
         title: 'Clarity',
         body: 'He understands what the Mishnah is saying, the questions being asked, and how the ideas fit together.',
-        image: '/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp',
-        alt: 'Rabbi Scheller teaching students in Atlanta, Georgia',
+        image: '/assets/outcomes/clarity-class.webp',
+        alt: 'Clear Mishnah class materials and review notes',
         assetBlocker: null,
         provisionalCopy: null,
       },
       {
         title: 'Retention',
-        body: 'Replays and review sheets help him remember the learning instead of forgetting it after class.',
-        image: '/assets/students/smiley-kid.png',
-        alt: 'Smiling One Time Mishnayos student',
+        body: 'Replays and review sheets help him remember the learning and return to the key ideas with confidence.',
+        image: null,
+        alt: '',
         assetBlocker: null,
         provisionalCopy: null,
+        visualTreatment: 'memory-review',
       },
       {
         title: 'Progress',
-        body: 'A clear daily rhythm gives him momentum, accomplishment, and something real to build on.',
+        body: 'A clear daily rhythm gives him confidence, consistent progress, and something real to build on.',
         image: '/assets/outcomes/accomplishment-toronto-class.jpg',
         alt: 'Rabbi Scheller smiling with boys after a Toronto One Time Torah class',
         assetBlocker: null,
@@ -121,7 +122,7 @@ export const landingContent = {
     body: 'Rabbi Eli Scheller has taught Torah to students and audiences across the Jewish world. His clarity, warmth, and energy help boys understand what they are learning and look forward to coming back.',
   },
   gallery: {
-    heading: 'Teaching Torah Across the Jewish World',
+    heading: 'Seen Across the Jewish World',
     slides: [
       ['Atlanta, Georgia', '/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp'],
       [
