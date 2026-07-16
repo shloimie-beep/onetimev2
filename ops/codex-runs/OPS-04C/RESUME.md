@@ -5,7 +5,7 @@
 - Worktree: `C:\Users\User\.batch-20260716-worktrees\OPS-04C`
 - Branch: `integration/ops04c-one-time-access-content-convergence-20260716T213505Z`
 - Base: `origin/codex/ops03b-email-step-up-login` at `25b2a95aa4e3ae82aad20537dc300e9978c15b56`
-- Status before final closeout commit: local convergence green, push/PR pending.
+- Status: local convergence green, pushed, draft PR opened at `https://github.com/webcraft-media/onetimev2/pull/54`.
 
 ## What is integrated
 
@@ -46,8 +46,5 @@
 
 ## Safe next steps
 
-1. Commit the current scoped changes plus OPS-04C checkpoint files.
-2. Push `integration/ops04c-one-time-access-content-convergence-20260716T213505Z`.
-3. Open a draft PR against `codex/ops03-staging-readiness-repair`.
-4. Fill `candidate_head_sha` and `draft_pr_url` in `STATE.json` / `FINAL-REPORT.md` if not already filled.
-5. Do not run staging deploy, live canaries, sends, imports, charges, DNS, or provider writes until a linked isolated staging project and protected variables are explicitly available and approved.
+1. Review draft PR #54.
+2. Do not run staging deploy, live canaries, sends, imports, charges, DNS, or provider writes until a linked isolated staging project and protected variables are explicitly available and approved.

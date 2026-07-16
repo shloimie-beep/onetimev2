@@ -1,12 +1,14 @@
 {
   "worker": "OPS-04C",
-  "status": "local_convergence_green_push_pending",
+  "status": "draft_pr_open_pushed",
   "branch": "integration/ops04c-one-time-access-content-convergence-20260716T213505Z",
   "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OPS-04C",
   "base_ref": "origin/codex/ops03b-email-step-up-login",
   "base_sha": "25b2a95aa4e3ae82aad20537dc300e9978c15b56",
   "candidate_head_sha": null,
-  "draft_pr_url": null,
+  "candidate_head_note": "The exact self-referential pushed branch head is reported in the final Codex response and GitHub PR head.",
+  "last_code_validation_sha_before_closeout_metadata": "92b91656cfdb18218ddf84c82a1c6d2c90211c0b",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/54",
   "integrated": {
     "ops03b_email_step_up_login": true,
     "ot104r_vimeo_private_runtime": true,
@@ -129,5 +131,5 @@
     "real_customer_import": false,
     "bna_runtime_mutation": false
   },
-  "next_status_update_required": "After final commit, push, and draft PR creation, fill candidate_head_sha and draft_pr_url."
+  "next_status_update_required": "None for local OPS-04C closeout; update only if staging credentials and explicit canary/deploy approval are later provided."
 }

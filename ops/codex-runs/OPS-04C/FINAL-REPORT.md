@@ -1,14 +1,15 @@
 # OPS-04C Final Report
 
-Status: local convergence green; final commit, push, and draft PR pending.
+Status: local convergence green; branch pushed; draft PR opened.
 
 ## Branch
 
 - Worktree: `C:\Users\User\.batch-20260716-worktrees\OPS-04C`
 - Branch: `integration/ops04c-one-time-access-content-convergence-20260716T213505Z`
 - Base: `origin/codex/ops03b-email-step-up-login` at `25b2a95aa4e3ae82aad20537dc300e9978c15b56`
-- Candidate head SHA: `PENDING_COMMIT`
-- Draft PR: `PENDING_PR`
+- Candidate head SHA: final pushed branch head is reported in the Codex final response and on the GitHub PR.
+- Last code-validation SHA before docs-only PR metadata closeout: `92b91656cfdb18218ddf84c82a1c6d2c90211c0b`
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/54`
 
 ## Integrated Inputs
 
