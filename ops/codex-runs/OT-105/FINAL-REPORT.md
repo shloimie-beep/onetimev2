@@ -2,6 +2,12 @@
 
 Local implementation is complete and verified. The external Stripe TEST canary remains blocked on protected TEST configuration and explicit operator authorization.
 
+Publication:
+
+- Branch: `codex/ot105-stripe-test-billing-canary`.
+- Implementation commit: `48182c6`.
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/45`.
+
 Implemented:
 
 - TEST-only Stripe env contract and operator canary.

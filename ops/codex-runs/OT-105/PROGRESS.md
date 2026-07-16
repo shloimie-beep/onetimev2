@@ -25,3 +25,9 @@
 ## Remaining External Step
 
 The real Stripe TEST canary remains blocked until the protected staging config and explicit `OT105_STRIPE_TEST_CANARY_AUTHORIZED=true` approval are provided.
+
+## Publication
+
+- Branch: `codex/ot105-stripe-test-billing-canary`.
+- Implementation commit: `48182c6`.
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/45`.
