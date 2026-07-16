@@ -1,6 +1,6 @@
 # OT-106 Final Report
 
-Status: verified locally, pending commit/push/draft PR.
+Status: verified locally and opened as draft PR https://github.com/webcraft-media/onetimev2/pull/46.
 
 ## Scope
 
