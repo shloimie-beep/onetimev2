@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-07-16T22:53:55.942Z",
+  "unexpected_console": [
+    "Failed to load resource: the server responded with a status of 403 (Forbidden)"
+  ],
+  "unexpected_responses": [
+    "403 http://127.0.0.1:3100/app/dashboard"
+  ],
+  "results": [
+    {
+      "id": "landing",
+      "path": "/",
+      "role": "anonymous",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "signup",
+      "path": "/signup",
+      "role": "anonymous",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "role": "anonymous",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "crm",
+      "path": "/app/crm",
+      "role": "admin",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "dashboard",
+      "path": "/app/dashboard",
+      "role": "admin",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "parent",
+      "path": "/app/parent",
+      "role": "parent",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "student",
+      "path": "/app/student",
+      "role": "student",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "support",
+      "path": "/app/support",
+      "role": "parent",
+      "status": "PASS",
+      "findings": []
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "pass": 8,
+    "fail": 0
+  }
+}
