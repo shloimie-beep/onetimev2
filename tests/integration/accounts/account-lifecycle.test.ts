@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
@@ -54,6 +54,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  vi.unstubAllGlobals();
   await pool.end();
 });
 
@@ -238,6 +239,83 @@ describe('OT-71 account lifecycle', () => {
       now: new Date('2026-07-15T10:08:00.000Z'),
     });
     expect(accepted).toMatchObject({ role: 'admin', status: 'active' });
+  });
+
+  it('delivers exactly one lifecycle email through Resend for the configured canary destination', async () => {
+    const canaryConfig = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'canary@example.test',
+      ONE_TIME_EMAIL_FROM: 'One Time <delivery@example.test>',
+      ONE_TIME_EMAIL_REPLY_TO: 'reply@example.test',
+      RESEND_API_KEY: 'test_resend_key',
+    });
+    const requests: Array<{ url: string; body: Record<string, unknown>; headers: Headers }> = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+        requests.push({
+          url: String(url),
+          body: JSON.parse(String(init?.body ?? '{}')) as Record<string, unknown>,
+          headers: new Headers(init?.headers),
+        });
+        return new Response(JSON.stringify({ id: 'email_provider_message_001' }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      }),
+    );
+
+    await createOwnerAdminInvitation({
+      pool,
+      config: canaryConfig,
+      actor: ownerActor(),
+      payload: {
+        idempotency_key: 'invite-admin-provider-001',
+        email: 'canary@example.test',
+        display_name: 'Canary Admin',
+        role: 'admin',
+      },
+      now: new Date('2026-07-15T10:00:00.000Z'),
+    });
+
+    const summary = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config: canaryConfig,
+      now: new Date('2026-07-15T10:01:00.000Z'),
+      workerId: 'account-lifecycle-provider-worker',
+    });
+
+    expect(summary).toMatchObject({
+      claimed: 1,
+      provider_delivered: 1,
+      sink_delivered: 0,
+      external_send_performed: true,
+      raw_token_logged: false,
+    });
+    expect(requests).toHaveLength(1);
+    expect(requests[0]?.url).toBe('https://api.resend.com/emails');
+    expect(requests[0]?.headers.get('authorization')).toBe('Bearer test_resend_key');
+    expect(requests[0]?.body).toMatchObject({
+      from: 'One Time <delivery@example.test>',
+      to: ['canary@example.test'],
+      reply_to: ['reply@example.test'],
+      subject: 'Activate your One Time account',
+    });
+    expect(String(requests[0]?.body.text)).toContain('/activate#token=');
+
+    const deliveredOutbox = await lifecycleDeliveryRows();
+    expect(deliveredOutbox[0]).toMatchObject({
+      state: 'provider_delivered',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
   });
 
   it('expires queued lifecycle deliveries and clears encrypted token material', async () => {

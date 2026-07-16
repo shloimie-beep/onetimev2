@@ -26,6 +26,7 @@ type ClaimedLifecycleDelivery = {
   delivery_key: string;
   token_key: string;
   purpose: AccountLifecycleTokenType;
+  destination_email: string;
   nonce: string;
   ciphertext: string;
   auth_tag: string;
@@ -46,11 +47,12 @@ export type LifecycleDeliveryCreateResult = {
 export type LifecycleDeliveryBatchSummary = {
   claimed: number;
   sink_delivered: number;
+  provider_delivered: number;
   expired: number;
   retried: number;
   dead_lettered: number;
   lease_lost: number;
-  external_send_performed: false;
+  external_send_performed: boolean;
   raw_token_logged: false;
 };
 
@@ -156,6 +158,7 @@ export async function runLifecycleDeliveryOutboxBatch(input: {
   const summary: LifecycleDeliveryBatchSummary = {
     claimed: claims.length,
     sink_delivered: 0,
+    provider_delivered: 0,
     expired,
     retried: 0,
     dead_lettered: 0,
@@ -165,14 +168,19 @@ export async function runLifecycleDeliveryOutboxBatch(input: {
   };
   for (const claim of claims) {
     try {
-      decryptDeliveryPayload(input.config, claim);
+      const payload = decryptDeliveryPayload(input.config, claim);
+      const providerMessageRefHash = await deliverLifecyclePayload(input.config, claim, payload);
       const completed = await completeLifecycleDelivery(input.pool, input.config, claim, {
-        state: 'sink_delivered',
+        state: providerMessageRefHash ? 'provider_delivered' : 'sink_delivered',
         now,
-        providerMessageRefHash: destinationReference(`sink:${claim.delivery_key}`),
+        providerMessageRefHash:
+          providerMessageRefHash ?? destinationReference(`sink:${claim.delivery_key}`),
       });
-      if (completed) summary.sink_delivered += 1;
-      else summary.lease_lost += 1;
+      if (!completed) summary.lease_lost += 1;
+      else if (providerMessageRefHash) {
+        summary.provider_delivered += 1;
+        summary.external_send_performed = true;
+      } else summary.sink_delivered += 1;
     } catch (error) {
       const terminal = claim.attempts >= claim.max_attempts;
       const completed = await failLifecycleDelivery(input.pool, input.config, claim, {
@@ -239,6 +247,97 @@ function lifecycleDeliveryKey(config: AppConfig) {
     throw new Error('ONE_TIME_LIFECYCLE_DELIVERY_KEY is required for lifecycle delivery.');
   }
   return createHash('sha256').update(config.lifecycleDeliveryKey).digest();
+}
+
+async function deliverLifecyclePayload(
+  config: AppConfig,
+  claim: ClaimedLifecycleDelivery,
+  payload: Record<string, unknown>,
+): Promise<string | null> {
+  if (!config.deliveryProviderTransportEnabled && !config.resendTransportEnabled) return null;
+  if (!config.deliveryProviderTransportEnabled || !config.resendTransportEnabled) {
+    throw new Error('lifecycle_resend_transport_not_fully_enabled');
+  }
+  if (!config.resendApiKey) throw new Error('lifecycle_resend_api_key_missing');
+  if (!config.emailFrom) throw new Error('lifecycle_email_from_missing');
+  const canary = config.deliveryTestCanaryEmail;
+  if (!canary) throw new Error('lifecycle_canary_email_missing');
+  if (claim.destination_email.toLowerCase() !== canary) {
+    throw new Error('lifecycle_canary_destination_not_authorized');
+  }
+  const activationUrl = requiredPayloadString(payload, 'activation_url');
+  const purpose = requiredPayloadString(payload, 'purpose') as AccountLifecycleTokenType;
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${config.resendApiKey}`,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': `${claim.delivery_key}:${claim.attempts}`,
+    },
+    body: JSON.stringify({
+      from: config.emailFrom,
+      to: [claim.destination_email],
+      ...(config.emailReplyTo ? { reply_to: [config.emailReplyTo] } : {}),
+      subject: lifecycleEmailSubject(purpose),
+      text: lifecycleEmailText(purpose, activationUrl),
+      html: lifecycleEmailHtml(purpose, activationUrl),
+      tags: [
+        { name: 'message_key', value: `account_${purpose}` },
+        { name: 'purpose', value: purpose },
+      ],
+    }),
+  });
+  if (!response.ok) throw new Error(`lifecycle_resend_http_${response.status}`);
+  const body = (await response.json().catch(() => ({}))) as { id?: unknown };
+  const messageId = typeof body.id === 'string' && body.id ? body.id : `status_${response.status}`;
+  return destinationReference(`resend:${messageId}`);
+}
+
+function lifecycleEmailSubject(purpose: AccountLifecycleTokenType) {
+  if (purpose === 'password_reset') return 'Reset your One Time password';
+  return 'Activate your One Time account';
+}
+
+function lifecycleEmailText(purpose: AccountLifecycleTokenType, activationUrl: string) {
+  const action = purpose === 'password_reset' ? 'reset your password' : 'activate your account';
+  return [
+    'Hello,',
+    '',
+    `Use the secure link below to ${action}.`,
+    '',
+    activationUrl,
+    '',
+    'If you did not request this, you can ignore this email.',
+    '',
+    '- One Time Mishnayos',
+  ].join('\n');
+}
+
+function lifecycleEmailHtml(purpose: AccountLifecycleTokenType, activationUrl: string) {
+  const action = purpose === 'password_reset' ? 'reset your password' : 'activate your account';
+  const safeUrl = escapeHtml(activationUrl);
+  return [
+    '<p>Hello,</p>',
+    `<p>Use the secure link below to ${escapeHtml(action)}.</p>`,
+    `<p><a href="${safeUrl}">${escapeHtml(lifecycleEmailSubject(purpose))}</a></p>`,
+    '<p>If you did not request this, you can ignore this email.</p>',
+    '<p>- One Time Mishnayos</p>',
+  ].join('');
+}
+
+function requiredPayloadString(payload: Record<string, unknown>, key: string) {
+  const value = payload[key];
+  if (typeof value !== 'string' || !value) throw new Error(`lifecycle_payload_${key}_missing`);
+  return value;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function lifecycleUrl(config: AppConfig, purpose: AccountLifecycleTokenType, token: string) {
@@ -313,17 +412,21 @@ async function claimLifecycleDeliveries(
     const leaseExpiresAt = new Date(input.now.getTime() + input.leaseMs);
     const lockClause = isMemoryPool(pool) ? '' : 'FOR UPDATE SKIP LOCKED';
     const selected = await client.query(
-      `SELECT id
-         FROM onetime.account_lifecycle_delivery_outbox
-        WHERE account_key = $1
-          AND product_key = $2
-          AND transport_mode = 'sink'
-          AND encrypted_payload_expires_at > $3::timestamptz
+      `SELECT outbox.id, tokens.email_normalized AS destination_email
+         FROM onetime.account_lifecycle_delivery_outbox AS outbox
+         JOIN onetime.account_lifecycle_tokens AS tokens
+           ON tokens.account_key = outbox.account_key
+          AND tokens.product_key = outbox.product_key
+          AND tokens.token_key = outbox.token_key
+        WHERE outbox.account_key = $1
+          AND outbox.product_key = $2
+          AND outbox.transport_mode = 'sink'
+          AND outbox.encrypted_payload_expires_at > $3::timestamptz
           AND (
-            (state IN ('queued', 'retry') AND next_attempt_at <= $3::timestamptz)
-            OR (state = 'leased' AND lease_expires_at <= $3::timestamptz)
+            (outbox.state IN ('queued', 'retry') AND outbox.next_attempt_at <= $3::timestamptz)
+            OR (outbox.state = 'leased' AND outbox.lease_expires_at <= $3::timestamptz)
           )
-        ORDER BY next_attempt_at ASC, created_at ASC, id ASC
+        ORDER BY outbox.next_attempt_at ASC, outbox.created_at ASC, outbox.id ASC
         LIMIT $4
         ${lockClause}`,
       [config.accountKey, config.productKey, input.now, input.limit],
@@ -344,7 +447,9 @@ async function claimLifecycleDeliveries(
                     attempts, max_attempts, lease_expires_at, encrypted_payload_expires_at`,
         [row.id, config.accountKey, config.productKey, input.now, input.workerId, leaseExpiresAt],
       );
-      if (updated.rows[0]) claims.push(mapClaim(updated.rows[0]));
+      if (updated.rows[0]) {
+        claims.push(mapClaim({ ...updated.rows[0], destination_email: row.destination_email }));
+      }
     }
     return claims;
   });
@@ -440,6 +545,7 @@ function mapClaim(row: Record<string, unknown>): ClaimedLifecycleDelivery {
     delivery_key: stringValue(row.delivery_key),
     token_key: stringValue(row.token_key),
     purpose: stringValue(row.purpose) as AccountLifecycleTokenType,
+    destination_email: stringValue(row.destination_email),
     nonce: stringValue(row.nonce),
     ciphertext: stringValue(row.ciphertext),
     auth_tag: stringValue(row.auth_tag),
