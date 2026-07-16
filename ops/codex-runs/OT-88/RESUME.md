@@ -1,6 +1,6 @@
 # OT-88 Resume
 
-Status: `READY_FOR_CI`.
+Status: `READY_FOR_OT99`.
 
 Worktree:
 
@@ -20,16 +20,15 @@ The controlling prompt is `ops/codex-runs/OT-88/TASK_PROMPT.md`. The selected pa
 
 Implementation state:
 
-1. Provider-off/sink-mode Zoom learner classroom implementation is locally complete.
+1. Provider-off/sink-mode Zoom learner classroom implementation is complete.
 2. Local scoped validation passed; see `ops/codex-runs/OT-88/evidence/local-validation.json`.
-3. `READY_FOR_OT99` is intentionally withheld until PR #34 CI is green.
+3. PR #34 CI passed on implementation head `d6cba56f539eb87c2f5edb1908a5f0fa3956df85`.
+4. The final `READY_FOR_OT99` status commit must keep the same PR checks green.
 
 Next safe step:
 
-1. Commit only OT-88 implementation, test, and evidence/report files.
-2. Push `codex/ot88-zoom-learner-classroom` to `origin`.
-3. Verify PR #34 checks through GitHub Actions.
-4. After CI is green, update this run status to `READY_FOR_OT99`.
+1. Push the `READY_FOR_OT99` status-only commit to `codex/ot88-zoom-learner-classroom`.
+2. Verify PR #34 checks through GitHub Actions on that final status commit.
 
 Current protected prerequisites missing in this shell: Zoom SDK/API credentials, Telegram webhook/bot runtime credentials, and `DATABASE_URL`.
 

@@ -1,8 +1,8 @@
 # OT-88 Final Report
 
-Status: `READY_FOR_CI`.
+Status: `READY_FOR_OT99`.
 
-Provider-off/sink-mode implementation is locally complete. Push and PR #34 CI verification are pending before `READY_FOR_OT99`.
+Provider-off/sink-mode implementation is complete. PR #34 CI passed on implementation head `d6cba56f539eb87c2f5edb1908a5f0fa3956df85`; the final status-only commit must keep the same checks green.
 
 Source remote: `origin`.
 
@@ -36,3 +36,9 @@ Validation evidence:
 - `ops/codex-runs/OT-88/evidence/zoom-docs.md`
 
 Local validation passed for typecheck, lint, brand check, secret scan, unit, integration, build, e2e, accessibility, performance, migration smoke, scoped formatter, and diff whitespace.
+
+GitHub PR checks passed on the implementation head:
+
+- Node 24 verify.
+- PostgreSQL 16 assurance harness.
+- PostgreSQL 16 learner-seat proof.

@@ -1,6 +1,6 @@
 {
   "ticket": "OT-88",
-  "status": "READY_FOR_CI",
+  "status": "READY_FOR_OT99",
   "started_at_utc": "2026-07-16T04:28:19Z",
   "repository": {
     "root": "C:\\Users\\User\\onetimev2",
@@ -125,8 +125,9 @@
     "postgres_real_target": "NOT_CONFIGURED"
   },
   "implementation_completion": {
-    "status": "LOCAL_IMPLEMENTATION_COMPLETE_PENDING_PR_CI",
+    "status": "READY_FOR_OT99",
     "completed_at_utc": "2026-07-16T09:57:48.6873595Z",
+    "ready_for_ot99_at_utc": "2026-07-16T10:08:40.3561861Z",
     "provider_mode": "sink_mode_only",
     "real_provider_mode": "disabled_fail_closed_without_runtime_configuration",
     "summary": [
@@ -141,6 +142,27 @@
       "ops/codex-runs/OT-88/evidence/implementation-map.md",
       "ops/codex-runs/OT-88/evidence/zoom-docs.md"
     ]
+  },
+  "github_ci": {
+    "status": "PASSED_ON_IMPLEMENTATION_HEAD_BEFORE_READY_FOR_OT99_STATUS_COMMIT",
+    "checked_at_utc": "2026-07-16T10:08:40.3561861Z",
+    "pull_request": 34,
+    "head": "d6cba56f539eb87c2f5edb1908a5f0fa3956df85",
+    "checks": [
+      {
+        "name": "Node 24 verify",
+        "result": "PASS"
+      },
+      {
+        "name": "PostgreSQL 16 assurance harness",
+        "result": "PASS"
+      },
+      {
+        "name": "PostgreSQL 16 learner-seat proof",
+        "result": "PASS"
+      }
+    ],
+    "note": "The READY_FOR_OT99 status commit is expected to trigger the same PR checks again; final closeout requires those checks to remain green."
   },
   "local_validation": {
     "status": "PASSED_FOR_READY_FOR_CI",
@@ -171,6 +193,11 @@
       "at_utc": "2026-07-16T09:57:48.6873595Z",
       "status": "READY_FOR_CI",
       "summary": "Completed the provider-off/sink-mode Zoom learner classroom implementation locally, passed scoped validation gates, and prepared evidence/final reports. READY_FOR_OT99 remains withheld until PR #34 CI is green."
+    },
+    {
+      "at_utc": "2026-07-16T10:08:40.3561861Z",
+      "status": "READY_FOR_OT99",
+      "summary": "PR #34 CI passed on the implementation head. Recording READY_FOR_OT99 in a status-only commit and requiring the final status-commit checks to remain green."
     }
   ]
 }
