@@ -1,0 +1,80 @@
+{
+  "authorization": {
+    "campaign_send": "not authorized",
+    "production_import": "not authorized",
+    "provider_mutation": "not authorized",
+    "repository_implementation": "authorized by packet",
+    "safe_nonproduction_rehearsal": "authorized only after guard passes",
+    "source_row_access": "requires exact external authorization receipt except synthetic fixtures",
+    "synthetic_rehearsal": "authorized"
+  },
+  "completion_dispositions": [
+    "waiting_for_source_export",
+    "staging_rehearsal_complete_waiting_for_production_authorization",
+    "blocked_production_guard",
+    "review_required"
+  ],
+  "delivery": {
+    "fallback_filename": "OPS-04-CODEX-PACKET.zip",
+    "pull_request_title": "[OPS-04][PACKET READY] Legacy audience migration",
+    "queue_branch": "dropoff/ops-04-fd38cbd7",
+    "queue_path": "packets/OPS-04/OPS-04-20260716-fd38cbd7/",
+    "queue_repository": "webcraft-media/onetime-codex-queue"
+  },
+  "execution_entrypoint": "CODEX-PROMPT.md",
+  "files": {
+    "ACCEPTANCE-MATRIX.md": {
+      "bytes": 8465,
+      "role": "blocking acceptance and verification matrix",
+      "sha256": "b591ea94a78d62b9d2b2f70a903f9354a5e4a022dbebd7224a2bcfe51dce2fea"
+    },
+    "AUDIT-NOTES.md": {
+      "bytes": 5815,
+      "role": "read-only repository and legacy-contract audit summary",
+      "sha256": "5be5f4969a465feedc550bcae5b23ec1984ba4684f0489ac5f66da4f6aa9d622"
+    },
+    "CANONICAL-FIELD-TAG-STATUS-MAPPING.md": {
+      "bytes": 15554,
+      "role": "canonical field, status, tag, and source mapping",
+      "sha256": "a23129178b97359f22d7926c612fe0d07756f7b46eb3263bd1c3b498baa3d2d9"
+    },
+    "CODEX-PROMPT.md": {
+      "bytes": 17706,
+      "role": "direct Codex execution prompt",
+      "sha256": "11684285ff745ca1c8badbeb4646bb7a30ec693ba20f33299bd97f14e87d1542"
+    },
+    "DRY-RUN-ROLLBACK-CONTRACT.md": {
+      "bytes": 10697,
+      "role": "manifest, approval, apply, ledger, rollback, replay, and reconciliation contract",
+      "sha256": "5c77c191e601a5ddcccfb0986a51aebd64b4899e45cb90f2ec67c651c1528a2b"
+    },
+    "DUPLICATE-CONFLICT-POLICY.md": {
+      "bytes": 9985,
+      "role": "identity matching, duplicate, merge, and quarantine policy",
+      "sha256": "fa002a52d921663d6412eb2eb2b9c9a2b998d61bc5892965fcf678e043e6a8d9"
+    }
+  },
+  "generated_at_utc": "2026-07-16T04:04:50Z",
+  "packet_id": "OPS-04-20260716-fd38cbd7",
+  "packet_version": 1,
+  "privacy": {
+    "evidence_policy": "HMAC/redacted/aggregate/synthetic only",
+    "real_rows_in_packet": false,
+    "secrets_in_packet": false,
+    "source_binaries_in_packet": false
+  },
+  "source_spec": {
+    "filename": "OPS-04-LEGACY-AUDIENCE-MIGRATION-FACTORY.md",
+    "sha256": "d1809d0c746fda32774b22dee7b9c490152876a15ba05a093d8288af4f782de2"
+  },
+  "target": {
+    "audited_main_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "implementation_branch": "codex/ops-04-legacy-audience-migration",
+    "implementation_pr_title": "[OPS-04] Legacy audience reconciliation and migration",
+    "integrated_anchor_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+    "legacy_audience_foundation_sha": "51cd99dc4434f0354ba229620ebe89558efeb120",
+    "preferred_compatible_base_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+    "repository": "webcraft-media/onetimev2"
+  },
+  "task_id": "OPS-04"
+}

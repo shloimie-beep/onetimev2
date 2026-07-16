@@ -1,0 +1,27 @@
+{
+  "task_id": "OPS-04",
+  "mode": "synthetic_rehearsal",
+  "batch_key": "ops04_batch_688146befabda4df9397be3f",
+  "manifest_sha256": "752e49a5585534ca54293b0fe19b97d7ce730195c85176d27cade09cd140f252",
+  "mapping_sha256": "8c5d3445188b31a8e95dbea6616492f549ac995f022f75e85ba61ca8d20480ab",
+  "database_snapshot_key": "ops04_snapshot_5023815dc2bc73b5255fc8db",
+  "dry_run_hash": "dbe5aab056f03c42b7906cd17483973b12ab79ffbe4a622984bae58489139e54",
+  "approved_counts": {
+    "add_contact_point": 10,
+    "add_contact_point_owner": 10,
+    "add_tag_assignment": 11,
+    "append_channel_state_event": 10,
+    "append_lead_event": 8,
+    "append_legacy_membership_event": 5,
+    "create_contact": 9,
+    "link_external_identity": 5,
+    "link_source_provenance": 18,
+    "set_migration_projection": 11,
+    "no_op_unchanged": 2,
+    "quarantine_manual_review": 7,
+    "reject_insufficient_identity": 2
+  },
+  "actor": "ops04-cli-synthetic-actor",
+  "expires_at": "2026-07-16T00:30:00.000Z",
+  "import_approval_does_not_authorize_send": true
+}

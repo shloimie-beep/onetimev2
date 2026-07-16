@@ -1,0 +1,28 @@
+{
+  "task_id": "OPS-04",
+  "resolved_at": "2026-07-16T05:27:00Z",
+  "target_repository": "webcraft-media/onetimev2",
+  "worktree": "C:/Users/User/.ops04-worktrees/OPS-04",
+  "branch": "codex/ops-04-legacy-audience-migration",
+  "initial_created_from": "origin/main",
+  "initial_created_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+  "resolved_base_ref": "origin/codex/ot85-whatsapp-lead-assistant",
+  "resolved_base_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+  "base_resolution_reason": "origin/codex/ot85-whatsapp-lead-assistant is the packet preferred compatible base and contains the preferred SHA.",
+  "ancestry": {
+    "convergence_anchor_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+    "convergence_anchor_is_ancestor_of_preferred_base": true,
+    "legacy_audience_foundation_sha": "51cd99dc4434f0354ba229620ebe89558efeb120",
+    "legacy_audience_foundation_is_ancestor_of_preferred_base": true,
+    "preferred_base_is_ancestor_of_resolved_ref": true,
+    "main_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "main_used_as_base": false
+  },
+  "commands": [
+    "git fetch origin --prune",
+    "git merge-base --is-ancestor 741af0c08ee1d43be4e220b7c6e4c77a2330adc2 fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+    "git merge-base --is-ancestor fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a origin/codex/ot85-whatsapp-lead-assistant",
+    "git merge-base --is-ancestor 51cd99dc4434f0354ba229620ebe89558efeb120 fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+    "git checkout -B codex/ops-04-legacy-audience-migration origin/codex/ot85-whatsapp-lead-assistant"
+  ]
+}

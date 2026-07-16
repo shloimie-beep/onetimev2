@@ -1,0 +1,39 @@
+{
+  "task_id": "OPS-04",
+  "packet": {
+    "selected_zip_path": "C:/Users/User/Downloads/OPS-04-CODEX-PACKET (2).zip",
+    "selected_zip_sha256": "3e297c9a39eb8a6c631c0f2b8a417d72ab3deb95dcbe4af996b640f05b44a759",
+    "packet_root": "OPS-04-20260716-fd38cbd7",
+    "extracted_to": "ops/codex-runs/OPS-04/source-packet/OPS-04-20260716-fd38cbd7",
+    "manifest_path": "ops/codex-runs/OPS-04/source-packet/OPS-04-20260716-fd38cbd7/PACKET-MANIFEST.json",
+    "entrypoint": "ops/execution/OPS-04/ORIGINAL-PROMPT.md",
+    "checksum_manifest": "CHECKSUMS.sha256",
+    "sha256sums_txt_present": false,
+    "path_validation": "passed",
+    "checksum_validation": "passed",
+    "high_confidence_secret_scan": "passed"
+  },
+  "source_exports": {
+    "ops04_source_root_env": "OPS04_SOURCE_ROOT",
+    "status": "not_configured",
+    "row_access_authorization_env": "OPS04_ROW_ACCESS_AUTHORIZATION_PATH",
+    "row_access_authorization_status": "absent",
+    "hmac_key_env": "OPS04_FINGERPRINT_HMAC_KEY",
+    "hmac_key_status": "required_for_non_synthetic_only"
+  },
+  "database": {
+    "staging_database_env": "OPS04_STAGING_DATABASE_URL",
+    "staging_database_status": "not_configured",
+    "production_import_authorization_env": "OPS04_PRODUCTION_IMPORT_AUTHORIZATION_PATH",
+    "production_import_authorization_status": "absent"
+  },
+  "side_effect_authorizations": {
+    "production_import": "absent",
+    "campaign_send": "absent",
+    "email_send": "absent",
+    "whatsapp_send": "absent",
+    "telegram_send": "absent",
+    "payment_or_access_mutation": "absent",
+    "provider_mutation": "absent"
+  }
+}
