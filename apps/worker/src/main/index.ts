@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { createPgPool } from '../../../../packages/db/src/index.ts';
 import {
+  runAuthEmailChallengeDeliveryOutboxBatch,
   runLifecycleDeliveryOutboxBatch,
   runSupportDeliveryBatch,
 } from '../../../../packages/domain/src/index.ts';
@@ -47,7 +48,13 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       limit: config.batchSize,
       leaseMs: config.claimLeaseMs,
     });
-    return { ...delivery, support, lifecycle };
+    const authEmail = await runAuthEmailChallengeDeliveryOutboxBatch({
+      pool,
+      config: config.appConfig,
+      limit: config.batchSize,
+      leaseMs: config.claimLeaseMs,
+    });
+    return { ...delivery, support, lifecycle, authEmail };
   } finally {
     await pool.end();
   }
@@ -107,6 +114,12 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             limit: config.batchSize,
             leaseMs: config.claimLeaseMs,
           });
+          await runAuthEmailChallengeDeliveryOutboxBatch({
+            pool,
+            config: config.appConfig,
+            limit: config.batchSize,
+            leaseMs: config.claimLeaseMs,
+          });
         } catch (error) {
           void error;
           logger.error('delivery_batch_failed', {
@@ -132,6 +145,8 @@ if (process.argv.includes('--once')) {
       `support_delivered=${summary.support.delivered}`,
       `lifecycle_sink_delivered=${summary.lifecycle.sink_delivered}`,
       `lifecycle_expired=${summary.lifecycle.expired}`,
+      `auth_email_sink_delivered=${summary.authEmail.sink_delivered}`,
+      `auth_email_expired=${summary.authEmail.expired}`,
     ].join('\n') + '\n',
   );
 } else {

@@ -1,0 +1,135 @@
+{
+  "worker": "OPS-04C",
+  "status": "draft_pr_open_pushed",
+  "branch": "integration/ops04c-one-time-access-content-convergence-20260716T213505Z",
+  "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OPS-04C",
+  "base_ref": "origin/codex/ops03b-email-step-up-login",
+  "base_sha": "25b2a95aa4e3ae82aad20537dc300e9978c15b56",
+  "candidate_head_sha": null,
+  "candidate_head_note": "The exact self-referential pushed branch head is reported in the final Codex response and GitHub PR head.",
+  "last_code_validation_sha_before_closeout_metadata": "92b91656cfdb18218ddf84c82a1c6d2c90211c0b",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/54",
+  "integrated": {
+    "ops03b_email_step_up_login": true,
+    "ot104r_vimeo_private_runtime": true,
+    "ot101r_telegram_admin_runtime": true,
+    "ot110a_admin_content_workspace": true,
+    "ot111_legacy_activation_campaign": true,
+    "pr44_ot107_student_helper": true,
+    "pr46_ot106_buffer_runtime": true,
+    "pr48_ot109_rabbi_content_publisher": true
+  },
+  "local_validation": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "summary": "359 packages installed, 0 vulnerabilities reported."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 985 repo text files."
+    },
+    {
+      "command": "npm run format",
+      "status": "blocked_baseline",
+      "summary": "Prettier check reports 665 pre-existing repo files with style drift; OPS-04C touched files were formatted."
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "summary": "Manifest, token drift, route scan, and raw source scan passed."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "Passed after removing a retired, unused MFA helper left by the email step-up convergence."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit passed."
+    },
+    {
+      "command": "focused integration suite",
+      "status": "passed",
+      "summary": "8 integration files, 37 tests passed for auth, migrations, Vimeo, Telegram, Buffer, OT-109, OT-110A, and OT-74/OT-111 coverage."
+    },
+    {
+      "command": "focused unit suite",
+      "status": "passed",
+      "summary": "OT-107 and OT-111 unit tests passed: 2 files, 8 tests."
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "summary": "32 files, 168 tests passed."
+    },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "summary": "32 files, 157 tests passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed_with_warning",
+      "summary": "Build passed; Vite warned that /assets/fonts/dm-serif-display-latin.woff2 remains runtime-resolved."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed",
+      "summary": "33 Playwright e2e tests passed after aligning auth and student-portal labels with current UI."
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "summary": "13 Playwright accessibility tests passed."
+    },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "summary": "7 Playwright performance tests passed and bundle check emitted budget summary."
+    },
+    {
+      "command": "npm run db:verify",
+      "status": "blocked_environment",
+      "summary": "Blocked by missing DATABASE_URL; pg-mem migration foundation passed in integration tests."
+    },
+    {
+      "command": "node bin/ot104r-vimeo-canary --json",
+      "status": "blocked_unconfigured_no_writes",
+      "summary": "Returned unconfigured with missing Vimeo variables and writes_performed=false."
+    },
+    {
+      "command": "node bin/ot106-buffer-canary --json",
+      "status": "blocked_unconfigured_no_writes",
+      "summary": "Returned unconfigured with missing Buffer token, organization, and channel aliases; writes_performed=false."
+    },
+    {
+      "command": "npx tsx scripts/ot111/legacy-activation-campaign-dry-run.ts",
+      "status": "passed",
+      "summary": "Synthetic dry run and campaign preview completed with production_side_effects=false."
+    },
+    {
+      "command": "npx tsx scripts/ot106-buffer-queue-proof.ts",
+      "status": "passed",
+      "summary": "Processed 10000 sink queue items, provider_writes=0, external_network_used=false."
+    },
+    {
+      "command": "railway status",
+      "status": "blocked_environment",
+      "summary": "No linked project found in isolated worktree; staging deployment not attempted."
+    }
+  ],
+  "external_mutations": {
+    "production_deployment": false,
+    "staging_deployment": false,
+    "dns_change": false,
+    "provider_write": false,
+    "broad_send": false,
+    "live_charge": false,
+    "real_customer_import": false,
+    "bna_runtime_mutation": false
+  },
+  "next_status_update_required": "None for local OPS-04C closeout; update only if staging credentials and explicit canary/deploy approval are later provided."
+}

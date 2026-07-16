@@ -1,0 +1,38 @@
+{
+  "lane": "OT-101R",
+  "branch": "codex/ot101r-telegram-admin-runtime",
+  "base_ref": "origin/codex/ops03-staging-readiness-repair",
+  "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "reference_ot84_sha": "310bb5ca8cc8c01e2218051367c5cc2e3414a719",
+  "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OT-101R",
+  "status": "implemented_local_verification_passed",
+  "started_at": "2026-07-16T23:55:00+03:00",
+  "last_updated_at": "2026-07-17T00:15:39+03:00",
+  "implementation": {
+    "webhook_ingress": "existing_ot84_foundation_reused",
+    "worker_runtime": "createOneTimeTelegramAdminRuntime_sql_backed_worker",
+    "application_adapter": "expanded_sql_backed_reads_and_confirmed_local_writes",
+    "bot_api_sender": "protected_allowlisted_bot_api_transport_available_sink_default",
+    "all_writes_require_confirmation": true,
+    "high_impact_provider_mutations": "blocked_or_web_route_required"
+  },
+  "verification": {
+    "format_targeted": "passed: npx prettier --check on touched supported files",
+    "lint_targeted": "passed: npx eslint on touched TypeScript files",
+    "unit": "passed: 3 files, 16 tests",
+    "integration": "passed: 2 files, 3 tests",
+    "typecheck": "passed: npm run typecheck",
+    "secret_scan": "passed: npm run secret:scan",
+    "postgresql_proof": "passed: pg-mem migration and SQL-backed runtime integration",
+    "live_canary": "blocked_missing_protected_telegram_configuration"
+  },
+  "safety": {
+    "bna_product_mutation": false,
+    "academy_context_reused": false,
+    "production_deploy": false,
+    "dns_change": false,
+    "broad_send": false,
+    "live_charge": false,
+    "provider_mutation": false
+  }
+}

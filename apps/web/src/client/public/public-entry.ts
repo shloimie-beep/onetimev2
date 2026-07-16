@@ -211,9 +211,13 @@ const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
 if (loginForm) {
   const status = loginForm.querySelector<HTMLElement>('[data-form-status]');
   const submit = loginForm.querySelector<HTMLButtonElement>('button[type="submit"]');
-  const mfaPanel = loginForm.querySelector<HTMLElement>('[data-login-mfa]');
-  const mfaInput = loginForm.querySelector<HTMLInputElement>('#mfa_code');
+  const emailPanel = loginForm.querySelector<HTMLElement>('[data-email-challenge]');
+  const emailInput = loginForm.querySelector<HTMLInputElement>('#email_code');
+  const trustDevice = loginForm.querySelector<HTMLInputElement>('input[name="trust_device"]');
+  const resendButton = loginForm.querySelector<HTMLButtonElement>('[data-resend-challenge]');
+  const resendStatus = loginForm.querySelector<HTMLElement>('[data-resend-status]');
   let challengeToken = '';
+  let resendTimer: number | undefined;
   const setError = (name: string, message: string) => {
     const field = loginForm.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
     if (field) field.textContent = message;
@@ -222,6 +226,56 @@ if (loginForm) {
     loginForm
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
+  const returnTo = () =>
+    String(new FormData(loginForm).get('return_to') ?? '/app/crm') || '/app/crm';
+  const revealEmailChallenge = (token: string) => {
+    challengeToken = token;
+    if (emailPanel) emailPanel.hidden = false;
+    if (emailInput) {
+      emailInput.required = true;
+      emailInput.focus();
+    }
+    if (submit) submit.textContent = 'Verify code';
+    startResendCooldown(45);
+    if (status) status.textContent = 'We sent a login code to that account if it can sign in.';
+  };
+  const startResendCooldown = (seconds: number) => {
+    window.clearInterval(resendTimer);
+    let remaining = seconds;
+    if (resendButton) resendButton.disabled = true;
+    const render = () => {
+      if (resendStatus) {
+        resendStatus.textContent =
+          remaining > 0 ? `Resend available in ${remaining}s.` : 'You can request a new code.';
+      }
+      if (remaining <= 0) {
+        if (resendButton) resendButton.disabled = false;
+        window.clearInterval(resendTimer);
+      }
+      remaining -= 1;
+    };
+    render();
+    resendTimer = window.setInterval(render, 1000);
+  };
+
+  const emailLinkToken = consumeFragmentValue(['email_challenge_token', 'link_token']);
+  if (emailLinkToken) {
+    if (status) status.textContent = 'Confirming email sign-in...';
+    void postJson('/api/v1/auth/email-challenge/link', {
+      link_token: emailLinkToken,
+      return_to: returnTo(),
+      trust_device: false,
+    }).then((response) => {
+      if (response.ok && response.json.success) {
+        window.location.assign(String(response.json.return_to ?? '/app/crm'));
+        return;
+      }
+      if (status)
+        status.textContent = String(
+          response.json.message ?? 'Email confirmation was not accepted.',
+        );
+    });
+  }
 
   loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -235,31 +289,24 @@ if (loginForm) {
     if (status) status.textContent = '';
     try {
       if (challengeToken) {
-        const trimmedCode = String(data.get('mfa_code') ?? '').trim();
+        const trimmedCode = String(data.get('email_code') ?? '').trim();
         if (!trimmedCode) {
-          setError('mfa_code', 'Enter an authenticator or recovery code.');
-          mfaInput?.focus();
+          setError('email_code', 'Enter the code from your email.');
+          emailInput?.focus();
           return;
         }
-        const endpoint = /^\d{6}$/.test(trimmedCode)
-          ? '/api/v1/auth/mfa/challenge'
-          : '/api/v1/auth/mfa/recovery';
-        const mfaResponse = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(
-            endpoint.endsWith('/challenge')
-              ? { challenge_token: challengeToken, totp_code: trimmedCode }
-              : { challenge_token: challengeToken, recovery_code: trimmedCode },
-          ),
+        const challengeResponse = await postJson('/api/v1/auth/email-challenge/verify', {
+          challenge_token: challengeToken,
+          code: trimmedCode,
+          trust_device: trustDevice?.checked === true,
+          return_to: returnTo(),
         });
-        const mfaJson = await mfaResponse.json();
-        if (!mfaResponse.ok || !mfaJson.success) {
+        if (!challengeResponse.ok || !challengeResponse.json.success) {
           if (status)
-            status.textContent = mfaJson.message ?? 'Authenticator code was not accepted.';
+            status.textContent = String(challengeResponse.json.message ?? 'Code was not accepted.');
           return;
         }
-        window.location.assign(mfaJson.return_to ?? '/app/crm');
+        window.location.assign(String(challengeResponse.json.return_to ?? '/app/crm'));
         return;
       }
       const response = await fetch('/api/v1/auth/login', {
@@ -277,14 +324,8 @@ if (loginForm) {
       });
       const json = await response.json();
       if (!response.ok || !json.success) {
-        if (json.code === 'MFA_REQUIRED' && json.challenge_token) {
-          challengeToken = String(json.challenge_token);
-          if (mfaPanel) mfaPanel.hidden = false;
-          if (mfaInput) {
-            mfaInput.required = true;
-            mfaInput.focus();
-          }
-          if (status) status.textContent = 'Enter your authenticator or recovery code.';
+        if (json.code === 'EMAIL_CHALLENGE_REQUIRED' && json.challenge_token) {
+          revealEmailChallenge(String(json.challenge_token));
           return;
         }
         if (json.field_errors) {
@@ -302,31 +343,38 @@ if (loginForm) {
     } finally {
       if (submit) {
         submit.disabled = false;
-        submit.textContent = 'Login';
+        submit.textContent = challengeToken ? 'Verify code' : 'Login';
       }
     }
+  });
+
+  resendButton?.addEventListener('click', async () => {
+    if (!challengeToken) return;
+    resendButton.disabled = true;
+    if (resendStatus) resendStatus.textContent = 'Requesting a new code...';
+    const response = await postJson('/api/v1/auth/email-challenge/resend', {
+      challenge_token: challengeToken,
+    });
+    if (!response.ok || !response.json.success) {
+      if (resendStatus)
+        resendStatus.textContent = String(
+          response.json.message ?? 'Please wait before requesting another code.',
+        );
+      startResendCooldown(45);
+      return;
+    }
+    challengeToken = String(response.json.challenge_token);
+    if (emailInput) emailInput.value = '';
+    startResendCooldown(45);
   });
 }
 
 const activationRoot = document.querySelector<HTMLElement>('[data-activation-root]');
 if (activationRoot) {
-  const token = consumeFragmentToken();
+  const token = consumeFragmentValue('token');
   const status = activationRoot.querySelector<HTMLElement>('[data-activation-status]');
   const error = activationRoot.querySelector<HTMLElement>('[data-activation-error]');
   const form = activationRoot.querySelector<HTMLFormElement>('[data-activation-form]');
-  const mfaPanel = activationRoot.querySelector<HTMLElement>('[data-activation-mfa]');
-  const mfaForm = activationRoot.querySelector<HTMLFormElement>('[data-activation-mfa-form]');
-  const secretNode = activationRoot.querySelector<HTMLElement>('[data-mfa-secret]');
-  const otpauthLink = activationRoot.querySelector<HTMLAnchorElement>('[data-otpauth-link]');
-  const recoveryPanel = activationRoot.querySelector<HTMLElement>('[data-recovery-panel]');
-  const recoveryList = activationRoot.querySelector<HTMLOListElement>('[data-recovery-codes]');
-  const recoveryAck = activationRoot.querySelector<HTMLInputElement>('[data-recovery-ack]');
-  const recoveryContinue = activationRoot.querySelector<HTMLButtonElement>(
-    '[data-recovery-continue]',
-  );
-  const recoveryStatus = activationRoot.querySelector<HTMLElement>('[data-recovery-status]');
-  let handoffToken = '';
-  let enrollmentToken = '';
 
   if (!token) {
     showFlowError(error, status, 'This activation link is missing its secure token.');
@@ -341,7 +389,7 @@ if (activationRoot) {
     const data = new FormData(form);
     if (!passwordsMatch(form, data)) return;
     setFormStatus(form, '');
-    setSubmitBusy(form, true, 'Continuing...');
+    setSubmitBusy(form, true, 'Activating...');
     try {
       const response = await postJson('/api/v1/account-lifecycle/activate', {
         token,
@@ -352,73 +400,10 @@ if (activationRoot) {
         applyApiErrors(form, response.json, error);
         return;
       }
-      if (response.json.mfa_required) {
-        handoffToken = String(response.json.handoff_token ?? '');
-        enrollmentToken = String(response.json.enrollment_token ?? '');
-        form.hidden = true;
-        if (mfaPanel) mfaPanel.hidden = false;
-        if (secretNode) secretNode.textContent = String(response.json.totp_secret ?? '');
-        if (otpauthLink) {
-          otpauthLink.href = String(response.json.otpauth_url ?? '#');
-        }
-        mfaForm?.querySelector<HTMLInputElement>('#activation_totp')?.focus();
-        if (status) status.textContent = 'Set up MFA to finish activation.';
-        return;
-      }
       window.location.assign(String(response.json.return_to ?? '/app/parent'));
     } finally {
-      setSubmitBusy(form, false, 'Continue');
+      setSubmitBusy(form, false, 'Activate account');
     }
-  });
-
-  mfaForm?.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    clearFormErrors(mfaForm);
-    if (!mfaForm.reportValidity() || !handoffToken || !enrollmentToken) return;
-    const data = new FormData(mfaForm);
-    setSubmitBusy(mfaForm, true, 'Verifying...');
-    try {
-      const response = await postJson('/api/v1/account-lifecycle/mfa/activate', {
-        handoff_token: handoffToken,
-        enrollment_token: enrollmentToken,
-        totp_code: String(data.get('totp_code') ?? '').trim(),
-      });
-      if (!response.ok || !response.json.success) {
-        applyApiErrors(mfaForm, response.json, error);
-        return;
-      }
-      const codes = Array.isArray(response.json.recovery_codes)
-        ? response.json.recovery_codes.map(String)
-        : [];
-      if (recoveryList) {
-        recoveryList.replaceChildren(...codes.map((code) => recoveryCodeItem(code)));
-      }
-      if (mfaPanel) mfaPanel.hidden = true;
-      if (recoveryPanel) recoveryPanel.hidden = false;
-      recoveryAck?.focus();
-    } finally {
-      setSubmitBusy(mfaForm, false, 'Verify code');
-    }
-  });
-
-  recoveryAck?.addEventListener('change', () => {
-    if (recoveryContinue) recoveryContinue.disabled = !recoveryAck.checked;
-  });
-  recoveryContinue?.addEventListener('click', async () => {
-    if (!recoveryAck?.checked || !handoffToken) return;
-    recoveryContinue.disabled = true;
-    if (recoveryStatus) recoveryStatus.textContent = 'Finishing setup...';
-    const response = await postJson('/api/v1/account-lifecycle/mfa/ack', {
-      handoff_token: handoffToken,
-      recovery_codes_saved: true,
-    });
-    if (!response.ok || !response.json.success) {
-      if (recoveryStatus)
-        recoveryStatus.textContent = String(response.json.message ?? 'Setup expired.');
-      recoveryContinue.disabled = false;
-      return;
-    }
-    window.location.assign(String(response.json.return_to ?? '/app/dashboard'));
   });
 }
 
@@ -454,7 +439,7 @@ if (forgotPasswordForm) {
 
 const resetRoot = document.querySelector<HTMLElement>('[data-reset-root]');
 if (resetRoot) {
-  const token = consumeFragmentToken();
+  const token = consumeFragmentValue('token');
   const status = resetRoot.querySelector<HTMLElement>('[data-reset-status]');
   const form = resetRoot.querySelector<HTMLFormElement>('[data-reset-password-form]');
   if (!token) {
@@ -522,10 +507,11 @@ async function checkLifecycleToken(
   }
 }
 
-function consumeFragmentToken() {
+function consumeFragmentValue(names: string | string[] = 'token') {
   const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
-  const token = params.get('token') ?? '';
-  if (window.location.hash) {
+  const candidates = Array.isArray(names) ? names : [names];
+  const token = candidates.map((name) => params.get(name) ?? '').find(Boolean) ?? '';
+  if (token && window.location.hash) {
     window.history.replaceState(
       null,
       document.title,
@@ -584,12 +570,4 @@ function passwordsMatch(form: HTMLFormElement, data: FormData) {
 function showFlowError(error: HTMLElement | null, status: HTMLElement | null, message: string) {
   if (status) status.textContent = '';
   if (error) error.textContent = message;
-}
-
-function recoveryCodeItem(code: string) {
-  const item = document.createElement('li');
-  const codeNode = document.createElement('code');
-  codeNode.textContent = code;
-  item.append(codeNode);
-  return item;
 }

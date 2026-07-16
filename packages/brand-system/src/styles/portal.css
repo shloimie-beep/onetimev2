@@ -81,6 +81,9 @@
   display: grid;
   gap: 10px;
 }
+.ot-helper-panel {
+  align-content: start;
+}
 .ot-question-form {
   display: grid;
   gap: 10px;
@@ -182,6 +185,28 @@
   color: #fff6bf;
   border-radius: 8px;
   padding: 10px 12px;
+}
+.ot-helper-answer,
+.ot-private-preview {
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-helper-answer p,
+.ot-private-preview p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.ot-citation-list {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+.ot-citation-list a {
+  color: var(--ot-portal-ice);
+  overflow-wrap: anywhere;
 }
 .ot-metrics {
   display: grid;

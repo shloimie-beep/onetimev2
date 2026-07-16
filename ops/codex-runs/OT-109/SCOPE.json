@@ -1,0 +1,33 @@
+{
+  "run_id": "OT-109",
+  "owned_roots": [
+    "packages/contracts/src/content/publisher.ts",
+    "packages/contracts/src/content/index.ts",
+    "packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
+    "packages/domain/src/content/publisher.ts",
+    "packages/domain/src/index.ts",
+    "tests/integration/content/ot109-rabbi-content-publisher.test.ts",
+    "OPS04-INTEGRATION-DELTA.md",
+    "ops/codex-runs/OT-109/"
+  ],
+  "explicitly_not_edited": [
+    "apps/web/src/server/app.ts",
+    "apps/worker/src/main/",
+    "packages/config/",
+    "root runtime manifests",
+    "auth/session code",
+    "landing pages",
+    "portals",
+    "Railway/deployment config",
+    "other providers",
+    "BNA repo runtime"
+  ],
+  "data_isolation": {
+    "fixed_account_key": "rabbi_sheller_provider",
+    "fixed_product_key": "one_time_mishnah_class",
+    "academy_data_allowed": false,
+    "raw_media_urls_in_logs_allowed": false,
+    "raw_vimeo_tokens_in_logs_allowed": false,
+    "complete_unapproved_transcripts_in_evidence_allowed": false
+  }
+}

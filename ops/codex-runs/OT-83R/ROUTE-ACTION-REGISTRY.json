@@ -350,7 +350,10 @@
       "roles": ["student"],
       "capability": "student:question:create",
       "handler": { "method": "POST", "path": "/api/v1/portals/student/questions" },
-      "confirmation": { "required": false, "reason": "Creates a private learner question." },
+      "confirmation": {
+        "required": true,
+        "reason": "The student sees the exact private question text before submission."
+      },
       "audit": { "mode": "portal_audit", "event": "student_question_submitted" },
       "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
       "readiness_state": "ready",
@@ -365,6 +368,25 @@
         "tests/ot-52/portal-services.test.ts",
         "tests/e2e/ot-83r-portals.spec.ts"
       ]
+    },
+    {
+      "action_id": "portal.student.class_helper.query",
+      "label": "Ask helper",
+      "surface": "form",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "helper:query",
+      "handler": { "method": "POST", "path": "/api/v1/portals/student/helper/query" },
+      "confirmation": {
+        "required": false,
+        "reason": "Returns only a bounded answer or abstention; it never submits a private question."
+      },
+      "audit": { "mode": "retrieval_audit", "event": "student_class_helper_query" },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/unit/ot107-student-class-helper.test.ts"],
+      "negative_tests": ["tests/unit/ot107-student-class-helper.test.ts"]
     },
     {
       "action_id": "portal.student.support.preview",

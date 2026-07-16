@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import type {
   AdministrativeUpdate,
   BillingSummary,
+  HelperAnswer,
   CreateLearnerPayload,
   HelperAvailability,
   HelperQueryPayload,
@@ -229,7 +230,7 @@ export type ScopedPortalHelperAdapter = {
     learner?: LearnerProfile;
     household?: HouseholdOverview;
     payload: HelperQueryPayload;
-  }): Promise<{ answer: string; source_refs: string[] }>;
+  }): Promise<HelperAnswer>;
 };
 
 export type SupportRequestAdapter = {

@@ -64,10 +64,31 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
     expect(first.some((migration) => migration.id === '2009_ops03a_activation_mfa_handoffs')).toBe(
       true,
     );
+    expect(first.some((migration) => migration.id === '2010_ops03b_email_step_up_login')).toBe(
+      true,
+    );
+    expect(first.some((migration) => migration.id === '2011_ot101r_telegram_admin_runtime')).toBe(
+      true,
+    );
+    expect(first.some((migration) => migration.id === '2012_ot104r_vimeo_private_runtime')).toBe(
+      true,
+    );
+    expect(first.some((migration) => migration.id === '2013_ot110a_admin_content_workspace')).toBe(
+      true,
+    );
+    expect(
+      first.some((migration) => migration.id === '2014_ot111_legacy_activation_campaign'),
+    ).toBe(true);
+    expect(first.some((migration) => migration.id === '2160_ot106_buffer_social_publishing')).toBe(
+      true,
+    );
+    expect(first.some((migration) => migration.id === '2190_ot109_rabbi_content_publisher')).toBe(
+      true,
+    );
     expect(
       first.some((migration) => migration.id === '2003_ot89a_subscriber_support_producer'),
     ).toBe(true);
-    expect(first.at(-1)?.id).toBe('2009_ops03a_activation_mfa_handoffs');
+    expect(first.at(-1)?.id).toBe('2190_ot109_rabbi_content_publisher');
     const applied = await pool.query(
       `SELECT checksum
          FROM onetime.schema_migrations
@@ -85,10 +106,17 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
           '2006_ot86b_social_publishing',
           '2007_ot87_stripe_test_entitlements',
           '2008_ops03a_lifecycle_delivery_outbox',
-          '2009_ops03a_activation_mfa_handoffs'
+          '2009_ops03a_activation_mfa_handoffs',
+          '2010_ops03b_email_step_up_login',
+          '2011_ot101r_telegram_admin_runtime',
+          '2012_ot104r_vimeo_private_runtime',
+          '2013_ot110a_admin_content_workspace',
+          '2014_ot111_legacy_activation_campaign',
+          '2160_ot106_buffer_social_publishing',
+          '2190_ot109_rabbi_content_publisher'
         )`,
     );
-    expect(applied.rowCount).toBe(14);
+    expect(applied.rowCount).toBe(21);
     await expect(runMigrations(pool)).rejects.toThrow(/not supported/i);
   });
 

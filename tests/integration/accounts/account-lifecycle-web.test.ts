@@ -9,7 +9,6 @@ import {
   createSession,
   decryptLifecycleDeliveryPayloadForTests,
   getSessionByToken,
-  totpCode,
 } from '../../../packages/domain/src/index.ts';
 
 let pool: DbPool;
@@ -54,7 +53,7 @@ afterEach(async () => {
   await pool.end();
 });
 
-describe('OPS-03A natural account lifecycle web flow', () => {
+describe('OPS-03B email step-up account lifecycle web flow', () => {
   it('serves noindexed auth pages and removes prompt-based MFA from public client code', async () => {
     for (const route of ['/login', '/activate', '/forgot-password', '/reset-password']) {
       const response = await fetch(`${baseUrl}${route}`);
@@ -72,9 +71,10 @@ describe('OPS-03A natural account lifecycle web flow', () => {
     expect(clientSource).not.toContain('window.prompt');
     expect(clientSource).toContain('window.history.replaceState');
     expect(clientSource).not.toMatch(/localStorage|sessionStorage/);
+    expect(clientSource).not.toMatch(/auth\/mfa|account-lifecycle\/mfa|totp_code/);
   });
 
-  it('activates an owner/admin invite through MFA setup before creating a session', async () => {
+  it('activates an owner/admin invite directly after password setup', async () => {
     const issued = await createOwnerAdminInvitation({
       pool,
       config: appConfig,
@@ -98,7 +98,7 @@ describe('OPS-03A natural account lifecycle web flow', () => {
     expect(status.json).toMatchObject({
       success: true,
       token_type: 'owner_admin_invitation',
-      mfa_required: true,
+      mfa_required: false,
     });
     expect(JSON.stringify(status.json)).not.toContain(token);
 
@@ -114,29 +114,12 @@ describe('OPS-03A natural account lifecycle web flow', () => {
     expect(activated.response.status).toBe(200);
     expect(activated.json).toMatchObject({
       success: true,
-      mfa_required: true,
-      recovery_codes_ack_required: true,
+      mfa_required: false,
+      return_to: '/app/dashboard',
     });
-    expect(cookieHeader(activated.response.headers)).not.toContain('otcrm_session=');
-    expect(JSON.stringify(activated.json)).not.toContain(token);
-
-    const secret = String(activated.json.totp_secret);
-    const verified = await postJson('/api/v1/account-lifecycle/mfa/activate', {
-      handoff_token: String(activated.json.handoff_token),
-      enrollment_token: String(activated.json.enrollment_token),
-      totp_code: totpCode(secret),
-    });
-    expect(verified.response.status).toBe(200);
-    expect(verified.json.recovery_codes as string[]).toHaveLength(10);
-
-    const ack = await postJson('/api/v1/account-lifecycle/mfa/ack', {
-      handoff_token: String(activated.json.handoff_token),
-      recovery_codes_saved: true,
-    });
-    expect(ack.response.status).toBe(200);
-    expect(ack.json).toMatchObject({ success: true, return_to: '/app/dashboard' });
-    const cookies = cookieHeader(ack.response.headers);
+    const cookies = mergeCookies(activationPage.cookies, cookieHeader(activated.response.headers));
     expect(cookies).toContain('otcrm_session=');
+    expect(JSON.stringify(activated.json)).not.toContain(token);
 
     const session = await fetch(`${baseUrl}/api/v1/auth/session`, { headers: { cookie: cookies } });
     expect(session.status).toBe(200);
@@ -281,6 +264,17 @@ function cookieHeader(headers: Headers) {
     .getSetCookie()
     .map((cookie) => cookie.split(';')[0])
     .join('; ');
+}
+
+function mergeCookies(...headers: string[]) {
+  const cookies = new Map<string, string>();
+  for (const header of headers) {
+    for (const part of header.split(';')) {
+      const [key, value] = part.trim().split('=');
+      if (key && value) cookies.set(key, value);
+    }
+  }
+  return [...cookies.entries()].map(([key, value]) => `${key}=${value}`).join('; ');
 }
 
 function requiredToken(issue: { token_for_local_proof?: string }) {

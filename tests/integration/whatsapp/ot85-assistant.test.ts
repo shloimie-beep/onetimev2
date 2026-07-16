@@ -256,6 +256,8 @@ describe('OT-85 WhatsApp assistant', () => {
       session: {
         session_key: 'sess_test_parent',
         expires_at: new Date(NOW.getTime() + 60_000).toISOString(),
+        assurance_method: 'password',
+        assurance_at: NOW.toISOString(),
         user: {
           user_key: parentUserKey,
           email: 'parent@example.test',

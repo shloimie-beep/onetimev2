@@ -753,7 +753,8 @@ fieldset {
 }
 
 fieldset label,
-.consent label {
+.consent label,
+label.consent {
   min-height: 48px;
   display: flex;
   align-items: center;
@@ -843,56 +844,26 @@ small {
   font-size: 1.35rem;
 }
 
-.mfa-setup,
-.recovery-codes {
+.email-challenge {
   display: grid;
-  gap: 16px;
+  gap: 0;
 }
 
-.manual-secret {
+.trusted-device {
+  margin-bottom: 14px;
+}
+
+.email-challenge-actions {
   display: grid;
   gap: 8px;
-  min-width: 0;
-  padding: 12px;
-  border: 1px solid rgba(126, 215, 232, 0.28);
-  border-radius: 8px;
-  background: rgba(126, 215, 232, 0.08);
+  margin-bottom: 18px;
 }
 
-.manual-secret span {
-  color: var(--color-cyan);
-  font-size: 0.8rem;
-  font-weight: 900;
-}
-
-.manual-secret code,
-.recovery-codes code {
-  overflow-wrap: anywhere;
-  color: var(--color-ink);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.95rem;
-  letter-spacing: 0;
-}
-
-.recovery-codes ol {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+.email-challenge-actions .form-status {
+  min-height: 20px;
   margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.recovery-codes li {
-  min-width: 0;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.recovery-ack {
-  margin: 0;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 .app-shell {
@@ -1001,10 +972,6 @@ small {
   }
 
   fieldset {
-    grid-template-columns: 1fr;
-  }
-
-  .recovery-codes ol {
     grid-template-columns: 1fr;
   }
 
