@@ -1,0 +1,30 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "reason": "Browser role proof requires the integrated OT-99 app routes and role fixtures. The current default branch lacks the target authenticated surfaces.",
+  "prepared_roles": [
+    "anonymous",
+    "viewer",
+    "owner",
+    "admin",
+    "parent_primary_guardian",
+    "parent_guardian",
+    "support_only_guardian",
+    "student",
+    "disabled_member",
+    "revoked_guardian",
+    "cross_account_user",
+    "cross_product_user"
+  ],
+  "required_when_resumed": [
+    "response status and security/cache headers",
+    "cookie/storage field names and flags only",
+    "direct navigation denial",
+    "logout and bfcache behavior",
+    "role UI exclusions",
+    "synthetic-only screenshots scanned for prohibited patterns"
+  ]
+}

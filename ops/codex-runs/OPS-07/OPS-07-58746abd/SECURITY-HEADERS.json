@@ -1,0 +1,21 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "current_main_static_observation": {
+    "helmet_present": true,
+    "csp_configured_in": "apps/web/src/server/app.ts",
+    "body_limit": "32kb",
+    "private_route_header_enumeration": "blocked_until_ot99"
+  },
+  "required_on_resume": [
+    "public and private route CSP snapshots",
+    "protected page frame policy",
+    "nosniff",
+    "safe referrer policy",
+    "HSTS in production configuration",
+    "private no-store for success, redirect, and error paths"
+  ]
+}

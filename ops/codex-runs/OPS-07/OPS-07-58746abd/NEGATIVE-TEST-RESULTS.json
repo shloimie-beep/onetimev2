@@ -1,0 +1,73 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "matrix_source": "SOURCE-PACKET.zip!/packets/OPS-07/OPS-07-58746abd/OPS-07-NEGATIVE-TEST-MATRIX.md",
+  "mandatory_case_count": 267,
+  "executed_case_count": 0,
+  "blocked_case_count": 267,
+  "prepared_lanes": [
+    {
+      "lane": "candidate_state",
+      "ids": "OPS-07-NEG-001..010",
+      "pre_ot99_status": "partially_reproduced",
+      "evidence": [
+        "BASE-RESOLUTION.json records NO_INTEGRATED_CANDIDATE.",
+        "STATE.json records BLOCKED_CANDIDATE_RESOLUTION.",
+        "Corrective branch was not created."
+      ]
+    },
+    {
+      "lane": "authorization_and_tenant_scope",
+      "ids": "OPS-07-NEG-011..030",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "learner_privacy_parent_student",
+      "ids": "OPS-07-NEG-031..054",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "privileged_session_request_integrity",
+      "ids": "OPS-07-NEG-055..104",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "signup_crm_identity",
+      "ids": "OPS-07-NEG-105..124",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "provider_webhook_replay",
+      "ids": "OPS-07-NEG-125..163",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "provider_link_and_private_data_leakage",
+      "ids": "OPS-07-NEG-164..179",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "ingestion_ssrf",
+      "ids": "OPS-07-NEG-180..203",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "prompt_tool_injection_kb",
+      "ids": "OPS-07-NEG-204..227",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "privacy_lifecycle",
+      "ids": "OPS-07-NEG-228..247",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "lane": "headers_dependencies_browser_errors",
+      "ids": "OPS-07-NEG-248..267",
+      "pre_ot99_status": "blocked_candidate_resolution"
+    }
+  ],
+  "non_claim": "No negative test is marked PASS before OT-99 exists."
+}

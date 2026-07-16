@@ -1,0 +1,9 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "reason": "Dependency/SBOM audit must run on the selected integrated OT-99 candidate and built artifacts.",
+  "current_main_note": "package-lock.json exists, but node_modules is absent in the OPS-07 checkpoint worktree."
+}

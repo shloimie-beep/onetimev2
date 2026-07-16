@@ -1,0 +1,241 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "captured_at_utc": "2026-07-16T05:29:08Z",
+  "repository": "webcraft-media/onetimev2",
+  "default_branch_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+  "candidate_classification": "NO_INTEGRATED_CANDIDATE",
+  "selected_ref": null,
+  "selected_sha": null,
+  "selection_reasons": [
+    "No origin OT-99 or ot99 ref exists after git fetch origin --prune.",
+    "origin/main is the repository default branch but remains the standalone foundation SHA and is not an integration candidate for the release-scoped OT lanes.",
+    "origin/main has no ops/execution/control/CANONICAL-CANDIDATE.json.",
+    "The newest observed branches remain parallel release leaves rather than one authoritative full integration candidate.",
+    "The packet explicitly forbids creating codex/ops-07-security-privacy-corrective-58746abd unless a FULLY_INTEGRATED candidate and exact SHA are recorded."
+  ],
+  "rejected_candidates": [
+    {
+      "ref": "origin/main",
+      "sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "reason": "Default branch contains no OT-80 through OT-87 release lane ancestry and no OT-99 control record.",
+      "missing_lanes": [
+        "OT-80",
+        "OT-81",
+        "OT-82",
+        "OT-83",
+        "OT-84",
+        "OT-85",
+        "OT-86A",
+        "OT-86B",
+        "OT-87",
+        "OT-99"
+      ]
+    },
+    {
+      "ref": "origin/codex/ot83-household-portals-foundation",
+      "sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+      "reason": "Latest shared product base observed by packet, but it excludes later provider/content/payment leaves.",
+      "missing_lanes": [
+        "OT-84",
+        "OT-85",
+        "OT-86A",
+        "OT-86B",
+        "OT-87",
+        "OT-99"
+      ]
+    },
+    {
+      "ref": "origin/codex/ot84-telegram-action-gateway",
+      "sha": "f98103ecc3660dbda871a91485656e17580940a8",
+      "reason": "Parallel OT-83 leaf containing OT-84 only.",
+      "missing_lanes": [
+        "OT-85",
+        "OT-86A",
+        "OT-86B",
+        "OT-87",
+        "OT-99"
+      ]
+    },
+    {
+      "ref": "origin/codex/ot85-whatsapp-lead-assistant",
+      "sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+      "reason": "Parallel OT-83 leaf containing OT-85 only.",
+      "missing_lanes": [
+        "OT-84",
+        "OT-86A",
+        "OT-86B",
+        "OT-87",
+        "OT-99"
+      ]
+    },
+    {
+      "ref": "origin/codex/ot87-stripe-test-entitlements",
+      "sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+      "reason": "Parallel OT-83 leaf containing OT-87 only.",
+      "missing_lanes": [
+        "OT-84",
+        "OT-85",
+        "OT-86A",
+        "OT-86B",
+        "OT-99"
+      ]
+    },
+    {
+      "ref": "origin/codex/ot86b-buffer-social",
+      "sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+      "reason": "Stacked OT-86B descendant includes OT-86A but excludes OT-84, OT-85, and OT-87.",
+      "missing_lanes": [
+        "OT-84",
+        "OT-85",
+        "OT-87",
+        "OT-99"
+      ]
+    }
+  ],
+  "ancestry_checks": [
+    {
+      "candidate_ref": "origin/main",
+      "candidate_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "included_lanes": [],
+      "missing_lanes": [
+        "OT-80",
+        "OT-81",
+        "OT-82",
+        "OT-83",
+        "OT-84",
+        "OT-85",
+        "OT-86A",
+        "OT-86B",
+        "OT-87"
+      ]
+    },
+    {
+      "candidate_ref": "origin/codex/ot83-household-portals-foundation",
+      "candidate_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+      "included_lanes": [
+        "OT-80",
+        "OT-81",
+        "OT-82",
+        "OT-83"
+      ],
+      "missing_lanes": [
+        "OT-84",
+        "OT-85",
+        "OT-86A",
+        "OT-86B",
+        "OT-87"
+      ]
+    },
+    {
+      "candidate_ref": "origin/codex/ot84-telegram-action-gateway",
+      "candidate_sha": "f98103ecc3660dbda871a91485656e17580940a8",
+      "included_lanes": [
+        "OT-80",
+        "OT-81",
+        "OT-82",
+        "OT-83",
+        "OT-84"
+      ],
+      "missing_lanes": [
+        "OT-85",
+        "OT-86A",
+        "OT-86B",
+        "OT-87"
+      ]
+    },
+    {
+      "candidate_ref": "origin/codex/ot85-whatsapp-lead-assistant",
+      "candidate_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+      "included_lanes": [
+        "OT-80",
+        "OT-81",
+        "OT-82",
+        "OT-83",
+        "OT-85"
+      ],
+      "missing_lanes": [
+        "OT-84",
+        "OT-86A",
+        "OT-86B",
+        "OT-87"
+      ]
+    },
+    {
+      "candidate_ref": "origin/codex/ot87-stripe-test-entitlements",
+      "candidate_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+      "included_lanes": [
+        "OT-80",
+        "OT-81",
+        "OT-82",
+        "OT-83",
+        "OT-87"
+      ],
+      "missing_lanes": [
+        "OT-84",
+        "OT-85",
+        "OT-86A",
+        "OT-86B"
+      ]
+    },
+    {
+      "candidate_ref": "origin/codex/ot86b-buffer-social",
+      "candidate_sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+      "included_lanes": [
+        "OT-80",
+        "OT-81",
+        "OT-82",
+        "OT-83",
+        "OT-86A",
+        "OT-86B"
+      ],
+      "missing_lanes": [
+        "OT-84",
+        "OT-85",
+        "OT-87"
+      ]
+    }
+  ],
+  "release_scope": [
+    "OT-80",
+    "OT-81",
+    "OT-82",
+    "OT-83",
+    "OT-84",
+    "OT-85",
+    "OT-86A",
+    "OT-86B",
+    "OT-87",
+    "OT-99"
+  ],
+  "included_lanes": [],
+  "excluded_lanes": [
+    "OT-80",
+    "OT-81",
+    "OT-82",
+    "OT-83",
+    "OT-84",
+    "OT-85",
+    "OT-86A",
+    "OT-86B",
+    "OT-87",
+    "OT-99"
+  ],
+  "control_records": [
+    {
+      "path": "origin/main:ops/execution/control/CANONICAL-CANDIDATE.json",
+      "status": "missing"
+    },
+    {
+      "path": "refs matching *ot99* or *OT-99*",
+      "status": "missing"
+    }
+  ],
+  "working_tree_clean": true,
+  "no_production_credentials_loaded": true,
+  "notes": [
+    "The checkpoint branch codex/ops-07-pre-ot99-checkpoint-58746abd was created only to persist blocked OPS-07 run artifacts and reusable audit scaffolding.",
+    "The corrective branch codex/ops-07-security-privacy-corrective-58746abd was not created.",
+    "This resolution does not claim any separate branch fleet is secure."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "reason": "Provider fixtures must be mounted against the integrated OT-99 provider ingress adapters. No real provider calls are allowed.",
+  "prepared_fixture_sets": [
+    "Stripe TEST raw-body signature, timestamp, replay, mode, and state transition fixtures",
+    "Telegram secret channel, bot identity, update_id dedupe, callback binding, and unknown chat fixtures",
+    "WhatsApp raw-body signature, provider message dedupe, STOP race, and public-facts-only fixtures",
+    "Vimeo/content signed manifest, checksum, nonce, sequence, and privacy flag fixtures",
+    "Zoom authenticity, timestamp, replay, and raw join URL leakage fixtures",
+    "Support bridge HMAC, nonce, actor scope, and explicit confirmation fixtures",
+    "Social publishing approval revision, private-source rejection, duplicate command, and retraction-state fixtures"
+  ],
+  "external_actions": {
+    "network_calls_to_real_services": 0,
+    "sends": 0,
+    "charges": 0,
+    "deployments": 0,
+    "dns_changes": 0,
+    "production_writes": 0
+  }
+}

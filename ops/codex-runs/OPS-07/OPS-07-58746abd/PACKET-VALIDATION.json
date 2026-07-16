@@ -1,0 +1,59 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "validated_at_utc": "2026-07-16T05:29:08Z",
+  "source_zip": "C:/Users/User/Downloads/OPS-07-CODEX-PACKET.zip",
+  "source_zip_sha256": "a11261c53da8e0e61cb566582dbafeda2cf0f4a973eb30c6953cad418ec30eb5",
+  "newest_candidate_search": {
+    "downloads_matches": [
+      {
+        "path": "C:/Users/User/Downloads/OPS-07-CODEX-PACKET.zip",
+        "last_write_time_local": "2026-07-16T07:28:50+03:00",
+        "length_bytes": 47228
+      }
+    ],
+    "browser_numbered_copy_used": false
+  },
+  "archive_safety": {
+    "status": "pass",
+    "entry_count": 18,
+    "unsafe_paths": []
+  },
+  "manifest_validation": {
+    "status": "pass_with_canonical_name_caveat",
+    "manifest_path": "SOURCE-PACKET.zip!/packets/OPS-07/OPS-07-58746abd/OPS-07-PACKET-MANIFEST.json",
+    "task_id": "OPS-07",
+    "packet_id": "OPS-07-58746abd",
+    "packet_id_suffix": "58746abd",
+    "target_repository": "webcraft-media/onetimev2",
+    "canonical_files_missing": [
+      "PACKET.json",
+      "SHA256SUMS.txt"
+    ],
+    "accepted_manifest_equivalents": [
+      "OPS-07-PACKET-MANIFEST.json",
+      "OPS-07-CHECKSUMS.sha256"
+    ],
+    "reason": "The only located unnumbered OPS-07 packet used OPS-prefixed manifest and checksum names. The manifest required those OPS-prefixed documents, declared task_id OPS-07, and declared packet_id OPS-07-58746abd. This caveat is recorded so a later canonical packet can supersede this checkpoint if provided."
+  },
+  "checksum_validation": {
+    "status": "pass",
+    "checksums_file": "SOURCE-PACKET.zip!/packets/OPS-07/OPS-07-58746abd/OPS-07-CHECKSUMS.sha256",
+    "validated_count": 17,
+    "failures": []
+  },
+  "secret_scan": {
+    "status": "pass",
+    "patterns": [
+      "openai_key",
+      "github_token",
+      "stripe_secret",
+      "slack_token",
+      "private_key",
+      "jwt",
+      "aws_access_key",
+      "generic_assignment"
+    ],
+    "findings": []
+  }
+}

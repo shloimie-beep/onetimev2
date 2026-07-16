@@ -1,0 +1,92 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "summary": "All 45 authorization matrix cases are registered for OT-99 rerun, but final execution is blocked because no fully integrated OT-99 candidate exists.",
+  "matrix_source": "SOURCE-PACKET.zip!/packets/OPS-07/OPS-07-58746abd/OPS-07-AUTHORIZATION-MATRIX.md",
+  "prepared_groups": [
+    {
+      "group": "public_and_anonymous",
+      "ids": [
+        "OPS-07-AUTHZ-001",
+        "OPS-07-AUTHZ-002",
+        "OPS-07-AUTHZ-003",
+        "OPS-07-AUTHZ-004"
+      ],
+      "pre_ot99_status": "prepared"
+    },
+    {
+      "group": "owner_admin_crm_membership",
+      "ids": [
+        "OPS-07-AUTHZ-005",
+        "OPS-07-AUTHZ-006",
+        "OPS-07-AUTHZ-007",
+        "OPS-07-AUTHZ-008",
+        "OPS-07-AUTHZ-009",
+        "OPS-07-AUTHZ-011",
+        "OPS-07-AUTHZ-012",
+        "OPS-07-AUTHZ-013",
+        "OPS-07-AUTHZ-027"
+      ],
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "group": "privileged_auth_session",
+      "ids": [
+        "OPS-07-AUTHZ-010"
+      ],
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "group": "guardian_learner_student",
+      "ids": [
+        "OPS-07-AUTHZ-014",
+        "OPS-07-AUTHZ-015",
+        "OPS-07-AUTHZ-016",
+        "OPS-07-AUTHZ-017",
+        "OPS-07-AUTHZ-018",
+        "OPS-07-AUTHZ-019",
+        "OPS-07-AUTHZ-020",
+        "OPS-07-AUTHZ-021",
+        "OPS-07-AUTHZ-022",
+        "OPS-07-AUTHZ-023",
+        "OPS-07-AUTHZ-024",
+        "OPS-07-AUTHZ-025",
+        "OPS-07-AUTHZ-026"
+      ],
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "group": "provider_ingress",
+      "ids": [
+        "OPS-07-AUTHZ-028",
+        "OPS-07-AUTHZ-029",
+        "OPS-07-AUTHZ-030",
+        "OPS-07-AUTHZ-031",
+        "OPS-07-AUTHZ-032",
+        "OPS-07-AUTHZ-033",
+        "OPS-07-AUTHZ-034",
+        "OPS-07-AUTHZ-035",
+        "OPS-07-AUTHZ-036",
+        "OPS-07-AUTHZ-037"
+      ],
+      "pre_ot99_status": "blocked_candidate_resolution"
+    },
+    {
+      "group": "helper_kb_ingestion_privacy",
+      "ids": [
+        "OPS-07-AUTHZ-038",
+        "OPS-07-AUTHZ-039",
+        "OPS-07-AUTHZ-040",
+        "OPS-07-AUTHZ-041",
+        "OPS-07-AUTHZ-042",
+        "OPS-07-AUTHZ-043",
+        "OPS-07-AUTHZ-044",
+        "OPS-07-AUTHZ-045"
+      ],
+      "pre_ot99_status": "blocked_candidate_resolution"
+    }
+  ],
+  "next_action": "Mount the authoritative OT-99 candidate and execute every case through HTTP route, service API, and repository/SQL layer where available."
+}

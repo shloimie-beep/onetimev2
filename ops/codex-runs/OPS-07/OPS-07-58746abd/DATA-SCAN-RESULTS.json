@@ -1,0 +1,31 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "prepared_canary_classes": [
+    "session/CSRF/MFA/recovery/provider secret canary",
+    "raw join/playback/provider URL/passcode canary",
+    "email/phone/contact-note canary",
+    "learner name/question/support-text canary",
+    "private content/source canary"
+  ],
+  "sinks_to_scan_on_ot99": [
+    "source",
+    "database fixtures",
+    "stdout and stderr",
+    "logs",
+    "metrics",
+    "traces",
+    "analytics fixtures",
+    "screenshots metadata",
+    "browser storage",
+    "requested URLs",
+    "response headers",
+    "support exports",
+    "built bundles",
+    "OPS-07 evidence artifacts"
+  ],
+  "packet_secret_scan": "pass"
+}

@@ -1,0 +1,20 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "prepared_cases": [
+    "versioned consent required for eligibility",
+    "policy-version transition does not silently reuse old consent",
+    "suppression revocation wins against queued send",
+    "STOP/START ordering is deterministic",
+    "missing suppression fails closed for non-transactional sends",
+    "deletion/export authorization rejects other household/learner subjects",
+    "deletion races with export and outbox claim",
+    "retention job idempotency and minimization",
+    "provider deletion unsupported is manual-required or blocked, never false success",
+    "deleted subject purged from KB/search cache",
+    "audit and privacy-request logs cannot reconstruct private payloads"
+  ]
+}

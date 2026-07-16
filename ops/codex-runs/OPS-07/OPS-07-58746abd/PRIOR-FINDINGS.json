@@ -1,0 +1,64 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "sources": [
+    "OT-24 PR2 hardening gate",
+    "OT-25/OT-26 intake addendum",
+    "OT-34 hardening report",
+    "OT-38 final report",
+    "OT-60R supersession matrix"
+  ],
+  "preliminary_findings": [
+    {
+      "id": "OPS-07-PRELIM-001",
+      "title": "Configuration-scoped domain calls may not propagate authenticated principal",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-002",
+      "title": "Manual CRM create may default to active outreach without consent",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-003",
+      "title": "CRM cursor may be unsigned and unbound",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-004",
+      "title": "CRM assignee joins may lack active account/product membership scope",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-005",
+      "title": "Privileged MFA recovery/factor management may lack recent step-up",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-006",
+      "title": "Return-route validation may not reject login loops",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-007",
+      "title": "Student resolver may select first active identity under corruption",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-008",
+      "title": "Support preview may preserve learner free text",
+      "pre_ot99_disposition": "blocked_candidate_resolution"
+    },
+    {
+      "id": "OPS-07-PRELIM-009",
+      "title": "OT-84, OT-85, OT-87, and OT-86A/B are not one integrated candidate",
+      "pre_ot99_disposition": "confirmed_blocking",
+      "evidence": [
+        "BASE-RESOLUTION.json"
+      ]
+    }
+  ],
+  "non_claim": "No prior finding is fixed or not_reproduced in this checkpoint."
+}

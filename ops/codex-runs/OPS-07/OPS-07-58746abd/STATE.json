@@ -1,0 +1,66 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "repository": "webcraft-media/onetimev2",
+  "phase": "candidate_resolution",
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "candidate": {
+    "classification": "NO_INTEGRATED_CANDIDATE",
+    "ref": null,
+    "sha": null,
+    "release_scope": [
+      "OT-80",
+      "OT-81",
+      "OT-82",
+      "OT-83",
+      "OT-84",
+      "OT-85",
+      "OT-86A",
+      "OT-86B",
+      "OT-87",
+      "OT-99"
+    ],
+    "ancestry_checks": []
+  },
+  "branch": "codex/ops-07-pre-ot99-checkpoint-58746abd",
+  "worktree": "C:/Users/User/.ops07-worktrees/OPS-07-58746abd",
+  "started_at_utc": "2026-07-16T05:29:08Z",
+  "updated_at_utc": "2026-07-16T05:29:08Z",
+  "state_persisted_before_edits": true,
+  "production_credentials_loaded": false,
+  "external_mutations": {
+    "deployments": 0,
+    "dns_changes": 0,
+    "provider_calls": 0,
+    "real_sends": 0,
+    "charges": 0,
+    "production_db_writes": 0,
+    "real_user_changes": 0
+  },
+  "gates": {
+    "OPS-07-G00": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G01": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G02": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G03": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G04": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G05": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G06": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G07": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G08": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G09": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G10": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G11": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G12": "BLOCKED_CANDIDATE_RESOLUTION",
+    "OPS-07-G13": "BLOCKED_CANDIDATE_RESOLUTION"
+  },
+  "artifacts": [
+    {
+      "path": "C:/Users/User/Downloads/OPS-07-CODEX-PACKET.zip",
+      "sha256": "a11261c53da8e0e61cb566582dbafeda2cf0f4a973eb30c6953cad418ec30eb5"
+    },
+    {
+      "path": "ops/codex-runs/OPS-07/OPS-07-58746abd/ORIGINAL-PROMPT.md",
+      "sha256": "9e70c0ffef1da175a0f8779931e4e5b6fd367aa87e0e2a36dad5753acad08bee"
+    }
+  ]
+}

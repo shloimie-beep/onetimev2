@@ -1,0 +1,23 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "prepared_cases": [
+    "compressed and uncompressed size limits",
+    "compression-ratio rejection",
+    "path traversal, absolute path, symlink, hardlink, duplicate normalized path, and ADS-like filename cases",
+    "MIME/magic-byte disagreement and executable disguised content",
+    "nested archive depth and file-count limits",
+    "parser timeout and memory limit",
+    "localhost/private/link-local/metadata SSRF",
+    "redirect and DNS rebinding SSRF",
+    "IPv6 loopback/private/mapped addresses",
+    "URL credentials and non-HTTP schemes",
+    "deceptive allowlisted hostnames",
+    "streaming byte caps and content-type revalidation",
+    "SVG/HTML active content and PDF external reference handling",
+    "transactional quarantine on failure"
+  ]
+}

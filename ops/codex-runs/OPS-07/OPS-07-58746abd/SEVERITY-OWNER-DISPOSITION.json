@@ -1,0 +1,24 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "report_final": false,
+  "owners": [
+    "release-engineering",
+    "security-qa"
+  ],
+  "open_release_blockers": [
+    {
+      "finding_id": "OPS-07-NEW-001",
+      "severity": "S1",
+      "owner": "release-engineering",
+      "title": "No fully integrated OT-99 candidate exists for final OPS-07 audit",
+      "disposition": "blocked_candidate_resolution",
+      "release_blocking": true,
+      "human_risk_acceptance": null
+    }
+  ],
+  "automated_s0_s1_acceptance": false,
+  "non_claim": "This is a checkpoint disposition, not the final security owner disposition report required after OT-99 exists."
+}

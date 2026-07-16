@@ -1,0 +1,21 @@
+{
+  "task_id": "OPS-07",
+  "packet_id": "OPS-07-58746abd",
+  "candidate_sha": null,
+  "status": "BLOCKED_CANDIDATE_RESOLUTION",
+  "executed": false,
+  "reason": "Disposable PostgreSQL race and migration proof must target the fully integrated OT-99 candidate. Running it against origin/main would not cover the required authenticated, provider, classroom, portal, and privacy surfaces.",
+  "prepared_races": [
+    "active learner limit create/restore",
+    "one student user to two learners",
+    "two student users to one learner",
+    "recovery-code double use",
+    "same idempotency key with same and different payload",
+    "same optimistic version update",
+    "login-rate-limit budget across two processes",
+    "provider event replay and out-of-order delivery",
+    "suppression/consent revocation against outbox claim/dispatch",
+    "deletion/export and deletion/outbox races"
+  ],
+  "current_main_static_note": "origin/main contains one lead-slice migration with account/product keyed public lead tables and idempotency_records."
+}
