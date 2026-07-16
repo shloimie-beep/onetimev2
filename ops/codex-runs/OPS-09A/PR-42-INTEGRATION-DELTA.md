@@ -28,6 +28,12 @@ The migration test now verifies:
 
 It no longer assumes any one migration ID is permanently final.
 
+Because GitHub's three-way merge still reported the stale migration-test hunk
+as a content conflict, OPS-09A created a PR #42-specific merge commit from the
+canonical reference and resolved only this test conflict. No provider runtime
+entrypoint, deployment config, worker scheduler, webhook mount, or Zoom provider
+canary wiring was activated by the mergeability repair.
+
 ## Remaining Conductor-Owned Wiring
 
 The original OT-103 integration delta remains valid:

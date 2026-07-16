@@ -1,0 +1,185 @@
+{
+  "run_id": "OPS-03A",
+  "title": "Natural email activation, login closeout, and PR #40 repair",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ops03-staging-readiness-repair",
+  "pr": "https://github.com/webcraft-media/onetimev2/pull/40",
+  "base_ref": "integration/ot-99-final-semantic-convergence-20260716T122407Z",
+  "base_sha": "96b429053d13a139595ed3bd0ea3c854cc2500e8",
+  "starting_head_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "current_head_sha": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
+  "staging_url": "https://ot99-web-staging.up.railway.app",
+  "railway_project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+  "railway_project_name": "one-time-ot99-staging-96b42905",
+  "status": "staging_deployed_pr_green_canary_blocked",
+  "prompt_sha256": "25405B3376EB7A6379159DF212DD9E9764025A257F2B014F261C4E837AD980D4",
+  "updated_at": "2026-07-16T22:40:00+03:00",
+  "authorization": {
+    "production_deployments": false,
+    "dns_changes": false,
+    "stripe_or_payment_changes": false,
+    "bna_runtime_changes": false,
+    "rabbi_or_customer_sends": false,
+    "broad_provider_activation": false,
+    "merge_pr_40": false,
+    "staging_pr_40_branch_push": true,
+    "isolated_railway_staging_update": true,
+    "exactly_one_allowlisted_activation_email": true
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Repair PR #40 checks",
+      "status": "done",
+      "completed_items": [
+        "Formatted ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json and verified it parses as JSON.",
+        "Updated OT-75 workflow to derive PR base/head from GitHub event data instead of using stale default historical SHAs.",
+        "Updated OT-75 validator to emit machine-readable NOT_APPLICABLE for mixed/non-OT-75 PR scopes without labeling the result READY.",
+        "Added OT-75 unit coverage for PR base/head and NOT_APPLICABLE reporting."
+      ],
+      "verification": [
+        "node scripts/ot75/validate-release-readiness.mjs --scope-base 96b429053d13a139595ed3bd0ea3c854cc2500e8 --scope-head HEAD --branch-name codex/ops03-staging-readiness-repair",
+        "npx vitest run --config vitest.unit.config.ts tests/unit/ot75/release-readiness.test.ts",
+        "npx prettier --check .github/workflows/ot75-release-readiness.yml scripts/ot75/validate-release-readiness.mjs tests/unit/ot75/release-readiness.test.ts ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json",
+        "node -e JSON.parse(fs.readFileSync('ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json','utf8'))"
+      ],
+      "known_local_caveat": "On Windows, npm run format still reports broad pre-existing repository formatting/line-ending drift. GitHub Linux CI is the authoritative full check and passed on 96a40e0008858ac4c9574f9a2c322637f4f2098c.",
+      "pushed_commit": "96a40e0008858ac4c9574f9a2c322637f4f2098c",
+      "github_checks": [
+        {
+          "name": "Node 24 verify",
+          "status": "passed",
+          "duration": "8m35s"
+        },
+        {
+          "name": "PostgreSQL 16 assurance harness",
+          "status": "passed",
+          "duration": "49s"
+        },
+        {
+          "name": "PostgreSQL 16 learner-seat proof",
+          "status": "passed",
+          "duration": "53s"
+        },
+        {
+          "name": "Static release readiness gates",
+          "status": "passed",
+          "duration": "18s"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Durable activation delivery",
+      "status": "done",
+      "completed_items": [
+        "Added additive encrypted lifecycle delivery outbox migration 2008_ops03a_lifecycle_delivery_outbox.sql.",
+        "Added additive post-activation MFA handoff migration 2009_ops03a_activation_mfa_handoffs.sql.",
+        "Encrypted activation/reset delivery payloads with AES-256-GCM using ONE_TIME_LIFECYCLE_DELIVERY_KEY, with key id/version, nonce, ciphertext, auth tag, expiry, destination ref, attempts, lease metadata, idempotency key, retry/dead-letter/supersede/expiry states.",
+        "Changed invitation lifetime to 24 hours while keeping password reset lifetime at 30 minutes.",
+        "Revoked earlier unconsumed same-account/purpose links on new issuance and superseded/cleared prior queued encrypted delivery material.",
+        "Added bounded sink worker processing with lease-safe claiming, retry/dead-letter behavior, expiry clearing, restart-safe state, and no raw token logging.",
+        "Wired lifecycle delivery processing into the existing worker one-shot and polling loops."
+      ],
+      "migration_sha256": {
+        "2008_ops03a_lifecycle_delivery_outbox.sql": "FA5BDD70675ACFA26A6BB891F2606428263D266886DE89F199EE298457883429",
+        "2009_ops03a_activation_mfa_handoffs.sql": "BDC3D4DA2B1CCA0B027119CC93609B87EBA20A6EAB8FCE4320C140DB9EF83F1B"
+      }
+    },
+    {
+      "phase": 3,
+      "name": "Web activation, forgot-password, reset-password, and login experience",
+      "status": "done",
+      "completed_items": [
+        "Added branded noindex/no-referrer /activate, /forgot-password, and /reset-password pages.",
+        "Updated /login copy to Welcome back, removed the CRM subtitle, and added Forgot password?.",
+        "Added token-status, activation completion, forgot-password, reset-password, post-activation MFA activation, and recovery-code acknowledgement APIs.",
+        "Activation/reset links use URL fragments; the public client reads the token into memory and clears the fragment with history.replaceState.",
+        "The public client does not use localStorage, sessionStorage, analytics, screenshots, logs, error reporting, referrers, or window.prompt for lifecycle secrets."
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Roles and owner/admin MFA closeout",
+      "status": "done",
+      "completed_items": [
+        "Owner/admin activation creates the account password first, then provisions a short-lived post-activation MFA handoff.",
+        "Owner/admin activation does not create a normal session until TOTP is verified and recovery-code saved acknowledgement is submitted.",
+        "Parent/student activations continue to create role-scoped sessions without owner/admin MFA.",
+        "Existing parent-managed student setup/reset/suspend/restore behavior remains covered."
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Focused security, browser, accessibility, and lifecycle tests",
+      "status": "done",
+      "verification": [
+        "npm run typecheck",
+        "npm run build",
+        "npx vitest run --config vitest.unit.config.ts tests/unit/account-lifecycle-sql.test.ts tests/unit/ot75/release-readiness.test.ts",
+        "npx vitest run --config vitest.integration.config.ts tests/integration/accounts/account-lifecycle.test.ts tests/integration/accounts/account-lifecycle-web.test.ts",
+        "npx playwright test tests/e2e/account-lifecycle-pages.spec.ts",
+        "npx playwright test tests/accessibility/account-lifecycle-a11y.spec.ts",
+        "npx prettier --check <OPS-03A touched source/test files>",
+        "git diff --check"
+      ],
+      "test_totals": {
+        "unit": 9,
+        "integration": 8,
+        "e2e": 1,
+        "accessibility": 4
+      }
+    },
+    {
+      "phase": 6,
+      "name": "Staging deployment and one-email canary",
+      "status": "staging_deployed_canary_blocked",
+      "completed_items": [
+        "Confirmed Railway CLI is linked to isolated staging project one-time-ot99-staging-96b42905, environment staging, project ID 7c8eee26-7a6a-4684-826d-9f4377d67d46.",
+        "Checked required Railway variable names through a local parser without printing raw values.",
+        "Committed and pushed OPS-03A implementation and PR #40 CI repair through f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b.",
+        "PR #40 checks passed at f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b: Node 24 verify, PostgreSQL 16 assurance harness, PostgreSQL 16 learner-seat proof, and Static release readiness gates.",
+        "Deployed exact local PR source to isolated Railway staging web deployment 7855ced9-5ece-4ca9-bc4c-2bc2659c4ed1 and worker deployment 213c84f9-6b6c-496f-bb1a-6b6c92444d45.",
+        "Applied migrations 2008_ops03a_lifecycle_delivery_outbox and 2009_ops03a_activation_mfa_handoffs to isolated ot99-pg16.",
+        "Live smokes passed for /health, /ready, /version, /activate, /forgot-password, /reset-password, and /login forgot-password copy."
+      ],
+      "pending_items": [
+        "Real one-email activation canary remains blocked until protected runtime variables are configured."
+      ],
+      "deployment": {
+        "implementation_sha": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
+        "web_deployment_id": "7855ced9-5ece-4ca9-bc4c-2bc2659c4ed1",
+        "worker_deployment_id": "213c84f9-6b6c-496f-bb1a-6b6c92444d45",
+        "version_endpoint": {
+          "version": "ops03a-f7647b9",
+          "commit_sha": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
+          "target_app": "one-time"
+        }
+      },
+      "migration_evidence": {
+        "2008_ops03a_lifecycle_delivery_outbox": "applied fa5bdd70675acfa26a6bb891f2606428263d266886de89f199ee298457883429",
+        "2009_ops03a_activation_mfa_handoffs": "applied bdc3d4da2b1cca0b027119cc93609b87eba20a6eab8fce4320c140db9ef83f1b"
+      },
+      "email_canary_status": "blocked_missing_protected_runtime",
+      "missing_protected_runtime_variables": [
+        "ONE_TIME_OWNER_TEST_EMAIL",
+        "ONE_TIME_LIFECYCLE_DELIVERY_KEY",
+        "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL",
+        "RESEND_API_KEY"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "scope": "exactly_one_real_activation_email_canary",
+      "status": "blocked",
+      "reason": "Required protected Railway variable names are absent on both ot99-web and ot99-worker. No destination was inferred or substituted.",
+      "missing_variables": [
+        "ONE_TIME_OWNER_TEST_EMAIL",
+        "ONE_TIME_LIFECYCLE_DELIVERY_KEY",
+        "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL",
+        "RESEND_API_KEY"
+      ]
+    }
+  ]
+}
