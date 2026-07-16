@@ -52,6 +52,10 @@ const envSchema = z.object({
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
   ENABLE_PAYMENT_TRANSPORT: booleanFromString,
+  ONE_TIME_TELEGRAM_WEBHOOK_ENABLED: booleanFromString,
+  ONE_TIME_TELEGRAM_WEBHOOK_SECRET: z.string().min(16).optional(),
+  ONE_TIME_TELEGRAM_BOT_KEY: z.string().min(1).default('one_time_internal_ops'),
+  ONE_TIME_TELEGRAM_ENVIRONMENT: z.enum(['local', 'staging', 'production']).default('staging'),
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -74,6 +78,17 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && !parsed.AUTH_CSRF_SECRET) {
     throw new Error('AUTH_CSRF_SECRET is required in production.');
+  }
+
+  if (parsed.NODE_ENV === 'production' && parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED) {
+    if (!parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET) {
+      throw new Error(
+        'ONE_TIME_TELEGRAM_WEBHOOK_SECRET is required when Telegram webhook is enabled.',
+      );
+    }
+    if (parsed.ONE_TIME_TELEGRAM_ENVIRONMENT !== 'production') {
+      throw new Error('Production Telegram webhook must use production Telegram environment.');
+    }
   }
 
   if (
@@ -119,5 +134,9 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     emailReplyTo: parsed.ONE_TIME_EMAIL_REPLY_TO,
     ownerTestWhatsapp: parsed.ONE_TIME_OWNER_TEST_WHATSAPP,
     ownerTestEmail: parsed.ONE_TIME_OWNER_TEST_EMAIL,
+    oneTimeTelegramWebhookEnabled: parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED,
+    oneTimeTelegramWebhookSecret: parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET,
+    oneTimeTelegramBotKey: parsed.ONE_TIME_TELEGRAM_BOT_KEY,
+    oneTimeTelegramEnvironment: parsed.ONE_TIME_TELEGRAM_ENVIRONMENT,
   };
 }

@@ -85,3 +85,4 @@ export {
   listContacts,
   updateContact,
 } from './crm/service.ts';
+export { createOneTimeTelegramApplicationAdapter } from './telegram/application-adapter.ts';
