@@ -62,6 +62,7 @@ import {
   createLoginCsrf,
   createParentPortalService,
   createSession,
+  consumeWhatsAppAccountLink,
   createStudentPortalService,
   getClassOccurrenceDetail,
   getContentItemDetail,
@@ -77,11 +78,13 @@ import {
   revokeMfaFactors,
   revokeSession,
   rotateSessionCsrf,
+  receiveWhatsAppWebhook,
   updateContact,
   verifyLoginCsrf,
   verifyMfaChallenge,
   verifyMfaRecoveryChallenge,
   verifySessionCsrf,
+  verifyWhatsAppWebhookChallenge,
   type AuthenticatedSession,
   PortalServiceError,
   type PortalServiceDeps,
@@ -159,6 +162,39 @@ export function createApp({
       });
     });
   }
+
+  app.get('/api/v1/whatsapp/meta/webhook', (req, res) => {
+    const challenge = verifyWhatsAppWebhookChallenge(config, req.query);
+    if (!challenge) {
+      res.status(403).json(publicError('INVALID_VERIFY_TOKEN', 'Webhook verification failed.'));
+      return;
+    }
+    res.status(200).type('text/plain').send(challenge);
+  });
+
+  app.post(
+    '/api/v1/whatsapp/meta/webhook',
+    express.raw({ type: '*/*', limit: '128kb' }),
+    async (req: RequestWithTrace, res) => {
+      const result = await withTiming(req, 'whatsapp_webhook', () =>
+        receiveWhatsAppWebhook({
+          pool,
+          config,
+          rawBody: req.body,
+          signatureHeader: req.header('x-hub-signature-256') ?? undefined,
+        }),
+      );
+      res.status(result.status).json({
+        success: result.ok,
+        code: result.code,
+        accepted: result.accepted,
+        duplicates: result.duplicates,
+        processed: result.processed,
+        request_id: req.traceId,
+      });
+    },
+  );
+
   registerSupportRoutes({
     app,
     config,
@@ -627,6 +663,28 @@ export function createApp({
       csrf_token: csrfToken,
       expires_at: session.expires_at,
     });
+  });
+
+  app.post('/api/v1/whatsapp/account-link/consume', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const linkToken = typeof req.body?.link_token === 'string' ? req.body.link_token.trim() : '';
+    const householdKey =
+      typeof req.body?.household_key === 'string' ? req.body.household_key.trim() : '';
+    if (!linkToken || !householdKey) {
+      res
+        .status(400)
+        .json(publicError('VALIDATION_ERROR', 'Submit a link token and household.', req.traceId));
+      return;
+    }
+    const result = await withTiming(req, 'whatsapp_account_link', () =>
+      consumeWhatsAppAccountLink({ pool, config, session, linkToken, householdKey }),
+    );
+    res
+      .status(result.ok ? 200 : 403)
+      .json({ success: result.ok, ...result, request_id: req.traceId });
   });
 
   app.get('/api/v1/dashboard/owner', async (req: RequestWithTrace, res) => {

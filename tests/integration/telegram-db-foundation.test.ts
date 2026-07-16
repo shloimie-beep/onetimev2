@@ -52,6 +52,7 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
     expect(first.some((migration) => migration.id === '2100_ot88_zoom_learner_classroom')).toBe(
       true,
     );
+    expect(first.some((migration) => migration.id === '2000_ot85_whatsapp_assistant')).toBe(true);
     expect(
       first.some((migration) => migration.id === '2100_ot89a_subscriber_support_producer'),
     ).toBe(true);
@@ -66,11 +67,12 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
           '1900_ot83_household_portal_foundation',
           '2000_ot83r_student_question_seam',
           '2000_ot84_telegram_action_gateway',
+          '2000_ot85_whatsapp_assistant',
           '2100_ot88_zoom_learner_classroom',
           '2100_ot89a_subscriber_support_producer'
         )`,
     );
-    expect(applied.rowCount).toBe(8);
+    expect(applied.rowCount).toBe(9);
     await expect(runMigrations(pool)).rejects.toThrow(/not supported/i);
   });
 
