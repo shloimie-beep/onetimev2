@@ -1,0 +1,101 @@
+{
+  "ops_agent": "OPS-09A",
+  "pr": 44,
+  "branch": "codex/ot107-student-ai-class-helper",
+  "worktree": "C:/Users/User/.overnight-20260717-worktrees/OPS-09A/PR-44-ot107-student-helper",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "canonical_reference_branch": "codex/ops03-staging-readiness-repair",
+  "canonical_reference_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "before_head_sha": "560a07c66baddc99df38441299f3e57107d02137",
+  "expected_packet_head_sha": "560a07c66baddc99df38441299f3e57107d02137",
+  "remote_head_advanced_before_repair": false,
+  "status": "local_repair_verified_pending_push",
+  "semantic_scope_preserved": [
+    "OT-107 Class Helper remains separate from explicit private-question submission",
+    "private questions still require preview and Send private question confirmation",
+    "helper answers remain bounded to approved Rabbi Scheller class material with citations",
+    "raw helper prompts and answers are not added to durable persistence"
+  ],
+  "repair_summary": [
+    "Repaired stale migration final-ID assertions in tests/integration/telegram-db-foundation.test.ts",
+    "Updated the OT-83R student portal e2e to exercise the OT-107 private-question preview and confirmation flow instead of the removed direct Submit question path",
+    "Cleaned generated Playwright screenshot/evidence churn from the worktree before commit"
+  ],
+  "tests": [
+    {
+      "command": "npm install",
+      "outcome": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts tests/integration/portals/portal-mount.test.ts tests/integration/content/ot86-content-pipeline.test.ts",
+      "outcome": "passed: 3 files / 10 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/ot107-student-class-helper.test.ts",
+      "outcome": "passed: 4 tests"
+    },
+    {
+      "command": "npx vitest run tests/ot-52/portal-ui.test.ts tests/ot-52/portal-router.test.ts tests/ot-52/portal-services.test.ts",
+      "outcome": "passed: 3 files / 19 tests"
+    },
+    {
+      "command": "npm run typecheck",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "outcome": "passed: 912 repo text files"
+    },
+    {
+      "command": "npm run brand:check",
+      "outcome": "passed; pre-build run skipped dist public bundle budgets"
+    },
+    {
+      "command": "npm run build",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run test",
+      "outcome": "passed: 30 unit files / 162 tests and 27 integration files / 134 tests"
+    },
+    {
+      "command": "npm run e2e",
+      "outcome": "failed before compatibility update: 32 passed, 1 timeout on old direct Submit question lookup; passed after update: 33 tests"
+    },
+    {
+      "command": "$env:PORT='3101'; npm run accessibility",
+      "outcome": "passed: 13 tests; initial default-port attempt failed with connection refused from a stale local test server"
+    },
+    {
+      "command": "npm run performance",
+      "outcome": "passed on default port: 7 tests plus bundle check; an earlier PORT=3102 retry produced a false external-request failure because the OT-88 performance test allowlist expects port 3100"
+    },
+    {
+      "command": "npm run format",
+      "outcome": "blocked by existing repo-wide Windows formatting baseline: Prettier reported 611 unrelated files; touched PR #44 files were formatted"
+    }
+  ],
+  "blocked": [
+    {
+      "id": "BLOCK-OT107-001",
+      "scope": "live AI provider canary only",
+      "reason": "protected live AI provider credentials and explicit canary approval are not present"
+    }
+  ],
+  "guardrails": {
+    "bna_checkout_used_for_implementation": false,
+    "bna_files_edited": false,
+    "production_deployment_performed": false,
+    "provider_mutation_performed": false,
+    "production_or_staging_database_mutation_performed": false,
+    "external_send_performed": false,
+    "live_charge_performed": false,
+    "force_push_used": false,
+    "duplicate_pr_opened": false
+  },
+  "updated_at": "2026-07-17T02:55:00+03:00"
+}

@@ -119,12 +119,23 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
     /https?:\/\/|zoom|vimeo|drive|meet/i,
   );
 
-  await studentPage
-    .getByRole('textbox', { name: 'Question', exact: true })
-    .fill('What should I review before the next class?');
-  await studentPage.getByRole('button', { name: 'Submit question' }).click();
+  const privateQuestion = 'What should I review before the next class?';
+  await studentPage.getByRole('textbox', { name: 'Ask privately' }).fill(privateQuestion);
+  await studentPage.getByRole('button', { name: 'Preview private question' }).click();
+  const privatePreview = studentPage.getByRole('status').filter({
+    hasText: 'Private question preview',
+  });
+  await expect(privatePreview).toContainText(privateQuestion);
+  await expect(privatePreview.getByRole('button', { name: 'Send private question' })).toBeVisible();
+  const questionResponse = studentPage.waitForResponse(
+    (response) =>
+      response.url().includes('/api/v1/portals/student/questions') &&
+      response.request().method() === 'POST',
+  );
+  await privatePreview.getByRole('button', { name: 'Send private question' }).click();
+  expect((await questionResponse).status()).toBe(201);
   await expect(studentPage.getByText('Question submitted.')).toBeVisible();
-  await expect(studentPage.getByText('What should I review before the next class?')).toBeVisible();
+  await expect(studentPage.getByText(privateQuestion)).toBeVisible();
 
   const csrf = await sessionCsrf(studentPage);
   const siblingClassAttempt = await studentPage.request.post(
