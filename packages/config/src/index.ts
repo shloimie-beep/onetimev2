@@ -68,6 +68,10 @@ const envSchema = z.object({
   ONE_TIME_WHATSAPP_VERIFY_TOKEN: z.string().min(8).optional(),
   ONETIME_CANARY_WHATSAPP_RECIPIENT_E164: z.string().optional(),
   ONETIME_WHATSAPP_CANARY_AUTHORIZED: booleanFromString,
+  OT86_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
+  OT86_PUBLISH_SIGNING_SECRET: z.string().optional(),
+  OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
+  OT86_PREVIOUS_PUBLISH_SIGNING_SECRET: z.string().optional(),
   ENABLE_REAL_EMAIL_TRANSPORT: booleanFromString,
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
@@ -271,5 +275,9 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ot89MockBnaEnabled: parsed.OT89_MOCK_BNA_ENABLED,
     ot89MockBnaOutage: parsed.OT89_MOCK_BNA_OUTAGE,
     ot89SupportDeploymentId: parsed.OT89_SUPPORT_DEPLOYMENT_ID,
+    ot86PublishSigningKeyId: parsed.OT86_PUBLISH_SIGNING_KEY_ID,
+    ot86PublishSigningSecret: parsed.OT86_PUBLISH_SIGNING_SECRET,
+    ot86PreviousPublishSigningKeyId: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID,
+    ot86PreviousPublishSigningSecret: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_SECRET,
   };
 }

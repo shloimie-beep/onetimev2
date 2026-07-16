@@ -35,6 +35,28 @@ export {
   redactProviderMetadata,
 } from './content/service.ts';
 export {
+  OT86_ALLOWED_TRANSITIONS,
+  Ot86ContentPipelineError,
+  applyNextOt86Publication,
+  approveOt86ContentVersion,
+  canonicalJson,
+  createOt86CandidateVersion,
+  createOt86ContentItem,
+  emitOt86ApprovedForSocialEvent,
+  inspectOt86VimeoReadinessFromEnv,
+  receiveOt86PublicationManifest,
+  recordOt86ProviderEventReceipt,
+  retrieveOt86ApprovedContent,
+  sanitizeOt86ProviderError,
+  signOt86Manifest,
+  stableOt86Key,
+  transitionOt86ContentState,
+  validateOt86ManifestChecksum,
+  withOt86ManifestChecksum,
+  type Ot86PublishReceiptResult,
+  type Ot86SigningSecret,
+} from './content/pipeline.ts';
+export {
   AccountLifecycleError,
   acceptOwnerAdminInvitation,
   acceptParentActivation,
