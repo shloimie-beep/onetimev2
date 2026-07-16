@@ -14,15 +14,25 @@
 }
 
 .audience-reconciliation__header h2,
+.audience-reconciliation__subheader h3,
 .audience-reconciliation__segments h3,
 .audience-reconciliation__split h3 {
   margin: 0;
 }
 
 .audience-reconciliation__header p,
+.audience-reconciliation__subheader p,
 .audience-reconciliation__muted {
   color: #5b6a70;
   margin: 4px 0 0;
+}
+
+.audience-reconciliation__subheader {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .audience-reconciliation__actions {
@@ -125,12 +135,14 @@
 
 @media (max-width: 760px) {
   .audience-reconciliation__header,
+  .audience-reconciliation__subheader,
   .audience-reconciliation__split {
     align-items: stretch;
     grid-template-columns: 1fr;
   }
 
-  .audience-reconciliation__header {
+  .audience-reconciliation__header,
+  .audience-reconciliation__subheader {
     display: grid;
   }
 

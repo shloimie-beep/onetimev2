@@ -33,6 +33,7 @@ export type LegacyAudienceExistingContact = {
   phone_normalized: string | null;
   archived_at: string | Date | null;
   suppression_state: string | null;
+  new_system_activated?: boolean | undefined;
 };
 
 type NormalizedRow = {
@@ -44,6 +45,7 @@ type NormalizedRow = {
   audienceType: LegacyAudienceType;
   legacySystemState: LegacySystemState;
   activeLegacyUser: boolean;
+  newSystemActivated: boolean;
   leadState: LegacyLeadState;
   consentState: LegacyConsentState;
   suppressionState: LegacySuppressionState;
@@ -221,6 +223,7 @@ export function formatLegacyAudienceDryRunReport(report: LegacyAudienceDryRunRep
     `migration_invite_eligible_rows: ${report.summary.migration_invite_eligible_rows}`,
     `school_follow_up_rows: ${report.summary.school_follow_up_rows}`,
     `do_not_contact_rows: ${report.summary.do_not_contact_rows}`,
+    `already_activated_rows: ${report.summary.already_activated_rows}`,
     'disposition_counts:',
     ...formatCounts(report.summary.disposition_counts),
     'reason_counts:',
@@ -246,11 +249,14 @@ function classifyRow(input: {
     input.match.contact?.suppression_state !== null &&
     input.match.contact?.suppression_state !== undefined &&
     input.match.contact.suppression_state !== 'active';
+  const newSystemActivated =
+    input.row.newSystemActivated || Boolean(input.match.contact?.new_system_activated);
   const consentOptedOut = input.row.consentState === 'opted_out';
   const communicationEligible =
     input.row.consentState === 'opted_in' &&
     !suppressedBySource &&
     !suppressedByContact &&
+    !newSystemActivated &&
     (input.row.hasEmail || input.row.hasPhone);
 
   let disposition: LegacyAudienceDisposition = 'stage_new_contact';
@@ -286,6 +292,7 @@ function classifyRow(input: {
   if (suppressedBySource) reasons.push('suppressed_source');
   if (suppressedByContact) reasons.push('suppressed_contact');
   if (consentOptedOut) reasons.push('consent_opted_out');
+  if (newSystemActivated) reasons.push('already_activated');
   if (suppressedBySource || suppressedByContact || consentOptedOut) {
     segmentCodes.add('do_not_contact');
   }
@@ -296,7 +303,8 @@ function classifyRow(input: {
     disposition !== 'duplicate_input' &&
     input.row.audienceType === 'family' &&
     input.row.activeLegacyUser &&
-    communicationEligible
+    communicationEligible &&
+    !newSystemActivated
   ) {
     segmentCodes.add('migration_invite_eligible');
   }
@@ -316,6 +324,7 @@ function classifyRow(input: {
     audience_type: input.row.audienceType,
     legacy_system_state: input.row.legacySystemState,
     active_legacy_user: input.row.activeLegacyUser,
+    new_system_activated: newSystemActivated,
     lead_state: input.row.leadState,
     consent_state: input.row.consentState,
     suppression_state: input.row.suppressionState,
@@ -402,6 +411,7 @@ function normalizeInputRow(
     audience_type: parsed.audience_type,
     legacy_system_state: parsed.legacy_system_state,
     active_legacy_user: parsed.active_legacy_user,
+    new_system_activated: parsed.new_system_activated,
     lead_state: parsed.lead_state,
     consent_state: parsed.consent_state,
     suppression_state: parsed.suppression_state,
@@ -416,6 +426,7 @@ function normalizeInputRow(
     audienceType: parsed.audience_type,
     legacySystemState: parsed.legacy_system_state,
     activeLegacyUser: parsed.active_legacy_user,
+    newSystemActivated: parsed.new_system_activated,
     leadState: parsed.lead_state,
     consentState: parsed.consent_state,
     suppressionState: parsed.suppression_state,
@@ -451,6 +462,7 @@ function summarizeRows(rowOutcomes: LegacyAudienceDryRunReport['row_outcomes']) 
     ).length,
     do_not_contact_rows: rowOutcomes.filter((row) => row.segment_codes.includes('do_not_contact'))
       .length,
+    already_activated_rows: rowOutcomes.filter((row) => row.new_system_activated).length,
     migration_invite_eligible_rows: rowOutcomes.filter((row) =>
       row.segment_codes.includes('migration_invite_eligible'),
     ).length,
@@ -512,6 +524,9 @@ function rowFromObject(input: {
     ),
     active_legacy_user: toBoolean(
       readCell(input.row, ['active_legacy_user', 'legacy_active', 'active_user']),
+    ),
+    new_system_activated: toBoolean(
+      readCell(input.row, ['new_system_activated', 'already_activated', 'activated_in_new_system']),
     ),
     lead_state: toLeadState(readCell(input.row, ['lead_state', 'is_lead', 'lead'])),
     consent_state: toConsentState(readCell(input.row, ['consent_state', 'consent'])),

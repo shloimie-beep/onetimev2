@@ -1,5 +1,6 @@
 import React from 'react';
 import type {
+  LegacyActivationCampaignPreview,
   LegacyAudienceSegmentContract,
   LegacyAudienceSummary,
 } from '../../../../../../packages/contracts/src/audience-reconciliation/index.ts';
@@ -10,8 +11,12 @@ type AudienceReconciliationPanelProps = {
   segments: LegacyAudienceSegmentContract[];
   loading?: boolean;
   error?: string | null;
+  campaignPreview?: LegacyActivationCampaignPreview | null;
   onDryRun?: () => void;
   onRollbackRecord?: () => void;
+  onCampaignPreview?: () => void;
+  onApproveCampaign?: () => void;
+  onQueueCanary?: () => void;
 };
 
 export function AudienceReconciliationPanel({
@@ -19,8 +24,12 @@ export function AudienceReconciliationPanel({
   segments,
   loading = false,
   error = null,
+  campaignPreview = null,
   onDryRun,
   onRollbackRecord,
+  onCampaignPreview,
+  onApproveCampaign,
+  onQueueCanary,
 }: AudienceReconciliationPanelProps) {
   if (loading) {
     return (
@@ -69,6 +78,38 @@ export function AudienceReconciliationPanel({
           <CountList counts={summary?.reason_counts ?? {}} />
         </section>
       </div>
+
+      <section className="audience-reconciliation__segments">
+        <header className="audience-reconciliation__subheader">
+          <div>
+            <h3>Activation Campaign</h3>
+            <p>{campaignPreview ? campaignPreview.status : 'No campaign snapshot'}</p>
+          </div>
+          <div className="audience-reconciliation__actions">
+            <button type="button" onClick={onCampaignPreview}>
+              Preview campaign
+            </button>
+            <button type="button" onClick={onApproveCampaign}>
+              Approve snapshot
+            </button>
+            <button type="button" onClick={onQueueCanary}>
+              Queue canary
+            </button>
+          </div>
+        </header>
+        <div className="audience-reconciliation__metrics">
+          <Metric label="Eligible" value={campaignPreview?.counts.eligible_rows ?? 0} />
+          <Metric
+            label="Activated"
+            value={campaignPreview?.counts.already_activated_excluded ?? 0}
+          />
+          <Metric label="Suppressed" value={campaignPreview?.counts.suppressed_excluded ?? 0} />
+          <Metric
+            label="Invalid"
+            value={campaignPreview?.counts.invalid_destination_excluded ?? 0}
+          />
+        </div>
+      </section>
 
       <section className="audience-reconciliation__segments">
         <h3>Prepared Segments</h3>

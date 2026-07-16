@@ -5,6 +5,11 @@ import {
   createPostgresLegacyAudienceRepository,
   LegacyAudienceIdempotencyConflictError,
 } from '../../packages/db/src/audience-reconciliation/repository.ts';
+import {
+  approveLegacyActivationCampaign,
+  createLegacyActivationCampaignPreview,
+  queueLegacyActivationCampaignIntents,
+} from '../../packages/domain/src/audience-reconciliation/activation-campaign.ts';
 import { createLegacyAudienceDryRun } from '../../packages/domain/src/audience-reconciliation/service.ts';
 import type { LegacyAudienceInputRow } from '../../packages/contracts/src/audience-reconciliation/index.ts';
 
@@ -133,6 +138,127 @@ describe('OT-74 legacy audience PostgreSQL repository', () => {
     });
     expect(contacts).toHaveLength(0);
   });
+
+  it('records OT-111 campaign preview, approval, canary intent, and controls without external sends', async () => {
+    const request = dryRunRequest([
+      row({
+        source_row_number: 2,
+        email: 'match@example.test',
+        active_legacy_user: true,
+        legacy_system_state: 'present',
+        lead_state: 'lead',
+        consent_state: 'opted_in',
+      }),
+      row({
+        source_row_number: 3,
+        email: 'new@example.test',
+        active_legacy_user: false,
+        lead_state: 'lead',
+        consent_state: 'opted_in',
+      }),
+    ]);
+    const contacts = await repository.findContactsByIdentities(
+      actor,
+      collectIdentityFilters(request.rows),
+    );
+    const report = createLegacyAudienceDryRun({
+      scope: actor,
+      request,
+      existingContacts: contacts,
+      now: new Date('2026-07-16T09:00:00.000Z'),
+    });
+    await repository.recordDryRun({ actor, idempotencyKey: request.idempotency_key, report });
+    const preview = createLegacyActivationCampaignPreview({
+      scope: actor,
+      report,
+      request: {
+        idempotency_key: 'campaign-preview-001',
+        batch_key: report.batch_key,
+        segment: 'active_legacy_family_users',
+        channel: 'email',
+        template_revision: 'draft-day-one-activation-v1',
+        batch_size: 10,
+      },
+      now: new Date('2026-07-16T09:01:00.000Z'),
+    });
+    const recordedPreview = await repository.recordCampaignPreview({
+      actor,
+      idempotencyKey: 'campaign-preview-001',
+      preview,
+    });
+    const replayPreview = await repository.recordCampaignPreview({
+      actor,
+      idempotencyKey: 'campaign-preview-001',
+      preview,
+    });
+    expect(recordedPreview.replayed).toBe(false);
+    expect(replayPreview.replayed).toBe(true);
+
+    const approval = approveLegacyActivationCampaign({
+      preview,
+      request: {
+        idempotency_key: 'campaign-approval-001',
+        campaign_key: preview.campaign_key,
+        snapshot_hash: preview.snapshot_hash,
+        approved_segment: preview.segment,
+        approved_channel: preview.channel,
+        approved_template_revision: preview.template_revision,
+        approved_batch_size: preview.batch_size,
+        approved_schedule_not_before: preview.schedule_not_before,
+        operator_approval_statement:
+          'I approve this exact OT-111 campaign snapshot for protected canary testing only.',
+        ops03b_login_verified: true,
+        real_audience_authorized: false,
+        canary_authorized: true,
+      },
+      now: new Date('2026-07-16T09:02:00.000Z'),
+    });
+    const recordedApproval = await repository.approveCampaign({
+      actor,
+      idempotencyKey: 'campaign-approval-001',
+      approval,
+    });
+    expect(recordedApproval.replayed).toBe(false);
+
+    const queue = await queueLegacyActivationCampaignIntents({
+      preview,
+      approval,
+      request: {
+        idempotency_key: 'campaign-canary-001',
+        campaign_key: preview.campaign_key,
+        snapshot_hash: preview.snapshot_hash,
+        mode: 'canary',
+        requested_count: 1,
+        protected_canary_destination: 'canary@example.test',
+      },
+      protectedCanaryDestination: 'canary@example.test',
+    });
+    expect(queue.status).toBe('queued');
+    const recordedQueue = await repository.recordCampaignSendIntents({
+      actor,
+      idempotencyKey: 'campaign-canary-001',
+      result: queue,
+    });
+    expect(recordedQueue.result.queued_count).toBe(1);
+
+    const pause = await repository.recordCampaignControl({
+      actor,
+      campaignKey: preview.campaign_key,
+      request: {
+        idempotency_key: 'campaign-pause-001',
+        action: 'pause',
+        reason: 'operator pause proof',
+      },
+    });
+    expect(pause).toMatchObject({ status: 'paused', replayed: false });
+    await expectScalar(
+      "SELECT COUNT(*) FROM onetime.schema_migrations WHERE id = '2010_ot111_legacy_activation_campaign'",
+      '1',
+    );
+    await expectScalar('SELECT COUNT(*) FROM onetime.legacy_activation_campaigns', '1');
+    await expectScalar('SELECT COUNT(*) FROM onetime.legacy_activation_campaign_intents', '1');
+    await expectScalar('SELECT COUNT(*) FROM onetime.legacy_activation_campaign_audit_events', '5');
+  });
 });
 
 async function seedContacts(db: DbPool) {
@@ -179,6 +305,7 @@ function row(overrides: Partial<LegacyAudienceInputRow>): LegacyAudienceInputRow
     audience_type: 'family',
     legacy_system_state: 'unknown',
     active_legacy_user: false,
+    new_system_activated: false,
     lead_state: 'unknown',
     consent_state: 'opted_in',
     suppression_state: 'active',

@@ -1,5 +1,11 @@
 import { createHash, randomUUID } from 'node:crypto';
 import type {
+  LegacyActivationCampaignApproval,
+  LegacyActivationCampaignControlRequest,
+  LegacyActivationCampaignControlResult,
+  LegacyActivationCampaignPreview,
+  LegacyActivationCampaignQueueResult,
+  LegacyActivationCampaignStatus,
   LegacyAudienceDryRunReport,
   LegacyAudienceInputRow,
   LegacyAudienceRollbackRequest,
@@ -23,6 +29,7 @@ export type LegacyAudienceContactRecord = {
   phone_normalized: string | null;
   archived_at: Date | string | null;
   suppression_state: string | null;
+  new_system_activated: boolean;
 };
 
 export type RecordDryRunResult = {
@@ -49,6 +56,18 @@ export class LegacyAudienceBatchNotFoundError extends Error {
   }
 }
 
+export class LegacyActivationCampaignNotFoundError extends Error {
+  constructor() {
+    super('Legacy activation campaign was not found.');
+  }
+}
+
+export type LegacyActivationCampaignRecord = {
+  preview: LegacyActivationCampaignPreview;
+  approval: LegacyActivationCampaignApproval | null;
+  status: LegacyActivationCampaignStatus;
+};
+
 export function createPostgresLegacyAudienceRepository(pool: DbPool) {
   return {
     async findContactsByIdentities(
@@ -57,15 +76,22 @@ export function createPostgresLegacyAudienceRepository(pool: DbPool) {
     ): Promise<LegacyAudienceContactRecord[]> {
       const clauses: string[] = [];
       const params: unknown[] = [actor.accountKey, actor.productKey];
-      addInClause(clauses, params, 'email_normalized', identities.emails);
-      addInClause(clauses, params, 'phone_normalized', identities.phones);
+      addInClause(clauses, params, 'contacts.email_normalized', identities.emails);
+      addInClause(clauses, params, 'contacts.phone_normalized', identities.phones);
       if (!clauses.length) return [];
       const result = await pool.query(
-        `SELECT account_key, product_key, contact_key, public_contact_id, display_name,
-                email_normalized, phone_normalized, archived_at, suppression_state
-           FROM onetime.contacts
-          WHERE account_key = $1
-            AND product_key = $2
+        `SELECT contacts.account_key, contacts.product_key, contacts.contact_key,
+                contacts.public_contact_id, contacts.display_name, contacts.email_normalized,
+                contacts.phone_normalized, contacts.archived_at, contacts.suppression_state,
+                activated_user.user_key IS NOT NULL AS new_system_activated
+           FROM onetime.contacts AS contacts
+           LEFT JOIN onetime.account_users AS activated_user
+             ON activated_user.account_key = contacts.account_key
+            AND activated_user.product_key = contacts.product_key
+            AND activated_user.email_normalized = contacts.email_normalized
+            AND activated_user.status = 'active'
+          WHERE contacts.account_key = $1
+            AND contacts.product_key = $2
             AND (${clauses.join(' OR ')})`,
         params,
       );
@@ -127,9 +153,9 @@ export function createPostgresLegacyAudienceRepository(pool: DbPool) {
             `INSERT INTO onetime.legacy_audience_import_rows
              (row_key, batch_key, account_key, product_key, source_row_number, source_sheet_label,
               row_fingerprint, identity_fingerprint, has_email, has_phone, audience_type,
-              legacy_system_state, active_legacy_user, lead_state, consent_state,
+              legacy_system_state, active_legacy_user, new_system_activated, lead_state, consent_state,
               suppression_state, disposition, reason_codes, segment_codes, matched_contact_key)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18::jsonb,$19::jsonb,$20)`,
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19::jsonb,$20::jsonb,$21)`,
             [
               row.row_key,
               input.report.batch_key,
@@ -144,6 +170,7 @@ export function createPostgresLegacyAudienceRepository(pool: DbPool) {
               row.audience_type,
               row.legacy_system_state,
               row.active_legacy_user,
+              row.new_system_activated,
               row.lead_state,
               row.consent_state,
               row.suppression_state,
@@ -276,6 +303,366 @@ export function createPostgresLegacyAudienceRepository(pool: DbPool) {
         };
       });
     },
+
+    async recordCampaignPreview(input: {
+      actor: LegacyAudienceRepositoryActor;
+      idempotencyKey: string;
+      preview: LegacyActivationCampaignPreview;
+    }): Promise<{ preview: LegacyActivationCampaignPreview; replayed: boolean }> {
+      return inTransaction(pool, async (client) => {
+        const batch = await client.query(
+          `SELECT batch_key
+             FROM onetime.legacy_audience_import_batches
+            WHERE account_key = $1
+              AND product_key = $2
+              AND batch_key = $3
+            LIMIT 1`,
+          [input.actor.accountKey, input.actor.productKey, input.preview.batch_key],
+        );
+        if (!batch.rowCount) throw new LegacyAudienceBatchNotFoundError();
+
+        const existing = await client.query(
+          `SELECT snapshot_hash, snapshot_payload
+             FROM onetime.legacy_activation_campaigns
+            WHERE account_key = $1
+              AND product_key = $2
+              AND idempotency_key = $3
+            LIMIT 1`,
+          [input.actor.accountKey, input.actor.productKey, input.idempotencyKey],
+        );
+        if (existing.rowCount) {
+          if (existing.rows[0].snapshot_hash !== input.preview.snapshot_hash) {
+            throw new LegacyAudienceIdempotencyConflictError();
+          }
+          await insertCampaignAudit(client, input.actor, {
+            campaignKey: input.preview.campaign_key,
+            batchKey: input.preview.batch_key,
+            eventType: 'preview_replayed',
+            metadata: { snapshot_hash: input.preview.snapshot_hash },
+          });
+          return {
+            preview: existing.rows[0].snapshot_payload as LegacyActivationCampaignPreview,
+            replayed: true,
+          };
+        }
+
+        await client.query(
+          `INSERT INTO onetime.legacy_activation_campaigns
+           (campaign_key, account_key, product_key, batch_key, segment_code, channel,
+            template_kind, template_revision, batch_size, schedule_not_before, status,
+            snapshot_hash, source_request_hash, source_digest, snapshot_expires_at,
+            snapshot_counts, snapshot_payload, idempotency_key, created_by_user_key,
+            created_at, updated_at)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'previewed',$11,$12,$13,$14,$15::jsonb,$16::jsonb,$17,$18,$19,$19)`,
+          [
+            input.preview.campaign_key,
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.preview.batch_key,
+            input.preview.segment,
+            input.preview.channel,
+            input.preview.template_kind,
+            input.preview.template_revision,
+            input.preview.batch_size,
+            input.preview.schedule_not_before,
+            input.preview.snapshot_hash,
+            input.preview.source_request_hash,
+            input.preview.source_digest,
+            input.preview.snapshot_expires_at,
+            JSON.stringify(input.preview.counts),
+            JSON.stringify(input.preview),
+            input.idempotencyKey,
+            input.actor.userKey,
+            input.preview.created_at,
+          ],
+        );
+        await insertCampaignAudit(client, input.actor, {
+          campaignKey: input.preview.campaign_key,
+          batchKey: input.preview.batch_key,
+          eventType: 'preview_recorded',
+          metadata: {
+            snapshot_hash: input.preview.snapshot_hash,
+            eligible_rows: input.preview.counts.eligible_rows,
+            raw_recipient_list_included: false,
+            production_side_effects: false,
+          },
+        });
+        return { preview: input.preview, replayed: false };
+      });
+    },
+
+    async getCampaignRecord(
+      actor: LegacyAudienceRepositoryActor,
+      campaignKey: string,
+    ): Promise<LegacyActivationCampaignRecord | null> {
+      const result = await pool.query(
+        `SELECT status, snapshot_payload, approval_metadata
+           FROM onetime.legacy_activation_campaigns
+          WHERE account_key = $1
+            AND product_key = $2
+            AND campaign_key = $3
+          LIMIT 1`,
+        [actor.accountKey, actor.productKey, campaignKey],
+      );
+      const row = result.rows[0] as Record<string, unknown> | undefined;
+      if (!row) return null;
+      const approvalMetadata = asRecord(row.approval_metadata);
+      return {
+        preview: row.snapshot_payload as LegacyActivationCampaignPreview,
+        approval:
+          (approvalMetadata.approval as LegacyActivationCampaignApproval | undefined) ?? null,
+        status: String(row.status) as LegacyActivationCampaignStatus,
+      };
+    },
+
+    async approveCampaign(input: {
+      actor: LegacyAudienceRepositoryActor;
+      idempotencyKey: string;
+      approval: LegacyActivationCampaignApproval;
+    }): Promise<{ approval: LegacyActivationCampaignApproval; replayed: boolean }> {
+      return inTransaction(pool, async (client) => {
+        const existing = await client.query(
+          `SELECT approval_idempotency_key, approval_fingerprint, approval_metadata
+             FROM onetime.legacy_activation_campaigns
+            WHERE account_key = $1
+              AND product_key = $2
+              AND campaign_key = $3
+              AND snapshot_hash = $4
+            LIMIT 1
+            FOR UPDATE`,
+          [
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.approval.campaign_key,
+            input.approval.snapshot_hash,
+          ],
+        );
+        if (!existing.rowCount) throw new LegacyActivationCampaignNotFoundError();
+        const current = existing.rows[0];
+        if (current.approval_idempotency_key) {
+          if (
+            current.approval_idempotency_key !== input.idempotencyKey ||
+            current.approval_fingerprint !== input.approval.approval_fingerprint
+          ) {
+            throw new LegacyAudienceIdempotencyConflictError();
+          }
+          await insertCampaignAudit(client, input.actor, {
+            campaignKey: input.approval.campaign_key,
+            batchKey: null,
+            eventType: 'approval_replayed',
+            metadata: { approval_fingerprint: input.approval.approval_fingerprint },
+          });
+          const metadata = asRecord(current.approval_metadata);
+          return {
+            approval:
+              (metadata.approval as LegacyActivationCampaignApproval | undefined) ?? input.approval,
+            replayed: true,
+          };
+        }
+        await client.query(
+          `UPDATE onetime.legacy_activation_campaigns
+              SET status = 'approved',
+                  approval_idempotency_key = $5,
+                  approval_fingerprint = $6,
+                  approved_by_user_key = $7,
+                  approved_at = $8,
+                  approval_metadata = $9::jsonb,
+                  updated_at = $8
+            WHERE account_key = $1
+              AND product_key = $2
+              AND campaign_key = $3
+              AND snapshot_hash = $4`,
+          [
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.approval.campaign_key,
+            input.approval.snapshot_hash,
+            input.idempotencyKey,
+            input.approval.approval_fingerprint,
+            input.actor.userKey,
+            input.approval.approved_at,
+            JSON.stringify({ approval: input.approval }),
+          ],
+        );
+        await insertCampaignAudit(client, input.actor, {
+          campaignKey: input.approval.campaign_key,
+          batchKey: null,
+          eventType: 'approval_recorded',
+          metadata: {
+            approval_fingerprint: input.approval.approval_fingerprint,
+            real_audience_authorized: input.approval.real_audience_authorized,
+            canary_authorized: input.approval.canary_authorized,
+          },
+        });
+        return { approval: input.approval, replayed: false };
+      });
+    },
+
+    async recordCampaignSendIntents(input: {
+      actor: LegacyAudienceRepositoryActor;
+      idempotencyKey: string;
+      result: LegacyActivationCampaignQueueResult;
+    }): Promise<{ result: LegacyActivationCampaignQueueResult; replayed: boolean }> {
+      return inTransaction(pool, async (client) => {
+        const campaign = await client.query(
+          `SELECT campaign_key, batch_key
+             FROM onetime.legacy_activation_campaigns
+            WHERE account_key = $1
+              AND product_key = $2
+              AND campaign_key = $3
+            LIMIT 1
+            FOR UPDATE`,
+          [input.actor.accountKey, input.actor.productKey, input.result.campaign_key],
+        );
+        if (!campaign.rowCount) throw new LegacyActivationCampaignNotFoundError();
+
+        if (input.result.status === 'blocked') {
+          await client.query(
+            `UPDATE onetime.legacy_activation_campaigns
+                SET status = 'blocked',
+                    updated_at = now()
+              WHERE account_key = $1
+                AND product_key = $2
+                AND campaign_key = $3`,
+            [input.actor.accountKey, input.actor.productKey, input.result.campaign_key],
+          );
+          await insertCampaignAudit(client, input.actor, {
+            campaignKey: input.result.campaign_key,
+            batchKey: String(campaign.rows[0].batch_key),
+            eventType: 'send_intents_blocked',
+            metadata: {
+              idempotency_key: input.idempotencyKey,
+              blocked_reasons: input.result.blocked_reasons,
+              external_send_performed: false,
+            },
+          });
+          return { result: input.result, replayed: false };
+        }
+
+        let inserted = 0;
+        for (const intent of input.result.intents) {
+          const write = await client.query(
+            `INSERT INTO onetime.legacy_activation_campaign_intents
+             (intent_key, campaign_key, account_key, product_key, identity_ref, channel,
+              template_revision, delivery_state, destination_ref, lifecycle_intent_ref,
+              idempotency_key, metadata)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb)
+             ON CONFLICT (campaign_key, identity_ref, channel, template_revision) DO NOTHING`,
+            [
+              intent.intent_key,
+              intent.campaign_key,
+              input.actor.accountKey,
+              input.actor.productKey,
+              intent.identity_ref,
+              intent.channel,
+              intent.template_revision,
+              intent.delivery_state,
+              intent.destination_ref,
+              intent.lifecycle_intent_ref,
+              input.idempotencyKey,
+              JSON.stringify({
+                raw_destination_included: false,
+                raw_token_included: false,
+                external_send_performed: false,
+              }),
+            ],
+          );
+          inserted += write.rowCount ?? 0;
+        }
+        await client.query(
+          `UPDATE onetime.legacy_activation_campaigns
+              SET status = 'running',
+                  updated_at = now()
+            WHERE account_key = $1
+              AND product_key = $2
+              AND campaign_key = $3`,
+          [input.actor.accountKey, input.actor.productKey, input.result.campaign_key],
+        );
+        await insertCampaignAudit(client, input.actor, {
+          campaignKey: input.result.campaign_key,
+          batchKey: String(campaign.rows[0].batch_key),
+          eventType: 'send_intents_recorded',
+          metadata: {
+            idempotency_key: input.idempotencyKey,
+            queued_count: inserted,
+            mode: input.result.mode,
+            external_send_performed: false,
+          },
+        });
+        return {
+          result: { ...input.result, queued_count: inserted },
+          replayed: inserted === 0 && input.result.intents.length > 0,
+        };
+      });
+    },
+
+    async recordCampaignControl(input: {
+      actor: LegacyAudienceRepositoryActor;
+      campaignKey: string;
+      request: LegacyActivationCampaignControlRequest;
+    }): Promise<LegacyActivationCampaignControlResult> {
+      return inTransaction(pool, async (client) => {
+        const replay = await client.query(
+          `SELECT metadata
+             FROM onetime.legacy_activation_campaign_audit_events
+            WHERE account_key = $1
+              AND product_key = $2
+              AND campaign_key = $3
+              AND event_type = $4
+              AND metadata->>'idempotency_key' = $5
+            LIMIT 1`,
+          [
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.campaignKey,
+            campaignControlEventType(input.request.action),
+            input.request.idempotency_key,
+          ],
+        );
+        if (replay.rowCount) {
+          return {
+            campaign_key: input.campaignKey,
+            action: input.request.action,
+            status: controlStatus(input.request.action),
+            replayed: true,
+            production_side_effects: false,
+          };
+        }
+        const updated = await client.query(
+          `UPDATE onetime.legacy_activation_campaigns
+              SET status = $4,
+                  updated_at = now()
+            WHERE account_key = $1
+              AND product_key = $2
+              AND campaign_key = $3
+            RETURNING status, batch_key`,
+          [
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.campaignKey,
+            controlStatus(input.request.action),
+          ],
+        );
+        if (!updated.rowCount) throw new LegacyActivationCampaignNotFoundError();
+        await insertCampaignAudit(client, input.actor, {
+          campaignKey: input.campaignKey,
+          batchKey: String(updated.rows[0].batch_key),
+          eventType: campaignControlEventType(input.request.action),
+          metadata: {
+            idempotency_key: input.request.idempotency_key,
+            reason: input.request.reason,
+            external_send_performed: false,
+          },
+        });
+        return {
+          campaign_key: input.campaignKey,
+          action: input.request.action,
+          status: updated.rows[0].status as LegacyActivationCampaignStatus,
+          replayed: false,
+          production_side_effects: false,
+        };
+      });
+    },
   };
 }
 
@@ -344,12 +731,62 @@ async function insertAudit(
   );
 }
 
-function addInClause(
-  clauses: string[],
-  params: unknown[],
-  column: 'email_normalized' | 'phone_normalized',
-  values: string[],
+async function insertCampaignAudit(
+  client: Queryable,
+  actor: LegacyAudienceRepositoryActor,
+  input: {
+    campaignKey: string;
+    batchKey: string | null;
+    eventType:
+      | 'preview_recorded'
+      | 'preview_replayed'
+      | 'approval_recorded'
+      | 'approval_replayed'
+      | 'send_intents_recorded'
+      | 'send_intents_blocked'
+      | 'paused'
+      | 'resumed'
+      | 'cancelled';
+    metadata: Record<string, unknown>;
+  },
 ) {
+  await client.query(
+    `INSERT INTO onetime.legacy_activation_campaign_audit_events
+     (event_key, account_key, product_key, campaign_key, batch_key, actor_user_key, event_type, metadata)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb)`,
+    [
+      stableKey('legacy_activation_audit', [
+        input.campaignKey,
+        input.eventType,
+        actor.userKey,
+        randomUUID(),
+      ]),
+      actor.accountKey,
+      actor.productKey,
+      input.campaignKey,
+      input.batchKey,
+      actor.userKey,
+      input.eventType,
+      JSON.stringify(input.metadata),
+    ],
+  );
+}
+
+function campaignControlEventType(action: LegacyActivationCampaignControlRequest['action']) {
+  if (action === 'pause') return 'paused';
+  if (action === 'resume') return 'resumed';
+  return 'cancelled';
+}
+
+function controlStatus(
+  action: LegacyActivationCampaignControlRequest['action'],
+): LegacyActivationCampaignStatus {
+  if (action === 'pause') return 'paused';
+  if (action === 'resume') return 'running';
+  return 'cancelled';
+}
+
+function addInClause(clauses: string[], params: unknown[], column: string, values: string[]) {
   const unique = Array.from(new Set(values.filter(Boolean)));
   if (!unique.length) return;
   const placeholders = unique.map((value) => {
@@ -370,6 +807,7 @@ function rowToContact(row: Record<string, unknown>): LegacyAudienceContactRecord
     phone_normalized: row.phone_normalized ? String(row.phone_normalized) : null,
     archived_at: (row.archived_at as Date | string | null | undefined) ?? null,
     suppression_state: row.suppression_state ? String(row.suppression_state) : null,
+    new_system_activated: row.new_system_activated === true || row.new_system_activated === 'true',
   };
 }
 
@@ -403,4 +841,11 @@ function normalizePhone(phone: string | undefined) {
 function stableKey(prefix: string, parts: string[]) {
   const hash = createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 24);
   return `${prefix}_${hash}`;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return {};
 }
