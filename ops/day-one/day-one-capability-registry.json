@@ -42,7 +42,10 @@
           "id": "school-thank-you-test",
           "type": "file_contains",
           "path": "tests/e2e/landing-signup.spec.ts",
-          "values": ["School", "Thank you."]
+          "values": [
+            "Thank you - we received your school inquiry.",
+            "does not create class access, reminders, a portal account, or Family messages."
+          ]
         },
         {
           "id": "capability-school-lead-only",
@@ -106,6 +109,8 @@
       "prompt_coverage": "Class/reminder boundaries and protected provider-off launch.",
       "required_for_certify": true,
       "signals": [
+        { "id": "route-classes-list", "type": "route", "route_id": "classes_list" },
+        { "id": "route-class-detail", "type": "route", "route_id": "class_detail" },
         {
           "id": "capability-class-reminder-provider-off",
           "type": "capability_status",
@@ -121,6 +126,13 @@
       "prompt_coverage": "Content review/publish and entitled library.",
       "required_for_certify": true,
       "signals": [
+        { "id": "route-content-library", "type": "route", "route_id": "content_library" },
+        {
+          "id": "route-content-library-detail",
+          "type": "route",
+          "route_id": "content_library_detail"
+        },
+        { "id": "route-content-outcomes", "type": "route", "route_id": "content_outcomes" },
         {
           "id": "capability-content-library",
           "type": "capability_status",
@@ -135,6 +147,22 @@
       "prompt_coverage": "Parent household scope and student exactly-one-learner scope.",
       "required_for_certify": true,
       "signals": [
+        { "id": "route-parent-portal-shell", "type": "route", "route_id": "parent_portal_shell" },
+        {
+          "id": "route-student-portal-shell",
+          "type": "route",
+          "route_id": "student_portal_shell"
+        },
+        {
+          "id": "route-parent-portal-dashboard",
+          "type": "route",
+          "route_id": "parent_portal_dashboard"
+        },
+        {
+          "id": "route-student-portal-dashboard",
+          "type": "route",
+          "route_id": "student_portal_dashboard"
+        },
         {
           "id": "portal-router-test",
           "type": "path_exists",
@@ -183,6 +211,12 @@
       "prompt_coverage": "Every visible action registry and handler/audit mapping.",
       "required_for_certify": true,
       "signals": [
+        {
+          "id": "visible-action-registry-file",
+          "type": "visible_action_registry",
+          "path": "ops/day-one/visible-action-registry.json",
+          "min_actions": 30
+        },
         {
           "id": "capability-action-registry",
           "type": "capability_status",
@@ -284,9 +318,14 @@
         { "id": "migration-0003", "type": "migration", "migration_id": "0003" },
         { "id": "migration-0004", "type": "migration", "migration_id": "0004" },
         { "id": "migration-1000", "type": "migration", "migration_id": "1000" },
+        { "id": "migration-1100", "type": "migration", "migration_id": "1100" },
+        { "id": "migration-1201", "type": "migration", "migration_id": "1201" },
         { "id": "migration-1300", "type": "migration", "migration_id": "1300" },
+        { "id": "migration-1400", "type": "migration", "migration_id": "1400" },
         { "id": "migration-1500", "type": "migration", "migration_id": "1500" },
         { "id": "migration-1600", "type": "migration", "migration_id": "1600" },
+        { "id": "migration-1700", "type": "migration", "migration_id": "1700" },
+        { "id": "migration-1800", "type": "migration", "migration_id": "1800" },
         { "id": "worker-entry", "type": "path_exists", "path": "apps/worker/src/main/index.ts" },
         {
           "id": "capability-source-readiness",

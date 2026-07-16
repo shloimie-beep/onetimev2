@@ -9,7 +9,7 @@ const DEFAULT_MANIFEST = 'ops/day-one/release-manifest.example.json';
 const DEFAULT_REGISTRY = 'ops/day-one/day-one-capability-registry.json';
 const DEFAULT_OUT_DIR = 'ops/evidence/ot-76';
 
-const ALLOWED_CHANGE_PATHS = [
+const DEFAULT_ALLOWED_CHANGE_PATHS = [
   'scripts/day-one-certification-harness.mjs',
   'ops/day-one/',
   'ops/evidence/ot-76/',
@@ -43,7 +43,9 @@ const gateResults = await Promise.all(
   registry.gates.map((gate) => evaluateGate({ gate, manifest, packageJson, facts })),
 );
 
-const forbiddenChanges = facts.changedFiles.filter((file) => !isAllowedChange(file));
+const forbiddenChanges = facts.changedFiles.filter(
+  (file) => !isAllowedChange(file, facts.allowedChangePaths),
+);
 const manifestFailures = validateManifest({ manifest, registry });
 const hardFailures = [
   ...manifestFailures,
@@ -170,7 +172,13 @@ async function collectFacts({ manifest, scopeBaseSha }) {
   for (const filePath of sourceFiles) {
     sourceText.set(normalizePath(filePath), await readTextIfExists(filePath));
   }
-  return { head, branch, changedFiles, sourceText };
+  return {
+    head,
+    branch,
+    changedFiles,
+    sourceText,
+    allowedChangePaths: allowedChangePaths(manifest),
+  };
 }
 
 async function evaluateGate({ gate, manifest, packageJson, facts }) {
@@ -249,6 +257,11 @@ async function evaluateSignal({ signal, manifest, packageJson, facts }) {
         `capability ${signal.capability_id} has allowed status`,
       );
     }
+    if (signal.type === 'visible_action_registry') {
+      const registry = await readJson(signal.path);
+      const validation = validateVisibleActionRegistry(registry, signal);
+      return signalResult(signal, validation.ok, validation.message);
+    }
     if (signal.type === 'budget') {
       return signalResult(
         signal,
@@ -280,7 +293,9 @@ async function evaluateSignal({ signal, manifest, packageJson, facts }) {
       );
     }
     if (signal.type === 'changed_files_allowed') {
-      const forbidden = facts.changedFiles.filter((file) => !isAllowedChange(file));
+      const forbidden = facts.changedFiles.filter(
+        (file) => !isAllowedChange(file, facts.allowedChangePaths),
+      );
       return signalResult(
         signal,
         forbidden.length === 0,
@@ -316,10 +331,24 @@ function validateManifest({ manifest, registry }) {
       message: 'manifest immutable base does not match OT-76 prompt',
     });
   }
-  if (manifest.permissions?.product_code_change_allowed !== false) {
+  if (manifest.permissions?.product_code_change_allowed === true) {
+    const changeScope = manifest.change_scope;
+    if (
+      changeScope?.product_code_changes_are_release_scoped !== true ||
+      !Array.isArray(changeScope.allowed_paths) ||
+      changeScope.allowed_paths.length === 0
+    ) {
+      failures.push({
+        code: 'PRODUCT_CODE_SCOPE_MISSING',
+        message:
+          'product code changes require explicit release-scoped allowed paths in change_scope',
+      });
+    }
+  } else if (manifest.permissions?.product_code_change_allowed !== false) {
     failures.push({
       code: 'PRODUCT_CODE_SCOPE_OPEN',
-      message: 'manifest must forbid product code changes',
+      message:
+        'manifest must either forbid product code changes or declare scoped release change paths',
     });
   }
   if (manifest.permissions?.deployment_allowed !== false) {
@@ -346,6 +375,63 @@ function signalResult(signal, ok, message) {
     type: signal.type,
     ok,
     message: ok ? message : (signal.missing_message ?? message),
+  };
+}
+
+function validateVisibleActionRegistry(registry, signal) {
+  const actions = registry?.actions;
+  if (!Array.isArray(actions)) {
+    return { ok: false, message: `${signal.path} must contain an actions array` };
+  }
+  const minActions = Number(signal.min_actions ?? 1);
+  if (actions.length < minActions) {
+    return {
+      ok: false,
+      message: `${signal.path} has ${actions.length} actions; expected at least ${minActions}`,
+    };
+  }
+  const ids = new Set();
+  for (const [index, action] of actions.entries()) {
+    const id = String(action?.action_id ?? '');
+    if (!id) return { ok: false, message: `action ${index} is missing action_id` };
+    if (ids.has(id)) return { ok: false, message: `${id} is duplicated` };
+    ids.add(id);
+    const requiredStringPaths = [
+      'label',
+      'surface',
+      'route',
+      'capability',
+      'handler.path',
+      'audit.event',
+      'readiness_state',
+    ];
+    for (const requiredPath of requiredStringPaths) {
+      const value = getPath(action, requiredPath);
+      if (typeof value !== 'string' || value.length === 0) {
+        return { ok: false, message: `${id} is missing ${requiredPath}` };
+      }
+    }
+    if (!Array.isArray(action.roles) || action.roles.length === 0) {
+      return { ok: false, message: `${id} must declare authorized roles` };
+    }
+    if (!['ready', 'unavailable_by_design'].includes(action.readiness_state)) {
+      return { ok: false, message: `${id} has unsupported readiness_state` };
+    }
+    if (action.external_mutation !== false) {
+      return { ok: false, message: `${id} must not perform external mutation for OT81` };
+    }
+    if (!Array.isArray(action.test_evidence) || action.test_evidence.length === 0) {
+      return { ok: false, message: `${id} must cite test evidence` };
+    }
+    for (const state of ['loading', 'success', 'error', 'permission', 'offline']) {
+      if (typeof action.states?.[state] !== 'string' || action.states[state].length === 0) {
+        return { ok: false, message: `${id} is missing ${state} state copy` };
+      }
+    }
+  }
+  return {
+    ok: true,
+    message: `${signal.path} maps ${actions.length} visible actions`,
   };
 }
 
@@ -436,9 +522,15 @@ function normalizePath(filePath) {
   return String(filePath).replaceAll('\\', '/');
 }
 
-function isAllowedChange(filePath) {
+function allowedChangePaths(manifest) {
+  const paths = manifest.change_scope?.allowed_paths;
+  if (!Array.isArray(paths) || paths.length === 0) return DEFAULT_ALLOWED_CHANGE_PATHS;
+  return paths.map(normalizePath);
+}
+
+function isAllowedChange(filePath, allowedPaths = DEFAULT_ALLOWED_CHANGE_PATHS) {
   const normalized = normalizePath(filePath);
-  return ALLOWED_CHANGE_PATHS.some((allowed) =>
+  return allowedPaths.some((allowed) =>
     allowed.endsWith('/') ? normalized.startsWith(allowed) : normalized === allowed,
   );
 }

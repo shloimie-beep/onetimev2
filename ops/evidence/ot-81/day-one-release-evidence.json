@@ -1,0 +1,52 @@
+{
+  "schema_version": "onetime.ot81.day_one_release_evidence.v1",
+  "generated_at": "2026-07-15T11:50:43.723Z",
+  "source": {
+    "resolved_base_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+    "product_anchor_sha": "b753d50ca562c01cfa8619762254e70c90b0105f",
+    "manifest": "ops/day-one/ot81-release-manifest.json",
+    "visible_action_registry": "ops/day-one/visible-action-registry.json",
+    "migration_ledger": "ops/evidence/ot-81/migration-ledger.json"
+  },
+  "external_mutations_performed": {
+    "deployments": 0,
+    "provider_calls": 0,
+    "live_sends": 0,
+    "production_database_writes": 0,
+    "payment_or_access_mutations": 0,
+    "dns_or_railway_mutations": 0
+  },
+  "provider_modes": {
+    "delivery": "sink",
+    "billing": "test_or_projection_only",
+    "class_launch": "provider_default_off",
+    "content_playback": "protected_local_action_only",
+    "telegram": "not_required_for_ot81"
+  },
+  "staging": {
+    "status": "READY_FOR_STAGING_AUTH",
+    "authorization": "isolated_staging_only_after_strict_local_ci_certification",
+    "staging_url": null,
+    "not_attempted_reason": "Railway CLI is linked to a production context and no isolated staging env/resource names are present.",
+    "read_only_checks": {
+      "railway_cli_installed": true,
+      "railway_status_project": "one-time-production",
+      "railway_status_environment": "production",
+      "railway_status_service": null,
+      "staging_env_names_present": false
+    },
+    "checklist": "ops/evidence/ot-81/STAGING-AUTH-CHECKLIST.md"
+  },
+  "backup_restore_and_rollback": {
+    "local_plan": "ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+    "rollback_plan": "ops/release/ot75/runbooks/rollback-and-source-readback.md",
+    "staging_facts_required_after_certification": [
+      "separate One Time Railway web service",
+      "separate One Time Railway worker service",
+      "separate One Time PostgreSQL resource",
+      "backup/PITR evidence URI",
+      "restore drill evidence URI",
+      "active deployed source SHA readback"
+    ]
+  }
+}

@@ -31,6 +31,8 @@ describe('OT-52P portal UI modules', () => {
     expect(markup).toContain('Student access');
     expect(markup).toContain('Progress And Rewards');
     expect(markup).toContain('aria-label="Add learner"');
+    expect(markup).toContain('disabled=""');
+    expect(markup).toContain('Learner editing is unavailable in V1');
     expect(markup).not.toMatch(/https?:\/\/|zoom|meet|provider/i);
     expect(markup).not.toMatch(/CRM|Admin|View as/i);
   });
