@@ -83,11 +83,23 @@ describe('lead validation and content contracts', () => {
     expect(JSON.stringify(landingContent)).not.toContain('Questions with Rabbi Scheller');
   });
 
-  it('assigns the approved Toronto accomplishment asset without substituting Lakewood', () => {
+  it('assigns approved gain assets and avoids duplicate student imagery', () => {
+    const clarity = landingContent.gain.cards.find((card) => card.title === 'Clarity');
+    const retention = landingContent.gain.cards.find((card) => card.title === 'Retention');
     const progress = landingContent.gain.cards.find((card) => card.title === 'Progress');
+    expect(clarity?.image).toBe('/assets/outcomes/clarity-class.webp');
+    expect(retention?.image).toBeNull();
+    expect(retention && 'visualTreatment' in retention ? retention.visualTreatment : null).toBe(
+      'memory-review',
+    );
     expect(progress?.image).toBe('/assets/outcomes/accomplishment-toronto-class.jpg');
     expect(progress?.alt).toContain('Toronto');
     expect(progress?.assetBlocker).toBeNull();
+    expect(
+      landingContent.gain.cards.filter(
+        (card) => (card.image as string | null) === '/assets/students/smiley-kid.png',
+      ),
+    ).toHaveLength(0);
     expect(landingContent.gain.cards.map((card) => card.title)).toEqual([
       'Clarity',
       'Retention',

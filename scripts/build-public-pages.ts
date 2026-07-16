@@ -18,6 +18,30 @@ import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
+const imageDimensions = new Map<string, readonly [number, number]>([
+  ['/assets/brand/onetimelogo.webp', [400, 400]],
+  ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
+  ['/assets/students/smiley-kid.png', [337, 600]],
+  ['/assets/outcomes/clarity-class.webp', [945, 2048]],
+  ['/assets/outcomes/excitement-learning-torah.webp', [945, 2048]],
+  ['/assets/outcomes/accomplishment-toronto-class.jpg', [1200, 745]],
+  ['/assets/rabbi/rabbi-eli-holding-book.jpg', [1600, 1067]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp', [1600, 714]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp', [1600, 1066]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp', [1600, 1200]],
+]);
+
+function mediaSizeAttributes(src: string) {
+  const dimensions = imageDimensions.get(src);
+  if (!dimensions) return '';
+  return ` width="${dimensions[0]}" height="${dimensions[1]}"`;
+}
+
 function pageShell(
   title: string,
   body: string,
@@ -66,10 +90,18 @@ function landingPage() {
         image: string | null;
         alt: string;
         assetBlocker: string | null;
+        visualTreatment?: string;
       } = card;
-      const visual = visualCard.image
-        ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}" loading="lazy" decoding="async">`
-        : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Toronto.jpg pending</div>`;
+      const visual =
+        visualCard.visualTreatment === 'memory-review'
+          ? `<div class="retention-visual" role="img" aria-label="Review rhythm, memory, and retention">
+              <span class="review-card review-card-one"><b>1</b><em>Learn</em></span>
+              <span class="review-card review-card-two"><b>2</b><em>Review</em></span>
+              <span class="review-card review-card-three"><b>3</b><em>Remember</em></span>
+            </div>`
+          : visualCard.image
+            ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}"${mediaSizeAttributes(visualCard.image)} loading="lazy" decoding="async">`
+            : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Missing approved asset</div>`;
       return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}">
         <div class="benefit-visual">${visual}</div>
         <h3>${escapeHtml(card.title)}</h3>
@@ -92,9 +124,9 @@ function landingPage() {
       (
         [title, src],
         index,
-      ) => `<figure class="gallery-slide" data-gallery-slide ${index === 0 ? '' : 'hidden'}>
-        <img src="${src}" alt="${escapeHtml(title)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
-        <figcaption><strong>${escapeHtml(title)}</strong></figcaption>
+      ) => `<figure class="gallery-slide" data-gallery-slide data-gallery-index="${index}" ${index === 0 ? 'data-active="true"' : 'aria-hidden="true"'} tabindex="${index === 0 ? '0' : '-1'}">
+        <img src="${src}" alt="${escapeHtml(title)}"${mediaSizeAttributes(src)} loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
+        <figcaption>${escapeHtml(title)}</figcaption>
       </figure>`,
     )
     .join('');
@@ -156,18 +188,21 @@ function landingPage() {
         <h2>${escapeHtml(landingContent.rabbi.heading)}</h2>
         <p>${escapeHtml(landingContent.rabbi.body)}</p>
       </div>
-      <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book" loading="lazy" decoding="async">
+      <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
-    <div class="gallery" data-gallery>
-      <h3>${escapeHtml(landingContent.gallery.heading)}</h3>
-      ${slides}
+    <div class="gallery" data-gallery role="region" aria-roledescription="carousel" aria-label="${escapeHtml(landingContent.gallery.heading)}">
+      <h3 id="gallery-heading">${escapeHtml(landingContent.gallery.heading)}</h3>
+      <div class="gallery-viewport" data-gallery-viewport aria-labelledby="gallery-heading">
+        <div class="gallery-track" data-gallery-track>${slides}</div>
+      </div>
+      <p class="sr-only" aria-live="polite" data-gallery-status>Showing ${escapeHtml(landingContent.gallery.slides[0][0])}</p>
       <div class="gallery-controls">
         <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
         <div>${dots}</div>
         <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
       </div>
     </div>
-    <div class="press-strip" aria-label="As Seen Across the Jewish World"><p>As Seen Across the Jewish World</p><div>${press}</div></div>
+    <div class="press-strip" aria-label="Torah media and publication logos"><p>Torah media and publication mentions</p><div>${press}</div></div>
   </section>
   <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Sign Up Now</a></section>
 </main>${footer()}`,

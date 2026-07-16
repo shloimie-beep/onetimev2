@@ -14,7 +14,7 @@ export function renderLogo({
   label = 'One Time Mishnayos home',
   subtitle = 'Worldwide Mishnah Learning',
   href = '/',
-  size = 56,
+  size = 72,
 }: {
   label?: string;
   subtitle?: string;
