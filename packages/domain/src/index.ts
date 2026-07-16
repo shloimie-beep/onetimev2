@@ -49,6 +49,28 @@ export {
   type Ot86SigningSecret,
 } from './content/pipeline.ts';
 export {
+  OT86B_ALLOWED_TRANSITIONS,
+  Ot86bSocialPublishingError,
+  approveAndScheduleOt86bDraft,
+  createUnconfiguredBufferAdapter,
+  dispatchNextOt86bSocialEvent,
+  editOt86bDraftRevision,
+  generateNextOt86bDraftJob,
+  inspectOt86bBufferReadinessFromEnv,
+  listOt86bSocialDrafts,
+  receiveOt86bSocialEvent,
+  requestOt86bRetraction,
+  runOt86bSchedulerOnce,
+  sanitizeOt86bProviderError,
+  validateOt86bDraftRevisionChecksum,
+  validateOt86bPublishCommand,
+  validateOt86bSocialEventChecksum,
+  withOt86bSocialDraftRevisionChecksum,
+  type Ot86bBufferAdapter,
+  type Ot86bProviderResult,
+  type Ot86bSocialEventReceiptResult,
+} from './social/publishing.ts';
+export {
   AccountLifecycleError,
   acceptOwnerAdminInvitation,
   acceptParentActivation,

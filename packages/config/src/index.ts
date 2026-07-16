@@ -52,6 +52,9 @@ const envSchema = z.object({
   OT86_PUBLISH_SIGNING_SECRET: z.string().optional(),
   OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
   OT86_PREVIOUS_PUBLISH_SIGNING_SECRET: z.string().optional(),
+  BUFFER_ACCESS_TOKEN: z.string().optional(),
+  BUFFER_ORGANIZATION_ID: z.string().optional(),
+  BUFFER_DESTINATION_IDS: z.string().optional(),
   ENABLE_REAL_EMAIL_TRANSPORT: booleanFromString,
   ENABLE_REAL_WHATSAPP_TRANSPORT: booleanFromString,
   ENABLE_REAL_TELEGRAM_TRANSPORT: booleanFromString,
@@ -127,5 +130,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     ot86PublishSigningSecret: parsed.OT86_PUBLISH_SIGNING_SECRET,
     ot86PreviousPublishSigningKeyId: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID,
     ot86PreviousPublishSigningSecret: parsed.OT86_PREVIOUS_PUBLISH_SIGNING_SECRET,
+    bufferAccessToken: parsed.BUFFER_ACCESS_TOKEN,
+    bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
+    bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
   };
 }

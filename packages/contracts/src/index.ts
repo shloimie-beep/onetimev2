@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export * from './classes/index.ts';
 export * from './content/index.ts';
+export * from './social/index.ts';
 export * from './accounts/index.ts';
 export * from './portals/index.ts';
 export * from './dashboard/index.ts';
