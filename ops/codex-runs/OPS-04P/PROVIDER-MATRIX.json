@@ -1,0 +1,470 @@
+{
+  "schema_version": 1,
+  "task_id": "OPS-04P",
+  "source": {
+    "repository": "webcraft-media/onetimev2",
+    "prompt_source_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+    "inventory_branch_head_at_write": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
+    "staging_origin": "https://ot99-web-staging.up.railway.app",
+    "railway_project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46"
+  },
+  "provider_records": [
+    {
+      "provider": "Resend/current One Time email provider",
+      "status": "SINK_ONLY",
+      "provider_account_label_redacted": "One Time staging email provider; external account not read because provider credentials are absent.",
+      "one_time_ownership_scope": "One Time lifecycle/owner/customer email delivery only.",
+      "runtime_service_owner": "ot99-worker for provider dispatch; ot99-web may enqueue and expose lifecycle routes.",
+      "protected_variables_present": [
+        "ONE_TIME_EMAIL_FROM",
+        "ONE_TIME_EMAIL_REPLY_TO",
+        "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+        "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+        "ONE_TIME_RESEND_WEBHOOK_ENABLED",
+        "ENABLE_REAL_EMAIL_TRANSPORT",
+        "DELIVERY_TRANSPORT_MODE",
+        "OUTBOX_TRANSPORT_MODE"
+      ],
+      "protected_variables_missing": [
+        "RESEND_API_KEY",
+        "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL",
+        "ONE_TIME_OWNER_TEST_EMAIL",
+        "ONE_TIME_LIFECYCLE_DELIVERY_KEY",
+        "RESEND_WEBHOOK_SECRET or equivalent provider webhook signing secret"
+      ],
+      "current_mode": "sink/off: DELIVERY_TRANSPORT_MODE=sink, OUTBOX_TRANSPORT_MODE=sink, ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED=false, ONE_TIME_RESEND_TRANSPORT_ENABLED=false, ENABLE_REAL_EMAIL_TRANSPORT=false.",
+      "existing_adapter_client_worker_paths": [
+        "apps/worker/src/delivery/provider-config.ts",
+        "apps/worker/src/delivery/provider-router.ts",
+        "apps/worker/src/delivery/provider-webhooks.ts",
+        "ops/codex-runs/OPS-03A/FINAL-REPORT.md"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "Provider webhook normalization exists in apps/worker/src/delivery/provider-webhooks.ts; no public Resend webhook route was verified in staging during this inventory.",
+        "configured_external_destination": "not configured/read back",
+        "matches_staging": false,
+        "reason": "Webhook enable flag is false and provider signing credential is absent."
+      },
+      "required_scopes_capabilities": [
+        "send transactional email to a single approved canary destination",
+        "read delivery event webhook status when explicitly configured",
+        "domain/sender verification in external Resend account"
+      ],
+      "read_only_account_status_result": "Railway readback showed email sender labels present but all real email/provider transport flags false; no Resend API key or canary destination variable was present, so no external account call was attempted.",
+      "safe_canary_prerequisite": "Configure protected test Resend credential, exact canary email destination, lifecycle delivery key, webhook signing secret if testing inbound status, then run one approved canary email command only after operator authorization.",
+      "rollback_disable_switch": "Set ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED=false, ONE_TIME_RESEND_TRANSPORT_ENABLED=false, ENABLE_REAL_EMAIL_TRANSPORT=false, and keep DELIVERY_TRANSPORT_MODE=sink.",
+      "data_classification_logging_restrictions": "Email addresses, message bodies, provider event payloads, and provider IDs must be redacted or hashed; no raw message body or recipient should appear in public evidence.",
+      "blocker_owner": "configuration/external account"
+    },
+    {
+      "provider": "Meta WhatsApp Cloud or selected WAPI/Whapi One Time provider",
+      "status": "SINK_ONLY",
+      "provider_account_label_redacted": "One Time staging WhatsApp provider account key is present as a label only; no phone number or token was printed.",
+      "one_time_ownership_scope": "One Time public lead/status WhatsApp channel and tightly scoped canary only.",
+      "runtime_service_owner": "ot99-web for Meta webhook ingress; ot99-worker for WAPI/Whapi provider dispatch if selected.",
+      "protected_variables_present": [
+        "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+        "ONE_TIME_WHATSAPP_PROVIDER_ENV",
+        "ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+        "ONETIME_WHATSAPP_CANARY_AUTHORIZED",
+        "ONE_TIME_WAPI_TRANSPORT_ENABLED",
+        "ONE_TIME_WAPI_WEBHOOK_ENABLED",
+        "ONE_TIME_PUBLIC_WHATSAPP_AUTOREPLY_ENABLED",
+        "ENABLE_REAL_WHATSAPP_TRANSPORT"
+      ],
+      "protected_variables_missing": [
+        "ONE_TIME_DELIVERY_TEST_CANARY_WHATSAPP",
+        "Meta WhatsApp access token",
+        "Meta WhatsApp phone number id",
+        "Meta WhatsApp app secret or x-hub signature secret",
+        "Meta WhatsApp verify token",
+        "WAPI/Whapi API token",
+        "WAPI/Whapi webhook signing secret"
+      ],
+      "current_mode": "sink/off: provider env is STAGING and staging isolation is true, but ONE_TIME_WAPI_TRANSPORT_ENABLED=false, ONE_TIME_WAPI_WEBHOOK_ENABLED=false, ONE_TIME_PUBLIC_WHATSAPP_AUTOREPLY_ENABLED=false, ENABLE_REAL_WHATSAPP_TRANSPORT=false, ONETIME_WHATSAPP_CANARY_AUTHORIZED=false.",
+      "existing_adapter_client_worker_paths": [
+        "apps/web/src/server/app.ts",
+        "apps/worker/src/delivery/provider-config.ts",
+        "apps/worker/src/delivery/provider-router.ts",
+        "apps/worker/src/delivery/provider-webhooks.ts",
+        "packages/domain/src/whatsapp/provider.ts",
+        "packages/domain/src/whatsapp/service.ts",
+        "scripts/ot85/canary-readiness.ts",
+        "ops/codex-runs/OT-85/PROVIDER-STATE.md"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "GET/POST https://ot99-web-staging.up.railway.app/api/v1/whatsapp/meta/webhook",
+        "configured_external_destination": "not read from Meta or WAPI provider because credentials were absent and mutation/read scopes were not established",
+        "matches_staging": "unknown",
+        "reason": "Webhook route exists in code, but webhook enable/signing variables are absent or disabled in staging."
+      },
+      "required_scopes_capabilities": [
+        "read webhook app configuration",
+        "receive signed webhook events",
+        "send one approved canary message to a protected test recipient",
+        "dedupe and classify inbound lead/status events"
+      ],
+      "read_only_account_status_result": "Railway readback showed WhatsApp provider labels and staging isolation, but all real WhatsApp/WAPI transport, webhook, public autoreply, and canary authorization flags are false; no external WhatsApp API call was made.",
+      "safe_canary_prerequisite": "Choose Meta or WAPI/Whapi explicitly, configure the corresponding protected token/secret/verify token and exact canary recipient, set canary authorization true, verify webhook destination read-only, then send one approved canary message.",
+      "rollback_disable_switch": "Set ENABLE_REAL_WHATSAPP_TRANSPORT=false, ONE_TIME_WAPI_TRANSPORT_ENABLED=false, ONE_TIME_WAPI_WEBHOOK_ENABLED=false, ONE_TIME_PUBLIC_WHATSAPP_AUTOREPLY_ENABLED=false, ONETIME_WHATSAPP_CANARY_AUTHORIZED=false.",
+      "data_classification_logging_restrictions": "Phone numbers, message bodies, webhook payloads, profile names, and provider IDs must be redacted or hashed; public helper must not expose portal/class links unless policy allows final delivery.",
+      "blocker_owner": "configuration/operator decision/external account"
+    },
+    {
+      "provider": "Telegram Bot API for Rabbi/owner bot and operator/admin bot",
+      "status": "UNCONFIGURED",
+      "provider_account_label_redacted": "Bot key defaults to one_time_internal_ops in code; no token, chat id, or operator identity was printed.",
+      "one_time_ownership_scope": "One Time owner/operator bot notifications and command ingress only.",
+      "runtime_service_owner": "ot99-web for webhook ingress; ot99-worker for future dispatch if transport is enabled.",
+      "protected_variables_present": [
+        "ONE_TIME_TELEGRAM_ENVIRONMENT",
+        "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+        "ENABLE_REAL_TELEGRAM_TRANSPORT"
+      ],
+      "protected_variables_missing": [
+        "ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+        "ONE_TIME_TELEGRAM_BOT_KEY",
+        "ONE_TIME_TELEGRAM_TOKEN_CONFIGURED",
+        "ONE_TIME_TELEGRAM_WEBHOOK_SECRET_CONFIGURED",
+        "ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED",
+        "ONE_TIME_TELEGRAM_SINGLE_CONSUMER_GATE",
+        "ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED",
+        "ONE_TIME_TELEGRAM_TRANSPORT_ENABLED",
+        "ONE_TIME_TELEGRAM_LOCAL_POLLING_ENABLED",
+        "ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED"
+      ],
+      "current_mode": "off/unconfigured: ONE_TIME_TELEGRAM_ENVIRONMENT=staging, ONE_TIME_TELEGRAM_WEBHOOK_ENABLED=false, ENABLE_REAL_TELEGRAM_TRANSPORT=false.",
+      "existing_adapter_client_worker_paths": [
+        "apps/web/src/server/app.ts",
+        "apps/telegram-bot/src/ingress.ts",
+        "packages/domain/src/telegram/config.ts",
+        "packages/domain/src/telegram/transport.ts",
+        "ops/codex-runs/OT-84/CANARY.json",
+        "ops/codex-runs/OT-84/PROVIDER-MUTATIONS.json"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "POST https://ot99-web-staging.up.railway.app/api/v1/telegram/one-time/webhook",
+        "configured_external_destination": "not configured/read back",
+        "matches_staging": false,
+        "reason": "Webhook is not mounted unless enabled, and staging has ONE_TIME_TELEGRAM_WEBHOOK_ENABLED=false."
+      },
+      "required_scopes_capabilities": [
+        "Bot API getMe/read identity",
+        "webhook secret token validation",
+        "single-consumer enforcement",
+        "owner/operator chat mapping",
+        "one approved canary message"
+      ],
+      "read_only_account_status_result": "No Telegram Bot API call was made. Staging lacks the presence flags that would prove token, webhook secret, owner mapping, single-consumer gate, and canary chat readiness.",
+      "safe_canary_prerequisite": "Configure protected bot token, webhook secret, owner/operator chat mapping, single-consumer gate, exact canary chat, and explicit canary approval; first run read-only getMe/getWebhookInfo, then one approved canary.",
+      "rollback_disable_switch": "Set ONE_TIME_TELEGRAM_WEBHOOK_ENABLED=false, ENABLE_REAL_TELEGRAM_TRANSPORT=false, and keep polling flags disabled.",
+      "data_classification_logging_restrictions": "Chat ids, user ids, message text, and webhook payloads must be hashed/redacted; do not store raw Telegram tokens or personal identifiers.",
+      "blocker_owner": "configuration/external account"
+    },
+    {
+      "provider": "Zoom for meeting/classroom/registrant/SDK capabilities",
+      "status": "SINK_ONLY",
+      "provider_account_label_redacted": "No Zoom account id/client id/host id was present or printed.",
+      "one_time_ownership_scope": "One Time classroom launch/registrant/reminder/join-grant flow.",
+      "runtime_service_owner": "ot99-web for portal/classroom UX; ot99-worker for reminders/registrant delivery if real provider is later enabled.",
+      "protected_variables_present": [
+        "ZOOM_CLASSROOM_ENABLED",
+        "ZOOM_CLASSROOM_PROVIDER_MODE",
+        "ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED",
+        "ZOOM_CLASSROOM_CANARY_ENABLED",
+        "ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED"
+      ],
+      "protected_variables_missing": [
+        "Zoom Server-to-Server OAuth account id",
+        "Zoom client id",
+        "Zoom client secret",
+        "Zoom SDK key or equivalent join credentials",
+        "Zoom webhook secret token",
+        "Zoom host/user id",
+        "Zoom canary meeting/template identifiers"
+      ],
+      "current_mode": "sink: ZOOM_CLASSROOM_ENABLED=true, ZOOM_CLASSROOM_PROVIDER_MODE=sink, ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=false, ZOOM_CLASSROOM_CANARY_ENABLED=false, ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED=true.",
+      "existing_adapter_client_worker_paths": [
+        "packages/domain/src/providers/zoom.ts",
+        "ops/codex-runs/OT-88/packet/07-TEST-CANARY-PLAN.md"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "No Zoom webhook route was verified for day-one staging in this inventory.",
+        "configured_external_destination": "not configured/read back",
+        "matches_staging": false,
+        "reason": "Real provider mode and canary are disabled, and Zoom credentials/account mapping are absent."
+      },
+      "required_scopes_capabilities": [
+        "read account/user/meeting settings",
+        "create or map test classroom meeting only after later authorization",
+        "registrant management",
+        "SDK/join grants",
+        "reminder scheduling"
+      ],
+      "read_only_account_status_result": "No Zoom API call was made. Staging is intentionally sink-mode with component view enabled but real provider and canary disabled.",
+      "safe_canary_prerequisite": "Use a protected Zoom test account, explicit host/test meeting or template, SDK credentials, webhook secret, and allowlisted canary classroom; perform read-only account/settings checks before any registrant or meeting mutation.",
+      "rollback_disable_switch": "Set ZOOM_CLASSROOM_PROVIDER_MODE=sink, ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED=false, ZOOM_CLASSROOM_CANARY_ENABLED=false; optionally set ZOOM_CLASSROOM_ENABLED=false if the feature must disappear.",
+      "data_classification_logging_restrictions": "Registrant data, join URLs, meeting IDs, host identifiers, SDK signatures, and attendance data must not be printed or committed.",
+      "blocker_owner": "configuration/external account/operator decision"
+    },
+    {
+      "provider": "Vimeo for identity, upload, privacy, playback, and webhook capabilities",
+      "status": "UNCONFIGURED",
+      "provider_account_label_redacted": "No Vimeo account id, client id, or token was present or printed.",
+      "one_time_ownership_scope": "One Time content pipeline video identity/upload/privacy/playback/webhook readiness.",
+      "runtime_service_owner": "ot99-web for signed content-publication ingress and content views; worker/background process for future reconciliation if enabled.",
+      "protected_variables_present": [],
+      "protected_variables_missing": [
+        "VIMEO_ACCESS_TOKEN",
+        "VIMEO_CLIENT_ID",
+        "VIMEO_CLIENT_SECRET",
+        "VIMEO_WEBHOOK_SECRET",
+        "VIMEO_ACCOUNT_ID",
+        "OT86_ALLOW_VIMEO_CANARY_UPLOAD"
+      ],
+      "current_mode": "off/unconfigured: no Vimeo variable names were present in staging web or worker.",
+      "existing_adapter_client_worker_paths": [
+        "bin/ot86-vimeo-canary",
+        "packages/domain/src/content/pipeline.ts",
+        "contracts/content-pipeline/v1/07-VIMEO-PROVIDER-CONTRACT.md",
+        "ops/codex-runs/OT-86A/VIMEO-READINESS.md"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "No Vimeo webhook route was verified in staging during this inventory.",
+        "configured_external_destination": "not configured/read back",
+        "matches_staging": false,
+        "reason": "No Vimeo credentials or webhook secret are configured."
+      },
+      "required_scopes_capabilities": [
+        "read account identity",
+        "read upload/privacy/playback capabilities",
+        "upload private fixture only in a later explicitly authorized canary",
+        "receive/verify webhook events"
+      ],
+      "read_only_account_status_result": "No Vimeo API call was made. The read-only canary script exists but cannot run without VIMEO_ACCESS_TOKEN.",
+      "safe_canary_prerequisite": "Configure protected Vimeo access token, client metadata, account id, webhook secret, and first run bin/ot86-vimeo-canary in read-only mode; upload mode remains blocked unless OT86_ALLOW_VIMEO_CANARY_UPLOAD=1 and cleanup is authorized.",
+      "rollback_disable_switch": "Remove/withhold Vimeo variables and keep upload canary authorization unset.",
+      "data_classification_logging_restrictions": "Video IDs, upload URLs, playback URLs, webhook payloads, and private content metadata must be redacted unless non-secret and explicitly needed.",
+      "blocker_owner": "configuration/external account"
+    },
+    {
+      "provider": "Stripe TEST mode for product, price, portal, checkout, and webhook configuration",
+      "status": "UNCONFIGURED",
+      "provider_account_label_redacted": "No Stripe test account id, product id, price id, portal configuration id, webhook endpoint id, secret key, webhook secret, or publishable key was present or printed.",
+      "one_time_ownership_scope": "One Time TEST billing only: checkout, portal, webhook projection, reconciliation, and entitlement state.",
+      "runtime_service_owner": "ot99-web for checkout/portal/webhook routes; worker/background reconciliation if later enabled.",
+      "protected_variables_present": [
+        "LIVE_STRIPE_CHARGES_AUTHORIZED",
+        "ENABLE_PAYMENT_TRANSPORT",
+        "ENABLE_STRIPE_TEST_CHECKOUT",
+        "ENABLE_STRIPE_TEST_PORTAL",
+        "ENABLE_STRIPE_TEST_WEBHOOKS",
+        "ENABLE_STRIPE_TEST_RECONCILIATION"
+      ],
+      "protected_variables_missing": [
+        "ONE_TIME_STRIPE_TEST_SECRET_KEY",
+        "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+        "ONE_TIME_STRIPE_TEST_ACCOUNT_ID",
+        "ONE_TIME_STRIPE_TEST_PRODUCT_ID",
+        "ONE_TIME_STRIPE_TEST_PRICE_ID",
+        "ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID",
+        "ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID",
+        "ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY"
+      ],
+      "current_mode": "off/unconfigured with live-charge guard: LIVE_STRIPE_CHARGES_AUTHORIZED=NO, ENABLE_PAYMENT_TRANSPORT=false, all Stripe TEST surfaces false.",
+      "existing_adapter_client_worker_paths": [
+        "apps/web/src/server/app.ts",
+        "packages/domain/src/billing/config.ts",
+        "packages/domain/src/billing/stripe-test-adapter.ts",
+        "packages/domain/src/billing/stripe-official-client.ts",
+        "scripts/ot87-stripe-test-resources.ts",
+        "ops/codex-runs/OT-87/STATE.json"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "https://ot99-web-staging.up.railway.app/api/v1/billing/webhooks/provider",
+        "configured_external_destination": "not read from Stripe because test credentials/resource ids are absent",
+        "matches_staging": "not verified",
+        "known_obsolete_destination": "http://join.onetimeonetime.com",
+        "known_obsolete_destination_matches_staging": false,
+        "reason": "The repo validator expects webhook endpoint paths ending in /api/v1/billing/webhooks/provider; the obsolete HTTP join.onetimeonetime.com target is not the staging origin and must be corrected in a later Stripe TEST configuration task, not here."
+      },
+      "required_scopes_capabilities": [
+        "read account identity",
+        "read product",
+        "read price",
+        "read billing portal configuration",
+        "read webhook endpoint",
+        "create checkout/customer-portal sessions only in a later approved TEST canary"
+      ],
+      "read_only_account_status_result": "No Stripe API call was made because the test secret key and resource ids are absent. Existing OT-87 evidence records WAITING_FOR_STRIPE_TEST_RESOURCES.",
+      "safe_canary_prerequisite": "Configure Stripe TEST secret key, account id, product id, price id, portal configuration id, webhook secret, publishable key, and webhook endpoint id targeting https://ot99-web-staging.up.railway.app/api/v1/billing/webhooks/provider; run read-only validate before any checkout/portal session canary.",
+      "rollback_disable_switch": "Set ENABLE_PAYMENT_TRANSPORT=false and all ENABLE_STRIPE_TEST_* flags false; keep LIVE_STRIPE_CHARGES_AUTHORIZED=NO.",
+      "data_classification_logging_restrictions": "Never log Stripe secret keys, webhook secrets, customer data, session URLs, payment methods, invoice details, or personal billing data.",
+      "blocker_owner": "configuration/external account"
+    },
+    {
+      "provider": "Buffer for organization, channels/profiles, drafts, scheduling, and publishing capabilities",
+      "status": "UNCONFIGURED",
+      "provider_account_label_redacted": "No Buffer organization id, profile/channel ids, destination ids, or token was present or printed.",
+      "one_time_ownership_scope": "One Time social publishing after approved content events.",
+      "runtime_service_owner": "ot99-web for signed social publishing ingress; worker/background process for future scheduling/publishing if enabled.",
+      "protected_variables_present": [],
+      "protected_variables_missing": [
+        "BUFFER_ACCESS_TOKEN",
+        "BUFFER_ORGANIZATION_ID",
+        "BUFFER_DESTINATION_IDS"
+      ],
+      "current_mode": "off/unconfigured: no Buffer variable names were present in staging web or worker.",
+      "existing_adapter_client_worker_paths": [
+        "bin/ot86-buffer-canary",
+        "packages/domain/src/social/publishing.ts",
+        "contracts/social-publishing/v1/07-BUFFER-ADAPTER-CONTRACT.md",
+        "ops/codex-runs/OT-86B/BUFFER-READINESS.md"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "POST https://ot99-web-staging.up.railway.app/internal/social-publishing/v1/events receives signed internal events; Buffer itself is outbound.",
+        "configured_external_destination": "not configured/read back",
+        "matches_staging": false,
+        "reason": "No Buffer account variables are configured; initial canary contract is read-only profiles."
+      },
+      "required_scopes_capabilities": [
+        "read profiles/channels",
+        "read organization/destination mapping",
+        "draft/schedule/publish only in later approved workflow"
+      ],
+      "read_only_account_status_result": "No Buffer API call was made. The read-only canary script requires BUFFER_ACCESS_TOKEN, BUFFER_ORGANIZATION_ID, and BUFFER_DESTINATION_IDS, all absent from staging.",
+      "safe_canary_prerequisite": "Configure protected Buffer token, organization id, and exact destination ids; run bin/ot86-buffer-canary read-only profiles before any draft/schedule/publish path.",
+      "rollback_disable_switch": "Withhold Buffer variables and leave social publishing in signed-ingress-only/unconfigured provider mode.",
+      "data_classification_logging_restrictions": "Do not print access tokens, unpublished copy, channel IDs unless necessary and non-secret, or profile/account owner data.",
+      "blocker_owner": "configuration/external account"
+    },
+    {
+      "provider": "OpenAI/provider-neutral retrieval runtime for the student helper",
+      "status": "UNCONFIGURED",
+      "provider_account_label_redacted": "No OpenAI account/project/model key was present or printed.",
+      "one_time_ownership_scope": "Student helper and approved content retrieval only; must remain provider-neutral until an explicit runtime is configured.",
+      "runtime_service_owner": "ot99-web for portal/helper request path; local database content retrieval is in domain package.",
+      "protected_variables_present": [],
+      "protected_variables_missing": [
+        "OPENAI_API_KEY or provider-neutral equivalent",
+        "OPENAI_PROJECT or provider-neutral equivalent",
+        "OPENAI_MODEL or provider-neutral equivalent",
+        "helper retrieval runtime enable flag",
+        "helper safety/policy configuration"
+      ],
+      "current_mode": "off/local-only: no OPENAI variables or provider client were found; portal helper defaults unavailable while content retrieval is local SQL over approved sections.",
+      "existing_adapter_client_worker_paths": [
+        "packages/domain/src/content/pipeline.ts",
+        "packages/domain/src/portals/services.ts",
+        "packages/domain/src/portals/schemas.ts"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "No external helper webhook route.",
+        "configured_external_destination": "not applicable",
+        "matches_staging": "not applicable",
+        "reason": "No external AI provider runtime is configured."
+      },
+      "required_scopes_capabilities": [
+        "retrieve only approved content sections",
+        "citation-backed responses",
+        "student-safe scope boundaries",
+        "no private/adult notes exposure",
+        "future provider-neutral inference with explicit policy controls"
+      ],
+      "read_only_account_status_result": "Repo search found no active OPENAI runtime configuration in staging code paths; helper availability remains unavailable/provider-neutral, and retrieval uses local approved content records.",
+      "safe_canary_prerequisite": "Define provider-neutral helper contract, configure explicit protected provider key/model/project and safety policy, load approved content corpus, and run local citation/scope tests before any external inference call.",
+      "rollback_disable_switch": "Leave provider variables absent and helper availability unavailable.",
+      "data_classification_logging_restrictions": "No raw student questions, private notes, family data, prompt payloads, or model responses with private context should be logged or committed.",
+      "blocker_owner": "code/operator decision/configuration"
+    },
+    {
+      "provider": "BNA signed support-event ingress",
+      "status": "UNCONFIGURED",
+      "provider_account_label_redacted": "No BNA endpoint/account id/signing key was present or printed.",
+      "one_time_ownership_scope": "One Time to BNA support ticket/event sync only; BNA/private/provider boundaries remain isolated.",
+      "runtime_service_owner": "ot99-web for internal signed ingress; ot99-worker/support worker for any later delivery projection.",
+      "protected_variables_present": [
+        "OT89_SUPPORT_ENABLED",
+        "OT89_SUPPORT_DELIVERY_MODE",
+        "OT89_SUPPORT_DEPLOYMENT_ID",
+        "OT89_MOCK_BNA_ENABLED"
+      ],
+      "protected_variables_missing": [
+        "OT89_SUPPORT_HMAC_KEY_ID",
+        "OT89_SUPPORT_HMAC_SECRET",
+        "OT89_BNA_BASE_URL",
+        "OT89_BNA_SUPPORT_EVENT_PATH",
+        "OT89_SUPPORT_ATTACHMENT_SIGNING_SECRET",
+        "support-event receiver account/workspace mapping"
+      ],
+      "current_mode": "disabled: OT89_SUPPORT_ENABLED=false, OT89_SUPPORT_DELIVERY_MODE=disabled, OT89_MOCK_BNA_ENABLED=false.",
+      "existing_adapter_client_worker_paths": [
+        "apps/web/src/server/features/support/router.ts",
+        "packages/domain/src/support/hmac.ts",
+        "packages/domain/src/support/delivery.ts",
+        "packages/domain/src/support/redaction.ts",
+        "ops/codex-runs/OT-89A/SUPPORT-EVENT-CONTRACT.json"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "route": "POST https://ot99-web-staging.up.railway.app/api/internal/integrations/onetime/support-events/v1",
+        "configured_external_destination": "not configured/read back",
+        "matches_staging": false,
+        "reason": "Support feature and delivery mode are disabled; support signing and BNA receiver variables are absent."
+      },
+      "required_scopes_capabilities": [
+        "signed support-event ingress",
+        "signed support-ticket status ingress",
+        "attachment access with signed/authorized fetch",
+        "redacted event delivery to BNA staging only"
+      ],
+      "read_only_account_status_result": "No BNA endpoint call was made. Staging has support routes in code but support is disabled and signing/receiver configuration is absent.",
+      "safe_canary_prerequisite": "Configure BNA staging receiver URL/path, support HMAC key id/secret, attachment signing secret, workspace mapping, and run a signed synthetic support-event canary against a BNA staging receiver only after explicit authorization.",
+      "rollback_disable_switch": "Set OT89_SUPPORT_ENABLED=false, OT89_SUPPORT_DELIVERY_MODE=disabled, OT89_MOCK_BNA_ENABLED=false.",
+      "data_classification_logging_restrictions": "Support tickets may include student/family/private notes; redact bodies, attachments, actor identifiers, and raw signatures.",
+      "blocker_owner": "configuration/external BNA staging account/operator decision"
+    },
+    {
+      "provider": "BNA content-publication ingress",
+      "status": "UNCONFIGURED",
+      "provider_account_label_redacted": "No BNA content publisher/signing key/account id was present or printed.",
+      "one_time_ownership_scope": "Signed internal publication of approved One Time content manifests and social events.",
+      "runtime_service_owner": "ot99-web for signed manifest/social ingress; domain content/social packages for validation and storage.",
+      "protected_variables_present": [],
+      "protected_variables_missing": [
+        "OT86_PUBLISH_SIGNING_KEY_ID",
+        "OT86_PUBLISH_SIGNING_SECRET",
+        "BNA content publisher account/workspace mapping",
+        "content-publication source allowlist"
+      ],
+      "current_mode": "off/unconfigured: signed ingress routes exist but signing variables are absent from staging web and worker.",
+      "existing_adapter_client_worker_paths": [
+        "apps/web/src/server/app.ts",
+        "contracts/content-pipeline/v1/06-PUBLISH-HANDOFF-CONTRACT.md",
+        "contracts/social-publishing/v1/07-BUFFER-ADAPTER-CONTRACT.md",
+        "ops/codex-runs/OT-86A/DISCOVERY.md",
+        "ops/codex-runs/OT-86B/IMPLEMENTATION.md"
+      ],
+      "existing_webhook_route_and_destination_match": {
+        "routes": [
+          "POST https://ot99-web-staging.up.railway.app/internal/content-publications/v1/manifests",
+          "POST https://ot99-web-staging.up.railway.app/internal/social-publishing/v1/events"
+        ],
+        "configured_external_destination": "not configured/read back",
+        "matches_staging": false,
+        "reason": "OT86 publish signing key id/secret are absent; route returns fail-closed when signing is unconfigured."
+      },
+      "required_scopes_capabilities": [
+        "signed manifest publication",
+        "signed social publishing event publication",
+        "source allowlist/workspace mapping",
+        "raw-byte HMAC verification",
+        "approved content only"
+      ],
+      "read_only_account_status_result": "No BNA publisher call was made. Code exposes signed internal routes, but staging lacks publish signing variables.",
+      "safe_canary_prerequisite": "Configure OT86 publish signing key id/secret and exact BNA staging publisher mapping; run a synthetic signed manifest/social event with non-sensitive fixture content after authorization.",
+      "rollback_disable_switch": "Remove/withhold OT86 publish signing variables and keep publisher mapping absent.",
+      "data_classification_logging_restrictions": "Do not log raw content bodies, private classroom notes, signing secrets, or cross-workspace identifiers; approved public content only.",
+      "blocker_owner": "configuration/external BNA staging account/operator decision"
+    }
+  ]
+}
