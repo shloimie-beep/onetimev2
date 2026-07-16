@@ -1,14 +1,12 @@
 # OT-89A Final
 
-Not final yet.
+See `FINAL-REPORT.md`.
 
-Pending:
+Current status: `IMPLEMENTED_LOCAL_GREEN_PENDING_PUSH_CI`.
 
-- implementation;
-- tests;
-- migration manifest;
-- diff review;
+Remaining before `READY_FOR_OT99`:
+
 - commit;
-- push;
-- draft PR;
-- final acceptance disposition.
+- push to `codex/ot89a-subscriber-support-producer`;
+- update draft PR #36;
+- observe and record CI status.

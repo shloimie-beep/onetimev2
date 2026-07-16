@@ -41,16 +41,18 @@ test('CRM shell emits post-paint marks and meets 30-sample performance gates', a
   });
 
   await installPerfObservers(page);
-  const email = `ot39-perf-${Date.now()}@example.test`;
+  const runId = Date.now();
+  const contactName = `OT39 Perf Parent ${runId}`;
+  const email = `ot39-perf-${runId}@example.test`;
   await login(page);
-  await createContact(page, 'OT39 Perf Parent', email);
+  await createContact(page, contactName, email);
   await applyMobileThrottle(context, page);
   await reloadList(page);
-  await page.getByRole('button', { name: /OT39 Perf Parent/ }).click();
+  await page.getByRole('button', { name: new RegExp(contactName) }).click();
   await waitForUsableDetail(page);
   const contactPath = new URL(page.url()).pathname;
 
-  await warmJourneys(page, 'OT39 Perf Parent');
+  await warmJourneys(page, contactName);
 
   const listSamples: number[] = [];
   const detailSamples: number[] = [];
@@ -78,7 +80,7 @@ test('CRM shell emits post-paint marks and meets 30-sample performance gates', a
     webVitals.detail_first_usable.push(detail.vitals);
     requestCounts.detail_first_usable.push(detail.request_count);
 
-    const warmReturn = await measureReturn(page, 'OT39 Perf Parent');
+    const warmReturn = await measureReturn(page, contactName);
     returnSamples.push(warmReturn.elapsed);
     requestCounts.warm_return_list_requests.push(warmReturn.list_request_count);
 
