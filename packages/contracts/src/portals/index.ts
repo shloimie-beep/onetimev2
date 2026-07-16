@@ -234,7 +234,7 @@ export type StudentQuestion = z.infer<typeof studentQuestionSchema>;
 
 export const parentPortalDashboardSchema = z.object({
   household: householdOverviewSchema,
-  learners: z.array(learnerProfileSchema).max(3),
+  learners: z.array(learnerProfileSchema).max(12),
   student_access: z.array(studentAccessStateSchema),
   upcoming_classes: z.record(z.string(), z.array(upcomingClassSummarySchema)),
   rewards: z.record(z.string(), rewardBalanceSchema),

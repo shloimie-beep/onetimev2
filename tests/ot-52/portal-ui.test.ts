@@ -29,6 +29,14 @@ describe('OT-52P portal UI modules', () => {
         rewardHistory: {
           learner_alpha: [rewardEvent()],
         },
+        onCreateLearner: () => undefined,
+        onEditLearner: () => undefined,
+        onArchiveLearner: () => undefined,
+        onRestoreLearner: () => undefined,
+        onStudentAccessAction: () => undefined,
+        onLaunchClass: () => undefined,
+        onOpenContent: () => undefined,
+        onPreviewSupport: () => undefined,
       }),
     );
 
@@ -37,8 +45,9 @@ describe('OT-52P portal UI modules', () => {
     expect(markup).toContain('Student access');
     expect(markup).toContain('Progress And Rewards');
     expect(markup).toContain('aria-label="Add learner"');
-    expect(markup).toContain('disabled=""');
-    expect(markup).toContain('Learner editing is unavailable in V1');
+    expect(markup).toContain('Edit');
+    expect(markup).toContain('Archive');
+    expect(markup).not.toContain('unavailable in V1');
     expect(markup).not.toMatch(/https?:\/\/|zoom|meet|provider/i);
     expect(markup).not.toMatch(/CRM|Admin|View as/i);
   });

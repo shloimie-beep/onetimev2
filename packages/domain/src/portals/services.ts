@@ -262,8 +262,6 @@ export type PortalServiceDeps = {
   idGenerator?: () => string;
 };
 
-const MAX_ACTIVE_LEARNERS = 3;
-
 export function createParentPortalService(deps: PortalServiceDeps) {
   const helper = deps.helper ?? unavailableHelper('Parent helper is not connected yet.');
   const support = deps.support ?? localSupportPreview(deps.idGenerator);
@@ -279,9 +277,9 @@ export function createParentPortalService(deps: PortalServiceDeps) {
       const learners = await deps.repository.listLearners({
         actor,
         household_key: householdKey,
-        include_archived: false,
+        include_archived: true,
       });
-      const visibleLearners = learners.slice(0, MAX_ACTIVE_LEARNERS);
+      const visibleLearners = learners.slice(0, 12);
       const studentAccess = await Promise.all(
         visibleLearners.map((learner) =>
           deps.repository.getStudentAccessState({ actor, learner_key: learner.learner_key }),

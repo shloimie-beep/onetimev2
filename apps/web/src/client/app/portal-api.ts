@@ -1,4 +1,5 @@
 import type {
+  LearnerProfile,
   ParentLearnerMaterials,
   ParentPortalDashboard,
   ProtectedActionDescriptor,
@@ -43,6 +44,81 @@ export async function getParentMaterials(householdKey: string, learnerKey: strin
     `/api/v1/portals/parent/households/${encodeURIComponent(
       householdKey,
     )}/learners/${encodeURIComponent(learnerKey)}/materials`,
+  );
+  return json.data;
+}
+
+export async function createParentLearner(input: {
+  csrfToken: string;
+  householdKey: string;
+  displayName: string;
+  hebrewName?: string | undefined;
+  gradeLabel?: string | undefined;
+}) {
+  const json = await api<{ success: true; data: LearnerProfile }>(
+    `/api/v1/portals/parent/households/${encodeURIComponent(input.householdKey)}/learners`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        display_name: input.displayName,
+        ...(input.hebrewName ? { hebrew_name: input.hebrewName } : {}),
+        ...(input.gradeLabel ? { grade_label: input.gradeLabel } : {}),
+      }),
+    },
+  );
+  return json.data;
+}
+
+export async function updateParentLearner(input: {
+  csrfToken: string;
+  householdKey: string;
+  learnerKey: string;
+  version: number;
+  displayName: string;
+  hebrewName?: string | null | undefined;
+  gradeLabel?: string | null | undefined;
+}) {
+  const json = await api<{ success: true; data: LearnerProfile }>(
+    `/api/v1/portals/parent/households/${encodeURIComponent(
+      input.householdKey,
+    )}/learners/${encodeURIComponent(input.learnerKey)}`,
+    {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        version: input.version,
+        display_name: input.displayName,
+        hebrew_name: input.hebrewName ?? null,
+        grade_label: input.gradeLabel ?? null,
+      }),
+    },
+  );
+  return json.data;
+}
+
+export async function setParentLearnerArchived(input: {
+  csrfToken: string;
+  householdKey: string;
+  learnerKey: string;
+  version: number;
+  archived: boolean;
+}) {
+  const operation = input.archived ? 'archive' : 'restore';
+  const json = await api<{ success: true; data: LearnerProfile }>(
+    `/api/v1/portals/parent/households/${encodeURIComponent(
+      input.householdKey,
+    )}/learners/${encodeURIComponent(input.learnerKey)}/${operation}`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        version: input.version,
+      }),
+    },
   );
   return json.data;
 }
@@ -148,7 +224,8 @@ export async function invokeProtectedAction(action: ProtectedActionDescriptor, c
   if (action.method === 'POST') {
     init.headers = { 'x-csrf-token': csrfToken };
   }
-  return api<unknown>(action.href, init);
+  const json = await api<{ success: true; data: ProtectedActionDescriptor }>(action.href, init);
+  return json.data;
 }
 
 export function createIdempotencyKey() {

@@ -145,8 +145,17 @@ describe('OT-52P parent and student portal services', () => {
 
     const dashboard = await parentService.dashboard(parentActor, householdKey);
     expect(dashboard.learners.map((learner) => learner.learner_key).sort()).toEqual(
-      [learner2.learner_key, learner3.learner_key, learner4.learner_key].sort(),
+      [
+        learner1.learner_key,
+        learner2.learner_key,
+        learner3.learner_key,
+        learner4.learner_key,
+      ].sort(),
     );
+    expect(
+      dashboard.learners.find((learner) => learner.learner_key === learner1.learner_key)
+        ?.learner_status,
+    ).toBe('archived');
     expect(dashboard.household.active_learner_count).toBe(3);
   });
 

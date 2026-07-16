@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.ot83r.portal_route_action_registry.v1",
   "task_id": "OT-83R",
-  "generated_at": "2026-07-16T12:00:00+03:00",
+  "generated_at": "2026-07-16T14:20:00+03:00",
   "external_mutations_performed": false,
   "provider_mode": "typed_default_off_adapters",
   "routes": [
@@ -12,8 +12,14 @@
       "capability": "parent:household:read",
       "handler": "apps/web/src/server/app.ts::serveProtectedAppShell(parent)",
       "readiness_state": "ready",
-      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
-      "negative_tests": ["tests/integration/portals/portal-mount.test.ts"]
+      "positive_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ],
+      "negative_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ]
     },
     {
       "route_id": "portal.student.shell",
@@ -22,8 +28,14 @@
       "capability": "student:dashboard:read",
       "handler": "apps/web/src/server/app.ts::serveProtectedAppShell(student)",
       "readiness_state": "ready",
-      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
-      "negative_tests": ["tests/integration/portals/portal-mount.test.ts"]
+      "positive_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ],
+      "negative_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ]
     },
     {
       "route_id": "portal.parent.dashboard.api",
@@ -32,8 +44,11 @@
       "capability": "parent:household:read",
       "handler": "apps/web/src/server/features/portals/routers.ts::createParentPortalRouter",
       "readiness_state": "ready",
-      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
-      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+      "positive_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts", "tests/e2e/ot-83r-portals.spec.ts"]
     },
     {
       "route_id": "portal.student.dashboard.api",
@@ -42,8 +57,11 @@
       "capability": "student:dashboard:read",
       "handler": "apps/web/src/server/features/portals/routers.ts::createStudentPortalRouter",
       "readiness_state": "ready",
-      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
-      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+      "positive_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts", "tests/e2e/ot-83r-portals.spec.ts"]
     }
   ],
   "actions": [
@@ -135,9 +153,10 @@
       "external_mutation": false,
       "positive_tests": [
         "tests/ot-52/portal-services.test.ts",
-        "tests/ot-52/portal-router.test.ts"
+        "tests/ot-52/portal-router.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
       ],
-      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+      "negative_tests": ["tests/ot-52/portal-services.test.ts", "tests/e2e/ot-83r-portals.spec.ts"]
     },
     {
       "action_id": "portal.parent.learner.update",
@@ -158,7 +177,7 @@
       "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
       "readiness_state": "ready",
       "external_mutation": false,
-      "positive_tests": ["tests/ot-52/portal-services.test.ts"],
+      "positive_tests": ["tests/ot-52/portal-services.test.ts", "tests/e2e/ot-83r-portals.spec.ts"],
       "negative_tests": ["tests/ot-52/portal-services.test.ts"]
     },
     {
@@ -177,8 +196,8 @@
       "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
       "readiness_state": "ready",
       "external_mutation": false,
-      "positive_tests": ["tests/ot-52/portal-services.test.ts"],
-      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+      "positive_tests": ["tests/ot-52/portal-services.test.ts", "tests/e2e/ot-83r-portals.spec.ts"],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts", "tests/e2e/ot-83r-portals.spec.ts"]
     },
     {
       "action_id": "portal.parent.student_access.manage",
@@ -202,8 +221,15 @@
       "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
       "readiness_state": "ready",
       "external_mutation": false,
-      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
-      "negative_tests": ["tests/ot-52/portal-router.test.ts", "tests/ot-52/portal-services.test.ts"]
+      "positive_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ],
+      "negative_tests": [
+        "tests/ot-52/portal-router.test.ts",
+        "tests/ot-52/portal-services.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ]
     },
     {
       "action_id": "portal.parent.class.launch",
@@ -224,8 +250,8 @@
       "idempotency": { "required": false, "key_source": null },
       "readiness_state": "default_off_adapter_ready",
       "external_mutation": false,
-      "positive_tests": ["tests/ot-52/portal-services.test.ts"],
-      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+      "positive_tests": ["tests/ot-52/portal-services.test.ts", "tests/e2e/ot-83r-portals.spec.ts"],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts", "tests/e2e/ot-83r-portals.spec.ts"]
     },
     {
       "action_id": "portal.parent.content.open",
@@ -287,8 +313,11 @@
       "idempotency": { "required": false, "key_source": null },
       "readiness_state": "default_off_adapter_ready",
       "external_mutation": false,
-      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
-      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+      "positive_tests": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts", "tests/e2e/ot-83r-portals.spec.ts"]
     },
     {
       "action_id": "portal.student.content.open",
@@ -308,9 +337,10 @@
       "external_mutation": false,
       "positive_tests": [
         "tests/ot-52/portal-router.test.ts",
-        "tests/ot-52/portal-services.test.ts"
+        "tests/ot-52/portal-services.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
       ],
-      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+      "negative_tests": ["tests/ot-52/portal-services.test.ts", "tests/e2e/ot-83r-portals.spec.ts"]
     },
     {
       "action_id": "portal.student.question.submit",
@@ -327,9 +357,14 @@
       "external_mutation": false,
       "positive_tests": [
         "tests/ot-52/portal-router.test.ts",
-        "tests/ot-52/portal-services.test.ts"
+        "tests/ot-52/portal-services.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
       ],
-      "negative_tests": ["tests/ot-52/portal-router.test.ts", "tests/ot-52/portal-services.test.ts"]
+      "negative_tests": [
+        "tests/ot-52/portal-router.test.ts",
+        "tests/ot-52/portal-services.test.ts",
+        "tests/e2e/ot-83r-portals.spec.ts"
+      ]
     },
     {
       "action_id": "portal.student.support.preview",

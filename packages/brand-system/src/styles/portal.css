@@ -110,6 +110,16 @@
 .ot-metrics dd {
   color: #ffffff;
 }
+.ot-item > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.ot-item strong,
+.ot-item span {
+  display: block;
+  overflow-wrap: anywhere;
+}
 .ot-button,
 .ot-icon-button,
 .ot-text-button {
@@ -181,6 +191,7 @@
   font-weight: 700;
 }
 .ot-field select,
+.ot-field input,
 .ot-field textarea {
   width: 100%;
   min-height: 44px;
@@ -195,12 +206,52 @@
   resize: vertical;
   overflow-wrap: anywhere;
 }
+.ot-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.74);
+  padding: 18px;
+}
+.ot-dialog {
+  width: min(560px, 100%);
+  border: 1px solid rgba(255, 210, 31, 0.42);
+  border-radius: 8px;
+  background: #111111;
+  color: var(--ot-portal-ink);
+  padding: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.56);
+}
+.ot-dialog-head,
+.ot-dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+.ot-dialog-head h2,
+.ot-dialog-head p {
+  margin: 0 0 6px;
+}
+.ot-dialog-form {
+  display: grid;
+  gap: 12px;
+}
+.ot-dialog-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
 @media (max-width: 760px) {
   .ot-portal {
     padding: 14px;
   }
   .ot-topline,
   .ot-panel-head,
+  .ot-dialog-head,
   .ot-subsection,
   .ot-item {
     align-items: stretch;

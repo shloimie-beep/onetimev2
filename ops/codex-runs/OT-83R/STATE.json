@@ -1,15 +1,15 @@
 {
   "task_id": "OT-83R",
-  "status": "ready_for_ot99",
-  "current_phase": "complete_ci_green",
-  "updated_at": "2026-07-16T12:22:09.4140985+03:00",
+  "status": "in_progress",
+  "current_phase": "truthfulness_repair_client_wiring",
+  "updated_at": "2026-07-16T14:20:00+03:00",
   "base_branch": "codex/ot83-household-portals-foundation",
   "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
   "working_branch": "codex/ot83r-complete-portals",
-  "authoritative_remote_head_at_resume": "04ca004e22b2c1e1ffaf710a3211eabcd3180f32",
+  "authoritative_remote_head_at_resume": "f8406b0a22683c9bf4391cae73f074ee5f09d36c",
   "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/33",
-  "ready_for_ot99": true,
-  "ready_for_ot99_reason": "Implementation is complete, FINAL-REPORT.md exists, the implementation commit was pushed to PR #33, and required CI including PostgreSQL proof was observed green.",
+  "ready_for_ot99": false,
+  "ready_for_ot99_reason": "Reset by OT-83R truthfulness repair. The f8406b0 audited checkpoint preserved backend work but left parent portal controls and tests partially unwired.",
   "requirements": [
     {
       "id": "OT83R-REQ-001",
@@ -24,22 +24,22 @@
     {
       "id": "OT83R-REQ-003",
       "title": "Complete V1 parent/student portal foundation",
-      "status": "done"
+      "status": "in_progress"
     },
     {
       "id": "OT83R-REQ-004",
       "title": "Add route/action registry coverage and focused tests",
-      "status": "done"
+      "status": "in_progress"
     },
     {
       "id": "OT83R-REQ-005",
       "title": "Run verification and capture evidence",
-      "status": "done"
+      "status": "in_progress"
     },
     {
       "id": "OT83R-REQ-006",
       "title": "Commit, push, update draft PR, and final report",
-      "status": "done"
+      "status": "in_progress"
     }
   ],
   "implementation_receipt": {
@@ -172,26 +172,9 @@
     "database_url": "unset"
   },
   "ci_evidence": {
-    "observed_at": "2026-07-16T12:22:09.4140985+03:00",
-    "implementation_commit": "76eb6f698134471b10fb5de5979c1660b64494e5",
-    "pr": "https://github.com/webcraft-media/onetimev2/pull/33",
-    "checks": [
-      {
-        "name": "Node 24 verify",
-        "status": "passed",
-        "duration": "6m38s"
-      },
-      {
-        "name": "PostgreSQL 16 assurance harness",
-        "status": "passed",
-        "duration": "47s"
-      },
-      {
-        "name": "PostgreSQL 16 learner-seat proof",
-        "status": "passed",
-        "duration": "31s"
-      }
-    ]
+    "status": "pending_new_remote_checks",
+    "previous_green_claim_invalidated_by_truthfulness_repair": true,
+    "required_before_final_report_or_pr_body_update": true
   },
   "blockers": [],
   "external_mutations_performed": []
