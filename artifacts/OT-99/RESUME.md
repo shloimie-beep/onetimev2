@@ -1,40 +1,63 @@
 # OT-99 Resume
 
-Status: blocked preintegration.
+Status: integrated locally; pending canonical draft PR remote checks.
 
 Repository: webcraft-media/onetimev2.
-Checkpoint branch: codex/ot99-gated-preflight-bcd34498.
-Base SHA: 610b585f3d221addd4e7b824c92a5cc256cffcf9.
 Packet: OT-99-bcd34498.
-Packet ZIP SHA-256: b00b4c5fa4859d3569bf52489c088455c173bbd6ae22a7a6fa4e6d0a81962a3d.
-State directory: C:\Users\User\AppData\Local\Temp\ot99-state\20260716T064235Z-610b585f3d22-1fa330ec.
-Packet extraction: C:\Users\User\AppData\Local\Temp\codex-ot99-packet-20260716-094107.
+Checkpoint branch resumed: codex/ot99-gated-preflight-bcd34498 at 4e76d4a1a197215dc5ce1e3855d29686e7f40e2a or later.
+Integration branch: integration/ot-99-final-semantic-convergence-20260716T122407Z.
+Validated code candidate before report-only closeout: 2ba69b080b96243de27cc701925717ae7144ac2f.
 
-## Gate Result
+## Gate Re-Evaluation
 
-Closed. Do not start semantic convergence, do not create the final integration worktree, do not merge, and do not renumber migrations until the missing prerequisites are published and re-verified.
+The preintegration gate opened after fetching the current remote heads and final reports:
 
-## Exact Blockers
+- OT-83R: codex/ot83r-complete-portals at 479a9b2a47a6f0cd4ba74558eac8414417883e2c, READY_FOR_OT99, GitHub checks green.
+- OT-88: codex/ot88-zoom-learner-classroom at f59f20afb0def3bacc5bf46fe5ca64f0c91c3a35, READY_FOR_OT99, GitHub checks green.
+- OT-89A: codex/ot89a-subscriber-support-producer at 23d89704409ff08ea6e249b69b89875cd9905c30, READY_FOR_OT99, GitHub checks green.
+- OPS-09: codex/ops09-branch-fleet-ci-repair at d63db6b55db366ab7c0b1c824b7af7befff25057, fleet report READY_FOR_OT99, no branch-local work remained for OT-99 to repair.
 
-- OT-83R: branch codex/ot83r-complete-portals at 04ca004e22b2c1e1ffaf710a3211eabcd3180f32, PR #33, no report-like file at the head, CI failures, PR body says implementation/tests/final report remain pending.
-- OT-88: branch codex/ot88-zoom-learner-classroom at 80a67b93c61e9d5fb127789dadc0739917f21555, PR #34, reports say IMPLEMENTATION_PENDING, Node 24 verify failed.
-- OT-89A: branch codex/ot89a-subscriber-support-producer at 0fe1b4668170f608d8763fb52d11b30f0150feb2, PR #36, report says Not final yet, Node 24 verify failed.
-- OPS-09: branch codex/ops09-branch-fleet-ci-repair at 738b0794d9f2420f1c82d2f08ee5b95bbd341244, PR #35, FLEET-REPORT.md says In progress, no check runs.
+## Semantic Convergence
 
-## Evidence Files
+Completed on the integration branch from OT-83R foundation:
 
-- artifacts/OT-99/preflight/prerequisite-audit.json
-- artifacts/OT-99/preflight/candidate-adjudication.json
-- artifacts/OT-99/preflight/ops-09-fleet-audit.json
-- artifacts/OT-99/preflight/remote-discovery.json
-- artifacts/OT-99/release-manifest.json
-- artifacts/OT-99/FINAL-REPORT.md
-- artifacts/OT-99/packet/
+- Merged OT-84 Telegram action gateway.
+- Merged OT-88 Zoom learner classroom.
+- Merged OT-89A subscriber support producer.
+- Merged OT-85 WhatsApp lead assistant.
+- Merged OT-86A Vimeo content knowledge base.
+- Merged OT-86B Buffer social publishing.
+- Merged OT-87 Stripe test entitlements.
+- Reconciled portal contracts across learner management, support, classroom questions, protected content, and billing access.
+- Reconciled server route order for raw webhook/body routes before global JSON parsing.
+- Preserved OT-89A frozen support contract bytes and LF hash evidence.
+- Renumbered colliding additive migrations into a single ordered 2000-2007 sequence without changing SQL body checksums.
+
+## Current Verification
+
+Passed locally on the integration line:
+
+- npm run secret:scan.
+- npm run lint.
+- npm run typecheck.
+- npm run unit.
+- npm run integration.
+- npm run build.
+- CI=1 npm run e2e.
+- CI=1 npm run accessibility.
+- CI=1 npm run performance.
+- Targeted Prettier on all OT-99-touched source/test files.
+
+Blocked locally by workstation environment:
+
+- npm run db:verify requires DATABASE_URL.
+- npx tsx scripts/postgres-assurance/run.ts cannot connect to 127.0.0.1:5432.
+- npm run verify stops at repo-wide npm run format because this Windows checkout reports pre-existing CRLF drift across hundreds of files outside the OT-99 touch set. Touched files pass scoped Prettier.
 
 ## Next Step
 
-After OT-83R, OT-88, OT-89A, and OPS-09 are completed/published with exact-SHA evidence, rerun OT-99 packet discovery and re-evaluate the gate. Only then may the true integration branch be created from the verified OT-83R SHA.
+Commit this closeout evidence, push integration/ot-99-final-semantic-convergence-20260716T122407Z, open the canonical draft PR against codex/ot83r-complete-portals, and let GitHub's Node 24 and PostgreSQL 16 checks determine the final remote green state for the exact pushed candidate SHA.
 
 ## Prohibitions Preserved
 
-No production deployment, root DNS, live charges, broad sends, public Buffer publishing, production data import, hard delete, BNA code import, or blanket conflict resolution occurred.
+No production deployment, root DNS change, live Stripe charge, broad send, production contact import, automatic Buffer publication, hard delete, BNA code import, BNA/provider contact, or production declaration occurred.
