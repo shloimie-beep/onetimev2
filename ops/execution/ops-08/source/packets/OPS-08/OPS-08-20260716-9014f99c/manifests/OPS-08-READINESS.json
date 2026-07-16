@@ -1,0 +1,100 @@
+{
+  "task_id": "OPS-08",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "generated_at": "2026-07-16T07:15:00+03:00",
+  "state": "packet_ready_audit_required",
+  "maximum_state_without_separate_authorization": "ready_for_dns_operator_action",
+  "cutover_authorized": false,
+  "root_dns_mutation_authorized": false,
+  "launch_domain_mutation_authorized": false,
+  "production_deployment_authorized": false,
+  "production_provider_mutation_authorized": false,
+  "email_dns_mutation_authorized": false,
+  "real_send_authorized": false,
+  "live_payment_authorized": false,
+  "current_audit_anchor": {
+    "repository": "webcraft-media/onetimev2",
+    "sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+    "disposition": "audit_anchor_only_not_release_target"
+  },
+  "required_repository_work": [
+    "persist OPS-08 state first",
+    "select one immutable converged source SHA",
+    "add production host allowlist and proxy validation",
+    "handle healthcheck.railway.app only on GET/HEAD /health while rejecting it on all other routes",
+    "make canonical URLs route-specific and configuration-derived",
+    "generate host-aware robots.txt and sitemap.xml",
+    "add route-aware canonical redirects with callback exclusions",
+    "enforce non-local APP_VERSION and exact COMMIT_SHA in production",
+    "centralize generated email links",
+    "add callback inventory and direct-delivery tests",
+    "add read-only DNS, TLS, source, and synthetic probe tooling",
+    "add reversible change and rollback manifests",
+    "add OPS-08 CI and evidence checks"
+  ],
+  "operator_or_account_actions_after_safe_work": [
+    {
+      "action_id": "OPS-08-ACT-001",
+      "owner_role": "Railway operator",
+      "action": "provide read-only exact project, environment, service, deployment, domain, target-port, healthcheck, and source metadata; provision isolated staging only under separate staging authorization",
+      "raw_values_in_packet": false
+    },
+    {
+      "action_id": "OPS-08-ACT-002",
+      "owner_role": "DNS operator",
+      "action": "capture current root, launch, www, mail, verification, and TTL state; retain private before/after and rollback values; perform no mutation during audit",
+      "raw_values_in_packet": false
+    },
+    {
+      "action_id": "OPS-08-ACT-003",
+      "owner_role": "Identity and migration owner",
+      "action": "provide aggregated 365-day eligibility and continuous 14-day old/new login migration metrics",
+      "raw_values_in_packet": false
+    },
+    {
+      "action_id": "OPS-08-ACT-004",
+      "owner_role": "Deliverability owner",
+      "action": "verify info mailbox, MX provider, all senders, SPF, DKIM, DMARC, return-path, TLS, bounce, complaint, suppression, and link canaries",
+      "raw_values_in_packet": false
+    },
+    {
+      "action_id": "OPS-08-ACT-005",
+      "owner_role": "Provider owners",
+      "action": "read back Stripe TEST, Zoom, Vimeo, email-provider, support, and analytics callback registrations and event scopes without changing them",
+      "raw_values_in_packet": false
+    },
+    {
+      "action_id": "OPS-08-ACT-006",
+      "owner_role": "Product and technical owners",
+      "action": "select the primary-domain architecture and issue a later exact authorization only after all acceptance gates pass",
+      "raw_values_in_packet": false
+    }
+  ],
+  "initial_gate_status": {
+    "OPS-08-G00": "packet_generated_pending_consumer_verification",
+    "OPS-08-G01": "blocked_source_selection",
+    "OPS-08-G02": "blocked_repository_controls_not_implemented",
+    "OPS-08-G03": "blocked_isolated_staging_not_proven",
+    "OPS-08-G04": "blocked_staging_flows_not_proven",
+    "OPS-08-G05": "blocked_host_canonical_controls",
+    "OPS-08-G06": "blocked_migration_metrics",
+    "OPS-08-G07": "blocked_email_evidence",
+    "OPS-08-G08": "blocked_callback_inventory",
+    "OPS-08-G09": "blocked_dns_tls_inventory",
+    "OPS-08-G10": "blocked_monitoring_rollback_drill",
+    "OPS-08-G11": "blocked_authorization_absent",
+    "OPS-08-G12": "pass_packet_contains_no_mutation",
+    "OPS-08-G13": "not_applicable_no_cutover",
+    "OPS-08-G14": "not_applicable_no_cutover"
+  },
+  "mutation_audit": {
+    "root_dns_changes": 0,
+    "launch_dns_changes": 0,
+    "email_dns_changes": 0,
+    "production_deployments": 0,
+    "provider_registration_changes": 0,
+    "real_sends": 0,
+    "live_payments": 0,
+    "unintended_access_grants": 0
+  }
+}

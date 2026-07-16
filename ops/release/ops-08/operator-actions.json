@@ -1,0 +1,71 @@
+{
+  "actions": [
+    {
+      "action": "Select one immutable converged source SHA that includes OT-81/OT-83/OT-86A/OT-86B plus Stripe, Zoom, Telegram/WhatsApp, and support/callback branches.",
+      "action_id": "OPS-08-ACT-SOURCE",
+      "owner_role": "technical owner",
+      "private_reference_fields": [
+        "selected_source_sha",
+        "branch_or_pr_digest"
+      ]
+    },
+    {
+      "action": "Provide or authorize isolated staging service evidence with project/environment/service/deployment digests, target port, health path, and runtime SHA.",
+      "action_id": "OPS-08-ACT-RAILWAY-STAGING",
+      "owner_role": "Railway operator",
+      "private_reference_fields": [
+        "project_id_sha256",
+        "environment_id_sha256",
+        "service_id_sha256",
+        "deployment_id_sha256"
+      ]
+    },
+    {
+      "action": "Capture private before/after/rollback DNS values and SHA-256 digests; do not apply root or join changes until a later authorization.",
+      "action_id": "OPS-08-ACT-DNS",
+      "owner_role": "DNS operator",
+      "private_reference_fields": [
+        "private_dns_change_set_sha256",
+        "private_dns_rollback_set_sha256",
+        "root_fingerprint_before_sha256"
+      ]
+    },
+    {
+      "action": "Provide aggregated 365-day eligibility and continuous 14-day migration/auth metrics.",
+      "action_id": "OPS-08-ACT-MIGRATION",
+      "owner_role": "identity and migration owner",
+      "private_reference_fields": [
+        "migration_evidence_sha256"
+      ]
+    },
+    {
+      "action": "Verify mailbox, sender, DKIM selectors, return path, bounce/complaint, suppression, unsubscribe, and canary results.",
+      "action_id": "OPS-08-ACT-EMAIL",
+      "owner_role": "deliverability owner",
+      "private_reference_fields": [
+        "email_provider_evidence_sha256"
+      ]
+    },
+    {
+      "action": "Read back Stripe TEST, Zoom, Vimeo, email-provider, support, and analytics registrations without mutating them.",
+      "action_id": "OPS-08-ACT-CALLBACKS",
+      "owner_role": "provider owners",
+      "private_reference_fields": [
+        "callback_snapshot_sha256",
+        "callback_rollback_sha256"
+      ]
+    },
+    {
+      "action": "Issue exact later authorization only after all gates pass; include root-mutation decision, window, monitor, and rollback owner.",
+      "action_id": "OPS-08-ACT-AUTH",
+      "owner_role": "product and technical owners",
+      "private_reference_fields": [
+        "authorization_sha256"
+      ]
+    }
+  ],
+  "captured_at": "2026-07-16T05:44:27.867Z",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "raw_private_values_embedded": false,
+  "task_id": "OPS-08"
+}

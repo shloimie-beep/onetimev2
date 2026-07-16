@@ -1,0 +1,179 @@
+{
+  "task_id": "OPS-08",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "generated_at": "2026-07-16T07:15:00+03:00",
+  "audit_mode": "read_only",
+  "cutover_authorized": false,
+  "source_repository": {
+    "repository": "webcraft-media/onetimev2",
+    "visibility": "private",
+    "default_branch": "main",
+    "default_branch_head_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "default_branch_disposition": "foundation_only_not_release_candidate",
+    "observed_open_candidate_chain": [
+      {
+        "pull_request": 25,
+        "branch": "codex/ot81-dayone-certification-and-staging",
+        "head_sha": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf",
+        "status": "repository_reports_local_certification_complete_waiting_for_isolated_staging",
+        "release_authorized": false
+      },
+      {
+        "pull_request": 27,
+        "branch": "codex/ot83-household-portals-foundation",
+        "head_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+        "status": "open_draft_checkpoint",
+        "release_authorized": false
+      },
+      {
+        "pull_request": 31,
+        "branch": "codex/ot86a-vimeo-content-kb",
+        "head_sha": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065",
+        "status": "open_draft_vimeo_projection_and_readiness",
+        "release_authorized": false
+      },
+      {
+        "pull_request": 32,
+        "branch": "codex/ot86b-buffer-social",
+        "head_sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+        "status": "latest_audited_descendant_open_draft",
+        "release_authorized": false
+      }
+    ],
+    "audited_candidate": {
+      "ref": "codex/ot86b-buffer-social",
+      "head_sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+      "selection_status": "audit_anchor_only_not_cutover_target",
+      "observations": [
+        "PUBLIC_BASE_URL defaults to https://join.onetimeonetime.com.",
+        "Landing canonical remains hard-coded to https://join.onetimeonetime.com/.",
+        "APP_VERSION and COMMIT_SHA default to local and are exposed by /version.",
+        "No ALLOWED_HOSTS or canonical-host enforcement setting is present in the audited config.",
+        "No Railway healthcheck request-host exception is present because no production host allowlist exists in the audited composition.",
+        "The server exposes /health, /ready, and /version.",
+        "The server has 301 legacy path redirects for /one-time, /one-time/signup, and /rabbi-member.",
+        "The server includes login and protected owner, parent, and student application routes.",
+        "The audited branch declares email sender and reply-to variables but leaves values unset.",
+        "Real email, WhatsApp, Telegram, and payment transport flags remain false and non-test activation is rejected by config.",
+        "Vimeo credentials and a Vimeo webhook secret name are declared, but a public Vimeo callback route was not proven in the audited application composition.",
+        "The internal OT-86 publication endpoint is not a substitute for a provider callback inventory.",
+        "The public-page build uses one landing canonical for all generated pages and does not generate robots.txt or sitemap.xml in the audited script."
+      ]
+    }
+  },
+  "repository_evidence": [
+    {
+      "ref": "main",
+      "path": ".env.example",
+      "blob_sha": "cdeeaa82b29bff6e29bb54f42e791007c8376069",
+      "purpose": "launch-domain and transport-default evidence"
+    },
+    {
+      "ref": "main",
+      "path": "apps/web/src/server/app.ts",
+      "blob_sha": "05780dbb4c0c8aa6fecddf81bfb1637a9e11965d",
+      "purpose": "foundation health, version, redirect, and lead-route evidence"
+    },
+    {
+      "ref": "codex/ot86b-buffer-social",
+      "path": ".env.example",
+      "blob_sha": "396592ab715576c7d28be1bd779c43fd1880137d",
+      "purpose": "candidate environment-name evidence"
+    },
+    {
+      "ref": "codex/ot86b-buffer-social",
+      "path": "packages/config/src/index.ts",
+      "blob_sha": "f6854a6c12b805ce701dd9381814f9c5fc90f6d2",
+      "purpose": "candidate runtime validation evidence"
+    },
+    {
+      "ref": "codex/ot86b-buffer-social",
+      "path": "apps/web/src/server/app.ts",
+      "blob_sha": "e6e46f4ce2ddcdd85e30a8d7e7c8b1bcf0990631",
+      "purpose": "candidate route and health evidence"
+    },
+    {
+      "ref": "codex/ot86b-buffer-social",
+      "path": "packages/domain/src/landing/content.ts",
+      "blob_sha": "5eae32bf130d27fc7e7adda7eca6b432e020b1a6",
+      "purpose": "candidate hard-coded canonical evidence"
+    },
+    {
+      "ref": "codex/ot86b-buffer-social",
+      "path": "scripts/build-public-pages.ts",
+      "blob_sha": "93b313629311797b50012c5fc2eee262da3c9a12",
+      "purpose": "candidate canonical, robots, and sitemap generation evidence"
+    }
+  ],
+  "domain_evidence": {
+    "control_plane": "GoDaddy DNS and email-DNS control per OPS-08 task specification; not an application host",
+    "root_hostname": "onetimeonetime.com",
+    "launch_hostname": "join.onetimeonetime.com",
+    "root_http_observation": {
+      "url": "https://onetimeonetime.com/",
+      "title": "OneTimeOneTime - Rabbi Eli Scheller",
+      "observed_at": "2026-07-16T07:15:00+03:00",
+      "hosting_target": "not_proven"
+    },
+    "join_http_observation": {
+      "status": "not_proven_from_current_audit_environment",
+      "reason": "direct fetch was unavailable; repository config proves intended launch origin but not live routing"
+    },
+    "public_dns_snapshot": {
+      "status": "not_collected",
+      "reason": "the audit environment could not obtain a trustworthy resolver response; no DNS values were guessed",
+      "required_next_action": "run the packet read-only inventory tool from an approved network and store value digests plus TTLs"
+    },
+    "root_mutation_during_audit": false,
+    "launch_domain_mutation_during_audit": false
+  },
+  "railway_evidence": {
+    "direct_account_inventory_status": "not_available",
+    "repository_report": {
+      "source_pull_request": 25,
+      "status": "Railway CLI linked to a production project/environment with no service selected and no isolated staging resource names",
+      "external_mutations_reported": 0
+    },
+    "project_id": null,
+    "environment_id": null,
+    "service_id": null,
+    "deployment_id": null,
+    "railway_public_domain": null,
+    "custom_domain_status": "not_proven",
+    "tls_status": "not_proven",
+    "healthcheck_configuration": "not_proven"
+  },
+  "email_evidence": {
+    "mailbox": "info@onetimeonetime.com",
+    "mailbox_existence": "not_proven",
+    "mx_provider": "not_proven",
+    "spf": "not_proven",
+    "dkim": "not_proven",
+    "dmarc": "not_proven",
+    "return_path": "not_proven",
+    "candidate_config": {
+      "from_variable": "ONE_TIME_EMAIL_FROM",
+      "reply_to_variable": "ONE_TIME_EMAIL_REPLY_TO",
+      "values_present_in_repository": false,
+      "transport_mode": "sink",
+      "real_transport_enabled": false
+    }
+  },
+  "traffic_migration_evidence": {
+    "old_application_identifier": "not_proven",
+    "old_login_endpoint": "not_proven",
+    "eligible_account_count": "not_proven",
+    "migrated_account_count": "not_proven",
+    "old_app_successful_login_count_14d": "not_proven",
+    "new_app_login_success_rate_14d": "not_proven",
+    "migration_gate_status": "blocked_missing_aggregated_evidence"
+  },
+  "callback_evidence": {
+    "stripe_test": "provider seam reported in repository history; production callback URL and dashboard registration not proven",
+    "zoom": "readiness/descriptor seam reported in repository history; launch and OAuth callback inventory not proven",
+    "vimeo": "credentials and webhook-secret name observed; callback registration and endpoint not proven",
+    "support_events": "not_proven",
+    "deep_links": "application route set observed; external email/provider deep-link usage not proven"
+  },
+  "current_disposition": "packet_ready_audit_required_no_cutover_authorization"
+}

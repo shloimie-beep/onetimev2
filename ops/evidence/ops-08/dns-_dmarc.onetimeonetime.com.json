@@ -1,0 +1,137 @@
+{
+  "captured_at": "2026-07-16T05:34:11.061Z",
+  "domain": "_dmarc.onetimeonetime.com",
+  "mode": "read_only_digest_only",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "raw_rdata_embedded": false,
+  "results": [
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "_dmarc.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "A"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "_dmarc.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "AAAA"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "_dmarc.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "CNAME"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "_dmarc.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "MX"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "6100a19194822700ec1f3d798affcfee866ae09ec493a7574ad34993ef359843",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "_dmarc.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "_dmarc.onetimeonetime.com",
+            "ttl": 600,
+            "type": "TXT",
+            "value_sha256": "dac63a3d1cbd46e7819b4471b80149babf458c3da8a043e2e90eb5acb6cd53df"
+          }
+        ],
+        "google": [
+          {
+            "owner": "_dmarc.onetimeonetime.com",
+            "ttl": 600,
+            "type": "TXT",
+            "value_sha256": "dac63a3d1cbd46e7819b4471b80149babf458c3da8a043e2e90eb5acb6cd53df"
+          }
+        ],
+        "system": [
+          {
+            "owner": "_dmarc.onetimeonetime.com",
+            "ttl": 0,
+            "type": "TXT",
+            "value_sha256": "dac63a3d1cbd46e7819b4471b80149babf458c3da8a043e2e90eb5acb6cd53df"
+          }
+        ]
+      },
+      "type": "TXT"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "_dmarc.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "NS"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "_dmarc.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "CAA"
+    }
+  ],
+  "root_fingerprint_sha256": "0e83f0b72675446f4629bad50a07f35a3427102078b337d1da2a4709c2f648f9",
+  "task_id": "OPS-08"
+}

@@ -1,0 +1,6 @@
+callback_id,provider,mode,purpose,method,path,current_registration_state,candidate_registration_state,redirect_allowed,raw_body_required,signature_verification,idempotency,dual_registration_supported,canary_result,secret_material_stored
+OPS-08-STRIPE-TEST-WEBHOOK,stripe,test,"Stripe TEST billing webhook seam",POST,/api/v1/billing/webhooks/provider,not_observed,not_observed,false,true,not_run,not_run,unknown,not_run,false
+OPS-08-ZOOM-OAUTH,zoom,sandbox,"Zoom OAuth redirect and launch seam",GET,/api/v1/providers/zoom/oauth/callback,not_observed,not_observed,false,false,not_applicable,not_run,unknown,not_run,false
+OPS-08-VIMEO-WEBHOOK,vimeo,sandbox,"Vimeo callback/event seam",POST,/api/v1/providers/vimeo/webhook,not_observed,not_observed,false,true,not_run,not_run,unknown,not_run,false
+OPS-08-EMAIL-PROVIDER-WEBHOOK,email_provider,production,"Bounce complaint and delivery callback seam",POST,/api/v1/delivery/provider-events,not_observed,not_observed,false,true,not_run,not_run,unknown,not_run,false
+OPS-08-SUPPORT-EVENT,support,internal,"Support event intake seam",POST,/api/v1/support/events,not_observed,not_observed,false,false,not_run,not_run,unknown,not_run,false

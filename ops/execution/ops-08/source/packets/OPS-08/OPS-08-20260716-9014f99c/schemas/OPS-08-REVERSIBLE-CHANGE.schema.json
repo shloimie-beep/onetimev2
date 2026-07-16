@@ -1,0 +1,476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://onetimeonetime.com/schemas/OPS-08-20260716-9014f99c/OPS-08-REVERSIBLE-CHANGE.schema.json",
+  "title": "OPS-08 Reversible Change Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "packet_id",
+    "manifest_id",
+    "created_at",
+    "status",
+    "authorization_sha256",
+    "private_dns_change_set_sha256",
+    "private_dns_rollback_set_sha256",
+    "private_callback_change_set_sha256",
+    "private_callback_rollback_set_sha256",
+    "root_mutation_authorized",
+    "root_dns_fingerprint_before_sha256",
+    "expected_root_dns_fingerprint_after_sha256",
+    "launch_domain_preservation",
+    "email_dns_change_count",
+    "source_transition",
+    "dns_changes",
+    "callback_changes",
+    "application_config_changes",
+    "execution_order",
+    "rollback_order",
+    "raw_secret_values_embedded"
+  ],
+  "properties": {
+    "task_id": {
+      "const": "OPS-08"
+    },
+    "packet_id": {
+      "const": "OPS-08-20260716-9014f99c"
+    },
+    "manifest_id": {
+      "type": "string",
+      "pattern": "^OPS-08-CHANGE-[0-9]{8}-[0-9a-f]{8}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authorization_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "before_sha",
+        "after_sha",
+        "before_service_id_sha256",
+        "after_service_id_sha256",
+        "before_deployment_id_sha256",
+        "after_deployment_id_sha256"
+      ],
+      "properties": {
+        "before_sha": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "after_sha": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "before_service_id_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "after_service_id_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "before_deployment_id_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "after_deployment_id_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "dns_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "change_id",
+          "owner",
+          "type",
+          "before_ttl",
+          "after_ttl",
+          "before_value_sha256",
+          "after_value_sha256",
+          "private_value_reference",
+          "root_record",
+          "email_dns_record",
+          "verification_query",
+          "rollback_change_id"
+        ],
+        "properties": {
+          "change_id": {
+            "type": "string",
+            "pattern": "^OPS-08-DNS-[0-9]{3}$"
+          },
+          "owner": {
+            "type": "string",
+            "format": "hostname"
+          },
+          "type": {
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "TXT",
+              "ALIAS",
+              "ANAME",
+              "FORWARD"
+            ]
+          },
+          "before_ttl": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "after_ttl": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "before_value_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "after_value_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "private_value_reference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 8
+          },
+          "root_record": {
+            "type": "boolean"
+          },
+          "email_dns_record": {
+            "const": false
+          },
+          "verification_query": {
+            "type": "string",
+            "minLength": 4
+          },
+          "rollback_change_id": {
+            "type": "string",
+            "pattern": "^OPS-08-RB-DNS-[0-9]{3}$"
+          }
+        }
+      }
+    },
+    "callback_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "change_id",
+          "provider",
+          "mode",
+          "before_url_sha256",
+          "after_url_sha256",
+          "private_registration_reference",
+          "before_enabled",
+          "after_enabled",
+          "canary_required",
+          "rollback_change_id"
+        ],
+        "properties": {
+          "change_id": {
+            "type": "string",
+            "pattern": "^OPS-08-CB-[0-9]{3}$"
+          },
+          "provider": {
+            "enum": [
+              "stripe",
+              "zoom",
+              "vimeo",
+              "email_provider",
+              "support",
+              "other"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "test",
+              "sandbox",
+              "production",
+              "internal"
+            ]
+          },
+          "before_url_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "after_url_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "private_registration_reference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 8
+          },
+          "before_enabled": {
+            "type": "boolean"
+          },
+          "after_enabled": {
+            "type": "boolean"
+          },
+          "canary_required": {
+            "const": true
+          },
+          "rollback_change_id": {
+            "type": "string",
+            "pattern": "^OPS-08-RB-CB-[0-9]{3}$"
+          }
+        }
+      }
+    },
+    "application_config_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "before_value_sha256",
+          "after_value_sha256",
+          "protected_environment_only",
+          "restart_required",
+          "rollback_value_reference"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]+$"
+          },
+          "before_value_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "after_value_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "protected_environment_only": {
+            "const": true
+          },
+          "restart_required": {
+            "type": "boolean"
+          },
+          "rollback_value_reference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 8
+          }
+        }
+      }
+    },
+    "execution_order": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 4
+      }
+    },
+    "rollback_order": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 4
+      }
+    },
+    "raw_secret_values_embedded": {
+      "const": false
+    },
+    "private_dns_change_set_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "private_dns_rollback_set_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "root_mutation_authorized": {
+      "type": "boolean"
+    },
+    "root_dns_fingerprint_before_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "expected_root_dns_fingerprint_after_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "launch_domain_preservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostname",
+        "minimum_days",
+        "removal_requires_separate_authorization"
+      ],
+      "properties": {
+        "hostname": {
+          "const": "join.onetimeonetime.com"
+        },
+        "minimum_days": {
+          "type": "integer",
+          "minimum": 180
+        },
+        "removal_requires_separate_authorization": {
+          "const": true
+        }
+      }
+    },
+    "email_dns_change_count": {
+      "const": 0
+    },
+    "private_callback_change_set_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "private_callback_rollback_set_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "readiness_draft",
+        "authorized"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "readiness_draft"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authorization_sha256": {
+            "type": "null"
+          },
+          "root_mutation_authorized": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "authorized"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "authorization_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "private_dns_change_set_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "private_dns_rollback_set_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "private_callback_change_set_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "private_callback_rollback_set_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "root_dns_fingerprint_before_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "expected_root_dns_fingerprint_after_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  ]
+}

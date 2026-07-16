@@ -1,0 +1,32 @@
+{
+  "blocker": "Railway read-only status was observed, but no isolated staging deployment/source SHA proof is authorized or selected.",
+  "captured_at": "2026-07-16T05:44:27.867Z",
+  "command_status": "blocked_or_unavailable",
+  "isolated_staging_proven": false,
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "production_deployment_authorized": false,
+  "raw_output_sha256": "c678b0f40c6e58c6ca5d5ce18be696a6e4f8f26ab2b338491dde111ad1c8351d",
+  "services": [
+    {
+      "custom_domains": [],
+      "deployment_id_sha256": null,
+      "environment_class": "unknown",
+      "environment_id_sha256": null,
+      "health_path": "/health",
+      "health_state": "not_observed",
+      "healthcheck_host_path_only": false,
+      "healthcheck_host_validation": "not_run",
+      "healthcheck_request_host": "healthcheck.railway.app",
+      "project_id_sha256": null,
+      "public_domain": null,
+      "ready_path": "/ready",
+      "service_id_sha256": null,
+      "service_key": "one-time-web",
+      "source_match": false,
+      "source_sha": null,
+      "target_port": null,
+      "version_path": "/version"
+    }
+  ],
+  "task_id": "OPS-08"
+}

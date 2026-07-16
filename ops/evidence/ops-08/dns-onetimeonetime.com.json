@@ -1,0 +1,290 @@
+{
+  "captured_at": "2026-07-16T05:34:13.775Z",
+  "domain": "onetimeonetime.com",
+  "mode": "read_only_digest_only",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "raw_rdata_embedded": false,
+  "results": [
+    {
+      "comparison": {
+        "answer_set_sha256": "c7d905ee5e92e28b0fa990506440ab033a840f39166152273c0e871fd7c01263",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 600,
+            "type": "A",
+            "value_sha256": "8617b972451ec276ea186ddebcd7a689c407bcc0278715c4b04dfa3914555bbf"
+          }
+        ],
+        "google": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 600,
+            "type": "A",
+            "value_sha256": "8617b972451ec276ea186ddebcd7a689c407bcc0278715c4b04dfa3914555bbf"
+          }
+        ],
+        "system": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 596,
+            "type": "A",
+            "value_sha256": "8617b972451ec276ea186ddebcd7a689c407bcc0278715c4b04dfa3914555bbf"
+          }
+        ]
+      },
+      "type": "A"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "AAAA"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "CNAME"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "468c6a4c531094bd4eca33940302e293b83d22079c73eb954387063193e41824",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "bdf143d06ef1c2c037b384f13ceea2dccb4c9d7b489041fbd5f2abc181af165c"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "f7d0edfce66ff9bce2c70975909a056d275dbe5f53fb40d30d0eeba968187da1"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "c0937693e0f493915704a9418d4a99ab2881f95dc979302eb8b292df038fd31d"
+          }
+        ],
+        "google": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "bdf143d06ef1c2c037b384f13ceea2dccb4c9d7b489041fbd5f2abc181af165c"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "c0937693e0f493915704a9418d4a99ab2881f95dc979302eb8b292df038fd31d"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "f7d0edfce66ff9bce2c70975909a056d275dbe5f53fb40d30d0eeba968187da1"
+          }
+        ],
+        "system": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "MX",
+            "value_sha256": "bdf143d06ef1c2c037b384f13ceea2dccb4c9d7b489041fbd5f2abc181af165c"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "MX",
+            "value_sha256": "f7d0edfce66ff9bce2c70975909a056d275dbe5f53fb40d30d0eeba968187da1"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "MX",
+            "value_sha256": "c0937693e0f493915704a9418d4a99ab2881f95dc979302eb8b292df038fd31d"
+          }
+        ]
+      },
+      "type": "MX"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "409a00dd0f206266cb5ed24ff175924c67a0f005be0350690335240be6e5dc14",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 1800,
+            "type": "TXT",
+            "value_sha256": "127ad32c57f22ea0a9c25c0a041708edf1d3c5d6fd7d64f06f2ebd9b95dc4c19"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 1800,
+            "type": "TXT",
+            "value_sha256": "7d07eab82a3a01b54c8505a45e85ae073856e3a19ee076a0ffc7b8bcc11c0c3c"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 1800,
+            "type": "TXT",
+            "value_sha256": "9132ca20e3a22eca566ce1c0b29b4704eca56ac7cc88e00b2fb8276bc6a1fbe2"
+          }
+        ],
+        "google": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 1800,
+            "type": "TXT",
+            "value_sha256": "9132ca20e3a22eca566ce1c0b29b4704eca56ac7cc88e00b2fb8276bc6a1fbe2"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 1800,
+            "type": "TXT",
+            "value_sha256": "7d07eab82a3a01b54c8505a45e85ae073856e3a19ee076a0ffc7b8bcc11c0c3c"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 1800,
+            "type": "TXT",
+            "value_sha256": "127ad32c57f22ea0a9c25c0a041708edf1d3c5d6fd7d64f06f2ebd9b95dc4c19"
+          }
+        ],
+        "system": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "TXT",
+            "value_sha256": "127ad32c57f22ea0a9c25c0a041708edf1d3c5d6fd7d64f06f2ebd9b95dc4c19"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "TXT",
+            "value_sha256": "7d07eab82a3a01b54c8505a45e85ae073856e3a19ee076a0ffc7b8bcc11c0c3c"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "TXT",
+            "value_sha256": "9132ca20e3a22eca566ce1c0b29b4704eca56ac7cc88e00b2fb8276bc6a1fbe2"
+          }
+        ]
+      },
+      "type": "TXT"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "6a62054f0f34f2ce394a91b031165b75f2122c14ab9f1b547253bd0136ec1d11",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "NS",
+            "value_sha256": "8fdaaf7aa4d67cd3be24a9e12325fde9d5cb880a29c1cb4d7f367adf36705918"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "NS",
+            "value_sha256": "e12fce9c6017d87edd60b3e5bf50f90e72af55a9bdae66a700f21dd0e7de5c29"
+          }
+        ],
+        "google": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "NS",
+            "value_sha256": "8fdaaf7aa4d67cd3be24a9e12325fde9d5cb880a29c1cb4d7f367adf36705918"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 3600,
+            "type": "NS",
+            "value_sha256": "e12fce9c6017d87edd60b3e5bf50f90e72af55a9bdae66a700f21dd0e7de5c29"
+          }
+        ],
+        "system": [
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "NS",
+            "value_sha256": "8fdaaf7aa4d67cd3be24a9e12325fde9d5cb880a29c1cb4d7f367adf36705918"
+          },
+          {
+            "owner": "onetimeonetime.com",
+            "ttl": 0,
+            "type": "NS",
+            "value_sha256": "e12fce9c6017d87edd60b3e5bf50f90e72af55a9bdae66a700f21dd0e7de5c29"
+          }
+        ]
+      },
+      "type": "NS"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "d4372a70389bd8b1db7dcfdc83c29297978c0e10e17a859e919e2add096813bc",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [],
+        "google": [],
+        "system": []
+      },
+      "type": "CAA"
+    }
+  ],
+  "root_fingerprint_sha256": "63a38ed60f147ecc1daef9f3b0242b9817616bc62f8b2978e8b7af8ab862a154",
+  "task_id": "OPS-08"
+}

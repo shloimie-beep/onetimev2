@@ -1,0 +1,240 @@
+{
+  "captured_at": "2026-07-16T05:34:09.848Z",
+  "domain": "join.onetimeonetime.com",
+  "mode": "read_only_digest_only",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "raw_rdata_embedded": false,
+  "results": [
+    {
+      "comparison": {
+        "answer_set_sha256": "df5a279b75e4f6a821bccec16f12e685fcb4ccb621586883f19c5b79ae6f0715",
+        "resolver_agreement": false,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "join.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "A",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          },
+          {
+            "owner": "awaz36ln.up.railway.app",
+            "ttl": 60,
+            "type": "A",
+            "value_sha256": "f939c8a229a08becbfcf2e64098ea8d246278a0d5f195feac339c5272010812d"
+          }
+        ],
+        "google": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "A",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          },
+          {
+            "owner": "awaz36ln.up.railway.app",
+            "ttl": 60,
+            "type": "A",
+            "value_sha256": "f939c8a229a08becbfcf2e64098ea8d246278a0d5f195feac339c5272010812d"
+          }
+        ],
+        "system": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 60,
+            "type": "A",
+            "value_sha256": "f939c8a229a08becbfcf2e64098ea8d246278a0d5f195feac339c5272010812d"
+          }
+        ]
+      },
+      "type": "A"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "4e22c2fa6ba2202423d30fb684ac89ebce7166cd6746b6aa12547c6ae0519397",
+        "resolver_agreement": false,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "join.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "AAAA",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "google": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3596,
+            "type": "AAAA",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "system": []
+      },
+      "type": "AAAA"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "4af54cb5888ae12d83898204fe6410f714874c4de99dcd496a115a64b1ab2018",
+        "resolver_agreement": true,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "join.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "CNAME",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "google": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3594,
+            "type": "CNAME",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "system": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 0,
+            "type": "CNAME",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ]
+      },
+      "type": "CNAME"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "06be1da595bd529882d63e6d730b67c42fa5559d79abcdacaf2dd35cb4980e4b",
+        "resolver_agreement": false,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "join.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "google": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "MX",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "system": []
+      },
+      "type": "MX"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "1da43889c12c864e3f44f053f6078ed5cffe86be34bd51cd83500ea55932630c",
+        "resolver_agreement": false,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "join.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "TXT",
+            "value_sha256": "3ae126418026942d137192c1ba4394e77a53f14acb6b3d5b7980a0e4f3d1ea0d"
+          }
+        ],
+        "google": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "TXT",
+            "value_sha256": "3ae126418026942d137192c1ba4394e77a53f14acb6b3d5b7980a0e4f3d1ea0d"
+          }
+        ],
+        "system": []
+      },
+      "type": "TXT"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "2b71ccfe87bf7e587792045f870da93de61c182bcd2bd3e7db6367205ad4c2a0",
+        "resolver_agreement": false,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "join.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "NS",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "google": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3599,
+            "type": "NS",
+            "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+          }
+        ],
+        "system": []
+      },
+      "type": "NS"
+    },
+    {
+      "comparison": {
+        "answer_set_sha256": "20f4ee41ec09051c1f8981f95987ca62dd7d306d0c426b2de2a83d3df26eaaef",
+        "resolver_agreement": false,
+        "resolver_count": 3
+      },
+      "errors": {},
+      "owner": "join.onetimeonetime.com",
+      "resolvers": {
+        "cloudflare": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3600,
+            "type": "CAA",
+            "value_sha256": "3ae126418026942d137192c1ba4394e77a53f14acb6b3d5b7980a0e4f3d1ea0d"
+          }
+        ],
+        "google": [
+          {
+            "owner": "join.onetimeonetime.com",
+            "ttl": 3599,
+            "type": "CAA",
+            "value_sha256": "3ae126418026942d137192c1ba4394e77a53f14acb6b3d5b7980a0e4f3d1ea0d"
+          }
+        ],
+        "system": []
+      },
+      "type": "CAA"
+    }
+  ],
+  "root_fingerprint_sha256": "3ab0ae728ee6095c86c934c49125d9f5af319c7133de3cfa9a86851d8f586f21",
+  "task_id": "OPS-08"
+}

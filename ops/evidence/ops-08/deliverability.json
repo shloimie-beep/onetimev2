@@ -1,0 +1,19 @@
+{
+  "blocker": "Provider/mailbox dashboard evidence and staged canary evidence were not available; email DNS mutation and real sends are not authorized.",
+  "canary_messages_sent": 0,
+  "captured_at": "2026-07-16T05:44:27.867Z",
+  "dkim_observed": false,
+  "dmarc_evidence_sha256": "7a743e04c6630d9f5e2ab250ab08a4352209fc52f2e18670782f37cea203b965",
+  "dmarc_observed": true,
+  "mailbox": "info@onetimeonetime.com",
+  "mailbox_verified": false,
+  "mx_evidence_sha256": "d5e38f47c657e5225b54d459fd48313d024936d09b0264022f2094d0253b4429",
+  "mx_observed": true,
+  "mx_record_count": 3,
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "production_send_enabled": false,
+  "return_path_observed": false,
+  "spf_evidence_sha256": "84fd92806c822f0ab92abe89269390811d69da77bf48e162a1d3a01052fac2d8",
+  "spf_observed": false,
+  "task_id": "OPS-08"
+}
