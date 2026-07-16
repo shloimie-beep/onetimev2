@@ -57,10 +57,12 @@ export type CanonicalOneTimeActor = {
 
 export const botCapabilities = [
   'gateway.help',
+  'gateway.status.read',
   'gateway.identity.read_self',
   'gateway.scope.read',
   'crm.lead.list',
   'crm.lead.read',
+  'crm.signup.recent',
   'crm.lead.create',
   'crm.contact.read_redacted',
   'crm.lead_tag.list',
@@ -71,6 +73,7 @@ export const botCapabilities = [
   'class.status.update',
   'content.pipeline.read',
   'content.item.read',
+  'content.knowledge.read',
   'content.item.retry',
   'task.list',
   'task.read',
@@ -78,11 +81,16 @@ export const botCapabilities = [
   'task.update',
   'support.ticket.list',
   'support.ticket.read_redacted',
+  'support.ticket.decision_needed',
   'support.ticket.assign_self',
   'support.ticket.status.update',
   'class.question.list',
   'class.question.read_redacted',
   'class.question.select',
+  'class.question.resolve',
+  'social.draft.list',
+  'social.draft.read',
+  'social.draft.approval_link',
   'telegram.audit.read_recent',
 ] as const;
 
@@ -102,6 +110,7 @@ export const botWriteCapabilities = [
   'support.ticket.assign_self',
   'support.ticket.status.update',
   'class.question.select',
+  'class.question.resolve',
 ] as const satisfies readonly BotCapability[];
 
 export type BotWriteCapability = (typeof botWriteCapabilities)[number];

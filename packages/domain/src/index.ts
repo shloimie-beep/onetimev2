@@ -148,6 +148,14 @@ export {
   updateContact,
 } from './crm/service.ts';
 export { createOneTimeTelegramApplicationAdapter } from './telegram/application-adapter.ts';
+export { createOneTimeTelegramAdminRuntime } from './telegram/runtime.ts';
+export {
+  OneTimeTelegramTransportAdapter,
+  TelegramBotApiSendMessageClient,
+  telegramTransportReadiness,
+  type TelegramProtectedChatDirectory,
+  type TelegramSendMessageClient,
+} from './telegram/transport.ts';
 export {
   SupportAttachmentError,
   normalizeSupportAttachments,
