@@ -1,0 +1,132 @@
+{
+  "ticket": "OT-88",
+  "status": "PREFLIGHT_COMPLETE",
+  "started_at_utc": "2026-07-16T04:28:19Z",
+  "repository": {
+    "root": "C:\\Users\\User\\onetimev2",
+    "worktree": "C:\\Users\\User\\.ot88-worktrees\\OT-88",
+    "origin": "https://github.com/webcraft-media/onetimev2.git",
+    "identified_by": [
+      "local path C:\\Users\\User\\onetimev2",
+      "origin remote https://github.com/webcraft-media/onetimev2.git",
+      "One Time package markers in package.json and AGENTS.md"
+    ]
+  },
+  "source": {
+    "remote": "origin",
+    "branch": "codex/ot84-telegram-action-gateway",
+    "ls_remote_result": "f98103ecc3660dbda871a91485656e17580940a8 refs/heads/codex/ot84-telegram-action-gateway",
+    "fetched_ref": "refs/remotes/origin/codex/ot84-telegram-action-gateway",
+    "resolved_commit": "f98103ecc3660dbda871a91485656e17580940a8",
+    "rev_parse_note": "PowerShell interpreted unquoted ^{commit}; remote proof and git show confirmed the fetched commit."
+  },
+  "target": {
+    "branch": "codex/ot88-zoom-learner-classroom",
+    "base_commit": "f98103ecc3660dbda871a91485656e17580940a8",
+    "draft_pr_base": "codex/ot84-telegram-action-gateway",
+    "created_clean_worktree": true,
+    "pre_metadata_git_status_porcelain": ""
+  },
+  "packet": {
+    "selected_zip_path": "C:\\Users\\User\\Downloads\\OT88-zoom-classroom-codex-packet.zip",
+    "selected_zip_sha256": "FE55C506C667F1C0A1D52EA646E4410C17B3698159DBB4C25D508FB20E9F3818",
+    "archive_path_safety": "ok",
+    "internal_checksum_count": 16,
+    "internal_checksums_verified": true,
+    "persisted_packet_dir": "ops/codex-runs/OT-88/packet",
+    "task_prompt_sha256": "5E648BF47E871189E3635DD628A816B9F0B8C2BF728DF98A9DD73948FED30DF2",
+    "original_prompt_sha256": "B1E67EF238635CFC0E24170F7F0E41BACA27657C953D820B9C7FAD1CE530F296"
+  },
+  "ot83_proof": {
+    "ancestry": {
+      "origin_codex_ot83_household_portals_foundation_is_ancestor_of_source": true,
+      "source_history_contains": [
+        "a02d1d2 [OT-83] update migration sentinel test",
+        "c12dac6 [OT-83] preserve codex provenance formatting",
+        "74cedc7 [OT-83] record checkpoint head",
+        "3c5c393 [OT-83] add parent student session revocation foundation"
+      ]
+    },
+    "provenance_evidence": [
+      "ops/codex-runs/OT-83/STATE.json",
+      "ops/codex-runs/OT-83/ORIGINAL-PROMPT.md",
+      "ops/codex-runs/OT-83/CHECKPOINT.md",
+      "ops/evidence/ot-83/FINAL-REPORT.md",
+      "packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+      "tests/ot-83/real-postgres-concurrency.ts"
+    ],
+    "functional_evidence_paths": {
+      "portal_auth_session_enforcement": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/server/features/portals/routers.ts"
+      ],
+      "learner_identity_context": [
+        "apps/web/src/server/app.ts",
+        "packages/contracts/src/portals/index.ts",
+        "packages/db/src/portals/repository.ts"
+      ],
+      "household_guardian_learner_scope": [
+        "packages/domain/src/portals/services.ts",
+        "packages/db/src/portals/repository.ts",
+        "packages/db/migrations/1500_ot52_portal_households_learners.sql"
+      ],
+      "entitlement_or_subscription_seam": [
+        "packages/contracts/src/billing/index.ts",
+        "packages/domain/src/billing/policy.ts",
+        "packages/db/migrations/1300_ot46_billing_foundation.sql"
+      ],
+      "protected_portal_shell": [
+        "apps/web/src/client/app/portal-entry.tsx",
+        "apps/web/src/client/app/portal-api.ts",
+        "apps/web/src/client/features/portals/PortalFeatures.tsx",
+        "packages/brand-system/src/styles/portal.css"
+      ],
+      "tests": [
+        "tests/ot-52/portal-services.test.ts",
+        "tests/ot-52/portal-router.test.ts",
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/ot-83/real-postgres-concurrency.ts"
+      ]
+    }
+  },
+  "repository_conventions": {
+    "stack": "Node.js 24, TypeScript, Express 5, Vite, PostgreSQL pg, React for authenticated app routes, forward-only SQL migrations, transactional outbox",
+    "package_manager": "npm workspaces",
+    "migration_framework": "packages/db/migrations with scripts/migrate.ts; no runtime schema creation in web process",
+    "auth_session_csrf": "otcrm_session httpOnly cookie plus otcrm_csrf session CSRF, verified through domain auth service and portal routers",
+    "logging_observability": "packages/observability trace middleware, public errors, Server-Timing; redaction helpers exist",
+    "feature_config": "packages/config/src/index.ts",
+    "telegram_gateway": "OT-84 default-off webhook and action gateway under apps/telegram-bot, packages/domain/src/telegram, packages/db/src/telegram",
+    "bna_fanout_definition": "One Time may only produce redacted async BNA oversight envelopes through the separate follow-up manifest; no synchronous BNA call, BNA runtime edit, BNA session/cookie/style/control-plane load, or BNA/Operations browser request is allowed."
+  },
+  "feature_flags_default_safety_mode": {
+    "zoom_classroom_enabled": false,
+    "zoom_component_view_enabled": false,
+    "zoom_provider_mutations_enabled": false,
+    "zoom_feature_participant_enabled": false,
+    "class_reminders_external_delivery_enabled": false,
+    "zoom_canary_enabled": false
+  },
+  "credentials_presence": {
+    "zoom_meeting_sdk_key": false,
+    "zoom_meeting_sdk_secret": false,
+    "zoom_api_account_id": false,
+    "zoom_api_client_id": false,
+    "zoom_api_client_secret": false,
+    "telegram_webhook_secret": false,
+    "telegram_bot_key": false,
+    "database_url": false
+  },
+  "test_canary_status": {
+    "provider_off_expected": true,
+    "zoom_canary": "NOT_RUN_MISSING_PROTECTED_CREDENTIALS_AND_EXPLICIT_CANARY_APPROVAL",
+    "postgres_real_target": "NOT_CONFIGURED"
+  },
+  "checkpoints": [
+    {
+      "at_utc": "2026-07-16T04:28:19Z",
+      "status": "PREFLIGHT_COMPLETE",
+      "summary": "Selected verified OT-88 packet, resolved remote OT-84 source commit, created clean isolated OT-88 worktree/branch, proved OT-83 ancestry and functional portal seams, and persisted first run artifacts before product code edits."
+    }
+  ]
+}

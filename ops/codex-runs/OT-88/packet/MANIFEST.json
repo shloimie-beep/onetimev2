@@ -1,0 +1,115 @@
+{
+  "packet": "OT88-zoom-classroom-codex-packet.zip",
+  "generatedAt": "2026-07-15T11:16:20Z",
+  "source": {
+    "filename": "PRO-04-ZOOM-CLASSROOM-FACTORY.md",
+    "packetCopy": "SOURCE-SPEC.md",
+    "sha256": "4391caee6a706a68fd8e168b748fcfe1a2dffb687d5749850515cd064593b5f2"
+  },
+  "sourceBranchRequired": "codex/ot84-telegram-action-gateway",
+  "targetBranchRequired": "codex/ot88-zoom-learner-classroom",
+  "officialSources": [
+    "https://developers.zoom.us/docs/meeting-sdk/web/",
+    "https://developers.zoom.us/docs/meeting-sdk/web/client-view/",
+    "https://developers.zoom.us/docs/meeting-sdk/web/component-view/supported/",
+    "https://github.com/zoom/meetingsdk-react-sample",
+    "https://github.com/zoom/meetingsdk-auth-endpoint-sample"
+  ],
+  "files": [
+    {
+      "path": "01-DIRECT-CODEX-PROMPT.md",
+      "bytes": 37558,
+      "sha256": "5e648bf47e871189e3635dd628a816b9f0b8c2bf728df98a9dd73948fed30df2",
+      "executable": false
+    },
+    {
+      "path": "02-DOMAIN-DATA-MODEL.md",
+      "bytes": 18254,
+      "sha256": "50dc90f63a7cf93586f3279c54c43d3cd48165160764d1f525fd0f9559392d5c",
+      "executable": false
+    },
+    {
+      "path": "03-ZOOM-CAPABILITY-FINDINGS.md",
+      "bytes": 14396,
+      "sha256": "0a460ba8103cf5042401b44dec6de5c86ed9abd8bbfa95cd403e65e3354a7476",
+      "executable": false
+    },
+    {
+      "path": "04-SEQUENCE-DIAGRAMS.md",
+      "bytes": 11567,
+      "sha256": "16b853d3992386bb69d9b0e9ca22cc9f9611f60b53862975e0583f197dede50f",
+      "executable": false
+    },
+    {
+      "path": "05-AUTHORIZATION-MATRIX.md",
+      "bytes": 12495,
+      "sha256": "bde17011eee7f95f46c0a76260ab7ccd4487cc981c03933f700a3535d5d74e00",
+      "executable": false
+    },
+    {
+      "path": "06-FAILURE-STATE-MATRIX.md",
+      "bytes": 14346,
+      "sha256": "e9c68cdb23c22af822ddac44d95a2b4d39182dee18ff206f3364c54908a13f86",
+      "executable": false
+    },
+    {
+      "path": "07-TEST-CANARY-PLAN.md",
+      "bytes": 20107,
+      "sha256": "6010990c4706ab27db27bc2b05e76365ae017376acc4ba19dfcc8d9f8da0a7f5",
+      "executable": false
+    },
+    {
+      "path": "08-SECURITY-PRIVACY-OBSERVABILITY.md",
+      "bytes": 18117,
+      "sha256": "a1d59824e83ababf3c8e982bbba8f53892b1e9e5f30cf4305e22a0fa85277ba4",
+      "executable": false
+    },
+    {
+      "path": "09-IMPLEMENTATION-BLUEPRINT.md",
+      "bytes": 17319,
+      "sha256": "e5002a1a22ea0d282e8e6dd7c3518b6bf737d31405a0d4787ed0a3dfdfbda64a",
+      "executable": false
+    },
+    {
+      "path": "10-EVIDENCE-RESUME-CONTRACT.md",
+      "bytes": 11692,
+      "sha256": "e1dd3551bae37be58d0298cb7ffe5a1625f037add8c243e5c1d15093f4d5c2b4",
+      "executable": false
+    },
+    {
+      "path": "11-REQUIREMENTS-TRACEABILITY.md",
+      "bytes": 6050,
+      "sha256": "a1f2d6be6e69f2db9f2b6681e9c81a3cba8dfa7671f7cd28755d8846b872721d",
+      "executable": false
+    },
+    {
+      "path": "README.md",
+      "bytes": 5116,
+      "sha256": "1216fe923ac77b9c628ff3f2cdc3e0ad8a157cb231925ee2189b504f6ff3bc3b",
+      "executable": false
+    },
+    {
+      "path": "SOURCE-SPEC.md",
+      "bytes": 4980,
+      "sha256": "4391caee6a706a68fd8e168b748fcfe1a2dffb687d5749850515cd064593b5f2",
+      "executable": false
+    },
+    {
+      "path": "SOURCES.md",
+      "bytes": 3987,
+      "sha256": "e6653a00a9c08e7faf80d84d6a3fd6c9106a15c2560ff758d06f786a0d0a208e",
+      "executable": false
+    },
+    {
+      "path": "VERIFY-CHECKSUMS.sh",
+      "bytes": 288,
+      "sha256": "fb9e862c703504e86f1eb851321af457cd716e6e22ef9cc2f63586722a4cd0f5",
+      "executable": true
+    }
+  ],
+  "checksumPolicy": {
+    "manifestLists": "all packet files except MANIFEST.json and SHA256SUMS",
+    "SHA256SUMSLists": "all packet files except SHA256SUMS",
+    "zipChecksum": "provided as OT88-zoom-classroom-codex-packet.zip.sha256 beside the ZIP"
+  }
+}
