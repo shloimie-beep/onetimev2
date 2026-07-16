@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         crm: path.resolve(process.cwd(), 'apps/web/src/client/app/crm-entry.tsx'),
         portal: path.resolve(process.cwd(), 'apps/web/src/client/app/portal-entry.tsx'),
+        support: path.resolve(process.cwd(), 'apps/web/src/client/app/support-entry.ts'),
       },
       output: {
         entryFileNames: 'assets/app-[name].js',

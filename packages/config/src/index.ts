@@ -16,6 +16,19 @@ const numberFromString = z
     return parsed;
   });
 
+const OT89_LOCAL_ONETIME_KEY_ID = 'ot89-onetime-local';
+const OT89_LOCAL_ONETIME_SECRET = 'ot89-test-secret-do-not-use-local-producer';
+const OT89_LOCAL_BNA_KEY_ID = 'ot89-bna-local';
+const OT89_LOCAL_BNA_SECRET = 'ot89-test-secret-do-not-use-local-consumer';
+const OT89_KNOWN_TEST_VALUES = new Set([
+  OT89_LOCAL_ONETIME_KEY_ID,
+  OT89_LOCAL_ONETIME_SECRET,
+  OT89_LOCAL_BNA_KEY_ID,
+  OT89_LOCAL_BNA_SECRET,
+  'ot89-test-secret-do-not-use',
+  'ot89-test-secret-do-not-use-reverse',
+]);
+
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: numberFromString.default(3000),
@@ -56,6 +69,19 @@ const envSchema = z.object({
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET: z.string().min(16).optional(),
   ONE_TIME_TELEGRAM_BOT_KEY: z.string().min(1).default('one_time_internal_ops'),
   ONE_TIME_TELEGRAM_ENVIRONMENT: z.enum(['local', 'staging', 'production']).default('staging'),
+  SUPPORT_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
+  SUPPORT_RATE_LIMIT_MAX: numberFromString.default(6),
+  SUPPORT_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(120),
+  OT89_SUPPORT_ENABLED: booleanFromString,
+  OT89_SUPPORT_DELIVERY_MODE: z.enum(['disabled', 'mock']).default('disabled'),
+  OT89_SUPPORT_BNA_BASE_URL: z.url().optional(),
+  OT89_SUPPORT_HMAC_KEY_ID: z.string().min(1).max(80).optional(),
+  OT89_SUPPORT_HMAC_SECRET: z.string().min(16).optional(),
+  OT89_BNA_TO_ONETIME_HMAC_KEY_ID: z.string().min(1).max(80).optional(),
+  OT89_BNA_TO_ONETIME_HMAC_SECRET: z.string().min(16).optional(),
+  OT89_MOCK_BNA_ENABLED: booleanFromString,
+  OT89_MOCK_BNA_OUTAGE: booleanFromString,
+  OT89_SUPPORT_DEPLOYMENT_ID: z.string().min(1).max(64).default('local-ot89a'),
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -74,6 +100,48 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
     throw new Error('Production web startup cannot run migrations automatically.');
+  }
+
+  if (parsed.NODE_ENV === 'production' && parsed.OT89_SUPPORT_DELIVERY_MODE !== 'disabled') {
+    throw new Error('OT89 support delivery must remain disabled in production.');
+  }
+
+  if (parsed.NODE_ENV === 'production' && parsed.OT89_MOCK_BNA_ENABLED) {
+    throw new Error('OT89 mock BNA endpoint is forbidden in production.');
+  }
+
+  const ot89ProvidedSecrets = [
+    parsed.OT89_SUPPORT_HMAC_KEY_ID,
+    parsed.OT89_SUPPORT_HMAC_SECRET,
+    parsed.OT89_BNA_TO_ONETIME_HMAC_KEY_ID,
+    parsed.OT89_BNA_TO_ONETIME_HMAC_SECRET,
+  ].filter((value): value is string => Boolean(value));
+
+  if (
+    parsed.NODE_ENV === 'production' &&
+    ot89ProvidedSecrets.some((value) => OT89_KNOWN_TEST_VALUES.has(value))
+  ) {
+    throw new Error('Known OT89 test HMAC defaults are forbidden in production.');
+  }
+
+  if (parsed.OT89_SUPPORT_DELIVERY_MODE === 'mock' && !parsed.OT89_SUPPORT_BNA_BASE_URL) {
+    throw new Error('OT89_SUPPORT_BNA_BASE_URL is required for mock support delivery.');
+  }
+
+  if (parsed.OT89_SUPPORT_ENABLED && parsed.OT89_SUPPORT_DELIVERY_MODE === 'disabled') {
+    throw new Error('OT89 support cannot be enabled without a configured delivery mode.');
+  }
+
+  if (
+    (parsed.OT89_SUPPORT_ENABLED ||
+      parsed.OT89_SUPPORT_DELIVERY_MODE !== 'disabled' ||
+      parsed.OT89_MOCK_BNA_ENABLED) &&
+    (!parsed.OT89_SUPPORT_HMAC_KEY_ID ||
+      !parsed.OT89_SUPPORT_HMAC_SECRET ||
+      !parsed.OT89_BNA_TO_ONETIME_HMAC_KEY_ID ||
+      !parsed.OT89_BNA_TO_ONETIME_HMAC_SECRET)
+  ) {
+    throw new Error('OT89 support HMAC key IDs and secrets are required when support is enabled.');
   }
 
   if (parsed.NODE_ENV === 'production' && !parsed.AUTH_CSRF_SECRET) {
@@ -138,5 +206,26 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeTelegramWebhookSecret: parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET,
     oneTimeTelegramBotKey: parsed.ONE_TIME_TELEGRAM_BOT_KEY,
     oneTimeTelegramEnvironment: parsed.ONE_TIME_TELEGRAM_ENVIRONMENT,
+    supportRateLimitWindowMs: parsed.SUPPORT_RATE_LIMIT_WINDOW_MS,
+    supportRateLimitMax: parsed.SUPPORT_RATE_LIMIT_MAX,
+    supportAccountRateLimitMax: parsed.SUPPORT_ACCOUNT_RATE_LIMIT_MAX,
+    ot89SupportEnabled: parsed.OT89_SUPPORT_ENABLED,
+    ot89SupportDeliveryMode: parsed.OT89_SUPPORT_DELIVERY_MODE,
+    ot89SupportBnaBaseUrl: parsed.OT89_SUPPORT_BNA_BASE_URL,
+    ot89SupportHmacKeyId:
+      parsed.OT89_SUPPORT_HMAC_KEY_ID ??
+      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_ONETIME_KEY_ID),
+    ot89SupportHmacSecret:
+      parsed.OT89_SUPPORT_HMAC_SECRET ??
+      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_ONETIME_SECRET),
+    ot89BnaToOnetimeHmacKeyId:
+      parsed.OT89_BNA_TO_ONETIME_HMAC_KEY_ID ??
+      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_BNA_KEY_ID),
+    ot89BnaToOnetimeHmacSecret:
+      parsed.OT89_BNA_TO_ONETIME_HMAC_SECRET ??
+      (parsed.NODE_ENV === 'production' ? '' : OT89_LOCAL_BNA_SECRET),
+    ot89MockBnaEnabled: parsed.OT89_MOCK_BNA_ENABLED,
+    ot89MockBnaOutage: parsed.OT89_MOCK_BNA_OUTAGE,
+    ot89SupportDeploymentId: parsed.OT89_SUPPORT_DEPLOYMENT_ID,
   };
 }

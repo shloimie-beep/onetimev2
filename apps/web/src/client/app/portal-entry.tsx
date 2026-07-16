@@ -224,9 +224,7 @@ function PortalApp() {
             void handleStudentAccessAction(learnerKey, action)
           }
           onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
-          onPreviewSupport={() =>
-            setNotice({ kind: 'info', message: 'Support preview is local-only right now.' })
-          }
+          onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
         />
       ) : (
@@ -236,9 +234,7 @@ function PortalApp() {
           actorFingerprint={actorFingerprint}
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
-          onPreviewSupport={() =>
-            setNotice({ kind: 'info', message: 'Support preview is local-only right now.' })
-          }
+          onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
         />
       )}

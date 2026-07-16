@@ -63,10 +63,24 @@ describe('OT81 visible action registry', () => {
       expect.arrayContaining([
         'portal.parent.class.launch.button',
         'portal.student.class.launch.button',
-        'portal.parent.support.preview.button',
-        'portal.student.support.preview.button',
       ]),
     );
     expect(unavailable.every((action) => action.external_mutation === false)).toBe(true);
+  });
+
+  it('maps OT-89A subscriber support actions to local handlers', () => {
+    const registryById = new Map(registry.actions.map((action) => [action.action_id, action]));
+    expect(registryById.get('support.view.route')).toMatchObject({
+      readiness_state: 'ready',
+      handler: { method: 'GET', path: '/app/support' },
+    });
+    expect(registryById.get('support.submit.form')).toMatchObject({
+      readiness_state: 'ready',
+      handler: { method: 'POST', path: '/api/v1/support/tickets' },
+    });
+    expect(registryById.get('portal.parent.support.open.button')).toMatchObject({
+      readiness_state: 'ready',
+      handler: { method: 'CLIENT', path: 'apps/web/src/client/app/portal-entry.tsx' },
+    });
   });
 });
