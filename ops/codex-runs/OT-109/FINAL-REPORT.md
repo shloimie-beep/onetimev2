@@ -2,6 +2,12 @@
 
 Status: implemented locally and ready for draft PR review.
 
+Branch: `codex/ot109-rabbi-content-publisher`
+
+Implementation commit: `e24431e9dc436bf3cea11dca6902c67b31848693`
+
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/48
+
 ## What Changed
 
 - Added standalone OT-109 publisher contracts for fixed Rabbi / One Time scope.

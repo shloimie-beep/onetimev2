@@ -4,6 +4,10 @@ Worktree: `C:/Users/User/.onetime-worktrees/OT-109`
 
 Branch: `codex/ot109-rabbi-content-publisher`
 
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/48
+
+Implementation commit: `e24431e9dc436bf3cea11dca6902c67b31848693`
+
 Implemented:
 
 - OT-109 content publisher contracts.
