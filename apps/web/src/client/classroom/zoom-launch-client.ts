@@ -1,3 +1,5 @@
+import { startClassroomSdk } from './zoom-sdk-adapter.ts';
+
 type BootstrapResponse = {
   success: true;
   data: {
@@ -100,32 +102,16 @@ async function bootstrap() {
     }
     activeAttemptKey = json.data.attempt_key;
     await postAttendance(activeAttemptKey, 'bootstrap_loaded', 'bootstrap_loaded');
-    await startMockedSdk(json.data);
+    await startClassroomSdk(json.data, sdkRoot, postAttendance);
+    const view = json.data.selected_view === 'component' ? 'desktop' : 'client';
+    setStatus(`Classroom is ready. View mode: ${view}.`);
+    if (leaveButton) leaveButton.hidden = false;
   } catch (error) {
     if (activeAttemptKey) {
       await postAttendance(activeAttemptKey, 'retry', 'bootstrap_retry_available');
     }
     setStatus(error instanceof Error ? error.message : 'Classroom is unavailable.', true);
   }
-}
-
-async function startMockedSdk(data: BootstrapResponse['data']) {
-  await postAttendance(data.attempt_key, 'sdk_join_started', data.selected_view);
-  if (sdkRoot) {
-    const panel = document.createElement('div');
-    panel.className = 'classroom-sdk-mock';
-    panel.dataset.mockedZoomSdk = 'true';
-    panel.dataset.selectedView = data.selected_view;
-    panel.textContent =
-      data.selected_view === 'component'
-        ? 'Mocked Zoom component view is ready.'
-        : 'Mocked Zoom client view is ready.';
-    sdkRoot.append(panel);
-  }
-  await postAttendance(data.attempt_key, 'sdk_joined', data.provider.state);
-  const view = data.selected_view === 'component' ? 'desktop' : 'client';
-  setStatus(`Classroom is ready. View mode: ${view}.`);
-  if (leaveButton) leaveButton.hidden = false;
 }
 
 async function leaveClassroom() {

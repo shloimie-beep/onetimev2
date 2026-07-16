@@ -19,6 +19,7 @@ const requiredStripeEventSchema = z.enum([
   'customer.subscription.created',
   'customer.subscription.updated',
   'customer.subscription.deleted',
+  'customer.subscription.trial_will_end',
   'customer.subscription.paused',
   'customer.subscription.resumed',
   'invoice.paid',
@@ -219,7 +220,7 @@ export const ot87CommercialPolicySchema = z
       .strict(),
     required_stripe_events: z
       .array(requiredStripeEventSchema)
-      .length(13)
+      .length(14)
       .refine((events) => new Set(events).size === events.length, {
         message: 'required_stripe_events must be unique',
       }),

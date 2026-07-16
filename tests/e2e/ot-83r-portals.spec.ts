@@ -119,12 +119,19 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
     /https?:\/\/|zoom|vimeo|drive|meet/i,
   );
 
+  const privateQuestion = 'What should I review before the next class?';
   await studentPage
-    .getByRole('textbox', { name: 'Question', exact: true })
-    .fill('What should I review before the next class?');
-  await studentPage.getByRole('button', { name: 'Submit question' }).click();
+    .getByRole('textbox', { name: 'Ask privately', exact: true })
+    .fill(privateQuestion);
+  await studentPage.getByRole('button', { name: 'Preview private question' }).click();
+  const privatePreview = studentPage.locator('.ot-private-preview');
+  await expect(privatePreview.getByText('Private question preview')).toBeVisible();
+  await expect(privatePreview.getByText(privateQuestion)).toBeVisible();
+  await studentPage.getByRole('button', { name: 'Send private question' }).click();
   await expect(studentPage.getByText('Question submitted.')).toBeVisible();
-  await expect(studentPage.getByText('What should I review before the next class?')).toBeVisible();
+  await expect(
+    studentPage.locator('article.ot-update').filter({ hasText: privateQuestion }),
+  ).toBeVisible();
 
   const csrf = await sessionCsrf(studentPage);
   const siblingClassAttempt = await studentPage.request.post(

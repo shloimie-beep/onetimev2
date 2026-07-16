@@ -1,0 +1,94 @@
+{
+  "run_id": "OT-110A",
+  "status": "implemented_local_ready_for_draft_pr",
+  "worker": "OT-110A",
+  "date": "2026-07-16",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OT-110A",
+  "branch": "codex/ot110a-admin-content-workspace",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/52",
+  "base_ref": "origin/codex/ops03-staging-readiness-repair",
+  "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "scope": {
+    "standalone_one_time_only": true,
+    "bna_product_code_touched": false,
+    "academy_content_touched": false,
+    "production_deploy_performed": false,
+    "dns_change_performed": false,
+    "broad_send_performed": false,
+    "live_charge_performed": false,
+    "provider_mutation_performed": false
+  },
+  "implemented": [
+    "OT-110A admin content workspace contracts",
+    "Additive migration 2010_ot110a_admin_content_workspace.sql",
+    "Feature-local provider-off ports for Vimeo, generation, knowledge indexing, Buffer, and Telegram",
+    "Explicit Content capability resolver and grant table",
+    "Prompt registry with immutable templates/versions, patch, preview, activate, and rollback",
+    "Generated artifact revision records with prompt/transcript/generation hashes",
+    "Authenticated /api/v1/admin/content/* routes",
+    "Lazy ContentWorkspace React route chunk for overview, processing, create, social, knowledge, prompts, activity, and detail",
+    "Focused OT-110A integration tests and adjacent content regression coverage"
+  ],
+  "provider_off_status": {
+    "vimeo": "provider_off_unconfigured_no_writes",
+    "generation": "provider_off_deterministic_local_drafts",
+    "knowledge_index": "provider_off_unconfigured_no_writes",
+    "buffer": "provider_off_unconfigured_no_writes",
+    "telegram": "provider_off_unconfigured_no_writes"
+  },
+  "verification": [
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "note": "Content workspace built as route chunk app-ContentWorkspace.js/css."
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/content/redaction.test.ts",
+      "status": "passed",
+      "tests": 1
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/content/ot110a-admin-content-workspace.test.ts tests/integration/content/content-library.test.ts tests/integration/content/ot86-content-pipeline.test.ts",
+      "status": "passed",
+      "tests": 13
+    },
+    {
+      "command": "npx prettier --check <OT-110A touched TS/CSS files>",
+      "status": "passed"
+    },
+    {
+      "command": "npm run db:verify",
+      "status": "blocked",
+      "reason": "DATABASE_URL is required for PostgreSQL-backed runtime."
+    }
+  ],
+  "remaining_blockers": [
+    {
+      "blocker": "disposable_postgresql_proof",
+      "status": "blocked_missing_database_url",
+      "next_action": "Run npm run db:verify with a disposable PostgreSQL DATABASE_URL."
+    },
+    {
+      "blocker": "live_provider_canaries",
+      "status": "not_authorized_or_unconfigured",
+      "next_action": "OPS-04C/provider branches connect real Vimeo, Buffer, Telegram, and AI secrets after explicit approval."
+    }
+  ]
+}

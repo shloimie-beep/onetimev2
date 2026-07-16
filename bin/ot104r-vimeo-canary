@@ -1,0 +1,152 @@
+#!/usr/bin/env node
+
+import { createHash } from 'node:crypto';
+
+const args = new Set(process.argv.slice(2));
+const modeArg = process.argv.find((arg) => arg.startsWith('--mode='));
+const mode = modeArg ? modeArg.slice('--mode='.length) : readModeFromSplitArgs();
+const json = args.has('--json');
+
+function readModeFromSplitArgs() {
+  const index = process.argv.indexOf('--mode');
+  return index >= 0 ? process.argv[index + 1] : 'read-only';
+}
+
+function result(status, extra = {}) {
+  return {
+    packet_id: 'OT-104R',
+    provider: 'vimeo',
+    mode,
+    status,
+    writes_performed: false,
+    ...extra,
+  };
+}
+
+function print(payload) {
+  if (json) {
+    process.stdout.write(`${JSON.stringify(payload)}\n`);
+    return;
+  }
+  process.stdout.write(`OT-104R Vimeo canary: ${payload.status}\n`);
+  for (const missing of payload.missing_variable_names ?? []) {
+    process.stdout.write(`missing: ${missing}\n`);
+  }
+  for (const capability of payload.capability_names ?? []) {
+    process.stdout.write(`capability: ${capability}\n`);
+  }
+}
+
+main().catch((error) => {
+  print(
+    result('canary_failed', {
+      safe_reason_code: sanitizeError(error),
+      missing_variable_names: ['unexpected_canary_error'],
+    }),
+  );
+  process.exit(2);
+});
+
+async function main() {
+  if (mode !== 'read-only') {
+    print(result('invalid_mode', { missing_variable_names: ['read_only_mode'] }));
+    process.exit(2);
+  }
+
+  const missing = missingConfig();
+  if (missing.length > 0) {
+    print(
+      result('unconfigured', {
+        missing_variable_names: missing,
+        capability_names: ['sink_adapter_supported'],
+        safe_reason_code: 'vimeo_configuration_missing',
+      }),
+    );
+    process.exit(2);
+  }
+
+  const response = await fetch('https://api.vimeo.com/me', {
+    headers: {
+      authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
+      accept: 'application/json',
+    },
+  });
+  if (!response.ok) {
+    print(
+      result('auth_invalid', {
+        missing_variable_names: ['valid_access_token_or_account_permission'],
+        http_status: response.status,
+        safe_reason_code: `vimeo_me_http_${response.status}`,
+      }),
+    );
+    process.exit(2);
+  }
+
+  const body = await response.json();
+  const configuredAccount = String(process.env.VIMEO_ACCOUNT_ID);
+  const providerAccount = String(body.uri ?? body.resource_key ?? body.name ?? 'vimeo');
+  const fixtureVideoId = process.env.VIMEO_STAGING_CANARY_VIDEO_ID;
+  const payload = result('ready_read_only', {
+    capability_names: ['account_identity_read', 'webhook_secret_configured'],
+    account_fingerprint: digest(`${configuredAccount}:${providerAccount}`).slice(0, 16),
+  });
+
+  if (!fixtureVideoId) {
+    print({
+      ...payload,
+      status: 'fixture_missing',
+      missing_variable_names: ['VIMEO_STAGING_CANARY_VIDEO_ID'],
+      safe_reason_code: 'dedicated_private_fixture_missing',
+    });
+    process.exit(2);
+  }
+
+  const video = await fetch(`https://api.vimeo.com/videos/${encodeURIComponent(fixtureVideoId)}`, {
+    headers: {
+      authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
+      accept: 'application/json',
+    },
+  });
+  if (!video.ok) {
+    print(
+      result('fixture_unreadable', {
+        missing_variable_names: ['authorized_private_fixture_video'],
+        http_status: video.status,
+        safe_reason_code: `vimeo_fixture_http_${video.status}`,
+      }),
+    );
+    process.exit(2);
+  }
+
+  print({
+    ...payload,
+    capability_names: [
+      'account_identity_read',
+      'private_fixture_read',
+      'webhook_secret_configured',
+    ],
+    fixture_fingerprint: digest(fixtureVideoId).slice(0, 16),
+  });
+}
+
+function missingConfig() {
+  return [
+    'VIMEO_ACCESS_TOKEN',
+    'VIMEO_CLIENT_ID',
+    'VIMEO_CLIENT_SECRET',
+    'VIMEO_ACCOUNT_ID',
+    'VIMEO_WEBHOOK_SECRET',
+  ].filter((key) => !process.env[key]);
+}
+
+function digest(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function sanitizeError(error) {
+  return String(error && error.message ? error.message : error)
+    .replace(/[A-Za-z0-9_-]{24,}/g, '[redacted-token]')
+    .replace(/Bearer\s+[^\s"']+/gi, 'Bearer [redacted-token]')
+    .replace(/https?:\/\/[^\s"')]+/gi, '[redacted-url]')
+    .slice(0, 120);
+}

@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-07-16T23:29:20.329Z",
+  "status": "passed",
+  "alert_count": 4,
+  "sink": {
+    "sink": "deterministic-local",
+    "external_notifications_sent": false,
+    "accepted": [
+      "blocker:delivery_outbox_expired_leases",
+      "blocker:delivery_outbox_dead_letters",
+      "blocker:delivery_outbox_heartbeat_stale",
+      "queue-lag:delivery_outbox"
+    ],
+    "events": [
+      {
+        "schema_version": "ops.alert.v1",
+        "alert_key": "blocker:delivery_outbox_expired_leases",
+        "severity": "critical",
+        "status": "firing",
+        "summary": "delivery_outbox has expired leases that require lease-safe recovery.",
+        "routing_key": "engineering",
+        "dedupe_key": "a8c6bdad833b0ed7ac0b5080",
+        "generated_at": "2026-07-16T23:29:20.329Z",
+        "evidence": {
+          "dependency": "delivery_outbox",
+          "code": "delivery_outbox_expired_leases"
+        }
+      },
+      {
+        "schema_version": "ops.alert.v1",
+        "alert_key": "blocker:delivery_outbox_dead_letters",
+        "severity": "warning",
+        "status": "firing",
+        "summary": "delivery_outbox has dead-letter rows that need operator review.",
+        "routing_key": "engineering",
+        "dedupe_key": "a334523adfc62becfdbeba55",
+        "generated_at": "2026-07-16T23:29:20.329Z",
+        "evidence": {
+          "dependency": "delivery_outbox",
+          "code": "delivery_outbox_dead_letters"
+        }
+      },
+      {
+        "schema_version": "ops.alert.v1",
+        "alert_key": "blocker:delivery_outbox_heartbeat_stale",
+        "severity": "critical",
+        "status": "firing",
+        "summary": "delivery_outbox heartbeat is stale.",
+        "routing_key": "engineering",
+        "dedupe_key": "02898c13d10312cdbb1aceba",
+        "generated_at": "2026-07-16T23:29:20.329Z",
+        "evidence": {
+          "dependency": "worker_heartbeats",
+          "code": "delivery_outbox_heartbeat_stale"
+        }
+      },
+      {
+        "schema_version": "ops.alert.v1",
+        "alert_key": "queue-lag:delivery_outbox",
+        "severity": "warning",
+        "status": "firing",
+        "summary": "delivery_outbox oldest ready item is above 10 minutes.",
+        "routing_key": "owner_ops",
+        "dedupe_key": "7321c1335dbfa7e1903d9da3",
+        "generated_at": "2026-07-16T23:29:20.329Z",
+        "evidence": {
+          "queue": "delivery_outbox",
+          "oldest_ready_age_ms": 720000,
+          "ready_count": 8
+        }
+      }
+    ]
+  },
+  "external_notifications_sent": false
+}

@@ -61,6 +61,7 @@ export function defaultBillingFeatureConfig(): BillingFeatureConfig {
     mode: 'test',
     canonicalPublicOrigin: null,
     expectedProviderAccountRef: null,
+    expectedProviderProductRef: null,
     offerMappings: [],
     policyId: 'ot46-billing-policy-v1',
     policyVersion: 'ot46-billing-policy-v1',
@@ -130,6 +131,7 @@ export function parseBillingFeatureConfig(source: BillingConfigSource): BillingF
     mode,
     canonicalPublicOrigin,
     expectedProviderAccountRef,
+    expectedProviderProductRef: null,
     offerMappings,
     policyId: 'ot46-billing-policy-v1',
     policyVersion: 'ot46-billing-policy-v1',
@@ -210,6 +212,7 @@ export function parseOt87StripeTestBillingConfig(
   }
 
   const providerAccountRef = text(source.ONE_TIME_STRIPE_TEST_ACCOUNT_ID);
+  const providerProductRef = text(source.ONE_TIME_STRIPE_TEST_PRODUCT_ID);
   const providerPriceRef = text(source.ONE_TIME_STRIPE_TEST_PRICE_ID);
   const providerPortalConfigurationRef = text(source.ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID);
   const offerMappings =
@@ -253,6 +256,7 @@ export function parseOt87StripeTestBillingConfig(
       source.ONE_TIME_BILLING_CANONICAL_PUBLIC_ORIGIN ?? defaults.canonicalPublicOrigin,
     ),
     expectedProviderAccountRef: providerAccountRef,
+    expectedProviderProductRef: providerProductRef,
     offerMappings,
     policyId: policy.policy_id,
     policyVersion: policy.policy_version,
@@ -273,6 +277,7 @@ export function parseOt87StripeTestBillingConfig(
           text(source.ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET),
         ),
         ONE_TIME_STRIPE_TEST_ACCOUNT_ID: Boolean(providerAccountRef),
+        ONE_TIME_STRIPE_TEST_PRODUCT_ID: Boolean(providerProductRef),
         ONE_TIME_STRIPE_TEST_PRICE_ID: Boolean(providerPriceRef),
         ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID: Boolean(providerPortalConfigurationRef),
         ONE_TIME_ENTITLEMENT_EMERGENCY_MODE: emergencyMode,
@@ -302,6 +307,7 @@ export function billingConfigSnapshot(config: BillingFeatureConfig) {
     mode: config.mode,
     canonicalPublicOrigin: config.canonicalPublicOrigin,
     expectedProviderAccountRef: config.expectedProviderAccountRef ? 'configured' : null,
+    expectedProviderProductRef: config.expectedProviderProductRef ? 'configured' : null,
     providerPortalConfigurationRef: config.providerPortalConfigurationRef ? 'configured' : null,
     offerCount: config.offerMappings.length,
     policyId: config.policyId,

@@ -4,7 +4,6 @@ import type {
   ClassOccurrenceSummary,
   ContactDetail,
   ContactListItem,
-  ContentLibraryItemSummary,
   OwnerDashboardResponse,
   SessionUser,
 } from '@onetime/contracts';
@@ -19,7 +18,6 @@ import {
   getAssignees,
   getClasses,
   getContact,
-  getContentLibrary,
   getOwnerDashboard,
   getSession,
   listContacts,
@@ -35,6 +33,12 @@ import './crm.css';
 const CommunicationsPanel = React.lazy(() =>
   communicationsRouteDescriptor.load().then((module) => ({
     default: module.CommunicationsFeature,
+  })),
+);
+
+const ContentWorkspace = React.lazy(() =>
+  import('./content-workspace/ContentWorkspace.js').then((module) => ({
+    default: module.ContentWorkspace,
   })),
 );
 
@@ -108,11 +112,9 @@ function CrmApp() {
     loading: false,
     error: '',
   });
-  const [contentItems, setContentItems] = useState<ContentLibraryItemSummary[]>([]);
-  const [contentState, setContentState] = useState<AsyncPanelState>({
-    loading: false,
-    error: '',
-  });
+  const [contentRoutePath, setContentRoutePath] = useState(
+    location.pathname.startsWith('/app/content') ? location.pathname : '/app/content',
+  );
   const [assignees, setAssignees] = useState<Assignee[]>([]);
   const [focusContactId, setFocusContactId] = useState<string | null>(null);
   const returnFocusContactId = useRef<string | null>(null);
@@ -189,7 +191,7 @@ function CrmApp() {
       setListLoading(false);
       if (ownerSurface === 'dashboard' || ownerSurface === 'billing') await loadDashboard();
       if (ownerSurface === 'classes') await loadClasses();
-      if (ownerSurface === 'content') await loadContent();
+      if (ownerSurface === 'content') setContentRoutePath(location.pathname);
       return;
     }
     if (location.pathname === communicationsRouteDescriptor.path) {
@@ -304,22 +306,6 @@ function CrmApp() {
     setClassesState({ loading: false, error: '' });
   }
 
-  async function loadContent() {
-    setContentState({ loading: true, error: '' });
-    try {
-      const json = await getContentLibrary();
-      setContentItems(json.items);
-    } catch (error) {
-      if (handleAuthError(error)) return;
-      setContentState({
-        loading: false,
-        error: errorMessage(error, 'Content library could not load.'),
-      });
-      return;
-    }
-    setContentState({ loading: false, error: '' });
-  }
-
   function openContact(contactId: string) {
     returnFocusContactId.current = contactId;
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(contactId)}`);
@@ -385,8 +371,11 @@ function CrmApp() {
     setListLoading(false);
   }
 
-  function openOwnerSurface(nextSurface: Exclude<OwnerSurface, 'crm'>) {
-    history.pushState({}, '', ownerSurfacePath(nextSurface));
+  function openOwnerSurface(
+    nextSurface: Exclude<OwnerSurface, 'crm'>,
+    href = ownerSurfacePath(nextSurface),
+  ) {
+    history.pushState({}, '', href);
     setSurface(nextSurface);
     setCommunicationsMode(null);
     setSelected(null);
@@ -395,7 +384,7 @@ function CrmApp() {
     setListLoading(false);
     if (nextSurface === 'dashboard' || nextSurface === 'billing') void loadDashboard();
     if (nextSurface === 'classes') void loadClasses();
-    if (nextSurface === 'content') void loadContent();
+    if (nextSurface === 'content') setContentRoutePath(href);
   }
 
   async function logout() {
@@ -465,8 +454,7 @@ function CrmApp() {
     setDashboardState({ loading: false, error: '' });
     setClasses([]);
     setClassesState({ loading: false, error: '' });
-    setContentItems([]);
-    setContentState({ loading: false, error: '' });
+    setContentRoutePath('/app/content');
     setListLoading(false);
     setDetailLoading(false);
     setSession(null);
@@ -524,7 +512,7 @@ function CrmApp() {
           },
           {
             id: 'content',
-            label: 'Content/Library',
+            label: 'Content',
             href: '/app/content',
             current: surface === 'content',
           },
@@ -589,13 +577,6 @@ function CrmApp() {
         loading={classesState.loading}
         onRefresh={() => void loadClasses()}
       />
-    ) : surface === 'content' ? (
-      <ReadOnlyToolbar
-        label="Refresh content"
-        actionId="content.library.refresh.button"
-        loading={contentState.loading}
-        onRefresh={() => void loadContent()}
-      />
     ) : surface === 'billing' ? (
       <ReadOnlyToolbar
         label="Refresh billing status"
@@ -651,7 +632,7 @@ function CrmApp() {
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
         const ownerSurface = ownerSurfaceFromPath(href);
-        if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface);
+        if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
         if (href === '/app/crm') void backToList();
         if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
       }}
@@ -667,7 +648,7 @@ function CrmApp() {
           onRetry={() => void loadDashboard()}
           onOpen={(href) => {
             const ownerSurface = ownerSurfaceFromPath(href);
-            if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface);
+            if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
             if (href === '/app/crm') void backToList();
             if (href === communicationsRouteDescriptor.path) openGlobalCommunications();
           }}
@@ -682,12 +663,20 @@ function CrmApp() {
         />
       )}
       {surface === 'content' && (
-        <ContentPanel
-          items={contentItems}
-          loading={contentState.loading}
-          error={contentState.error}
-          onRetry={() => void loadContent()}
-        />
+        <Suspense
+          fallback={
+            <p className="state-panel" role="status">
+              Loading Content Workspace...
+            </p>
+          }
+        >
+          <ContentWorkspace
+            csrfToken={session?.csrf_token ?? ''}
+            path={contentRoutePath}
+            onNavigate={(href) => openOwnerSurface('content', href)}
+            onProtectedStateCleared={clearProtectedState}
+          />
+        </Suspense>
       )}
       {surface === 'billing' && (
         <BillingPanel
@@ -933,66 +922,6 @@ function ClassesPanel({
   );
 }
 
-function ContentPanel({
-  items,
-  loading,
-  error,
-  onRetry,
-}: {
-  items: ContentLibraryItemSummary[];
-  loading: boolean;
-  error: string;
-  onRetry: () => void;
-}) {
-  if (loading && items.length === 0) return <ReadOnlySkeleton label="Loading content" />;
-  if (error) {
-    return (
-      <StatePanel
-        kind="error"
-        title="Content library could not load"
-        body={error}
-        actionLabel="Retry"
-        onAction={onRetry}
-      />
-    );
-  }
-  if (items.length === 0) {
-    return (
-      <StatePanel
-        kind="empty"
-        title="No content library items"
-        body="No admitted content outcomes are available."
-      />
-    );
-  }
-  return (
-    <section className="readonly-list" aria-busy={loading}>
-      {items.map((item) => (
-        <article className="readonly-row" key={item.item_key}>
-          <div>
-            <h2>{item.title}</h2>
-            <p>{item.item_key}</p>
-          </div>
-          <dl>
-            <div>
-              <dt>Type</dt>
-              <dd>{readableState(item.item_type)}</dd>
-            </div>
-            <div>
-              <dt>Lifecycle</dt>
-              <dd>{readableState(item.lifecycle_state)}</dd>
-            </div>
-            <div>
-              <dt>Updated</dt>
-              <dd>{formatDate(item.updated_at)}</dd>
-            </div>
-          </dl>
-        </article>
-      ))}
-    </section>
-  );
-}
-
 function BillingPanel({
   dashboard,
   loading,
@@ -1060,31 +989,28 @@ function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['a
   const visible = actions.filter((action) => action.roles.includes('owner'));
   return (
     <section className="action-registry" aria-labelledby="action-registry-title">
-      <h2 id="action-registry-title">Visible action registry</h2>
+      <h2 id="action-registry-title">Operator action coverage</h2>
       <div className="action-registry-grid">
         {visible.map((action) => (
           <article key={action.action_id}>
             <h3>{action.label}</h3>
-            <p>{action.action_id}</p>
             <dl>
               <div>
-                <dt>Capability</dt>
-                <dd>{action.capability}</dd>
+                <dt>Area</dt>
+                <dd>{formatRegistryLabel(action.capability)}</dd>
               </div>
               <div>
-                <dt>Handler</dt>
+                <dt>Control</dt>
+                <dd>{action.handler.method === 'GET' ? 'Read-only view' : 'Protected update'}</dd>
+              </div>
+              <div>
+                <dt>Activity record</dt>
+                <dd>Recorded for operator review.</dd>
+              </div>
+              <div>
+                <dt>Duplicate protection</dt>
                 <dd>
-                  {action.handler.method} {action.handler.path}
-                </dd>
-              </div>
-              <div>
-                <dt>Audit</dt>
-                <dd>{action.audit.event}</dd>
-              </div>
-              <div>
-                <dt>Idempotency</dt>
-                <dd>
-                  {action.idempotency.required ? action.idempotency.key_source : 'Not required'}
+                  {action.idempotency.required ? 'Duplicate taps are ignored.' : 'Read-only safe.'}
                 </dd>
               </div>
             </dl>
@@ -1093,6 +1019,14 @@ function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['a
       </div>
     </section>
   );
+}
+
+function formatRegistryLabel(value: string) {
+  return value
+    .replace(/[_:/.-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function ReadOnlySkeleton({ label }: { label: string }) {
@@ -1765,7 +1699,7 @@ function sourceLabel(value: string) {
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/dashboard') return 'dashboard';
   if (pathname === '/app/classes') return 'classes';
-  if (pathname === '/app/content') return 'content';
+  if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
   if (pathname === '/app/crm') return 'crm';
   return null;
@@ -1778,7 +1712,7 @@ function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
 function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'dashboard') return 'Dashboard';
   if (surface === 'classes') return 'Classes';
-  if (surface === 'content') return 'Content/Library';
+  if (surface === 'content') return 'Content Workspace';
   if (surface === 'billing') return 'Products/Billing status';
   return 'CRM';
 }
@@ -1788,7 +1722,9 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
     return 'Bounded owner/admin status from CRM, classes, communications, content, portals and billing projections.';
   }
   if (surface === 'classes') return 'Read-only class occurrence status from the classes API.';
-  if (surface === 'content') return 'Read-only admitted content outcomes from the library API.';
+  if (surface === 'content') {
+    return 'Operational Rabbi and One Time content review, prompts, artifacts, social drafts and provider-off status.';
+  }
   if (surface === 'billing') return 'Read-only billing readiness and projection status.';
   return 'One Time signup and contact review.';
 }

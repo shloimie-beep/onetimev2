@@ -1,5 +1,8 @@
 import { z } from 'zod';
 export * from './pipeline.ts';
+export * from './vimeo-runtime.ts';
+export * from './publisher.ts';
+export * from './admin-workspace.ts';
 
 export const contentLifecycleStateSchema = z.enum([
   'received',

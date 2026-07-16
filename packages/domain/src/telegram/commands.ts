@@ -25,12 +25,12 @@ import { TelegramIdentityResolver } from './identity.ts';
 
 const HELP_TEXT = [
   'One Time Telegram commands:',
-  '/whoami, /scope, /leads, /lead <ref>, /contact <ref>, /classes, /class <ref>, /content, /content-item <ref>, /tasks, /task <ref>, /support, /ticket <ref>.',
-  'Write commands include /lead-create, /tag-add, /tag-remove, /class-status, /content-retry, /task-create, /task-update, /ticket-assign, /ticket-status, and /question-select when enabled.',
+  '/status, /whoami, /scope, /leads, /new-leads, /signups, /lead <ref>, /contact <ref>, /classes, /class <ref>, /content, /content-item <ref>, /content-readiness <ref>, /tasks, /task <ref>, /support, /ticket <ref>, /questions, /question <ref>, /social, /social-draft <ref>.',
+  'Write commands include /lead-create, /tag-add, /tag-remove, /class-status, /content-retry, /task-create, /task-update, /ticket-assign, /ticket-status, /question-select, and /question-resolve when enabled. Every write previews first and requires explicit confirmation.',
 ].join('\n');
 
 const forbiddenRequestPattern =
-  /delete|drop table|select\s+\*|sql|shell|print env|token|secret|export|mass send|charge|refund|impersonate|view as|act as|switch role|another account|other product|bna bot/i;
+  /delete|drop table|select\s+\*|sql|shell|print env|token|secret|export|mass send|bulk send|publish|buffer publish|billing|charge|refund|provider config|role change|impersonate|view as|act as|switch role|another account|other product|academy|bna bot/i;
 
 export class TelegramCommandEngine {
   constructor(
@@ -179,6 +179,14 @@ export class TelegramCommandEngine {
     request: BotActionRequest,
   ) {
     if (capability === 'gateway.help') return HELP_TEXT;
+    if (capability === 'gateway.status.read') {
+      return [
+        'One Time Telegram runtime: sink/mock safe.',
+        `Actor: ${actor.displayLabel} (${gatewayRole(actor.role)}).`,
+        `Scope: ${actor.accountKey}/${actor.productKey}.`,
+        'Writes require preview, payload hash, idempotency key, and explicit confirmation.',
+      ].join('\n');
+    }
     if (capability === 'gateway.identity.read_self') {
       return `Signed in as ${actor.displayLabel} (${gatewayRole(actor.role)}). Acting only as yourself.`;
     }
@@ -274,7 +282,7 @@ export class TelegramCommandEngine {
     return {
       chatRef: input.update.chatRef as never,
       correlationKey: input.correlation,
-      text: `${preview}\n\nAction: ${input.command.capability}\nScope: ${input.actor.accountKey}/${input.actor.productKey}\nConfirm before ${expiresAt}.`,
+      text: `${preview}\n\nAction: ${input.command.capability}\nScope: ${input.actor.accountKey}/${input.actor.productKey}\nPayload hash: ${actionDigest.slice(0, 24)}\nIdempotency key: ${idempotencyKey.slice(0, 24)}\nConfirm before ${expiresAt}.`,
       buttons: [
         { label: 'Confirm', callbackData: `confirm:v1:${confirmationKey}` },
         { label: 'Cancel', callbackData: `cancel:v1:${confirmationKey}` },
@@ -383,6 +391,30 @@ export class TelegramCommandEngine {
       actorKey: record.actorUserKey,
       classification: 'confirmation_payload',
     })) as BotActionRequest;
+    const payloadMismatch = confirmationPayloadMismatch(record, payload, auth.actor, auth.mapping);
+    if (payloadMismatch) {
+      const result: BotCommandResult = {
+        status: 'stale',
+        publicMessage: 'Confirmation denied because the payload no longer matches the preview.',
+      };
+      await this.confirmations.recordResult(record.confirmationKey, result, input.now);
+      await this.audit.record({
+        botKey: input.update.botKey,
+        environment: input.update.environment,
+        accountKey: auth.actor.accountKey,
+        productKey: auth.actor.productKey,
+        actorUserKey: auth.actor.userKey,
+        correlationKey: input.correlation,
+        capability: record.capability,
+        outcome: 'denied',
+        reason: payloadMismatch,
+      });
+      return {
+        chatRef: input.update.chatRef,
+        correlationKey: input.correlation,
+        text: result.publicMessage,
+      };
+    }
     const result = await this.executeAction(payload, auth.actor, record.idempotencyKey);
     await this.confirmations.recordResult(record.confirmationKey, result, input.now);
     await this.audit.record({
@@ -457,13 +489,24 @@ export function classifyCommand(update: NormalizedBotUpdate): BotCommand {
 
 function classifyDeterministic(text: string): BotCommand | null {
   const lower = text.toLowerCase();
+  if (['/status', 'status'].includes(lower)) return read('gateway.status.read');
   if (['/whoami', 'whoami'].includes(lower)) {
     return read('gateway.identity.read_self');
   }
   if (['/scope', 'scope'].includes(lower)) return read('gateway.scope.read');
   if (lower === '/leads' || lower === 'leads') return read('crm.lead.list');
+  if (lower === '/new-leads' || lower === 'new leads') {
+    return read('crm.lead.list', { status: 'new' });
+  }
   if (lower.startsWith('/leads ') || lower.startsWith('leads ')) {
-    return read('crm.lead.list', { filter: stripCommand(text, 'leads').slice(0, 80) });
+    const query = stripCommand(text, 'leads').slice(0, 240);
+    if (query.toLowerCase().startsWith('page ')) {
+      return read('crm.lead.list', { cursor: query.slice(5).trim().slice(0, 220) });
+    }
+    return read('crm.lead.list', { filter: query.slice(0, 80) });
+  }
+  if (lower === '/signups' || lower === 'signups' || lower === '/recent-signups') {
+    return read('crm.signup.recent');
   }
   if (lower.startsWith('/lead ')) return readWithRef(text, 'lead', 'crm.lead.read');
   if (lower.startsWith('/contact '))
@@ -503,6 +546,9 @@ function classifyDeterministic(text: string): BotCommand | null {
   if (lower.startsWith('/content-item ')) {
     return readWithRef(text, 'content-item', 'content.item.read');
   }
+  if (lower.startsWith('/content-readiness ')) {
+    return readWithRef(text, 'content-readiness', 'content.knowledge.read');
+  }
   if (lower.startsWith('/content-retry ')) {
     return write(
       'content.item.retry',
@@ -517,6 +563,14 @@ function classifyDeterministic(text: string): BotCommand | null {
   if (lower.startsWith('/task-create ') || lower.startsWith('task create ')) {
     const title = stripCommand(text.replace(/^task create/i, '/task-create'), 'task-create');
     if (title.length < 3) return missing();
+    const targeted = title.match(/^([A-Za-z0-9:_-]{2,100})\s+\|\s+(.+)$/);
+    if (targeted?.[1] && targeted[2]) {
+      return write(
+        'task.create',
+        { contact_ref: targeted[1], title: targeted[2].slice(0, 160) },
+        'deterministic',
+      );
+    }
     return write('task.create', { title: title.slice(0, 160) }, 'deterministic');
   }
   if (lower.startsWith('/task-update ') || lower.startsWith('task update ')) {
@@ -535,6 +589,9 @@ function classifyDeterministic(text: string): BotCommand | null {
   if (lower === '/support' || lower === 'support') return read('support.ticket.list');
   if (lower.startsWith('/support ')) {
     return read('support.ticket.list', { filter: stripCommand(text, 'support').slice(0, 80) });
+  }
+  if (lower === '/ticket-decisions' || lower === 'ticket decisions') {
+    return read('support.ticket.decision_needed');
   }
   if (lower.startsWith('/ticket-assign ')) {
     const args = splitArgs(stripCommand(text, 'ticket-assign'), 2);
@@ -567,8 +624,29 @@ function classifyDeterministic(text: string): BotCommand | null {
       'deterministic',
     );
   }
+  if (lower.startsWith('/question-resolve ')) {
+    const args = splitArgs(stripCommand(text, 'question-resolve'), 2);
+    if (!args) return missing();
+    return write(
+      'class.question.resolve',
+      { question_ref: args[0], status: args[1]!.toLowerCase() },
+      'deterministic',
+    );
+  }
   if (lower.startsWith('/question ')) {
     return readWithRef(text, 'question', 'class.question.read_redacted');
+  }
+  if (lower === '/social' || lower === 'social' || lower === '/social-drafts') {
+    return read('social.draft.list');
+  }
+  if (lower.startsWith('/social ') || lower.startsWith('social ')) {
+    return read('social.draft.list', { filter: stripCommand(text, 'social').slice(0, 80) });
+  }
+  if (lower.startsWith('/social-draft ')) {
+    return readWithRef(text, 'social-draft', 'social.draft.read');
+  }
+  if (lower.startsWith('/social-approval ')) {
+    return readWithRef(text, 'social-approval', 'social.draft.approval_link');
   }
   if (lower === '/gateway-audit' || lower === 'gateway-audit') {
     return read('telegram.audit.read_recent', { count: 10 });
@@ -583,6 +661,10 @@ function classifyDeterministic(text: string): BotCommand | null {
 }
 
 function classifyNaturalLanguage(text: string): BotCommand | null {
+  if (/^(show|list) new leads$/i.test(text)) return read('crm.lead.list', { status: 'new' });
+  if (/^(show|list) recent signups$/i.test(text)) return read('crm.signup.recent');
+  if (/^(show|list) social drafts$/i.test(text)) return read('social.draft.list');
+  if (/^(show|list) ticket decisions$/i.test(text)) return read('support.ticket.decision_needed');
   const createTask = text.match(/^create task (.+)$/i);
   if (createTask?.[1]) {
     return write('task.create', { title: createTask[1].slice(0, 160) }, 'natural_language');
@@ -600,6 +682,20 @@ function classifyNaturalLanguage(text: string): BotCommand | null {
     return write(
       'support.ticket.assign_self',
       { ticket_ref: assignTicket[1], assignee: 'self' },
+      'natural_language',
+    );
+  }
+  const featureQuestion = text.match(/^feature question ([A-Za-z0-9:_-]{2,100})$/i);
+  if (featureQuestion?.[1]) {
+    return write('class.question.select', { question_ref: featureQuestion[1] }, 'natural_language');
+  }
+  const resolveQuestion = text.match(
+    /^resolve question ([A-Za-z0-9:_-]{2,100}) as (answered|dismissed)$/i,
+  );
+  if (resolveQuestion?.[1] && resolveQuestion[2]) {
+    return write(
+      'class.question.resolve',
+      { question_ref: resolveQuestion[1], status: resolveQuestion[2].toLowerCase() },
       'natural_language',
     );
   }
@@ -663,17 +759,8 @@ function actionRequest(command: Extract<BotCommand, { type: 'read' | 'write' }>)
 }
 
 function confirmationMode(capability: BotWriteCapability): BotConfirmationMode {
-  switch (capability) {
-    case 'crm.lead.create':
-    case 'crm.lead_tag.remove':
-    case 'class.status.update':
-    case 'content.item.retry':
-    case 'support.ticket.status.update':
-    case 'class.question.select':
-      return 'always';
-    default:
-      return 'nl_preview';
-  }
+  void capability;
+  return 'always';
 }
 
 function riskClass(capability: BotWriteCapability): BotRiskClass {
@@ -681,7 +768,8 @@ function riskClass(capability: BotWriteCapability): BotRiskClass {
 }
 
 function requiresConfirmation(command: Extract<BotCommand, { type: 'write' }>) {
-  return command.confirmationMode === 'always' || command.source === 'natural_language';
+  void command;
+  return true;
 }
 
 function isWriteCapability(capability: BotCapability): capability is BotWriteCapability {
@@ -696,6 +784,7 @@ function isWriteCapability(capability: BotCapability): capability is BotWriteCap
     'support.ticket.assign_self',
     'support.ticket.status.update',
     'class.question.select',
+    'class.question.resolve',
   ].includes(capability);
 }
 
@@ -731,6 +820,26 @@ function confirmationMismatch(
   if (record.roleAtPreview !== actor.role || record.securityVersion !== actor.securityVersion) {
     return 'CONFIRMATION_STATE_CHANGED';
   }
+  return null;
+}
+
+function confirmationPayloadMismatch(
+  record: ConfirmationRecord,
+  payload: BotActionRequest,
+  actor: CanonicalOneTimeActor,
+  mapping: { mappingKey: string; mappingVersion: number },
+) {
+  if (payload.capability !== record.capability) return 'CONFIRMATION_PAYLOAD_CHANGED';
+  const digest = stableDigest([
+    payload.capability,
+    actor.userKey,
+    actor.accountKey,
+    actor.productKey,
+    canonicalJson(payload.args),
+    mapping.mappingKey,
+    String(mapping.mappingVersion),
+  ]);
+  if (digest !== record.actionDigest) return 'CONFIRMATION_PAYLOAD_CHANGED';
   return null;
 }
 

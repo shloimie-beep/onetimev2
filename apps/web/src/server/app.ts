@@ -42,9 +42,32 @@ import {
   classOccurrenceDetailResponseSchema,
   classOccurrenceListQuerySchema,
   classOccurrenceListResponseSchema,
+  contentAdminActionPayloadSchema,
+  contentAdminActionResponseSchema,
+  contentAdminActivityResponseSchema,
+  contentAdminCreateGenerationPayloadSchema,
+  contentAdminCreateGenerationResponseSchema,
+  contentAdminCreateWorkspaceResponseSchema,
+  contentAdminKnowledgeResponseSchema,
+  contentAdminOverviewResponseSchema,
+  contentAdminProcessingResponseSchema,
+  contentAdminPromptActivatePayloadSchema,
+  contentAdminPromptListResponseSchema,
+  contentAdminPromptMutationResponseSchema,
+  contentAdminPromptPatchPayloadSchema,
+  contentAdminPromptPreviewPayloadSchema,
+  contentAdminPromptPreviewResponseSchema,
+  contentAdminPromptRollbackPayloadSchema,
+  contentAdminSocialWorkspaceResponseSchema,
+  contentAdminSourceDetailResponseSchema,
+  contentAdminWorkspaceQuerySchema,
   ot86bReadinessResponseSchema,
   ot86bSocialDraftListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
+import {
+  providerCanaryPlanResponseSchema,
+  providerControlCenterResponseSchema,
+} from '../../../../packages/contracts/src/providers/control-center.ts';
 import type {
   PortalActorContext,
   PortalCapability,
@@ -53,11 +76,13 @@ import {
   CrmDuplicateError,
   CrmVersionConflictError,
   ContentIdempotencyConflictError,
+  Ot110aContentWorkspaceError,
   IdempotencyConflictError,
   AccountLifecycleError,
   acceptOwnerAdminInvitation,
   acceptParentActivation,
   acceptStudentSetup,
+  activateOt110aPromptVersion,
   admitContentOutcome,
   authenticateUser,
   canEditContacts,
@@ -71,14 +96,22 @@ import {
   createClassroomService,
   createContentPortalAccessAdapter,
   createLoginCsrf,
+  createOt110aGeneratedArtifact,
+  createOt110aIntegratedProviderPorts,
+  createOt110aPromptPatch,
   createParentPortalService,
   createSession,
   consumeWhatsAppAccountLink,
+  createStudentClassHelperAdapter,
   createStudentPortalService,
   resendEmailChallenge,
   getClassOccurrenceDetail,
   getContentItemDetail,
   getContactDetail,
+  getOt110aContentCreateWorkspace,
+  getOt110aContentProcessingQueue,
+  getOt110aContentSourceDetail,
+  getOt110aContentWorkspaceOverview,
   getSessionUserByKey,
   getSessionByToken,
   inspectAccountLifecycleToken,
@@ -87,13 +120,21 @@ import {
   listContentLibrary,
   listAssignableUsers,
   listContacts,
+  listOt110aActivity,
+  listOt110aKnowledgeWorkspace,
+  listOt110aPromptTemplates,
+  listOt110aSocialWorkspace,
   ownerAdminVisibleActions,
+  performOt110aContentAction,
+  previewOt110aPromptPatch,
   inspectOt86bBufferReadinessFromEnv,
   listOt86bSocialDrafts,
   receiveOt86PublicationManifest,
   receiveOt86bSocialEvent,
   requestPasswordReset,
   revokeTrustedDevice,
+  resolveOt110aContentAdminActor,
+  rollbackOt110aPromptVersion,
   revokeSession,
   rotateSessionCsrf,
   receiveWhatsAppWebhook,
@@ -108,6 +149,10 @@ import {
   PortalServiceError,
   type PortalServiceDeps,
 } from '../../../../packages/domain/src/index.ts';
+import {
+  buildProviderControlCenter,
+  planProviderCanary,
+} from '../../../../packages/domain/src/providers/control-center.ts';
 import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
@@ -123,6 +168,7 @@ import type {
   BillingFeatureConfig,
 } from '../../../../packages/domain/src/billing/types.ts';
 import {
+  collectOpsReadiness,
   exposeServerTiming,
   publicError,
   traceMiddleware,
@@ -137,6 +183,7 @@ import { createParentPortalRouter, createStudentPortalRouter } from './features/
 import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
+import { registerOpsRoutes } from './ops-routes.ts';
 
 type AppDeps = {
   config: AppConfig;
@@ -390,17 +437,31 @@ export function createApp({
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
+  registerOpsRoutes({
+    app,
+    config,
+    pool,
+    sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+    setPrivateNoStore,
+    ...(clock ? { clock } : {}),
+  });
+
   app.get('/health', (_req, res) => {
     res.json({ ok: true, service: 'onetime-web' });
   });
 
   app.get('/ready', async (req: RequestWithTrace, res) => {
-    try {
-      await withTiming(req, 'db', () => pool.query('SELECT 1'));
-      res.json({ ok: true });
-    } catch {
-      res.status(503).json({ ok: false });
-    }
+    const readiness = await withTiming(req, 'ops_ready', () =>
+      collectOpsReadiness({ pool, config, ...(clock ? { now: clock() } : {}) }),
+    );
+    res.status(readiness.ok ? 200 : 503).json({
+      ok: readiness.ok,
+      service: 'onetime-web',
+      generated_at: readiness.generated_at,
+      dependencies: readiness.dependencies,
+      optional_dependencies: readiness.optional_dependencies,
+      blockers: readiness.blockers,
+    });
   });
 
   app.get('/version', (_req, res) => {
@@ -1011,6 +1072,53 @@ export function createApp({
     }
   });
 
+  app.get(
+    '/api/internal/operations/provider-control-center/v1',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (session.user.role !== 'owner') {
+        res
+          .status(403)
+          .json(
+            publicError('FORBIDDEN', 'Provider control center requires owner access.', req.traceId),
+          );
+        return;
+      }
+      try {
+        const controlCenter = buildProviderControlCenter({
+          config,
+          env: process.env,
+          now: clock ? clock() : new Date(),
+        });
+        res.json(providerControlCenterResponseSchema.parse(controlCenter));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/internal/operations/provider-control-center/v1/canary-plan',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      if (!requireSameOriginPost(req, res, config)) return;
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      const plan = planProviderCanary({
+        payload: stripCsrfField(req.body),
+        actorRole: session.user.role,
+        recentEmailAssuredAt: req.header('x-ot-ops-email-assured-at') ?? undefined,
+        allowlistedTargets: providerCanaryAllowlist(config, process.env),
+        now: clock ? clock() : new Date(),
+      });
+      const parsed = providerCanaryPlanResponseSchema.parse(plan);
+      res.status(parsed.success ? 200 : statusForCanaryPlanCode(parsed.code)).json(parsed);
+    },
+  );
+
   const portalRepository = createPortalRepository(pool);
   const classroomRepository = createClassroomRepository(pool);
   const classroomService = createClassroomService({
@@ -1027,6 +1135,7 @@ export function createApp({
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
+    helper: createStudentClassHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
     billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
   };
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
@@ -1343,6 +1452,359 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/admin/content/workspace', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const query = contentAdminWorkspaceQuerySchema.parse(req.query);
+      const workspace = await withTiming(req, 'db', () =>
+        getOt110aContentWorkspaceOverview({
+          pool,
+          config,
+          actor,
+          query,
+          ports: createOt110aIntegratedProviderPorts(config),
+        }),
+      );
+      res.json(contentAdminOverviewResponseSchema.parse({ success: true, ...workspace }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/admin/content/processing', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const queue = await withTiming(req, 'db', () =>
+        getOt110aContentProcessingQueue({
+          pool,
+          config,
+          actor,
+          ports: createOt110aIntegratedProviderPorts(config),
+        }),
+      );
+      res.json(contentAdminProcessingResponseSchema.parse({ success: true, ...queue }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/admin/content/create', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const workspace = await withTiming(req, 'db', () =>
+        getOt110aContentCreateWorkspace({
+          pool,
+          config,
+          actor,
+          ports: createOt110aIntegratedProviderPorts(config),
+        }),
+      );
+      res.json(contentAdminCreateWorkspaceResponseSchema.parse({ success: true, ...workspace }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/create', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const payload = contentAdminCreateGenerationPayloadSchema.parse(req.body);
+      const artifact = await withTiming(req, 'db', () =>
+        createOt110aGeneratedArtifact({
+          pool,
+          config,
+          actor,
+          payload,
+          ports: createOt110aIntegratedProviderPorts(config),
+        }),
+      );
+      res.status(202).json(
+        contentAdminCreateGenerationResponseSchema.parse({
+          success: true,
+          artifact,
+          provider_ports: [createOt110aIntegratedProviderPorts(config).generation.inspect()],
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/admin/content/social', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const workspace = await withTiming(req, 'db', () =>
+        listOt110aSocialWorkspace({
+          pool,
+          config,
+          actor,
+          ports: createOt110aIntegratedProviderPorts(config),
+        }),
+      );
+      res.json(contentAdminSocialWorkspaceResponseSchema.parse({ success: true, ...workspace }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/admin/content/knowledge', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const workspace = await withTiming(req, 'db', () =>
+        listOt110aKnowledgeWorkspace({
+          pool,
+          config,
+          actor,
+          ports: createOt110aIntegratedProviderPorts(config),
+        }),
+      );
+      res.json(contentAdminKnowledgeResponseSchema.parse({ success: true, ...workspace }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/admin/content/prompts', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const templates = await withTiming(req, 'db', () =>
+        listOt110aPromptTemplates({ pool, config, actor }),
+      );
+      res.json(
+        contentAdminPromptListResponseSchema.parse({
+          success: true,
+          capabilities: actor.capabilities,
+          templates,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/prompts/:templateKey/patch', async (req, res) => {
+    setPrivateNoStore(res);
+    const request = req as RequestWithTrace;
+    const session = await requireApiSession(request, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(request, res, pool, session))) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const payload = contentAdminPromptPatchPayloadSchema.parse(request.body);
+      const result = await withTiming(request, 'db', () =>
+        createOt110aPromptPatch({
+          pool,
+          config,
+          actor,
+          templateKey: String(request.params.templateKey),
+          payload,
+        }),
+      );
+      res
+        .status(201)
+        .json(contentAdminPromptMutationResponseSchema.parse({ success: true, ...result }));
+    } catch (error) {
+      handleApiError(error, request, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/prompts/:templateKey/preview', async (req, res) => {
+    setPrivateNoStore(res);
+    const request = req as RequestWithTrace;
+    const session = await requireApiSession(request, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(request, res, pool, session))) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const payload = contentAdminPromptPreviewPayloadSchema.parse(request.body);
+      const preview = await withTiming(request, 'db', () =>
+        previewOt110aPromptPatch({
+          pool,
+          config,
+          actor,
+          templateKey: String(request.params.templateKey),
+          payload,
+        }),
+      );
+      res.json(contentAdminPromptPreviewResponseSchema.parse({ success: true, preview }));
+    } catch (error) {
+      handleApiError(error, request, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/prompts/:templateKey/activate', async (req, res) => {
+    setPrivateNoStore(res);
+    const request = req as RequestWithTrace;
+    const session = await requireApiSession(request, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(request, res, pool, session))) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const payload = contentAdminPromptActivatePayloadSchema.parse(request.body);
+      const result = await withTiming(request, 'db', () =>
+        activateOt110aPromptVersion({
+          pool,
+          config,
+          actor,
+          templateKey: String(request.params.templateKey),
+          versionKey: payload.version_key,
+          reason: payload.reason,
+        }),
+      );
+      res.json(contentAdminPromptMutationResponseSchema.parse({ success: true, ...result }));
+    } catch (error) {
+      handleApiError(error, request, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/prompts/:templateKey/rollback', async (req, res) => {
+    setPrivateNoStore(res);
+    const request = req as RequestWithTrace;
+    const session = await requireApiSession(request, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(request, res, pool, session))) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const payload = contentAdminPromptRollbackPayloadSchema.parse(request.body);
+      const result = await withTiming(request, 'db', () =>
+        rollbackOt110aPromptVersion({
+          pool,
+          config,
+          actor,
+          templateKey: String(request.params.templateKey),
+          targetVersionKey: payload.target_version_key,
+          reason: payload.reason,
+        }),
+      );
+      res.json(contentAdminPromptMutationResponseSchema.parse({ success: true, ...result }));
+    } catch (error) {
+      handleApiError(error, request, res);
+    }
+  });
+
+  app.get('/api/v1/admin/content/activity', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const sourceKey = typeof req.query.source_key === 'string' ? req.query.source_key : undefined;
+      const events = await withTiming(req, 'db', () =>
+        listOt110aActivity({
+          pool,
+          config,
+          actor,
+          ...(sourceKey ? { sourceKey } : {}),
+        }),
+      );
+      res.json(contentAdminActivityResponseSchema.parse({ success: true, events }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/transcript/approve',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'transcript.approve');
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/artifacts/approve',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'artifact.approve');
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/artifacts/publish',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'artifact.publish');
+    },
+  );
+
+  app.post('/api/v1/admin/content/sources/:sourceKey/retry', async (req: RequestWithTrace, res) => {
+    await handleOt110aSourceAction(req, res, pool, config, 'content.retry');
+  });
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/retract',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'content.retract');
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/social/approve',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'social.approve');
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/social/schedule',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'social.schedule');
+    },
+  );
+
+  app.post(
+    '/api/v1/admin/content/sources/:sourceKey/social/retract',
+    async (req: RequestWithTrace, res) => {
+      await handleOt110aSourceAction(req, res, pool, config, 'social.retract');
+    },
+  );
+
+  app.get('/api/v1/admin/content/sources/:sourceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    try {
+      const actor = await ot110aActorFromSession(pool, config, session);
+      const source = await withTiming(req, 'db', () =>
+        getOt110aContentSourceDetail({
+          pool,
+          config,
+          actor,
+          sourceKey: String(req.params.sourceKey),
+          ports: createOt110aIntegratedProviderPorts(config),
+        }),
+      );
+      if (!source) {
+        res
+          .status(404)
+          .json(publicError('NOT_FOUND', 'Content source was not found.', req.traceId));
+        return;
+      }
+      res.json(contentAdminSourceDetailResponseSchema.parse({ success: true, source }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.get('/api/v1/social-publishing/readiness', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -1597,6 +2059,62 @@ async function requireRecentEmailAssurance(
   return false;
 }
 
+async function ot110aActorFromSession(
+  pool: DbPool,
+  config: AppConfig,
+  session: AuthenticatedSession,
+) {
+  return resolveOt110aContentAdminActor({
+    pool,
+    config,
+    user: {
+      user_key: session.user.user_key,
+      role: session.user.role,
+    },
+  });
+}
+
+async function handleOt110aSourceAction(
+  req: RequestWithTrace,
+  res: Response,
+  pool: DbPool,
+  config: AppConfig,
+  actionType:
+    | 'transcript.approve'
+    | 'artifact.approve'
+    | 'artifact.publish'
+    | 'content.retry'
+    | 'content.retract'
+    | 'social.approve'
+    | 'social.schedule'
+    | 'social.retract',
+) {
+  setPrivateNoStore(res);
+  const session = await requireApiSession(req, res, pool, config);
+  if (!session) return;
+  if (!(await requireSessionCsrf(req, res, pool, session))) return;
+  try {
+    const actor = await ot110aActorFromSession(pool, config, session);
+    const payload = contentAdminActionPayloadSchema.parse(req.body);
+    const action = await withTiming(req, 'db', () =>
+      performOt110aContentAction({
+        pool,
+        config,
+        actor,
+        sourceKey: String(req.params.sourceKey),
+        actionType,
+        reason: payload.reason,
+        ...(payload.expected_revision_key
+          ? { expectedRevisionKey: payload.expected_revision_key }
+          : {}),
+      }),
+    );
+    res.json(contentAdminActionResponseSchema.parse({ success: true, action }));
+  } catch (error) {
+    handleApiError(error, req, res);
+  }
+}
+
 async function completeEmailChallengeLogin(
   req: RequestWithTrace,
   res: Response,
@@ -1686,6 +2204,34 @@ function requireSameOriginPost(req: RequestWithTrace, res: Response, config: App
   if (isSameOriginPost(req, config)) return true;
   res.status(403).json(publicError('FORBIDDEN', 'Refresh the page and try again.', req.traceId));
   return false;
+}
+
+function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
+  const values = [
+    'ops05_fixture_webhook',
+    config.deliveryTestCanaryEmail,
+    config.whatsappCanaryRecipientE164,
+    env.ONE_TIME_TELEGRAM_CANARY_CHAT_REF,
+    env.ONE_TIME_STRIPE_TEST_CANARY_FIXTURE,
+    env.ONE_TIME_HELPER_FIXTURE_ALLOWLIST,
+    env.BUFFER_CANARY_DESTINATION_ALLOWLIST,
+  ];
+  return values.filter(
+    (value): value is string => typeof value === 'string' && value.trim() !== '',
+  );
+}
+
+function stripCsrfField(body: unknown) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return body;
+  const rest = { ...(body as Record<string, unknown>) };
+  delete rest.csrf_token;
+  return rest;
+}
+
+function statusForCanaryPlanCode(code: string) {
+  if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'RECENT_EMAIL_ASSURANCE_REQUIRED') return 428;
+  return 403;
 }
 
 function isSameOriginPost(req: Request, config: AppConfig) {
@@ -2200,6 +2746,15 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof Ot110aContentWorkspaceError) {
+    res.status(statusForOt110aError(error.code)).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      request_id: req.traceId,
+    });
+    return;
+  }
   if (error instanceof PortalServiceError) {
     res.status(statusForPortalError(error.code)).json({
       success: false,
@@ -2220,6 +2775,7 @@ function statusForPortalError(code: string) {
   if (code === 'FORBIDDEN' || code === 'CSRF_REQUIRED') return 403;
   if (code === 'NOT_FOUND') return 404;
   if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'RATE_LIMITED') return 429;
   if (
     code === 'IDEMPOTENCY_CONFLICT' ||
     code === 'VERSION_CONFLICT' ||
@@ -2231,6 +2787,14 @@ function statusForPortalError(code: string) {
   }
   if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
   if (code === 'ADAPTER_UNAVAILABLE') return 503;
+  return 500;
+}
+
+function statusForOt110aError(code: string) {
+  if (code === 'FORBIDDEN') return 403;
+  if (code === 'NOT_FOUND') return 404;
+  if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'VERSION_CONFLICT' || code === 'PROMPT_PATCH_NOOP') return 409;
   return 500;
 }
 
@@ -2538,7 +3102,7 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
         </div>
         <div class="email-challenge" data-email-challenge hidden>
           <div class="field">
-            <label for="email_code">Email code</label>
+            <label for="email_code">Verification code</label>
             <input id="email_code" name="email_code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}">
             <p tabindex="-1" class="error" data-error-for="email_code"></p>
           </div>

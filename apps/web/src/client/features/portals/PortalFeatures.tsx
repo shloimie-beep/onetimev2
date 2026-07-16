@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type {
   AdministrativeUpdate,
+  HelperAnswer,
   HelperAvailability,
   LearnerProfile,
   LibraryItem,
@@ -61,6 +62,7 @@ export type StudentPortalFeatureProps = {
   resetSignal?: number;
   onLaunchClass?: (action: ProtectedActionDescriptor) => void;
   onOpenContent?: (action: ProtectedActionDescriptor) => void;
+  onQueryHelper?: (question: string) => Promise<HelperAnswer>;
   onSubmitQuestion?: (question: string, classKey?: string | undefined) => void;
   onSubmitClassroomQuestion?: (occurrenceKey: string, body: string) => void;
   onPreviewSupport?: () => void;
@@ -328,6 +330,7 @@ export function StudentPortalFeature({
   resetSignal,
   onLaunchClass,
   onOpenContent,
+  onQueryHelper,
   onSubmitQuestion,
   onSubmitClassroomQuestion,
   onPreviewSupport,
@@ -413,6 +416,10 @@ export function StudentPortalFeature({
           <h2 id="student-library-heading">Library</h2>
           <ContentList items={dashboard.library_items} onOpen={onOpenContent} />
         </section>
+        <section className="ot-panel" aria-labelledby="student-helper-heading">
+          <h2 id="student-helper-heading">Class Helper</h2>
+          <ClassHelperPanel helper={dashboard.helper} onQueryHelper={onQueryHelper} />
+        </section>
         <section className="ot-panel" aria-labelledby="student-progress-heading">
           <h2 id="student-progress-heading">Progress</h2>
           <ProgressSummaryView progress={dashboard.progress} rewards={dashboard.rewards} />
@@ -428,7 +435,6 @@ export function StudentPortalFeature({
         <section className="ot-panel" aria-labelledby="student-updates-heading">
           <h2 id="student-updates-heading">Updates</h2>
           <UpdatesList updates={dashboard.updates} />
-          <HelperState helper={dashboard.helper} />
           <button type="button" className="ot-button" onClick={onPreviewSupport}>
             Technical help
           </button>
@@ -681,6 +687,89 @@ function ContentList({
   );
 }
 
+function ClassHelperPanel({
+  helper,
+  onQueryHelper,
+}: {
+  helper: HelperAvailability;
+  onQueryHelper?: ((question: string) => Promise<HelperAnswer>) | undefined;
+}) {
+  const [draft, setDraft] = useState('');
+  const [answer, setAnswer] = useState<HelperAnswer | null>(null);
+  const [state, setState] = useState<'idle' | 'loading' | 'answered' | 'error'>('idle');
+  const [error, setError] = useState('');
+  const trimmed = draft.trim();
+  const canAsk = helper.available && Boolean(onQueryHelper) && trimmed.length > 0;
+  return (
+    <div className="ot-stack ot-helper-panel">
+      <HelperState helper={helper} />
+      <p className="ot-muted">
+        Class Helper answers from Rabbi Scheller's approved class material.
+      </p>
+      <form
+        className="ot-question-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!canAsk || !onQueryHelper) return;
+          setState('loading');
+          setError('');
+          void onQueryHelper(trimmed)
+            .then((result) => {
+              setAnswer(result);
+              setDraft('');
+              setState('answered');
+            })
+            .catch((caught: unknown) => {
+              setState('error');
+              setError(
+                caught instanceof Error
+                  ? caught.message
+                  : 'Class Helper is being prepared for this class. Send a private question and we will route it for review.',
+              );
+            });
+        }}
+      >
+        <label className="ot-field">
+          <span>Ask Class Helper</span>
+          <textarea
+            value={draft}
+            maxLength={800}
+            rows={4}
+            disabled={!helper.available || state === 'loading'}
+            onChange={(event) => {
+              setDraft(event.currentTarget.value);
+              setState('idle');
+              setError('');
+            }}
+          />
+        </label>
+        <button type="submit" className="ot-button ot-button-primary" disabled={!canAsk}>
+          {state === 'loading' ? 'Checking' : 'Ask helper'}
+        </button>
+      </form>
+      {error && (
+        <p className="ot-warning" role="alert">
+          {error}
+        </p>
+      )}
+      {answer && (
+        <article className="ot-helper-answer" data-abstained={answer.abstained}>
+          <p>{answer.answer}</p>
+          {answer.citations.length > 0 && (
+            <ul className="ot-citation-list" aria-label="Approved sources">
+              {answer.citations.map((citation) => (
+                <li key={`${citation.content_id}:${citation.section_id}`}>
+                  <a href={citation.deep_link}>{citation.section_title}</a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+      )}
+    </div>
+  );
+}
+
 function QuestionPanel({
   questions,
   upcoming,
@@ -692,6 +781,10 @@ function QuestionPanel({
 }) {
   const [draft, setDraft] = useState('');
   const [classKey, setClassKey] = useState(upcoming[0]?.class_key ?? '');
+  const [preview, setPreview] = useState<{
+    question: string;
+    classKey?: string | undefined;
+  } | null>(null);
   const trimmed = draft.trim();
   return (
     <div className="ot-stack">
@@ -700,14 +793,19 @@ function QuestionPanel({
         onSubmit={(event) => {
           event.preventDefault();
           if (!trimmed || !onSubmitQuestion) return;
-          onSubmitQuestion(trimmed, classKey || undefined);
-          setDraft('');
+          setPreview({ question: trimmed, classKey: classKey || undefined });
         }}
       >
         {upcoming.length > 0 && (
           <label className="ot-field">
             <span>Class</span>
-            <select value={classKey} onChange={(event) => setClassKey(event.currentTarget.value)}>
+            <select
+              value={classKey}
+              onChange={(event) => {
+                setClassKey(event.currentTarget.value);
+                setPreview(null);
+              }}
+            >
               {upcoming.map((item) => (
                 <option key={item.class_key} value={item.class_key}>
                   {item.title}
@@ -717,12 +815,15 @@ function QuestionPanel({
           </label>
         )}
         <label className="ot-field">
-          <span>Question</span>
+          <span>Ask privately</span>
           <textarea
             value={draft}
             maxLength={800}
             rows={4}
-            onChange={(event) => setDraft(event.currentTarget.value)}
+            onChange={(event) => {
+              setDraft(event.currentTarget.value);
+              setPreview(null);
+            }}
           />
         </label>
         <button
@@ -730,9 +831,32 @@ function QuestionPanel({
           className="ot-button ot-button-primary"
           disabled={!trimmed || !onSubmitQuestion}
         >
-          Submit question
+          Preview private question
         </button>
       </form>
+      {preview && (
+        <div className="ot-private-preview" role="status">
+          <strong>Private question preview</strong>
+          <p>{preview.question}</p>
+          <div className="ot-action-row">
+            <button
+              type="button"
+              className="ot-button ot-button-primary"
+              onClick={() => {
+                if (!onSubmitQuestion) return;
+                onSubmitQuestion(preview.question, preview.classKey);
+                setDraft('');
+                setPreview(null);
+              }}
+            >
+              Send private question
+            </button>
+            <button type="button" className="ot-button" onClick={() => setPreview(null)}>
+              Edit
+            </button>
+          </div>
+        </div>
+      )}
       {questions.length === 0 ? (
         <p className="ot-muted">Submitted questions will appear here.</p>
       ) : (

@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-07-16T22:56:16.927Z",
+  "status": "blocked",
+  "blocker": "connect ECONNREFUSED 127.0.0.1:5432",
+  "postgres_version": null,
+  "source_database": null,
+  "restore_database": null,
+  "rpo_target_minutes": 15,
+  "rto_target_minutes": 30,
+  "measured_rto_seconds": null,
+  "restored_schema_migration_count": null,
+  "functional_smoke": {},
+  "external_mutations": {
+    "production_database": false,
+    "providers": false,
+    "sends": false,
+    "deployment": false
+  }
+}

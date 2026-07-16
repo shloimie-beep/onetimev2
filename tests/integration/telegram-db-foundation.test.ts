@@ -35,64 +35,49 @@ afterEach(async () => {
 describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
   it('applies all migrations and documents pg-mem no-op rerun limitation', async () => {
     const first = await runMigrations(pool);
-    expect(first.some((migration) => migration.id === '1600_ot51_telegram_bot_foundation')).toBe(
-      true,
-    );
-    expect(first.some((migration) => migration.id === '1700_ot71_account_lifecycle')).toBe(true);
-    expect(first.some((migration) => migration.id === '1800_ot72_provider_truth')).toBe(true);
-    expect(
-      first.some((migration) => migration.id === '1900_ot83_household_portal_foundation'),
-    ).toBe(true);
-    expect(first.some((migration) => migration.id === '2000_ot83r_student_question_seam')).toBe(
-      true,
-    );
-    expect(first.some((migration) => migration.id === '2001_ot84_telegram_action_gateway')).toBe(
-      true,
-    );
-    expect(first.some((migration) => migration.id === '2002_ot88_zoom_learner_classroom')).toBe(
-      true,
-    );
-    expect(first.some((migration) => migration.id === '2004_ot85_whatsapp_assistant')).toBe(true);
-    expect(first.some((migration) => migration.id === '2005_ot86_content_pipeline')).toBe(true);
-    expect(first.some((migration) => migration.id === '2006_ot86b_social_publishing')).toBe(true);
-    expect(first.some((migration) => migration.id === '2007_ot87_stripe_test_entitlements')).toBe(
-      true,
-    );
-    expect(
-      first.some((migration) => migration.id === '2008_ops03a_lifecycle_delivery_outbox'),
-    ).toBe(true);
-    expect(first.some((migration) => migration.id === '2009_ops03a_activation_mfa_handoffs')).toBe(
-      true,
-    );
-    expect(first.some((migration) => migration.id === '2010_ops03b_email_step_up_login')).toBe(
-      true,
-    );
-    expect(
-      first.some((migration) => migration.id === '2003_ot89a_subscriber_support_producer'),
-    ).toBe(true);
-    expect(first.at(-1)?.id).toBe('2010_ops03b_email_step_up_login');
+    const migrationIds = first.map((migration) => migration.id);
+    const requiredMigrationIds = [
+      '1600_ot51_telegram_bot_foundation',
+      '1700_ot71_account_lifecycle',
+      '1800_ot72_provider_truth',
+      '1900_ot83_household_portal_foundation',
+      '2000_ot83r_student_question_seam',
+      '2001_ot84_telegram_action_gateway',
+      '2002_ot88_zoom_learner_classroom',
+      '2003_ot89a_subscriber_support_producer',
+      '2004_ot85_whatsapp_assistant',
+      '2005_ot86_content_pipeline',
+      '2006_ot86b_social_publishing',
+      '2007_ot87_stripe_test_entitlements',
+      '2008_ops03a_lifecycle_delivery_outbox',
+      '2009_ops03a_activation_mfa_handoffs',
+      '2010_ops03b_email_step_up_login',
+      '2011_ot101r_telegram_admin_runtime',
+      '2012_ot104r_vimeo_private_runtime',
+      '2013_ot110a_admin_content_workspace',
+      '2014_ot111_legacy_activation_campaign',
+      '2015_ops06_reliability_observability',
+      '2100_ot100_whatsapp_provider_activation',
+      '2130_ot103_zoom_provider',
+      '2160_ot106_buffer_social_publishing',
+      '2190_ot109_rabbi_content_publisher',
+    ];
+    for (const migrationId of requiredMigrationIds) {
+      expect(migrationIds).toContain(migrationId);
+    }
+    expect(new Set(migrationIds).size).toBe(migrationIds.length);
+    expect(migrationIds).toEqual([...migrationIds].sort((a, b) => a.localeCompare(b)));
+
     const applied = await pool.query(
-      `SELECT checksum
+      `SELECT id, checksum
          FROM onetime.schema_migrations
-        WHERE id IN (
-          '1600_ot51_telegram_bot_foundation',
-          '1700_ot71_account_lifecycle',
-          '1800_ot72_provider_truth',
-          '1900_ot83_household_portal_foundation',
-          '2000_ot83r_student_question_seam',
-          '2001_ot84_telegram_action_gateway',
-          '2002_ot88_zoom_learner_classroom',
-          '2003_ot89a_subscriber_support_producer',
-          '2004_ot85_whatsapp_assistant',
-          '2005_ot86_content_pipeline',
-          '2006_ot86b_social_publishing',
-          '2007_ot87_stripe_test_entitlements',
-          '2008_ops03a_lifecycle_delivery_outbox',
-          '2009_ops03a_activation_mfa_handoffs',
-          '2010_ops03b_email_step_up_login'
-        )`,
+        ORDER BY id`,
     );
-    expect(applied.rowCount).toBe(15);
+    expect(applied.rowCount).toBe(first.length);
+    expect(applied.rows.map((row) => row.id)).toEqual(migrationIds);
+    expect(
+      applied.rows.every((row) => typeof row.checksum === 'string' && row.checksum.length > 0),
+    ).toBe(true);
     await expect(runMigrations(pool)).rejects.toThrow(/not supported/i);
   });
 

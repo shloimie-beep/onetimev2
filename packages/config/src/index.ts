@@ -39,6 +39,8 @@ const envSchema = z.object({
   DATABASE_SSL: booleanFromString,
   RUN_MIGRATIONS_ON_STARTUP: booleanFromString,
   TRUSTED_PROXY_HOPS: numberFromString.default(0),
+  OPERATIONS_PROBE_TOKEN: z.string().min(24).optional(),
+  OPERATIONS_WORKER_HEARTBEAT_TTL_MS: numberFromString.default(90_000),
   ONE_TIME_ACCOUNT_KEY: z.string().min(1).default('one_time'),
   ONE_TIME_PRODUCT_KEY: z.string().min(1).default('one_time_mishnah_class'),
   ONE_TIME_OWNER_INTERNAL_LABEL: z.string().min(1).default('Rabbi'),
@@ -63,8 +65,10 @@ const envSchema = z.object({
   ONE_TIME_EMAIL_REPLY_TO: z.string().optional(),
   ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: booleanFromString,
   ONE_TIME_RESEND_TRANSPORT_ENABLED: booleanFromString,
+  ONE_TIME_RESEND_WEBHOOK_ENABLED: booleanFromString,
   ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: z.string().email().optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
+  RESEND_WEBHOOK_SECRET: z.string().min(16).optional(),
   ONE_TIME_OWNER_TEST_WHATSAPP: z.string().optional(),
   ONE_TIME_OWNER_TEST_EMAIL: z.string().optional(),
   ONE_TIME_PARENT_TEST_EMAIL: z.string().optional(),
@@ -143,6 +147,14 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Production web startup cannot run migrations automatically.');
   }
 
+  if (
+    parsed.NODE_ENV === 'production' &&
+    parsed.ONE_TIME_RESEND_WEBHOOK_ENABLED &&
+    !parsed.RESEND_WEBHOOK_SECRET
+  ) {
+    throw new Error('RESEND_WEBHOOK_SECRET is required when Resend webhooks are enabled.');
+  }
+
   if (parsed.NODE_ENV === 'production' && parsed.OT89_SUPPORT_DELIVERY_MODE !== 'disabled') {
     throw new Error('OT89 support delivery must remain disabled in production.');
   }
@@ -219,6 +231,9 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     databaseSsl: parsed.DATABASE_SSL,
     runMigrationsOnStartup: parsed.RUN_MIGRATIONS_ON_STARTUP,
     trustedProxyHops: parsed.TRUSTED_PROXY_HOPS,
+    operationsProbeToken: parsed.OPERATIONS_PROBE_TOKEN,
+    operationsProbeTokenConfigured: Boolean(parsed.OPERATIONS_PROBE_TOKEN),
+    operationsWorkerHeartbeatTtlMs: parsed.OPERATIONS_WORKER_HEARTBEAT_TTL_MS,
     accountKey: parsed.ONE_TIME_ACCOUNT_KEY,
     productKey: parsed.ONE_TIME_PRODUCT_KEY,
     ownerInternalLabel: parsed.ONE_TIME_OWNER_INTERNAL_LABEL,
@@ -250,6 +265,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     emailReplyTo: parsed.ONE_TIME_EMAIL_REPLY_TO,
     deliveryProviderTransportEnabled: parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED,
     resendTransportEnabled: parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED,
+    resendWebhookEnabled: parsed.ONE_TIME_RESEND_WEBHOOK_ENABLED,
+    resendWebhookSecretConfigured: Boolean(parsed.RESEND_WEBHOOK_SECRET),
     deliveryTestCanaryEmail: parsed.ONE_TIME_DELIVERY_TEST_CANARY_EMAIL?.trim().toLowerCase(),
     resendApiKey: parsed.RESEND_API_KEY,
     ownerTestWhatsapp: parsed.ONE_TIME_OWNER_TEST_WHATSAPP,

@@ -1,0 +1,57 @@
+{
+  "run_id": "OPS-08",
+  "status": "partial_checkpoint",
+  "readiness": "PARTIALLY_READY_FOR_OPERATOR_TESTING",
+  "repository": "webcraft-media/onetimev2",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "worktree": "C:\\Users\\User\\.overnight-20260717-worktrees\\OPS-08",
+  "branch": "integration/ops08-overnight-final-20260716T230543Z",
+  "pre_closeout_head_sha": "0b8e05f090623328cf894932a82eff46eb0b3dc4",
+  "final_head_sha": "recorded after commit and push by OPS-08 final response",
+  "created_from": {
+    "ref": "origin/codex/ops03b-email-step-up-login",
+    "sha": "25b2a95aa4e3ae82aad20537dc300e9978c15b56"
+  },
+  "external_mutations": {
+    "production_deploy": false,
+    "staging_deploy": false,
+    "dns_change": false,
+    "broad_campaign_send": false,
+    "live_stripe_charge": false,
+    "live_buffer_publication": false,
+    "production_data_import": false,
+    "provider_mutation": false,
+    "credential_disclosure": false
+  },
+  "local_fixes": [
+    "Removed raw idempotency/API handler copy from normal CRM operator action coverage UI.",
+    "Replaced app-shell loading identity fallback copy that could show Signed out/Session expired/Checking session during normal loading.",
+    "Replaced student/parent helper unavailable fallback copy with student-safe prepared-state copy.",
+    "Fixed inactive gallery slide opacity so brand normal-text opacity gate passes.",
+    "Updated OPS-05 integration test login helper to OPS-03B email challenge flow.",
+    "Updated OPS-07 route gate to isolate role sessions and distinguish expected protected-route 403s from real route failures."
+  ],
+  "validation": {
+    "npm_ci": "passed",
+    "secret_scan": "passed",
+    "format": "blocked_repo_wide_baseline_778_files",
+    "targeted_prettier": "passed_for_ops08_touched_files",
+    "brand_check": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "unit": "passed_37_files_189_tests",
+    "integration": "passed_36_files_169_tests",
+    "build": "passed",
+    "ops06_alerts": "passed",
+    "ops06_migrations": "passed",
+    "ops07_route_gate": "passed_8_routes",
+    "db_verify": "blocked_missing_database_url"
+  },
+  "blockers": [
+    "Current PR #44 head 3871c38b75e7fc866f572ec80d3b2ec37cde6b6e is not merged because merge-tree reports conflicts and no green check metadata was available.",
+    "OT-113 has no remote branch/ref and remains blocked on PR #44.",
+    "OT-114 head 096dd614c9493cec1c29851e14f56166863ad26b was observed ready-for-review but not merged because merge-tree reports a central apps/web/src/server/app.ts conflict.",
+    "BNA-OPS-02 canary branch is not available as a One Time remote input; BNA work remains external/in-progress.",
+    "Provider real canaries and db:verify require protected staging configuration."
+  ]
+}

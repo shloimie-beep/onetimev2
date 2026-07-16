@@ -175,7 +175,8 @@ export function parentDashboard(): ParentPortalDashboard {
     },
     helper: {
       available: false,
-      reason: 'Portal helper is not connected yet.',
+      reason:
+        'Portal helper is being prepared for your household. Send a support request and we will route it for review.',
       scope_label: 'Portal helper',
     },
     billing: { enabled: false, summary_label: null },
@@ -206,7 +207,8 @@ export function studentDashboard(): StudentPortalDashboard {
     questions: [],
     helper: {
       available: false,
-      reason: 'Student helper is not connected yet.',
+      reason:
+        'Class Helper is being prepared for this class. Send a private question and we will route it for review.',
       scope_label: 'Portal helper',
     },
   };

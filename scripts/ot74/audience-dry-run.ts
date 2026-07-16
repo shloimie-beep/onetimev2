@@ -49,6 +49,7 @@ function syntheticRows(count: number): LegacyAudienceInputRow[] {
       audience_type: school ? 'school' : 'family',
       legacy_system_state: index % 3 === 0 ? 'present' : 'unknown',
       active_legacy_user: index % 2 === 0,
+      new_system_activated: false,
       lead_state: school || index % 4 === 0 ? 'lead' : 'unknown',
       consent_state: suppressed ? 'opted_out' : 'opted_in',
       suppression_state: suppressed ? 'suppressed' : 'active',

@@ -100,10 +100,12 @@
     },
     "shadow": {
       "panel": "0 18px 46px rgba(0, 0, 0, 0.38)",
-      "drawer": "0 24px 72px rgba(0, 0, 0, 0.52)"
+      "drawer": "0 24px 72px rgba(0, 0, 0, 0.52)",
+      "focus": "0 0 0 3px rgba(134, 232, 255, 0.24)"
     },
     "motion": {
       "standard": "120ms cubic-bezier(0.2, 0, 0, 1)",
+      "emphasized": "180ms cubic-bezier(0.2, 0, 0, 1)",
       "ticker": "26s linear infinite"
     },
     "focus": {
@@ -116,6 +118,9 @@
       "ticker": 19,
       "drawerOverlay": 800,
       "drawer": 810,
+      "dialogOverlay": 900,
+      "dialog": 910,
+      "toast": 960,
       "skipLink": 1001
     },
     "breakpoints": {
@@ -128,6 +133,11 @@
       "bottom": "env(safe-area-inset-bottom)",
       "left": "env(safe-area-inset-left)",
       "right": "env(safe-area-inset-right)"
+    },
+    "density": {
+      "compact": "8px",
+      "default": "12px",
+      "comfortable": "16px"
     },
     "componentSizes": {
       "touchTarget": "44px",
@@ -157,7 +167,15 @@
       "FilterStrip",
       "Footer",
       "Header",
-      "Toolbar"
+      "Toolbar",
+      "SectionTabs",
+      "MetricTile",
+      "StatusChip",
+      "MobileCard",
+      "StatePanel",
+      "ToastBanner",
+      "MediaFrame",
+      "ActivityTimeline"
     ],
     "sizes": ["compact", "default", "large"],
     "variants": ["primary", "secondary", "text", "danger", "neutral"]
@@ -167,22 +185,40 @@
     "auth": { "chrome": ["header", "footer"], "ticker": false },
     "owner-admin": { "chrome": ["app-header", "app-sidebar", "app-footer"], "ticker": false },
     "parent": { "chrome": ["app-header", "parent-content", "app-footer"], "ticker": false },
-    "student": { "chrome": ["app-header", "student-content", "app-footer"], "ticker": false }
+    "student": { "chrome": ["app-header", "student-content", "app-footer"], "ticker": false },
+    "authenticated-support": {
+      "chrome": ["app-header", "support-content", "app-footer"],
+      "ticker": false
+    }
   },
   "routes": {
     "/": "public-marketing",
     "/signup": "auth",
     "/login": "auth",
+    "/activate": "auth",
+    "/forgot-password": "auth",
+    "/reset-password": "auth",
     "/privacy": "public-marketing",
     "/terms": "public-marketing",
     "/404.html": "public-marketing",
+    "/one-time": "public-marketing",
+    "/one-time/signup": "auth",
+    "/rabbi-member": "auth",
     "/app/crm": "owner-admin",
+    "/app/crm/contacts/:contactId": "owner-admin",
+    "/app/crm/contacts/:contactId/communications": "owner-admin",
     "/app/dashboard": "owner-admin",
     "/app/classes": "owner-admin",
     "/app/content": "owner-admin",
     "/app/billing": "owner-admin",
+    "/app/billing/checkout/redirect/:redirectKey": "owner-admin",
+    "/app/billing/portal/redirect/:redirectKey": "owner-admin",
+    "/app/communications": "owner-admin",
+    "/app/support": "authenticated-support",
+    "/app/support/receipts/:receiptId": "authenticated-support",
     "/app/parent": "parent",
-    "/app/student": "student"
+    "/app/student": "student",
+    "/classroom/launch/:grantKey/:secret": "student"
   },
   "ticker": {
     "allowlist": ["/"],

@@ -1,0 +1,68 @@
+{
+  "generated_at": "2026-07-16T23:31:35.903Z",
+  "unexpected_console": [],
+  "unexpected_responses": [],
+  "results": [
+    {
+      "id": "landing",
+      "path": "/",
+      "role": "anonymous",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "signup",
+      "path": "/signup",
+      "role": "anonymous",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "role": "anonymous",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "crm",
+      "path": "/app/crm",
+      "role": "admin",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "dashboard",
+      "path": "/app/dashboard",
+      "role": "admin",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "parent",
+      "path": "/app/parent",
+      "role": "parent",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "student",
+      "path": "/app/student",
+      "role": "student",
+      "status": "PASS",
+      "findings": []
+    },
+    {
+      "id": "support",
+      "path": "/app/support",
+      "role": "parent",
+      "status": "PASS",
+      "findings": []
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "pass": 8,
+    "fail": 0
+  }
+}

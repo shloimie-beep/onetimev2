@@ -1,0 +1,95 @@
+{
+  "run_id": "OPS-08",
+  "generated_at_utc": "2026-07-16T23:32:12Z",
+  "overall_status": "blocked_for_real_provider_canaries",
+  "staging_deployment": {
+    "attempted": false,
+    "reason": "Partial checkpoint only; required inputs are missing/conflicting and protected isolated staging config was not available."
+  },
+  "canaries": [
+    {
+      "provider": "email_resend",
+      "status": "blocked_missing_protected_config",
+      "required_examples": [
+        "RESEND_API_KEY",
+        "ONE_TIME_EMAIL_FROM",
+        "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL",
+        "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED=true",
+        "ONE_TIME_RESEND_TRANSPORT_ENABLED=true"
+      ],
+      "mutation_attempted": false
+    },
+    {
+      "provider": "telegram",
+      "status": "blocked_missing_protected_bot_and_webhook_config",
+      "mutation_attempted": false
+    },
+    {
+      "provider": "vimeo",
+      "status": "blocked_missing_vimeo_protected_config",
+      "required_examples": [
+        "VIMEO_ACCESS_TOKEN",
+        "VIMEO_CLIENT_ID",
+        "VIMEO_CLIENT_SECRET",
+        "VIMEO_ACCOUNT_ID",
+        "VIMEO_WEBHOOK_SECRET",
+        "VIMEO_STAGING_CANARY_VIDEO_ID"
+      ],
+      "mutation_attempted": false
+    },
+    {
+      "provider": "zoom",
+      "status": "blocked_missing_zoom_protected_config",
+      "required_examples": [
+        "ZOOM_ACCOUNT_ID",
+        "ZOOM_CLIENT_ID",
+        "ZOOM_CLIENT_SECRET",
+        "ZOOM_MEETING_SDK_KEY",
+        "ZOOM_MEETING_SDK_SECRET",
+        "ZOOM_WEBHOOK_SECRET_TOKEN",
+        "ZOOM_HOST_USER_ID",
+        "OT103_STAGING_CANARY_AUTHORIZED"
+      ],
+      "mutation_attempted": false
+    },
+    {
+      "provider": "whatsapp",
+      "status": "blocked_missing_whatsapp_protected_config_and_authorization",
+      "required_examples": [
+        "ONE_TIME_WHATSAPP_CLOUD_ACCESS_TOKEN",
+        "ONE_TIME_WHATSAPP_PHONE_NUMBER_ID",
+        "ONE_TIME_WHATSAPP_WABA_ID",
+        "ONETIME_WHATSAPP_CANARY_AUTHORIZED",
+        "ONETIME_CANARY_WHATSAPP_RECIPIENT_E164"
+      ],
+      "mutation_attempted": false
+    },
+    {
+      "provider": "stripe_test",
+      "status": "blocked_missing_test_config_and_explicit_canary_authorization",
+      "live_charge_attempted": false,
+      "mutation_attempted": false
+    },
+    {
+      "provider": "buffer",
+      "status": "blocked_missing_buffer_protected_config",
+      "required_examples": [
+        "BUFFER_ACCESS_TOKEN",
+        "BUFFER_ORGANIZATION_ID",
+        "OT106_BUFFER_CHANNEL_ALIASES"
+      ],
+      "live_publication_attempted": false,
+      "mutation_attempted": false
+    },
+    {
+      "provider": "bna_support_bridge",
+      "status": "blocked_bna_consumer_not_ready",
+      "required_examples": [
+        "OT89_SUPPORT_BNA_BASE_URL",
+        "OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+        "OT89_BNA_TO_ONETIME_HMAC_SECRET"
+      ],
+      "mutation_attempted": false
+    }
+  ]
+}

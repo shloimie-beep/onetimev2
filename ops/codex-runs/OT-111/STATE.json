@@ -1,0 +1,51 @@
+{
+  "task_id": "OT-111",
+  "title": "Legacy audience reconciliation and activation campaign controls",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OT-111",
+  "branch": "codex/ot111-legacy-activation-campaign",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "status": "draft_pr_opened",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/50",
+  "implementation_commit_sha": "ce37beebd97a9d8f76612b3911a906318922ddcf",
+  "production_deployment_authorized": false,
+  "production_import_authorized": false,
+  "broad_send_authorized": false,
+  "live_charge_authorized": false,
+  "bna_mutation_authorized": false,
+  "real_audience_import_status": "not_performed",
+  "real_send_status": "not_performed",
+  "external_mutations": [],
+  "tests": [
+    {
+      "command": "npm run typecheck",
+      "result": "PASS"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts tests/unit/ot111-legacy-activation-campaign.test.ts",
+      "result": "PASS",
+      "details": "3 files, 10 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts",
+      "result": "PASS",
+      "details": "2 files, 10 tests"
+    },
+    {
+      "command": "npx tsx scripts/ot111/legacy-activation-campaign-dry-run.ts",
+      "result": "PASS",
+      "details": "Synthetic counts-only dry run and campaign preview; no raw recipients"
+    },
+    {
+      "command": "npm run secret:scan",
+      "result": "PASS",
+      "details": "Secret scan passed across 912 repo text files"
+    },
+    {
+      "command": "npm run lint",
+      "result": "PASS"
+    }
+  ],
+  "blockers": []
+}

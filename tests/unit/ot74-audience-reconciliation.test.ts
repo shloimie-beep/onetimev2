@@ -35,6 +35,7 @@ describe('OT-74 legacy audience reconciliation dry run', () => {
           source_row_number: 4,
           email: 'blocked@example.test',
           active_legacy_user: true,
+          new_system_activated: true,
           consent_state: 'opted_out',
           suppression_state: 'suppressed',
         }),
@@ -48,7 +49,9 @@ describe('OT-74 legacy audience reconciliation dry run', () => {
     expect(report.summary.matched_existing_contacts).toBe(1);
     expect(report.summary.school_follow_up_rows).toBe(1);
     expect(report.summary.do_not_contact_rows).toBe(1);
+    expect(report.summary.already_activated_rows).toBe(1);
     expect(report.summary.migration_invite_eligible_rows).toBe(1);
+    expect(outcome(report, 4).reasons).toContain('already_activated');
 
     const school = report.row_outcomes.find((outcome) => outcome.row_number === 3);
     expect(school?.segment_codes).toContain('school_follow_up');
@@ -221,6 +224,7 @@ function row(overrides: Partial<LegacyAudienceInputRow>): LegacyAudienceInputRow
     audience_type: 'family',
     legacy_system_state: 'unknown',
     active_legacy_user: false,
+    new_system_activated: false,
     lead_state: 'unknown',
     consent_state: 'unknown',
     suppression_state: 'active',

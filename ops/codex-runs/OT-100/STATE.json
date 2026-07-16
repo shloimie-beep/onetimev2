@@ -1,0 +1,43 @@
+{
+  "task_id": "OT-100",
+  "title": "WhatsApp Public Lead Assistant Provider Runtime",
+  "status": "implementation_in_progress",
+  "branch": "codex/ot100-whatsapp-public-provider-activation",
+  "repository": "webcraft-media/onetimev2",
+  "base_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "draft_pr_base": "codex/ops03-staging-readiness-repair",
+  "worktree": "C:/Users/User/onetimev2-ot100-whatsapp-public-provider-activation",
+  "prompt_path": "ops/codex-runs/OT-100/ORIGINAL-PROMPT.md",
+  "scope": [
+    "WhatsApp contracts and domain runtime",
+    "Meta provider client and webhook verification",
+    "Feature-local worker/repository/tests/evidence",
+    "Integration delta documentation for later shared wiring"
+  ],
+  "out_of_scope": [
+    "shared app.ts edits",
+    "shared worker main edits",
+    "global config and .env.example edits",
+    "root manifests or lockfiles",
+    "auth, landing, CRM, portal, provider modules",
+    "Railway descriptors",
+    "production sends or provider mutations"
+  ],
+  "external_mutations": {
+    "whatsapp_sends": 0,
+    "email_sends": 0,
+    "telegram_sends": 0,
+    "payments": 0,
+    "production_webhooks": 0,
+    "dns": 0,
+    "deployments": 0
+  },
+  "implementation": {
+    "migration_added": "packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
+    "meta_graph_version": "v25.0",
+    "real_provider_default": "off_until_protected_staging_canary_gates_pass",
+    "shared_entrypoints_modified": false
+  },
+  "created_at": "2026-07-16",
+  "updated_at": "2026-07-16"
+}

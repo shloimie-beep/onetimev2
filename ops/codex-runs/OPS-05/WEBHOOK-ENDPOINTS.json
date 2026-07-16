@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-17T05:30:00.000Z",
+  "endpoints": [
+    {
+      "provider": "resend_email",
+      "path": null,
+      "method": null,
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 131072,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "svix_headers_raw_body",
+      "replay_or_dedupe": [
+        "svix_timestamp_window",
+        "svix_message_id_replay",
+        "provider_event_id_dedupe"
+      ],
+      "handler_mounted": false,
+      "acknowledged_after_durable_enqueue": false,
+      "business_processing_async": true,
+      "secret_logging_forbidden": true,
+      "registration_note": "No Resend route is mounted in base; final conductor must mount a raw-body POST route before express.json."
+    },
+    {
+      "provider": "whatsapp_meta",
+      "path": "/api/v1/whatsapp/meta/webhook",
+      "method": "POST",
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 131072,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "meta_x_hub_signature_256_raw_body",
+      "replay_or_dedupe": [
+        "provider_message_id_dedupe",
+        "account_product_scope"
+      ],
+      "handler_mounted": true,
+      "acknowledged_after_durable_enqueue": true,
+      "business_processing_async": false,
+      "secret_logging_forbidden": true,
+      "registration_note": "GET challenge exists only for Meta subscription verification; event intake is POST."
+    },
+    {
+      "provider": "telegram_one_time",
+      "path": "/api/v1/telegram/one-time/webhook",
+      "method": "POST",
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 32768,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "telegram_secret_token_header",
+      "replay_or_dedupe": [
+        "telegram_update_id_inbox_dedupe",
+        "single_consumer_gate"
+      ],
+      "handler_mounted": true,
+      "acknowledged_after_durable_enqueue": true,
+      "business_processing_async": true,
+      "secret_logging_forbidden": true,
+      "registration_note": "Mounted only when ONE_TIME_TELEGRAM_WEBHOOK_ENABLED is true."
+    },
+    {
+      "provider": "zoom_classroom",
+      "path": null,
+      "method": null,
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 131072,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "zoom_webhook_signature_required_before_enablement",
+      "replay_or_dedupe": [
+        "provider_event_id_dedupe",
+        "meeting_scope"
+      ],
+      "handler_mounted": false,
+      "acknowledged_after_durable_enqueue": false,
+      "business_processing_async": true,
+      "secret_logging_forbidden": true,
+      "registration_note": "Zoom webhook route is not in this base; PR #42 introduced adjacent Zoom provider work for later integration."
+    },
+    {
+      "provider": "vimeo_private_content",
+      "path": null,
+      "method": null,
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 131072,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "vimeo_callback_verifier_required_before_enablement",
+      "replay_or_dedupe": [
+        "provider_event_id_dedupe",
+        "content_scope"
+      ],
+      "handler_mounted": false,
+      "acknowledged_after_durable_enqueue": false,
+      "business_processing_async": true,
+      "secret_logging_forbidden": true,
+      "registration_note": "No Vimeo callback endpoint is mounted in this base."
+    },
+    {
+      "provider": "buffer_social",
+      "path": null,
+      "method": null,
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 131072,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "buffer_callback_verifier_required_before_enablement",
+      "replay_or_dedupe": [
+        "provider_event_id_dedupe",
+        "draft_revision_scope"
+      ],
+      "handler_mounted": false,
+      "acknowledged_after_durable_enqueue": false,
+      "business_processing_async": true,
+      "secret_logging_forbidden": true,
+      "registration_note": "No Buffer external callback endpoint is mounted; internal social events use OT86 signing."
+    },
+    {
+      "provider": "stripe_test",
+      "path": "/api/v1/billing/webhooks/provider",
+      "method": "POST",
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 65536,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "stripe_construct_event_raw_body_test_mode",
+      "replay_or_dedupe": [
+        "provider_event_id_dedupe",
+        "raw_body_digest_mismatch_guard"
+      ],
+      "handler_mounted": true,
+      "acknowledged_after_durable_enqueue": true,
+      "business_processing_async": true,
+      "secret_logging_forbidden": true,
+      "registration_note": "Canonical staging Stripe endpoint in this base."
+    },
+    {
+      "provider": "openai_helper",
+      "path": null,
+      "method": null,
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": null,
+      "content_type": null,
+      "raw_body_required": false,
+      "signature_scheme": "no_webhook_supported",
+      "replay_or_dedupe": [
+        "no_external_callback_supported"
+      ],
+      "handler_mounted": false,
+      "acknowledged_after_durable_enqueue": false,
+      "business_processing_async": false,
+      "secret_logging_forbidden": true,
+      "registration_note": "Helper runtime has no provider webhook endpoint in this base."
+    },
+    {
+      "provider": "bna_support_bridge",
+      "path": "/api/internal/integrations/onetime/support-events/v1",
+      "method": "POST",
+      "https_required": true,
+      "post_only": true,
+      "max_bytes": 131072,
+      "content_type": "application/json",
+      "raw_body_required": true,
+      "signature_scheme": "ot89_hmac_canonical_request",
+      "replay_or_dedupe": [
+        "timestamp_window",
+        "nonce_event_id_dedupe",
+        "account_product_scope"
+      ],
+      "handler_mounted": true,
+      "acknowledged_after_durable_enqueue": true,
+      "business_processing_async": true,
+      "secret_logging_forbidden": true,
+      "registration_note": "Support status uses /api/internal/integrations/onetime/support-ticket-status/v1 with the same signer."
+    }
+  ]
+}

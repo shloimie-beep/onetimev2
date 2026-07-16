@@ -1,0 +1,98 @@
+{
+  "run_id": "OPS-08",
+  "generated_at_utc": "2026-07-16T23:32:12Z",
+  "readiness": "PARTIALLY_READY_FOR_OPERATOR_TESTING",
+  "capabilities": [
+    {
+      "id": "ops03b_email_step_up_login",
+      "status": "integrated",
+      "ui_domain": "public login/account lifecycle",
+      "local_validation": ["unit", "integration", "build", "ops05 email challenge regression"],
+      "real_canary": "blocked_missing_protected_email_delivery_config"
+    },
+    {
+      "id": "telegram_admin_runtime",
+      "status": "integrated_via_ops04c",
+      "ui_domain": "owner/admin Telegram runtime",
+      "local_validation": ["unit", "integration"],
+      "real_canary": "blocked_missing_telegram_protected_config"
+    },
+    {
+      "id": "vimeo_private_runtime",
+      "status": "integrated_via_ops04c",
+      "ui_domain": "content/video runtime",
+      "local_validation": ["integration"],
+      "real_canary": "blocked_missing_vimeo_protected_config"
+    },
+    {
+      "id": "zoom_classroom",
+      "status": "integrated",
+      "source": "PR #42",
+      "local_validation": ["integration classroom zoom learner classroom"],
+      "real_canary": "blocked_missing_zoom_protected_config"
+    },
+    {
+      "id": "whatsapp_provider_activation",
+      "status": "integrated",
+      "source": "PR #43",
+      "local_validation": ["unit", "integration"],
+      "real_canary": "blocked_missing_whatsapp_protected_config"
+    },
+    {
+      "id": "stripe_test_billing",
+      "status": "integrated",
+      "source": "PR #45",
+      "local_validation": ["integration stripe TEST billing canary"],
+      "real_canary": "blocked_missing_stripe_test_config_and_explicit_authorization"
+    },
+    {
+      "id": "premium_landing_and_product_system",
+      "status": "integrated",
+      "source": "PR #47 and OT-112",
+      "local_validation": ["brand_check", "build"],
+      "real_canary": "not_applicable_no_provider_mutation"
+    },
+    {
+      "id": "provider_control_center",
+      "status": "integrated",
+      "source": "OPS-05 / PR #56",
+      "local_validation": ["unit", "integration", "email_challenge_regression"],
+      "real_canary": "dry_run_only_no_provider_mutation"
+    },
+    {
+      "id": "reliability_observability",
+      "status": "integrated",
+      "source": "OPS-06 / PR #58",
+      "local_validation": ["unit", "integration", "ops06_alerts", "ops06_migrations"],
+      "real_canary": "probes_load_backup_blocked_without_staging_base_url_and_postgres"
+    },
+    {
+      "id": "day_one_route_gates",
+      "status": "integrated_with_ops08_fixes",
+      "source": "OPS-07 / PR #55",
+      "local_validation": ["ops07_route_gate_passed_8_routes"],
+      "real_canary": "not_applicable"
+    },
+    {
+      "id": "student_class_helper_ot107",
+      "status": "partial_inherited_old_pr44_via_ops04c_current_pr44_not_merged",
+      "source": "PR #44",
+      "local_validation": ["unit ot107 passed", "ops07 visible copy fixed"],
+      "real_canary": "blocked_current_pr44_conflicts_and_ot113_absent"
+    },
+    {
+      "id": "crm_communications_support_ot114",
+      "status": "observed_ready_not_integrated",
+      "source": "OT-114",
+      "local_validation": ["source report claims green", "merge_tree_conflicts_in_app_ts"],
+      "real_canary": "blocked_bna_endpoint_absent"
+    },
+    {
+      "id": "bna_support_consumer",
+      "status": "not_integrated",
+      "source": "BNA-OPS-02",
+      "local_validation": [],
+      "real_canary": "blocked_no_remote_branch_or_green_report"
+    }
+  ]
+}

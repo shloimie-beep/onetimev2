@@ -1,4 +1,3 @@
-import { createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -26,7 +25,10 @@ import { parseOneTimeTelegramTransportConfig } from '../../packages/domain/src/t
 import { OneTimeTelegramTransportAdapter } from '../../packages/domain/src/telegram/transport.ts';
 import { parseDeliveryProviderFeatureConfig } from '../../apps/worker/src/delivery/provider-config.ts';
 import { OneTimeProviderDeliveryRouter } from '../../apps/worker/src/delivery/provider-router.ts';
-import { normalizeResendWebhookEvent } from '../../apps/worker/src/delivery/provider-webhooks.ts';
+import {
+  normalizeResendWebhookEvent,
+  signResendSvixFixture,
+} from '../../apps/worker/src/delivery/provider-webhooks.ts';
 
 const providerAccount: BillingProviderAccountRef = {
   provider: 'stripe',
@@ -210,16 +212,22 @@ describe('OT-72 Resend/WAPI provider truth', () => {
         created_at: '2026-07-15T06:00:00.000Z',
       }),
     );
-    const signatureHeader = createHmac('sha256', 'fixture_delivery_secret')
-      .update(rawBody)
-      .digest('hex');
+    const webhookSecret = `whsec_${Buffer.from('fixture_delivery_secret_for_ot72').toString('base64')}`;
+    const now = new Date('2026-07-15T06:00:00.000Z');
+    const headers = signResendSvixFixture({
+      rawBody,
+      webhookSecret,
+      id: 'msg_ot72_resend',
+      timestamp: Math.floor(now.getTime() / 1000),
+    });
 
     const event = normalizeResendWebhookEvent({
       accountKey: 'one_time',
       productKey: 'one_time_mishnah_class',
       rawBody,
-      signatureHeader,
-      secret: 'fixture_delivery_secret',
+      headers,
+      webhookSecret,
+      now,
     });
 
     expect(event.canonical_state).toBe('delivered');

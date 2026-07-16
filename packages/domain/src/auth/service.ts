@@ -2287,42 +2287,6 @@ function safeDeliveryErrorCode(error: unknown) {
   return value.replace(/[^a-z0-9_.:-]/gi, '_').slice(0, 120) || 'unknown_auth_email_error';
 }
 
-async function createMfaChallengeForUser({
-  pool,
-  config,
-  userKey,
-}: {
-  pool: DbPool;
-  config: AppConfig;
-  userKey: string;
-  ip?: string | undefined;
-  userAgent?: string | undefined;
-}) {
-  const active = await pool.query(
-    `SELECT 1
-       FROM onetime.mfa_factors
-      WHERE account_key = $1 AND product_key = $2 AND user_key = $3 AND status = 'active'
-      LIMIT 1`,
-    [config.accountKey, config.productKey, userKey],
-  );
-  if (!active.rowCount) return null;
-  const challengeToken = token();
-  await pool.query(
-    `INSERT INTO onetime.mfa_challenges
-     (challenge_key, account_key, product_key, user_key, challenge_hash, expires_at)
-     VALUES ($1,$2,$3,$4,$5,$6)`,
-    [
-      `mfach_${randomUUID()}`,
-      config.accountKey,
-      config.productKey,
-      userKey,
-      hashValue(challengeToken),
-      new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-    ],
-  );
-  return challengeToken;
-}
-
 function encryptionKey(config: AppConfig) {
   return createHash('sha256').update(config.mfaSecretEncryptionKey).digest();
 }

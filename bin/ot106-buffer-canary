@@ -1,0 +1,251 @@
+#!/usr/bin/env node
+
+import { createHash } from 'node:crypto';
+
+const args = new Set(process.argv.slice(2));
+const json = args.has('--json');
+const mode = readArg('--mode') ?? 'read-only';
+
+main().catch((error) => {
+  print({
+    packet_id: 'OT-106',
+    provider: 'buffer',
+    mode,
+    status: 'canary_failed',
+    writes_performed: false,
+    error_code: sanitize(error).slice(0, 120),
+  });
+  process.exit(2);
+});
+
+async function main() {
+  const config = readConfig();
+  if (!config.accessToken || !config.organizationId || config.channels.length < 1) {
+    print({
+      packet_id: 'OT-106',
+      provider: 'buffer',
+      mode,
+      status: 'unconfigured',
+      writes_performed: false,
+      missing_capability_classes: [
+        ...(!config.accessToken ? ['access_token'] : []),
+        ...(!config.organizationId ? ['organization_id'] : []),
+        ...(config.channels.length < 1 ? ['channel_aliases'] : []),
+      ],
+      channels: [],
+    });
+    process.exit(2);
+  }
+  const discovery = await graphql(config.accessToken, {
+    query: `
+      query Ot106Discovery($organizationId: OrganizationId!) {
+        account { id organizations { id name } }
+        channels(input: { organizationId: $organizationId }) {
+          id
+          name
+          service
+          type
+          isDisconnected
+          isLocked
+        }
+      }`,
+    variables: { organizationId: config.organizationId },
+  });
+  if (discovery.errors?.length) {
+    print({
+      packet_id: 'OT-106',
+      provider: 'buffer',
+      mode,
+      status: 'auth_invalid',
+      writes_performed: false,
+      error_code: sanitize(JSON.stringify(discovery.errors)).slice(0, 120),
+    });
+    process.exit(2);
+  }
+  const returnedChannels = Array.isArray(discovery.data?.channels) ? discovery.data.channels : [];
+  const allowlisted = config.channels.filter((channel) =>
+    returnedChannels.some((item) => String(item.id) === channel.channelId),
+  );
+  if (allowlisted.length < 1) {
+    print({
+      packet_id: 'OT-106',
+      provider: 'buffer',
+      mode,
+      status: 'channels_missing',
+      writes_performed: false,
+      missing_capability_classes: ['allowlisted_channels_visible_to_token'],
+      organization_fingerprint: digest(config.organizationId).slice(0, 16),
+      channels: [],
+    });
+    process.exit(2);
+  }
+  if (mode === 'read-only') {
+    print({
+      packet_id: 'OT-106',
+      provider: 'buffer',
+      mode,
+      status: 'ready_read_only',
+      writes_performed: false,
+      organization_fingerprint: digest(config.organizationId).slice(0, 16),
+      channels: allowlisted.map(safeChannel),
+    });
+    return;
+  }
+  if (mode !== 'draft') {
+    print({
+      packet_id: 'OT-106',
+      provider: 'buffer',
+      mode,
+      status: 'invalid_mode',
+      writes_performed: false,
+      missing_capability_classes: ['read_only_or_draft_mode'],
+    });
+    process.exit(2);
+  }
+  if (process.env.OT106_BUFFER_DRAFT_CANARY_AUTHORIZED !== 'true') {
+    print({
+      packet_id: 'OT-106',
+      provider: 'buffer',
+      mode,
+      status: 'blocked_needs_authorization',
+      writes_performed: false,
+      missing_capability_classes: ['OT106_BUFFER_DRAFT_CANARY_AUTHORIZED=true'],
+      channels: allowlisted.map(safeChannel),
+    });
+    process.exit(2);
+  }
+  const channel = allowlisted[0];
+  const mutation = await graphql(config.accessToken, {
+    query: `
+      mutation Ot106DraftCanary($input: CreatePostInput!) {
+        createPost(input: $input) {
+          ... on PostActionSuccess { post { id text channelId status } }
+          ... on MutationError { message }
+        }
+      }`,
+    variables: {
+      input: {
+        text: `OT-106 synthetic Buffer draft canary ${new Date().toISOString()} - do not publish.`,
+        channelId: channel.channelId,
+        schedulingType: 'automatic',
+        mode: 'addToQueue',
+        saveToDraft: true,
+        assets: [],
+        source: 'onetime-ot106-canary',
+        aiAssisted: false,
+      },
+    },
+  });
+  const post = mutation.data?.createPost?.post;
+  if (!post?.id) {
+    print({
+      packet_id: 'OT-106',
+      provider: 'buffer',
+      mode,
+      status: 'draft_canary_failed',
+      writes_performed: false,
+      error_code: sanitize(JSON.stringify(mutation.errors ?? mutation.data?.createPost)).slice(
+        0,
+        120,
+      ),
+    });
+    process.exit(2);
+  }
+  print({
+    packet_id: 'OT-106',
+    provider: 'buffer',
+    mode,
+    status: 'draft_created',
+    writes_performed: true,
+    provider_post_fingerprint: digest(String(post.id)).slice(0, 16),
+    channel: safeChannel(channel),
+  });
+}
+
+async function graphql(accessToken, payload) {
+  const response = await fetch('https://api.buffer.com', {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      'content-type': 'application/json',
+      accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  const text = await response.text();
+  if (response.status === 429) {
+    return {
+      errors: [
+        {
+          message: 'rate_limited',
+          extensions: {
+            code: 'RATE_LIMIT_EXCEEDED',
+            retry_after: response.headers.get('retry-after'),
+          },
+        },
+      ],
+    };
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { errors: [{ message: `non_json_http_${response.status}` }] };
+  }
+}
+
+function readConfig() {
+  return {
+    accessToken: process.env.BUFFER_ACCESS_TOKEN,
+    organizationId: process.env.BUFFER_ORGANIZATION_ID,
+    channels: parseAliases(process.env.OT106_BUFFER_CHANNEL_ALIASES ?? ''),
+  };
+}
+
+function parseAliases(value) {
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [alias, rest] = entry.split('=');
+      const [channelId, platform = 'facebook', ...labelParts] = String(rest ?? '').split(':');
+      return {
+        alias: String(alias ?? '').trim(),
+        channelId: String(channelId ?? '').trim(),
+        platform: platform.trim(),
+        label: labelParts.join(':').trim() || String(alias ?? '').trim(),
+      };
+    })
+    .filter((entry) => entry.alias && entry.channelId);
+}
+
+function readArg(name) {
+  const inline = process.argv.find((arg) => arg.startsWith(`${name}=`));
+  if (inline) return inline.slice(name.length + 1);
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] : null;
+}
+
+function safeChannel(channel) {
+  return {
+    alias: channel.alias,
+    platform: channel.platform,
+    channel_fingerprint: digest(channel.channelId).slice(0, 16),
+    label: channel.label,
+  };
+}
+
+function print(payload) {
+  if (json) process.stdout.write(`${JSON.stringify(payload)}\n`);
+  else process.stdout.write(`${payload.packet_id} Buffer canary: ${payload.status}\n`);
+}
+
+function digest(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function sanitize(error) {
+  return String(error && error.message ? error.message : error)
+    .replace(/[A-Za-z0-9_-]{24,}/g, '[redacted-token]')
+    .replace(/Bearer\s+[^\s"']+/gi, 'Bearer [redacted-token]');
+}

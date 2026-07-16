@@ -182,15 +182,23 @@ describe('OT-51P identity and commands', () => {
     expect(auditDenied[0]?.text).toContain('authorized owner/admin private chats');
   });
 
-  it('executes deterministic R1 writes and previews, confirms, cancels, expires, and replays NL writes', async () => {
+  it('previews, confirms, cancels, expires, and replays every write', async () => {
     const context = await buildContext(actor);
     await context.mappings.upsertProtectedMapping(mappingFixture());
 
-    const direct = await context.engine.handle(
+    const directPreview = await context.engine.handle(
       updateFixture({ updateId: '99', text: '/task-create Quick follow up' }),
     );
-    expect(direct[0]?.text).toContain('Completed task.create');
-    expect(direct[0]?.buttons).toBeUndefined();
+    expect(directPreview[0]?.text).toContain('Preview task.create');
+    expect(directPreview[0]?.text).toContain('Payload hash:');
+    const directConfirmed = await context.engine.handle(
+      updateFixture({
+        updateId: '99-confirm',
+        kind: 'callback_query',
+        callbackData: requireString(directPreview[0]?.buttons?.[0]?.callbackData),
+      }),
+    );
+    expect(directConfirmed[0]?.text).toContain('Completed task.create');
 
     const preview = await context.engine.handle(
       updateFixture({ updateId: '100', text: 'create task Call parent' }),

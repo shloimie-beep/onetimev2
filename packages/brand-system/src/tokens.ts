@@ -38,6 +38,52 @@ export const oneTimeTokens = {
     panel: '12px',
     pill: '999px',
   },
+  border: {
+    default: '1px solid var(--ot-color-border)',
+    strong: '1px solid var(--ot-color-border-strong)',
+    action: '1px solid var(--ot-color-action-auth)',
+  },
+  shadow: {
+    panel: '0 18px 46px rgba(0, 0, 0, 0.38)',
+    drawer: '0 24px 72px rgba(0, 0, 0, 0.52)',
+    focus: '0 0 0 3px rgba(134, 232, 255, 0.24)',
+  },
+  motion: {
+    standard: '120ms cubic-bezier(0.2, 0, 0, 1)',
+    emphasized: '180ms cubic-bezier(0.2, 0, 0, 1)',
+    ticker: '26s linear infinite',
+  },
+  focus: {
+    width: '3px',
+    offset: '3px',
+    color: '#86e8ff',
+  },
+  layers: {
+    header: 100,
+    ticker: 19,
+    drawerOverlay: 800,
+    drawer: 810,
+    dialogOverlay: 900,
+    dialog: 910,
+    toast: 960,
+    skipLink: 1001,
+  },
+  breakpoints: {
+    mobile: '520px',
+    tablet: '820px',
+    desktop: '1200px',
+  },
+  safeAreas: {
+    top: 'env(safe-area-inset-top)',
+    bottom: 'env(safe-area-inset-bottom)',
+    left: 'env(safe-area-inset-left)',
+    right: 'env(safe-area-inset-right)',
+  },
+  density: {
+    compact: '8px',
+    default: '12px',
+    comfortable: '16px',
+  },
   componentSizes: {
     touchTarget: '44px',
     publicLogoMobile: '48px',
