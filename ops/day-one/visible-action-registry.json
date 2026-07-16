@@ -1393,6 +1393,99 @@
       "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
     },
     {
+      "action_id": "portal.student.class_helper.query.form",
+      "label": "Ask helper",
+      "surface": "form",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "helper:query",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/student/helper/query"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "retrieval_audit",
+        "event": "student_class_helper_query"
+      },
+      "states": {
+        "loading": "Checking approved class material.",
+        "success": "An answer or bounded abstention is shown with no external mutation.",
+        "error": "A local error state is shown and no private question is submitted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/unit/ot107-student-class-helper.test.ts"]
+    },
+    {
+      "action_id": "portal.student.private_question.preview.form",
+      "label": "Preview private question",
+      "surface": "form",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:question:create",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/features/portals/PortalFeatures.tsx"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "private_question_previewed"
+      },
+      "states": {
+        "loading": "Preparing local preview.",
+        "success": "Exact text is shown before submission.",
+        "error": "No private question is submitted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
+    },
+    {
+      "action_id": "portal.student.private_question.send.button",
+      "label": "Send private question",
+      "surface": "button",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:question:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/student/questions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "portal_audit",
+        "event": "student_question_submitted"
+      },
+      "states": {
+        "loading": "Submitting the confirmed private question.",
+        "success": "Submitted status is shown in the private question list.",
+        "error": "A local error state is shown and no retry is sent automatically.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/ot-52/portal-router.test.ts", "tests/ot-52/portal-services.test.ts"]
+    },
+    {
       "action_id": "portal.student.content.open.button",
       "label": "Open",
       "surface": "button",

@@ -139,6 +139,15 @@ export {
   type PortalServiceDeps,
 } from './portals/services.ts';
 export {
+  STUDENT_CLASS_HELPER_NO_SOURCE,
+  STUDENT_CLASS_HELPER_OUTSIDE_SCOPE,
+  STUDENT_CLASS_HELPER_POLICY,
+  createInMemoryStudentClassHelperRateLimitStore,
+  createStudentClassHelperAdapter,
+  type StudentClassHelperProviderPort,
+  type StudentClassHelperRateLimitStore,
+} from './portals/student-class-helper.ts';
+export {
   CrmDuplicateError,
   CrmVersionConflictError,
   createContact,

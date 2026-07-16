@@ -2,6 +2,7 @@ import express, { type Request, type Response } from 'express';
 import { ZodError, z } from 'zod';
 import {
   createLearnerPayloadSchema,
+  helperAnswerSchema,
   helperQueryPayloadSchema,
   idempotencyKeySchema,
   learnerProfileSchema,
@@ -137,10 +138,6 @@ export type StudentPortalRouterDeps = {
 
 const portalRouteParamSchema = z.string().trim().min(3).max(180);
 const studentAccessOperationSchema = studentAccessOperationTypeSchema;
-const helperAnswerSchema = z.object({
-  answer: z.string().trim().min(1).max(2400),
-  source_refs: z.array(z.string().trim().min(1).max(180)).max(20),
-});
 const studentQuestionListSchema = z.array(studentQuestionSchema);
 export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
   const router = express.Router();
@@ -527,6 +524,7 @@ function statusForError(code: PortalErrorCode) {
   if (code === 'FORBIDDEN' || code === 'CSRF_REQUIRED') return 403;
   if (code === 'NOT_FOUND') return 404;
   if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'RATE_LIMITED') return 429;
   if (
     code === 'IDEMPOTENCY_CONFLICT' ||
     code === 'VERSION_CONFLICT' ||

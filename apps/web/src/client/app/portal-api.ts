@@ -1,5 +1,6 @@
 import type {
   ClassroomQuestionSubmitResponse,
+  HelperAnswer,
   LearnerProfile,
   ParentLearnerMaterials,
   ParentPortalDashboard,
@@ -170,6 +171,21 @@ export async function submitStudentQuestion(input: {
         idempotency_key: createIdempotencyKey(),
         question: input.question,
         ...(input.classKey ? { class_key: input.classKey } : {}),
+      }),
+    },
+  );
+  return json.data;
+}
+
+export async function queryStudentHelper(input: { csrfToken: string; question: string }) {
+  const json = await api<{ success: true; data: HelperAnswer }>(
+    '/api/v1/portals/student/helper/query',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        question: input.question,
       }),
     },
   );

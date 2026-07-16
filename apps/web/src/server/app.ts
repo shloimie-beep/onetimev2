@@ -80,6 +80,7 @@ import {
   createSession,
   consumePostActivationMfaHandoff,
   consumeWhatsAppAccountLink,
+  createStudentClassHelperAdapter,
   createStudentPortalService,
   getClassOccurrenceDetail,
   getContentItemDetail,
@@ -1176,6 +1177,7 @@ export function createApp({
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
+    helper: createStudentClassHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
     billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
   };
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
@@ -2256,6 +2258,7 @@ function statusForPortalError(code: string) {
   if (code === 'FORBIDDEN' || code === 'CSRF_REQUIRED') return 403;
   if (code === 'NOT_FOUND') return 404;
   if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'RATE_LIMITED') return 429;
   if (
     code === 'IDEMPOTENCY_CONFLICT' ||
     code === 'VERSION_CONFLICT' ||
