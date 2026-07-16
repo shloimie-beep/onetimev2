@@ -26,6 +26,22 @@ export {
   type ClassroomRepository,
   type ClassroomService,
 } from './classroom/service.ts';
+export { createClassroomReminderJob } from './classroom/reminders.ts';
+export {
+  ZoomApiError,
+  assertNoZoomSecretLeak,
+  createLearnerZoomSdkSignature,
+  createZoomRestClient,
+  registrantTokenFromJoinUrl,
+  resolveZoomOccurrenceForLocalDate,
+} from './providers/zoom-rest.ts';
+export {
+  processZoomWebhook,
+  projectZoomWebhookAttendance,
+  verifyZoomWebhookSignature,
+  zoomWebhookSignature,
+  zoomWebhookUrlValidationToken,
+} from './providers/zoom-webhook.ts';
 export {
   ContentIdempotencyConflictError,
   admitContentOutcome,
