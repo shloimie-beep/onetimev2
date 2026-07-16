@@ -4,6 +4,12 @@ import {
   runLifecycleDeliveryOutboxBatch,
   runSupportDeliveryBatch,
 } from '../../../../packages/domain/src/index.ts';
+import {
+  markOpsWorkerDraining,
+  markOpsWorkerStopped,
+  opsWorkerInstanceKey,
+  upsertOpsWorkerHeartbeat,
+} from '../../../../packages/observability/src/index.ts';
 import { loadDeliveryWorkerConfig } from '../delivery/config.ts';
 import { createDeliveryLogger } from '../delivery/logger.ts';
 import { PollingLoopControl, runNonOverlappingPollingLoop } from '../delivery/loop.ts';
@@ -11,14 +17,34 @@ import { PostgresDeliveryRepository } from '../delivery/repository.ts';
 import { SinkDeliveryRouter } from '../delivery/sink-router.ts';
 import { runDeliveryBatch } from '../delivery/worker.ts';
 
+const WORKER_TYPE = 'delivery_outbox';
+
 export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.env) {
   const config = loadDeliveryWorkerConfig(source);
   const pool = createPgPool(config.appConfig);
+  const logger = createDeliveryLogger();
+  const workerInstanceKey = opsWorkerInstanceKey(WORKER_TYPE, source);
   try {
+    await safeHeartbeat(
+      () =>
+        upsertOpsWorkerHeartbeat({
+          pool,
+          config: config.appConfig,
+          workerType: WORKER_TYPE,
+          workerInstanceKey,
+          state: 'ready',
+          readiness: {
+            mode: 'once',
+            batch_size: config.batchSize,
+            transport_mode: config.appConfig.outboxTransportMode,
+          },
+        }),
+      logger,
+    );
     const delivery = await runDeliveryBatch({
       repository: new PostgresDeliveryRepository(pool),
       router: new SinkDeliveryRouter(),
-      logger: createDeliveryLogger(),
+      logger,
       messageConfig: config.message,
       options: {
         accountKey: config.accountKey,
@@ -49,6 +75,10 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
     });
     return { ...delivery, support, lifecycle };
   } finally {
+    await safeHeartbeat(
+      () => markOpsWorkerStopped({ pool, workerType: WORKER_TYPE, workerInstanceKey }),
+      logger,
+    );
     await pool.end();
   }
 }
@@ -62,8 +92,39 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
   const pool = createPgPool(config.appConfig);
   const logger = createDeliveryLogger();
   const control = new PollingLoopControl();
+  const workerInstanceKey = opsWorkerInstanceKey(WORKER_TYPE, source);
+  const heartbeat = () =>
+    safeHeartbeat(
+      () =>
+        upsertOpsWorkerHeartbeat({
+          pool,
+          config: config.appConfig,
+          workerType: WORKER_TYPE,
+          workerInstanceKey,
+          state: control.stopped ? 'draining' : 'ready',
+          readiness: {
+            mode: 'continuous',
+            batch_size: config.batchSize,
+            concurrency: config.concurrency,
+            poll_interval_ms: config.pollIntervalMs,
+            transport_mode: config.appConfig.outboxTransportMode,
+          },
+        }),
+      logger,
+    );
+  await heartbeat();
+  const heartbeatTimer = setInterval(
+    () => {
+      void heartbeat();
+    },
+    Math.max(5_000, Math.min(config.pollIntervalMs, 30_000)),
+  );
   const stop = () => {
     logger.info('delivery_worker_shutdown_requested', { worker: 'ot36-delivery-sink' });
+    void safeHeartbeat(
+      () => markOpsWorkerDraining({ pool, workerType: WORKER_TYPE, workerInstanceKey }),
+      logger,
+    );
     control.stop();
   };
   process.once('SIGTERM', stop);
@@ -117,10 +178,30 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
       },
     });
   } finally {
+    clearInterval(heartbeatTimer);
     process.off('SIGTERM', stop);
     process.off('SIGINT', stop);
+    await safeHeartbeat(
+      () => markOpsWorkerStopped({ pool, workerType: WORKER_TYPE, workerInstanceKey }),
+      logger,
+    );
     await pool.end();
     logger.info('delivery_worker_shutdown_complete', { worker: 'ot36-delivery-sink' });
+  }
+}
+
+async function safeHeartbeat(
+  run: () => Promise<void>,
+  logger: ReturnType<typeof createDeliveryLogger>,
+) {
+  try {
+    await run();
+  } catch (error) {
+    void error;
+    logger.warn('worker_heartbeat_failed', {
+      worker: 'ot36-delivery-sink',
+      failure_code: 'worker_heartbeat_failed',
+    });
   }
 }
 

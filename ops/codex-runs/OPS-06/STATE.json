@@ -1,0 +1,72 @@
+{
+  "lane": "OPS-06",
+  "branch": "codex/ops06-reliability-observability",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/58",
+  "worktree": "C:/Users/User/.overnight-20260717-worktrees/OPS-06",
+  "status": "ready_for_review",
+  "external_mutations": {
+    "deployment": false,
+    "production_database": false,
+    "providers": false,
+    "sends": false,
+    "charges": false,
+    "dns": false,
+    "bna_mutation": false
+  },
+  "owned_surfaces": [
+    "packages/contracts/src/ops",
+    "packages/observability/src/ops.ts",
+    "apps/web/src/server/ops-routes.ts",
+    "apps/worker/src/main/index.ts heartbeat hooks",
+    "packages/db/migrations/2010_ops06_reliability_observability.sql",
+    "scripts/ops06-*.ts",
+    "tests/unit/ops06",
+    "tests/integration/ops06",
+    ".github/workflows/ops06-reliability-observability.yml",
+    "ops/codex-runs/OPS-06"
+  ],
+  "verification": {
+    "passed": [
+      "npm ci",
+      "npm run typecheck",
+      "npx vitest run tests/unit/ops06/ops-observability.test.ts tests/integration/ops06/ops-diagnostics-routes.test.ts",
+      "npm run unit",
+      "npm run integration",
+      "npm run lint",
+      "npm run build",
+      "npm run secret:scan",
+      "git diff --check",
+      "npx prettier --check <OPS-06-owned files, excluding SQL because this repo has no SQL parser>",
+      "npm run ops06:alerts",
+      "npm run ops06:migrations"
+    ],
+    "blocked": [
+      {
+        "command": "npm run ops06:probes",
+        "reason": "OPS06_BASE_URL was not configured for a local or staging target."
+      },
+      {
+        "command": "OPS06_ALLOW_PG_ASSURANCE=true npm run ops06:load",
+        "reason": "Local disposable PostgreSQL was unavailable: connect ECONNREFUSED 127.0.0.1:5432. psql and Docker were not installed in this environment."
+      },
+      {
+        "command": "OPS06_ALLOW_PG_ASSURANCE=true npm run ops06:backup-restore",
+        "reason": "Local disposable PostgreSQL was unavailable: connect ECONNREFUSED 127.0.0.1:5432. psql and Docker were not installed in this environment."
+      },
+      {
+        "command": "npm run format",
+        "reason": "Repo-wide Prettier check has preexisting formatting debt across hundreds of files; targeted OPS-06-owned Prettier check passed."
+      }
+    ]
+  },
+  "evidence": [
+    "ops/codex-runs/OPS-06/evidence/alert-eval.json",
+    "ops/codex-runs/OPS-06/evidence/migration-safety.json",
+    "ops/codex-runs/OPS-06/evidence/synthetic-probes.json",
+    "ops/codex-runs/OPS-06/evidence/load-backpressure.json",
+    "ops/codex-runs/OPS-06/evidence/backup-restore.json"
+  ],
+  "updated_at": "2026-07-17T02:02:09.0000000+03:00"
+}

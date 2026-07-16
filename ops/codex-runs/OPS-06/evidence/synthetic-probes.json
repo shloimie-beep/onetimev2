@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-07-16T22:55:28.128Z",
+  "target_base_url": null,
+  "status": "blocked",
+  "duration_ms": 0,
+  "results": [
+    {
+      "id": "target_base_url",
+      "status": "blocked",
+      "http_status": null,
+      "latency_ms": null,
+      "detail": "Set OPS06_BASE_URL to run synthetic probes against a local/staging target."
+    }
+  ],
+  "external_mutations": {
+    "production_database": false,
+    "providers": false,
+    "sends": false,
+    "deployment": false
+  }
+}
