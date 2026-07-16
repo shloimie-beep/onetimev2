@@ -1,0 +1,139 @@
+{
+  "recorded": {
+    "batch_key": "ops04_batch_688146befabda4df9397be3f",
+    "dry_run_hash": "dbe5aab056f03c42b7906cd17483973b12ab79ffbe4a622984bae58489139e54",
+    "replayed": false
+  },
+  "applied": {
+    "batch_key": "ops04_batch_688146befabda4df9397be3f",
+    "replayed": false,
+    "action_status_counts": {
+      "committed": 87,
+      "no_op": 2,
+      "quarantined": 9
+    },
+    "no_send_diff": {
+      "outbox_events": 0,
+      "whatsapp_outbox_messages": 0,
+      "delivery_provider_events": 0,
+      "account_invitations": 0,
+      "access_grants": 0,
+      "payment_records": 0,
+      "zero_diff": true
+    }
+  },
+  "replayed": {
+    "batch_key": "ops04_batch_688146befabda4df9397be3f",
+    "replayed": true,
+    "action_status_counts": {
+      "committed": 87,
+      "no_op": 2,
+      "quarantined": 9
+    },
+    "no_send_diff": {
+      "outbox_events": 0,
+      "whatsapp_outbox_messages": 0,
+      "delivery_provider_events": 0,
+      "account_invitations": 0,
+      "access_grants": 0,
+      "payment_records": 0,
+      "zero_diff": true
+    }
+  },
+  "verified": {
+    "batch_key": "ops04_batch_688146befabda4df9397be3f",
+    "replayed": false,
+    "action_status_counts": {
+      "no_op": 2,
+      "quarantined": 9,
+      "verified": 87
+    },
+    "no_send_diff": {
+      "outbox_events": 0,
+      "whatsapp_outbox_messages": 0,
+      "delivery_provider_events": 0,
+      "account_invitations": 0,
+      "access_grants": 0,
+      "payment_records": 0,
+      "zero_diff": true
+    }
+  },
+  "rollback": {
+    "batch_key": "ops04_batch_688146befabda4df9397be3f",
+    "replayed": false,
+    "rolled_back_actions": 89,
+    "no_send_diff": {
+      "outbox_events": 0,
+      "whatsapp_outbox_messages": 0,
+      "delivery_provider_events": 0,
+      "account_invitations": 0,
+      "access_grants": 0,
+      "payment_records": 0,
+      "zero_diff": true
+    }
+  },
+  "totals": {
+    "files": {
+      "total": 1,
+      "classified_source": 1,
+      "unclassified_source": 0,
+      "rejected_source": 0
+    },
+    "rows": {
+      "total": 18,
+      "unique": 17,
+      "duplicate_occurrences": 1,
+      "manual_review": 7,
+      "suppressed": 1,
+      "already_migrated": 1,
+      "migration_invitation_eligible": 3,
+      "blast_candidate": 6,
+      "quarantine": 7,
+      "matched": 2,
+      "current_subscriber_read_only": 1,
+      "active_old_app_user_leads": 4,
+      "school_leads_without_entitlement": 1
+    },
+    "occurrences": {
+      "source_rows": 18,
+      "row_versions": 17,
+      "repeated_row_versions": 1
+    },
+    "unique_rows": {
+      "row_versions": 17,
+      "matched_contact_keys": 2,
+      "email_hmacs": 14,
+      "phone_hmacs": 4
+    },
+    "actions": {
+      "add_contact_point": 10,
+      "add_contact_point_owner": 10,
+      "add_tag_assignment": 11,
+      "append_channel_state_event": 10,
+      "append_lead_event": 8,
+      "append_legacy_membership_event": 5,
+      "create_contact": 9,
+      "link_external_identity": 5,
+      "link_source_provenance": 18,
+      "set_migration_projection": 11,
+      "no_op_unchanged": 2,
+      "quarantine_manual_review": 7,
+      "reject_insufficient_identity": 2
+    },
+    "attempts": {
+      "dry_run": 18,
+      "apply": 0,
+      "sends": 0
+    },
+    "rollback": {
+      "reversible_actions_planned": 9,
+      "rolled_back": 0
+    },
+    "outreach": {
+      "sends_allowed": 0,
+      "campaigns_authorized": 0,
+      "suppressed_channels": 1
+    },
+    "equations_balanced": true
+  }
+}

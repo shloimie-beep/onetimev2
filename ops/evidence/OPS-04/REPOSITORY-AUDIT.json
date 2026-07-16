@@ -1,0 +1,27 @@
+{
+  "task_id": "OPS-04",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:/Users/User/.ops04-worktrees/OPS-04",
+  "branch": "codex/ops-04-legacy-audience-migration",
+  "base_branch": "origin/codex/ot85-whatsapp-lead-assistant",
+  "packet_id": "OPS-04-20260716-fd38cbd7",
+  "source_export_available": false,
+  "row_access_authorized": false,
+  "production_import_authorized": false,
+  "campaign_send_authorized": false,
+  "implemented_controls": [
+    "additive_ops04_migration",
+    "deterministic_dry_run",
+    "full_source_file_manifest_binding",
+    "hmac_row_and_identity_provenance",
+    "deduplication",
+    "conflict_quarantine",
+    "lead_old_system_active_user_tags",
+    "consent_suppression_preservation",
+    "reconciliation_totals",
+    "synthetic_apply_replay_verify_rollback",
+    "no_send_side_effect_diff",
+    "public_signup_freshness_guard"
+  ],
+  "final_status": "waiting_for_source_export"
+}

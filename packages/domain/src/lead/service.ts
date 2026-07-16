@@ -31,6 +31,12 @@ type OutboxEvent = {
   payload: Record<string, unknown>;
 };
 
+type UpsertContactResult = {
+  contactKey: string;
+  emailForOutbox: string;
+  phoneAcceptedForPublicOutbox: string | null;
+};
+
 const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
 const CONSENT_POLICY = 'one-time-class-reminders-v1-2026-07-14';
@@ -66,7 +72,8 @@ export async function captureLead({
       return { ...previous, duplicate_submission: true };
     }
 
-    const contactKey = await upsertContact(client, config, parsed, email, phone);
+    const contact = await upsertContact(client, config, parsed, email, phone);
+    const contactKey = contact.contactKey;
     const signupKey = stableKey('signup', [contactKey, OFFER_VERSION, CONTENT_VERSION]);
     const message = successCopy(parsed.audience_type);
     const responseBase = {
@@ -76,12 +83,27 @@ export async function captureLead({
       contact_key: contactKey,
       signup_key: signupKey,
       confirmation_queued: true as const,
-      outbox_intents: outboxDeliveryKeys(config, parsed, contactKey, signupKey),
+      outbox_intents: outboxDeliveryKeys(
+        config,
+        parsed,
+        contactKey,
+        signupKey,
+        contact.emailForOutbox,
+        contact.phoneAcceptedForPublicOutbox,
+      ),
       message,
     };
     await upsertSignup(client, config, parsed, contactKey, signupKey);
     await insertAudit(client, config, parsed, contactKey, signupKey);
-    await insertOutboxIntents(client, config, parsed, contactKey, signupKey, email, phone);
+    await insertOutboxIntents(
+      client,
+      config,
+      parsed,
+      contactKey,
+      signupKey,
+      contact.emailForOutbox,
+      contact.phoneAcceptedForPublicOutbox,
+    );
     await client.query(
       `INSERT INTO onetime.idempotency_records
        (account_key, product_key, idempotency_key, request_hash, response_json)
@@ -139,7 +161,7 @@ async function upsertContact(
   payload: LeadPayload,
   email: string,
   phone: string | null,
-) {
+): Promise<UpsertContactResult> {
   const contactKey = `contact_${randomUUID()}`;
   const publicContactId = randomUUID();
   const result = await client.query(
@@ -152,23 +174,57 @@ async function upsertContact(
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,CASE WHEN $14 THEN now() ELSE NULL END,$15,$16,$17,'new',now())
      ON CONFLICT (account_key, product_key, email_normalized)
      DO UPDATE SET
-       display_name = EXCLUDED.display_name,
-       family_school_classification = EXCLUDED.family_school_classification,
-       family_or_school = EXCLUDED.family_or_school,
-       location_text = EXCLUDED.location_text,
-       timezone = EXCLUDED.timezone,
-       phone_normalized = COALESCE(EXCLUDED.phone_normalized, onetime.contacts.phone_normalized),
-       reminder_preference = EXCLUDED.reminder_preference,
-       consent_policy_version = EXCLUDED.consent_policy_version,
-       consent_recorded_at = COALESCE(EXCLUDED.consent_recorded_at, onetime.contacts.consent_recorded_at),
+       display_name = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup' THEN EXCLUDED.display_name
+         ELSE onetime.contacts.display_name
+       END,
+       family_school_classification = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup' THEN EXCLUDED.family_school_classification
+         ELSE onetime.contacts.family_school_classification
+       END,
+       family_or_school = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup' THEN EXCLUDED.family_or_school
+         ELSE onetime.contacts.family_or_school
+       END,
+       location_text = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup' THEN EXCLUDED.location_text
+         ELSE onetime.contacts.location_text
+       END,
+       timezone = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup' THEN EXCLUDED.timezone
+         ELSE onetime.contacts.timezone
+       END,
+       phone_normalized = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup'
+           THEN COALESCE(EXCLUDED.phone_normalized, onetime.contacts.phone_normalized)
+         ELSE onetime.contacts.phone_normalized
+       END,
+       reminder_preference = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup' THEN EXCLUDED.reminder_preference
+         ELSE onetime.contacts.reminder_preference
+       END,
+       consent_policy_version = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup' THEN EXCLUDED.consent_policy_version
+         ELSE onetime.contacts.consent_policy_version
+       END,
+       consent_recorded_at = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup'
+           THEN COALESCE(EXCLUDED.consent_recorded_at, onetime.contacts.consent_recorded_at)
+         ELSE onetime.contacts.consent_recorded_at
+       END,
        offer_version = $15,
        content_version = $16,
        lead_status = CASE WHEN onetime.contacts.lead_status = 'archived' THEN 'new' ELSE onetime.contacts.lead_status END,
        last_activity_at = now(),
        version = onetime.contacts.version + 1,
-       identity_version = onetime.contacts.identity_version + 1,
+       identity_version = CASE
+         WHEN onetime.contacts.source = 'one_time_public_signup'
+          AND COALESCE(EXCLUDED.phone_normalized, '') <> COALESCE(onetime.contacts.phone_normalized, '')
+           THEN onetime.contacts.identity_version + 1
+         ELSE onetime.contacts.identity_version
+       END,
        updated_at = now()
-     RETURNING contact_key`,
+     RETURNING contact_key, email_normalized, phone_normalized, source`,
     [
       contactKey,
       publicContactId,
@@ -189,7 +245,13 @@ async function upsertContact(
       CONTENT_VERSION,
     ],
   );
-  return String(result.rows[0].contact_key);
+  const returned = result.rows[0];
+  const returnedPhone = returned?.phone_normalized ? String(returned.phone_normalized) : null;
+  return {
+    contactKey: String(returned?.contact_key),
+    emailForOutbox: returned?.email_normalized ? String(returned.email_normalized) : email,
+    phoneAcceptedForPublicOutbox: returnedPhone === phone ? returnedPhone : null,
+  };
 }
 
 async function upsertSignup(
@@ -290,15 +352,12 @@ function outboxDeliveryKeys(
   payload: LeadPayload,
   contactKey: string,
   signupKey: string,
+  email: string,
+  phone: string | null,
 ) {
-  return outboxEvents(
-    config,
-    payload,
-    contactKey,
-    signupKey,
-    normalizeEmail(payload.email),
-    normalizePhone(payload.phone),
-  ).map((event) => event.deliveryKey);
+  return outboxEvents(config, payload, contactKey, signupKey, email, phone).map(
+    (event) => event.deliveryKey,
+  );
 }
 
 function outboxEvents(

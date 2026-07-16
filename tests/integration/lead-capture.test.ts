@@ -165,6 +165,71 @@ describe('lead capture transaction', () => {
     ]);
   });
 
+  it('preserves CRM-owned canonical fields when public signup reuses the same email', async () => {
+    await pool.query(
+      `INSERT INTO onetime.contacts
+       (contact_key, public_contact_id, account_key, product_key, display_name,
+        family_school_classification, family_or_school, location_text, timezone,
+        email_normalized, phone_normalized, reminder_preference, consent_policy_version,
+        consent_recorded_at, source, offer_version, content_version, lead_status,
+        last_activity_at, version, identity_version)
+       VALUES
+       ('contact_manual_guard', 'public_manual_guard', $1, $2, 'Manual CRM Name',
+        'family', 'Manual CRM Family', 'Manual CRM City', 'America/New_York',
+        'guard@example.test', '+14155559999', 'email', NULL, NULL, 'manual_crm',
+        NULL, NULL, 'contacted', now(), 7, 5)`,
+      [config.accountKey, config.productKey],
+    );
+
+    const result = await captureLead({
+      pool,
+      config,
+      payload: {
+        ...payload,
+        contact_name: 'Public Form Replacement',
+        family_or_school: 'Public Form Family',
+        location: 'Public Form City',
+        timezone: 'Asia/Jerusalem',
+        email: 'guard@example.test',
+        phone: '050-999-9999',
+        reminder_preference: 'both',
+        reminder_consent: true,
+        idempotency_key: 'idem-manual-guard-1',
+      },
+      now: beforeReminder,
+    });
+
+    expect(result.contact_key).toBe('contact_manual_guard');
+    const contact = await pool.query(
+      `SELECT display_name, family_or_school, location_text, timezone, phone_normalized,
+              reminder_preference, source, lead_status, version, identity_version
+         FROM onetime.contacts
+        WHERE contact_key = 'contact_manual_guard'`,
+    );
+    expect(contact.rows[0]).toMatchObject({
+      display_name: 'Manual CRM Name',
+      family_or_school: 'Manual CRM Family',
+      location_text: 'Manual CRM City',
+      timezone: 'America/New_York',
+      phone_normalized: '+14155559999',
+      reminder_preference: 'email',
+      source: 'manual_crm',
+      lead_status: 'contacted',
+      version: 8,
+      identity_version: 5,
+    });
+    const outbox = await pool.query(
+      `SELECT event_type, channel
+         FROM onetime.outbox_events
+        WHERE contact_key = 'contact_manual_guard'
+        ORDER BY event_type, channel`,
+    );
+    expect(outbox.rows.map((row) => `${row.event_type}:${row.channel}`)).toEqual([
+      `${DELIVERY_EVENT_TYPES.familySignupEmailAck}:email`,
+      `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
+    ]);
+  });
+
   it('sink worker delivers deterministic intents without external transport', async () => {
     await captureLead({ pool, config, payload, now: beforeReminder });
     const sink = await processOutboxSink(pool);

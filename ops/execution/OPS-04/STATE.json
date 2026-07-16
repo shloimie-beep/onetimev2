@@ -1,0 +1,43 @@
+{
+  "task_id": "OPS-04",
+  "packet_id": "OPS-04-20260716-fd38cbd7",
+  "packet_version": 1,
+  "phase": "source_independent_tooling_complete",
+  "status": "waiting_for_source_export",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:/Users/User/.ops04-worktrees/OPS-04",
+  "branch": "codex/ops-04-legacy-audience-migration",
+  "base_branch": "origin/codex/ot85-whatsapp-lead-assistant",
+  "base_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+  "audited_main_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+  "convergence_anchor_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+  "legacy_audience_foundation_sha": "51cd99dc4434f0354ba229620ebe89558efeb120",
+  "production_import_authorization": "absent",
+  "production_send_authorization": "absent",
+  "source_row_access_authorization": "absent",
+  "source_export_status": "not_available_in_repo",
+  "staging_rehearsal_status": "synthetic_rehearsal_passed",
+  "implemented": {
+    "additive_migration": true,
+    "deterministic_dry_run": true,
+    "normalization": true,
+    "hmac_provenance": true,
+    "deduplication": true,
+    "conflict_quarantine": true,
+    "lead_old_system_active_user_tags": true,
+    "consent_suppression_preservation": true,
+    "reconciliation_totals": true,
+    "replay_tooling": true,
+    "rollback_tooling": true,
+    "public_signup_freshness_guard": true
+  },
+  "blocked_inputs": [
+    "final integrated CRM schema/source export unavailable",
+    "production import authorization absent",
+    "campaign send authorization absent",
+    "real row access authorization and HMAC key absent",
+    "staging database marker/fingerprint unavailable"
+  ],
+  "final_disposition": "resumable_checkpoint_published_waiting_for_source_export",
+  "updated_at": "2026-07-16T08:52:00Z"
+}

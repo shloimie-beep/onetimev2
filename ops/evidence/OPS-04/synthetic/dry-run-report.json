@@ -1,0 +1,1225 @@
+{
+  "task_id": "OPS-04",
+  "batch_key": "ops04_batch_688146befabda4df9397be3f",
+  "manifest_sha256": "752e49a5585534ca54293b0fe19b97d7ce730195c85176d27cade09cd140f252",
+  "mapping_sha256": "8c5d3445188b31a8e95dbea6616492f549ac995f022f75e85ba61ca8d20480ab",
+  "database_snapshot_key": "ops04_snapshot_5023815dc2bc73b5255fc8db",
+  "dry_run_hash": "dbe5aab056f03c42b7906cd17483973b12ab79ffbe4a622984bae58489139e54",
+  "generated_at": "2026-07-16T00:00:00.000Z",
+  "source_files": [
+    {
+      "file_id": "ops04_synthetic_fixture",
+      "adapter_family": "ops04_synthetic",
+      "adapter_version": "v1",
+      "file_sha256": "4cd3c79e7108f8c7005174dc2ab893924d024a73ef3df04e428409a6e3cc1d18",
+      "byte_size": 18000,
+      "safe_path_fingerprint": "ops04_path_3a3436765885cdf2edc17951",
+      "workbook_sheets": [
+        "synthetic"
+      ],
+      "normalized_headers": [
+        "source_row_number",
+        "display_name",
+        "email",
+        "phone",
+        "audience_type",
+        "old_user_id",
+        "legacy_membership_state",
+        "lead_state",
+        "consent",
+        "suppression"
+      ],
+      "physical_row_count": 18,
+      "blank_row_count": 0,
+      "error_row_count": 0,
+      "classification_status": "classified_source",
+      "snapshot_semantics": "snapshot",
+      "timestamp_policy": "synthetic_fixed_2026_07_16",
+      "consent_suppression_metadata": {
+        "synthetic": true
+      }
+    }
+  ],
+  "rows": [
+    {
+      "row_version_key": "ops04_row_586c28a4a34bd4b22e945c35",
+      "decision_key": "ops04_decision_586c28a4a34bd4b22e945c35",
+      "source_row_number": 2,
+      "source_sheet": "synthetic",
+      "row_hmac": "6bd6d7db5b5f0efdfe41d8873e48b728e685400f922cf2db73100b4489665ce2",
+      "row_version_sha256": "2c9b6575c0a3b3bcd6c7ff2ebaf1a53f3b0a3c1557c992f8dfb27e5e5524481d",
+      "old_external_id_hmacs": [
+        "43f61d978bad77a1044687c633516f16c5c6c19ef86d01500ae4bc90d1666cc4"
+      ],
+      "email_hmac": "887699e1a7cdb6e78b0f00d6fcdaaaf1962cd00a251bd0bbb00b2dc6ac197124",
+      "phone_hmac": "e704c390a017cceaa918dbde71aa2344b2735aeedd8b97ce45b9480d965fe5eb",
+      "normalized_phone_status": "valid",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "migration_invitation_eligible",
+      "independent_facts": {
+        "lead": true,
+        "old_system": true,
+        "active_old_app_user": true,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:migration_invitation_eligible",
+        "ops04:lead:yes",
+        "ops04:legacy:active-user",
+        "ops04:old-system",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "append_lead_event",
+        "append_legacy_membership_event",
+        "create_contact",
+        "link_external_identity",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_278c52336d775293d8076cd5",
+      "decision_key": "ops04_decision_278c52336d775293d8076cd5",
+      "source_row_number": 3,
+      "source_sheet": "synthetic",
+      "row_hmac": "2df6e34a294646804299d2041e0f91a52605d1f7a15c140ab3f368d1c8592627",
+      "row_version_sha256": "1559db3c8fef92659a62d0412fabcc1f729a62acd2db716700031506cdb7d7aa",
+      "old_external_id_hmacs": [],
+      "email_hmac": "66aee4274bb38be311677ecc7ee93d780e76a14d6551d4bd1b0230559f40994a",
+      "phone_hmac": "573f302401405cbb0a9d5a58ec7ee002c9aabda109e27e521d86f99d21e94173",
+      "normalized_phone_status": "valid",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "blast_candidate",
+      "independent_facts": {
+        "lead": true,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "unknown_consent",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "consent_not_opted_in"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:blast_candidate",
+        "ops04:lead:yes",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "append_lead_event",
+        "create_contact",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_f677ac73007f51bbe1130272",
+      "decision_key": "ops04_decision_f677ac73007f51bbe1130272",
+      "source_row_number": 4,
+      "source_sheet": "synthetic",
+      "row_hmac": "b6e28f65b07b6edf9b454e82f8c98f48b627c0489bc4f5e04751baa8c241f049",
+      "row_version_sha256": "87b22f42392fae14a836a4c7b3409d6044e8b623a727637343fb7a9ea59f0212",
+      "old_external_id_hmacs": [
+        "c0e68ce331ce4aa0f83cb1a43531e7e24acc4baa04aa3f7964ec470a61f340f7"
+      ],
+      "email_hmac": "c8ec4204b665f39d6bb75c22cc8f0dc5ec7b62dc228cccc55e7798381346487b",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": "contact_current_subscriber",
+      "candidate_contact_keys": [
+        "contact_current_subscriber"
+      ],
+      "quarantine_reasons": [],
+      "primary_disposition": "already_migrated",
+      "independent_facts": {
+        "lead": true,
+        "old_system": true,
+        "active_old_app_user": true,
+        "current_subscriber": true,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": true
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:already_migrated",
+        "ops04:lead:yes",
+        "ops04:legacy:active-user",
+        "ops04:old-system",
+        "ops04:source:legacy",
+        "ops04:subscriber:current"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "append_lead_event",
+        "append_legacy_membership_event",
+        "link_external_identity",
+        "link_source_provenance",
+        "no_op_unchanged",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_0665705ec13a9f0f173fc283",
+      "decision_key": "ops04_decision_0665705ec13a9f0f173fc283",
+      "source_row_number": 5,
+      "source_sheet": "synthetic",
+      "row_hmac": "18999a45c63f757a7fbb5c145f46a879a5a284d8cd30cb7f6d920bf8bd78e59a",
+      "row_version_sha256": "9d4400b4e9b301c0711f2d72e327809ba6ebd8d7e6bf3729dafda73a75dd9de9",
+      "old_external_id_hmacs": [],
+      "email_hmac": "b45df7969ce9896ebb03952a5639e60d76cf3590228a904f37547c256957113d",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": "contact_suppressed",
+      "candidate_contact_keys": [
+        "contact_suppressed"
+      ],
+      "quarantine_reasons": [],
+      "primary_disposition": "suppressed",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "suppressed",
+          "consent_state": "opted_out",
+          "suppression_state": "hard_bounce",
+          "sends_allowed": false,
+          "reason": "suppression_or_opt_out_precedence"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "suppressed",
+          "consent_state": "unknown",
+          "suppression_state": "stop",
+          "sends_allowed": false,
+          "reason": "suppression_or_opt_out_precedence"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:suppressed",
+        "ops04:lead:no",
+        "ops04:source:legacy",
+        "ops04:suppression:email:hard_bounce",
+        "ops04:suppression:whatsapp:stop"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_8f5d21f74b4d31f96977cd11",
+      "decision_key": "ops04_decision_8f5d21f74b4d31f96977cd11",
+      "source_row_number": 6,
+      "source_sheet": "synthetic",
+      "row_hmac": "5c32f87a397e14295a45d9aa90e947c7295b1233072b581a1a28d6bde8caeeb0",
+      "row_version_sha256": "d6b81e7c5495c887668bad062f116b1266f9e79b5c7d8ff2d8827a3c13eb2de7",
+      "old_external_id_hmacs": [],
+      "email_hmac": "cea4fd9e2faf3c2f7b40fc6ec51c52b920d86bb8f35e173316a5f5225b298e51",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [
+        "contact_shared_household_a",
+        "contact_shared_household_b"
+      ],
+      "quarantine_reasons": [
+        "shared_email_without_relationship"
+      ],
+      "primary_disposition": "manual_review",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "manual_review",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "identity_or_ownership_requires_review"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:manual_review",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "link_source_provenance",
+        "quarantine_manual_review"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_7c48e0b77479b210f6ab0f63",
+      "decision_key": "ops04_decision_7c48e0b77479b210f6ab0f63",
+      "source_row_number": 7,
+      "source_sheet": "synthetic",
+      "row_hmac": "8a4c7863e0b1f6551c87b1a2f904ec0c57c118ddb072de26fb1d7f70ac169760",
+      "row_version_sha256": "d2241125f3b960d6a989ac939c662a42c528a83bf8fb00fb980989b7ba3fe2e5",
+      "old_external_id_hmacs": [],
+      "email_hmac": "d6f0bb13735eed45619711ffe5e05a42a9985c8392dc5a2d80f8425dfb82985d",
+      "phone_hmac": null,
+      "normalized_phone_status": "ambiguous_local_phone",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [
+        "ambiguous_local_phone"
+      ],
+      "primary_disposition": "manual_review",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "manual_review",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "identity_or_ownership_requires_review"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:manual_review",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "link_source_provenance",
+        "quarantine_manual_review"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_42b0c4b462a1b6e9ef220d17",
+      "decision_key": "ops04_decision_42b0c4b462a1b6e9ef220d17",
+      "source_row_number": 8,
+      "source_sheet": "synthetic",
+      "row_hmac": "63c8ebed11389939000e74a9374430c3938ae6b614c219f3aa251320df270d08",
+      "row_version_sha256": "ed7d097fbfd1f63532336e8836517a3bfdbc1d6a505a298cc4a5223f9ee4c922",
+      "old_external_id_hmacs": [],
+      "email_hmac": null,
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [
+        "insufficient_identity"
+      ],
+      "primary_disposition": "manual_review",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "missing_destination",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:manual_review",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "link_source_provenance",
+        "quarantine_manual_review",
+        "reject_insufficient_identity"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_a1876f27237437f91fb198d0",
+      "decision_key": "ops04_decision_a1876f27237437f91fb198d0",
+      "source_row_number": 9,
+      "source_sheet": "synthetic",
+      "row_hmac": "0f558438bdd095699468434196adda69ccd39ffef96458f3eebb22f4c8a3fbd1",
+      "row_version_sha256": "d6bae85e378fb05a0564d61fa9bf38e0f0598b2c9b35f33c1d53816b937e674d",
+      "old_external_id_hmacs": [],
+      "email_hmac": "fbb03818978e7bae0bde2aa0940d98a1bb740eb53baa544db67c22d8eda685d5",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "blast_candidate",
+      "independent_facts": {
+        "lead": true,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": false,
+        "school": true,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:school",
+        "ops04:disposition:blast_candidate",
+        "ops04:lead:yes",
+        "ops04:source-tag:school-lead",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "append_lead_event",
+        "create_contact",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_a56e872f2812040f7a4d3c33",
+      "decision_key": "ops04_decision_a56e872f2812040f7a4d3c33",
+      "source_row_number": 10,
+      "source_sheet": "synthetic",
+      "row_hmac": "731a2ef0da113061f4b910ffe41257e96e58e2a9f8b1fc381a6b290565dde33c",
+      "row_version_sha256": "10bc3c75ba6a3a1cfd8c7327d6ebb7b51ce99b458cfd2f87cd087f63aed74e57",
+      "old_external_id_hmacs": [
+        "f860549ebb64bdb26451c043e48aac5c56eb382e39ce518c8fe242c8d94c364d"
+      ],
+      "email_hmac": "fa46ae85a7067e1c6d277dadeb055c3b8ac051d00fee9c54c7d87d7f2d7cd96a",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "migration_invitation_eligible",
+      "independent_facts": {
+        "lead": true,
+        "old_system": true,
+        "active_old_app_user": true,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:migration_invitation_eligible",
+        "ops04:lead:yes",
+        "ops04:legacy:active-user",
+        "ops04:old-system",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "append_lead_event",
+        "append_legacy_membership_event",
+        "create_contact",
+        "link_external_identity",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_75cedd3163b8827e01305adf",
+      "decision_key": "ops04_decision_75cedd3163b8827e01305adf",
+      "source_row_number": 11,
+      "source_sheet": "synthetic",
+      "row_hmac": "ce84307e08af36513ee4560c6fab26825b8654e41244df19d2e527893c371245",
+      "row_version_sha256": "bdb4bcbaef7796ece7ab3ef69a68338b478d13b690edfb81bcc533b9ec1c3563",
+      "old_external_id_hmacs": [],
+      "email_hmac": "cb6888051a70e4f3374b4f8d930ebf234e8d81869e16f9b5bd28d224ad0318f8",
+      "phone_hmac": "9cebb16752b73dc1f6727fc0e11c4cc686bbdd858a68863b9b0851c9c3036455",
+      "normalized_phone_status": "valid",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [
+        "contact_phone_a",
+        "contact_phone_b"
+      ],
+      "quarantine_reasons": [
+        "email_phone_target_conflict"
+      ],
+      "primary_disposition": "manual_review",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "manual_review",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "identity_or_ownership_requires_review"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "manual_review",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "identity_or_ownership_requires_review"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:manual_review",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "link_source_provenance",
+        "quarantine_manual_review"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_ab254269b61f704aeb1e2611",
+      "decision_key": "ops04_decision_ab254269b61f704aeb1e2611",
+      "source_row_number": 12,
+      "source_sheet": "synthetic",
+      "row_hmac": "39fb26b345791f6c5c70e582171d4f35926ee949d7928bbef65c7c68dda93459",
+      "row_version_sha256": "fecf40a061d983cdb8f798f558ebefec0bf3ee450935120ddaf9a64bb95423cd",
+      "old_external_id_hmacs": [],
+      "email_hmac": null,
+      "phone_hmac": null,
+      "normalized_phone_status": "invalid",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [
+        "insufficient_identity",
+        "invalid_destination_with_no_stable_identity"
+      ],
+      "primary_disposition": "manual_review",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "missing_destination",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:manual_review",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "link_source_provenance",
+        "quarantine_manual_review",
+        "reject_insufficient_identity"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_6896c3476e2cf7027cc0c621",
+      "decision_key": "ops04_decision_6896c3476e2cf7027cc0c621",
+      "source_row_number": 13,
+      "source_sheet": "synthetic",
+      "row_hmac": "6c4131fca7713ea925a1a81d0352219bc3ec40f2bb90348d93c2f80e29880ca6",
+      "row_version_sha256": "9b9a31f7c56db0ae2bbf4a9891b9fbf348a6f7ec3960eb2b20d80148647ac6c0",
+      "old_external_id_hmacs": [
+        "8390a750d73bc69213405b024161ed79f1a37cde81fac6c6f9fa206cc666c4a4",
+        "a2c1d21935ffdbc5313fe216b6c373ffd6daeaaecc32cd89822f5c0597bce9c3"
+      ],
+      "email_hmac": null,
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "blast_candidate",
+      "independent_facts": {
+        "lead": true,
+        "old_system": true,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "missing_destination",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:blast_candidate",
+        "ops04:lead:yes",
+        "ops04:old-system",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_tag_assignment",
+        "append_lead_event",
+        "append_legacy_membership_event",
+        "create_contact",
+        "link_external_identity",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_c9812675b8c792a2dff65088",
+      "decision_key": "ops04_decision_c9812675b8c792a2dff65088",
+      "source_row_number": 14,
+      "source_sheet": "synthetic",
+      "row_hmac": "9cc3ee7cb2fac77c1dd8fca67030698c0e7e93355608a0244b009405dde9cdfa",
+      "row_version_sha256": "3af0ff7de966b464c0ec35d1f32eddc7c75cf9c4da354ba9e60aa5fad643b815",
+      "old_external_id_hmacs": [],
+      "email_hmac": "b3ed7a2bd09b1fcd8bf0dbe839d77a9960ebe62491dd3731f9e8f2e163875fe6",
+      "phone_hmac": "c1d2957e7e27342d300cb4331c1bfd92656f2ec2ab9a6ed737e1ee42ffc65f32",
+      "normalized_phone_status": "valid",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "blast_candidate",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "unknown_consent",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "consent_not_opted_in"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "unknown_consent",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "consent_not_opted_in"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:blast_candidate",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "create_contact",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_e3082c25ffe126b820b903fc",
+      "decision_key": "ops04_decision_e3082c25ffe126b820b903fc",
+      "source_row_number": 15,
+      "source_sheet": "synthetic",
+      "row_hmac": "0b910197dabc933b2e9274ca3860d5ae9cda1e30e821269cb0b4546717df1cb1",
+      "row_version_sha256": "bd47c2120256b31be47f3370777b17e3413fc9ad0a1a3b5b548f55849dbeec56",
+      "old_external_id_hmacs": [],
+      "email_hmac": "9da71d4b4a861215ef46277d1a987f18f19e7c70347d135406998fbdec4ed820",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "blast_candidate",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "unknown_consent",
+          "consent_state": "transactional_only",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "consent_not_opted_in"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:blast_candidate",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "create_contact",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_586c28a4a34bd4b22e945c35",
+      "decision_key": "ops04_decision_586c28a4a34bd4b22e945c35",
+      "source_row_number": 16,
+      "source_sheet": "synthetic",
+      "row_hmac": "6bd6d7db5b5f0efdfe41d8873e48b728e685400f922cf2db73100b4489665ce2",
+      "row_version_sha256": "2c9b6575c0a3b3bcd6c7ff2ebaf1a53f3b0a3c1557c992f8dfb27e5e5524481d",
+      "old_external_id_hmacs": [
+        "43f61d978bad77a1044687c633516f16c5c6c19ef86d01500ae4bc90d1666cc4"
+      ],
+      "email_hmac": "887699e1a7cdb6e78b0f00d6fcdaaaf1962cd00a251bd0bbb00b2dc6ac197124",
+      "phone_hmac": "e704c390a017cceaa918dbde71aa2344b2735aeedd8b97ce45b9480d965fe5eb",
+      "normalized_phone_status": "valid",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "migration_invitation_eligible",
+      "independent_facts": {
+        "lead": true,
+        "old_system": true,
+        "active_old_app_user": true,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:migration_invitation_eligible",
+        "ops04:lead:yes",
+        "ops04:legacy:active-user",
+        "ops04:old-system",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "append_lead_event",
+        "append_legacy_membership_event",
+        "create_contact",
+        "link_external_identity",
+        "link_source_provenance",
+        "no_op_unchanged",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_188f8a7a03275af920afbeef",
+      "decision_key": "ops04_decision_188f8a7a03275af920afbeef",
+      "source_row_number": 17,
+      "source_sheet": "synthetic",
+      "row_hmac": "9ecf1c17f0c04320aa016d3b8de2b60a0ff1ba5b9b26c3544c8b94c7c2e06624",
+      "row_version_sha256": "fb52184908d6eff6c9c71ef5bf38c961f0b37341e026089e1185b1f54ee7006b",
+      "old_external_id_hmacs": [],
+      "email_hmac": "17a12793109e2e7b6cc90effa8369d10ed944c03fecddf82e86c3d96cab9312a",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [],
+      "primary_disposition": "blast_candidate",
+      "independent_facts": {
+        "lead": true,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": false,
+        "school": false,
+        "organization": true,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "eligible",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "eligible_for_future_review_only"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:organization",
+        "ops04:disposition:blast_candidate",
+        "ops04:lead:yes",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "add_contact_point",
+        "add_contact_point_owner",
+        "add_tag_assignment",
+        "append_channel_state_event",
+        "append_lead_event",
+        "create_contact",
+        "link_source_provenance",
+        "set_migration_projection"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_0f354289b62a3490bd7046d2",
+      "decision_key": "ops04_decision_0f354289b62a3490bd7046d2",
+      "source_row_number": 18,
+      "source_sheet": "synthetic",
+      "row_hmac": "b632bd09e99d75a71500137e4e41c827cd041fe815712e020014a4eb8d21138b",
+      "row_version_sha256": "2715c12440fe6134023df8cfbb8ad8964a63a3a11a65b154c403715944433e87",
+      "old_external_id_hmacs": [],
+      "email_hmac": "0f2cbbffe1061d58708cc53fb3c980bf9cd6cc39dab6ad3d32f657da47507bf3",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [
+        "archived_target_requires_review"
+      ],
+      "primary_disposition": "manual_review",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "manual_review",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "identity_or_ownership_requires_review"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:manual_review",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "link_source_provenance",
+        "quarantine_manual_review"
+      ],
+      "sends_allowed": false
+    },
+    {
+      "row_version_key": "ops04_row_3cde59f0dbab89c262fe15d2",
+      "decision_key": "ops04_decision_3cde59f0dbab89c262fe15d2",
+      "source_row_number": 19,
+      "source_sheet": "synthetic",
+      "row_hmac": "513c9ed2ebbfbf4ec716a7404d1a0b3b27a440fd157b2598c51641b1389405f0",
+      "row_version_sha256": "4024a74fcaab2b41f01500becace0ff6c61e4b0523f615d4291ad1da6195daed",
+      "old_external_id_hmacs": [],
+      "email_hmac": "04b6dc123b543f3284be96efd8e60576980f1373bb730f6c04042d7879689a2b",
+      "phone_hmac": null,
+      "normalized_phone_status": "missing",
+      "matched_contact_key": null,
+      "candidate_contact_keys": [],
+      "quarantine_reasons": [
+        "cleaned_provider_semantics_unknown"
+      ],
+      "primary_disposition": "manual_review",
+      "independent_facts": {
+        "lead": false,
+        "old_system": false,
+        "active_old_app_user": false,
+        "current_subscriber": false,
+        "family": true,
+        "school": false,
+        "organization": false,
+        "already_migrated": false
+      },
+      "channel_snapshots": {
+        "email": {
+          "channel": "email",
+          "eligibility": "manual_review",
+          "consent_state": "opted_in",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "identity_or_ownership_requires_review"
+        },
+        "whatsapp": {
+          "channel": "whatsapp",
+          "eligibility": "missing_destination",
+          "consent_state": "unknown",
+          "suppression_state": "none",
+          "sends_allowed": false,
+          "reason": "destination_missing"
+        }
+      },
+      "tag_keys": [
+        "ops04:audience:family",
+        "ops04:disposition:manual_review",
+        "ops04:lead:no",
+        "ops04:source:legacy"
+      ],
+      "planned_actions": [
+        "link_source_provenance",
+        "quarantine_manual_review"
+      ],
+      "sends_allowed": false
+    }
+  ],
+  "totals": {
+    "files": {
+      "total": 1,
+      "classified_source": 1,
+      "unclassified_source": 0,
+      "rejected_source": 0
+    },
+    "rows": {
+      "total": 18,
+      "unique": 17,
+      "duplicate_occurrences": 1,
+      "manual_review": 7,
+      "suppressed": 1,
+      "already_migrated": 1,
+      "migration_invitation_eligible": 3,
+      "blast_candidate": 6,
+      "quarantine": 7,
+      "matched": 2,
+      "current_subscriber_read_only": 1,
+      "active_old_app_user_leads": 4,
+      "school_leads_without_entitlement": 1
+    },
+    "occurrences": {
+      "source_rows": 18,
+      "row_versions": 17,
+      "repeated_row_versions": 1
+    },
+    "unique_rows": {
+      "row_versions": 17,
+      "matched_contact_keys": 2,
+      "email_hmacs": 14,
+      "phone_hmacs": 4
+    },
+    "actions": {
+      "add_contact_point": 10,
+      "add_contact_point_owner": 10,
+      "add_tag_assignment": 11,
+      "append_channel_state_event": 10,
+      "append_lead_event": 8,
+      "append_legacy_membership_event": 5,
+      "create_contact": 9,
+      "link_external_identity": 5,
+      "link_source_provenance": 18,
+      "set_migration_projection": 11,
+      "no_op_unchanged": 2,
+      "quarantine_manual_review": 7,
+      "reject_insufficient_identity": 2
+    },
+    "attempts": {
+      "dry_run": 18,
+      "apply": 0,
+      "sends": 0
+    },
+    "rollback": {
+      "reversible_actions_planned": 9,
+      "rolled_back": 0
+    },
+    "outreach": {
+      "sends_allowed": 0,
+      "campaigns_authorized": 0,
+      "suppressed_channels": 1
+    },
+    "equations_balanced": true
+  },
+  "approval_status": "absent",
+  "production_import_authorized": false,
+  "campaign_send_authorized": false,
+  "raw_row_contents_included": false,
+  "sends_allowed": false
+}

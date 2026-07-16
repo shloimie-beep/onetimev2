@@ -1,0 +1,20 @@
+{
+  "task_id": "OPS-04",
+  "status": "waiting_for_source_export",
+  "generated_at": "2026-07-16T08:52:00Z",
+  "files": [
+    "ops/evidence/OPS-04/REPOSITORY-AUDIT.md",
+    "ops/evidence/OPS-04/REPOSITORY-AUDIT.json",
+    "ops/evidence/OPS-04/FINAL-REPORT.md",
+    "ops/evidence/OPS-04/synthetic/dry-run-report.json",
+    "ops/evidence/OPS-04/synthetic/dry-run-report.md",
+    "ops/evidence/OPS-04/synthetic/apply-receipt.json",
+    "ops/evidence/OPS-04/synthetic/repository-rehearsal.json",
+    "ops/execution/OPS-04/STATE.json",
+    "ops/execution/OPS-04/RESUME.md",
+    "ops/execution/OPS-04/TEST-RESULTS.md"
+  ],
+  "production_import_authorized": false,
+  "campaign_send_authorized": false,
+  "raw_rows_included": false
+}

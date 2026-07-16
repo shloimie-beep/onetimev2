@@ -97,3 +97,15 @@ export {
 } from './whatsapp/service.ts';
 export { MetaWhatsAppCloudAdapter, SinkWhatsAppProviderAdapter } from './whatsapp/provider.ts';
 export { compileWhatsAppIntent } from './whatsapp/intent.ts';
+export {
+  canonicalJson as canonicalOps04Json,
+  createOps04ApplyReceipt,
+  createOps04DryRun,
+  createSyntheticOps04Fixture,
+  formatOps04DryRunMarkdown,
+  hmacDigest as ops04HmacDigest,
+  normalizeOps04Email,
+  normalizeOps04Phone,
+  sha256 as ops04Sha256,
+  stableKey as ops04StableKey,
+} from './ops04/service.ts';
