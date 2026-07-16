@@ -1,0 +1,30 @@
+{
+  "task_id": "OPS-02",
+  "generated_at_utc": "2026-07-16T05:50:22.585Z",
+  "git": {
+    "origin_url": "https://github.com/webcraft-media/onetimev2.git",
+    "normalized_origin": "webcraft-media/onetimev2",
+    "head_sha": "be84a8979698032acdbe795c84cbc5f81089e999",
+    "tree_sha": "ddd78ce5755bcb8b4fb9c8476faa190588140ca2",
+    "porcelain_count": 12,
+    "origin_ok": true
+  },
+  "tools": {
+    "git": {
+      "available": true,
+      "first_line": "git version 2.53.0.windows.2"
+    },
+    "gh": {
+      "available": true,
+      "first_line": "gh version 2.88.0 (2026-03-10)"
+    },
+    "railway": {
+      "available": true,
+      "first_line": "railway 4.33.0"
+    }
+  },
+  "railway": {
+    "mode": "not_requested"
+  },
+  "temp_raw_deleted": true
+}

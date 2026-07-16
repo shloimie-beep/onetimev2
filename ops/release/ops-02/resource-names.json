@@ -1,0 +1,27 @@
+{
+  "task_id": "OPS-02",
+  "names": {
+    "project": "one-time-staging-ops-02",
+    "environment": "staging",
+    "web_service": "one-time-staging-web",
+    "worker_service": "one-time-staging-worker",
+    "database_service": "one-time-staging-postgres",
+    "launch_hostname_preserved": "join.onetimeonetime.com"
+  },
+  "denylist": [
+    "BNA",
+    "Bnei Neviim",
+    "academy",
+    "skillful-motivation",
+    "one-time-production",
+    "production"
+  ],
+  "adoption_requires": [
+    "explicit_protected_approval_reference",
+    "opaque_project_id",
+    "opaque_environment_id",
+    "opaque_service_ids",
+    "postgres16_readback",
+    "database_reference_inequality"
+  ]
+}

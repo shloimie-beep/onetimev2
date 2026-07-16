@@ -1,0 +1,1019 @@
+{
+  "task_id": "OPS-02",
+  "status": "waiting_for_ot99_sha",
+  "repository": "webcraft-media/onetimev2",
+  "generated_at_utc": "2026-07-16T05:50:22.457Z",
+  "git": {
+    "origin_url": "https://github.com/webcraft-media/onetimev2.git",
+    "normalized_origin": "webcraft-media/onetimev2",
+    "head_sha": "be84a8979698032acdbe795c84cbc5f81089e999",
+    "tree_sha": "ddd78ce5755bcb8b4fb9c8476faa190588140ca2",
+    "porcelain_count": 12
+  },
+  "ot99_search_terms": [
+    "OT-99",
+    "OT99"
+  ],
+  "eligible_candidate": null,
+  "considered_candidates": [
+    {
+      "source": "git_ref",
+      "ref": "origin/codex/ops-07-pre-ot99-checkpoint-58746abd",
+      "sha": "d1825332e0a9fd3107842dd0d60f183ceb5167a3",
+      "title": "OPS-07 pre-OT99 checkpoint",
+      "evidence": [
+        "ref_or_subject_mentions_ot99"
+      ],
+      "eligible": false,
+      "eligibility_failures": [
+        "missing_acceptance_record",
+        "missing_check_evidence"
+      ]
+    }
+  ],
+  "absence_evidence": [
+    "No eligible accepted OT-99 exact SHA was found in fetched refs, origin/main text, or GitHub PR/issue search.",
+    "Branch or PR existence alone is not accepted as OT-99 eligibility."
+  ],
+  "github": {
+    "gh_available": true,
+    "pr_search": {
+      "ok": true,
+      "count": 0,
+      "items": []
+    },
+    "issue_search": {
+      "ok": true,
+      "count": 0,
+      "items": []
+    },
+    "all_pr_summary": {
+      "ok": true,
+      "count": 37,
+      "items": [
+        {
+          "number": 37,
+          "title": "[OPS-08] Domain, email, and legacy cutover readiness",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/37",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ops-08-readiness-checkpoint",
+          "head_sha": "abbb96f62266ba57856af49876745716094df81e",
+          "base_ref": "main",
+          "updated_at": "2026-07-16T05:47:02Z",
+          "check_rollup": []
+        },
+        {
+          "number": 36,
+          "title": "[OT-89A] Recovery checkpoint for subscriber support producer",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/36",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot89a-subscriber-support-producer",
+          "head_sha": "0fe1b4668170f608d8763fb52d11b30f0150feb2",
+          "base_ref": "codex/ot84-telegram-action-gateway",
+          "updated_at": "2026-07-16T05:31:12Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29474103794/job/87543288518"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29474103858/job/87543288548"
+            }
+          ]
+        },
+        {
+          "number": 35,
+          "title": "[OPS-09] Recovery checkpoint for branch-fleet CI repair",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/35",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ops09-branch-fleet-ci-repair",
+          "head_sha": "738b0794d9f2420f1c82d2f08ee5b95bbd341244",
+          "base_ref": "main",
+          "updated_at": "2026-07-16T05:31:12Z",
+          "check_rollup": []
+        },
+        {
+          "number": 34,
+          "title": "[OT-88] Recovery checkpoint for Zoom learner classroom",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/34",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot88-zoom-learner-classroom",
+          "head_sha": "80a67b93c61e9d5fb127789dadc0739917f21555",
+          "base_ref": "codex/ot84-telegram-action-gateway",
+          "updated_at": "2026-07-16T05:31:12Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29474103787/job/87543288115"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29474103745/job/87543288144"
+            }
+          ]
+        },
+        {
+          "number": 33,
+          "title": "[OT-83R] Recovery checkpoint for complete portals",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/33",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot83r-complete-portals",
+          "head_sha": "04ca004e22b2c1e1ffaf710a3211eabcd3180f32",
+          "base_ref": "codex/ot83-household-portals-foundation",
+          "updated_at": "2026-07-16T05:29:10Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29474011189/job/87543006059"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29474011259/job/87543006174"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29474011246/job/87543006260"
+            }
+          ]
+        },
+        {
+          "number": 32,
+          "title": "[OT-86B] Human-approved Buffer social publishing",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/32",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot86b-buffer-social",
+          "head_sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+          "base_ref": "codex/ot86a-vimeo-content-kb",
+          "updated_at": "2026-07-15T18:03:00Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29438980009/job/87432813150"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29438980039/job/87432772663"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29438980084/job/87432760929"
+            }
+          ]
+        },
+        {
+          "number": 31,
+          "title": "[OT-86A] Vimeo content pipeline and approved-content KB",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/31",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot86a-vimeo-content-kb",
+          "head_sha": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065",
+          "base_ref": "codex/ot83-household-portals-foundation",
+          "updated_at": "2026-07-15T17:21:43Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29436173799/job/87423322200"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29436173123/job/87423303269"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29436173815/job/87423293562"
+            }
+          ]
+        },
+        {
+          "number": 30,
+          "title": "OT-87 Stripe TEST family subscription and entitlements",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/30",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot87-stripe-test-entitlements",
+          "head_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+          "base_ref": "codex/ot83-household-portals-foundation",
+          "updated_at": "2026-07-15T17:15:07Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29435726273/job/87421808537"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29435726264/job/87421774348"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29435726136/job/87421773798"
+            }
+          ]
+        },
+        {
+          "number": 29,
+          "title": "OT-84 Telegram action gateway",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/29",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot84-telegram-action-gateway",
+          "head_sha": "f98103ecc3660dbda871a91485656e17580940a8",
+          "base_ref": "codex/ot83-household-portals-foundation",
+          "updated_at": "2026-07-15T17:05:45Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29435097058/job/87419618475"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29435096903/job/87419618042"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29435097000/job/87419618330"
+            }
+          ]
+        },
+        {
+          "number": 28,
+          "title": "[OT-85] WhatsApp lead assistant",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/28",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot85-whatsapp-lead-assistant",
+          "head_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+          "base_ref": "codex/ot83-household-portals-foundation",
+          "updated_at": "2026-07-15T16:54:17Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29434333598/job/87417056758"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29434333608/job/87417043345"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29434333616/job/87417041380"
+            }
+          ]
+        },
+        {
+          "number": 27,
+          "title": "[OT-83] Household, parent/student identity, and portal foundation",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/27",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot83-household-portals-foundation",
+          "head_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+          "base_ref": "codex/ot82-brand-system-foundation",
+          "updated_at": "2026-07-15T13:55:30Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29421287590/job/87372088508"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29421287426/job/87372088431"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29421288091/job/87372093838"
+            },
+            {
+              "name": "PostgreSQL 16 learner-seat proof",
+              "workflow": "OT-83 PostgreSQL Concurrency",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29421283818/job/87372075788"
+            }
+          ]
+        },
+        {
+          "number": 26,
+          "title": "OT82: One Time brand system foundation",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/26",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot82-brand-system-foundation",
+          "head_sha": "a8e4109b0530855bc7a5f56c90104706b9c8cd7c",
+          "base_ref": "codex/ot81-dayone-certification-staging",
+          "updated_at": "2026-07-15T13:24:14Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29419032693/job/87364496972"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29419032619/job/87364482662"
+            }
+          ]
+        },
+        {
+          "number": 25,
+          "title": "[OT-81] Day-One certification and isolated staging",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/25",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot81-dayone-certification-and-staging",
+          "head_sha": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf",
+          "base_ref": "codex/ot80-one-shot-final-convergence",
+          "updated_at": "2026-07-15T12:26:53Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29415246285/job/87351631101"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29415246282/job/87351630993"
+            }
+          ]
+        },
+        {
+          "number": 24,
+          "title": "OT81 Day-One certification staging candidate",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/24",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot81-dayone-certification-staging",
+          "head_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
+          "base_ref": "codex/ot80-one-shot-final-convergence",
+          "updated_at": "2026-07-15T11:55:37Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29413345858/job/87345380207"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29413345927/job/87345380195"
+            }
+          ]
+        },
+        {
+          "number": 23,
+          "title": "OT80 final convergence candidate",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/23",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot80-one-shot-final-convergence",
+          "head_sha": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+          "base_ref": "codex/ot60r-recovery-convergence",
+          "updated_at": "2026-07-15T10:39:05Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29408485654/job/87329627503"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29408485708/job/87329627815"
+            },
+            {
+              "name": "Static release readiness gates",
+              "workflow": "OT-75 Release Readiness",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29408485645/job/87329627452"
+            }
+          ]
+        },
+        {
+          "number": 22,
+          "title": "OT74: legacy audience reconciliation foundation",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/22",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot74-audience-reconciliation",
+          "head_sha": "51cd99dc4434f0354ba229620ebe89558efeb120",
+          "base_ref": "codex/ot60r-recovery-convergence",
+          "updated_at": "2026-07-15T07:10:22Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29396477088/job/87291038608"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29396477091/job/87291019000"
+            }
+          ]
+        },
+        {
+          "number": 21,
+          "title": "OT-76 Day-One certification harness",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/21",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot76-day-one-certification-harness",
+          "head_sha": "b9ece3146d2de6edc9f386712fad146f17b18031",
+          "base_ref": "codex/ot60r-recovery-convergence",
+          "updated_at": "2026-07-15T06:50:45Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29395415063/job/87287705826"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29395415089/job/87287705740"
+            }
+          ]
+        },
+        {
+          "number": 20,
+          "title": "Prepare OT-75 release observability readiness",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/20",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot75-release-observability-readiness",
+          "head_sha": "028a05f3e44a7b37c2395576aa3800f507dd5268",
+          "base_ref": "codex/ot60r-recovery-convergence",
+          "updated_at": "2026-07-15T06:55:35Z",
+          "check_rollup": [
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29395295568/job/87288254491"
+            },
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29395295606/job/87287343819"
+            },
+            {
+              "name": "Static release readiness gates",
+              "workflow": "OT-75 Release Readiness",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29395295561/job/87287328512"
+            }
+          ]
+        },
+        {
+          "number": 19,
+          "title": "OT-73 corrected landing addendum",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/19",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot73-landing-intent-reconciliation",
+          "head_sha": "ed2074254863468b4a70a0a3304490486ab2b71e",
+          "base_ref": "codex/ot60r-recovery-convergence",
+          "updated_at": "2026-07-15T07:20:16Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29396960775/job/87292551166"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29396960766/job/87292550559"
+            }
+          ]
+        },
+        {
+          "number": 18,
+          "title": "OT-72 provider sandbox adapters",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/18",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot72-provider-sandbox-train",
+          "head_sha": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+          "base_ref": "codex/ot60r-recovery-convergence",
+          "updated_at": "2026-07-15T06:54:22Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29395269475/job/87287290307"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29395269479/job/87287245543"
+            }
+          ]
+        },
+        {
+          "number": 17,
+          "title": "OT-60R recovery convergence",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/17",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot60r-recovery-convergence",
+          "head_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+          "base_ref": "codex/crm-core-v1",
+          "updated_at": "2026-07-15T00:21:48Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29378828572/job/87237824495"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29378828673/job/87237824840"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29378826334/job/87237818185"
+            }
+          ]
+        },
+        {
+          "number": 16,
+          "title": "Draft: preserve blocked OT-61-OT-70 run packets",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/16",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/recovery-blocked-ot61-ot70",
+          "head_sha": "17cfba068660eee489474a18963566dcf55eaffa",
+          "base_ref": "codex/crm-core-v1",
+          "updated_at": "2026-07-14T22:22:54Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29372797243/job/87219712483"
+            }
+          ]
+        },
+        {
+          "number": 15,
+          "title": "OT-52P isolated Parent and Student Portals V1",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/15",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot52p-isolated-parent-student-portals",
+          "head_sha": "9594c228b9ac3047f42bb9e8c804384cc45a3e40",
+          "base_ref": "codex/parallel-base-ot38-2456495",
+          "updated_at": "2026-07-14T21:17:54Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29369011835/job/87207541174"
+            }
+          ]
+        },
+        {
+          "number": 14,
+          "title": "OT-44 Communications V1A — truthful local intent read model",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/14",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/parallel-ot44-communications-v1a",
+          "head_sha": "76cae19be515ee896f22d0da976082a09d1d25d6",
+          "base_ref": "codex/parallel-base-ot40-571b18f",
+          "updated_at": "2026-07-14T21:02:14Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29368026307/job/87204307785"
+            }
+          ]
+        },
+        {
+          "number": 13,
+          "title": "OT-51P isolated One Time Telegram bot foundation",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/13",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot51p-isolated-telegram-bot",
+          "head_sha": "e235af05759f0a97496552c6e8aabed7ba3eee18",
+          "base_ref": "codex/parallel-base-a73458d",
+          "updated_at": "2026-07-14T20:58:25Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29367782529/job/87203510169"
+            }
+          ]
+        },
+        {
+          "number": 12,
+          "title": "OT-46P isolated Stripe fixture-only foundation",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/12",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot46p-isolated-stripe-foundation",
+          "head_sha": "f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899",
+          "base_ref": "codex/parallel-base-a73458d",
+          "updated_at": "2026-07-14T20:54:43Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29367547443/job/87202735491"
+            }
+          ]
+        },
+        {
+          "number": 11,
+          "title": "OT-42 parallel CRM module v1",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/11",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/parallel-ot42-crm-module-v1",
+          "head_sha": "b2c159a060d8aa50ec6feb69f1cae003fd633bf3",
+          "base_ref": "codex/parallel-base-ot39-c158457",
+          "updated_at": "2026-07-14T20:50:49Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29367296278/job/87201926805"
+            }
+          ]
+        },
+        {
+          "number": 10,
+          "title": "OT-47 parallel secure content-library foundation",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/10",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/parallel-ot47-content-library-foundation",
+          "head_sha": "9444176dbc55e0c5af048ec1df2ea75ffa8dde33",
+          "base_ref": "codex/parallel-base-a73458d",
+          "updated_at": "2026-07-14T20:43:02Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29366785448/job/87200276153"
+            }
+          ]
+        },
+        {
+          "number": 9,
+          "title": "OT-38 real privileged MFA security correction",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/9",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot38-real-mfa-security-correction",
+          "head_sha": "245649523566a7a0ace493ba70ede2a405ebdcce",
+          "base_ref": "codex/ot34-first-slice-core-hardening",
+          "updated_at": "2026-07-14T18:42:15Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29358939738/job/87173752460"
+            }
+          ]
+        },
+        {
+          "number": 8,
+          "title": "OT-40: lock school receipt worker contract",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/8",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot40-school-receipt-worker-correction",
+          "head_sha": "571b18f36cdc645f757cc3be6b0519f1af3225f6",
+          "base_ref": "codex/ot36-delivery-sink-foundation",
+          "updated_at": "2026-07-14T18:33:24Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29358340522/job/87171611848"
+            }
+          ]
+        },
+        {
+          "number": 7,
+          "title": "fix OT-39 CRM privacy and performance evidence",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/7",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot39-crm-privacy-performance-correction",
+          "head_sha": "c1584577780d7b5125bce4fb81d2a454c9e84096",
+          "base_ref": "codex/ot35-app-shell-crm-clarity",
+          "updated_at": "2026-07-14T18:32:35Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29358282903/job/87171419496"
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "title": "OT-37 PostgreSQL assurance harness",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/6",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot37-postgres-assurance",
+          "head_sha": "0ea782d8551c26edd48b08d644b573e19b9835b1",
+          "base_ref": "codex/crm-core-v1",
+          "updated_at": "2026-07-14T18:26:52Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29357888021/job/87170071586"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29357887956/job/87170071409"
+            },
+            {
+              "name": "PostgreSQL 16 assurance harness",
+              "workflow": "OT-37 PostgreSQL Assurance",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29357863332/job/87169981950"
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "title": "OT-35 authenticated CRM shell clarity",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/5",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot35-app-shell-crm-clarity",
+          "head_sha": "6ca5e568c328ea116a9413b57ea5920400f8bc14",
+          "base_ref": "codex/crm-core-v1",
+          "updated_at": "2026-07-14T14:40:50Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29341933571/job/87115647592"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "title": "Add OT-36 sink delivery worker foundation",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/4",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot36-delivery-sink-foundation",
+          "head_sha": "61d4755fe279ca47c37e7adbe8d1e6ce8b258dae",
+          "base_ref": "codex/crm-core-v1",
+          "updated_at": "2026-07-14T17:46:29Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29355167835/job/87160860095"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "title": "OT-34 first-slice core hardening",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/3",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/ot34-first-slice-core-hardening",
+          "head_sha": "87f9b315c54e32e918912cc100610e2c561b68ac",
+          "base_ref": "codex/crm-core-v1",
+          "updated_at": "2026-07-14T14:27:18Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29340917577/job/87112112297"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "title": "OT-12 CRM Core V1",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/2",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/crm-core-v1",
+          "head_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+          "base_ref": "codex/foundation-landing-lead-v1",
+          "updated_at": "2026-07-14T18:07:17Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29356573402/job/87165612574"
+            },
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "FAILURE",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29356569371/job/87165600170"
+            }
+          ]
+        },
+        {
+          "number": 1,
+          "title": "Foundation: standalone landing and lead-capture slice",
+          "url": "https://github.com/webcraft-media/onetimev2/pull/1",
+          "state": "OPEN",
+          "is_draft": true,
+          "head_ref": "codex/foundation-landing-lead-v1",
+          "head_sha": "3465bd7d4c6b6829a6be6e4b4f8a003d608f3680",
+          "base_ref": "main",
+          "updated_at": "2026-07-14T13:18:39Z",
+          "check_rollup": [
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29335894983/job/87094914264"
+            },
+            {
+              "name": "Node 24 verify",
+              "workflow": "CI",
+              "status": "COMPLETED",
+              "conclusion": "SUCCESS",
+              "details_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29335891497/job/87094902163"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

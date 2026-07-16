@@ -1,28 +1,65 @@
-﻿{
-    "task_id":  "OPS-02",
-    "packet_id":  "OPS-02-20260716T040144Z-40d638ea",
-    "run_id":  "OPS-02-20260716T052528Z-610b585f",
-    "status":  "waiting_for_ot99_sha",
-    "phase":  "intake_persisted",
-    "prepared_at_utc":  "2026-07-16T05:26:41Z",
-    "normalized_origin":  "webcraft-media/onetimev2",
-    "preparation_base_sha":  "610b585f3d221addd4e7b824c92a5cc256cffcf9",
-    "ot99_candidate":  null,
-    "mutation_counters":  {
-                              "repository_file_edits_before_intake":  0,
-                              "railway_mutations":  0,
-                              "database_mutations":  0,
-                              "domain_mutations":  0,
-                              "deployments":  0,
-                              "provider_actions":  0,
-                              "live_email_sends":  0,
-                              "live_whatsapp_sends":  0,
-                              "live_telegram_sends":  0,
-                              "live_charges":  0,
-                              "root_dns_changes":  0,
-                              "secret_values_output":  0
-                          },
-    "notes":  [
-                  "Initial run state persisted before OPS-02 implementation tooling or external mutation."
-              ]
+{
+  "task_id": "OPS-02",
+  "packet_id": "OPS-02-20260716T040144Z-40d638ea",
+  "run_id": "OPS-02-20260716T052528Z-610b585f",
+  "status": "waiting_for_ot99_sha",
+  "phase": "checkpoint_ready_no_deploy",
+  "prepared_at_utc": "2026-07-16T05:26:41Z",
+  "last_updated_utc": "2026-07-16T05:45:00Z",
+  "normalized_origin": "webcraft-media/onetimev2",
+  "origin_url": "https://github.com/webcraft-media/onetimev2.git",
+  "preparation_base_ref": "origin/main",
+  "preparation_base_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+  "checkpoint_branch": "codex/ops-02-staging-activation-610b585f",
+  "isolated_worktree": "C:\\Users\\User\\.ops02-worktrees\\onetimev2-OPS-02-20260716T052528Z-610b585f",
+  "ot99_candidate": null,
+  "eligible_ot99_sha": null,
+  "blocker": "No eligible accepted integrated/OT-99 exact SHA was found. Deployment, Railway mutation, database mutation, DNS change, live send, live charge, production import, provider mutation, real-user creation, and secret output remain blocked.",
+  "tooling_completed": [
+    "scripts/ops-02/candidate-resolver.mjs",
+    "scripts/ops-02/inventory.mjs",
+    "scripts/ops-02/guard-context.mjs",
+    "scripts/ops-02/render-env-presence.mjs",
+    "scripts/ops-02/migration-ledger.mjs",
+    "scripts/ops-02/verify-runtime.mjs",
+    "scripts/ops-02/worker-smoke.mjs",
+    "scripts/ops-02/forbidden-action-audit.mjs",
+    "scripts/ops-02/evidence-scan.mjs",
+    "scripts/ops-02/validate-static.mjs",
+    "ops/release/ops-02/architecture-contract.json",
+    "ops/release/ops-02/resource-names.json",
+    "ops/release/ops-02/protected-config.json",
+    "ops/release/ops-02/acceptance-gates.json",
+    "ops/release/ops-02/backup-restore-contract.json",
+    "ops/release/ops-02/rollback-contract.json",
+    ".github/workflows/ops-02-static-validation.yml"
+  ],
+  "evidence": {
+    "packet_validation": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/packet-validation.json",
+    "static_validation_summary": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/static-validation/summary.json",
+    "candidate_resolution": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/static-validation/candidate-resolution.json",
+    "railway_help_summary": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/railway-help-summary.json",
+    "railway_readonly_inventory": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/railway-inventory.redacted.json",
+    "evidence_scan_all": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/evidence-scan-all.json",
+    "verification_results": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/verification-results.json"
+  },
+  "mutation_counters": {
+    "repository_file_edits_before_intake": 0,
+    "railway_mutations": 0,
+    "database_mutations": 0,
+    "domain_mutations": 0,
+    "deployments": 0,
+    "provider_actions": 0,
+    "live_email_sends": 0,
+    "live_whatsapp_sends": 0,
+    "live_telegram_sends": 0,
+    "live_charges": 0,
+    "root_dns_changes": 0,
+    "secret_values_output": 0
+  },
+  "notes": [
+    "Initial intake records were persisted before OPS-02 implementation work.",
+    "Reusable OPS-02 staging discovery, guard, inventory, evidence, and static-validation tooling is ready for a future accepted OT-99 SHA.",
+    "Read-only Railway inventory found existing denylist/collision evidence; no Railway resource was created, adopted, changed, or deployed."
+  ]
 }

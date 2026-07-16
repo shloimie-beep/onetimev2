@@ -1,0 +1,28 @@
+{
+  "task_id": "OPS-02",
+  "allowed_final_statuses": [
+    "waiting_for_ot99_sha",
+    "ready_for_exact_sha_staging",
+    "staging_deployed_provider_off",
+    "ready_for_controlled_canary_approval",
+    "blocked_external_access"
+  ],
+  "candidate_required_for_deployment": {
+    "task_marker": "OT-99",
+    "required_sha_length": 40,
+    "branch_name_sufficient": false,
+    "requires_acceptance_record": true,
+    "requires_manifest_in_tree": true,
+    "requires_successful_checks": true,
+    "requires_coherent_ancestry": true,
+    "requires_no_newer_superseding_candidate": true
+  },
+  "waiting_for_ot99_sha_done_criteria": [
+    "reusable_ops02_assets_built",
+    "static_validation_passed",
+    "candidate_absence_recorded",
+    "no_application_deployment",
+    "resume_steps_recorded",
+    "forbidden_action_counters_all_zero"
+  ]
+}

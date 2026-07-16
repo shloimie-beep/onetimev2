@@ -1,0 +1,1501 @@
+{
+  "task_id": "OPS-02",
+  "generated_at_utc": "2026-07-16T05:42:31.067Z",
+  "git": {
+    "origin_url": "https://github.com/webcraft-media/onetimev2.git",
+    "normalized_origin": "webcraft-media/onetimev2",
+    "head_sha": "be84a8979698032acdbe795c84cbc5f81089e999",
+    "tree_sha": "ddd78ce5755bcb8b4fb9c8476faa190588140ca2",
+    "porcelain_count": 7,
+    "origin_ok": true
+  },
+  "tools": {
+    "git": {
+      "available": true,
+      "first_line": "git version 2.53.0.windows.2"
+    },
+    "gh": {
+      "available": true,
+      "first_line": "gh version 2.88.0 (2026-03-10)"
+    },
+    "railway": {
+      "available": true,
+      "first_line": "railway 4.33.0"
+    }
+  },
+  "railway": {
+    "mode": "readonly",
+    "commands": [
+      {
+        "command": "railway whoami",
+        "ok": true,
+        "status": 0,
+        "text": "Logged in as [redacted-email] 👋"
+      },
+      {
+        "command": "railway project list --json",
+        "ok": true,
+        "value": [
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+            "name": "one-time-production",
+            "createdAt": "2026-06-22T06:37:02.726Z",
+            "updatedAt": "2026-06-22T06:38:50.852Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "2a9b61fa-6d88-4405-b6d6-0120ff7f461f",
+                    "name": "crm-test",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "ebbb512e-3d27-44e1-a85b-4be3871a6b2f"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "id": "f911acfc-e206-44df-a569-9d69d709b94b",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "d175ad94-5e3c-41c2-8cbc-daa1a299077d"
+                          }
+                        },
+                        {
+                          "node": {
+                            "serviceId": "db590e4a-7dc5-40cb-a243-5206ce21b746"
+                          }
+                        },
+                        {
+                          "node": {
+                            "serviceId": "7d6541d3-a138-40b6-9a42-81c536529022"
+                          }
+                        },
+                        {
+                          "node": {
+                            "serviceId": "742f60ed-dc2f-4321-85d0-019003d4e9b9"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+                    "name": "one-time-delivery-cron"
+                  }
+                },
+                {
+                  "node": {
+                    "id": "7d6541d3-a138-40b6-9a42-81c536529022",
+                    "name": "Postgres"
+                  }
+                },
+                {
+                  "node": {
+                    "id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+                    "name": "one-time-web"
+                  }
+                },
+                {
+                  "node": {
+                    "id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+                    "name": "Postgres-j9Pi"
+                  }
+                },
+                {
+                  "node": {
+                    "id": "ebbb512e-3d27-44e1-a85b-4be3871a6b2f",
+                    "name": "Postgres-ib9s"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "18a972de-68dc-4dd4-b427-5c790fe85865",
+            "name": "satisfied-imagination",
+            "createdAt": "2026-06-19T10:08:49.011Z",
+            "updatedAt": "2026-06-19T10:08:56.117Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "ddbb8e7e-7125-41ce-8ba2-a445877856ea",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "f0e63583-1ba3-4067-8f01-de1411108306"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "f0e63583-1ba3-4067-8f01-de1411108306",
+                    "name": "one-time-one-time"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "bd5b6d78-5e83-4e83-89b2-cd5f52ed7889",
+            "name": "skillful-motivation",
+            "createdAt": "2026-05-24T20:26:09.212Z",
+            "updatedAt": "2026-06-19T09:41:02.910Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "3ce30933-49c7-4b90-8c36-a5afd67df329",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "4079db35-5f4a-44ef-a767-3406c74f6005"
+                          }
+                        },
+                        {
+                          "node": {
+                            "serviceId": "0932581f-de79-4cd6-9108-3ddec40e390f"
+                          }
+                        },
+                        {
+                          "node": {
+                            "serviceId": "c54eb718-ae21-46a3-8ca7-7ca77d3f5c6f"
+                          }
+                        },
+                        {
+                          "node": {
+                            "serviceId": "360b8764-8f6b-4a8c-b651-4e64c7d83e59"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "0932581f-de79-4cd6-9108-3ddec40e390f",
+                    "name": "academy-telegram-worker"
+                  }
+                },
+                {
+                  "node": {
+                    "id": "360b8764-8f6b-4a8c-b651-4e64c7d83e59",
+                    "name": "Postgres"
+                  }
+                },
+                {
+                  "node": {
+                    "id": "4079db35-5f4a-44ef-a767-3406c74f6005",
+                    "name": "skillful-motivation"
+                  }
+                },
+                {
+                  "node": {
+                    "id": "c54eb718-ae21-46a3-8ca7-7ca77d3f5c6f",
+                    "name": "rabbi-telegram-worker"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "4f9198fa-befa-4604-b5d1-bbe8c8936036",
+            "name": "Aios v7",
+            "createdAt": "2026-03-10T15:04:09.547Z",
+            "updatedAt": "2026-06-05T13:24:20.359Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "465308ec-7254-48af-a6da-910965982151",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": []
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": []
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "590a8386-ae9e-4a81-b09e-26494124931f",
+            "name": "zucchini-warmth",
+            "createdAt": "2026-05-04T08:39:43.110Z",
+            "updatedAt": "2026-05-04T09:37:47.744Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "5d669e18-f05f-4589-9477-e97a53465aa7",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "4026c156-f1f4-41af-b31a-263428259fd9"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "4026c156-f1f4-41af-b31a-263428259fd9",
+                    "name": "holyflow-app"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "8984a93e-0001-4fa1-b419-11016365ee2d",
+            "name": "Iser Sharvolon Site",
+            "createdAt": "2026-04-30T16:37:28.051Z",
+            "updatedAt": "2026-04-30T16:41:44.003Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "cabc7dd8-be42-4bc9-94c9-43c7744fa7d8",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "9c20e2fb-ebfc-42e3-858c-2c55537f724e"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "9c20e2fb-ebfc-42e3-858c-2c55537f724e",
+                    "name": "Iser Sharvolon Site"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "eb711d37-ace4-4f46-83ab-b8f40afb111a",
+            "name": "magnificent-dedication",
+            "createdAt": "2026-03-13T11:02:39.280Z",
+            "updatedAt": "2026-04-10T09:44:25.950Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "e10f9897-e268-476e-9f65-c9d178d5da0e",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": []
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": []
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "b6a6f700-3ea3-4faa-98fb-4d305d8087c8",
+            "name": "lively-trust",
+            "createdAt": "2026-03-13T11:06:14.479Z",
+            "updatedAt": "2026-04-10T08:54:25.584Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "8b7843fa-7055-4fa8-907f-e1cc04a69fd6",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "9eb70978-a7e7-4f93-a69f-4b158ed2b501"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "9eb70978-a7e7-4f93-a69f-4b158ed2b501",
+                    "name": "ai-os"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "ffcac176-17fb-462e-9b48-12eb5a9d488b",
+            "name": "vigilant-energy",
+            "createdAt": "2026-03-13T11:05:45.237Z",
+            "updatedAt": "2026-04-09T12:56:12.162Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "55718259-7c6a-4b56-adcd-f9d2a229b16e",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "002695eb-fc53-4c9b-bb53-b059b946a409"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "002695eb-fc53-4c9b-bb53-b059b946a409",
+                    "name": "ai-os"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "8265fea4-8d15-4b1c-8632-ba01947dd012",
+            "name": "inspiring-determination",
+            "createdAt": "2026-03-13T11:43:59.194Z",
+            "updatedAt": "2026-03-21T21:38:14.494Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "1afa7c0f-78a7-48c5-bd76-79f729f0d7e6",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "e62b184e-fdb0-48cc-8f43-417e61abf115"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "e62b184e-fdb0-48cc-8f43-417e61abf115",
+                    "name": "ai-os"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "4eb35023-4166-4058-88af-7675873b8963",
+            "name": "just-wholeness",
+            "createdAt": "2026-03-13T08:10:46.427Z",
+            "updatedAt": "2026-03-13T08:10:53.387Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "35ea2c14-d676-49d0-895a-ccd56168f99a",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": []
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": []
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "888b87cb-8235-42b3-a2d0-5ffe344c1dd6",
+            "name": "exemplary-radiance",
+            "createdAt": "2026-03-11T15:04:13.080Z",
+            "updatedAt": "2026-03-11T15:07:39.495Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "06b9712a-90e9-4614-af3c-e11691148936",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "abb4e201-7a1f-4c41-b384-9aa31b488f10"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "abb4e201-7a1f-4c41-b384-9aa31b488f10",
+                    "name": "Roden-page"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "workspace": {
+              "id": "d2428a88-aa7e-4369-b396-72060bf720f4",
+              "name": "sdratler's Projects"
+            },
+            "id": "1cb8321e-173f-4782-aa58-f110aad97741",
+            "name": "gracious-rejoicing",
+            "createdAt": "2026-03-08T18:37:24.758Z",
+            "updatedAt": "2026-03-08T18:37:33.506Z",
+            "deletedAt": null,
+            "environments": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "37e26612-8649-481a-91a1-2d4f1aa374dd",
+                    "name": "production",
+                    "canAccess": true,
+                    "serviceInstances": {
+                      "edges": [
+                        {
+                          "node": {
+                            "serviceId": "5febadc1-3ddc-45d1-8713-bd0744f0feda"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "services": {
+              "edges": [
+                {
+                  "node": {
+                    "id": "5febadc1-3ddc-45d1-8713-bd0744f0feda",
+                    "name": "webcraft-agent"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "command": "railway status --json",
+        "ok": true,
+        "value": {
+          "id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+          "name": "one-time-production",
+          "deletedAt": null,
+          "workspace": {
+            "name": "sdratler's Projects"
+          },
+          "buckets": {
+            "edges": []
+          },
+          "environments": {
+            "edges": [
+              {
+                "node": {
+                  "id": "2a9b61fa-6d88-4405-b6d6-0120ff7f461f",
+                  "name": "crm-test",
+                  "canAccess": true,
+                  "deletedAt": null,
+                  "unmergedChangesCount": null,
+                  "serviceInstances": {
+                    "edges": [
+                      {
+                        "node": {
+                          "id": "fa548985-b6e8-40d9-a4b6-96d1b1a79ba3",
+                          "serviceId": "ebbb512e-3d27-44e1-a85b-4be3871a6b2f",
+                          "serviceName": "Postgres-ib9s",
+                          "environmentId": "2a9b61fa-6d88-4405-b6d6-0120ff7f461f",
+                          "latestDeployment": {
+                            "canRedeploy": true,
+                            "id": "48642b37-70b0-4480-a7a1-28964a55fcd8",
+                            "meta": {
+                              "image": "ghcr.io/railwayapp-templates/postgres-ssl:18",
+                              "imageDigest": "sha256:764fabc5fceb7166414c425a57bed8722a08cfb7fff508efb21a86eb31e172a6",
+                              "logsV2": true,
+                              "patchId": "311f7859-665f-448d-82f8-b97615a7f1e3",
+                              "reason": "deploy",
+                              "runtime": "V2",
+                              "serviceManifest": {
+                                "build": {
+                                  "buildCommand": null,
+                                  "buildEnvironment": "V3",
+                                  "builder": "RAILPACK",
+                                  "dockerfilePath": null,
+                                  "nixpacksConfigPath": null,
+                                  "nixpacksPlan": null,
+                                  "watchPatterns": []
+                                },
+                                "deploy": {
+                                  "cronSchedule": null,
+                                  "drainingSeconds": null,
+                                  "healthcheckPath": null,
+                                  "healthcheckTimeout": null,
+                                  "ipv6EgressEnabled": false,
+                                  "limitOverride": null,
+                                  "multiRegionConfig": {
+                                    "us-west2": {
+                                      "numReplicas": 1
+                                    }
+                                  },
+                                  "numReplicas": 1,
+                                  "overlapSeconds": null,
+                                  "preDeployCommand": null,
+                                  "region": null,
+                                  "registryCredentials": null,
+                                  "requiredMountPath": null,
+                                  "restartPolicyMaxRetries": 10,
+                                  "restartPolicyType": "ON_FAILURE",
+                                  "runtime": "V2",
+                                  "sleepApplication": false,
+                                  "startCommand": null,
+                                  "useLegacyStacker": false
+                                }
+                              },
+                              "volumeMounts": [
+                                "/var/lib/postgresql/data"
+                              ]
+                            },
+                            "status": "SUCCESS",
+                            "createdAt": "2026-07-13T03:14:23.385Z",
+                            "deploymentStopped": false
+                          },
+                          "activeDeployments": [
+                            {
+                              "id": "48642b37-70b0-4480-a7a1-28964a55fcd8",
+                              "status": "SUCCESS",
+                              "createdAt": "2026-07-13T03:14:23.385Z",
+                              "meta": {
+                                "image": "ghcr.io/railwayapp-templates/postgres-ssl:18",
+                                "imageDigest": "sha256:764fabc5fceb7166414c425a57bed8722a08cfb7fff508efb21a86eb31e172a6",
+                                "logsV2": true,
+                                "patchId": "311f7859-665f-448d-82f8-b97615a7f1e3",
+                                "reason": "deploy",
+                                "runtime": "V2",
+                                "serviceManifest": {
+                                  "build": {
+                                    "buildCommand": null,
+                                    "buildEnvironment": "V3",
+                                    "builder": "RAILPACK",
+                                    "dockerfilePath": null,
+                                    "nixpacksConfigPath": null,
+                                    "nixpacksPlan": null,
+                                    "watchPatterns": []
+                                  },
+                                  "deploy": {
+                                    "cronSchedule": null,
+                                    "drainingSeconds": null,
+                                    "healthcheckPath": null,
+                                    "healthcheckTimeout": null,
+                                    "ipv6EgressEnabled": false,
+                                    "limitOverride": null,
+                                    "multiRegionConfig": {
+                                      "us-west2": {
+                                        "numReplicas": 1
+                                      }
+                                    },
+                                    "numReplicas": 1,
+                                    "overlapSeconds": null,
+                                    "preDeployCommand": null,
+                                    "region": null,
+                                    "registryCredentials": null,
+                                    "requiredMountPath": null,
+                                    "restartPolicyMaxRetries": 10,
+                                    "restartPolicyType": "ON_FAILURE",
+                                    "runtime": "V2",
+                                    "sleepApplication": false,
+                                    "startCommand": null,
+                                    "useLegacyStacker": false
+                                  }
+                                },
+                                "volumeMounts": [
+                                  "/var/lib/postgresql/data"
+                                ]
+                              }
+                            }
+                          ],
+                          "source": {
+                            "repo": null,
+                            "image": "ghcr.io/railwayapp-templates/postgres-ssl:18"
+                          },
+                          "domains": {
+                            "serviceDomains": [],
+                            "customDomains": []
+                          },
+                          "cronSchedule": null,
+                          "nextCronRunAt": null,
+                          "startCommand": null
+                        }
+                      }
+                    ]
+                  },
+                  "volumeInstances": {
+                    "edges": [
+                      {
+                        "node": {
+                          "serviceId": "ebbb512e-3d27-44e1-a85b-4be3871a6b2f",
+                          "mountPath": "/var/lib/postgresql/data",
+                          "environmentId": "2a9b61fa-6d88-4405-b6d6-0120ff7f461f",
+                          "currentSizeMB": 204.161024,
+                          "sizeMB": 5000,
+                          "volume": {
+                            "name": "postgres-volume-Obr_",
+                            "id": "c225819d-9a04-434b-9dfd-0e5119099eaa"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "node": {
+                  "id": "f911acfc-e206-44df-a569-9d69d709b94b",
+                  "name": "production",
+                  "canAccess": true,
+                  "deletedAt": null,
+                  "unmergedChangesCount": null,
+                  "serviceInstances": {
+                    "edges": [
+                      {
+                        "node": {
+                          "id": "a6371599-d284-43b0-be57-aefc09ab7f9c",
+                          "serviceId": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+                          "serviceName": "one-time-web",
+                          "environmentId": "f911acfc-e206-44df-a569-9d69d709b94b",
+                          "latestDeployment": {
+                            "canRedeploy": true,
+                            "id": "15280d13-3e12-4c72-8460-10e0c6e99b3e",
+                            "meta": {
+                              "buildOnly": false,
+                              "cliMessage": "Manual deploy from local workspace",
+                              "configFile": "/railway.json",
+                              "fileServiceManifest": {
+                                "build": {
+                                  "builder": "NIXPACKS"
+                                }
+                              },
+                              "imageDigest": "sha256:3390fcfe443897c8da1a698c98428cc85458f6a5bef789492a53ddf4a0003553",
+                              "logsV2": true,
+                              "nixpacksProviders": [],
+                              "propertyFileMapping": {
+                                "build.builder": "$.build.builder"
+                              },
+                              "reason": "deploy",
+                              "rootDirectory": null,
+                              "runtime": "V2",
+                              "serviceManifest": {
+                                "build": {
+                                  "buildCommand": null,
+                                  "buildEnvironment": "V3",
+                                  "builder": "DOCKERFILE",
+                                  "dockerfilePath": "/Dockerfile",
+                                  "nixpacksConfigPath": null,
+                                  "nixpacksPlan": null,
+                                  "watchPatterns": []
+                                },
+                                "deploy": {
+                                  "cronSchedule": null,
+                                  "drainingSeconds": null,
+                                  "healthcheckPath": null,
+                                  "healthcheckTimeout": null,
+                                  "ipv6EgressEnabled": false,
+                                  "limitOverride": null,
+                                  "multiRegionConfig": {
+                                    "us-west2": {
+                                      "numReplicas": 1
+                                    }
+                                  },
+                                  "numReplicas": 1,
+                                  "overlapSeconds": null,
+                                  "preDeployCommand": null,
+                                  "region": null,
+                                  "registryCredentials": null,
+                                  "requiredMountPath": null,
+                                  "restartPolicyMaxRetries": 10,
+                                  "restartPolicyType": "ON_FAILURE",
+                                  "runtime": "V2",
+                                  "sleepApplication": false,
+                                  "startCommand": null,
+                                  "useLegacyStacker": false
+                                }
+                              },
+                              "volumeMounts": []
+                            },
+                            "status": "SUCCESS",
+                            "createdAt": "2026-07-13T21:39:22.666Z",
+                            "deploymentStopped": false
+                          },
+                          "activeDeployments": [
+                            {
+                              "id": "15280d13-3e12-4c72-8460-10e0c6e99b3e",
+                              "status": "SUCCESS",
+                              "createdAt": "2026-07-13T21:39:22.666Z",
+                              "meta": {
+                                "buildOnly": false,
+                                "cliMessage": "Manual deploy from local workspace",
+                                "configFile": "/railway.json",
+                                "fileServiceManifest": {
+                                  "build": {
+                                    "builder": "NIXPACKS"
+                                  }
+                                },
+                                "imageDigest": "sha256:3390fcfe443897c8da1a698c98428cc85458f6a5bef789492a53ddf4a0003553",
+                                "logsV2": true,
+                                "nixpacksProviders": [],
+                                "propertyFileMapping": {
+                                  "build.builder": "$.build.builder"
+                                },
+                                "reason": "deploy",
+                                "rootDirectory": null,
+                                "runtime": "V2",
+                                "serviceManifest": {
+                                  "build": {
+                                    "buildCommand": null,
+                                    "buildEnvironment": "V3",
+                                    "builder": "DOCKERFILE",
+                                    "dockerfilePath": "/Dockerfile",
+                                    "nixpacksConfigPath": null,
+                                    "nixpacksPlan": null,
+                                    "watchPatterns": []
+                                  },
+                                  "deploy": {
+                                    "cronSchedule": null,
+                                    "drainingSeconds": null,
+                                    "healthcheckPath": null,
+                                    "healthcheckTimeout": null,
+                                    "ipv6EgressEnabled": false,
+                                    "limitOverride": null,
+                                    "multiRegionConfig": {
+                                      "us-west2": {
+                                        "numReplicas": 1
+                                      }
+                                    },
+                                    "numReplicas": 1,
+                                    "overlapSeconds": null,
+                                    "preDeployCommand": null,
+                                    "region": null,
+                                    "registryCredentials": null,
+                                    "requiredMountPath": null,
+                                    "restartPolicyMaxRetries": 10,
+                                    "restartPolicyType": "ON_FAILURE",
+                                    "runtime": "V2",
+                                    "sleepApplication": false,
+                                    "startCommand": null,
+                                    "useLegacyStacker": false
+                                  }
+                                },
+                                "volumeMounts": []
+                              }
+                            }
+                          ],
+                          "source": {
+                            "repo": null,
+                            "image": null
+                          },
+                          "domains": {
+                            "serviceDomains": [],
+                            "customDomains": [
+                              {
+                                "id": "4447443b-bac4-4f16-a390-795d7e9bd811",
+                                "domain": "join.onetimeonetime.com",
+                                "targetPort": null
+                              }
+                            ]
+                          },
+                          "cronSchedule": null,
+                          "nextCronRunAt": null,
+                          "startCommand": null
+                        }
+                      },
+                      {
+                        "node": {
+                          "id": "af0f2ab1-3e4e-445f-a99f-6dc5809f445f",
+                          "serviceId": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+                          "serviceName": "Postgres-j9Pi",
+                          "environmentId": "f911acfc-e206-44df-a569-9d69d709b94b",
+                          "latestDeployment": {
+                            "canRedeploy": true,
+                            "id": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+                            "meta": {
+                              "image": "ghcr.io/railwayapp-templates/postgres-ssl:18",
+                              "imageDigest": "sha256:b75472d708b058ef15c5d1fb69db08e836cb7e1bad82e2ac6ac75d1198829366",
+                              "logsV2": true,
+                              "patchId": "d068ce71-612d-4801-8642-bed3f8cbf969",
+                              "reason": "deploy",
+                              "runtime": "V2",
+                              "serviceManifest": {
+                                "build": {
+                                  "buildCommand": null,
+                                  "buildEnvironment": "V3",
+                                  "builder": "RAILPACK",
+                                  "dockerfilePath": null,
+                                  "nixpacksConfigPath": null,
+                                  "nixpacksPlan": null,
+                                  "watchPatterns": []
+                                },
+                                "deploy": {
+                                  "cronSchedule": null,
+                                  "drainingSeconds": null,
+                                  "healthcheckPath": null,
+                                  "healthcheckTimeout": null,
+                                  "ipv6EgressEnabled": false,
+                                  "limitOverride": null,
+                                  "multiRegionConfig": {
+                                    "us-west2": {
+                                      "numReplicas": 1
+                                    }
+                                  },
+                                  "numReplicas": 1,
+                                  "overlapSeconds": null,
+                                  "preDeployCommand": null,
+                                  "region": null,
+                                  "registryCredentials": null,
+                                  "requiredMountPath": null,
+                                  "restartPolicyMaxRetries": 10,
+                                  "restartPolicyType": "ON_FAILURE",
+                                  "runtime": "V2",
+                                  "sleepApplication": false,
+                                  "startCommand": null,
+                                  "useLegacyStacker": false
+                                }
+                              },
+                              "volumeMounts": [
+                                "/var/lib/postgresql/data"
+                              ]
+                            },
+                            "status": "SUCCESS",
+                            "createdAt": "2026-07-02T12:56:35.572Z",
+                            "deploymentStopped": false
+                          },
+                          "activeDeployments": [
+                            {
+                              "id": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+                              "status": "SUCCESS",
+                              "createdAt": "2026-07-02T12:56:35.572Z",
+                              "meta": {
+                                "image": "ghcr.io/railwayapp-templates/postgres-ssl:18",
+                                "imageDigest": "sha256:b75472d708b058ef15c5d1fb69db08e836cb7e1bad82e2ac6ac75d1198829366",
+                                "logsV2": true,
+                                "patchId": "d068ce71-612d-4801-8642-bed3f8cbf969",
+                                "reason": "deploy",
+                                "runtime": "V2",
+                                "serviceManifest": {
+                                  "build": {
+                                    "buildCommand": null,
+                                    "buildEnvironment": "V3",
+                                    "builder": "RAILPACK",
+                                    "dockerfilePath": null,
+                                    "nixpacksConfigPath": null,
+                                    "nixpacksPlan": null,
+                                    "watchPatterns": []
+                                  },
+                                  "deploy": {
+                                    "cronSchedule": null,
+                                    "drainingSeconds": null,
+                                    "healthcheckPath": null,
+                                    "healthcheckTimeout": null,
+                                    "ipv6EgressEnabled": false,
+                                    "limitOverride": null,
+                                    "multiRegionConfig": {
+                                      "us-west2": {
+                                        "numReplicas": 1
+                                      }
+                                    },
+                                    "numReplicas": 1,
+                                    "overlapSeconds": null,
+                                    "preDeployCommand": null,
+                                    "region": null,
+                                    "registryCredentials": null,
+                                    "requiredMountPath": null,
+                                    "restartPolicyMaxRetries": 10,
+                                    "restartPolicyType": "ON_FAILURE",
+                                    "runtime": "V2",
+                                    "sleepApplication": false,
+                                    "startCommand": null,
+                                    "useLegacyStacker": false
+                                  }
+                                },
+                                "volumeMounts": [
+                                  "/var/lib/postgresql/data"
+                                ]
+                              }
+                            }
+                          ],
+                          "source": {
+                            "repo": null,
+                            "image": "ghcr.io/railwayapp-templates/postgres-ssl:18"
+                          },
+                          "domains": {
+                            "serviceDomains": [],
+                            "customDomains": []
+                          },
+                          "cronSchedule": null,
+                          "nextCronRunAt": null,
+                          "startCommand": null
+                        }
+                      },
+                      {
+                        "node": {
+                          "id": "c37b8b4b-d757-4b3e-a9f4-85141934d8d2",
+                          "serviceId": "7d6541d3-a138-40b6-9a42-81c536529022",
+                          "serviceName": "Postgres",
+                          "environmentId": "f911acfc-e206-44df-a569-9d69d709b94b",
+                          "latestDeployment": {
+                            "canRedeploy": true,
+                            "id": "6e3cfc7e-f795-448a-91e6-8fa9403b1c8a",
+                            "meta": {
+                              "image": "ghcr.io/railwayapp-templates/postgres-ssl:18",
+                              "imageDigest": "sha256:1fe96504c87bb0b36e09f41ee99de34da77fff5cb21a390105855dc8d02706cc",
+                              "logsV2": true,
+                              "patchId": "c3fd3d8b-be96-4965-b713-cffa62fb8ac0",
+                              "reason": "deploy",
+                              "runtime": "V2",
+                              "serviceManifest": {
+                                "build": {
+                                  "buildCommand": null,
+                                  "buildEnvironment": "V3",
+                                  "builder": "RAILPACK",
+                                  "dockerfilePath": null,
+                                  "nixpacksConfigPath": null,
+                                  "nixpacksPlan": null,
+                                  "watchPatterns": []
+                                },
+                                "deploy": {
+                                  "cronSchedule": null,
+                                  "drainingSeconds": null,
+                                  "healthcheckPath": null,
+                                  "healthcheckTimeout": null,
+                                  "ipv6EgressEnabled": false,
+                                  "limitOverride": null,
+                                  "multiRegionConfig": {
+                                    "us-west2": {
+                                      "numReplicas": 1
+                                    }
+                                  },
+                                  "numReplicas": 1,
+                                  "overlapSeconds": null,
+                                  "preDeployCommand": null,
+                                  "region": null,
+                                  "registryCredentials": null,
+                                  "requiredMountPath": null,
+                                  "restartPolicyMaxRetries": 10,
+                                  "restartPolicyType": "ON_FAILURE",
+                                  "runtime": "V2",
+                                  "sleepApplication": false,
+                                  "startCommand": null,
+                                  "useLegacyStacker": false
+                                }
+                              },
+                              "volumeMounts": [
+                                "/var/lib/postgresql/data"
+                              ]
+                            },
+                            "status": "SUCCESS",
+                            "createdAt": "2026-06-22T10:50:41.485Z",
+                            "deploymentStopped": false
+                          },
+                          "activeDeployments": [
+                            {
+                              "id": "6e3cfc7e-f795-448a-91e6-8fa9403b1c8a",
+                              "status": "SUCCESS",
+                              "createdAt": "2026-06-22T10:50:41.485Z",
+                              "meta": {
+                                "image": "ghcr.io/railwayapp-templates/postgres-ssl:18",
+                                "imageDigest": "sha256:1fe96504c87bb0b36e09f41ee99de34da77fff5cb21a390105855dc8d02706cc",
+                                "logsV2": true,
+                                "patchId": "c3fd3d8b-be96-4965-b713-cffa62fb8ac0",
+                                "reason": "deploy",
+                                "runtime": "V2",
+                                "serviceManifest": {
+                                  "build": {
+                                    "buildCommand": null,
+                                    "buildEnvironment": "V3",
+                                    "builder": "RAILPACK",
+                                    "dockerfilePath": null,
+                                    "nixpacksConfigPath": null,
+                                    "nixpacksPlan": null,
+                                    "watchPatterns": []
+                                  },
+                                  "deploy": {
+                                    "cronSchedule": null,
+                                    "drainingSeconds": null,
+                                    "healthcheckPath": null,
+                                    "healthcheckTimeout": null,
+                                    "ipv6EgressEnabled": false,
+                                    "limitOverride": null,
+                                    "multiRegionConfig": {
+                                      "us-west2": {
+                                        "numReplicas": 1
+                                      }
+                                    },
+                                    "numReplicas": 1,
+                                    "overlapSeconds": null,
+                                    "preDeployCommand": null,
+                                    "region": null,
+                                    "registryCredentials": null,
+                                    "requiredMountPath": null,
+                                    "restartPolicyMaxRetries": 10,
+                                    "restartPolicyType": "ON_FAILURE",
+                                    "runtime": "V2",
+                                    "sleepApplication": false,
+                                    "startCommand": null,
+                                    "useLegacyStacker": false
+                                  }
+                                },
+                                "volumeMounts": [
+                                  "/var/lib/postgresql/data"
+                                ]
+                              }
+                            }
+                          ],
+                          "source": {
+                            "repo": null,
+                            "image": "ghcr.io/railwayapp-templates/postgres-ssl:18"
+                          },
+                          "domains": {
+                            "serviceDomains": [],
+                            "customDomains": []
+                          },
+                          "cronSchedule": null,
+                          "nextCronRunAt": null,
+                          "startCommand": null
+                        }
+                      },
+                      {
+                        "node": {
+                          "id": "f2742f6e-9edd-437f-bf5c-d06d7bfea70e",
+                          "serviceId": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+                          "serviceName": "one-time-delivery-cron",
+                          "environmentId": "f911acfc-e206-44df-a569-9d69d709b94b",
+                          "latestDeployment": {
+                            "canRedeploy": true,
+                            "id": "387e2e49-2055-43c8-86f4-de11f0e60b59",
+                            "meta": {
+                              "buildOnly": true,
+                              "cliMessage": "Deploy One Time delivery outbox cron runner",
+                              "configFile": "/railway.json",
+                              "duration": 0,
+                              "fileServiceManifest": {
+                                "build": {
+                                  "builder": "NIXPACKS"
+                                },
+                                "deploy": {
+                                  "cronSchedule": "*/5 * * * *",
+                                  "restartPolicyType": "NEVER",
+                                  "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs"
+                                }
+                              },
+                              "ignoreWatchPatterns": true,
+                              "imageDigest": "sha256:cca6c9720caf97d780c455e403c9228756c97da56ef722c31f124a4376b1bc31",
+                              "logsV2": true,
+                              "nixpacksProviders": [],
+                              "propertyFileMapping": {
+                                "build.builder": "$.build.builder",
+                                "deploy.cronSchedule": "$.deploy.cronSchedule",
+                                "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+                                "deploy.startCommand": "$.deploy.startCommand"
+                              },
+                              "reason": "redeploy",
+                              "rootDirectory": null,
+                              "runtime": "V2",
+                              "serviceManifest": {
+                                "build": {
+                                  "buildCommand": null,
+                                  "buildEnvironment": "V3",
+                                  "builder": "NIXPACKS",
+                                  "dockerfilePath": null,
+                                  "nixpacksConfigPath": null,
+                                  "nixpacksPlan": null,
+                                  "watchPatterns": []
+                                },
+                                "deploy": {
+                                  "cronSchedule": "*/5 * * * *",
+                                  "drainingSeconds": null,
+                                  "healthcheckPath": null,
+                                  "healthcheckTimeout": null,
+                                  "ipv6EgressEnabled": false,
+                                  "limitOverride": null,
+                                  "multiRegionConfig": {
+                                    "us-west2": {
+                                      "numReplicas": 1
+                                    }
+                                  },
+                                  "numReplicas": 1,
+                                  "overlapSeconds": null,
+                                  "preDeployCommand": null,
+                                  "region": null,
+                                  "registryCredentials": null,
+                                  "requiredMountPath": null,
+                                  "restartPolicyMaxRetries": null,
+                                  "restartPolicyType": "NEVER",
+                                  "runtime": "V2",
+                                  "sleepApplication": false,
+                                  "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs",
+                                  "useLegacyStacker": false
+                                }
+                              },
+                              "volumeMounts": []
+                            },
+                            "status": "SUCCESS",
+                            "createdAt": "2026-07-13T14:35:19.751Z",
+                            "deploymentStopped": true
+                          },
+                          "activeDeployments": [
+                            {
+                              "id": "387e2e49-2055-43c8-86f4-de11f0e60b59",
+                              "status": "SUCCESS",
+                              "createdAt": "2026-07-13T14:35:19.751Z",
+                              "meta": {
+                                "buildOnly": true,
+                                "cliMessage": "Deploy One Time delivery outbox cron runner",
+                                "configFile": "/railway.json",
+                                "duration": 0,
+                                "fileServiceManifest": {
+                                  "build": {
+                                    "builder": "NIXPACKS"
+                                  },
+                                  "deploy": {
+                                    "cronSchedule": "*/5 * * * *",
+                                    "restartPolicyType": "NEVER",
+                                    "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs"
+                                  }
+                                },
+                                "ignoreWatchPatterns": true,
+                                "imageDigest": "sha256:cca6c9720caf97d780c455e403c9228756c97da56ef722c31f124a4376b1bc31",
+                                "logsV2": true,
+                                "nixpacksProviders": [],
+                                "propertyFileMapping": {
+                                  "build.builder": "$.build.builder",
+                                  "deploy.cronSchedule": "$.deploy.cronSchedule",
+                                  "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+                                  "deploy.startCommand": "$.deploy.startCommand"
+                                },
+                                "reason": "redeploy",
+                                "rootDirectory": null,
+                                "runtime": "V2",
+                                "serviceManifest": {
+                                  "build": {
+                                    "buildCommand": null,
+                                    "buildEnvironment": "V3",
+                                    "builder": "NIXPACKS",
+                                    "dockerfilePath": null,
+                                    "nixpacksConfigPath": null,
+                                    "nixpacksPlan": null,
+                                    "watchPatterns": []
+                                  },
+                                  "deploy": {
+                                    "cronSchedule": "*/5 * * * *",
+                                    "drainingSeconds": null,
+                                    "healthcheckPath": null,
+                                    "healthcheckTimeout": null,
+                                    "ipv6EgressEnabled": false,
+                                    "limitOverride": null,
+                                    "multiRegionConfig": {
+                                      "us-west2": {
+                                        "numReplicas": 1
+                                      }
+                                    },
+                                    "numReplicas": 1,
+                                    "overlapSeconds": null,
+                                    "preDeployCommand": null,
+                                    "region": null,
+                                    "registryCredentials": null,
+                                    "requiredMountPath": null,
+                                    "restartPolicyMaxRetries": null,
+                                    "restartPolicyType": "NEVER",
+                                    "runtime": "V2",
+                                    "sleepApplication": false,
+                                    "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs",
+                                    "useLegacyStacker": false
+                                  }
+                                },
+                                "volumeMounts": []
+                              }
+                            }
+                          ],
+                          "source": {
+                            "repo": null,
+                            "image": null
+                          },
+                          "domains": {
+                            "serviceDomains": [],
+                            "customDomains": []
+                          },
+                          "cronSchedule": null,
+                          "nextCronRunAt": null,
+                          "startCommand": null
+                        }
+                      }
+                    ]
+                  },
+                  "volumeInstances": {
+                    "edges": [
+                      {
+                        "node": {
+                          "serviceId": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+                          "mountPath": "/var/lib/postgresql/data",
+                          "environmentId": "f911acfc-e206-44df-a569-9d69d709b94b",
+                          "currentSizeMB": 277.987328,
+                          "sizeMB": 5000,
+                          "volume": {
+                            "name": "postgres-volume-YYfM",
+                            "id": "911ff445-84e8-4f03-ac3f-c92e51225398"
+                          }
+                        }
+                      },
+                      {
+                        "node": {
+                          "serviceId": "7d6541d3-a138-40b6-9a42-81c536529022",
+                          "mountPath": "/var/lib/postgresql/data",
+                          "environmentId": "f911acfc-e206-44df-a569-9d69d709b94b",
+                          "currentSizeMB": 199.35232,
+                          "sizeMB": 5000,
+                          "volume": {
+                            "name": "postgres-volume",
+                            "id": "25e63c49-40ae-44bb-86a5-c5656f787e24"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "services": {
+            "edges": [
+              {
+                "node": {
+                  "id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+                  "name": "one-time-delivery-cron"
+                }
+              },
+              {
+                "node": {
+                  "id": "7d6541d3-a138-40b6-9a42-81c536529022",
+                  "name": "Postgres"
+                }
+              },
+              {
+                "node": {
+                  "id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+                  "name": "one-time-web"
+                }
+              },
+              {
+                "node": {
+                  "id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+                  "name": "Postgres-j9Pi"
+                }
+              },
+              {
+                "node": {
+                  "id": "ebbb512e-3d27-44e1-a85b-4be3871a6b2f",
+                  "name": "Postgres-ib9s"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "command": "railway environment list --json",
+        "ok": false,
+        "status": 1,
+        "text": "Environment not found\n"
+      },
+      {
+        "command": "railway service list --json",
+        "ok": false,
+        "status": 1,
+        "text": "error: unexpected argument '--json' found\n\n  tip: to pass '--json' as a value, use '-- --json'\n\nUsage: railway.exe service <SERVICE>\n\nFor more information, try '--help'.\n\n"
+      },
+      {
+        "command": "railway service status --all --json",
+        "ok": true,
+        "value": [
+          {
+            "id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+            "name": "one-time-web",
+            "deploymentId": "15280d13-3e12-4c72-8460-10e0c6e99b3e",
+            "status": "SUCCESS",
+            "stopped": false
+          },
+          {
+            "id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+            "name": "Postgres-j9Pi",
+            "deploymentId": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+            "status": "SUCCESS",
+            "stopped": false
+          },
+          {
+            "id": "7d6541d3-a138-40b6-9a42-81c536529022",
+            "name": "Postgres",
+            "deploymentId": "6e3cfc7e-f795-448a-91e6-8fa9403b1c8a",
+            "status": "SUCCESS",
+            "stopped": false
+          },
+          {
+            "id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+            "name": "one-time-delivery-cron",
+            "deploymentId": "387e2e49-2055-43c8-86f4-de11f0e60b59",
+            "status": "SUCCESS",
+            "stopped": true
+          }
+        ]
+      }
+    ],
+    "denylist": {
+      "bna_matches": 1,
+      "skillful_motivation_matches": 2,
+      "one_time_production_matches": 2,
+      "production_environment_matches": 16
+    }
+  },
+  "temp_raw_deleted": true
+}

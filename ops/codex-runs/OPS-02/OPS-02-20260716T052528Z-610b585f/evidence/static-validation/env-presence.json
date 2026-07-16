@@ -1,13 +1,8 @@
 {
   "task_id": "OPS-02",
-  "packet_id": "OPS-02-20260716T040144Z-40d638ea",
-  "target_repository": "webcraft-media/onetimev2",
-  "selected_packet_archive_sha256": "a1d58cf35db429a95c9345383ba4b441982d2f0fdba27ddcc65722940d27ea5b",
-  "selected_packet_revision_identifier": "OPS-02-20260716T040144Z-40d638ea",
-  "packet_literal_revision_key": "missing",
-  "preparation_base_ref": "origin/main",
-  "preparation_base_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
-  "protected_name_presence": [
+  "generated_at_utc": "2026-07-16T05:50:22.857Z",
+  "value_output_policy": "names_and_presence_only",
+  "variables": [
     {
       "name": "OPS02_RAILWAY_WORKSPACE",
       "present": false
@@ -72,13 +67,5 @@
       "name": "RAILWAY_API_TOKEN",
       "present": false
     }
-  ],
-  "public_resource_names": {
-    "railway_project_name": "one-time-staging-ops-02",
-    "railway_environment_name": "staging",
-    "railway_web_service_name": "one-time-staging-web",
-    "railway_worker_service_name": "one-time-staging-worker",
-    "railway_database_service_name": "one-time-staging-postgres",
-    "preserved_launch_hostname": "join.onetimeonetime.com"
-  }
+  ]
 }

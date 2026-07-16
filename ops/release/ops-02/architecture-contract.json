@@ -1,0 +1,28 @@
+{
+  "task_id": "OPS-02",
+  "repository": "webcraft-media/onetimev2",
+  "required_topology": {
+    "railway_project": "one-time-staging-ops-02",
+    "environment": "staging",
+    "web_service": "one-time-staging-web",
+    "worker_service": "one-time-staging-worker",
+    "postgres_service": "one-time-staging-postgres",
+    "postgres_major": 16,
+    "hostname_policy": "railway_generated_staging_hostname_only"
+  },
+  "hard_boundaries": [
+    "no_bna_resources",
+    "no_skillful_motivation_resources",
+    "no_production_environment",
+    "no_join_hostname_change",
+    "no_root_dns_change",
+    "no_provider_activation",
+    "no_live_sends",
+    "no_live_charges",
+    "no_real_user_creation",
+    "no_production_contact_import"
+  ],
+  "exact_source_required": true,
+  "moving_branch_deployment_allowed": false,
+  "provider_mode": "sink_or_disabled"
+}

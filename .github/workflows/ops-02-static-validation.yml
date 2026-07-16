@@ -1,0 +1,27 @@
+name: OPS-02 Static Validation
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops-02/**'
+      - 'ops/release/ops-02/**'
+      - 'ops/codex-runs/OPS-02/**'
+      - '.github/workflows/ops-02-static-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  ops-02-static-validation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: node scripts/ops-02/validate-static.mjs

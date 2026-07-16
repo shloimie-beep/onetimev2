@@ -1,0 +1,24 @@
+{
+  "task_id": "OPS-02",
+  "scope": "isolated_ops02_staging_project",
+  "source_policy": {
+    "rollback_sha_must_be_immutable": true,
+    "redeploy_latest_allowed": false,
+    "down_migrations_allowed": false
+  },
+  "when_no_prior_approved_staging_sha": {
+    "safe_action": "stop_services_preserve_database",
+    "must_not_fabricate_sha": true
+  },
+  "automatic_stop_triggers": [
+    "source_sha_mismatch",
+    "web_worker_sha_mismatch",
+    "target_app_not_one_time",
+    "postgres_major_not_16",
+    "migration_checksum_mismatch",
+    "provider_mutation_attempt",
+    "live_send_or_charge",
+    "root_dns_mutation",
+    "secret_or_pii_in_evidence"
+  ]
+}

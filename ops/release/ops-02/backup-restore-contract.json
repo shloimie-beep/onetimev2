@@ -1,0 +1,26 @@
+{
+  "task_id": "OPS-02",
+  "scope": "isolated_staging_only_after_ot99_exists",
+  "backup_required_before": [
+    "persistent_staging_migration",
+    "synthetic_write",
+    "restore_rehearsal"
+  ],
+  "preferred_restore_mode": "pitr_side_by_side_fork",
+  "forbidden_restore_modes": [
+    "production_restore",
+    "bna_restore",
+    "first_rehearsal_as_only_volume_swap",
+    "destructive_down_migration"
+  ],
+  "record_only": [
+    "opaque_service_id",
+    "backup_schedule_present",
+    "latest_backup_age",
+    "pitr_enabled",
+    "retention_window",
+    "restore_target_timestamp",
+    "migration_ledger_hash",
+    "sanitized_counts"
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "task_id": "OPS-02",
+  "run_id": "OPS-02-20260716T052528Z-610b585f",
+  "generated_at_utc": "2026-07-16T05:45:00Z",
+  "status": "waiting_for_ot99_sha",
+  "repository": "webcraft-media/onetimev2",
+  "checkpoint_branch": "codex/ops-02-staging-activation-610b585f",
+  "preparation_base_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+  "eligible_ot99_sha": null,
+  "packet": {
+    "packet_id": "OPS-02-20260716T040144Z-40d638ea",
+    "archive_sha256": "a1d58cf35db429a95c9345383ba4b441982d2f0fdba27ddcc65722940d27ea5b",
+    "task_id_validation": "ok",
+    "sha256sums_validation": "ok",
+    "revision_validation": "missing_literal_revision_key; selected packet_id as the only valid revision identifier"
+  },
+  "candidate_resolution": {
+    "evidence_file": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/static-validation/candidate-resolution.json",
+    "eligible_candidate": null,
+    "considered_candidate_count": 1,
+    "non_eligible_candidate": {
+      "source": "git_ref",
+      "ref": "origin/codex/ops-07-pre-ot99-checkpoint-58746abd",
+      "sha": "d1825332e0a9fd3107842dd0d60f183ceb5167a3",
+      "eligibility_failures": [
+        "missing_acceptance_record",
+        "missing_check_evidence"
+      ]
+    }
+  },
+  "railway_readonly_inventory": {
+    "evidence_file": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/railway-inventory.redacted.json",
+    "mode": "readonly",
+    "denylist_matches": {
+      "bna_matches": 1,
+      "skillful_motivation_matches": 2,
+      "one_time_production_matches": 2,
+      "production_environment_matches": 16
+    },
+    "notes": [
+      "Existing denylist/collision evidence was recorded for guard purposes only.",
+      "No Railway project, environment, service, variable, database, or deployment was created, adopted, changed, or deleted."
+    ]
+  },
+  "commands": [
+    {
+      "command": "npm ci",
+      "status": "pass"
+    },
+    {
+      "command": "npx prettier --check scripts/ops-02 ops/release/ops-02 .github/workflows/ops-02-static-validation.yml",
+      "status": "pass"
+    },
+    {
+      "command": "npx eslint scripts/ops-02",
+      "status": "pass"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "pass"
+    },
+    {
+      "command": "node scripts/ops-02/validate-static.mjs ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/static-validation",
+      "status": "pass",
+      "evidence_file": "ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/static-validation/summary.json"
+    },
+    {
+      "command": "node scripts/ops-02/evidence-scan.mjs --path ops/codex-runs/OPS-02 --path ops/release/ops-02 --path scripts/ops-02 --out ops/codex-runs/OPS-02/OPS-02-20260716T052528Z-610b585f/evidence/evidence-scan-all.json",
+      "status": "pass",
+      "finding_count": 0
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "inherited_failures": [
+    {
+      "command": "npm run lint",
+      "status": "fail",
+      "scope": "existing product code outside OPS-02 tooling",
+      "summary": "packages/domain/src/lead/service.ts:5:55 has an unused selectedChannels import."
+    },
+    {
+      "command": "npm run unit",
+      "status": "fail",
+      "scope": "existing package script/config outside OPS-02 tooling",
+      "summary": "vitest.unit.config.ts is absent."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "not_available",
+      "scope": "package scripts",
+      "summary": "No secret:scan script exists; OPS-02 evidence-scan was used instead."
+    }
+  ],
+  "mutation_counters": {
+    "repository_file_edits_before_intake": 0,
+    "railway_mutations": 0,
+    "database_mutations": 0,
+    "domain_mutations": 0,
+    "deployments": 0,
+    "provider_actions": 0,
+    "live_email_sends": 0,
+    "live_whatsapp_sends": 0,
+    "live_telegram_sends": 0,
+    "live_charges": 0,
+    "root_dns_changes": 0,
+    "secret_values_output": 0
+  }
+}

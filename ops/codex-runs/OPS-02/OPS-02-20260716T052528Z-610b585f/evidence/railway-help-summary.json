@@ -1,0 +1,57 @@
+﻿[
+    {
+        "command":  "railway --version",
+        "exit_code":  0,
+        "first_line":  "railway 4.33.0"
+    },
+    {
+        "command":  "railway --help",
+        "exit_code":  0,
+        "first_line":  "Interact with Railway via CLI"
+    },
+    {
+        "command":  "railway init --help",
+        "exit_code":  0,
+        "first_line":  "Create a new project"
+    },
+    {
+        "command":  "railway link --help",
+        "exit_code":  0,
+        "first_line":  "Associate existing project with current directory, may specify projectId as an argument"
+    },
+    {
+        "command":  "railway status --help",
+        "exit_code":  0,
+        "first_line":  "Show information about the current project"
+    },
+    {
+        "command":  "railway environment --help",
+        "exit_code":  0,
+        "first_line":  "Create, delete or link an environment"
+    },
+    {
+        "command":  "railway add --help",
+        "exit_code":  0,
+        "first_line":  "Add a service to your project"
+    },
+    {
+        "command":  "railway service --help",
+        "exit_code":  0,
+        "first_line":  "Manage services"
+    },
+    {
+        "command":  "railway variable --help",
+        "exit_code":  0,
+        "first_line":  "Manage environment variables for a service"
+    },
+    {
+        "command":  "railway domain --help",
+        "exit_code":  0,
+        "first_line":  "Add a custom domain or generate a railway provided domain for a service."
+    },
+    {
+        "command":  "railway up --help",
+        "exit_code":  0,
+        "first_line":  "Upload and deploy project from the current directory"
+    }
+]

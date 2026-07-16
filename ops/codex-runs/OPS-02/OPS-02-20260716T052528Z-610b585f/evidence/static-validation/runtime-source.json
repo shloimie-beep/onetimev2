@@ -1,0 +1,18 @@
+{
+  "task_id": "OPS-02",
+  "generated_at_utc": "2026-07-16T05:50:22.933Z",
+  "mode": "source_discovery",
+  "implemented_paths": [
+    "/api/one-time/interest",
+    "/api/v1/leads",
+    "/health",
+    "/one-time",
+    "/one-time/signup",
+    "/rabbi-member",
+    "/ready",
+    "/version"
+  ],
+  "probes": [],
+  "expected_sha": null,
+  "status": "pass"
+}

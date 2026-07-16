@@ -1,0 +1,18 @@
+{
+  "task_id": "OPS-02",
+  "generated_at_utc": "2026-07-16T05:50:22.895Z",
+  "migrations_dir": "packages/db/migrations",
+  "count": 1,
+  "ledger_sha256": "6d935c237cd4c183b1aa3b2f2fab03606a72cc699d335b27e66637bb039151a3",
+  "migrations": [
+    {
+      "index": 0,
+      "id": "0001_onetime_lead_slice",
+      "file": "0001_onetime_lead_slice.sql",
+      "sha256": "c6290bffe0fd832332d6c72f44c7499bf4ab56155e70875ff1d2c76d9fa667c0"
+    }
+  ],
+  "comparison": {
+    "mode": "not_provided"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "task_id": "OPS-02",
+  "status": "pass",
+  "results": [
+    {
+      "command": "node --check scripts/ops-02/candidate-resolver.mjs",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/candidate-resolver.mjs --repo . --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\candidate-resolution.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/inventory.mjs --repo . --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\inventory.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/guard-context.mjs --repo . --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\guard-context.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/render-env-presence.mjs --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\env-presence.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/migration-ledger.mjs --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\migration-ledger.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/verify-runtime.mjs --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\runtime-source.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/worker-smoke.mjs --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\worker-smoke.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/forbidden-action-audit.mjs --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\forbidden-action-audit.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    },
+    {
+      "command": "node scripts/ops-02/evidence-scan.mjs --path ops/release/ops-02 --path scripts/ops-02 --out ops\\codex-runs\\OPS-02\\OPS-02-20260716T052528Z-610b585f\\evidence\\static-validation\\evidence-scan.json",
+      "status": 0,
+      "ok": true,
+      "stderr": ""
+    }
+  ]
+}

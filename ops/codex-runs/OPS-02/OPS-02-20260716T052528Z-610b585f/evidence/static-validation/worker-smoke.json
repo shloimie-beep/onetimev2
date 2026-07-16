@@ -1,0 +1,13 @@
+{
+  "task_id": "OPS-02",
+  "generated_at_utc": "2026-07-16T05:50:22.973Z",
+  "mode": "offline_source_smoke",
+  "checks": {
+    "uses_for_update_skip_locked": true,
+    "sink_delivery_status_present": true,
+    "bounded_limit_present": true,
+    "provider_send_code_present": false
+  },
+  "status": "pass",
+  "failures": []
+}
