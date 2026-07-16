@@ -26,7 +26,11 @@ import {
 } from './crypto.ts';
 import { compileWhatsAppIntent } from './intent.ts';
 import { answerPublicProgramQuestion } from './public-facts.ts';
-import { MetaWhatsAppCloudAdapter, SinkWhatsAppProviderAdapter } from './provider.ts';
+import {
+  MetaWhatsAppCloudAdapter,
+  SinkWhatsAppProviderAdapter,
+  WhatsAppProviderSendError,
+} from './provider.ts';
 
 const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
@@ -211,27 +215,33 @@ export async function processQueuedWhatsAppOutbox(input: {
   adapter?: WhatsAppProviderAdapter | undefined;
   now?: Date | undefined;
   limit?: number | undefined;
+  leaseOwner?: string | undefined;
+  leaseMs?: number | undefined;
+  maxAttempts?: number | undefined;
+  canaryOnly?: boolean | undefined;
 }) {
   const now = input.now ?? new Date();
-  const rows = await input.pool.query(
-    `SELECT *
-       FROM onetime.whatsapp_outbox_messages
-      WHERE account_key = $1
-        AND product_key = $2
-        AND status IN ('queued', 'retry_wait')
-        AND next_attempt_at <= $3
-      ORDER BY created_at ASC, outbox_message_key ASC
-      LIMIT $4`,
-    [input.config.accountKey, input.config.productKey, now.toISOString(), input.limit ?? 25],
-  );
+  const leaseOwner = input.leaseOwner ?? `wa_worker_${randomUUID()}`;
+  const maxAttempts = input.maxAttempts ?? 3;
+  const rows = await claimQueuedWhatsAppOutbox({
+    pool: input.pool,
+    config: input.config,
+    now,
+    limit: input.limit ?? 25,
+    leaseOwner,
+    leaseExpiresAt: new Date(now.getTime() + (input.leaseMs ?? 120_000)),
+    canaryOnly: Boolean(input.canaryOnly),
+  });
   let sent = 0;
   let suppressed = 0;
   let retried = 0;
   let deadLettered = 0;
+  let leaseLost = 0;
   const adapter = input.adapter ?? new SinkWhatsAppProviderAdapter();
 
-  for (const row of rows.rows) {
+  for (const row of rows) {
     const outboxKey = String(row.outbox_message_key);
+    const leaseGeneration = Number(row.lease_generation ?? 0);
     if (!suppressionBypass(row.message_kind)) {
       const suppression = await input.pool.query(
         `SELECT 1
@@ -255,8 +265,15 @@ export async function processQueuedWhatsAppOutbox(input: {
         ],
       );
       if (suppression.rowCount) {
-        await setOutboxSuppressed(input.pool, input.config, outboxKey, 'active_suppression');
-        suppressed += 1;
+        const completed = await setOutboxSuppressed(
+          input.pool,
+          input.config,
+          outboxKey,
+          'active_suppression',
+          { owner: leaseOwner, generation: leaseGeneration },
+        );
+        if (completed) suppressed += 1;
+        else leaseLost += 1;
         continue;
       }
     }
@@ -277,6 +294,13 @@ export async function processQueuedWhatsAppOutbox(input: {
         toE164,
         text: body,
         kind: row.message_kind as WhatsAppMessageKind,
+        metadata: {
+          outbox_message_key: outboxKey,
+          conversation_key: String(row.conversation_key),
+          provider_account_key: String(row.provider_account_key),
+          last_inbound_at: dateIso(row.last_inbound_at),
+          canary: Boolean(row.canary),
+        },
       });
       const providerHash = receipt.providerMessageId
         ? whatsappProviderRefHash(
@@ -285,59 +309,130 @@ export async function processQueuedWhatsAppOutbox(input: {
             receipt.providerMessageId,
           )
         : null;
-      await input.pool.query(
-        `UPDATE onetime.whatsapp_outbox_messages
-            SET status = $4,
-                attempts = attempts + 1,
-                provider_message_ref_hash = $5,
-                sent_at = $6
-          WHERE account_key = $1
-            AND product_key = $2
-            AND outbox_message_key = $3`,
-        [
-          input.config.accountKey,
-          input.config.productKey,
-          outboxKey,
-          receipt.sink ? 'sink_delivered' : 'sent',
-          providerHash,
-          receipt.acceptedAt.toISOString(),
-        ],
-      );
+      const encryptedProviderRef = receipt.providerMessageId
+        ? encryptForWhatsApp(input.config, receipt.providerMessageId)
+        : null;
+      const completed = await setOutboxSent(input.pool, input.config, {
+        outboxMessageKey: outboxKey,
+        leaseOwner,
+        leaseGeneration,
+        status: receipt.sink ? 'sink_delivered' : 'sent',
+        providerHash,
+        encryptedProviderRef,
+        providerResponseStatus: receipt.sink ? null : 200,
+        sentAt: receipt.acceptedAt,
+      });
+      if (!completed) {
+        leaseLost += 1;
+        continue;
+      }
       await insertDeliveryEvent(input.pool, input.config, {
         outboxMessageKey: outboxKey,
         status: receipt.sink ? 'accepted' : 'sent',
         providerEventRefHash: providerHash,
+        providerResponseStatus: receipt.sink ? undefined : 200,
         metadata: { provider: receipt.provider, sink: receipt.sink },
       });
       sent += 1;
     } catch (error) {
-      const attempts = Number(row.attempts) + 1;
-      if (attempts >= 3) {
-        await setOutboxDeadLettered(input.pool, input.config, outboxKey, error);
-        deadLettered += 1;
+      const attempts = Number(row.attempts ?? 1);
+      if (shouldDeadLetterWhatsApp(error, attempts, maxAttempts)) {
+        const completed = await setOutboxDeadLettered(input.pool, input.config, outboxKey, error, {
+          owner: leaseOwner,
+          generation: leaseGeneration,
+        });
+        if (completed) deadLettered += 1;
+        else leaseLost += 1;
       } else {
-        await input.pool.query(
-          `UPDATE onetime.whatsapp_outbox_messages
-              SET status = 'retry_wait',
-                  attempts = $4,
-                  next_attempt_at = $5
-            WHERE account_key = $1
-              AND product_key = $2
-              AND outbox_message_key = $3`,
-          [
-            input.config.accountKey,
-            input.config.productKey,
-            outboxKey,
-            attempts,
-            new Date(now.getTime() + attempts * 60_000).toISOString(),
-          ],
-        );
-        retried += 1;
+        const completed = await setOutboxRetryWait(input.pool, input.config, {
+          outboxMessageKey: outboxKey,
+          leaseOwner,
+          leaseGeneration,
+          nextAttemptAt: nextWhatsAppRetryAt(error, now, attempts, outboxKey),
+          retryAfterMs: error instanceof WhatsAppProviderSendError ? error.retryAfterMs : undefined,
+        });
+        if (completed) retried += 1;
+        else leaseLost += 1;
       }
     }
   }
 
-  return { claimed: rows.rowCount ?? rows.rows.length, sent, suppressed, retried, deadLettered };
+  return { claimed: rows.length, sent, suppressed, retried, deadLettered, leaseLost };
+}
+
+async function claimQueuedWhatsAppOutbox(input: {
+  pool: DbPool;
+  config: AppConfig;
+  now: Date;
+  limit: number;
+  leaseOwner: string;
+  leaseExpiresAt: Date;
+  canaryOnly: boolean;
+}) {
+  return inTransaction(input.pool, async (client) => {
+    const nowIso = input.now.toISOString();
+    const candidates = await client.query(
+      `SELECT outbox_message_key
+         FROM onetime.whatsapp_outbox_messages
+        WHERE account_key = $1
+          AND product_key = $2
+          ${input.canaryOnly ? 'AND canary = true' : ''}
+          AND (
+            (status IN ('queued', 'retry_wait') AND next_attempt_at <= $3)
+            OR (status = 'sending' AND (lease_expires_at IS NULL OR lease_expires_at <= $3))
+          )
+        ORDER BY created_at ASC, outbox_message_key ASC
+        LIMIT $4`,
+      [input.config.accountKey, input.config.productKey, nowIso, input.limit],
+    );
+    const keys = candidates.rows.map((row) => String(row.outbox_message_key));
+    if (keys.length === 0) return [] as Record<string, unknown>[];
+    const keyPlaceholders = keys.map((_, index) => `$${index + 4}`).join(', ');
+    const values: unknown[] = [input.config.accountKey, input.config.productKey, nowIso, ...keys];
+    const leaseOwnerIndex = values.push(input.leaseOwner);
+    const leaseExpiresIndex = values.push(input.leaseExpiresAt.toISOString());
+    const claimed = await client.query(
+      `UPDATE onetime.whatsapp_outbox_messages
+          SET status = 'sending',
+              lease_owner = $${leaseOwnerIndex},
+              lease_expires_at = $${leaseExpiresIndex},
+              lease_generation = lease_generation + 1,
+              attempts = attempts + 1,
+              provider_retry_after_ms = NULL
+        WHERE account_key = $1
+          AND product_key = $2
+          ${input.canaryOnly ? 'AND canary = true' : ''}
+          AND outbox_message_key IN (${keyPlaceholders})
+          AND (
+            (status IN ('queued', 'retry_wait') AND next_attempt_at <= $3)
+            OR (status = 'sending' AND (lease_expires_at IS NULL OR lease_expires_at <= $3))
+          )
+        RETURNING *`,
+      values,
+    );
+    if (claimed.rows.length === 0) return [];
+    const claimedKeys = claimed.rows.map((row) => String(row.outbox_message_key));
+    const joinPlaceholders = claimedKeys.map((_, index) => `$${index + 3}`).join(', ');
+    const joined = await client.query(
+      `SELECT outbox.outbox_message_key, conversations.last_inbound_at
+         FROM onetime.whatsapp_outbox_messages AS outbox
+         JOIN onetime.whatsapp_conversations AS conversations
+           ON conversations.account_key = outbox.account_key
+          AND conversations.product_key = outbox.product_key
+          AND conversations.conversation_key = outbox.conversation_key
+        WHERE outbox.account_key = $1
+          AND outbox.product_key = $2
+          AND outbox.outbox_message_key IN (${joinPlaceholders})`,
+      [input.config.accountKey, input.config.productKey, ...claimedKeys],
+    );
+    const inboundByKey = new Map(
+      joined.rows.map((row) => [String(row.outbox_message_key), row.last_inbound_at]),
+    );
+    return claimed.rows.map((row) => ({
+      ...row,
+      last_inbound_at: inboundByKey.get(String(row.outbox_message_key)) ?? null,
+    }));
+  });
 }
 
 export async function consumeWhatsAppAccountLink(input: {
@@ -592,7 +687,16 @@ async function ingestStatusEvent(
   const outboxKey = existing.rows[0]?.outbox_message_key
     ? String(existing.rows[0].outbox_message_key)
     : null;
-  await insertDeliveryEvent(pool, config, {
+  const providerStatusEventKey = stableKey('wa_delivery_status', [
+    config.accountKey,
+    config.productKey,
+    providerAccountKey,
+    providerHash,
+    status.status,
+    status.timestamp?.toISOString() ?? 'no-provider-timestamp',
+  ]);
+  const inserted = await insertDeliveryEvent(pool, config, {
+    deliveryEventKey: providerStatusEventKey,
     outboxMessageKey: outboxKey,
     status: status.status,
     providerEventRefHash: providerHash,
@@ -608,6 +712,18 @@ async function ingestStatusEvent(
     },
     occurredAt: status.timestamp ?? now,
   });
+  if (inserted && outboxKey && status.status === 'failed') {
+    await pool.query(
+      `UPDATE onetime.whatsapp_outbox_messages
+          SET status = 'dead_lettered',
+              provider_retry_after_ms = NULL
+        WHERE account_key = $1
+          AND product_key = $2
+          AND outbox_message_key = $3
+          AND status IN ('sent', 'sending', 'retry_wait')`,
+      [config.accountKey, config.productKey, outboxKey],
+    );
+  }
 }
 
 async function processInboxEvent(pool: DbPool, config: AppConfig, eventKey: string, now: Date) {
@@ -1529,6 +1645,7 @@ async function insertDeliveryEvent(
   target: DbPool | Queryable,
   config: AppConfig,
   input: {
+    deliveryEventKey?: string | undefined;
     outboxMessageKey: string | null;
     status:
       | 'accepted'
@@ -1543,15 +1660,18 @@ async function insertDeliveryEvent(
     failureCode?: string | undefined;
     metadata?: Record<string, unknown> | undefined;
     occurredAt?: Date | undefined;
+    providerResponseStatus?: number | undefined;
   },
 ) {
-  await target.query(
+  const result = await target.query(
     `INSERT INTO onetime.whatsapp_delivery_events
      (delivery_event_key, account_key, product_key, outbox_message_key, provider_event_ref_hash,
-      status, failure_code, metadata, occurred_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9)`,
+      status, failure_code, metadata, occurred_at, provider_status_event_key,
+      provider_response_status)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$10,$11)
+     ON CONFLICT (delivery_event_key) DO NOTHING`,
     [
-      `wa_delivery_${randomUUID()}`,
+      input.deliveryEventKey ?? `wa_delivery_${randomUUID()}`,
       config.accountKey,
       config.productKey,
       input.outboxMessageKey,
@@ -1560,8 +1680,96 @@ async function insertDeliveryEvent(
       input.failureCode ?? null,
       JSON.stringify(input.metadata ?? {}),
       (input.occurredAt ?? new Date()).toISOString(),
+      input.deliveryEventKey ?? null,
+      input.providerResponseStatus ?? null,
     ],
   );
+  return Boolean(result.rowCount);
+}
+
+async function setOutboxSent(
+  pool: DbPool,
+  config: AppConfig,
+  input: {
+    outboxMessageKey: string;
+    leaseOwner: string;
+    leaseGeneration: number;
+    status: 'sent' | 'sink_delivered';
+    providerHash: string | null;
+    encryptedProviderRef: { ciphertext: string; iv: string; tag: string } | null;
+    providerResponseStatus: number | null;
+    sentAt: Date;
+  },
+) {
+  const result = await pool.query(
+    `UPDATE onetime.whatsapp_outbox_messages
+        SET status = $6,
+            lease_owner = NULL,
+            lease_expires_at = NULL,
+            provider_message_ref_hash = $7,
+            provider_message_ref_ciphertext = $8,
+            provider_message_ref_iv = $9,
+            provider_message_ref_tag = $10,
+            provider_response_status = $11,
+            provider_retry_after_ms = NULL,
+            sent_at = $12
+      WHERE account_key = $1
+        AND product_key = $2
+        AND outbox_message_key = $3
+        AND lease_owner = $4
+        AND lease_generation = $5`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.outboxMessageKey,
+      input.leaseOwner,
+      input.leaseGeneration,
+      input.status,
+      input.providerHash,
+      input.encryptedProviderRef?.ciphertext ?? null,
+      input.encryptedProviderRef?.iv ?? null,
+      input.encryptedProviderRef?.tag ?? null,
+      input.providerResponseStatus,
+      input.sentAt.toISOString(),
+    ],
+  );
+  return Boolean(result.rowCount);
+}
+
+async function setOutboxRetryWait(
+  pool: DbPool,
+  config: AppConfig,
+  input: {
+    outboxMessageKey: string;
+    leaseOwner: string;
+    leaseGeneration: number;
+    nextAttemptAt: Date;
+    retryAfterMs?: number | undefined;
+  },
+) {
+  const result = await pool.query(
+    `UPDATE onetime.whatsapp_outbox_messages
+        SET status = 'retry_wait',
+            lease_owner = NULL,
+            lease_expires_at = NULL,
+            next_attempt_at = $6,
+            provider_retry_after_ms = $7
+      WHERE account_key = $1
+        AND product_key = $2
+        AND outbox_message_key = $3
+        AND lease_owner = $4
+        AND lease_generation = $5`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.outboxMessageKey,
+      input.leaseOwner,
+      input.leaseGeneration,
+      input.nextAttemptAt.toISOString(),
+      input.retryAfterMs ?? null,
+    ],
+  );
+  return Boolean(result.rowCount);
 }
 
 async function setOutboxSuppressed(
@@ -1569,20 +1777,28 @@ async function setOutboxSuppressed(
   config: AppConfig,
   outboxMessageKey: string,
   reason: string,
+  lease?: { owner: string; generation: number } | undefined,
 ) {
-  await pool.query(
+  const result = await pool.query(
     `UPDATE onetime.whatsapp_outbox_messages
-        SET status = 'suppressed'
+        SET status = 'suppressed',
+            lease_owner = NULL,
+            lease_expires_at = NULL
       WHERE account_key = $1
         AND product_key = $2
-        AND outbox_message_key = $3`,
-    [config.accountKey, config.productKey, outboxMessageKey],
+        AND outbox_message_key = $3
+        ${lease ? 'AND lease_owner = $4 AND lease_generation = $5' : ''}`,
+    lease
+      ? [config.accountKey, config.productKey, outboxMessageKey, lease.owner, lease.generation]
+      : [config.accountKey, config.productKey, outboxMessageKey],
   );
+  if (!result.rowCount) return false;
   await insertDeliveryEvent(pool, config, {
     outboxMessageKey,
     status: 'suppressed',
     metadata: { reason },
   });
+  return true;
 }
 
 async function setOutboxDeadLettered(
@@ -1590,21 +1806,29 @@ async function setOutboxDeadLettered(
   config: AppConfig,
   outboxMessageKey: string,
   error: unknown,
+  lease?: { owner: string; generation: number } | undefined,
 ) {
-  await pool.query(
+  const result = await pool.query(
     `UPDATE onetime.whatsapp_outbox_messages
         SET status = 'dead_lettered',
-            attempts = attempts + 1
+            lease_owner = NULL,
+            lease_expires_at = NULL,
+            provider_retry_after_ms = NULL
       WHERE account_key = $1
         AND product_key = $2
-        AND outbox_message_key = $3`,
-    [config.accountKey, config.productKey, outboxMessageKey],
+        AND outbox_message_key = $3
+        ${lease ? 'AND lease_owner = $4 AND lease_generation = $5' : ''}`,
+    lease
+      ? [config.accountKey, config.productKey, outboxMessageKey, lease.owner, lease.generation]
+      : [config.accountKey, config.productKey, outboxMessageKey],
   );
+  if (!result.rowCount) return false;
   await insertDeliveryEvent(pool, config, {
     outboxMessageKey,
     status: 'dead_lettered',
     failureCode: failureCode(error),
   });
+  return true;
 }
 
 async function markInboxFailure(pool: DbPool, config: AppConfig, eventKey: string, error: unknown) {
@@ -1666,6 +1890,33 @@ function jsonObject(value: unknown): Record<string, unknown> {
   return typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+}
+
+function dateIso(value: unknown) {
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value === 'string') {
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return new Date(parsed).toISOString();
+  }
+  return null;
+}
+
+function shouldDeadLetterWhatsApp(error: unknown, attempt: number, maxAttempts: number) {
+  if (error instanceof WhatsAppProviderSendError && !error.retryable) return true;
+  return attempt >= maxAttempts;
+}
+
+function nextWhatsAppRetryAt(error: unknown, now: Date, attempt: number, outboxKey: string) {
+  const providerDelay =
+    error instanceof WhatsAppProviderSendError && error.retryAfterMs !== undefined
+      ? Math.max(0, error.retryAfterMs)
+      : 0;
+  const exponent = Math.max(0, attempt - 1);
+  const baseDelay = Math.min(6 * 60 * 60 * 1000, 30_000 * 2 ** exponent);
+  const jitterByte = createHash('sha256').update(`${outboxKey}\0${attempt}`).digest()[0] ?? 128;
+  const jitter = 0.8 + (jitterByte / 255) * 0.4;
+  const retryDelay = Math.max(providerDelay, Math.round(baseDelay * jitter));
+  return new Date(now.getTime() + retryDelay);
 }
 
 function expectedIntentContext(state: WhatsAppConversationState) {

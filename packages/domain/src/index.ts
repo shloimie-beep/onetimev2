@@ -195,5 +195,14 @@ export {
   receiveWhatsAppWebhook,
   verifyWhatsAppWebhookChallenge,
 } from './whatsapp/service.ts';
-export { MetaWhatsAppCloudAdapter, SinkWhatsAppProviderAdapter } from './whatsapp/provider.ts';
+export {
+  MetaWhatsAppCloudAdapter,
+  OT100_META_GRAPH_VERSION,
+  OT100_STAGING_ENVIRONMENT_FINGERPRINT,
+  SinkWhatsAppProviderAdapter,
+  WhatsAppProviderSendError,
+  createMetaWhatsAppCloudAdapterFromEnv,
+  inspectMetaWhatsAppCloudReadiness,
+  loadMetaWhatsAppCloudAdapterOptions,
+} from './whatsapp/provider.ts';
 export { compileWhatsAppIntent } from './whatsapp/intent.ts';
