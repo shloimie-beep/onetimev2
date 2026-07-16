@@ -1,0 +1,25 @@
+{
+  "packet_id": "OT-106",
+  "branch": "codex/ot106-buffer-social-publishing-runtime",
+  "worktree": "C:\\Users\\User\\.onetime-worktrees\\OT-106",
+  "required_base_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "actual_start_sha": "b34eb0bf54c7583fff0ded11551cfbea7c33fc78",
+  "draft_pr_base": "codex/ops03-staging-readiness-repair",
+  "required_base_verified_as_ancestor": true,
+  "status": "draft_pr_open",
+  "external_writes_performed": false,
+  "provider_canary_status": "unconfigured_no_writes",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/46",
+  "implementation_commit_sha": "aabee052c1836f5905f5bc27b024ad33159ece5b",
+  "local_verification": {
+    "focused_integration": "passed_8_tests",
+    "lint": "passed",
+    "typecheck": "passed",
+    "build": "passed",
+    "secret_scan": "passed",
+    "queue_proof": "passed_10000_sink_zero_provider_writes",
+    "bundle_provider_grep": "no_matches",
+    "db_verify": "blocked_missing_DATABASE_URL"
+  },
+  "updated_at": "2026-07-16T19:51:00Z"
+}

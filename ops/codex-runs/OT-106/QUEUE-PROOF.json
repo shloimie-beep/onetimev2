@@ -1,0 +1,16 @@
+{
+  "packet_id": "OT-106",
+  "generated_at": "2026-07-16T19:46:52.640Z",
+  "queue_size": 10000,
+  "batch_size": 250,
+  "processed": 10000,
+  "provider_writes": 0,
+  "external_network_used": false,
+  "elapsed_ms": 150496.76,
+  "summary": {
+    "provider_draft_created": 10000,
+    "retryable_failure": 0,
+    "dead_lettered": 0
+  },
+  "passed": true
+}
