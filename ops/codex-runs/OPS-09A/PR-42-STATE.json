@@ -1,0 +1,117 @@
+{
+  "ops_agent": "OPS-09A",
+  "pr": 42,
+  "branch": "codex/ot103-zoom-classroom-fulfillment",
+  "worktree": "C:/Users/User/.overnight-20260717-worktrees/OPS-09A/PR-42-ot103-zoom",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "canonical_reference_branch": "codex/ops03-staging-readiness-repair",
+  "canonical_reference_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "before_head_sha": "4140b4e211b257a8978c9b5a485b17a00ebf3bf2",
+  "expected_packet_head_sha": "4140b4e211b257a8978c9b5a485b17a00ebf3bf2",
+  "remote_head_advanced_before_repair": false,
+  "status": "local_repair_verified_pending_push",
+  "semantic_scope_preserved": [
+    "OT-103 Zoom REST provider client remains sink/off by default",
+    "learner launch remains scoped and role-0 only",
+    "raw Zoom secrets, start URLs, passcodes, ZAK, and join URLs stay out of logs and responses",
+    "provider canary remains blocked on protected credentials and explicit authorization"
+  ],
+  "repair_summary": [
+    "Repaired stale migration final-ID assertion in tests/integration/telegram-db-foundation.test.ts",
+    "Added OPS-09A PR #42 integration delta documenting the inspected conflict and remaining conductor-owned wiring",
+    "Created a PR #42-specific merge commit from the canonical reference to resolve the GitHub content conflict without enabling Zoom runtime wiring"
+  ],
+  "tests": [
+    {
+      "command": "npm install",
+      "outcome": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts",
+      "outcome": "passed: 2 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/classroom/ot103-zoom-provider.test.ts",
+      "outcome": "passed: 6 tests"
+    },
+    {
+      "command": "npx prettier --write tests/integration/telegram-db-foundation.test.ts",
+      "outcome": "applied formatting to touched test only"
+    },
+    {
+      "command": "npm run typecheck",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "outcome": "passed: 908 repo text files"
+    },
+    {
+      "command": "npx prettier --check tests/integration/telegram-db-foundation.test.ts",
+      "outcome": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/classroom/ot103-zoom-provider.test.ts tests/unit/classroom/classroom-contracts.test.ts",
+      "outcome": "passed: 11 tests"
+    },
+    {
+      "command": "npm run build",
+      "outcome": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/classroom/zoom-learner-classroom.test.ts",
+      "outcome": "passed: 7 tests"
+    },
+    {
+      "command": "npx playwright test tests/accessibility/ot88-zoom-classroom-a11y.spec.ts tests/performance/ot88-zoom-classroom-performance.spec.ts",
+      "outcome": "passed: 3 tests"
+    },
+    {
+      "command": "npx playwright test tests/e2e/ot88-zoom-classroom.spec.ts",
+      "outcome": "passed on rerun: 3 tests; first parallel attempt hit EADDRINUSE on port 3100"
+    },
+    {
+      "command": "npm run test",
+      "outcome": "passed after PR #42 canonical merge result: 30 unit files / 164 tests and 27 integration files / 135 tests"
+    },
+    {
+      "command": "npm run e2e",
+      "outcome": "passed: 33 tests"
+    },
+    {
+      "command": "npm run accessibility",
+      "outcome": "passed: 13 tests"
+    },
+    {
+      "command": "npm run performance",
+      "outcome": "passed: 7 tests plus bundle check"
+    },
+    {
+      "command": "npm run format",
+      "outcome": "blocked by existing repo-wide Windows formatting baseline: Prettier reported 620 unrelated files; touched-file Prettier check passed and no mass-format was performed"
+    }
+  ],
+  "blocked": [
+    {
+      "id": "BLOCK-OT103-001",
+      "scope": "provider canary only",
+      "reason": "protected staging Zoom credentials and explicit OT103_STAGING_CANARY_AUTHORIZED=true are not present"
+    }
+  ],
+  "guardrails": {
+    "bna_checkout_used_for_implementation": false,
+    "bna_files_edited": false,
+    "production_deployment_performed": false,
+    "provider_mutation_performed": false,
+    "production_or_staging_database_mutation_performed": false,
+    "external_send_performed": false,
+    "live_charge_performed": false,
+    "force_push_used": false,
+    "duplicate_pr_opened": false
+  },
+  "updated_at": "2026-07-17T01:47:00+03:00"
+}
