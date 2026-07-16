@@ -1,0 +1,145 @@
+﻿{
+    "task_id":  "OT-99",
+    "packet_id":  "OT-99-bcd34498",
+    "generated_at_utc":  "2026-07-16T06:47:24Z",
+    "repository":  "webcraft-media/onetimev2",
+    "integration_gate":  {
+                             "open":  false,
+                             "ot_83r_completion_verified":  false,
+                             "ot_88_report_inspected":  true,
+                             "ot_89a_report_inspected":  true,
+                             "evidence":  [
+                                              "artifacts/OT-99/preflight/remote-discovery-summary.txt",
+                                              "artifacts/OT-99/preflight/remote-discovery.json",
+                                              "artifacts/OT-99/preflight/prerequisite-audit.json"
+                                          ],
+                             "blockers":  [
+                                              "OT-83R branch origin/codex/ot83r-complete-portals at 04ca004e22b2c1e1ffaf710a3211eabcd3180f32 has no inspectable checkpoint/final/completion report at its remote head.",
+                                              "OT-83R PR #33 body explicitly says implementation, routes, UI, registry coverage, tests, and final report are still pending.",
+                                              "OT-83R exact-SHA CI has failing Node 24 verify and PostgreSQL 16 assurance checks.",
+                                              "OT-88 PR #34 and reports state IMPLEMENTATION_PENDING; exact-SHA Node 24 verify failed.",
+                                              "OT-89A PR #36 and report state implementation/tests/migration/diff/commit/push/final acceptance pending; exact-SHA Node 24 verify failed.",
+                                              "OPS-09 PR #35/FLEET-REPORT.md is in progress with no CI check runs at the branch head."
+                                          ]
+                         },
+    "candidates":  [
+                       {
+                           "task":  "OT-83R",
+                           "remote_branch":  "codex/ot83r-complete-portals",
+                           "head_sha":  "04ca004e22b2c1e1ffaf710a3211eabcd3180f32",
+                           "pull_request_url":  "https://github.com/webcraft-media/onetimev2/pull/33",
+                           "report_paths":  [
+
+                                            ],
+                           "ci_state":  "failure",
+                           "ancestry":  {
+                                            "base":  "codex/ot83-household-portals-foundation",
+                                            "base_is_ancestor":  true,
+                                            "merge_base":  "a02d1d254ae0d17804fb657079a7871567260ea2"
+                                        },
+                           "scope_verified":  false,
+                           "decision":  "blocked",
+                           "evidence":  [
+                                            "PR #33 is draft/open and says final report/tests/implementation remain pending.",
+                                            "No report-like paths found at origin/codex/ot83r-complete-portals.",
+                                            "Exact-SHA CI has failures."
+                                        ]
+                       },
+                       {
+                           "task":  "OT-88",
+                           "remote_branch":  "codex/ot88-zoom-learner-classroom",
+                           "head_sha":  "80a67b93c61e9d5fb127789dadc0739917f21555",
+                           "pull_request_url":  "https://github.com/webcraft-media/onetimev2/pull/34",
+                           "report_paths":  [
+                                                "ops/codex-runs/OT-88/FINAL-REPORT.md",
+                                                "ops/codex-runs/OT-88/FINAL.md",
+                                                "ops/codex-runs/OT-88/packet/10-EVIDENCE-RESUME-CONTRACT.md"
+                                            ],
+                           "ci_state":  "failure",
+                           "ancestry":  {
+                                            "base":  "codex/ot84-telegram-action-gateway",
+                                            "base_is_ancestor":  true,
+                                            "merge_base":  "f98103ecc3660dbda871a91485656e17580940a8"
+                                        },
+                           "scope_verified":  false,
+                           "decision":  "blocked",
+                           "evidence":  [
+                                            "PR #34 is a recovery checkpoint and body says implementation is pending.",
+                                            "FINAL.md status is IMPLEMENTATION_PENDING.",
+                                            "Exact-SHA Node 24 verify failed."
+                                        ]
+                       },
+                       {
+                           "task":  "OT-89A",
+                           "remote_branch":  "codex/ot89a-subscriber-support-producer",
+                           "head_sha":  "0fe1b4668170f608d8763fb52d11b30f0150feb2",
+                           "pull_request_url":  "https://github.com/webcraft-media/onetimev2/pull/36",
+                           "report_paths":  [
+                                                "ops/codex-runs/OT-89A/FINAL.md"
+                                            ],
+                           "ci_state":  "failure",
+                           "ancestry":  {
+                                            "base":  "codex/ot84-telegram-action-gateway",
+                                            "base_is_ancestor":  true,
+                                            "merge_base":  "f98103ecc3660dbda871a91485656e17580940a8"
+                                        },
+                           "scope_verified":  false,
+                           "decision":  "blocked",
+                           "evidence":  [
+                                            "PR #36 body says product implementation, tests, migration, and final acceptance are pending.",
+                                            "FINAL.md says Not final yet.",
+                                            "Exact-SHA Node 24 verify failed."
+                                        ]
+                       },
+                       {
+                           "task":  "OT-89B",
+                           "remote_branch":  null,
+                           "head_sha":  null,
+                           "pull_request_url":  "https://github.com/shloimie-beep/bnei-neviim-academy/pull/136",
+                           "report_paths":  [
+
+                                            ],
+                           "ci_state":  "unavailable",
+                           "ancestry":  {
+                                            "system":  "BNA external asynchronous dependency",
+                                            "imported_into_one_time":  false
+                                        },
+                           "scope_verified":  false,
+                           "decision":  "external_only",
+                           "evidence":  [
+                                            "OT-89B is an external BNA consumer and must not be imported into One Time.",
+                                            "OT-99 gate closed before OT-89A producer validation against BNA/stub."
+                                        ]
+                       }
+                   ],
+    "audit_hypotheses":  [
+                             {
+                                 "name":  "main is still initial foundation and unsuitable as direct integration base",
+                                 "result":  "confirmed",
+                                 "evidence":  [
+                                                  "origin/main HEAD is 610b585f3d221addd4e7b824c92a5cc256cffcf9; OT-83R expected foundation is not verified complete."
+                                              ]
+                             },
+                             {
+                                 "name":  "OT-83 was partial and requires OT-83R completion",
+                                 "result":  "confirmed",
+                                 "evidence":  [
+                                                  "OT-99 gate requires OT-83R completion report; OT-83R has no report and PR #33 says implementation remains pending."
+                                              ]
+                             },
+                             {
+                                 "name":  "OT-88 and OT-89A prerequisites are not ready for convergence",
+                                 "result":  "confirmed",
+                                 "evidence":  [
+                                                  "OT-88 and OT-89A reports are checkpoint/preimplementation only and exact-SHA Node 24 verify failed."
+                                              ]
+                             },
+                             {
+                                 "name":  "OPS-09 fleet report prerequisite remains incomplete",
+                                 "result":  "confirmed",
+                                 "evidence":  [
+                                                  "OPS-09 FLEET-REPORT.md status is In progress and PR #35 has no check runs."
+                                              ]
+                             }
+                         ]
+}

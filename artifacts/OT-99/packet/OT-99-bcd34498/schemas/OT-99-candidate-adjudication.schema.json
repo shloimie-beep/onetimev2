@@ -1,0 +1,198 @@
+{
+  "$id": "urn:ot-99:candidate-adjudication",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "audit_hypotheses": {
+      "items": {
+        "properties": {
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          },
+          "result": {
+            "enum": [
+              "confirmed",
+              "corrected",
+              "not_applicable",
+              "unresolved"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "result",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "candidates": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "ancestry": {
+            "type": "object"
+          },
+          "ci_state": {
+            "enum": [
+              "success",
+              "failure",
+              "pending",
+              "neutral",
+              "not_configured",
+              "unavailable"
+            ]
+          },
+          "decision": {
+            "enum": [
+              "foundation",
+              "merge",
+              "skip_already_contained",
+              "skip_incomplete",
+              "skip_superseded",
+              "external_only",
+              "blocked"
+            ]
+          },
+          "evidence": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "head_sha": {
+            "pattern": "^[0-9a-f]{40}$",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pull_request_url": {
+            "format": "uri",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "remote_branch": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "report_paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "scope_verified": {
+            "type": "boolean"
+          },
+          "task": {
+            "enum": [
+              "OT-81",
+              "OT-82",
+              "OT-83",
+              "OT-83R",
+              "OT-84",
+              "OT-85",
+              "OT-86A",
+              "OT-86B",
+              "OT-87",
+              "OT-88",
+              "OT-89A",
+              "OT-89B"
+            ]
+          }
+        },
+        "required": [
+          "task",
+          "remote_branch",
+          "head_sha",
+          "report_paths",
+          "ci_state",
+          "ancestry",
+          "scope_verified",
+          "decision",
+          "evidence"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "generated_at_utc": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "integration_gate": {
+      "additionalProperties": false,
+      "properties": {
+        "blockers": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "open": {
+          "type": "boolean"
+        },
+        "ot_83r_completion_verified": {
+          "type": "boolean"
+        },
+        "ot_88_report_inspected": {
+          "type": "boolean"
+        },
+        "ot_89a_report_inspected": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "open",
+        "ot_83r_completion_verified",
+        "ot_88_report_inspected",
+        "ot_89a_report_inspected",
+        "evidence"
+      ],
+      "type": "object"
+    },
+    "packet_id": {
+      "const": "OT-99-bcd34498"
+    },
+    "repository": {
+      "minLength": 3,
+      "type": "string"
+    },
+    "task_id": {
+      "const": "OT-99"
+    }
+  },
+  "required": [
+    "task_id",
+    "packet_id",
+    "generated_at_utc",
+    "integration_gate",
+    "candidates",
+    "audit_hypotheses"
+  ],
+  "title": "OT-99 Candidate Adjudication",
+  "type": "object"
+}
