@@ -1,6 +1,6 @@
 {
   "base_url": "https://ot99-web-staging.up.railway.app",
-  "generated_at": "2026-07-16T18:20:32.293Z",
+  "generated_at": "2026-07-16T18:25:10.996Z",
   "checks": [
     {
       "name": "admin_login",
