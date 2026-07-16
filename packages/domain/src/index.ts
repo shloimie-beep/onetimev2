@@ -111,6 +111,7 @@ export {
   getAuthorizedSupportAttachment,
   hasActiveSupportEntitlement,
   ingestMockBnaSupportEvent,
+  isSupportSubmissionAvailable,
   readMockBnaStatus,
   readSupportReceipt,
   type SupportReceiptProjection,

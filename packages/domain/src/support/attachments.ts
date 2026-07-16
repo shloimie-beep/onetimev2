@@ -1,4 +1,5 @@
 import { TextDecoder } from 'node:util';
+import sharp, { type Metadata } from 'sharp';
 import type { SupportAttachmentUpload } from '../../../contracts/src/support/index.ts';
 import { sha256Hex } from './hmac.ts';
 import { createSupportId } from './ids.ts';
@@ -35,10 +36,20 @@ const maxTextBytes = 1024 * 1024;
 const maxTotalBytes = 10 * 1024 * 1024;
 const maxAxisPixels = 8000;
 const maxMegapixels = 20;
+const maxInputPixels = maxMegapixels * 1_000_000;
 
-export function normalizeSupportAttachments(
+export const supportAttachmentLimits = {
+  maxAttachments,
+  maxImageBytes,
+  maxTextBytes,
+  maxTotalBytes,
+  maxAxisPixels,
+  maxMegapixels,
+};
+
+export async function normalizeSupportAttachments(
   uploads: SupportAttachmentUpload[],
-): NormalizedSupportAttachment[] {
+): Promise<NormalizedSupportAttachment[]> {
   if (uploads.length > maxAttachments) {
     throw new SupportAttachmentError('ATTACHMENT_LIMIT_EXCEEDED', 'Attach up to three files.');
   }
@@ -62,7 +73,7 @@ export function normalizeSupportAttachments(
     const attachment =
       declaredType === 'text/plain'
         ? normalizeTextAttachment(bytes, filenameResult.name)
-        : normalizeImageAttachment(bytes, filenameResult.name, declaredType);
+        : await normalizeImageAttachment(bytes, filenameResult.name, declaredType);
     normalized.push({
       ...attachment,
       redacted_filename: filenameResult.redacted,
@@ -182,39 +193,61 @@ function normalizeTextAttachment(bytes: Buffer, filename: string): NormalizedSup
   };
 }
 
-function normalizeImageAttachment(
+async function normalizeImageAttachment(
   bytes: Buffer,
   filename: string,
   mediaType: 'image/png' | 'image/jpeg' | 'image/webp',
-): NormalizedSupportAttachment {
+): Promise<NormalizedSupportAttachment> {
   if (bytes.length > maxImageBytes) {
     throw new SupportAttachmentError(
       'ATTACHMENT_IMAGE_TOO_LARGE',
       'Image attachment is too large.',
     );
   }
-  const parsed =
-    mediaType === 'image/png'
-      ? parsePng(bytes)
-      : mediaType === 'image/jpeg'
-        ? parseJpeg(bytes)
-        : parseWebp(bytes);
-  if (parsed.mediaType !== mediaType) {
+  assertStrictImageContainer(bytes, mediaType);
+  let metadata: Metadata;
+  try {
+    metadata = await sharp(bytes, {
+      animated: false,
+      failOn: 'error',
+      limitInputPixels: maxInputPixels,
+      sequentialRead: true,
+    }).metadata();
+  } catch {
+    throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'Image could not be decoded.');
+  }
+  if (metadata.format !== sharpFormatForMediaType(mediaType)) {
     throw new SupportAttachmentError('ATTACHMENT_MIME_MISMATCH', 'Attachment type does not match.');
   }
+  if ((metadata.pages ?? 1) > 1) {
+    throw new SupportAttachmentError(
+      'ATTACHMENT_IMAGE_INVALID',
+      'Animated images are not allowed.',
+    );
+  }
+  const width = metadata.width ?? 0;
+  const height = metadata.height ?? 0;
   if (
-    parsed.width > maxAxisPixels ||
-    parsed.height > maxAxisPixels ||
-    (parsed.width * parsed.height) / 1_000_000 > maxMegapixels
+    width < 1 ||
+    height < 1 ||
+    width > maxAxisPixels ||
+    height > maxAxisPixels ||
+    (width * height) / 1_000_000 > maxMegapixels
   ) {
     throw new SupportAttachmentError('ATTACHMENT_IMAGE_DIMENSIONS_REJECTED', 'Image is too large.');
   }
-  const stored =
-    mediaType === 'image/png'
-      ? stripPngMetadata(bytes)
-      : mediaType === 'image/jpeg'
-        ? stripJpegMetadata(bytes)
-        : stripWebpMetadata(bytes);
+  let stored: Buffer;
+  try {
+    stored = await reencodeImage(bytes, mediaType);
+  } catch {
+    throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'Image could not be re-encoded.');
+  }
+  if (stored.length === 0 || stored.length > maxImageBytes) {
+    throw new SupportAttachmentError(
+      'ATTACHMENT_IMAGE_TOO_LARGE',
+      'Normalized image is too large.',
+    );
+  }
   const attachmentId = createSupportId('ota');
   return {
     attachment_id: attachmentId,
@@ -226,8 +259,8 @@ function normalizeImageAttachment(
     normalization: 'image-decoded-and-reencoded',
     storage_class: 'private',
     content_disposition: 'attachment',
-    pixel_width: parsed.width,
-    pixel_height: parsed.height,
+    pixel_width: width,
+    pixel_height: height,
     blob_bytes: stored,
     redacted_filename: false,
   };
@@ -254,157 +287,97 @@ function rejectForbiddenBytes(bytes: Buffer) {
   }
 }
 
-function parsePng(bytes: Buffer) {
+function assertStrictImageContainer(
+  bytes: Buffer,
+  mediaType: 'image/png' | 'image/jpeg' | 'image/webp',
+) {
+  if (mediaType === 'image/png') {
+    assertStrictPngContainer(bytes);
+    return;
+  }
+  if (mediaType === 'image/jpeg') {
+    assertStrictJpegContainer(bytes);
+    return;
+  }
+  assertStrictWebpContainer(bytes);
+}
+
+function assertStrictPngContainer(bytes: Buffer) {
   const signature = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
   if (bytes.length < 33 || !bytes.subarray(0, 8).equals(signature)) {
     throw new SupportAttachmentError('ATTACHMENT_MIME_MISMATCH', 'PNG signature is invalid.');
   }
-  if (bytes.subarray(12, 16).toString('ascii') !== 'IHDR') {
-    throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'PNG header is invalid.');
-  }
-  return {
-    mediaType: 'image/png' as const,
-    width: bytes.readUInt32BE(16),
-    height: bytes.readUInt32BE(20),
-  };
-}
-
-function parseJpeg(bytes: Buffer) {
-  if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) {
-    throw new SupportAttachmentError('ATTACHMENT_MIME_MISMATCH', 'JPEG signature is invalid.');
-  }
-  let offset = 2;
-  while (offset + 9 < bytes.length) {
-    if (bytes[offset] !== 0xff) {
-      offset += 1;
-      continue;
-    }
-    const marker = bytes[offset + 1];
-    if (marker === undefined) break;
-    if (marker === 0xda || marker === 0xd9) break;
-    const length = bytes.readUInt16BE(offset + 2);
-    if (length < 2 || offset + 2 + length > bytes.length) break;
-    if (
-      (marker >= 0xc0 && marker <= 0xc3) ||
-      (marker >= 0xc5 && marker <= 0xc7) ||
-      (marker >= 0xc9 && marker <= 0xcb) ||
-      (marker >= 0xcd && marker <= 0xcf)
-    ) {
-      return {
-        mediaType: 'image/jpeg' as const,
-        height: bytes.readUInt16BE(offset + 5),
-        width: bytes.readUInt16BE(offset + 7),
-      };
-    }
-    offset += 2 + length;
-  }
-  throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'JPEG dimensions were not found.');
-}
-
-function parseWebp(bytes: Buffer) {
-  if (
-    bytes.length < 30 ||
-    bytes.subarray(0, 4).toString('ascii') !== 'RIFF' ||
-    bytes.subarray(8, 12).toString('ascii') !== 'WEBP'
-  ) {
-    throw new SupportAttachmentError('ATTACHMENT_MIME_MISMATCH', 'WebP signature is invalid.');
-  }
-  const chunkType = bytes.subarray(12, 16).toString('ascii');
-  if (chunkType === 'VP8X') {
-    return {
-      mediaType: 'image/webp' as const,
-      width: readUint24LE(bytes, 24) + 1,
-      height: readUint24LE(bytes, 27) + 1,
-    };
-  }
-  if (chunkType === 'VP8L') {
-    if (bytes[20] !== 0x2f) {
-      throw new SupportAttachmentError(
-        'ATTACHMENT_IMAGE_INVALID',
-        'WebP lossless header is invalid.',
-      );
-    }
-    const bits = bytes.readUInt32LE(21);
-    return {
-      mediaType: 'image/webp' as const,
-      width: (bits & 0x3fff) + 1,
-      height: ((bits >> 14) & 0x3fff) + 1,
-    };
-  }
-  if (chunkType === 'VP8 ') {
-    if (bytes.subarray(23, 26).toString('hex') !== '9d012a') {
-      throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'WebP lossy header is invalid.');
-    }
-    return {
-      mediaType: 'image/webp' as const,
-      width: bytes.readUInt16LE(26) & 0x3fff,
-      height: bytes.readUInt16LE(28) & 0x3fff,
-    };
-  }
-  throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'WebP type is unsupported.');
-}
-
-function readUint24LE(bytes: Buffer, offset: number) {
-  return (bytes[offset] ?? 0) | ((bytes[offset + 1] ?? 0) << 8) | ((bytes[offset + 2] ?? 0) << 16);
-}
-
-function stripPngMetadata(bytes: Buffer) {
-  const parts = [bytes.subarray(0, 8)];
   let offset = 8;
   while (offset + 12 <= bytes.length) {
     const length = bytes.readUInt32BE(offset);
     const type = bytes.subarray(offset + 4, offset + 8).toString('ascii');
     const end = offset + 12 + length;
-    if (end > bytes.length) break;
-    const firstChar = type.charCodeAt(0);
-    const isCritical = firstChar >= 65 && firstChar <= 90;
-    if (isCritical) parts.push(bytes.subarray(offset, end));
-    offset = end;
-    if (type === 'IEND') break;
-  }
-  return Buffer.concat(parts);
-}
-
-function stripJpegMetadata(bytes: Buffer) {
-  const parts = [bytes.subarray(0, 2)];
-  let offset = 2;
-  while (offset + 4 <= bytes.length) {
-    if (bytes[offset] !== 0xff) break;
-    const marker = bytes[offset + 1];
-    if (marker === undefined) break;
-    if (marker === 0xda) {
-      parts.push(bytes.subarray(offset));
-      return Buffer.concat(parts);
+    if (!/^[A-Za-z]{4}$/u.test(type) || end > bytes.length) {
+      throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'PNG chunks are invalid.');
     }
-    const length = bytes.readUInt16BE(offset + 2);
-    const end = offset + 2 + length;
-    if (end > bytes.length) break;
-    const isMetadata = (marker >= 0xe0 && marker <= 0xef) || marker === 0xfe;
-    if (!isMetadata) parts.push(bytes.subarray(offset, end));
+    if (type === 'IEND') {
+      if (end !== bytes.length) {
+        throw new SupportAttachmentError(
+          'ATTACHMENT_POLYGLOT_REJECTED',
+          'Image contains trailing data.',
+        );
+      }
+      return;
+    }
     offset = end;
   }
-  return bytes;
+  throw new SupportAttachmentError('ATTACHMENT_IMAGE_INVALID', 'PNG end marker is missing.');
 }
 
-function stripWebpMetadata(bytes: Buffer) {
-  const chunks: Buffer[] = [];
-  let offset = 12;
-  while (offset + 8 <= bytes.length) {
-    const type = bytes.subarray(offset, offset + 4).toString('ascii');
-    const length = bytes.readUInt32LE(offset + 4);
-    const paddedEnd = offset + 8 + length + (length % 2);
-    if (paddedEnd > bytes.length) break;
-    if (!['EXIF', 'ICCP', 'XMP '].includes(type)) {
-      chunks.push(bytes.subarray(offset, paddedEnd));
-    }
-    offset = paddedEnd;
+function assertStrictJpegContainer(bytes: Buffer) {
+  if (bytes.length < 4 || bytes[0] !== 0xff || bytes[1] !== 0xd8) {
+    throw new SupportAttachmentError('ATTACHMENT_MIME_MISMATCH', 'JPEG signature is invalid.');
   }
-  const body = Buffer.concat(chunks);
-  const header = Buffer.alloc(12);
-  header.write('RIFF', 0, 'ascii');
-  header.writeUInt32LE(body.length + 4, 4);
-  header.write('WEBP', 8, 'ascii');
-  return Buffer.concat([header, body]);
+  if (bytes[bytes.length - 2] !== 0xff || bytes[bytes.length - 1] !== 0xd9) {
+    throw new SupportAttachmentError(
+      'ATTACHMENT_POLYGLOT_REJECTED',
+      'Image contains trailing data.',
+    );
+  }
+}
+
+function assertStrictWebpContainer(bytes: Buffer) {
+  if (
+    bytes.length < 20 ||
+    bytes.subarray(0, 4).toString('ascii') !== 'RIFF' ||
+    bytes.subarray(8, 12).toString('ascii') !== 'WEBP'
+  ) {
+    throw new SupportAttachmentError('ATTACHMENT_MIME_MISMATCH', 'WebP signature is invalid.');
+  }
+  const riffSize = bytes.readUInt32LE(4);
+  if (riffSize + 8 !== bytes.length) {
+    throw new SupportAttachmentError(
+      'ATTACHMENT_POLYGLOT_REJECTED',
+      'Image contains trailing data.',
+    );
+  }
+}
+
+function sharpFormatForMediaType(mediaType: 'image/png' | 'image/jpeg' | 'image/webp') {
+  if (mediaType === 'image/png') return 'png';
+  if (mediaType === 'image/jpeg') return 'jpeg';
+  return 'webp';
+}
+
+async function reencodeImage(bytes: Buffer, mediaType: 'image/png' | 'image/jpeg' | 'image/webp') {
+  const pipeline = sharp(bytes, {
+    animated: false,
+    failOn: 'error',
+    limitInputPixels: maxInputPixels,
+    sequentialRead: true,
+  }).rotate();
+  if (mediaType === 'image/png') {
+    return pipeline.png({ compressionLevel: 9, force: true }).toBuffer();
+  }
+  if (mediaType === 'image/jpeg') {
+    return pipeline.jpeg({ force: true, mozjpeg: false, quality: 90 }).toBuffer();
+  }
+  return pipeline.webp({ force: true, quality: 90 }).toBuffer();
 }
 
 function hasUnsafeFilenameCharacters(value: string) {

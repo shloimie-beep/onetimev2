@@ -64,6 +64,18 @@ export type SupportReceiptProjection = {
   updated_at: string;
 };
 
+export function isSupportSubmissionAvailable(config: AppConfig): boolean {
+  return Boolean(
+    config.ot89SupportEnabled &&
+    config.ot89SupportDeliveryMode === 'mock' &&
+    config.ot89SupportBnaBaseUrl &&
+    config.ot89SupportHmacKeyId &&
+    config.ot89SupportHmacSecret &&
+    config.ot89BnaToOnetimeHmacKeyId &&
+    config.ot89BnaToOnetimeHmacSecret,
+  );
+}
+
 export async function hasActiveSupportEntitlement(input: {
   target: DbPool | Queryable;
   config: AppConfig;
@@ -82,7 +94,7 @@ export async function createSupportSubmission(input: {
   correlationId?: string | undefined;
   now?: Date | undefined;
 }): Promise<SupportReceiptResponse> {
-  if (!input.config.ot89SupportEnabled) {
+  if (!isSupportSubmissionAvailable(input.config)) {
     throw new SupportSubmissionError('SUPPORT_DISABLED', 503, 'Support is unavailable.');
   }
   const parsed = supportSubmissionPayloadSchema.safeParse(input.payload);
@@ -91,7 +103,7 @@ export async function createSupportSubmission(input: {
   }
   let attachments: NormalizedSupportAttachment[];
   try {
-    attachments = normalizeSupportAttachments(parsed.data.attachments);
+    attachments = await normalizeSupportAttachments(parsed.data.attachments);
   } catch (error) {
     if (error instanceof SupportAttachmentError) {
       throw new SupportSubmissionError(error.code, 400, error.message);

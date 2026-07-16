@@ -7,6 +7,17 @@ const config = loadConfig({
   ...process.env,
   NODE_ENV: 'test',
   PORT: process.env.PORT ?? '3100',
+  OT89_SUPPORT_ENABLED: process.env.OT89_SUPPORT_ENABLED ?? 'true',
+  OT89_SUPPORT_DELIVERY_MODE: process.env.OT89_SUPPORT_DELIVERY_MODE ?? 'mock',
+  OT89_SUPPORT_BNA_BASE_URL:
+    process.env.OT89_SUPPORT_BNA_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
+  OT89_MOCK_BNA_ENABLED: process.env.OT89_MOCK_BNA_ENABLED ?? 'true',
+  OT89_SUPPORT_HMAC_KEY_ID: process.env.OT89_SUPPORT_HMAC_KEY_ID ?? 'ot89-onetime-e2e',
+  OT89_SUPPORT_HMAC_SECRET:
+    process.env.OT89_SUPPORT_HMAC_SECRET ?? 'ot89-e2e-producer-secret-do-not-use',
+  OT89_BNA_TO_ONETIME_HMAC_KEY_ID: process.env.OT89_BNA_TO_ONETIME_HMAC_KEY_ID ?? 'ot89-bna-e2e',
+  OT89_BNA_TO_ONETIME_HMAC_SECRET:
+    process.env.OT89_BNA_TO_ONETIME_HMAC_SECRET ?? 'ot89-e2e-consumer-secret-do-not-use',
 });
 const pool = createMemoryPool();
 await runMigrations(pool);
@@ -37,6 +48,7 @@ const parentUserKey = await createAccountUser({
   role: 'parent',
   mfaCapable: false,
 });
+await seedActiveSupportEntitlement(parentUserKey);
 const studentUserKey = await createAccountUser({
   pool,
   config,
@@ -149,4 +161,31 @@ async function seedDayOneBrowserRecords() {
     [config.accountKey, config.productKey],
   );
   void ownerUserKey;
+}
+
+async function seedActiveSupportEntitlement(userKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.billing_entitlement_projections
+       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
+        policy_version, source, reason, effective_at, evaluated_at)
+     VALUES ($1,$2,$3,$4,'account_user','active','test-policy','test','active',now(),now())`,
+    [`e2e_entitlement_${userKey.slice(0, 16)}`, config.accountKey, config.productKey, userKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.billing_subscription_projections
+       (account_key, product_key, principal_key, principal_type, provider, mode,
+        provider_account_ref, provider_customer_ref, provider_subscription_ref, status,
+        current_period_end, provider_updated_at, source_event_key)
+     VALUES ($1,$2,$3,'account_user','stripe','test','acct_e2e_support',$4,$5,'active',
+        $6::timestamptz,now(),$7)`,
+    [
+      config.accountKey,
+      config.productKey,
+      userKey,
+      `cus_support_${userKey.slice(0, 12)}`,
+      `sub_support_${userKey.slice(0, 12)}`,
+      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      `evt_support_${userKey.slice(0, 12)}`,
+    ],
+  );
 }

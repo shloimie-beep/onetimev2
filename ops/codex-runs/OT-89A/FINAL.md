@@ -2,10 +2,12 @@
 
 See `FINAL-REPORT.md`.
 
-Current status: `READY_FOR_OT99`.
+Current status: `in_progress`.
 
-Closeout:
+READY_FOR_OT99 is intentionally withheld until the repaired branch head is pushed and the new remote head is observed green, including PostgreSQL service-backed GitHub checks.
 
-- pushed to `codex/ot89a-subscriber-support-producer`;
-- updated existing draft PR #36;
-- PR checks observed green before final closeout documentation commit.
+Closeout pending:
+
+- push to `codex/ot89a-subscriber-support-producer`;
+- observe existing PR #36 checks green on the new remote head;
+- update this closeout to `READY_FOR_OT99` only after that green remote head exists.

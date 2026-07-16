@@ -1,12 +1,12 @@
 {
   "run_id": "OT-89A",
-  "status": "READY_FOR_OT99",
-  "phase": "complete",
+  "status": "in_progress",
+  "phase": "readiness_defect_repair",
   "branch": "codex/ot89a-subscriber-support-producer",
   "base_commit": "f98103ecc3660dbda871a91485656e17580940a8",
-  "audited_resume_head": "0fe1b4668170f608d8763fb52d11b30f0150feb2",
-  "head": "latest pushed branch head after OT-89A closeout documentation commit",
-  "working_tree": "clean_after_push",
+  "audited_resume_head": "50b3a9c6790ee4befd457e16c4ac01674dc264ae",
+  "head": "50b3a9c6790ee4befd457e16c4ac01674dc264ae",
+  "working_tree": "dirty_readiness_defect_repair",
   "completed": [
     "packet located",
     "packet zip hash recorded",
@@ -33,8 +33,21 @@
     "implementation commit pushed to existing branch",
     "CI-format follow-up commit pushed to existing branch",
     "existing draft PR #36 updated",
-    "PR checks observed green before final closeout: Node 24 verify, PostgreSQL 16 assurance harness, PostgreSQL 16 learner-seat proof"
+    "PR checks observed green before final closeout: Node 24 verify, PostgreSQL 16 assurance harness, PostgreSQL 16 learner-seat proof",
+    "readiness reopened after remote-head audit found OT-89A readiness defects",
+    "supported image attachments now decode and re-encode through sharp with bounded pixels/dimensions, metadata stripping, exact container checks, and malformed/polyglot/bomb rejection",
+    "support transport now accepts the documented 10 MiB decoded attachment aggregate after base64 overhead while preserving decoded per-file and aggregate limits",
+    "support page and API now fail closed behind OT89_SUPPORT_ENABLED; unconfigured production defaults off; production mock BNA and known test HMAC defaults are forbidden",
+    "focused unit, integration, e2e, and accessibility coverage added for readiness defect scenarios",
+    "CI-mode browser gates passing locally on isolated override ports",
+    "Node verification gates passing locally except repo-wide Windows CRLF format caveat",
+    "local PostgreSQL workflow commands attempted and blocked by missing PostgreSQL service/client/Docker"
   ],
-  "open": [],
-  "blockers": []
+  "open": [
+    "push repaired implementation to existing branch",
+    "observe new remote head green for Node 24 verify and PostgreSQL service-backed checks before restoring READY_FOR_OT99"
+  ],
+  "blockers": [
+    "local PostgreSQL verification unavailable on this Windows machine: no listener on 127.0.0.1:5432, pg_isready/psql/initdb absent, Docker absent; remote GitHub PostgreSQL checks remain authoritative"
+  ]
 }

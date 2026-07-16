@@ -16,9 +16,19 @@ async function submitSupportForm(
   idempotencyInput: HTMLInputElement,
 ) {
   statusNode.textContent = 'Saving support request...';
+  const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  submitButton?.setAttribute('disabled', 'true');
   const formData = new FormData(form);
   const csrfToken = String(formData.get('csrf_token') ?? '');
-  const attachments = await readAttachments(formData.getAll('attachments'));
+  let attachments: Awaited<ReturnType<typeof readAttachments>>;
+  try {
+    attachments = await readAttachments(formData.getAll('attachments'));
+  } catch {
+    statusNode.textContent = 'Attachment could not be read. Remove it and try again.';
+    submitButton?.removeAttribute('disabled');
+    form.querySelector<HTMLInputElement>('input[type="file"]')?.focus();
+    return;
+  }
   const payload = {
     category: stringValue(formData, 'category'),
     title: stringValue(formData, 'title'),
@@ -46,26 +56,37 @@ async function submitSupportForm(
     attachments,
     idempotency_key: idempotencyInput.value,
   };
-  const response = await fetch('/api/v1/support/tickets', {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: {
-      'content-type': 'application/json',
-      'x-csrf-token': csrfToken,
-    },
-    body: JSON.stringify(payload),
-  });
-  const body = (await response.json().catch(() => ({}))) as {
-    success?: boolean;
-    status_path?: string;
-    message?: string;
-  };
-  if (!response.ok || body.success !== true || !body.status_path) {
-    statusNode.textContent = body.message ?? 'Support request was not saved.';
-    return;
+  try {
+    const response = await fetch('/api/v1/support/tickets', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify(payload),
+    });
+    const body = (await response.json().catch(() => ({}))) as {
+      success?: boolean;
+      status_path?: string;
+      message?: string;
+      duplicate_submission?: boolean;
+    };
+    if (!response.ok || body.success !== true || !body.status_path) {
+      statusNode.textContent = body.message ?? 'Support request was not saved. Please try again.';
+      submitButton?.removeAttribute('disabled');
+      statusNode.focus();
+      return;
+    }
+    statusNode.textContent = body.duplicate_submission
+      ? 'Support request was already saved. Opening receipt.'
+      : 'Support request saved. Opening receipt.';
+    window.location.assign(body.status_path);
+  } catch {
+    statusNode.textContent = 'Network error. Support request was not saved. Please try again.';
+    submitButton?.removeAttribute('disabled');
+    statusNode.focus();
   }
-  statusNode.textContent = 'Support request saved.';
-  window.location.assign(body.status_path);
 }
 
 async function readAttachments(values: FormDataEntryValue[]) {

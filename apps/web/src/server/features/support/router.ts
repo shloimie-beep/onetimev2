@@ -8,6 +8,7 @@ import {
   getAuthorizedSupportAttachment,
   hasActiveSupportEntitlement,
   ingestMockBnaSupportEvent,
+  isSupportSubmissionAvailable,
   readMockBnaStatus,
   readSupportReceipt,
   SupportSubmissionError,
@@ -101,6 +102,10 @@ export function registerSupportRoutes(input: {
   input.app.get('/app/support', async (req: RequestWithTrace, res) => {
     input.session.setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    if (!isSupportSubmissionAvailable(input.config)) {
+      res.status(200).type('html').send(supportLeadOnlyHtml('Subscriber support is unavailable'));
+      return;
+    }
     const session = await input.session.sessionFromRequest(req);
     if (!session) {
       res.status(200).type('html').send(supportLeadOnlyHtml('Sign in for subscriber support'));
@@ -167,13 +172,19 @@ export function registerSupportRoutes(input: {
 
   input.app.post(
     '/api/v1/support/tickets',
-    express.json({ limit: '12mb' }),
+    express.json({ limit: '15mb' }),
     express.urlencoded({ extended: false, limit: '256kb' }),
     async (req: RequestWithTrace, res) => {
       input.session.setPrivateNoStore(res);
       const session = await input.session.sessionFromRequest(req);
       if (!session) {
         res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+        return;
+      }
+      if (!isSupportSubmissionAvailable(input.config)) {
+        res
+          .status(503)
+          .json(publicError('SUPPORT_DISABLED', 'Subscriber support is unavailable.', req.traceId));
         return;
       }
       if (!(await input.session.requireSessionCsrf(req, res, session))) return;
@@ -432,7 +443,7 @@ function supportFormHtml(csrfToken: string, config: AppConfig) {
           <input id="support-attachments" name="attachments" type="file" multiple accept="image/png,image/jpeg,image/webp,text/plain">
         </div>
         <button class="button button-primary" type="submit">Submit support request</button>
-        <p class="form-status" role="status" data-support-status></p>
+        <p class="form-status" role="status" tabindex="-1" data-support-status></p>
       </form>
     </section>
   </main>

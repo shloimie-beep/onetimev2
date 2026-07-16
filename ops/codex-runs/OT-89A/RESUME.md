@@ -10,9 +10,9 @@ Base commit: `f98103ecc3660dbda871a91485656e17580940a8`
 
 Feature branch: `codex/ot89a-subscriber-support-producer`
 
-Audited resume HEAD: `0fe1b4668170f608d8763fb52d11b30f0150feb2`
+Audited remote HEAD: `50b3a9c6790ee4befd457e16c4ac01674dc264ae`
 
-Current HEAD: latest pushed branch head after OT-89A closeout documentation commit.
+Current status: `in_progress`
 
 Clean-state check:
 
@@ -20,34 +20,38 @@ Clean-state check:
 git status --short --branch
 ```
 
-Completed:
+Completed in this readiness-repair pass:
 
-- Validated OT89 packet safe paths and SHA-256 sums.
-- Copied the frozen contract and policy files into `ops/codex-runs/OT-89A/`.
-- Validated the contract example and negative schema cases.
-- Created the isolated OT89A worktree and branch from the exact OT84 base.
-- Implemented subscriber-only support page, form, API, receipt/status reads, private attachment transfer, mock BNA event/status endpoints, support outbox worker, retry/dead-letter/requeue, HMAC signing, attachment normalization, redaction, and support migration.
-- Added focused OT-89A unit/integration tests and updated the visible-action registry.
-- Recorded migration checksum, full local verification evidence, and final implementation report.
-- Local gates passing: `npm run secret:scan`, `npm run lint`, `npm run typecheck`, `npm run build`, `npm run brand:check`, `npm run test`, `CI=1 npm run e2e`, `CI=1 npm run accessibility`, and `CI=1 npm run performance`.
-- Repo-wide `npm run format` still fails locally on this Windows checkout for 377 pre-existing files; all OT-89A-touched files were formatted and checked separately.
-- Pushed implementation commit `d2fa568ff0b486ebcb0dda91d50ed04fc6d76c52`.
-- Pushed CI-format follow-up commit `ef52728f8b4cca24bb4ce63f4f235cffe7b641ff`.
-- Updated existing draft PR #36: `https://github.com/webcraft-media/onetimev2/pull/36`.
-- PR checks observed green before final closeout documentation commit: `Node 24 verify`, `PostgreSQL 16 assurance harness`, and `PostgreSQL 16 learner-seat proof`.
+- Reopened OT-89A after the remote-head audit and set STATE back to `in_progress`.
+- Fetched and verified the authoritative branch/PR head at `50b3a9c6790ee4befd457e16c4ac01674dc264ae`.
+- Replaced attachment byte filtering with true image decode/re-encode through `sharp`; supported PNG/JPEG/WebP uploads now strip metadata and reject malformed, trailing-byte/polyglot, dimension, pixel-count, and decoded-size violations.
+- Raised the support JSON parser cap so base64 transport can carry the documented 10 MiB decoded attachment aggregate while decoded per-file and aggregate limits remain strict.
+- Made support fail closed behind `OT89_SUPPORT_ENABLED`: unconfigured production defaults off, production mock BNA is forbidden, known test HMAC defaults are forbidden, and disabled support never renders a black-hole form.
+- Added focused unit/integration/browser/a11y coverage for anonymous, non-subscriber, active subscriber, 360/390 mobile, keyboard/focus, successful receipt, duplicate submission, server failure, network failure, and file-read failure paths.
+- Added a Playwright `PORT` override so local CI-mode browser verification can isolate its server from stale desktop processes while preserving default port 3100.
+- Local Node/browser gates are green except for the repo-wide Windows CRLF `npm run format` caveat documented in `TEST-RESULTS.md`.
 
-Next exact command:
+Local blockers:
+
+- PostgreSQL service-backed verification cannot run on this machine: there is no listener on `127.0.0.1:5432`, `pg_isready`/`psql`/`initdb` are absent, Docker is absent, `npm run db:verify` fails because `DATABASE_URL` is unset, and OT-37/OT-83 workflow commands fail with `ECONNREFUSED 127.0.0.1:5432`.
+
+Next exact commands:
 
 ```bash
 git status --short --branch
-gh pr checks 36
+git diff --check
+git add <scoped OT-89A files>
+git commit -m "Repair OT-89A support readiness defects"
+git push origin codex/ot89a-subscriber-support-producer
+gh pr checks 36 --repo webcraft-media/onetimev2 --watch
 ```
 
-Blockers: none.
+READY_FOR_OT99 remains withheld until the new remote head is green, including the PostgreSQL service-backed GitHub checks.
 
 Recovery steps:
 
-- Do not reset or force-push shared branches.
+- Do not create another branch or PR.
+- Do not deploy, contact BNA, or contact providers.
+- Do not reset or force-push the shared branch.
 - If interrupted before commit, resume from this worktree, run `git status --short --branch`, and review `ops/codex-runs/OT-89A/TEST-RESULTS.md`.
-- If another OT89A branch appears remotely, fetch and verify ancestry before pushing.
 - Preserve the frozen contract file; do not regenerate or reformat `ops/codex-runs/OT-89A/SUPPORT-EVENT-CONTRACT.json`.

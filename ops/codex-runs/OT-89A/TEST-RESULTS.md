@@ -1,46 +1,59 @@
 # OT-89A Test Results
 
-## Preimplementation Integrity
+## Remote-Head Preflight
 
-| Command                                                                                                                           | Result                            | Acceptance       |
-| --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ---------------- |
-| Packet ZIP safe path and `SHA256SUMS.txt` validation                                                                              | Pass                              | CONTRACT-01      |
-| Python `jsonschema` validation of copied contract example plus negative schema cases                                              | Pass                              | CONTRACT-01      |
-| `git ls-remote --exit-code --heads https://github.com/webcraft-media/onetimev2.git refs/heads/codex/ot84-telegram-action-gateway` | Pass                              | BASE-01          |
-| `gh auth status`                                                                                                                  | Pass, token masked by tool output | GIT-01 preflight |
+| Command                                                                                     | Result                                                        | Acceptance |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ---------- |
+| `git fetch origin codex/ot89a-subscriber-support-producer`                                  | Pass                                                          | GIT-01     |
+| `git ls-remote origin refs/heads/codex/ot89a-subscriber-support-producer refs/pull/36/head` | Pass; both refs at `50b3a9c6790ee4befd457e16c4ac01674dc264ae` | GIT-01     |
+| `git status --short --branch` before edits                                                  | Pass; local branch matched origin and audited head            | GIT-01     |
 
-## Implementation Validation
+## Focused Readiness Validation
 
-| Command                                                                                                                                          | Result                                                                                                                                     | Acceptance                                                                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `npx tsx -` migration smoke using `createMemoryPool()` and `runMigrations()`                                                                     | Pass; last migration `2100_ot89a_subscriber_support_producer`, checksum `b928f174ff622b380e7ba609d16db90f28a53e304bd6789e013f6024e05960f0` | MIG-01                                                                                                                      |
-| `npx vitest run --config vitest.unit.config.ts tests/unit/support`                                                                               | Pass; 2 files, 6 tests                                                                                                                     | CONTRACT-01, ATT-01, ATT-02, ATT-03, PRIV-01, OUTBOX-03                                                                     |
-| `npx vitest run --config vitest.integration.config.ts tests/integration/support/ot89a-subscriber-support.test.ts`                                | Pass; 1 file, 8 tests                                                                                                                      | AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, ASYNC-01, OUTBOX-01, OUTBOX-02, OUTBOX-03, ATT-04, STATUS-01, IDEM-01, IDEM-02 |
-| `node -e "JSON.parse(require('fs').readFileSync('ops/day-one/visible-action-registry.json','utf8')); console.log('visible-action-registry ok')"` | Pass                                                                                                                                       | TASK-01                                                                                                                     |
-| `npx vitest run --config vitest.unit.config.ts tests/unit/day-one/visible-action-registry.test.ts`                                               | Pass; 1 file, 4 tests                                                                                                                      | TASK-01                                                                                                                     |
+| Command                                                                                                           | Result                  | Acceptance                                                                 |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------- | -------------------------------------------------------------------------- |
+| `npx vitest run --config vitest.unit.config.ts tests/unit/support`                                                | Pass; 3 files, 12 tests | ATT-01, ATT-02, ATT-03, CONFIG-01                                          |
+| `npx vitest run --config vitest.integration.config.ts tests/integration/support/ot89a-subscriber-support.test.ts` | Pass; 1 file, 11 tests  | AUTH-01, AUTH-02, AUTH-03, ASYNC-01, OUTBOX-01, ATT-04, STATUS-01, IDEM-01 |
+| `npx playwright test tests/e2e/support.spec.ts tests/accessibility/support-a11y.spec.ts`                          | Pass; 6 tests           | UI-01, A11Y-01                                                             |
 
-## Full Local Verification
+## Full Local Node And Browser Verification
 
-| Command                                                    | Result                                                                                                                                                                                         | Acceptance                  |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------- |
-| `npm run secret:scan`                                      | Pass; scanned 646 repo text files                                                                                                                                                              | PRIV-01, GIT-01             |
-| `npm run lint`                                             | Pass                                                                                                                                                                                           | GIT-01                      |
-| `npm run typecheck`                                        | Pass                                                                                                                                                                                           | GIT-01                      |
-| `npm run build`                                            | Pass; emitted `assets/app-support.js` and completed typecheck                                                                                                                                  | UI-01, STATUS-01, GIT-01    |
-| `npm run brand:check` after build                          | Pass                                                                                                                                                                                           | SCOPE-01                    |
-| `npm run test`                                             | Pass; 19 files, 94 tests                                                                                                                                                                       | AUTH/OUTBOX/ATT/PRIV/STATUS |
-| `CI=1 npm run e2e`                                         | Pass; 22 browser tests                                                                                                                                                                         | UI-01, SCOPE-01             |
-| `CI=1 npm run accessibility`                               | Pass; 6 browser tests                                                                                                                                                                          | UI-01                       |
-| `CI=1 npm run performance`                                 | Pass; 6 browser tests plus `scripts/check-bundles.ts`                                                                                                                                          | GIT-01                      |
-| `npx prettier --check` on OT-89A-touched source/test files | Pass                                                                                                                                                                                           | GIT-01                      |
-| `npm run format`                                           | Local Windows checkout failure; 377 pre-existing files reported by repo-wide Prettier check. OT-89A-touched files were formatted and checked separately. PR CI remains the authoritative gate. | GIT-01 tracked caveat       |
+| Command                                               | Result                                                        | Acceptance               |
+| ----------------------------------------------------- | ------------------------------------------------------------- | ------------------------ |
+| `npm run secret:scan`                                 | Pass; scanned 649 repo text files                             | PRIV-01, GIT-01          |
+| Scoped `npx prettier --check` on OT-89A touched files | Pass                                                          | GIT-01                   |
+| `npm run brand:check`                                 | Pass                                                          | SCOPE-01                 |
+| `npm run lint`                                        | Pass                                                          | GIT-01                   |
+| `npm run typecheck`                                   | Pass                                                          | GIT-01                   |
+| `npm run unit`                                        | Pass; 24 files, 140 tests                                     | ATT/CONFIG/CONTRACT      |
+| `npm run integration`                                 | Pass; 19 files, 97 tests                                      | AUTH/OUTBOX/ATT/STATUS   |
+| `npm run build`                                       | Pass; emitted `assets/app-support.js` and completed typecheck | UI-01, STATUS-01, GIT-01 |
+| `CI=1 PORT=3101 npm run e2e`                          | Pass; 27 browser tests                                        | UI-01, SCOPE-01          |
+| `CI=1 PORT=3102 npm run accessibility`                | Pass; 7 browser tests                                         | UI-01, A11Y-01           |
+| `CI=1 PORT=3103 npm run performance`                  | Pass; 6 browser tests plus `scripts/check-bundles.ts`         | GIT-01                   |
+
+## Full Verify Caveat
+
+| Command          | Result                                                                                                                                                                                      | Acceptance            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `npm run verify` | Blocked locally at `npm run format`; Prettier reported 369 pre-existing CRLF-affected files in this Windows checkout before downstream gates. Downstream gates were run individually above. | GIT-01 tracked caveat |
+
+## PostgreSQL Verification
+
+| Command                                                                                         | Result                                                            | Acceptance          |
+| ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------- |
+| `Get-NetTCPConnection -LocalPort 5432 -State Listen`                                            | No local PostgreSQL listener found                                | DB environment      |
+| `pg_isready -h 127.0.0.1 -p 5432 -d postgres -U postgres`                                       | Blocked; `pg_isready` is not installed                            | DB environment      |
+| `docker --version`                                                                              | Blocked; Docker is not installed                                  | DB environment      |
+| `Get-Service` / `Get-Command psql` / `Get-Command initdb` checks                                | No PostgreSQL service/client/initdb found                         | DB environment      |
+| `npm run db:verify`                                                                             | Blocked; `DATABASE_URL is required for PostgreSQL-backed runtime` | DB-01 local blocker |
+| OT-37 workflow command, `npx tsx scripts/postgres-assurance/run.ts` with workflow PG env        | Blocked; `connect ECONNREFUSED 127.0.0.1:5432`                    | DB-01 local blocker |
+| OT-83 workflow command, `npx tsx tests/ot-83/real-postgres-concurrency.ts` with workflow PG env | Blocked; `connect ECONNREFUSED 127.0.0.1:5432`                    | DB-01 local blocker |
+
+GitHub's PostgreSQL service-backed checks remain required before READY_FOR_OT99 is restored.
 
 ## Branch/PR Verification
 
-- Push to `codex/ot89a-subscriber-support-producer`: pass.
-- Existing draft PR #36 update: pass via GitHub API fallback after `gh pr edit` required an unrelated `read:project` scope.
-- Remote checks observed green on head `ef52728f8b4cca24bb4ce63f4f235cffe7b641ff`:
-  - `Node 24 verify`: pass.
-  - `PostgreSQL 16 assurance harness`: pass.
-  - `PostgreSQL 16 learner-seat proof`: pass.
-- Final closeout documentation commit will be pushed and rechecked before handoff.
+- Push to `codex/ot89a-subscriber-support-producer`: pending.
+- Existing draft PR #36: pending new remote check observation.
+- READY_FOR_OT99: withheld until the new remote head is green.

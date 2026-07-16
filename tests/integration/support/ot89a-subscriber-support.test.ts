@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import sharp from 'sharp';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import { supportEventV1Schema } from '../../../packages/contracts/src/support/index.ts';
@@ -9,6 +10,7 @@ import {
   requeueSupportDeadLetter,
   runSupportDeliveryBatch,
 } from '../../../packages/domain/src/index.ts';
+import { supportAttachmentLimits } from '../../../packages/domain/src/support/attachments.ts';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 
 let pool: DbPool;
@@ -30,7 +32,9 @@ beforeEach(async () => {
     OT89_MOCK_BNA_ENABLED: 'true',
     OT89_SUPPORT_DELIVERY_MODE: 'mock',
     OT89_SUPPORT_BNA_BASE_URL: 'http://127.0.0.1:1',
+    OT89_SUPPORT_HMAC_KEY_ID: 'ot89-onetime-integration',
     OT89_SUPPORT_HMAC_SECRET: 'ot89-test-secret-do-not-use',
+    OT89_BNA_TO_ONETIME_HMAC_KEY_ID: 'ot89-bna-integration',
     OT89_BNA_TO_ONETIME_HMAC_SECRET: 'ot89-test-secret-do-not-use-reverse',
   });
   await runMigrations(pool);
@@ -99,6 +103,40 @@ describe('OT-89A subscriber support producer', () => {
     expect(Number(count.rows[0].count)).toBe(0);
   });
 
+  it('fails closed when support is disabled and never displays a black-hole form', async () => {
+    const disabledConfig = {
+      ...config,
+      ot89SupportEnabled: false,
+      ot89SupportDeliveryMode: 'disabled' as const,
+    };
+    const disabledApp = createApp({ config: disabledConfig, pool });
+    const disabledServer = await listen(disabledApp);
+    try {
+      const disabledBaseUrl = serverBaseUrl(disabledServer);
+      const login = await loginAsAt(
+        disabledBaseUrl,
+        'subscriber@example.test',
+        'SubscriberPass!234',
+      );
+      const page = await fetch(`${disabledBaseUrl}/app/support`, {
+        headers: { cookie: login.cookies },
+      });
+      const html = await page.text();
+      expect(page.status).toBe(200);
+      expect(html).toContain('Subscriber support is unavailable');
+      expect(html).not.toContain('data-support-form');
+
+      const api = await postSupportAt(disabledBaseUrl, login, validSupportPayload('support-off'));
+      expect(api.status).toBe(503);
+      const submissions = await pool.query(
+        'SELECT count(*)::int AS count FROM onetime.support_submissions',
+      );
+      expect(countValue(submissions.rows[0].count)).toBe(0);
+    } finally {
+      await new Promise<void>((resolve) => disabledServer.close(() => resolve()));
+    }
+  });
+
   it('rechecks expired entitlement at submit and creates no durable rows', async () => {
     const login = await loginAs('subscriber@example.test', 'SubscriberPass!234');
     const page = await fetch(`${baseUrl}/app/support`, { headers: { cookie: login.cookies } });
@@ -151,6 +189,68 @@ describe('OT-89A subscriber support producer', () => {
       'SELECT count(*)::int AS count FROM onetime.support_mock_bna_events',
     );
     expect(Number(mockRows.rows[0].count)).toBe(0);
+  });
+
+  it('returns the existing receipt for duplicate support submissions', async () => {
+    const login = await loginAs('subscriber@example.test', 'SubscriberPass!234');
+    const payload = validSupportPayload('duplicate-submit');
+    const first = await postSupport(login, payload);
+    expect(first.status).toBe(202);
+    const firstBody = (await first.json()) as {
+      receipt_id: string;
+      duplicate_submission: boolean;
+    };
+    expect(firstBody.duplicate_submission).toBe(false);
+
+    const duplicate = await postSupport(login, payload);
+    expect(duplicate.status).toBe(202);
+    const duplicateBody = (await duplicate.json()) as {
+      receipt_id: string;
+      duplicate_submission: boolean;
+    };
+    expect(duplicateBody).toMatchObject({
+      receipt_id: firstBody.receipt_id,
+      duplicate_submission: true,
+    });
+    const submissions = await pool.query(
+      'SELECT count(*)::int AS count FROM onetime.support_submissions',
+    );
+    expect(countValue(submissions.rows[0].count)).toBe(1);
+  });
+
+  it('accepts exactly 10 MiB decoded attachments through base64 JSON transport and rejects 10 MiB plus one byte', async () => {
+    const login = await loginAs('subscriber@example.test', 'SubscriberPass!234');
+    const jpeg = await imageFixture('jpeg', 8, 8);
+    const exactA = jpegWithAppSegments(jpeg, supportAttachmentLimits.maxImageBytes);
+    const exactB = jpegWithAppSegments(jpeg, supportAttachmentLimits.maxImageBytes);
+    const exactPayload = validSupportPayload('exact-10mib');
+    exactPayload.attachments = [
+      imageUpload('exact-a.jpg', 'image/jpeg', exactA),
+      imageUpload('exact-b.jpg', 'image/jpeg', exactB),
+    ];
+    const exact = await postSupport(login, exactPayload);
+    expect(exact.status).toBe(202);
+    const exactBody = (await exact.json()) as { source_ticket_id: string };
+    const stored = await pool.query(
+      'SELECT count(*)::int AS count FROM onetime.support_attachments WHERE source_ticket_id = $1',
+      [exactBody.source_ticket_id],
+    );
+    expect(countValue(stored.rows[0].count)).toBe(2);
+
+    const overPayload = validSupportPayload('over-10mib');
+    overPayload.attachments = [
+      imageUpload('over-a.jpg', 'image/jpeg', exactA),
+      imageUpload('over-b.jpg', 'image/jpeg', exactB),
+      {
+        filename: 'one-byte.txt',
+        media_type: 'text/plain',
+        content_base64: Buffer.from('x').toString('base64'),
+      },
+    ];
+    const over = await postSupport(login, overPayload);
+    expect(over.status).toBe(400);
+    const overBody = (await over.json()) as { code: string };
+    expect(overBody.code).toBe('ATTACHMENT_TOTAL_TOO_LARGE');
   });
 
   it('delivers asynchronously to the deterministic mock and caches same-account status', async () => {
@@ -377,8 +477,8 @@ async function expireSubscriberEntitlement(userKey: string) {
   );
 }
 
-async function getLoginCsrf() {
-  const page = await fetch(`${baseUrl}/login`);
+async function getLoginCsrf(targetBaseUrl = baseUrl) {
+  const page = await fetch(`${targetBaseUrl}/login`);
   const html = await page.text();
   const token = html.match(/name="csrf_token" value="([^"]+)"/)?.[1];
   if (!token) throw new Error('missing csrf token');
@@ -386,8 +486,16 @@ async function getLoginCsrf() {
 }
 
 async function loginAs(email: string, password: string): Promise<LoginResult> {
-  const csrf = await getLoginCsrf();
-  const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
+  return loginAsAt(baseUrl, email, password);
+}
+
+async function loginAsAt(
+  targetBaseUrl: string,
+  email: string,
+  password: string,
+): Promise<LoginResult> {
+  const csrf = await getLoginCsrf(targetBaseUrl);
+  const response = await fetch(`${targetBaseUrl}/api/v1/auth/login`, {
     method: 'POST',
     headers: {
       cookie: csrf.cookies,
@@ -404,7 +512,15 @@ async function loginAs(email: string, password: string): Promise<LoginResult> {
 }
 
 async function postSupport(login: LoginResult, payload: Record<string, unknown>) {
-  return fetch(`${baseUrl}/api/v1/support/tickets`, {
+  return postSupportAt(baseUrl, login, payload);
+}
+
+async function postSupportAt(
+  targetBaseUrl: string,
+  login: LoginResult,
+  payload: Record<string, unknown>,
+) {
+  return fetch(`${targetBaseUrl}/api/v1/support/tickets`, {
     method: 'POST',
     headers: {
       cookie: login.cookies,
@@ -413,6 +529,21 @@ async function postSupport(login: LoginResult, payload: Record<string, unknown>)
     },
     body: JSON.stringify(payload),
   });
+}
+
+async function listen(app: ReturnType<typeof createApp>) {
+  return new Promise<ReturnType<ReturnType<typeof createApp>['listen']>>((resolve, reject) => {
+    const nextServer = app.listen(0, (error?: Error) => {
+      if (error) reject(error);
+      else resolve(nextServer);
+    });
+  });
+}
+
+function serverBaseUrl(targetServer: ReturnType<ReturnType<typeof createApp>['listen']>) {
+  const address = targetServer.address();
+  if (typeof address !== 'object' || !address) throw new Error('missing server address');
+  return `http://127.0.0.1:${address.port}`;
 }
 
 function validSupportPayload(
@@ -441,6 +572,54 @@ function validSupportPayload(
     attachments: [],
     idempotency_key: `support-${suffix}-${Date.now()}`,
   };
+}
+
+function imageUpload(filename: string, mediaType: string, bytes: Buffer) {
+  return { filename, media_type: mediaType, content_base64: bytes.toString('base64') };
+}
+
+async function imageFixture(format: 'jpeg' | 'png', width: number, height: number) {
+  const image = sharp({
+    create: {
+      width,
+      height,
+      channels: 3,
+      background: { r: 248, g: 210, b: 64 },
+    },
+    limitInputPixels: false,
+  });
+  return format === 'png' ? image.png().toBuffer() : image.jpeg().toBuffer();
+}
+
+function jpegWithAppSegments(input: Buffer, targetBytes: number) {
+  if (
+    input[0] !== 0xff ||
+    input[1] !== 0xd8 ||
+    input[input.length - 2] !== 0xff ||
+    input[input.length - 1] !== 0xd9
+  ) {
+    throw new Error('expected JPEG fixture');
+  }
+  const extraBytes = targetBytes - input.length;
+  if (extraBytes < 0) throw new Error('target smaller than fixture');
+  const segments: Buffer[] = [];
+  let remaining = extraBytes;
+  let sequence = 0;
+  while (remaining > 0) {
+    if (remaining < 4) throw new Error('target leaves an impossible JPEG segment remainder');
+    const segmentSize = Math.min(remaining, 65_537);
+    const payloadLength = segmentSize - 4;
+    const segment = Buffer.alloc(segmentSize, 0x41);
+    segment[0] = 0xff;
+    segment[1] = 0xe1;
+    segment.writeUInt16BE(payloadLength + 2, 2);
+    segment.write('OT89', 4, 'ascii');
+    if (payloadLength > 5) segment.writeUInt16BE(sequence % 65_536, 8);
+    segments.push(segment);
+    remaining -= segmentSize;
+    sequence += 1;
+  }
+  return Buffer.concat([input.subarray(0, 2), ...segments, input.subarray(2)]);
 }
 
 function signedAttachmentHeaders(target: string) {
