@@ -48,6 +48,10 @@ import {
   ot86bReadinessResponseSchema,
   ot86bSocialDraftListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
+import {
+  providerCanaryPlanResponseSchema,
+  providerControlCenterResponseSchema,
+} from '../../../../packages/contracts/src/providers/control-center.ts';
 import type {
   PortalActorContext,
   PortalCapability,
@@ -114,6 +118,10 @@ import {
   PortalServiceError,
   type PortalServiceDeps,
 } from '../../../../packages/domain/src/index.ts';
+import {
+  buildProviderControlCenter,
+  planProviderCanary,
+} from '../../../../packages/domain/src/providers/control-center.ts';
 import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
@@ -1160,6 +1168,53 @@ export function createApp({
     }
   });
 
+  app.get(
+    '/api/internal/operations/provider-control-center/v1',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (session.user.role !== 'owner') {
+        res
+          .status(403)
+          .json(
+            publicError('FORBIDDEN', 'Provider control center requires owner access.', req.traceId),
+          );
+        return;
+      }
+      try {
+        const controlCenter = buildProviderControlCenter({
+          config,
+          env: process.env,
+          now: clock ? clock() : new Date(),
+        });
+        res.json(providerControlCenterResponseSchema.parse(controlCenter));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/internal/operations/provider-control-center/v1/canary-plan',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      if (!requireSameOriginPost(req, res, config)) return;
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      const plan = planProviderCanary({
+        payload: stripCsrfField(req.body),
+        actorRole: session.user.role,
+        recentEmailAssuredAt: req.header('x-ot-ops-email-assured-at') ?? undefined,
+        allowlistedTargets: providerCanaryAllowlist(config, process.env),
+        now: clock ? clock() : new Date(),
+      });
+      const parsed = providerCanaryPlanResponseSchema.parse(plan);
+      res.status(parsed.success ? 200 : statusForCanaryPlanCode(parsed.code)).json(parsed);
+    },
+  );
+
   const portalRepository = createPortalRepository(pool);
   const classroomRepository = createClassroomRepository(pool);
   const classroomService = createClassroomService({
@@ -1722,6 +1777,34 @@ function requireSameOriginPost(req: RequestWithTrace, res: Response, config: App
   if (isSameOriginPost(req, config)) return true;
   res.status(403).json(publicError('FORBIDDEN', 'Refresh the page and try again.', req.traceId));
   return false;
+}
+
+function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
+  const values = [
+    'ops05_fixture_webhook',
+    config.deliveryTestCanaryEmail,
+    config.whatsappCanaryRecipientE164,
+    env.ONE_TIME_TELEGRAM_CANARY_CHAT_REF,
+    env.ONE_TIME_STRIPE_TEST_CANARY_FIXTURE,
+    env.ONE_TIME_HELPER_FIXTURE_ALLOWLIST,
+    env.BUFFER_CANARY_DESTINATION_ALLOWLIST,
+  ];
+  return values.filter(
+    (value): value is string => typeof value === 'string' && value.trim() !== '',
+  );
+}
+
+function stripCsrfField(body: unknown) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return body;
+  const rest = { ...(body as Record<string, unknown>) };
+  delete rest.csrf_token;
+  return rest;
+}
+
+function statusForCanaryPlanCode(code: string) {
+  if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'RECENT_EMAIL_ASSURANCE_REQUIRED') return 428;
+  return 403;
 }
 
 function isSameOriginPost(req: Request, config: AppConfig) {
