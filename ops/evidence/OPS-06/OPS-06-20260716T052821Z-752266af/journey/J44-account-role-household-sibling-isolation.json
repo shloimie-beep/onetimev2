@@ -1,0 +1,10 @@
+{
+  "step_id": "J44",
+  "name": "Account, role, household, sibling isolation",
+  "actor": "security_test",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

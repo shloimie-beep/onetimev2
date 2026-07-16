@@ -1,0 +1,10 @@
+{
+  "step_id": "J11",
+  "name": "Activate and log in administrator",
+  "actor": "administrator",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

@@ -1,0 +1,262 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "local_head": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+  "packet_valid": true,
+  "packet": {
+    "valid": true,
+    "task_id": "OPS-06",
+    "packet_id": "OPS-06-20260716-d34103b1",
+    "schema_version": "ops06.packet_manifest.v1",
+    "checksum_rows": 22,
+    "mismatches": [],
+    "exact_control_names": {
+      "packet_json_present": false,
+      "sha256sums_txt_present": false,
+      "codex_prompt_md_present": false
+    },
+    "control_name_discrepancy": "Packet uses MANIFEST.json/checksums.sha256/DIRECT-CODEX-PROMPT.md instead of exact PACKET.json/SHA256SUMS.txt/CODEX-PROMPT.md names."
+  },
+  "route_inventory": {
+    "count": 35,
+    "routes": [
+      {
+        "method": "GET",
+        "expression": "/^\\/app\\/billing\\/(?:checkout|portal)\\/redirect\\/([^/]+)$/"
+      },
+      {
+        "method": "GET",
+        "expression": "'/health'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/ready'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/version'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/one-time'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/one-time/signup'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/rabbi-member'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/login'"
+      },
+      {
+        "method": "GET",
+        "expression": "/^\\/app\\/crm(?:\\/.*)?$/"
+      },
+      {
+        "method": "GET",
+        "expression": ""
+      },
+      {
+        "method": "GET",
+        "expression": ""
+      },
+      {
+        "method": "GET",
+        "expression": "/^\\/app\\/parent(?:\\/.*)?$/"
+      },
+      {
+        "method": "GET",
+        "expression": "/^\\/app\\/student(?:\\/.*)?$/"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/leads'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/one-time/interest'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/auth/login'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/auth/mfa/enroll/activate'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/auth/mfa/challenge'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/auth/mfa/recovery'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/auth/mfa/recovery/replace'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/auth/mfa/revoke'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/auth/logout'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/auth/session'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/dashboard/owner'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/crm/contacts'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/crm/contacts/search'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/crm/assignees'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/classes'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/classes/:occurrenceKey'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/content/library'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/content/library/:itemKey'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/content/outcomes'"
+      },
+      {
+        "method": "POST",
+        "expression": "'/api/v1/crm/contacts'"
+      },
+      {
+        "method": "GET",
+        "expression": "'/api/v1/crm/contacts/:contactId'"
+      },
+      {
+        "method": "PATCH",
+        "expression": "'/api/v1/crm/contacts/:contactId'"
+      }
+    ]
+  },
+  "existing_scripts": [
+    "accessibility",
+    "billing:reconcile:test",
+    "billing:reconcile:test:apply",
+    "brand:check",
+    "build",
+    "build:client",
+    "build:pages",
+    "clean",
+    "db:migrate",
+    "db:verify",
+    "dev",
+    "dev:worker",
+    "e2e",
+    "format",
+    "format:write",
+    "integration",
+    "lint",
+    "ops06:harness",
+    "outbox:sink",
+    "performance",
+    "secret:scan",
+    "start",
+    "start:worker",
+    "stripe:test:resources:setup",
+    "stripe:test:resources:validate",
+    "test",
+    "typecheck",
+    "unit",
+    "verify",
+    "version:print"
+  ],
+  "audit_anchor": {
+    "ref": "codex/ot87-stripe-test-entitlements",
+    "sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+    "reason": "Latest inspected branch containing the OT83 portal stack plus family subscription/entitlement work; it is not presumed to be the deployed staging source."
+  },
+  "mandatory_gaps_or_unproven_surfaces": [
+    {
+      "id": "OPS-06-GAP-001",
+      "area": "action_registry",
+      "severity": "blocking",
+      "finding": "Existing registry has 39 entries, older source metadata, non-exhaustive visible-control coverage, and lacks multiple OPS-06 fields.",
+      "required_outcome": "Runtime-generated exhaustive registry with DOM-to-registry bijection and all required metadata."
+    },
+    {
+      "id": "OPS-06-GAP-002",
+      "area": "visible_controls",
+      "severity": "blocking",
+      "finding": "Several visible controls are disabled or marked unavailable_by_design, including learner creation, class launch, content open, and support.",
+      "required_outcome": "Each visible control must be functional and tested or removed from the visible DOM; no disabled dead/Coming Soon control passes."
+    },
+    {
+      "id": "OPS-06-GAP-003",
+      "area": "crm",
+      "severity": "blocking",
+      "finding": "Audited contracts prove a single internal_note but not tag lifecycle, note history, relationships, or task lifecycle.",
+      "required_outcome": "Truthfully prove the requested CRM surfaces or report FAIL_PRODUCT_GAP without inventing a test-only product implementation."
+    },
+    {
+      "id": "OPS-06-GAP-004",
+      "area": "question_queue",
+      "severity": "blocking",
+      "finding": "Helper query is optional and defaults to ADAPTER_UNAVAILABLE; no durable learner question queue/receipt is proven.",
+      "required_outcome": "Durable provider-off learner question receipt, queue state, idempotency, audit, and owner/admin visibility."
+    },
+    {
+      "id": "OPS-06-GAP-005",
+      "area": "support",
+      "severity": "blocking",
+      "finding": "Portal support route is preview-only and default adapter performs no durable subscriber support receipt.",
+      "required_outcome": "Durable provider-off support request receipt with no school-lead entitlement."
+    },
+    {
+      "id": "OPS-06-GAP-006",
+      "area": "staging",
+      "severity": "blocking",
+      "finding": "No isolated staging URL, deployed SHA, or staging PostgreSQL 16 resource is proven by inspected PR metadata.",
+      "required_outcome": "Exact source/deployment SHA and isolated-resource proof before any rehearsal mutation."
+    },
+    {
+      "id": "OPS-06-GAP-007",
+      "area": "worker_restart",
+      "severity": "blocking",
+      "finding": "Retry/dead-letter primitives exist, but isolated-staging retry persistence and worker-restart recovery evidence is absent.",
+      "required_outcome": "Fault-injected retry, lease recovery, dead-letter, restart, and duplicate-suppression evidence."
+    },
+    {
+      "id": "OPS-06-GAP-008",
+      "area": "performance",
+      "severity": "blocking",
+      "finding": "Existing 30-sample evidence is route-limited and does not prove the complete OPS-06 throttled-mobile matrix.",
+      "required_outcome": "Thirty samples per required route under declared throttling with p50/p75/p95, request and bundle budgets."
+    }
+  ],
+  "product_gap_policy": "These gaps are blockers. The harness records them; it does not invent missing business features."
+}

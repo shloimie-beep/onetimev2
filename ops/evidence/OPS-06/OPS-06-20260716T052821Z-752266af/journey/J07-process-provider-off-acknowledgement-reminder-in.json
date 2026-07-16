@@ -1,0 +1,10 @@
+{
+  "step_id": "J07",
+  "name": "Process provider-off acknowledgement/reminder intents",
+  "actor": "worker",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

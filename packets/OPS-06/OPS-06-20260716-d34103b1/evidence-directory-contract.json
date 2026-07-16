@@ -1,0 +1,63 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "schema_version": "ops06.evidence_directory.v1",
+  "required_paths": [
+    "state/state.json",
+    "state/state-transitions.jsonl",
+    "state/commands.ndjson",
+    "state/safety.json",
+    "preflight/target-discovery.json",
+    "preflight/source-sha.json",
+    "preflight/provider-off.json",
+    "health/web.json",
+    "health/worker.json",
+    "database/fresh-migration.json",
+    "database/upgrade-migration.json",
+    "database/migration-ledger.json",
+    "database/concurrency.json",
+    "all 48 journey result paths resolved from journey-matrix.csv",
+    "actions/runtime-action-registry.json",
+    "actions/dom-registry-diff.json",
+    "role-state/results.json",
+    "accessibility/J45-matrix.json",
+    "design/system-consistency.json",
+    "queue/J43-retry-dead-letter.json",
+    "security/scan-summary.json",
+    "security/network-destinations.json",
+    "security/mutation-ledger.json",
+    "performance/J46-summary.json",
+    "performance/raw/*.json",
+    "reset/J47-reset-1.json",
+    "reset/J47-reset-2.json",
+    "reset/post-reset-diff.json",
+    "FINAL-REPORT.json",
+    "evidence-index.json",
+    "checksums.sha256"
+  ],
+  "evidence_record_minimum": {
+    "task_id": "OPS-06",
+    "run_id": "nonempty exact execution run id",
+    "captured_at": "RFC3339 UTC timestamp",
+    "source_sha": "40 lowercase hexadecimal characters",
+    "environment": "isolated staging identifier",
+    "status": "PASS or FAIL",
+    "command_or_request": "redacted reproducible invocation",
+    "inputs": "fixture references and hashes, not secrets",
+    "observations": "machine-readable measurements/assertions",
+    "artifact_sha256": "64 lowercase hexadecimal characters"
+  },
+  "redaction_rules": [
+    "Never store raw passwords, activation tokens, session cookies, CSRF values, API keys, provider secrets, authorization headers, or database URLs.",
+    "Store only synthetic .example.test identifiers from fixtures.synthetic.json.",
+    "Store provider references as opaque digests; provider URLs are forbidden in provider-off baseline.",
+    "Screenshots must not contain real-user or production data."
+  ],
+  "index_rules": [
+    "Every evidence file except checksums.sha256 appears once in evidence-index.json.",
+    "Every indexed SHA-256 matches bytes on disk.",
+    "Every journey, gate, action, role/state, viewport/mode, and reset evidence reference resolves.",
+    "The final report validates against evidence.schema.json."
+  ],
+  "root_pattern": "^ops/evidence/OPS-06/OPS-06-[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}/$"
+}

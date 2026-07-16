@@ -1,0 +1,10 @@
+{
+  "step_id": "J22",
+  "name": "Issue parent activation",
+  "actor": "owner|administrator",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

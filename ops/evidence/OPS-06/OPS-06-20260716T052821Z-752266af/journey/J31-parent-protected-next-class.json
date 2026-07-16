@@ -1,0 +1,10 @@
+{
+  "step_id": "J31",
+  "name": "Parent protected next class",
+  "actor": "parent",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

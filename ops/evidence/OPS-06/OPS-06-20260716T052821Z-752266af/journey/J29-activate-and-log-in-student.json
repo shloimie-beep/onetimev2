@@ -1,0 +1,10 @@
+{
+  "step_id": "J29",
+  "name": "Activate and log in student",
+  "actor": "student",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

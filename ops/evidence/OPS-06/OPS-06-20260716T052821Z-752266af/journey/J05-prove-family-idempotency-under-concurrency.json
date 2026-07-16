@@ -1,0 +1,10 @@
+{
+  "step_id": "J05",
+  "name": "Prove Family idempotency under concurrency",
+  "actor": "anonymous",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

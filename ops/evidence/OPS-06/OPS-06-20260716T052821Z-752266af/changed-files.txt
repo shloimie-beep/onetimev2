@@ -1,0 +1,8 @@
+ M package.json
+?? ops/evidence/OPS-06/
+?? ops/ops06/
+?? packets/
+?? scripts/ops06-synthetic-harness.d.mts
+?? scripts/ops06-synthetic-harness.mjs
+?? tests/unit/ops06/
+

@@ -1,0 +1,10 @@
+{
+  "step_id": "J46",
+  "name": "PostgreSQL 16, scans, health, and performance",
+  "actor": "release_engineer",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

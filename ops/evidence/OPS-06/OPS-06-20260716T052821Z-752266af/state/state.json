@@ -1,0 +1,36 @@
+﻿{
+    "task_id":  "OPS-06",
+    "packet_id":  "OPS-06-20260716-d34103b1",
+    "packet_control_discrepancy":  "Archive has nested MANIFEST.json/checksums.sha256/DIRECT-CODEX-PROMPT.md, not exact PACKET.json/SHA256SUMS.txt/CODEX-PROMPT.md names requested by operator.",
+    "run_id":  "OPS-06-20260716T052821Z-752266af",
+    "phase":  "PACKET_COPIED",
+    "packet_checksum_result":  "VALID_NESTED_CHECKSUMS_SHA256",
+    "packet_zip_sha256":  "28b3cd976e0382b0fc4bf7e8b5f41574f7edb51d932da2169f4fe538c6d444d0",
+    "packet_manifest_sha256":  "b79fb0b4c526e079fc9dbfa1bb7d057f02a15767c28543475c4bb3f407da4d3b",
+    "packet_checksums_sha256":  "c57d42ec61458816577f8a24d83fd7ce5b5bb0b2059b35958ba0e8bd7e6ea0db",
+    "local_head":  "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+    "dirty_worktree":  false,
+    "branch":  "codex/ops-06-ops-06-20260716t052821z-752266af",
+    "worktree":  "C:\\Users\\User\\.ops06-worktrees\\OPS-06-20260716T052821Z-752266af",
+    "process_id":  6964,
+    "utc_time":  "2026-07-16T05:28:22.8091446Z",
+    "random_bytes_sha256":  "72cc268d44330a6b15b3bea5181a96e99f1f993e71771786efffc578fe5d055f",
+    "command_plan_digest":  "16a851a78674eff13e9fcfb9012c03dfec28cfdde8e426f73ea7d37f6805800d",
+    "mutation_ledger":  [
+
+                        ],
+    "safety_flags":  {
+                         "fictional_data_only":  true,
+                         "provider_off_baseline_required":  true,
+                         "forbid_real_users":  true,
+                         "forbid_production_rows":  true,
+                         "forbid_broad_sends":  true,
+                         "forbid_live_charges":  true,
+                         "forbid_public_posts":  true,
+                         "forbid_root_dns":  true,
+                         "forbid_production_deployment":  true,
+                         "exact_isolated_staging_sha_required_for_real_rehearsal":  true
+                     },
+    "packet_path":  "packets/OPS-06/OPS-06-20260716-d34103b1"
+}
+

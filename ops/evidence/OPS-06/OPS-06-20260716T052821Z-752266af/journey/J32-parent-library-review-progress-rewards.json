@@ -1,0 +1,10 @@
+{
+  "step_id": "J32",
+  "name": "Parent library, review, progress, rewards",
+  "actor": "parent",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

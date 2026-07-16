@@ -1,0 +1,10 @@
+{
+  "step_id": "J33",
+  "name": "Student portal",
+  "actor": "student",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

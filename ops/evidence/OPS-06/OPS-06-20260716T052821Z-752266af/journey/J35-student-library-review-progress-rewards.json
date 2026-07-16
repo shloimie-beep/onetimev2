@@ -1,0 +1,10 @@
+{
+  "step_id": "J35",
+  "name": "Student library, review, progress, rewards",
+  "actor": "student",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

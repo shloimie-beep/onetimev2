@@ -1,0 +1,215 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "schema_version": "ops06.acceptance_gates.v1",
+  "verdict_rule": "PASS requires every hard gate PASS and blockers=[]; otherwise use FAIL_PRODUCT_GAP for an absent required capability or dead visible control, FAIL_TEST for failed fresh proof of an existing capability, FAIL_SAFETY for a safety/reset/isolation violation, or BLOCKED_ENVIRONMENT for an unavailable exact isolated target/PostgreSQL 16 execution path.",
+  "gates": [
+    {
+      "gate_id": "G01",
+      "name": "Persist state first",
+      "category": "execution_integrity",
+      "severity": "hard",
+      "pass_when": "run state, safety snapshot, phase ledger, and command log exist before staging/source decisions",
+      "evidence": [
+        "state/state.json",
+        "state/state-transitions.jsonl",
+        "state/commands.ndjson",
+        "state/safety.json"
+      ]
+    },
+    {
+      "gate_id": "G02",
+      "name": "Exact isolated staging and source SHA",
+      "category": "release",
+      "severity": "hard",
+      "pass_when": "one isolated non-production target is proven and /version commit_sha resolves to the tested checkout; web/worker source lineage is consistent",
+      "evidence": [
+        "preflight/target-discovery.json",
+        "preflight/source-sha.json",
+        "health/web.json",
+        "health/worker.json"
+      ]
+    },
+    {
+      "gate_id": "G03",
+      "name": "Provider-off safety baseline",
+      "category": "safety",
+      "severity": "hard",
+      "pass_when": "all provider modes are off/sink; network trace contains zero third-party/provider/BNA requests; no production linkage or real user/row/charge/send",
+      "evidence": [
+        "preflight/provider-off.json",
+        "security/network-destinations.json",
+        "security/mutation-ledger.json"
+      ]
+    },
+    {
+      "gate_id": "G04",
+      "name": "PostgreSQL 16 fresh and upgrade",
+      "category": "database",
+      "severity": "hard",
+      "pass_when": "fresh schema and supported upgrade path both migrate/verify on isolated PostgreSQL 16 with checksums and no runtime schema creation",
+      "evidence": [
+        "database/fresh-migration.json",
+        "database/upgrade-migration.json",
+        "database/migration-ledger.json"
+      ]
+    },
+    {
+      "gate_id": "G05",
+      "name": "Family signup transaction and idempotency",
+      "category": "journey",
+      "severity": "hard",
+      "pass_when": "Family flow creates one contact/lead/audit/outbox set; concurrent/replayed same request is one logical write; different payload conflicts",
+      "evidence": [
+        "journey/J04-family-signup.json",
+        "journey/J05-idempotency.json",
+        "journey/J06-idempotency-conflict.json"
+      ]
+    },
+    {
+      "gate_id": "G06",
+      "name": "Owner/admin activation, login, dashboard, CRM",
+      "category": "journey",
+      "severity": "hard",
+      "pass_when": "owner and administrator journeys pass with session rotation, role boundaries, dashboard, CRM list/search/filter/detail/edit/tags/notes/relationships/communications/tasks",
+      "evidence": [
+        "journey/J08-owner-activation.json",
+        "journey/J11-admin-activation-login.json",
+        "journey/J12-crm-list.json",
+        "journey/J20-tasks.json"
+      ]
+    },
+    {
+      "gate_id": "G07",
+      "name": "Household, parent, learners, fourth-seat denial",
+      "category": "journey",
+      "severity": "hard",
+      "pass_when": "provider-off synthetic subscription and parent activation succeed; exactly three named learners exist; fourth active seat is denied atomically",
+      "evidence": [
+        "journey/J21-household-entitlement.json",
+        "journey/J23-parent-activation-login.json",
+        "journey/J27-fourth-seat-denial.json",
+        "db/J27-seat-concurrency.json"
+      ]
+    },
+    {
+      "gate_id": "G08",
+      "name": "Student and parent protected learning",
+      "category": "journey",
+      "severity": "hard",
+      "pass_when": "parent/student portals expose functional protected next-class, library, review, progress, and rewards with account/household/sibling isolation",
+      "evidence": [
+        "journey/J30-parent-portal.json",
+        "journey/J35-student-learning.json",
+        "journey/J44-isolation.json"
+      ]
+    },
+    {
+      "gate_id": "G09",
+      "name": "Question queue and subscriber support receipt",
+      "category": "journey",
+      "severity": "hard",
+      "pass_when": "durable provider-off question and support receipts are idempotent, audited, owner/admin-visible, and entitlement-scoped",
+      "evidence": [
+        "journey/J36-question-queue.json",
+        "journey/J37-support-receipt.json"
+      ]
+    },
+    {
+      "gate_id": "G10",
+      "name": "School lead-only proof",
+      "category": "negative_entitlement",
+      "severity": "hard",
+      "pass_when": "School signup creates one CRM lead/internal alert only and zero subscription, household, classroom, portal, Family message, or support entitlement",
+      "evidence": [
+        "journey/J40-school-signup.json",
+        "journey/J41-school-boundaries.json",
+        "db/J41-school-negative-ledger.json"
+      ]
+    },
+    {
+      "gate_id": "G11",
+      "name": "Exhaustive visible action registry",
+      "category": "ui_quality",
+      "severity": "hard",
+      "pass_when": "runtime DOM and action registry are a bijection; every visible control has required metadata/evidence and is functional; zero hidden/dead/Coming Soon placeholders",
+      "evidence": [
+        "actions/runtime-action-registry.json",
+        "actions/dom-registry-diff.json",
+        "journey/J45-action-sweep.json"
+      ]
+    },
+    {
+      "gate_id": "G12",
+      "name": "Role, state, responsive, and accessibility matrix",
+      "category": "ui_quality",
+      "severity": "hard",
+      "pass_when": "all seven roles, twelve states, four viewports, keyboard, RTL, reduced motion, 200% reflow, and design consistency pass",
+      "evidence": [
+        "role-state/results.json",
+        "accessibility/J45-matrix.json",
+        "design/system-consistency.json"
+      ]
+    },
+    {
+      "gate_id": "G13",
+      "name": "Queue retry, dead-letter, restart",
+      "category": "worker",
+      "severity": "hard",
+      "pass_when": "retryable/terminal faults, lease expiry, worker stop/restart, deterministic retry, dead-letter, and duplicate suppression are proven on PostgreSQL 16",
+      "evidence": [
+        "journey/J43-worker-restart.json",
+        "queue/J43-retry-dead-letter.json"
+      ]
+    },
+    {
+      "gate_id": "G14",
+      "name": "Health, scans, budgets, and no BNA fanout",
+      "category": "release",
+      "severity": "hard",
+      "pass_when": "web/worker health pass; secret/PII/provider-URL scans pass; request/bundle/database budgets and 30-sample throttled-mobile p50/p75/p95 pass; BNA fanout is zero",
+      "evidence": [
+        "health/web.json",
+        "health/worker.json",
+        "security/scan-summary.json",
+        "performance/J46-summary.json"
+      ]
+    },
+    {
+      "gate_id": "G15",
+      "name": "Logout, revocation, and session isolation",
+      "category": "security",
+      "severity": "hard",
+      "pass_when": "logout and parent revocation invalidate intended sessions, token replay fails, role switch clears protected state, and unrelated sessions remain correct",
+      "evidence": [
+        "journey/J38-student-logout.json",
+        "journey/J39-parent-revoke-student-sessions.json",
+        "security/session-isolation.json"
+      ]
+    },
+    {
+      "gate_id": "G16",
+      "name": "Synthetic reset and rollback",
+      "category": "rollback",
+      "severity": "hard",
+      "pass_when": "reset removes/returns every OPS-06 fixture, queue item, session, artifact, cache, and lease to baseline; second reset is also clean",
+      "evidence": [
+        "reset/J47-reset-1.json",
+        "reset/J47-reset-2.json",
+        "reset/post-reset-diff.json"
+      ]
+    },
+    {
+      "gate_id": "G17",
+      "name": "Evidence completeness and checksums",
+      "category": "evidence",
+      "severity": "hard",
+      "pass_when": "FINAL-REPORT validates against evidence.schema.json, every evidence file is indexed and checksummed, all gates pass, and blockers is empty",
+      "evidence": [
+        "FINAL-REPORT.json",
+        "evidence-index.json",
+        "checksums.sha256"
+      ]
+    }
+  ]
+}

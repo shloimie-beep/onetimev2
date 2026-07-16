@@ -1,0 +1,206 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "packet_id8": "d34103b1",
+  "schema_version": "ops06.packet_manifest.v1",
+  "generated_date": "2026-07-16",
+  "purpose": "Direct-to-Codex deterministic synthetic end-to-end Day-One launch rehearsal packet for isolated staging.",
+  "source_request": {
+    "uploaded_filename": "OPS-06-E2E-LAUNCH-REHEARSAL-FACTORY.md",
+    "sha256": "291fb5d3937e78be8446f6d95178a1e8ab5fd71b653625b2f693f62b242f0f50",
+    "included_as": "SOURCE-REQUEST.md",
+    "rendering": "Original request with delivery tokens resolved to this packet ID; original input hash retained."
+  },
+  "source_audit": {
+    "repository": "webcraft-media/onetimev2",
+    "default_branch_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "audit_anchor_ref": "codex/ot87-stripe-test-entitlements",
+    "audit_anchor_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+    "staging_url_proven": false,
+    "deployed_sha_proven": false,
+    "dynamic_discovery_required": true
+  },
+  "delivery": {
+    "preferred_repository": "webcraft-media/onetime-codex-queue",
+    "preferred_branch": "dropoff/ops-06-d34103b1",
+    "preferred_path": "packets/OPS-06/OPS-06-20260716-d34103b1/",
+    "preferred_pr_title": "[OPS-06][PACKET READY] Day-One launch rehearsal",
+    "actual_mode": "fallback_zip",
+    "actual_filename": "OPS-06-CODEX-PACKET.zip",
+    "github_mutations": 0
+  },
+  "safety": {
+    "provider_off_baseline_required": true,
+    "provider_canaries_separate": true,
+    "forbidden": [
+      "broad send",
+      "real user",
+      "production row",
+      "live charge",
+      "Buffer publish",
+      "root DNS mutation",
+      "production deploy",
+      "synchronous BNA dependency"
+    ]
+  },
+  "coverage": {
+    "journey_steps": 48,
+    "action_registry_entries": 161,
+    "roles": 7,
+    "role_state_cases": 84,
+    "error_cases": 15,
+    "viewport_mode_cases": 20,
+    "isolation_cases": 10,
+    "acceptance_gates": 17,
+    "performance_routes": 12,
+    "performance_samples_per_route": 30
+  },
+  "required_execution_order": [
+    "Validate checksums.sha256.",
+    "Read DIRECT-CODEX-PROMPT.md.",
+    "Persist OPS-06 run state before target/source decisions.",
+    "Discover and prove isolated staging plus exact SHA.",
+    "Audit exact deployed source read-only.",
+    "Add only missing test harness/evidence glue.",
+    "Run provider-off journey, matrices, scans, PostgreSQL 16 proof, worker restart proof, and performance budgets.",
+    "Reset synthetic fixtures twice.",
+    "Validate final evidence and emit an honest PASS or FAIL."
+  ],
+  "integrity": {
+    "payload_inventory_excludes": [
+      "MANIFEST.json",
+      "checksums.sha256"
+    ],
+    "checksums_file_covers": "every packet file except checksums.sha256, including MANIFEST.json",
+    "hash_algorithm": "SHA-256"
+  },
+  "payload_file_count": 21,
+  "payload_files": [
+    {
+      "path": "AUDIT-CURRENT-STATE.json",
+      "bytes": 7607,
+      "sha256": "fc09c7f746b80323ab01dfab4a636fa01b12290587c6fcb76cb560de24e1c1f5",
+      "media_type": "application/json"
+    },
+    {
+      "path": "AUDIT-CURRENT-STATE.md",
+      "bytes": 3816,
+      "sha256": "8ea3802a0165917a03c056ca7ee40d11ea3c7c7c723f39bc3cb85a5f71f4b893",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "DIRECT-CODEX-PROMPT.md",
+      "bytes": 18739,
+      "sha256": "a2b03fb05fc3fa6fd0ba9730375f79dfc33ee76a069901eb9167983373d6aa8d",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2840,
+      "sha256": "c57bfd0165258f993aa3c24811ed1f74bb441604150c25f2e2b7893845ee6f46",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "SOURCE-REQUEST.md",
+      "bytes": 3401,
+      "sha256": "7c3f1a79a8a81db0a88f030b8a867d22f85931691d7221ef1b58ee4b6a73ade4",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "acceptance-gates.json",
+      "bytes": 8411,
+      "sha256": "26678a64870f23f8766e02b3de7387f15a246445ec0c9103ebca6b838734debd",
+      "media_type": "application/json"
+    },
+    {
+      "path": "action-matrix.csv",
+      "bytes": 83417,
+      "sha256": "6316c4d44c061305448ecdb7a6051a92d92f30c91851901e03c789c340badc5e",
+      "media_type": "text/csv"
+    },
+    {
+      "path": "action-registry.required.json",
+      "bytes": 536157,
+      "sha256": "928be06fa32ef7f9f611844614238e0fac6aa9b9499ba6fcc30b12900954ece7",
+      "media_type": "application/json"
+    },
+    {
+      "path": "action-registry.schema.json",
+      "bytes": 4169,
+      "sha256": "4aa98effce703bf3487cbf1f90c7cf488fe2089006f50eb24533a9dc5863dcf6",
+      "media_type": "application/json"
+    },
+    {
+      "path": "delivery-attempt.json",
+      "bytes": 1297,
+      "sha256": "3f852040b5b04678d40f004a5573021b8baea23faeae4cb67bf0120e9ea3a86a",
+      "media_type": "application/json"
+    },
+    {
+      "path": "error-state-matrix.csv",
+      "bytes": 2496,
+      "sha256": "ba84b889e13309303b23d9121bd3c8b5621bd2b1cbf31d1930d19dd021c6ecdc",
+      "media_type": "text/csv"
+    },
+    {
+      "path": "evidence-directory-contract.json",
+      "bytes": 2593,
+      "sha256": "630d19f6e542fd4993dc07eca74cbce2b1687af18231c18e81c7bb428a93563a",
+      "media_type": "application/json"
+    },
+    {
+      "path": "evidence.schema.json",
+      "bytes": 12838,
+      "sha256": "6447f0da579080b86883318372a51fc06f563a45748f11af86a6d8aa4ed41ffb",
+      "media_type": "application/json"
+    },
+    {
+      "path": "fixtures.synthetic.json",
+      "bytes": 5356,
+      "sha256": "b525d4fb01952127ba2a7c04f1b70a2679c1ab590b731b81c9b626dbe811dc04",
+      "media_type": "application/json"
+    },
+    {
+      "path": "isolation-matrix.csv",
+      "bytes": 1887,
+      "sha256": "d2b23ad75624e2b8530f3551bdad56792600ad7edde6b54e2a699ec5c9093fd4",
+      "media_type": "text/csv"
+    },
+    {
+      "path": "journey-matrix.csv",
+      "bytes": 13041,
+      "sha256": "e794e3f6a00585573ac02ce1cb690ad301ed70d66e8f14c230595f898a4c6bb6",
+      "media_type": "text/csv"
+    },
+    {
+      "path": "performance-budgets.json",
+      "bytes": 5071,
+      "sha256": "2c21167f87a10650f5f3b3f70aa74b2ebea52c0ca9ff5f2f25eb9ad67529cf44",
+      "media_type": "application/json"
+    },
+    {
+      "path": "reset-rollback-plan.md",
+      "bytes": 5328,
+      "sha256": "1e1f69121336007540a8425cdb7d19e7d86f7356b7ff559ea4010a269a0837b3",
+      "media_type": "text/markdown"
+    },
+    {
+      "path": "role-capability-matrix.csv",
+      "bytes": 3661,
+      "sha256": "79da78938847580ea3f4556f59b6f17252b0557393c72fbf224a7e60a1e0450b",
+      "media_type": "text/csv"
+    },
+    {
+      "path": "role-state-matrix.csv",
+      "bytes": 16833,
+      "sha256": "d8258a48b88c92fb505690c9d4257f29a83dbef440ba7f44b769da7412ee5ea3",
+      "media_type": "text/csv"
+    },
+    {
+      "path": "viewport-a11y-matrix.csv",
+      "bytes": 7647,
+      "sha256": "bbae4e8a9e0140a4bfff2b20b44d52165213027c6ed2e741961bb39c14a357b0",
+      "media_type": "text/csv"
+    }
+  ]
+}

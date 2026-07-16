@@ -1,0 +1,10 @@
+{
+  "step_id": "J23",
+  "name": "Activate and log in parent",
+  "actor": "parent",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

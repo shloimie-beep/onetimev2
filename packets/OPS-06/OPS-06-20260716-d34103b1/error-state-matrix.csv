@@ -1,0 +1,16 @@
+task_id,error_id,condition,expected_http,expected_ui,mutation_expectation,required_proof
+OPS-06,E01,Unauthenticated protected route/API,302 route or 401 API,Login required; protected state cleared,none,"route, API, cookie, cache headers"
+OPS-06,E02,Authenticated role lacks capability,403,Control absent or permission state,none,authorization before repository mutation
+OPS-06,E03,Cross-household or sibling identifier,403 or non-enumerating 404,Requested record unavailable,none,zero cross-scope rows and no timing/data enumeration
+OPS-06,E04,Validation error,400,Field-specific errors and focus management,none,database before/after counts equal
+OPS-06,E05,Duplicate same key/same payload,200/201 replay envelope,Original success receipt,exactly one logical mutation,idempotency ledger and row/outbox/audit counts
+OPS-06,E06,Same key/different payload,409,Explicit idempotency conflict,none beyond original,request fingerprints and unchanged counts
+OPS-06,E07,Optimistic version conflict,409,Record changed; reload/reconcile,no overwrite,stored version and rejected payload
+OPS-06,E08,Fourth active learner,409 or domain conflict,Three-seat limit reached,no learner/access/account partial rows,concurrent and sequential PostgreSQL count
+OPS-06,E09,Provider unavailable/off baseline,"200 safe local receipt, 409/503 bounded unavailable, or control not visible by contract",Truthful provider-off state,local receipt only; zero provider call,network trace and provider URL scan
+OPS-06,E10,Offline browser,no request,Offline state with retry,none,network log and no stale protected cache
+OPS-06,E11,Worker retryable failure,not applicable,Owner/admin queue shows retry-safe status if exposed,one attempt record and scheduled retry,"attempt count, deterministic next_attempt_at, no duplicate receipt"
+OPS-06,E12,Worker terminal/max-attempt failure,not applicable,Owner/admin queue shows dead-letter/manual review if exposed,one dead-letter terminal state,"DLQ row, redacted failure class, restart persistence"
+OPS-06,E13,Session expiry between load and write,401,Session expired; protected state cleared,none,revoked session ledger and response headers
+OPS-06,E14,Partial API failure,mixed bounded responses,Successful regions remain; failed region retryable,no unrelated rollback or duplicate,per-region requests and UI state
+OPS-06,E15,School lead requests subscriber entitlement,403 or non-enumerating 404,No subscriber access,none,"zero subscription, household, classroom, portal, support rows"

@@ -1,0 +1,602 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/ops06/evidence.schema.json",
+  "title": "OPS-06 final rehearsal evidence",
+  "description": "Validation schema for the final provider-off synthetic Day-One rehearsal report.",
+  "type": "object",
+  "required": [
+    "task_id",
+    "packet_id",
+    "schema_version",
+    "generated_at",
+    "verdict",
+    "environment",
+    "source",
+    "safety",
+    "journey",
+    "actions",
+    "roles_states",
+    "database",
+    "worker",
+    "security",
+    "performance",
+    "reset",
+    "gates",
+    "blockers",
+    "evidence_index_sha256"
+  ],
+  "properties": {
+    "task_id": {
+      "const": "OPS-06"
+    },
+    "packet_id": {
+      "const": "OPS-06-20260716-d34103b1"
+    },
+    "schema_version": {
+      "const": "ops06.final_evidence.v1"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL_PRODUCT_GAP",
+        "FAIL_TEST",
+        "FAIL_SAFETY",
+        "BLOCKED_ENVIRONMENT"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "name",
+        "base_url",
+        "isolated",
+        "production_linked",
+        "postgres_major",
+        "provider_mode"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "isolated": {
+          "const": true
+        },
+        "production_linked": {
+          "const": false
+        },
+        "postgres_major": {
+          "const": 16
+        },
+        "provider_mode": {
+          "const": "off"
+        }
+      },
+      "additionalProperties": true
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "repository",
+        "tested_sha",
+        "deployed_sha",
+        "version_endpoint_sha",
+        "worker_sha",
+        "sha_match"
+      ],
+      "properties": {
+        "repository": {
+          "const": "webcraft-media/onetimev2"
+        },
+        "tested_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "deployed_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "version_endpoint_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "worker_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "sha_match": {
+          "const": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "provider_calls",
+        "real_users_created",
+        "production_rows_touched",
+        "live_charges",
+        "broad_sends",
+        "buffer_publishes",
+        "root_dns_mutations",
+        "production_deploys",
+        "bna_fanout"
+      ],
+      "properties": {
+        "provider_calls": {
+          "const": 0
+        },
+        "real_users_created": {
+          "const": 0
+        },
+        "production_rows_touched": {
+          "const": 0
+        },
+        "live_charges": {
+          "const": 0
+        },
+        "broad_sends": {
+          "const": 0
+        },
+        "buffer_publishes": {
+          "const": 0
+        },
+        "root_dns_mutations": {
+          "const": 0
+        },
+        "production_deploys": {
+          "const": 0
+        },
+        "bna_fanout": {
+          "const": 0
+        }
+      },
+      "additionalProperties": true
+    },
+    "journey": {
+      "type": "object",
+      "required": [
+        "required_steps",
+        "executed_steps",
+        "passed_steps",
+        "failed_steps",
+        "results"
+      ],
+      "properties": {
+        "required_steps": {
+          "const": 48
+        },
+        "executed_steps": {
+          "const": 48
+        },
+        "passed_steps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 48
+        },
+        "failed_steps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 48
+        },
+        "results": {
+          "type": "array",
+          "minItems": 48,
+          "maxItems": 48,
+          "items": {
+            "type": "object",
+            "required": [
+              "step_id",
+              "status",
+              "evidence"
+            ],
+            "properties": {
+              "step_id": {
+                "type": "string",
+                "pattern": "^J(?:0[1-9]|[1-3][0-9]|4[0-8])$"
+              },
+              "status": {
+                "enum": [
+                  "PASS",
+                  "FAIL"
+                ]
+              },
+              "evidence": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "required": [
+        "registry_count",
+        "visible_dom_count",
+        "registered_visible_count",
+        "dead_count",
+        "hidden_count",
+        "coming_soon_count",
+        "bijection",
+        "results_path"
+      ],
+      "properties": {
+        "registry_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "visible_dom_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "registered_visible_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dead_count": {
+          "const": 0
+        },
+        "hidden_count": {
+          "const": 0
+        },
+        "coming_soon_count": {
+          "const": 0
+        },
+        "bijection": {
+          "const": true
+        },
+        "results_path": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "roles_states": {
+      "type": "object",
+      "required": [
+        "roles_required",
+        "roles_passed",
+        "state_cases_required",
+        "state_cases_passed",
+        "viewport_mode_cases_required",
+        "viewport_mode_cases_passed"
+      ],
+      "properties": {
+        "roles_required": {
+          "const": 7
+        },
+        "roles_passed": {
+          "const": 7
+        },
+        "state_cases_required": {
+          "const": 84
+        },
+        "state_cases_passed": {
+          "const": 84
+        },
+        "viewport_mode_cases_required": {
+          "const": 20
+        },
+        "viewport_mode_cases_passed": {
+          "const": 20
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "required": [
+        "postgres_major",
+        "fresh_migration",
+        "upgrade_migration",
+        "concurrency",
+        "account_isolation",
+        "role_isolation",
+        "household_isolation",
+        "sibling_isolation"
+      ],
+      "properties": {
+        "postgres_major": {
+          "const": 16
+        },
+        "fresh_migration": {
+          "const": "PASS"
+        },
+        "upgrade_migration": {
+          "const": "PASS"
+        },
+        "concurrency": {
+          "const": "PASS"
+        },
+        "account_isolation": {
+          "const": "PASS"
+        },
+        "role_isolation": {
+          "const": "PASS"
+        },
+        "household_isolation": {
+          "const": "PASS"
+        },
+        "sibling_isolation": {
+          "const": "PASS"
+        }
+      }
+    },
+    "worker": {
+      "type": "object",
+      "required": [
+        "health",
+        "retry",
+        "dead_letter",
+        "restart_recovery",
+        "duplicate_suppression",
+        "provider_mode"
+      ],
+      "properties": {
+        "health": {
+          "const": "PASS"
+        },
+        "retry": {
+          "const": "PASS"
+        },
+        "dead_letter": {
+          "const": "PASS"
+        },
+        "restart_recovery": {
+          "const": "PASS"
+        },
+        "duplicate_suppression": {
+          "const": "PASS"
+        },
+        "provider_mode": {
+          "const": "sink"
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "required": [
+        "secret_scan",
+        "pii_scan",
+        "provider_url_scan",
+        "session_revocation",
+        "forbidden_matrix",
+        "network_destination_scan"
+      ],
+      "properties": {
+        "secret_scan": {
+          "const": "PASS"
+        },
+        "pii_scan": {
+          "const": "PASS"
+        },
+        "provider_url_scan": {
+          "const": "PASS"
+        },
+        "session_revocation": {
+          "const": "PASS"
+        },
+        "forbidden_matrix": {
+          "const": "PASS"
+        },
+        "network_destination_scan": {
+          "const": "PASS"
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "required": [
+        "profile_sha256",
+        "routes_required",
+        "routes_passed",
+        "samples_per_route",
+        "raw_samples_present",
+        "bundle_budgets",
+        "request_budgets",
+        "database_budgets",
+        "bna_fanout"
+      ],
+      "properties": {
+        "profile_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "routes_required": {
+          "const": 12
+        },
+        "routes_passed": {
+          "const": 12
+        },
+        "samples_per_route": {
+          "const": 30
+        },
+        "raw_samples_present": {
+          "const": true
+        },
+        "bundle_budgets": {
+          "const": "PASS"
+        },
+        "request_budgets": {
+          "const": "PASS"
+        },
+        "database_budgets": {
+          "const": "PASS"
+        },
+        "bna_fanout": {
+          "const": 0
+        }
+      }
+    },
+    "reset": {
+      "type": "object",
+      "required": [
+        "first_reset",
+        "second_reset",
+        "remaining_synthetic_rows",
+        "remaining_sessions",
+        "remaining_queue_claims",
+        "idempotent"
+      ],
+      "properties": {
+        "first_reset": {
+          "const": "PASS"
+        },
+        "second_reset": {
+          "const": "PASS"
+        },
+        "remaining_synthetic_rows": {
+          "const": 0
+        },
+        "remaining_sessions": {
+          "const": 0
+        },
+        "remaining_queue_claims": {
+          "const": 0
+        },
+        "idempotent": {
+          "const": true
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 17,
+      "maxItems": 17,
+      "items": {
+        "type": "object",
+        "required": [
+          "gate_id",
+          "status",
+          "evidence"
+        ],
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "pattern": "^G(?:0[1-9]|1[0-7])$"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "blocker_id",
+          "severity",
+          "summary",
+          "evidence"
+        ],
+        "properties": {
+          "blocker_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "severity": {
+            "enum": [
+              "blocking"
+            ]
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "evidence_index_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "journey": {
+            "properties": {
+              "passed_steps": {
+                "const": 48
+              },
+              "failed_steps": {
+                "const": 0
+              }
+            }
+          },
+          "blockers": {
+            "maxItems": 0
+          },
+          "gates": {
+            "items": {
+              "properties": {
+                "status": {
+                  "const": "PASS"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "not": {
+              "const": "PASS"
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "blockers": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": true,
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1"
+}

@@ -1,0 +1,10 @@
+{
+  "step_id": "J10",
+  "name": "Owner dashboard",
+  "actor": "owner",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

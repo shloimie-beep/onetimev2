@@ -1,0 +1,11 @@
+task_id,isolation_id,boundary,source_actor,target,methods,expected
+OPS-06,I01,account,owner account A,synthetic account B,UI navigation|direct API|cursor replay|identifier substitution,deny before data access; zero account-B rows or identifiers
+OPS-06,I02,role,parent,"owner/admin CRM, tasks, communications",route open|API call|forged capability payload,401/403/404; browser payload cannot grant capability
+OPS-06,I03,household,parent Adler,synthetic second household,householdKey substitution|cached route|search,non-enumerating deny; zero target household data
+OPS-06,I04,sibling,Ari student,Bina and Chaim,learnerKey substitution|class/content/reward/progress endpoints|client state inspection,only Ari subject; zero sibling data and no sibling identifiers
+OPS-06,I05,session,revoked student session,protected student APIs and UI,cookie replay|parallel tab|service worker/cache,401/login; protected state purged; parent session unaffected
+OPS-06,I06,school_lead,Cedar Grove school lead,"Family subscription, household, classroom, portal, support",direct API|login attempt|receipt lookup,lead-only; zero entitlement/account/support/classroom rows
+OPS-06,I07,inactive_entitlement,inactive subscriber,"class, content, question, support",direct action endpoint|cached descriptor|identifier replay,truthful inactive deny; no protected receipt or queued request
+OPS-06,I08,worker_lease,worker instance A,worker instance B after restart,claim collision|lease expiry|clock advance,one completion; no duplicate provider-off receipt; stale lease cannot complete
+OPS-06,I09,idempotency,same key same scope,different account/product scope,key replay across scope,scope-bound ledger; no cross-scope replay or collision
+OPS-06,I10,cache,role switch in same browser,prior actor protected DOM/data,logout/login|back-forward cache|offline|history,no prior protected state remains visible or readable

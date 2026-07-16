@@ -1,0 +1,495 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "required_steps": 48,
+  "executed_steps": 1,
+  "passed_steps": 1,
+  "failed_steps": 0,
+  "not_run_steps": 47,
+  "results": [
+    {
+      "step_id": "J01",
+      "name": "Persist OPS-06 run state",
+      "actor": "automation",
+      "status": "PASS",
+      "evidence": [
+        "state/state.json",
+        "state/state-transitions.jsonl",
+        "state/commands.ndjson",
+        "state/safety.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J02",
+      "name": "Discover isolated staging and exact SHA",
+      "actor": "release_engineer",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J03",
+      "name": "Open landing",
+      "actor": "anonymous",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J04",
+      "name": "Submit Family signup",
+      "actor": "anonymous",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J05",
+      "name": "Prove Family idempotency under concurrency",
+      "actor": "anonymous",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J06",
+      "name": "Prove idempotency conflict",
+      "actor": "anonymous",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J07",
+      "name": "Process provider-off acknowledgement/reminder intents",
+      "actor": "worker",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J08",
+      "name": "Activate owner",
+      "actor": "anonymous",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J09",
+      "name": "Owner login",
+      "actor": "owner",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J10",
+      "name": "Owner dashboard",
+      "actor": "owner",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J11",
+      "name": "Activate and log in administrator",
+      "actor": "administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J12",
+      "name": "CRM list",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J13",
+      "name": "CRM search and filters",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J14",
+      "name": "CRM detail",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J15",
+      "name": "CRM edit",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J16",
+      "name": "CRM tags",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J17",
+      "name": "CRM notes",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J18",
+      "name": "CRM relationships",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J19",
+      "name": "Read-only communications",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J20",
+      "name": "Tasks",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J21",
+      "name": "Create household and provider-off subscription entitlement",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J22",
+      "name": "Issue parent activation",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J23",
+      "name": "Activate and log in parent",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J24",
+      "name": "Create learner Ari",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J25",
+      "name": "Create learner Bina",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J26",
+      "name": "Create learner Chaim",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J27",
+      "name": "Deny fourth active learner",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J28",
+      "name": "Issue student activation",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J29",
+      "name": "Activate and log in student",
+      "actor": "student",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J30",
+      "name": "Parent portal",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J31",
+      "name": "Parent protected next class",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J32",
+      "name": "Parent library, review, progress, rewards",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J33",
+      "name": "Student portal",
+      "actor": "student",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J34",
+      "name": "Student protected next class",
+      "actor": "student",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J35",
+      "name": "Student library, review, progress, rewards",
+      "actor": "student",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J36",
+      "name": "Learner question queue",
+      "actor": "student",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J37",
+      "name": "Subscriber support receipt",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J38",
+      "name": "Student logout and token replay",
+      "actor": "student",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J39",
+      "name": "Parent revokes student sessions",
+      "actor": "parent",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J40",
+      "name": "School signup",
+      "actor": "anonymous",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J41",
+      "name": "Prove School lead-only boundaries",
+      "actor": "owner|administrator",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J42",
+      "name": "Inactive subscriber role",
+      "actor": "inactive_subscriber",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J43",
+      "name": "Queue retry, dead-letter, and worker restart",
+      "actor": "worker",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J44",
+      "name": "Account, role, household, sibling isolation",
+      "actor": "security_test",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J45",
+      "name": "Click every visible action in all presentation modes",
+      "actor": "all_roles",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J46",
+      "name": "PostgreSQL 16, scans, health, and performance",
+      "actor": "release_engineer",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J47",
+      "name": "Reset synthetic fixtures twice",
+      "actor": "release_engineer",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    },
+    {
+      "step_id": "J48",
+      "name": "Emit final certification and checksums",
+      "actor": "automation",
+      "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "fabricated": false
+    }
+  ]
+}

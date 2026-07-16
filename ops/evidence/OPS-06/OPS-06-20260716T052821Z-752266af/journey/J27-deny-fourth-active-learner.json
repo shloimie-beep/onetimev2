@@ -1,0 +1,10 @@
+{
+  "step_id": "J27",
+  "name": "Deny fourth active learner",
+  "actor": "parent",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

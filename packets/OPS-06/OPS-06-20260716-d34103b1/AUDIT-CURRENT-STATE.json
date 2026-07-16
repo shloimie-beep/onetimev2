@@ -1,0 +1,170 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_date": "2026-07-16",
+  "mode": "read_only_repository_audit",
+  "source_repository": "webcraft-media/onetimev2",
+  "queue_repository": "webcraft-media/onetime-codex-queue",
+  "audit_anchor": {
+    "ref": "codex/ot87-stripe-test-entitlements",
+    "sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+    "reason": "Latest inspected branch containing the OT83 portal stack plus family subscription/entitlement work; it is not presumed to be the deployed staging source."
+  },
+  "default_branch": {
+    "name": "main",
+    "sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "disposition": "foundation_only_not_integrated_day_one_candidate"
+  },
+  "branch_lineage": [
+    {
+      "pr": 24,
+      "ref": "codex/ot81-dayone-certification-staging",
+      "sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
+      "status": "open_draft",
+      "finding": "Code-certified locally; isolated staging was not deployed."
+    },
+    {
+      "pr": 26,
+      "ref": "codex/ot82-brand-system-foundation",
+      "sha": "a8e4109b0530855bc7a5f56c90104706b9c8cd7c",
+      "status": "open_draft",
+      "finding": "Brand-system and protected shell integration."
+    },
+    {
+      "pr": 27,
+      "ref": "codex/ot83-household-portals-foundation",
+      "sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+      "status": "open_draft",
+      "finding": "Portal foundation; PR explicitly states the full OT83 mega-prompt is incomplete."
+    },
+    {
+      "pr": 30,
+      "ref": "codex/ot87-stripe-test-entitlements",
+      "sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+      "status": "open_draft",
+      "finding": "Family billing/entitlement slice; protected Stripe TEST resources are absent and provider execution is blocked."
+    },
+    {
+      "pr": 31,
+      "ref": "codex/ot86a-vimeo-content-kb",
+      "sha": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065",
+      "status": "open_draft_divergent",
+      "finding": "Content/KB branch diverging from OT87 at OT83; Vimeo canary unconfigured."
+    },
+    {
+      "pr": 32,
+      "ref": "codex/ot86b-buffer-social",
+      "sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+      "status": "open_draft_divergent",
+      "finding": "Buffer social branch; Buffer publication is explicitly forbidden for OPS-06."
+    }
+  ],
+  "staging_truth": {
+    "known_isolated_staging_url": null,
+    "known_deployed_sha": null,
+    "required_discovery": [
+      "Read an explicit isolated-staging target from protected deployment inventory.",
+      "GET /version and record commit_sha.",
+      "Resolve that SHA in the source repository.",
+      "Prove the running web and worker use the same intended source lineage.",
+      "Fail closed on production-linked, ambiguous, absent, or mismatched targets."
+    ],
+    "prohibited_assumption": "Do not infer staging source from main, an open PR, a branch name, or the newest commit."
+  },
+  "implemented_foundations": [
+    "Landing and canonical Family/School lead capture",
+    "Idempotent lead/contact/audit/outbox persistence",
+    "Owner/admin authentication and protected CRM shell",
+    "CRM list/search/filter/detail/create/edit",
+    "Read-only communications projection",
+    "Parent/student portal contracts and protected shells",
+    "Three-active-learner domain limit",
+    "Protected class/content descriptor seams",
+    "Progress and rewards read models",
+    "Session revocation foundation",
+    "Sink worker with leases, retry, concurrency, and dead-letter primitives",
+    "Brand, accessibility, bundle, and performance harness foundations"
+  ],
+  "mandatory_gaps_or_unproven_surfaces": [
+    {
+      "id": "OPS-06-GAP-001",
+      "area": "action_registry",
+      "severity": "blocking",
+      "finding": "Existing registry has 39 entries, older source metadata, non-exhaustive visible-control coverage, and lacks multiple OPS-06 fields.",
+      "required_outcome": "Runtime-generated exhaustive registry with DOM-to-registry bijection and all required metadata."
+    },
+    {
+      "id": "OPS-06-GAP-002",
+      "area": "visible_controls",
+      "severity": "blocking",
+      "finding": "Several visible controls are disabled or marked unavailable_by_design, including learner creation, class launch, content open, and support.",
+      "required_outcome": "Each visible control must be functional and tested or removed from the visible DOM; no disabled dead/Coming Soon control passes."
+    },
+    {
+      "id": "OPS-06-GAP-003",
+      "area": "crm",
+      "severity": "blocking",
+      "finding": "Audited contracts prove a single internal_note but not tag lifecycle, note history, relationships, or task lifecycle.",
+      "required_outcome": "Truthfully prove the requested CRM surfaces or report FAIL_PRODUCT_GAP without inventing a test-only product implementation."
+    },
+    {
+      "id": "OPS-06-GAP-004",
+      "area": "question_queue",
+      "severity": "blocking",
+      "finding": "Helper query is optional and defaults to ADAPTER_UNAVAILABLE; no durable learner question queue/receipt is proven.",
+      "required_outcome": "Durable provider-off learner question receipt, queue state, idempotency, audit, and owner/admin visibility."
+    },
+    {
+      "id": "OPS-06-GAP-005",
+      "area": "support",
+      "severity": "blocking",
+      "finding": "Portal support route is preview-only and default adapter performs no durable subscriber support receipt.",
+      "required_outcome": "Durable provider-off support request receipt with no school-lead entitlement."
+    },
+    {
+      "id": "OPS-06-GAP-006",
+      "area": "staging",
+      "severity": "blocking",
+      "finding": "No isolated staging URL, deployed SHA, or staging PostgreSQL 16 resource is proven by inspected PR metadata.",
+      "required_outcome": "Exact source/deployment SHA and isolated-resource proof before any rehearsal mutation."
+    },
+    {
+      "id": "OPS-06-GAP-007",
+      "area": "worker_restart",
+      "severity": "blocking",
+      "finding": "Retry/dead-letter primitives exist, but isolated-staging retry persistence and worker-restart recovery evidence is absent.",
+      "required_outcome": "Fault-injected retry, lease recovery, dead-letter, restart, and duplicate-suppression evidence."
+    },
+    {
+      "id": "OPS-06-GAP-008",
+      "area": "performance",
+      "severity": "blocking",
+      "finding": "Existing 30-sample evidence is route-limited and does not prove the complete OPS-06 throttled-mobile matrix.",
+      "required_outcome": "Thirty samples per required route under declared throttling with p50/p75/p95, request and bundle budgets."
+    }
+  ],
+  "safety_findings": {
+    "provider_off_baseline_available": true,
+    "sink_worker_available": true,
+    "production_mutation_authorized": false,
+    "provider_canary_authorized_in_baseline": false,
+    "buffer_publish_authorized": false,
+    "bna_runtime_dependency_authorized": false
+  },
+  "audit_evidence": [
+    "README.md and package scripts at default and integrated refs",
+    "apps/web/src/server/app.ts",
+    "packages/contracts/src/index.ts",
+    "packages/contracts/src/portals/index.ts",
+    "packages/domain/src/portals/services.ts",
+    "apps/web/src/client/features/portals/PortalFeatures.tsx",
+    "apps/worker/src/main/index.ts",
+    "apps/worker/src/delivery/worker.ts",
+    "tests/e2e/landing-signup.spec.ts",
+    "tests/e2e/crm-core.spec.ts",
+    "tests/integration/lead-capture.test.ts",
+    "tests/accessibility/ot81-day-one-matrix.spec.ts",
+    "tests/performance/ot81-day-one-performance.spec.ts",
+    "ops/day-one/visible-action-registry.json"
+  ]
+}

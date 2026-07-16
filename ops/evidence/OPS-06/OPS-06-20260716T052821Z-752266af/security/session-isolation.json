@@ -1,0 +1,8 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.860Z",
+  "subject": "session isolation",
+  "status": "not_run_blocked_environment",
+  "reason": "Exact isolated staging/source SHA was not proven; no rehearsal result is fabricated."
+}

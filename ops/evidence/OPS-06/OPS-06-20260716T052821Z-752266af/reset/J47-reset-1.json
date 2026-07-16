@@ -1,0 +1,10 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "status": "not_run_no_fixtures_created",
+  "remaining_synthetic_rows": 0,
+  "remaining_sessions": 0,
+  "remaining_queue_claims": 0,
+  "idempotent": true
+}

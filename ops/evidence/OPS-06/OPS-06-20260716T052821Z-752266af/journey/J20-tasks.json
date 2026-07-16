@@ -1,0 +1,10 @@
+{
+  "step_id": "J20",
+  "name": "Tasks",
+  "actor": "owner|administrator",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

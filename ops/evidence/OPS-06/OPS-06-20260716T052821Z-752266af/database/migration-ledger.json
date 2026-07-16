@@ -1,0 +1,23 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "status": "static_migration_inventory_only",
+  "migration_files": [
+    "0001_onetime_lead_slice.sql",
+    "0002_crm_auth_core.sql",
+    "0003_ot27_security_crm_repair.sql",
+    "0004_delivery_worker_claim_index.sql",
+    "1000_ot42_crm_module_v1.sql",
+    "1100_ot71_class_occurrence_fulfillment.sql",
+    "1201_ot74_legacy_audience_reconciliation.sql",
+    "1300_ot46_billing_foundation.sql",
+    "1400_ot71_content_library.sql",
+    "1500_ot52_portal_households_learners.sql",
+    "1600_ot51_telegram_bot_foundation.sql",
+    "1700_ot71_account_lifecycle.sql",
+    "1800_ot72_provider_truth.sql",
+    "1900_ot83_household_portal_foundation.sql",
+    "2000_ot87_stripe_test_entitlements.sql"
+  ]
+}

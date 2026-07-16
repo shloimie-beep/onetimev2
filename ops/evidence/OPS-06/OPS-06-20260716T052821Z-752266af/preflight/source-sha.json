@@ -1,0 +1,13 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "repository": "webcraft-media/onetimev2",
+  "local_head": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+  "branch": "codex/ops-06-ops-06-20260716t052821z-752266af",
+  "exact_deployed_sha_proven": false,
+  "tested_sha": null,
+  "deployed_sha": null,
+  "version_endpoint_sha": null,
+  "reason": "No isolated staging URL/SHA was proven."
+}

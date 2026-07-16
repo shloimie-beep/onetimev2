@@ -1,0 +1,10 @@
+{
+  "step_id": "J17",
+  "name": "CRM notes",
+  "actor": "owner|administrator",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

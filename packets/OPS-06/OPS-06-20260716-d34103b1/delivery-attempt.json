@@ -1,0 +1,32 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_date": "2026-07-16",
+  "delivery_protocol": {
+    "preferred_repository": "webcraft-media/onetime-codex-queue",
+    "preferred_branch": "dropoff/ops-06-d34103b1",
+    "preferred_path": "packets/OPS-06/OPS-06-20260716-d34103b1/",
+    "preferred_pr_title": "[OPS-06][PACKET READY] Day-One launch rehearsal",
+    "fallback_filename": "OPS-06-CODEX-PACKET.zip"
+  },
+  "attempt": {
+    "queue_repository_discovered": true,
+    "queue_repository_state": "empty_git_repository",
+    "queue_read_result": "GitHub commit listing returned repository-empty/409 behavior.",
+    "github_write_channel_available": false,
+    "local_authenticated_git_publication_path_available": false,
+    "source_repository_mutations": 0,
+    "queue_repository_mutations": 0,
+    "branch_created": false,
+    "commit_created": false,
+    "pull_request_created": false,
+    "pull_request_url": null,
+    "pull_request_sha": null
+  },
+  "result": {
+    "mode": "fallback_zip",
+    "filename": "OPS-06-CODEX-PACKET.zip",
+    "reason": "The connected GitHub surface available to this run was read-only and the queue repository was empty; no authorized branch/commit/PR creation path was available.",
+    "loose_prose_delivery_forbidden": true
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "status": "blocked_environment",
+  "env": {
+    "required_env": {
+      "ONE_TIME_STAGING_URL": {
+        "present": false,
+        "redacted": null
+      },
+      "STAGING_BASE_URL": {
+        "present": false,
+        "redacted": null
+      },
+      "RAILWAY_PUBLIC_DOMAIN": {
+        "present": false,
+        "redacted": null
+      },
+      "OT75_STAGING_WEB_SERVICE": {
+        "present": false,
+        "redacted": null
+      },
+      "OT75_STAGING_DOMAIN": {
+        "present": false,
+        "redacted": null
+      },
+      "OT75_STAGING_DATABASE_REFERENCE_ID": {
+        "present": false,
+        "redacted": null
+      }
+    },
+    "staging_url_present": false,
+    "staging_deploy_allowed": false
+  },
+  "ot75_predeploy": {
+    "exit_code": 0,
+    "blocked_count": 12,
+    "gates": [
+      {
+        "id": "GATE-STAGING-SERVICE",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_STAGING_WEB_SERVICE",
+          "OT75_STAGING_DELIVERY_WORKER_SERVICE",
+          "OT75_STAGING_PROVIDER_WORKER_SERVICE",
+          "OT75_STAGING_TELEGRAM_WORKER_SERVICE"
+        ]
+      },
+      {
+        "id": "GATE-STAGING-DOMAIN",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_STAGING_DOMAIN"
+        ]
+      },
+      {
+        "id": "GATE-BACKUP-PITR-EVIDENCE",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_BACKUP_PITR_EVIDENCE_URI"
+        ]
+      },
+      {
+        "id": "GATE-RESTORE-DRILL",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_RESTORE_DRILL_EVIDENCE_URI"
+        ]
+      },
+      {
+        "id": "GATE-ACTIVE-SOURCE-SHA",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_EXPECTED_SOURCE_SHA",
+          "OT75_ACTIVE_SOURCE_SHA"
+        ]
+      },
+      {
+        "id": "GATE-MIGRATION-LEDGER-CHECKSUM",
+        "status": "blocked_activation_or_static_missing",
+        "missing_env_names": [
+          "OT75_MIGRATION_LEDGER_SHA256"
+        ]
+      },
+      {
+        "id": "GATE-DATABASE-REFERENCE-DRIFT",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_STAGING_DATABASE_REFERENCE_ID",
+          "OT75_PRODUCTION_DATABASE_REFERENCE_ID"
+        ]
+      },
+      {
+        "id": "GATE-DUPLICATE-DATA-AUDIT",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_DUPLICATE_DATA_AUDIT_REPORT"
+        ]
+      },
+      {
+        "id": "GATE-WORKER-ISOLATION",
+        "status": "blocked_activation_or_static_missing",
+        "missing_env_names": [
+          "OT75_WORKER_ISOLATION_APPROVED"
+        ]
+      },
+      {
+        "id": "GATE-PROVIDER-STATE-CONTRACT",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_PROVIDER_STATE_REPORT"
+        ]
+      },
+      {
+        "id": "GATE-OWNER-ADMIN-BOOTSTRAP",
+        "status": "blocked_activation_missing_env",
+        "missing_env_names": [
+          "OT75_OWNER_ADMIN_BOOTSTRAP_REPORT"
+        ]
+      },
+      {
+        "id": "GATE-NO-RUNTIME-COMPOSITION-DRIFT",
+        "status": "blocked_scope_drift",
+        "missing_env_names": []
+      }
+    ]
+  },
+  "forbidden_actions_performed": false
+}

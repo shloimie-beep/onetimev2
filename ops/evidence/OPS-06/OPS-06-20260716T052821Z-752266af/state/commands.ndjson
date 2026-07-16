@@ -1,0 +1,2 @@
+{"at":"2026-07-16T05:28:22.8091446Z","command":"initial worktree creation and state persistence","redacted":true,"cwd":"C:\\Users\\User\\.ops06-worktrees\\OPS-06-20260716T052821Z-752266af","result":"ok"}
+{"at":"2026-07-16T05:28:37.9960423Z","command":"copy validated OPS-06 packet into worktree","redacted":true,"cwd":"C:\\Users\\User\\.ops06-worktrees\\OPS-06-20260716T052821Z-752266af","result":"ok"}

@@ -1,0 +1,163 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "gates": [
+    {
+      "gate_id": "G01",
+      "name": "Persist state first",
+      "status": "PASS",
+      "evidence": [
+        "state/state.json",
+        "state/state-transitions.jsonl",
+        "state/commands.ndjson",
+        "state/safety.json"
+      ]
+    },
+    {
+      "gate_id": "G02",
+      "name": "Exact isolated staging and source SHA",
+      "status": "BLOCKED",
+      "evidence": [
+        "preflight/target-discovery.json",
+        "preflight/source-sha.json"
+      ],
+      "blocker_id": "BLOCKER-OPS06-ISOLATED-STAGING"
+    },
+    {
+      "gate_id": "G03",
+      "name": "Provider-off safety baseline",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G04",
+      "name": "PostgreSQL 16 fresh and upgrade",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G05",
+      "name": "Family signup transaction and idempotency",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G06",
+      "name": "Owner/admin activation, login, dashboard, CRM",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G07",
+      "name": "Household, parent, learners, fourth-seat denial",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G08",
+      "name": "Student and parent protected learning",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G09",
+      "name": "Question queue and subscriber support receipt",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G10",
+      "name": "School lead-only proof",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G11",
+      "name": "Exhaustive visible action registry",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G12",
+      "name": "Role, state, responsive, and accessibility matrix",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G13",
+      "name": "Queue retry, dead-letter, restart",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G14",
+      "name": "Health, scans, budgets, and no BNA fanout",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G15",
+      "name": "Logout, revocation, and session isolation",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G16",
+      "name": "Synthetic reset and rollback",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G17",
+      "name": "Evidence completeness and checksums",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    }
+  ]
+}

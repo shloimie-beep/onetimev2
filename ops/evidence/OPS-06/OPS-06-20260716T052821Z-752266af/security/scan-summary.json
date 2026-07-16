@@ -1,0 +1,17 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "status": "static_preflight_only",
+  "fixture_validation": {
+    "valid": true,
+    "email_count": 9,
+    "non_example_emails": [],
+    "forbidden_matches": [],
+    "namespace": "ops06-d34103b1",
+    "schema_version": "ops06.synthetic_fixtures.v1"
+  },
+  "provider_calls": 0,
+  "production_rows_touched": 0,
+  "real_users_created": 0
+}

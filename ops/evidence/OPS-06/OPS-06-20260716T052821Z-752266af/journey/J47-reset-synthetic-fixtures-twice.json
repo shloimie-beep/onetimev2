@@ -1,0 +1,10 @@
+{
+  "step_id": "J47",
+  "name": "Reset synthetic fixtures twice",
+  "actor": "release_engineer",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

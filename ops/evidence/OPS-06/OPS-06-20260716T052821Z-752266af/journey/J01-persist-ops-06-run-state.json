@@ -1,0 +1,13 @@
+{
+  "step_id": "J01",
+  "name": "Persist OPS-06 run state",
+  "actor": "automation",
+  "status": "PASS",
+  "evidence": [
+    "state/state.json",
+    "state/state-transitions.jsonl",
+    "state/commands.ndjson",
+    "state/safety.json"
+  ],
+  "fabricated": false
+}

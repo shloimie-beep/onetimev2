@@ -1,0 +1,10 @@
+{
+  "step_id": "J42",
+  "name": "Inactive subscriber role",
+  "actor": "inactive_subscriber",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

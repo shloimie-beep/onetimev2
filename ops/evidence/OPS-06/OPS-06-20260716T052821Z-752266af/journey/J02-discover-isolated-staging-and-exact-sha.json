@@ -1,0 +1,10 @@
+{
+  "step_id": "J02",
+  "name": "Discover isolated staging and exact SHA",
+  "actor": "release_engineer",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

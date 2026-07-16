@@ -1,0 +1,18 @@
+{
+    "task_id":  "OPS-06",
+    "run_id":  "OPS-06-20260716T052821Z-752266af",
+    "created_at":  "2026-07-16T05:28:22.8091446Z",
+    "allowed_identities_domain":  ".example.test",
+    "provider_mode":  "off_required",
+    "staging_deploy_allowed":  false,
+    "forbidden_actions":  [
+                              "real users",
+                              "production rows",
+                              "broad sends",
+                              "live charges",
+                              "public posts",
+                              "root DNS",
+                              "production deployment",
+                              "provider mutations"
+                          ]
+}

@@ -1,0 +1,384 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "schema_version": "ops06.checkpoint_evidence.v1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "verdict": "BLOCKED_ENVIRONMENT",
+  "environment": {
+    "status": "blocked_missing_exact_isolated_staging",
+    "base_url": null,
+    "isolated_staging_proven": false,
+    "deployment_attempted": false,
+    "postgres_major": null,
+    "provider_mode": "off_static_preflight"
+  },
+  "source": {
+    "repository": "webcraft-media/onetimev2",
+    "local_head": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+    "branch": "codex/ops-06-ops-06-20260716t052821z-752266af",
+    "tested_sha": null,
+    "deployed_sha": null,
+    "version_endpoint_sha": null,
+    "worker_sha": null,
+    "exact_deployed_sha_proven": false
+  },
+  "safety": {
+    "provider_calls": 0,
+    "real_users_created": 0,
+    "production_rows_touched": 0,
+    "live_charges": 0,
+    "broad_sends": 0,
+    "buffer_publishes": 0,
+    "root_dns_mutations": 0,
+    "production_deploys": 0,
+    "bna_fanout": 0
+  },
+  "journey": {
+    "required_steps": 48,
+    "executed_steps": 1,
+    "passed_steps": 1,
+    "failed_steps": 0,
+    "not_run_steps": 47,
+    "results_path": "journey/results.json"
+  },
+  "actions": {
+    "required_registry_count": 161,
+    "runtime_registry_count": 41,
+    "matched_count": 0,
+    "missing_count": 161,
+    "unavailable_by_design_count": 6,
+    "results_path": "actions/runtime-action-registry.json"
+  },
+  "roles_states": {
+    "roles_required": 7,
+    "roles_passed": 0,
+    "state_cases_required": 84,
+    "state_cases_passed": 0,
+    "viewport_mode_cases_required": 20,
+    "viewport_mode_cases_passed": 0,
+    "results_path": "role-state/results.json"
+  },
+  "database": {
+    "postgres_major": null,
+    "fresh_migration": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "upgrade_migration": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "concurrency": "NOT_RUN_BLOCKED_ENVIRONMENT"
+  },
+  "worker": {
+    "health": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "retry": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "dead_letter": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "restart_recovery": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "duplicate_suppression": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "provider_mode": "sink_required_not_executed"
+  },
+  "security": {
+    "secret_scan": "STATIC_FIXTURE_PREFLIGHT_ONLY",
+    "pii_scan": "STATIC_FIXTURE_PREFLIGHT_ONLY",
+    "provider_url_scan": "STATIC_FIXTURE_PREFLIGHT_ONLY",
+    "session_revocation": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "forbidden_matrix": "NO_FORBIDDEN_MUTATION_PERFORMED",
+    "network_destination_scan": "NOT_RUN_BLOCKED_ENVIRONMENT"
+  },
+  "performance": {
+    "profile_sha256": "a741bdd1896cf6feb49636fa34df9f10a6a1820d26c21c74d63e9b50156ba5ef",
+    "routes_required": 12,
+    "routes_passed": 0,
+    "samples_per_route": 30,
+    "raw_samples_present": false,
+    "bundle_budgets": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "request_budgets": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "database_budgets": "NOT_RUN_BLOCKED_ENVIRONMENT",
+    "bna_fanout": 0
+  },
+  "reset": {
+    "first_reset": "NOT_RUN_NO_FIXTURES_CREATED",
+    "second_reset": "NOT_RUN_NO_FIXTURES_CREATED",
+    "remaining_synthetic_rows": 0,
+    "remaining_sessions": 0,
+    "remaining_queue_claims": 0,
+    "idempotent": true
+  },
+  "gates": [
+    {
+      "gate_id": "G01",
+      "name": "Persist state first",
+      "status": "PASS",
+      "evidence": [
+        "state/state.json",
+        "state/state-transitions.jsonl",
+        "state/commands.ndjson",
+        "state/safety.json"
+      ]
+    },
+    {
+      "gate_id": "G02",
+      "name": "Exact isolated staging and source SHA",
+      "status": "BLOCKED",
+      "evidence": [
+        "preflight/target-discovery.json",
+        "preflight/source-sha.json"
+      ],
+      "blocker_id": "BLOCKER-OPS06-ISOLATED-STAGING"
+    },
+    {
+      "gate_id": "G03",
+      "name": "Provider-off safety baseline",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G04",
+      "name": "PostgreSQL 16 fresh and upgrade",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G05",
+      "name": "Family signup transaction and idempotency",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G06",
+      "name": "Owner/admin activation, login, dashboard, CRM",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G07",
+      "name": "Household, parent, learners, fourth-seat denial",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G08",
+      "name": "Student and parent protected learning",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G09",
+      "name": "Question queue and subscriber support receipt",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G10",
+      "name": "School lead-only proof",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G11",
+      "name": "Exhaustive visible action registry",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G12",
+      "name": "Role, state, responsive, and accessibility matrix",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G13",
+      "name": "Queue retry, dead-letter, restart",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G14",
+      "name": "Health, scans, budgets, and no BNA fanout",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G15",
+      "name": "Logout, revocation, and session isolation",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G16",
+      "name": "Synthetic reset and rollback",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    },
+    {
+      "gate_id": "G17",
+      "name": "Evidence completeness and checksums",
+      "status": "NOT_RUN",
+      "evidence": [
+        "preflight/target-discovery.json"
+      ],
+      "blocked_by": "G02"
+    }
+  ],
+  "blockers": [
+    {
+      "blocker_id": "BLOCKER-OPS06-ISOLATED-STAGING",
+      "severity": "blocking",
+      "summary": "No exact isolated staging URL/SHA is available; staging deploy approval is absent and OT75 predeploy gates report activation blockers.",
+      "evidence": [
+        "preflight/target-discovery.json",
+        "preflight/source-sha.json"
+      ],
+      "owner_next_action": "Provide isolated One Time staging service/domain/database variables and exact deployed SHA readback, then rerun OPS-06."
+    },
+    {
+      "blocker_id": "BLOCKER-OPS06-ACTION-REGISTRY",
+      "severity": "blocking",
+      "summary": "Current static action registry is not OPS-06 complete and still contains unavailable-by-design controls.",
+      "evidence": [
+        "actions/runtime-action-registry.json",
+        "actions/dom-registry-diff.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-001",
+      "severity": "blocking",
+      "summary": "Existing registry has 39 entries, older source metadata, non-exhaustive visible-control coverage, and lacks multiple OPS-06 fields.",
+      "area": "action_registry",
+      "required_outcome": "Runtime-generated exhaustive registry with DOM-to-registry bijection and all required metadata.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-002",
+      "severity": "blocking",
+      "summary": "Several visible controls are disabled or marked unavailable_by_design, including learner creation, class launch, content open, and support.",
+      "area": "visible_controls",
+      "required_outcome": "Each visible control must be functional and tested or removed from the visible DOM; no disabled dead/Coming Soon control passes.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-003",
+      "severity": "blocking",
+      "summary": "Audited contracts prove a single internal_note but not tag lifecycle, note history, relationships, or task lifecycle.",
+      "area": "crm",
+      "required_outcome": "Truthfully prove the requested CRM surfaces or report FAIL_PRODUCT_GAP without inventing a test-only product implementation.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-004",
+      "severity": "blocking",
+      "summary": "Helper query is optional and defaults to ADAPTER_UNAVAILABLE; no durable learner question queue/receipt is proven.",
+      "area": "question_queue",
+      "required_outcome": "Durable provider-off learner question receipt, queue state, idempotency, audit, and owner/admin visibility.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-005",
+      "severity": "blocking",
+      "summary": "Portal support route is preview-only and default adapter performs no durable subscriber support receipt.",
+      "area": "support",
+      "required_outcome": "Durable provider-off support request receipt with no school-lead entitlement.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-006",
+      "severity": "blocking",
+      "summary": "No isolated staging URL, deployed SHA, or staging PostgreSQL 16 resource is proven by inspected PR metadata.",
+      "area": "staging",
+      "required_outcome": "Exact source/deployment SHA and isolated-resource proof before any rehearsal mutation.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-007",
+      "severity": "blocking",
+      "summary": "Retry/dead-letter primitives exist, but isolated-staging retry persistence and worker-restart recovery evidence is absent.",
+      "area": "worker_restart",
+      "required_outcome": "Fault-injected retry, lease recovery, dead-letter, restart, and duplicate-suppression evidence.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    },
+    {
+      "blocker_id": "BLOCKER-OPS-06-GAP-008",
+      "severity": "blocking",
+      "summary": "Existing 30-sample evidence is route-limited and does not prove the complete OPS-06 throttled-mobile matrix.",
+      "area": "performance",
+      "required_outcome": "Thirty samples per required route under declared throttling with p50/p75/p95, request and bundle budgets.",
+      "evidence": [
+        "audit/contracts-routes-tests.json"
+      ]
+    }
+  ],
+  "packet_validation": {
+    "valid": true,
+    "task_id": "OPS-06",
+    "packet_id": "OPS-06-20260716-d34103b1",
+    "schema_version": "ops06.packet_manifest.v1",
+    "checksum_rows": 22,
+    "mismatches": [],
+    "exact_control_names": {
+      "packet_json_present": false,
+      "sha256sums_txt_present": false,
+      "codex_prompt_md_present": false
+    },
+    "control_name_discrepancy": "Packet uses MANIFEST.json/checksums.sha256/DIRECT-CODEX-PROMPT.md instead of exact PACKET.json/SHA256SUMS.txt/CODEX-PROMPT.md names."
+  },
+  "fixture_validation": {
+    "valid": true,
+    "email_count": 9,
+    "non_example_emails": [],
+    "forbidden_matches": [],
+    "namespace": "ops06-d34103b1",
+    "schema_version": "ops06.synthetic_fixtures.v1"
+  },
+  "evidence_index_sha256": "6f1f5284442e1979522cded33df49c9066a0e26d789f352eb410e6528bc8cc9f"
+}

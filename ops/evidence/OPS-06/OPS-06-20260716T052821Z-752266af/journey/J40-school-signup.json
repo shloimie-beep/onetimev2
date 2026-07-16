@@ -1,0 +1,10 @@
+{
+  "step_id": "J40",
+  "name": "School signup",
+  "actor": "anonymous",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

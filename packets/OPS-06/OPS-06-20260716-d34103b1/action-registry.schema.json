@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/ops06/action-registry.schema.json",
+  "title": "OPS-06 action registry",
+  "type": "object",
+  "required": [
+    "task_id",
+    "packet_id",
+    "schema_version",
+    "runtime_generation_requirement",
+    "counts",
+    "actions"
+  ],
+  "properties": {
+    "task_id": {
+      "const": "OPS-06"
+    },
+    "packet_id": {
+      "const": "OPS-06-20260716-d34103b1"
+    },
+    "schema_version": {
+      "const": "ops06.action_registry.v1"
+    },
+    "runtime_generation_requirement": {
+      "type": "object"
+    },
+    "counts": {
+      "type": "object"
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "task_id",
+          "stable_id",
+          "dom_stable_id",
+          "role_capability",
+          "route",
+          "component",
+          "label",
+          "read_write",
+          "control_type",
+          "handler_endpoint",
+          "confirmation",
+          "idempotency_audit",
+          "states",
+          "readiness",
+          "owner",
+          "positive_tests",
+          "negative_tests"
+        ],
+        "properties": {
+          "task_id": {
+            "const": "OPS-06"
+          },
+          "stable_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_.-]+$"
+          },
+          "dom_stable_id": {
+            "type": "string",
+            "pattern": "^data-ops06-action="
+          },
+          "role_capability": {
+            "type": "array",
+            "minItems": 1
+          },
+          "route": {
+            "type": "string",
+            "minLength": 1
+          },
+          "component": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "read_write": {
+            "enum": [
+              "read",
+              "write"
+            ]
+          },
+          "control_type": {
+            "type": "string"
+          },
+          "handler_endpoint": {
+            "type": "object",
+            "required": [
+              "method",
+              "path_or_handler"
+            ],
+            "properties": {
+              "method": {
+                "enum": [
+                  "GET",
+                  "POST",
+                  "PATCH",
+                  "PUT",
+                  "DELETE",
+                  "CLIENT"
+                ]
+              },
+              "path_or_handler": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "confirmation": {
+            "type": "object",
+            "required": [
+              "required",
+              "mode",
+              "success_receipt_required"
+            ]
+          },
+          "idempotency_audit": {
+            "type": "object",
+            "required": [
+              "idempotency_required",
+              "key_source",
+              "audit_required",
+              "audit_event"
+            ]
+          },
+          "states": {
+            "type": "object",
+            "required": [
+              "loading",
+              "success",
+              "error",
+              "offline",
+              "permission",
+              "conflict",
+              "duplicate",
+              "provider_unavailable",
+              "session_expiry"
+            ]
+          },
+          "readiness": {
+            "type": "object",
+            "required": [
+              "required",
+              "current_audit_state",
+              "gate",
+              "audit_note",
+              "fail_conditions"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "positive_tests": {
+            "type": "array",
+            "minItems": 1
+          },
+          "negative_tests": {
+            "type": "array",
+            "minItems": 1
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true,
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1"
+}

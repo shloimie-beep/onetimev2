@@ -1,0 +1,10 @@
+{
+  "step_id": "J03",
+  "name": "Open landing",
+  "actor": "anonymous",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

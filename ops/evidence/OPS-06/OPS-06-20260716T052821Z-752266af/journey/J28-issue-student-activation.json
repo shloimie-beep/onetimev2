@@ -1,0 +1,10 @@
+{
+  "step_id": "J28",
+  "name": "Issue student activation",
+  "actor": "parent",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

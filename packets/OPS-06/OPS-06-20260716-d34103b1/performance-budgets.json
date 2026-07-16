@@ -1,0 +1,187 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "schema_version": "ops06.performance_budgets.v1",
+  "measurement_profile": {
+    "browser": "Chromium stable installed in the execution environment",
+    "viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "device_scale_factor": 1,
+    "cpu_slowdown_multiplier": 4,
+    "network": {
+      "download_kbps": 1600,
+      "upload_kbps": 750,
+      "latency_ms": 150,
+      "packet_loss_percent": 0
+    },
+    "cache_profiles": [
+      "cold",
+      "warm"
+    ],
+    "samples_per_route": 30,
+    "warmups_per_route": 3,
+    "percentiles": [
+      "p50",
+      "p75",
+      "p95"
+    ],
+    "route_only_measurement": true,
+    "exact_sha_required": true
+  },
+  "routes": [
+    {
+      "route_id": "landing",
+      "path": "/",
+      "auth": "anonymous",
+      "ready_mark": "primary heading and initial CTA visible",
+      "p75_ms_max": 2500,
+      "p95_ms_max": 4000,
+      "max_requests": 45
+    },
+    {
+      "route_id": "signup",
+      "path": "/signup",
+      "auth": "anonymous",
+      "ready_mark": "signup form actionable",
+      "p75_ms_max": 2500,
+      "p95_ms_max": 4000,
+      "max_requests": 45
+    },
+    {
+      "route_id": "login",
+      "path": "/login",
+      "auth": "anonymous",
+      "ready_mark": "login submit actionable",
+      "p75_ms_max": 2500,
+      "p95_ms_max": 4000,
+      "max_requests": 45
+    },
+    {
+      "route_id": "dashboard",
+      "path": "/app/dashboard",
+      "auth": "owner",
+      "ready_mark": "dashboard data and navigation actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "crm_list",
+      "path": "/app/crm",
+      "auth": "owner",
+      "ready_mark": "CRM list/filter toolbar actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "crm_detail",
+      "path": "/app/crm/contacts/:contactId",
+      "auth": "owner",
+      "ready_mark": "contact detail and edit control actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "communications",
+      "path": "/app/communications",
+      "auth": "owner",
+      "ready_mark": "communications filters and rows actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "tasks",
+      "path": "/app/tasks",
+      "auth": "owner",
+      "ready_mark": "task filters and create control actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "household",
+      "path": "/app/households/:householdKey",
+      "auth": "owner",
+      "ready_mark": "household detail and member controls actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "parent_portal",
+      "path": "/app/parent",
+      "auth": "parent",
+      "ready_mark": "parent household and learner controls actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "student_portal",
+      "path": "/app/student",
+      "auth": "student",
+      "ready_mark": "student next-class/library controls actionable",
+      "p75_ms_max": 3500,
+      "p95_ms_max": 5500,
+      "max_requests": 60
+    },
+    {
+      "route_id": "warm_return",
+      "path": "/app/crm",
+      "auth": "owner",
+      "ready_mark": "second navigation to CRM actionable",
+      "p75_ms_max": 2500,
+      "p95_ms_max": 3500,
+      "max_requests": 45
+    }
+  ],
+  "web_vitals": {
+    "public_lcp_p75_ms_max": 2500,
+    "protected_lcp_p75_ms_max": 3500,
+    "cls_p75_max": 0.1,
+    "tbt_p75_ms_max": 200,
+    "inp_p75_ms_max": 200,
+    "horizontal_overflow_count_max": 0
+  },
+  "bundle_budgets_bytes_gzip": {
+    "public_initial_javascript_max": 40960,
+    "authenticated_shell_initial_javascript_max": 256000,
+    "single_lazy_route_chunk_max": 184320,
+    "crm_total_javascript_max": 460800,
+    "public_must_not_import_authenticated_bundle": true
+  },
+  "request_budgets": {
+    "dashboard_api_requests_max": 12,
+    "single_mutation_requests_max": 3,
+    "duplicate_mutation_business_writes_max": 1,
+    "bna_or_operations_fanout_max": 0,
+    "third_party_requests_provider_off_max": 0,
+    "raw_provider_url_in_response_or_bundle_max": 0
+  },
+  "database_budgets": {
+    "seed_scale": {
+      "crm_contacts": 10000,
+      "communications": 50000,
+      "tasks": 10000,
+      "households": 1000,
+      "learners": 3000,
+      "queue_receipts": 10000
+    },
+    "critical_query_p95_ms_max": 250,
+    "single_transaction_p95_ms_max": 500,
+    "sequential_scan_on_unbounded_hot_table_allowed": false,
+    "explain_analyze_required": true
+  },
+  "failure_policy": {
+    "any_sample_failure_fails_route": true,
+    "missing_throttling_metadata_fails": true,
+    "fewer_than_30_valid_samples_fails": true,
+    "percentiles_must_be_derived_from_raw_samples": true,
+    "aggregate_without_raw_samples_fails": true
+  }
+}

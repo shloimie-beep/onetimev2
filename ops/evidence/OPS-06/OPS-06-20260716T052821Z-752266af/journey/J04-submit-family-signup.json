@@ -1,0 +1,10 @@
+{
+  "step_id": "J04",
+  "name": "Submit Family signup",
+  "actor": "anonymous",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

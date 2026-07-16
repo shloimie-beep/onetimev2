@@ -1,0 +1,178 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "schema_version": "ops06.synthetic_fixtures.v1",
+  "namespace": "ops06-d34103b1",
+  "all_data_policy": {
+    "email_domain": "example.test",
+    "fictional_only": true,
+    "production_rows_forbidden": true,
+    "real_user_creation_forbidden": true,
+    "provider_send_forbidden": true,
+    "live_charge_forbidden": true
+  },
+  "clock": {
+    "rehearsal_date": "2026-07-16",
+    "timezone": "Asia/Jerusalem",
+    "fixed_instant_utc": "2026-07-16T09:00:00.000Z"
+  },
+  "shared_password": "Ops06-Synthetic-Only!2026",
+  "actors": {
+    "owner": {
+      "display_name": "Oren Vale",
+      "email": "owner.ops06@example.test",
+      "role": "owner"
+    },
+    "administrator": {
+      "display_name": "Ada North",
+      "email": "admin.ops06@example.test",
+      "role": "admin"
+    },
+    "parent": {
+      "display_name": "Miriam Adler",
+      "email": "miriam.adler.ops06@example.test",
+      "phone": "+1-202-555-0106",
+      "role": "parent"
+    },
+    "student": {
+      "display_name": "Ari Adler",
+      "email": "ari.adler.ops06@example.test",
+      "role": "student"
+    },
+    "inactive_subscriber": {
+      "display_name": "Isaac Dormant",
+      "email": "isaac.dormant.ops06@example.test",
+      "role": "parent",
+      "entitlement_state": "inactive"
+    },
+    "school_lead": {
+      "display_name": "Leah Cohen",
+      "email": "leah.cohen.ops06@example.test",
+      "role": "school_lead"
+    }
+  },
+  "family_signup": {
+    "contact_name": "Miriam Adler",
+    "family_or_school": "Adler OPS-06 Family",
+    "audience_type": "family",
+    "location": "Ramat Beit Shemesh, Israel",
+    "timezone": "Asia/Jerusalem",
+    "browser_timezone": "Asia/Jerusalem",
+    "email": "miriam.adler.ops06@example.test",
+    "phone": "+1-202-555-0106",
+    "reminder_preference": "both",
+    "reminder_consent": true,
+    "idempotency_key": "ops06-d34103b1-family-signup",
+    "attribution": {
+      "landing_path": "/signup",
+      "utm_source": "ops06",
+      "utm_campaign": "day-one-rehearsal"
+    }
+  },
+  "school_signup": {
+    "contact_name": "Leah Cohen",
+    "family_or_school": "Cedar Grove OPS-06 School",
+    "audience_type": "school",
+    "location": "London, United Kingdom",
+    "timezone": "Europe/London",
+    "browser_timezone": "Europe/London",
+    "email": "leah.cohen.ops06@example.test",
+    "phone": "+44-20-7946-0106",
+    "reminder_preference": "both",
+    "reminder_consent": true,
+    "idempotency_key": "ops06-d34103b1-school-signup",
+    "attribution": {
+      "landing_path": "/signup",
+      "utm_source": "ops06",
+      "utm_campaign": "school-lead-proof"
+    }
+  },
+  "household": {
+    "display_name": "Adler OPS-06 Household",
+    "subscription_state": "synthetic_active",
+    "max_active_learners": 3,
+    "parent_relationship": "primary_guardian"
+  },
+  "learners": [
+    {
+      "display_name": "Ari Adler",
+      "hebrew_name": "Aharon",
+      "grade_label": "Grade 6",
+      "idempotency_key": "ops06-d34103b1-learner-ari"
+    },
+    {
+      "display_name": "Bina Adler",
+      "hebrew_name": "Bina",
+      "grade_label": "Grade 5",
+      "idempotency_key": "ops06-d34103b1-learner-bina"
+    },
+    {
+      "display_name": "Chaim Adler",
+      "hebrew_name": "Chaim",
+      "grade_label": "Grade 4",
+      "idempotency_key": "ops06-d34103b1-learner-chaim"
+    }
+  ],
+  "fourth_learner_denial": {
+    "display_name": "Devorah Adler",
+    "hebrew_name": "Devorah",
+    "grade_label": "Grade 3",
+    "idempotency_key": "ops06-d34103b1-learner-fourth",
+    "expected_code": "LEARNER_LIMIT_REACHED",
+    "expected_active_count_after": 3
+  },
+  "crm_mutations": {
+    "status": "contacted",
+    "tag": "ops06-rehearsal",
+    "note": "OPS-06 synthetic Day-One rehearsal note.",
+    "relationship": {
+      "type": "parent_of",
+      "target_display_name": "Ari Adler"
+    },
+    "task": {
+      "title": "Review OPS-06 Family signup",
+      "due_at": "2026-07-17T09:00:00.000Z"
+    }
+  },
+  "protected_learning": {
+    "class_title": "OPS-06 Synthetic Next Class",
+    "library_title": "OPS-06 Synthetic Library Lesson",
+    "review_title": "OPS-06 Synthetic Review Sheet",
+    "progress": {
+      "attendance_count": 4,
+      "watch_minutes": 72,
+      "completed_items": 3
+    },
+    "reward": {
+      "balance": 25,
+      "event_count": 2
+    }
+  },
+  "learner_question": {
+    "question": "What is the main idea of today's Mishnah?",
+    "idempotency_key": "ops06-d34103b1-question-ari",
+    "expected_state": "queued",
+    "provider_delivery_expected": false
+  },
+  "support_request": {
+    "subject": "OPS-06 synthetic portal support request",
+    "body": "Please confirm this fictional subscriber support receipt without sending to a provider.",
+    "idempotency_key": "ops06-d34103b1-support-parent",
+    "expected_state": "received",
+    "provider_delivery_expected": false
+  },
+  "school_negative_assertions": [
+    "no subscription",
+    "no household",
+    "no learner",
+    "no classroom or class entitlement",
+    "no parent or student portal account",
+    "no subscriber support entitlement",
+    "no public automated reminder or acknowledgement beyond truthful school inquiry handling"
+  ],
+  "reset_matchers": {
+    "email_suffix": ".ops06@example.test",
+    "idempotency_prefix": "ops06-d34103b1-",
+    "namespace": "ops06-d34103b1"
+  }
+}

@@ -1,0 +1,85 @@
+task_id,role,state,injection,expected_result,required_evidence,gate
+OPS-06,owner,loading,Delay target API/route response without changing data.,Skeleton/progress is announced; controls are stable and double-submit is prevented.,role-state/owner/loading.json,required
+OPS-06,owner,empty,Use an authorized fixture with no rows for the tested collection.,Truthful empty copy and only valid next actions; no fake populated data.,role-state/owner/empty.json,required
+OPS-06,owner,populated,Use OPS-06 synthetic fixtures.,Expected records and controls appear with exact scope.,role-state/owner/populated.json,required
+OPS-06,owner,partial_error,Fail one subordinate request while primary data succeeds.,Available data remains usable; failed region is bounded and retryable.,role-state/owner/partial_error.json,required
+OPS-06,owner,retry,Return one retryable failure then success.,Retry succeeds once; no duplicate write or stale protected data.,role-state/owner/retry.json,required
+OPS-06,owner,offline,Set browser offline after initial shell and before protected read/write.,No cached protected payload leak; write remains unsent or explicitly recoverable.,role-state/owner/offline.json,required
+OPS-06,owner,session_expiry,Expire/revoke session between render and action.,Protected state clears; action is denied; login is required.,role-state/owner/session_expiry.json,required
+OPS-06,owner,forbidden,Use a valid session lacking role/capability/scope.,Control absent/disabled and server denies without enumeration.,role-state/owner/forbidden.json,required
+OPS-06,owner,conflict,Submit stale version or competing write.,Explicit conflict; no silent overwrite; reload/reconcile path works.,role-state/owner/conflict.json,required
+OPS-06,owner,duplicate,Replay identical idempotency key and payload.,Original receipt is returned; row/outbox/audit counts do not increase.,role-state/owner/duplicate.json,required
+OPS-06,owner,provider_unavailable,Keep all provider credentials/modes off and exercise provider-dependent boundary.,Truthful unavailable or safe local receipt; no provider URL or call.,role-state/owner/provider_unavailable.json,required
+OPS-06,owner,worker_restart,Stop worker after claim/lease and restart after lease expiry.,Claim recovers exactly once; retry/DLQ state survives restart.,role-state/owner/worker_restart.json,required
+OPS-06,administrator,loading,Delay target API/route response without changing data.,Skeleton/progress is announced; controls are stable and double-submit is prevented.,role-state/administrator/loading.json,required
+OPS-06,administrator,empty,Use an authorized fixture with no rows for the tested collection.,Truthful empty copy and only valid next actions; no fake populated data.,role-state/administrator/empty.json,required
+OPS-06,administrator,populated,Use OPS-06 synthetic fixtures.,Expected records and controls appear with exact scope.,role-state/administrator/populated.json,required
+OPS-06,administrator,partial_error,Fail one subordinate request while primary data succeeds.,Available data remains usable; failed region is bounded and retryable.,role-state/administrator/partial_error.json,required
+OPS-06,administrator,retry,Return one retryable failure then success.,Retry succeeds once; no duplicate write or stale protected data.,role-state/administrator/retry.json,required
+OPS-06,administrator,offline,Set browser offline after initial shell and before protected read/write.,No cached protected payload leak; write remains unsent or explicitly recoverable.,role-state/administrator/offline.json,required
+OPS-06,administrator,session_expiry,Expire/revoke session between render and action.,Protected state clears; action is denied; login is required.,role-state/administrator/session_expiry.json,required
+OPS-06,administrator,forbidden,Use a valid session lacking role/capability/scope.,Control absent/disabled and server denies without enumeration.,role-state/administrator/forbidden.json,required
+OPS-06,administrator,conflict,Submit stale version or competing write.,Explicit conflict; no silent overwrite; reload/reconcile path works.,role-state/administrator/conflict.json,required
+OPS-06,administrator,duplicate,Replay identical idempotency key and payload.,Original receipt is returned; row/outbox/audit counts do not increase.,role-state/administrator/duplicate.json,required
+OPS-06,administrator,provider_unavailable,Keep all provider credentials/modes off and exercise provider-dependent boundary.,Truthful unavailable or safe local receipt; no provider URL or call.,role-state/administrator/provider_unavailable.json,required
+OPS-06,administrator,worker_restart,Stop worker after claim/lease and restart after lease expiry.,Claim recovers exactly once; retry/DLQ state survives restart.,role-state/administrator/worker_restart.json,required
+OPS-06,parent,loading,Delay target API/route response without changing data.,Skeleton/progress is announced; controls are stable and double-submit is prevented.,role-state/parent/loading.json,required
+OPS-06,parent,empty,Use an authorized fixture with no rows for the tested collection.,Truthful empty copy and only valid next actions; no fake populated data.,role-state/parent/empty.json,required
+OPS-06,parent,populated,Use OPS-06 synthetic fixtures.,Expected records and controls appear with exact scope.,role-state/parent/populated.json,required
+OPS-06,parent,partial_error,Fail one subordinate request while primary data succeeds.,Available data remains usable; failed region is bounded and retryable.,role-state/parent/partial_error.json,required
+OPS-06,parent,retry,Return one retryable failure then success.,Retry succeeds once; no duplicate write or stale protected data.,role-state/parent/retry.json,required
+OPS-06,parent,offline,Set browser offline after initial shell and before protected read/write.,No cached protected payload leak; write remains unsent or explicitly recoverable.,role-state/parent/offline.json,required
+OPS-06,parent,session_expiry,Expire/revoke session between render and action.,Protected state clears; action is denied; login is required.,role-state/parent/session_expiry.json,required
+OPS-06,parent,forbidden,Use a valid session lacking role/capability/scope.,Control absent/disabled and server denies without enumeration.,role-state/parent/forbidden.json,required
+OPS-06,parent,conflict,Submit stale version or competing write.,Explicit conflict; no silent overwrite; reload/reconcile path works.,role-state/parent/conflict.json,required
+OPS-06,parent,duplicate,Replay identical idempotency key and payload.,Original receipt is returned; row/outbox/audit counts do not increase.,role-state/parent/duplicate.json,required
+OPS-06,parent,provider_unavailable,Keep all provider credentials/modes off and exercise provider-dependent boundary.,Truthful unavailable or safe local receipt; no provider URL or call.,role-state/parent/provider_unavailable.json,required
+OPS-06,parent,worker_restart,Stop worker after claim/lease and restart after lease expiry.,Claim recovers exactly once; retry/DLQ state survives restart.,role-state/parent/worker_restart.json,required
+OPS-06,student,loading,Delay target API/route response without changing data.,Skeleton/progress is announced; controls are stable and double-submit is prevented.,role-state/student/loading.json,required
+OPS-06,student,empty,Use an authorized fixture with no rows for the tested collection.,Truthful empty copy and only valid next actions; no fake populated data.,role-state/student/empty.json,required
+OPS-06,student,populated,Use OPS-06 synthetic fixtures.,Expected records and controls appear with exact scope.,role-state/student/populated.json,required
+OPS-06,student,partial_error,Fail one subordinate request while primary data succeeds.,Available data remains usable; failed region is bounded and retryable.,role-state/student/partial_error.json,required
+OPS-06,student,retry,Return one retryable failure then success.,Retry succeeds once; no duplicate write or stale protected data.,role-state/student/retry.json,required
+OPS-06,student,offline,Set browser offline after initial shell and before protected read/write.,No cached protected payload leak; write remains unsent or explicitly recoverable.,role-state/student/offline.json,required
+OPS-06,student,session_expiry,Expire/revoke session between render and action.,Protected state clears; action is denied; login is required.,role-state/student/session_expiry.json,required
+OPS-06,student,forbidden,Use a valid session lacking role/capability/scope.,Control absent/disabled and server denies without enumeration.,role-state/student/forbidden.json,required
+OPS-06,student,conflict,Submit stale version or competing write.,Explicit conflict; no silent overwrite; reload/reconcile path works.,role-state/student/conflict.json,required
+OPS-06,student,duplicate,Replay identical idempotency key and payload.,Original receipt is returned; row/outbox/audit counts do not increase.,role-state/student/duplicate.json,required
+OPS-06,student,provider_unavailable,Keep all provider credentials/modes off and exercise provider-dependent boundary.,Truthful unavailable or safe local receipt; no provider URL or call.,role-state/student/provider_unavailable.json,required
+OPS-06,student,worker_restart,Stop worker after claim/lease and restart after lease expiry.,Claim recovers exactly once; retry/DLQ state survives restart.,role-state/student/worker_restart.json,required
+OPS-06,anonymous,loading,Delay target API/route response without changing data.,Skeleton/progress is announced; controls are stable and double-submit is prevented.,role-state/anonymous/loading.json,required
+OPS-06,anonymous,empty,Use an authorized fixture with no rows for the tested collection.,Truthful empty copy and only valid next actions; no fake populated data.,role-state/anonymous/empty.json,required
+OPS-06,anonymous,populated,Use OPS-06 synthetic fixtures.,Expected records and controls appear with exact scope.,role-state/anonymous/populated.json,required
+OPS-06,anonymous,partial_error,Fail one subordinate request while primary data succeeds.,Available data remains usable; failed region is bounded and retryable.,role-state/anonymous/partial_error.json,required
+OPS-06,anonymous,retry,Return one retryable failure then success.,Retry succeeds once; no duplicate write or stale protected data.,role-state/anonymous/retry.json,required
+OPS-06,anonymous,offline,Set browser offline after initial shell and before protected read/write.,No cached protected payload leak; write remains unsent or explicitly recoverable.,role-state/anonymous/offline.json,required
+OPS-06,anonymous,session_expiry,Expire/revoke session between render and action.,Protected state clears; action is denied; login is required.,role-state/anonymous/session_expiry.json,required
+OPS-06,anonymous,forbidden,Use a valid session lacking role/capability/scope.,Control absent/disabled and server denies without enumeration.,role-state/anonymous/forbidden.json,required
+OPS-06,anonymous,conflict,Submit stale version or competing write.,Explicit conflict; no silent overwrite; reload/reconcile path works.,role-state/anonymous/conflict.json,required
+OPS-06,anonymous,duplicate,Replay identical idempotency key and payload.,Original receipt is returned; row/outbox/audit counts do not increase.,role-state/anonymous/duplicate.json,required
+OPS-06,anonymous,provider_unavailable,Keep all provider credentials/modes off and exercise provider-dependent boundary.,Truthful unavailable or safe local receipt; no provider URL or call.,role-state/anonymous/provider_unavailable.json,required
+OPS-06,anonymous,worker_restart,Stop worker after claim/lease and restart after lease expiry.,Claim recovers exactly once; retry/DLQ state survives restart.,role-state/anonymous/worker_restart.json,required
+OPS-06,inactive_subscriber,loading,Delay target API/route response without changing data.,Skeleton/progress is announced; controls are stable and double-submit is prevented.,role-state/inactive-subscriber/loading.json,required
+OPS-06,inactive_subscriber,empty,Use an authorized fixture with no rows for the tested collection.,Truthful empty copy and only valid next actions; no fake populated data.,role-state/inactive-subscriber/empty.json,required
+OPS-06,inactive_subscriber,populated,Use OPS-06 synthetic fixtures.,Expected records and controls appear with exact scope.,role-state/inactive-subscriber/populated.json,required
+OPS-06,inactive_subscriber,partial_error,Fail one subordinate request while primary data succeeds.,Available data remains usable; failed region is bounded and retryable.,role-state/inactive-subscriber/partial_error.json,required
+OPS-06,inactive_subscriber,retry,Return one retryable failure then success.,Retry succeeds once; no duplicate write or stale protected data.,role-state/inactive-subscriber/retry.json,required
+OPS-06,inactive_subscriber,offline,Set browser offline after initial shell and before protected read/write.,No cached protected payload leak; write remains unsent or explicitly recoverable.,role-state/inactive-subscriber/offline.json,required
+OPS-06,inactive_subscriber,session_expiry,Expire/revoke session between render and action.,Protected state clears; action is denied; login is required.,role-state/inactive-subscriber/session_expiry.json,required
+OPS-06,inactive_subscriber,forbidden,Use a valid session lacking role/capability/scope.,Control absent/disabled and server denies without enumeration.,role-state/inactive-subscriber/forbidden.json,required
+OPS-06,inactive_subscriber,conflict,Submit stale version or competing write.,Explicit conflict; no silent overwrite; reload/reconcile path works.,role-state/inactive-subscriber/conflict.json,required
+OPS-06,inactive_subscriber,duplicate,Replay identical idempotency key and payload.,Original receipt is returned; row/outbox/audit counts do not increase.,role-state/inactive-subscriber/duplicate.json,required
+OPS-06,inactive_subscriber,provider_unavailable,Keep all provider credentials/modes off and exercise provider-dependent boundary.,Truthful unavailable or safe local receipt; no provider URL or call.,role-state/inactive-subscriber/provider_unavailable.json,required
+OPS-06,inactive_subscriber,worker_restart,Stop worker after claim/lease and restart after lease expiry.,Claim recovers exactly once; retry/DLQ state survives restart.,role-state/inactive-subscriber/worker_restart.json,required
+OPS-06,school_lead,loading,Delay target API/route response without changing data.,Skeleton/progress is announced; controls are stable and double-submit is prevented.,role-state/school-lead/loading.json,required
+OPS-06,school_lead,empty,Use an authorized fixture with no rows for the tested collection.,Truthful empty copy and only valid next actions; no fake populated data.,role-state/school-lead/empty.json,required
+OPS-06,school_lead,populated,Use OPS-06 synthetic fixtures.,Expected records and controls appear with exact scope.,role-state/school-lead/populated.json,required
+OPS-06,school_lead,partial_error,Fail one subordinate request while primary data succeeds.,Available data remains usable; failed region is bounded and retryable.,role-state/school-lead/partial_error.json,required
+OPS-06,school_lead,retry,Return one retryable failure then success.,Retry succeeds once; no duplicate write or stale protected data.,role-state/school-lead/retry.json,required
+OPS-06,school_lead,offline,Set browser offline after initial shell and before protected read/write.,No cached protected payload leak; write remains unsent or explicitly recoverable.,role-state/school-lead/offline.json,required
+OPS-06,school_lead,session_expiry,Expire/revoke session between render and action.,Protected state clears; action is denied; login is required.,role-state/school-lead/session_expiry.json,required
+OPS-06,school_lead,forbidden,Use a valid session lacking role/capability/scope.,Control absent/disabled and server denies without enumeration.,role-state/school-lead/forbidden.json,required
+OPS-06,school_lead,conflict,Submit stale version or competing write.,Explicit conflict; no silent overwrite; reload/reconcile path works.,role-state/school-lead/conflict.json,required
+OPS-06,school_lead,duplicate,Replay identical idempotency key and payload.,Original receipt is returned; row/outbox/audit counts do not increase.,role-state/school-lead/duplicate.json,required
+OPS-06,school_lead,provider_unavailable,Keep all provider credentials/modes off and exercise provider-dependent boundary.,Truthful unavailable or safe local receipt; no provider URL or call.,role-state/school-lead/provider_unavailable.json,required
+OPS-06,school_lead,worker_restart,Stop worker after claim/lease and restart after lease expiry.,Claim recovers exactly once; retry/DLQ state survives restart.,role-state/school-lead/worker_restart.json,required

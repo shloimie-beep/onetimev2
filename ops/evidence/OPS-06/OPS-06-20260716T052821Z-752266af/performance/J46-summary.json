@@ -1,0 +1,11 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.857Z",
+  "subject": "30-sample throttled performance",
+  "status": "not_run_blocked_environment",
+  "reason": "Exact isolated staging/source SHA was not proven; no rehearsal result is fabricated.",
+  "performance_profile_sha256": "a741bdd1896cf6feb49636fa34df9f10a6a1820d26c21c74d63e9b50156ba5ef",
+  "routes_required": 12,
+  "samples_per_route": 30
+}

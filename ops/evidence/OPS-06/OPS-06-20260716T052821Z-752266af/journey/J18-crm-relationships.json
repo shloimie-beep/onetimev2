@@ -1,0 +1,10 @@
+{
+  "step_id": "J18",
+  "name": "CRM relationships",
+  "actor": "owner|administrator",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

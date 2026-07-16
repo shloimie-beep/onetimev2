@@ -1,0 +1,10 @@
+{
+  "step_id": "J41",
+  "name": "Prove School lead-only boundaries",
+  "actor": "owner|administrator",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

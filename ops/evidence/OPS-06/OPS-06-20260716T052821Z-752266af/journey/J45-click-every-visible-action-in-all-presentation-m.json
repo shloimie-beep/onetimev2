@@ -1,0 +1,10 @@
+{
+  "step_id": "J45",
+  "name": "Click every visible action in all presentation modes",
+  "actor": "all_roles",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

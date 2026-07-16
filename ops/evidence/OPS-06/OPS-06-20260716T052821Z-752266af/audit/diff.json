@@ -1,0 +1,14 @@
+{
+  "task_id": "OPS-06",
+  "packet_id": "OPS-06-20260716-d34103b1",
+  "generated_at": "2026-07-16T05:43:16.581Z",
+  "changed_files": [
+    " M package.json",
+    "?? ops/evidence/OPS-06/",
+    "?? ops/ops06/",
+    "?? packets/",
+    "?? scripts/ops06-synthetic-harness.d.mts",
+    "?? scripts/ops06-synthetic-harness.mjs",
+    "?? tests/unit/ops06/"
+  ]
+}

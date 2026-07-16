@@ -1,0 +1,10 @@
+{
+  "step_id": "J38",
+  "name": "Student logout and token replay",
+  "actor": "student",
+  "status": "NOT_RUN_BLOCKED_ENVIRONMENT",
+  "evidence": [
+    "preflight/target-discovery.json"
+  ],
+  "fabricated": false
+}

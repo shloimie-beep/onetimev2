@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/ops06/checkpoint-evidence.schema.json",
+  "title": "OPS-06 checkpoint evidence",
+  "type": "object",
+  "required": [
+    "task_id",
+    "packet_id",
+    "schema_version",
+    "generated_at",
+    "verdict",
+    "environment",
+    "source",
+    "safety",
+    "journey",
+    "actions",
+    "gates",
+    "blockers",
+    "evidence_index_sha256"
+  ],
+  "properties": {
+    "task_id": { "const": "OPS-06" },
+    "packet_id": { "const": "OPS-06-20260716-d34103b1" },
+    "schema_version": { "const": "ops06.checkpoint_evidence.v1" },
+    "generated_at": { "type": "string", "minLength": 1 },
+    "verdict": {
+      "enum": ["PASS", "FAIL_PRODUCT_GAP", "FAIL_TEST", "FAIL_SAFETY", "BLOCKED_ENVIRONMENT"]
+    },
+    "environment": {
+      "type": "object",
+      "required": ["status", "isolated_staging_proven", "deployment_attempted"],
+      "properties": {
+        "status": { "type": "string", "minLength": 1 },
+        "isolated_staging_proven": { "type": "boolean" },
+        "deployment_attempted": { "const": false }
+      },
+      "additionalProperties": true
+    },
+    "source": {
+      "type": "object",
+      "required": ["repository", "local_head", "tested_sha", "exact_deployed_sha_proven"],
+      "properties": {
+        "repository": { "const": "webcraft-media/onetimev2" },
+        "local_head": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tested_sha": { "type": ["string", "null"] },
+        "exact_deployed_sha_proven": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "provider_calls",
+        "real_users_created",
+        "production_rows_touched",
+        "live_charges",
+        "broad_sends",
+        "buffer_publishes",
+        "root_dns_mutations",
+        "production_deploys",
+        "bna_fanout"
+      ],
+      "properties": {
+        "provider_calls": { "const": 0 },
+        "real_users_created": { "const": 0 },
+        "production_rows_touched": { "const": 0 },
+        "live_charges": { "const": 0 },
+        "broad_sends": { "const": 0 },
+        "buffer_publishes": { "const": 0 },
+        "root_dns_mutations": { "const": 0 },
+        "production_deploys": { "const": 0 },
+        "bna_fanout": { "const": 0 }
+      },
+      "additionalProperties": true
+    },
+    "journey": {
+      "type": "object",
+      "required": ["required_steps", "executed_steps", "passed_steps", "results_path"],
+      "properties": {
+        "required_steps": { "const": 48 },
+        "executed_steps": { "type": "integer", "minimum": 0, "maximum": 48 },
+        "passed_steps": { "type": "integer", "minimum": 0, "maximum": 48 },
+        "results_path": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "actions": {
+      "type": "object",
+      "required": ["required_registry_count", "runtime_registry_count", "results_path"],
+      "properties": {
+        "required_registry_count": { "const": 161 },
+        "runtime_registry_count": { "type": "integer", "minimum": 0 },
+        "results_path": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": true
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 17,
+      "maxItems": 17,
+      "items": {
+        "type": "object",
+        "required": ["gate_id", "status", "evidence"],
+        "properties": {
+          "gate_id": { "type": "string", "pattern": "^G(?:0[1-9]|1[0-7])$" },
+          "status": { "enum": ["PASS", "FAIL", "BLOCKED", "NOT_RUN"] },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["blocker_id", "severity", "summary", "evidence"],
+        "properties": {
+          "blocker_id": { "type": "string", "minLength": 1 },
+          "severity": { "const": "blocking" },
+          "summary": { "type": "string", "minLength": 1 },
+          "evidence": { "type": "array", "minItems": 1 }
+        },
+        "additionalProperties": true
+      }
+    },
+    "evidence_index_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "verdict": { "const": "PASS" } } },
+      "then": {
+        "properties": {
+          "blockers": { "maxItems": 0 },
+          "environment": {
+            "properties": { "isolated_staging_proven": { "const": true } }
+          },
+          "source": {
+            "properties": { "exact_deployed_sha_proven": { "const": true } }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "verdict": { "not": { "const": "PASS" } } } },
+      "then": { "properties": { "blockers": { "minItems": 1 } } }
+    }
+  ],
+  "additionalProperties": true
+}
