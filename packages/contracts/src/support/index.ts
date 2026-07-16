@@ -6,15 +6,20 @@ const sha256Hex = /^[a-f0-9]{64}$/;
 const isoDateTime = z.string().datetime({ offset: true });
 
 export const supportTicketCategorySchema = z.enum([
-  'bug',
   'access_login',
   'class_zoom',
   'billing',
   'content',
-  'complaint',
+  'technical_bug',
+  'account_family',
   'other',
 ]);
 export type SupportTicketCategory = z.infer<typeof supportTicketCategorySchema>;
+
+const supportEventTicketCategorySchema = z.union([
+  supportTicketCategorySchema,
+  z.enum(['bug', 'complaint']),
+]);
 
 export const supportReplyPreferenceSchema = z.enum(['in_app', 'email', 'whatsapp']);
 export type SupportReplyPreference = z.infer<typeof supportReplyPreferenceSchema>;
@@ -161,6 +166,12 @@ export const supportEventV1Schema = z
       deployment_id: z.string().min(1).max(64),
       source_commit: z.string().regex(/^[a-f0-9]{40}$/),
     }),
+    scope: z
+      .object({
+        account_key: z.string().min(1).max(128),
+        product_key: z.string().min(1).max(128),
+      })
+      .optional(),
     submission: z.object({
       source_ticket_id: z.string().regex(new RegExp(`^ots_${crockfordId}$`)),
       receipt_id: z.string().regex(new RegExp(`^otr_${crockfordId}$`)),
@@ -171,7 +182,11 @@ export const supportEventV1Schema = z
       onetime_account_id: z.string().regex(opaqueActorId),
     }),
     authorization: z.object({
-      policy_version: z.literal('ot89-subscriber-support-v1'),
+      policy_version: z.enum([
+        'ot89-subscriber-support-v1',
+        'ot114-subscriber-support-v1',
+        'ot114-owner-admin-support-v1',
+      ]),
       authenticated: z.literal(true),
       account_id: z.string().regex(opaqueActorId),
       entitlement_product: z.literal('one_time'),
@@ -181,12 +196,22 @@ export const supportEventV1Schema = z
       valid_until: isoDateTime.nullable(),
     }),
     ticket: z.object({
-      category: supportTicketCategorySchema,
+      category: supportEventTicketCategorySchema,
+      severity: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
       title: z.string().min(5).max(120),
+      redacted_summary: z.string().min(1).max(500).optional(),
       message: z.string().min(20).max(6000),
       issue_details: issueDetailsSchema,
       client_context: clientContextSchema,
       reply_preference: supportReplyPreferenceSchema,
+      idempotency_key_hash: z.string().regex(sha256Hex).optional(),
+      operator_triage: z
+        .object({
+          bna_triage_candidate: z.boolean(),
+          decision_state: z.enum(['triage_candidate', 'decision_needed']),
+          structured_options: z.array(z.string().min(1).max(120)).min(1).max(4),
+        })
+        .optional(),
     }),
     attachments: z.array(supportEventAttachmentSchema).max(3),
     privacy: z.object({

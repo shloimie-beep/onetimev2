@@ -97,13 +97,13 @@ describe('Communications API registration hook', () => {
     });
     expect(json.items).toHaveLength(2);
     expect(json.items[0]).toMatchObject({
-      local_state: 'intent_queued',
-      state_label: 'Queued locally',
+      local_state: 'queued',
+      state_label: 'Queued',
       recipient_masked: 'Email recipient',
     });
     expect(json.items[1]).toMatchObject({
-      local_state: 'sink_processed',
-      state_label: 'Processed in test mode',
+      local_state: 'draft_saved',
+      state_label: 'Processed in test mode, not delivery',
       recipient_masked: 'WhatsApp recipient ending 7890',
     });
     const serialized = JSON.stringify(json);

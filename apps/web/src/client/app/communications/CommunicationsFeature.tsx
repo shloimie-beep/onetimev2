@@ -132,15 +132,22 @@ export function CommunicationsFeature({ contactId, onProtectedStateCleared }: Pr
               Family signup WhatsApp confirmation
             </option>
             <option value="internal_lead_alert">Internal owner alert</option>
+            <option value="single_recipient_reply">Single-recipient reply</option>
           </select>
         </label>
         <label>
           <span>Local status</span>
           <select value={status} onChange={(event) => setStatus(event.target.value)}>
             <option value="">All</option>
-            <option value="intent_queued">Queued locally</option>
-            <option value="sink_processed">Processed in test mode</option>
-            <option value="status_unavailable">Status unavailable</option>
+            <option value="queued">Queued</option>
+            <option value="provider_accepted">Provider accepted</option>
+            <option value="delivered">Delivered</option>
+            <option value="failed">Failed</option>
+            <option value="bounced">Bounced</option>
+            <option value="complained">Complained</option>
+            <option value="suppressed">Suppressed</option>
+            <option value="draft_saved">Draft saved/provider off</option>
+            <option value="unknown">Unknown</option>
           </select>
         </label>
         <div className="communications-filter-actions">
@@ -379,12 +386,12 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
       provider_acceptance: false,
       provider_delivery: false,
       inbound_import: false,
-      replies: false,
+      replies: true,
       threads: false,
       subject_body_access: false,
       attachments: false,
       reminder_execution: false,
-      compose: false,
+      compose: true,
       resend: false,
       campaigns: false,
       templates: false,
@@ -394,11 +401,18 @@ function emptyUnavailableResponse(): CommunicationsListResponse {
         'family_signup_email_ack',
         'family_signup_whatsapp_confirmation',
         'internal_lead_alert',
+        'single_recipient_reply',
       ] satisfies CommunicationsIntentType[],
       local_states: [
-        'intent_queued',
-        'sink_processed',
-        'status_unavailable',
+        'queued',
+        'provider_accepted',
+        'delivered',
+        'failed',
+        'bounced',
+        'complained',
+        'suppressed',
+        'draft_saved',
+        'unknown',
       ] satisfies CommunicationsLocalState[],
     },
     applied_filters: {

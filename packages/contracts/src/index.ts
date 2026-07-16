@@ -269,10 +269,134 @@ export type ContactListItem = {
   phone: string | null;
   source: string;
   assigned_team_member: string | null;
+  tags: ContactTag[];
+  system_facts: ContactSystemFact[];
   last_activity_at: string;
   updated_at: string;
   version: number;
 };
+
+export type ContactTag = {
+  tag_id: string;
+  display_name: string;
+  visual_token: string | null;
+};
+
+export type ContactSystemFact = {
+  dimension: string;
+  value: string;
+  label: string;
+  source: string;
+};
+
+export type ContactNote = {
+  note_id: string;
+  body: string;
+  author_label: string;
+  source: string;
+  created_at: string;
+};
+
+export type ContactRelationship = {
+  relationship_id: string;
+  contact_id: string;
+  display_name: string;
+  type: string;
+  label: string | null;
+};
+
+export type ContactTask = {
+  task_id: string;
+  title: string;
+  detail: string | null;
+  status: string;
+  owner_label: string;
+  due_at: string;
+};
+
+export type ContactSupportTicket = {
+  receipt_id: string;
+  status: string;
+  delivery_state: string;
+  public_summary: string;
+  updated_at: string;
+};
+
+export type ContactTimelineItem = {
+  timeline_id: string;
+  occurred_at: string;
+  kind: 'communication' | 'note' | 'support' | 'audit' | 'task';
+  label: string;
+  status_label: string;
+  channel: string | null;
+  detail: string;
+};
+
+export type ContactSummaryFact = {
+  label: string;
+  value: string;
+};
+
+const contactTagSchema = z.object({
+  tag_id: z.string().min(1),
+  display_name: z.string().min(1),
+  visual_token: z.string().nullable(),
+}) satisfies z.ZodType<ContactTag>;
+
+const contactSystemFactSchema = z.object({
+  dimension: z.string().min(1),
+  value: z.string().min(1),
+  label: z.string().min(1),
+  source: z.string().min(1),
+}) satisfies z.ZodType<ContactSystemFact>;
+
+const contactNoteSchema = z.object({
+  note_id: z.string().min(1),
+  body: z.string().min(1),
+  author_label: z.string().min(1),
+  source: z.string().min(1),
+  created_at: z.string(),
+}) satisfies z.ZodType<ContactNote>;
+
+const contactRelationshipSchema = z.object({
+  relationship_id: z.string().min(1),
+  contact_id: z.string().min(1),
+  display_name: z.string().min(1),
+  type: z.string().min(1),
+  label: z.string().nullable(),
+}) satisfies z.ZodType<ContactRelationship>;
+
+const contactTaskSchema = z.object({
+  task_id: z.string().min(1),
+  title: z.string().min(1),
+  detail: z.string().nullable(),
+  status: z.string().min(1),
+  owner_label: z.string().min(1),
+  due_at: z.string(),
+}) satisfies z.ZodType<ContactTask>;
+
+const contactSupportTicketSchema = z.object({
+  receipt_id: z.string().min(1),
+  status: z.string().min(1),
+  delivery_state: z.string().min(1),
+  public_summary: z.string().min(1),
+  updated_at: z.string(),
+}) satisfies z.ZodType<ContactSupportTicket>;
+
+const contactTimelineItemSchema = z.object({
+  timeline_id: z.string().min(1),
+  occurred_at: z.string(),
+  kind: z.enum(['communication', 'note', 'support', 'audit', 'task']),
+  label: z.string().min(1),
+  status_label: z.string().min(1),
+  channel: z.string().nullable(),
+  detail: z.string(),
+}) satisfies z.ZodType<ContactTimelineItem>;
+
+const contactSummaryFactSchema = z.object({
+  label: z.string().min(1),
+  value: z.string().min(1),
+}) satisfies z.ZodType<ContactSummaryFact>;
 
 export const contactListItemSchema = z.object({
   contact_id: z.string().min(1),
@@ -283,6 +407,8 @@ export const contactListItemSchema = z.object({
   phone: z.string().nullable(),
   source: z.string(),
   assigned_team_member: z.string().nullable(),
+  tags: z.array(contactTagSchema),
+  system_facts: z.array(contactSystemFactSchema),
   last_activity_at: z.string(),
   updated_at: z.string(),
   version: z.number().int(),
@@ -302,6 +428,12 @@ export type ContactDetail = ContactListItem & {
     signup_key: string | null;
     captured_at: string | null;
   };
+  enrollment_summary: ContactSummaryFact[];
+  relationships: ContactRelationship[];
+  notes: ContactNote[];
+  tasks: ContactTask[];
+  support_tickets: ContactSupportTicket[];
+  timeline: ContactTimelineItem[];
   internal_note: string;
 };
 
@@ -319,6 +451,12 @@ export const contactDetailSchema: z.ZodType<ContactDetail> = contactListItemSche
     signup_key: z.string().nullable(),
     captured_at: z.string().nullable(),
   }),
+  enrollment_summary: z.array(contactSummaryFactSchema),
+  relationships: z.array(contactRelationshipSchema),
+  notes: z.array(contactNoteSchema),
+  tasks: z.array(contactTaskSchema),
+  support_tickets: z.array(contactSupportTicketSchema),
+  timeline: z.array(contactTimelineItemSchema),
   internal_note: z.string(),
 });
 

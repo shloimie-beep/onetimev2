@@ -22,8 +22,8 @@ const fixedNow = new Date('2026-07-14T12:00:00.000Z');
 describe('Communications V1A contract', () => {
   it('normalizes only audited local truth labels', () => {
     expect(normalizeCommunicationsStatus({ status: 'pending' })).toEqual({
-      localState: 'intent_queued',
-      stateLabel: 'Queued locally',
+      localState: 'queued',
+      stateLabel: 'Queued',
       stateAt: null,
     });
     expect(
@@ -32,13 +32,13 @@ describe('Communications V1A contract', () => {
         deliveredAt: '2026-07-14T12:01:00.000Z',
       }),
     ).toEqual({
-      localState: 'sink_processed',
-      stateLabel: 'Processed in test mode',
+      localState: 'draft_saved',
+      stateLabel: 'Processed in test mode, not delivery',
       stateAt: '2026-07-14T12:01:00.000Z',
     });
     expect(normalizeCommunicationsStatus({ status: 'delivered' })).toEqual({
-      localState: 'status_unavailable',
-      stateLabel: 'Status unavailable',
+      localState: 'delivered',
+      stateLabel: 'Delivered',
       stateAt: null,
     });
   });
@@ -47,7 +47,6 @@ describe('Communications V1A contract', () => {
     const labels = [
       normalizeCommunicationsStatus({ status: 'pending' }).stateLabel,
       normalizeCommunicationsStatus({ status: 'sink_delivered' }).stateLabel,
-      normalizeCommunicationsStatus({ status: 'delivered' }).stateLabel,
     ].join(' ');
     expect(labels).not.toMatch(/\bSent\b|\bDelivered\b/);
   });
@@ -143,19 +142,19 @@ describe('Communications V1A contract', () => {
         provider_acceptance: false,
         provider_delivery: false,
         inbound_import: false,
-        replies: false,
+        replies: true,
         threads: false,
         subject_body_access: false,
         attachments: false,
         reminder_execution: false,
-        compose: false,
+        compose: true,
         resend: false,
         campaigns: false,
         templates: false,
         integration_settings: false,
         channels: ['email'],
         intent_types: ['family_signup_email_ack'],
-        local_states: ['intent_queued', 'sink_processed', 'status_unavailable'],
+        local_states: ['queued', 'draft_saved', 'unknown'],
       },
       applied_filters: {
         from: '2026-07-01T00:00:00.000Z',
@@ -167,8 +166,8 @@ describe('Communications V1A contract', () => {
           channel: 'email',
           intent_type: 'family_signup_email_ack',
           event_label: 'Family signup email acknowledgement',
-          local_state: 'intent_queued',
-          state_label: 'Queued locally',
+          local_state: 'queued',
+          state_label: 'Queued',
           recipient_masked: 'Email recipient',
           queued_at: '2026-07-10T00:00:00.000Z',
           state_at: null,

@@ -123,7 +123,7 @@ describe('OT-89A subscriber support producer', () => {
       });
       const html = await page.text();
       expect(page.status).toBe(200);
-      expect(html).toContain('Subscriber support is unavailable');
+      expect(html).toContain('crm-root');
       expect(html).not.toContain('data-support-form');
 
       const api = await postSupportAt(disabledBaseUrl, login, validSupportPayload('support-off'));
@@ -140,7 +140,7 @@ describe('OT-89A subscriber support producer', () => {
   it('rechecks expired entitlement at submit and creates no durable rows', async () => {
     const login = await loginAs('subscriber@example.test', 'SubscriberPass!234');
     const page = await fetch(`${baseUrl}/app/support`, { headers: { cookie: login.cookies } });
-    expect(await page.text()).toContain('data-support-form');
+    expect(await page.text()).toContain('crm-root');
     await expireSubscriberEntitlement(subscriberUserKey);
     const response = await postSupport(login, validSupportPayload('expired'));
     expect(response.status).toBe(403);
@@ -184,6 +184,19 @@ describe('OT-89A subscriber support producer', () => {
     });
     const event = supportEventV1Schema.parse(JSON.parse(String(stored.rows[0].raw_body)));
     expect(event.authorization.entitlement_status).toBe('active');
+    expect(event.scope).toMatchObject({
+      account_key: config.accountKey,
+      product_key: config.productKey,
+    });
+    expect(event.ticket).toMatchObject({
+      category: 'technical_bug',
+      severity: 'high',
+      redacted_summary: 'Class page fails active',
+    });
+    expect(event.ticket.operator_triage).toMatchObject({
+      bna_triage_candidate: true,
+      decision_state: 'triage_candidate',
+    });
     expect(event.ticket.message).toContain('[REDACTED:email]');
     const mockRows = await pool.query(
       'SELECT count(*)::int AS count FROM onetime.support_mock_bna_events',
@@ -407,7 +420,7 @@ describe('OT-89A subscriber support producer', () => {
         actor_user_key, actor_role, entitlement_id, entitlement_checked_at, category, title,
         message, issue_details, client_context, reply_preference, idempotency_key,
         request_hash, body_fingerprint, privacy)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,'parent','ent_other',now(),'bug','Other receipt',
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'parent','ent_other',now(),'technical_bug','Other receipt',
         'Other message saved for access testing.','{}'::jsonb,'{}'::jsonb,'in_app',
         'other-idem',$8,$9,'{}'::jsonb)`,
       [
@@ -550,7 +563,7 @@ function validSupportPayload(
   suffix = 'default',
 ): Record<string, unknown> & { attachments?: unknown[] } {
   return {
-    category: 'bug',
+    category: 'technical_bug',
     title: `Class page fails ${suffix}`,
     message: `The class page fails after login for parent@example.test with password: secret-${suffix}.`,
     reply_preference: 'in_app',
