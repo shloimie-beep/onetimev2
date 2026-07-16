@@ -1,0 +1,75 @@
+{
+  "run_id": "OPS-03A",
+  "title": "Natural email activation, login closeout, and PR #40 repair",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ops03-staging-readiness-repair",
+  "pr": "https://github.com/webcraft-media/onetimev2/pull/40",
+  "base_ref": "integration/ot-99-final-semantic-convergence-20260716T122407Z",
+  "base_sha": "96b429053d13a139595ed3bd0ea3c854cc2500e8",
+  "starting_head_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "current_head_sha": "local-uncommitted",
+  "staging_url": "https://ot99-web-staging.up.railway.app",
+  "railway_project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+  "railway_project_name": "one-time-ot99-staging-96b42905",
+  "status": "in_progress",
+  "prompt_sha256": "25405B3376EB7A6379159DF212DD9E9764025A257F2B014F261C4E837AD980D4",
+  "updated_at": "2026-07-16T21:46:34.1645148+03:00",
+  "authorization": {
+    "production_deployments": false,
+    "dns_changes": false,
+    "stripe_or_payment_changes": false,
+    "bna_runtime_changes": false,
+    "rabbi_or_customer_sends": false,
+    "broad_provider_activation": false,
+    "merge_pr_40": false,
+    "staging_pr_40_branch_push": true,
+    "isolated_railway_staging_update": true,
+    "exactly_one_allowlisted_activation_email": true
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Repair PR #40 checks",
+      "status": "local_verification_passed_pending_push_and_ci",
+      "completed_items": [
+        "Formatted ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json and verified it parses as JSON.",
+        "Updated OT-75 workflow to derive PR base/head from GitHub event data instead of using stale default historical SHAs.",
+        "Updated OT-75 validator to emit machine-readable NOT_APPLICABLE for mixed/non-OT-75 PR scopes without labeling the result READY.",
+        "Added OT-75 unit coverage for PR base/head and NOT_APPLICABLE reporting."
+      ],
+      "verification": [
+        "node scripts/ot75/validate-release-readiness.mjs --scope-base 96b429053d13a139595ed3bd0ea3c854cc2500e8 --scope-head HEAD --branch-name codex/ops03-staging-readiness-repair",
+        "npx vitest run --config vitest.unit.config.ts tests/unit/ot75/release-readiness.test.ts",
+        "npx prettier --check .github/workflows/ot75-release-readiness.yml scripts/ot75/validate-release-readiness.mjs tests/unit/ot75/release-readiness.test.ts ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json",
+        "node -e JSON.parse(fs.readFileSync('ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json','utf8'))"
+      ],
+      "known_local_caveat": "On Windows, npm run format still reports broad pre-existing repository formatting/line-ending drift. The CI failure target and Phase 1 touched files pass targeted Prettier; GitHub Linux CI remains the authority for the full check."
+    },
+    {
+      "phase": 2,
+      "name": "Durable activation delivery",
+      "status": "not_started"
+    },
+    {
+      "phase": 3,
+      "name": "Web activation, forgot-password, reset-password, and login experience",
+      "status": "not_started"
+    },
+    {
+      "phase": 4,
+      "name": "Roles and owner/admin MFA closeout",
+      "status": "not_started"
+    },
+    {
+      "phase": 5,
+      "name": "Focused security, browser, accessibility, and lifecycle tests",
+      "status": "not_started"
+    },
+    {
+      "phase": 6,
+      "name": "Staging deployment and one-email canary",
+      "status": "not_started"
+    }
+  ],
+  "blockers": []
+}
