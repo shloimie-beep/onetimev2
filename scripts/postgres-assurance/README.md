@@ -29,10 +29,11 @@ ops/evidence/ot-37/latest-postgres-assurance-report.md
 ## Future Branch Instructions
 
 OT-34, OT-36, OT-60R, and later integration branches can run the same command
-after rebasing or stacking on a branch that contains this harness. Add new
-scenarios under `tests/postgres-assurance/` and call them from
+after rebasing or stacking on a branch that contains this harness. Add reusable
+scenario catalogs under `scripts/postgres-assurance/` and call them from
 `scripts/postgres-assurance/run.ts`; do not rewrite the database helpers for
-each lane.
+each lane. Test-only compatibility shims may live under `tests/`, but production
+scripts must not import from that tree.
 
 This harness intentionally exposes current-base gaps as expected-open findings
 instead of repairing application code or migrations. Migration execution and

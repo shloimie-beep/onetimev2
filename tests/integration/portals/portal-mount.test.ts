@@ -84,6 +84,14 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(JSON.stringify(dashboardJson)).not.toContain('learner_beta');
       expect(JSON.stringify(dashboardJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive/i);
 
+      await pool.query(
+        `DELETE FROM onetime.portal_student_access_state
+          WHERE account_key = $1
+            AND product_key = $2
+            AND learner_key = 'learner_setup'`,
+        [config.accountKey, config.productKey],
+      );
+
       const crossHousehold = await fetch(
         `${server.baseUrl}/api/v1/portals/parent/households/household_beta/dashboard`,
         { headers: { cookie: parent.cookies } },
@@ -113,6 +121,17 @@ describe('OT-71 mounted parent and student portals', () => {
         success: true,
         data: { learner_key: 'learner_setup', status: 'setup_requested' },
       });
+      const repairedAccessRows = await pool.query(
+        `SELECT status, last_operation_type
+           FROM onetime.portal_student_access_state
+          WHERE account_key = $1
+            AND product_key = $2
+            AND learner_key = 'learner_setup'`,
+        [config.accountKey, config.productKey],
+      );
+      expect(repairedAccessRows.rows).toEqual([
+        { status: 'setup_requested', last_operation_type: 'setup' },
+      ]);
 
       const tokenRows = await pool.query(
         `SELECT token_hash, metadata

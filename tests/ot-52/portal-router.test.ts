@@ -136,7 +136,7 @@ describe('OT-52P portal routers', () => {
     });
   });
 
-  it('keeps student launch scoped to the actor subject and omits raw provider URLs', async () => {
+  it('rejects learner override payloads and keeps student launch scoped to the actor subject', async () => {
     const response = await fetch(
       `${baseUrl}/api/v1/portals/student/classes/class_week_001/launch`,
       {
@@ -151,11 +151,27 @@ describe('OT-52P portal routers', () => {
     );
     const json = await response.json();
 
-    expect(response.status).toBe(200);
-    expect(lastStudentLaunchActor?.student_learner?.learner_key).toBe('learner_student_self');
+    expect(response.status).toBe(400);
+    expect(lastStudentLaunchActor).toBeNull();
     expect(JSON.stringify(json)).not.toContain('learner_sibling_attempt');
     expect(JSON.stringify(json)).not.toMatch(/https?:\/\/|zoom|meet/i);
-    expect(json).toMatchObject({
+    expect(json).toMatchObject({ success: false, code: 'VALIDATION_ERROR' });
+
+    const scoped = await fetch(`${baseUrl}/api/v1/portals/student/classes/class_week_001/launch`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-actor': 'student',
+        'x-csrf-token': 'valid-csrf',
+      },
+      body: JSON.stringify({}),
+    });
+    const scopedJson = await scoped.json();
+
+    expect(scoped.status).toBe(200);
+    expect(lastStudentLaunchActor?.student_learner?.learner_key).toBe('learner_student_self');
+    expect(JSON.stringify(scopedJson)).not.toMatch(/https?:\/\/|zoom|meet/i);
+    expect(scopedJson).toMatchObject({
       success: true,
       data: {
         kind: 'class_launch',
