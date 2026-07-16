@@ -1,6 +1,6 @@
 # OT-83R Final Report
 
-Updated: 2026-07-16T12:22:09.4140985+03:00
+Updated: 2026-07-16T14:27:00+03:00
 
 Branch: `codex/ot83r-complete-portals`
 
@@ -8,91 +8,89 @@ Draft PR: https://github.com/webcraft-media/onetimev2/pull/33
 
 Status: `READY_FOR_OT99`
 
-`READY_FOR_OT99`: yes. The implementation is complete, the final report exists,
-the worktree was clean after the implementation commit, and PR #33 required CI
-was observed green for implementation commit
-`76eb6f698134471b10fb5de5979c1660b64494e5`.
+`READY_FOR_OT99`: yes after the OT-83R truthfulness repair. Implementation head
+`20fe0f8ffc079f1f540d7dc16cacca86259ab407` was observed green on PR #33 with
+Node 24 verify and both PostgreSQL workflows passing.
 
-## Completed Implementation
+## Completed Repair
 
-- Reused the existing task-owned worktree and branch; no replacement branch or
-  PR was created.
-- Added parent/student protected content-open capabilities and routed library
-  actions through learner-scoped portal APIs.
-- Completed student-question persistence with repository list/submit,
-  idempotency, audit recording, student-only write access, and parent read
-  denial.
-- Added parent content-open route and student content-open/question routes with
-  CSRF on question submit.
-- Wired client APIs for student question submission and parent/student support
-  preview.
-- Added responsive student question UI and portal CSS.
-- Added OT-83R route/action registry coverage at
-  `ops/codex-runs/OT-83R/ROUTE-ACTION-REGISTRY.json`.
-- Added OT-83R browser/a11y/performance harness at
-  `tests/ot-83/portal-browser-harness.ts`.
-- Updated integration expectations for migration 2000, scoped portal content
-  action URLs, and deterministic sink delivery count.
+- Reused the existing task-owned branch and PR; no replacement branch or PR was
+  created.
+- Preserved the completed backend from audited head
+  `f8406b0a22683c9bf4391cae73f074ee5f09d36c`.
+- Wired parent learner create, edit, archive, and restore through
+  `portal-api.ts` and `portal-entry.tsx`.
+- Wired student-access setup, reset, suspend, restore, and revoke sessions
+  through the same client/API boundary.
+- Replaced portal `window.prompt` usage with accessible branded dialogs for
+  learner and student-access operations.
+- Wired parent protected content opening through learner-scoped material
+  callbacks.
+- Removed visible portal controls that only advertised unavailable V1 behavior.
+- Kept Add learner visible and routed so the fourth-seat denial is a real API
+  journey, not a disabled-control screenshot.
+- Kept archived learners visible in the parent dashboard so Restore is reachable
+  while backend active-seat enforcement remains intact.
+- Updated route/action registry coverage to point at the new real routed
+  browser journey.
 
-## Role And Safety Results
+## Browser Journeys
 
-- Parent scope remains household-bound and cannot read student private
-  questions.
-- Student scope is derived from the authenticated student learner and has no
-  sibling selector or parent controls.
-- Protected class and content actions return local opaque descriptors only.
-- Raw provider URLs are rejected by service tests and absent from browser
-  evidence.
-- No production database, provider send, payment, deploy, DNS, real-user, or BNA
-  product-code mutation was performed.
+Added `tests/e2e/ot-83r-portals.spec.ts` with real app/API coverage for:
+
+- parent add learner;
+- fourth active-seat denial;
+- edit learner;
+- archive and restore learner;
+- student credential lifecycle operations;
+- parent protected content opening;
+- student content opening;
+- student question submission;
+- session expiry after parent revokes sessions;
+- household, sibling, and role denial;
+- provider URL leakage guards.
+
+Evidence:
+
+- `ops/evidence/ot-83r/REAL-APP-JOURNEYS.json`
+- `ops/evidence/ot-83r/real-app-screenshots/parent-after-journey-390x844.png`
+- `ops/evidence/ot-83r/real-app-screenshots/parent-after-journey-1440x1000.png`
+- `ops/evidence/ot-83r/real-app-screenshots/student-after-journey-390x844.png`
+- `ops/evidence/ot-83r/real-app-screenshots/student-after-journey-1440x1000.png`
+
+The real app evidence recorded 0 critical/serious axe violations, no horizontal
+overflow, and no raw provider URL leakage across captured viewports.
 
 ## Verification
 
 Passed locally:
 
-- `npm ci`
-- `npm run secret:scan`
+- `CI=1 npm run verify`
+- `npx vitest run tests/ot-52/portal-services.test.ts tests/ot-52/portal-router.test.ts tests/ot-52/portal-ui.test.ts tests/unit/ot83r-portal-registry.test.ts`
+- `CI=1 npx playwright test tests/e2e/ot-83r-portals.spec.ts`
 - `npm run format`
-- `npm run brand:check`
-- `npm run lint`
-- `npm run typecheck`
-- `npm run unit` - 21 files, 124 tests passed
-- `npm run integration` - 18 files, 86 tests passed
-- `npm run build`
-- `npm run e2e` - 22 Playwright tests passed
-- `npm run accessibility` - 6 Playwright tests passed
-- `npm run performance` - 6 Playwright tests passed plus bundle check
-- `npx tsx tests/ot-83/portal-browser-harness.ts`
 
-OT-83R browser evidence:
+Local PostgreSQL commands were attempted but blocked by environment, not by
+code:
 
-- Report: `ops/evidence/ot-83r/BROWSER-A11Y-PERFORMANCE.json`
-- Screenshots: `ops/evidence/ot-83r/screenshots`
-- Viewports: 360x800, 390x844, 768x1024, and 1440x1000 for parent and student
-- Critical/serious axe violations: 0
-- Horizontal overflow: none
-- Raw provider URL exposure: none
-- 30-sample render p95: 4.029 ms
+- `npm run db:verify` failed because `DATABASE_URL` is unset.
+- `npx tsx scripts/postgres-assurance/run.ts` failed with
+  `ECONNREFUSED 127.0.0.1:5432`.
+- `OT83_ALLOW_POSTGRES_WRITE=true npx tsx tests/ot-83/real-postgres-concurrency.ts`
+  failed with `ECONNREFUSED 127.0.0.1:5432`.
+- Docker, `psql`, and a local PostgreSQL listener were unavailable.
 
-Blocked locally:
+CI passed on PR #33 for implementation head
+`20fe0f8ffc079f1f540d7dc16cacca86259ab407`:
 
-- `npm run db:verify` failed because `DATABASE_URL` is not set for a safe local
-  PostgreSQL target.
-- `npx tsx tests/ot-83/real-postgres-concurrency.ts` wrote a blocked local
-  result because `OT83_ALLOW_POSTGRES_WRITE=true` was not paired with an
-  explicit safe PostgreSQL URL or PG* connection variables.
-- `psql --version` failed because `psql` is not installed.
-- `docker --version` failed because Docker is not installed.
-- `Test-NetConnection 127.0.0.1:5432` reported no listener.
+- `Node 24 verify` - passed in 7m03s.
+- `PostgreSQL 16 assurance harness` - passed in 55s.
+- `PostgreSQL 16 learner-seat proof` - passed in 37s.
 
-CI passed on PR #33:
+## Guardrails
 
-- `Node 24 verify` - passed in 6m38s.
-- `PostgreSQL 16 assurance harness` - passed in 47s.
-- `PostgreSQL 16 learner-seat proof` - passed in 31s.
-
-## Remaining Gate
-
-None for OT-83R. The PR remains a draft because it was already draft; this report
-does not perform production deploys, provider sends, DNS changes, payments, or
-real-user creation.
+- BNA was not edited.
+- No production database, provider send, payment, deploy, DNS, real-user, or
+  source-of-truth mutation was performed.
+- Provider adapters remain default-off and return opaque local descriptors
+  without raw provider URLs.

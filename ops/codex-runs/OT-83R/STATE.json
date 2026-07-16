@@ -1,15 +1,16 @@
 {
   "task_id": "OT-83R",
-  "status": "in_progress",
-  "current_phase": "truthfulness_repair_client_wiring",
-  "updated_at": "2026-07-16T14:20:00+03:00",
+  "status": "ready_for_ot99",
+  "current_phase": "truthfulness_repair_complete",
+  "updated_at": "2026-07-16T14:27:00+03:00",
   "base_branch": "codex/ot83-household-portals-foundation",
   "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
   "working_branch": "codex/ot83r-complete-portals",
   "authoritative_remote_head_at_resume": "f8406b0a22683c9bf4391cae73f074ee5f09d36c",
+  "truthfulness_repair_implementation_head": "20fe0f8ffc079f1f540d7dc16cacca86259ab407",
   "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/33",
-  "ready_for_ot99": false,
-  "ready_for_ot99_reason": "Reset by OT-83R truthfulness repair. The f8406b0 audited checkpoint preserved backend work but left parent portal controls and tests partially unwired.",
+  "ready_for_ot99": true,
+  "ready_for_ot99_reason": "OT-83R truthfulness repair completed. Implementation head 20fe0f8ffc079f1f540d7dc16cacca86259ab407 was observed green on PR #33 with Node 24 verify, PostgreSQL 16 assurance harness, and PostgreSQL 16 learner-seat proof passing.",
   "requirements": [
     {
       "id": "OT83R-REQ-001",
@@ -24,44 +25,49 @@
     {
       "id": "OT83R-REQ-003",
       "title": "Complete V1 parent/student portal foundation",
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "OT83R-REQ-004",
       "title": "Add route/action registry coverage and focused tests",
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "OT83R-REQ-005",
       "title": "Run verification and capture evidence",
-      "status": "in_progress"
+      "status": "done"
     },
     {
       "id": "OT83R-REQ-006",
       "title": "Commit, push, update draft PR, and final report",
-      "status": "in_progress"
+      "status": "done"
     }
   ],
   "implementation_receipt": {
     "contracts": [
-      "Added parent/student protected content-open capabilities and student-question contracts."
+      "Preserved completed backend portal contracts.",
+      "Kept parent dashboard schema large enough to include archived learners while active-seat enforcement remains backend-owned."
     ],
     "persistence": [
-      "Added repository-backed student question list/submit with idempotency, audit action, and student-only write isolation."
+      "Preserved repository-backed student questions, student access, and learner lifecycle behavior from the audited backend."
     ],
     "domain": [
-      "Added learner-scoped protected content-open checks for parent and student services with default-off opaque action descriptors.",
-      "Kept unavailable provider adapters deterministic and prevented raw provider URLs from crossing service serialization."
+      "Preserved learner-scoped protected content-open checks for parent and student services.",
+      "Kept unavailable provider adapters deterministic and prevented raw provider URLs from crossing service serialization.",
+      "Returned archived learners in parent dashboard payloads so Restore remains reachable."
     ],
     "api_routes": [
-      "Added parent learner-scoped content-open route.",
-      "Added student content-open, question list, and question submit routes with CSRF on mutation."
+      "Wired parent learner create, edit, archive, restore, student-access, and protected content-open client calls through portal-api.ts."
     ],
     "ui": [
-      "Wired student question submission, support-preview API calls, content-open routes, and responsive question UI."
+      "Wired every parent Add, Edit, Archive, Restore, student-access, and material Open callback through portal-entry.tsx.",
+      "Replaced parent portal window.prompt usage with accessible branded dialogs.",
+      "Removed visible unavailable-in-V1 portal controls and disabled material-open fallbacks."
     ],
-    "registry": [
-      "Added OT-83R route/action registry with route/action IDs, role capabilities, audit/idempotency/confirmation expectations, and negative-test links."
+    "registry": ["Updated OT-83R route/action registry with real routed browser journey coverage."],
+    "evidence": [
+      "Added tests/e2e/ot-83r-portals.spec.ts for real app/API journeys.",
+      "Added ops/evidence/ot-83r/REAL-APP-JOURNEYS.json and responsive screenshots."
     ],
     "guardrails": [
       "No production database, provider send, payment, deploy, DNS, real-user, or BNA product-code mutation performed."
@@ -69,101 +75,53 @@
   },
   "tests_recorded": [
     {
-      "command": "npm ci",
-      "status": "passed"
+      "command": "CI=1 npm run verify",
+      "status": "passed",
+      "result": "secret scan, format, brand check, lint, typecheck, unit, integration, build, e2e, accessibility, performance, and bundle gates"
     },
     {
-      "command": "npm run secret:scan",
-      "status": "passed"
+      "command": "npx vitest run tests/ot-52/portal-services.test.ts tests/ot-52/portal-router.test.ts tests/ot-52/portal-ui.test.ts tests/unit/ot83r-portal-registry.test.ts",
+      "status": "passed",
+      "result": "4 files, 20 tests"
+    },
+    {
+      "command": "CI=1 npx playwright test tests/e2e/ot-83r-portals.spec.ts",
+      "status": "passed",
+      "result": "2 real routed browser journeys"
     },
     {
       "command": "npm run format",
-      "status": "passed"
-    },
-    {
-      "command": "npm run brand:check",
-      "status": "passed"
-    },
-    {
-      "command": "npm run lint",
-      "status": "passed"
-    },
-    {
-      "command": "npm run typecheck",
-      "status": "passed"
-    },
-    {
-      "command": "npm run unit",
       "status": "passed",
-      "result": "21 files, 124 tests"
-    },
-    {
-      "command": "npm run integration",
-      "status": "passed",
-      "result": "18 files, 86 tests"
-    },
-    {
-      "command": "npm run build",
-      "status": "passed",
-      "note": "Build emits existing unresolved runtime font warning for dm-serif-display-latin.woff2."
-    },
-    {
-      "command": "npm run e2e",
-      "status": "passed",
-      "result": "22 Playwright tests"
-    },
-    {
-      "command": "npm run accessibility",
-      "status": "passed",
-      "result": "6 Playwright tests"
-    },
-    {
-      "command": "npm run performance",
-      "status": "passed",
-      "result": "6 Playwright tests plus bundle check"
-    },
-    {
-      "command": "npx vitest run tests/ot-52/portal-services.test.ts tests/ot-52/portal-router.test.ts tests/ot-52/portal-ui.test.ts",
-      "status": "passed"
-    },
-    {
-      "command": "npm run unit -- --run tests/unit/ot83r-portal-registry.test.ts",
-      "status": "passed"
-    },
-    {
-      "command": "npx tsx tests/ot-83/portal-browser-harness.ts",
-      "status": "passed",
-      "evidence": "ops/evidence/ot-83r/BROWSER-A11Y-PERFORMANCE.json"
+      "note": "Re-run after final registry/state/report updates."
     },
     {
       "command": "npm run db:verify",
       "status": "blocked_local",
-      "reason": "DATABASE_URL is not set for a safe local PostgreSQL target."
+      "reason": "DATABASE_URL is unset for local PostgreSQL runtime."
     },
     {
-      "command": "npx tsx tests/ot-83/real-postgres-concurrency.ts",
+      "command": "npx tsx scripts/postgres-assurance/run.ts",
       "status": "blocked_local",
-      "reason": "No explicit safe PostgreSQL URL or PG* connection variables were provided with OT83_ALLOW_POSTGRES_WRITE=true."
+      "reason": "connect ECONNREFUSED 127.0.0.1:5432"
+    },
+    {
+      "command": "OT83_ALLOW_POSTGRES_WRITE=true npx tsx tests/ot-83/real-postgres-concurrency.ts",
+      "status": "blocked_local",
+      "reason": "connect ECONNREFUSED 127.0.0.1:5432"
     }
   ],
   "browser_evidence": {
     "status": "completed",
-    "report": "ops/evidence/ot-83r/BROWSER-A11Y-PERFORMANCE.json",
-    "screenshots": "ops/evidence/ot-83r/screenshots",
-    "viewports": [
-      "360x800 parent",
-      "360x800 student",
-      "390x844 parent",
-      "390x844 student",
-      "768x1024 parent",
-      "768x1024 student",
-      "1440x1000 parent",
-      "1440x1000 student"
+    "real_app_report": "ops/evidence/ot-83r/REAL-APP-JOURNEYS.json",
+    "real_app_screenshots": "ops/evidence/ot-83r/real-app-screenshots",
+    "journeys": [
+      "parent add/fourth-seat denial/edit/archive/restore/student-access/content-open",
+      "student content-open/questions/session-expiry/sibling-household-role-denial/provider-url-guard"
     ],
+    "viewports": ["390x844", "1440x1000"],
     "critical_or_serious_a11y_violations": 0,
-    "horizontal_overflow": [],
-    "raw_provider_url_exposure": [],
-    "render_p95_ms": 4.029
+    "horizontal_overflow": false,
+    "raw_provider_url_exposure": false
   },
   "local_postgres_probe": {
     "psql": "not_installed",
@@ -172,9 +130,26 @@
     "database_url": "unset"
   },
   "ci_evidence": {
-    "status": "pending_new_remote_checks",
-    "previous_green_claim_invalidated_by_truthfulness_repair": true,
-    "required_before_final_report_or_pr_body_update": true
+    "observed_at": "2026-07-16T14:25:30+03:00",
+    "implementation_commit": "20fe0f8ffc079f1f540d7dc16cacca86259ab407",
+    "pr": "https://github.com/webcraft-media/onetimev2/pull/33",
+    "checks": [
+      {
+        "name": "Node 24 verify",
+        "status": "passed",
+        "duration": "7m03s"
+      },
+      {
+        "name": "PostgreSQL 16 assurance harness",
+        "status": "passed",
+        "duration": "55s"
+      },
+      {
+        "name": "PostgreSQL 16 learner-seat proof",
+        "status": "passed",
+        "duration": "37s"
+      }
+    ]
   },
   "blockers": [],
   "external_mutations_performed": []
