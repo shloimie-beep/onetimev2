@@ -32,19 +32,41 @@ function main() {
   const writeReport = process.argv.includes('--write-report');
   const contract = readJson(CONTRACT_PATH);
   const gates = readJson(contract.contracts.predeploy_gates);
+  const branchName =
+    argValue('--branch-name') ??
+    process.env.BRANCH_NAME ??
+    process.env.GITHUB_HEAD_REF ??
+    process.env.GITHUB_REF_NAME ??
+    '';
   const scopeBaseSha =
     argValue('--scope-base') ?? process.env.OT75_SCOPE_BASE_SHA ?? contract.task.immutable_base_sha;
   const scopeHeadSha = argValue('--scope-head') ?? process.env.OT75_SCOPE_HEAD_SHA ?? 'HEAD';
   const changedFiles = changedFilesForScope(scopeBaseSha, scopeHeadSha);
+  const applicability = classifyApplicability(contract, changedFiles, branchName);
   const report = {
     task_id: contract.task.id,
     generated_at: new Date().toISOString(),
+    status: 'READY_CANDIDATE',
     base_sha: contract.task.immutable_base_sha,
     scope_base_sha: scopeBaseSha,
     scope_head_sha: scopeHeadSha,
+    branch_name: branchName,
     changed_files: changedFiles,
+    applicability,
     checks: [],
   };
+
+  if (!applicability.applies) {
+    report.status = 'NOT_APPLICABLE';
+    report.checks.push({
+      name: 'OT-75 applicability',
+      status: 'not_applicable',
+      detail: applicability.reason,
+    });
+    if (writeReport) writeValidationReport(report);
+    process.stdout.write(`OT-75 validation NOT_APPLICABLE: ${applicability.reason}\n`);
+    return;
+  }
 
   check(
     contract.task.repository === 'webcraft-media/onetimev2',
@@ -79,11 +101,9 @@ function main() {
   checkSecretPatterns(changedFiles, report);
   checkManifestTemplate(contract.contracts.release_manifest_template, report);
 
-  const failed = report.checks.filter((item) => item.status !== 'passed');
-  if (writeReport) {
-    mkdirSync(path.dirname(resolvePath(REPORT_PATH)), { recursive: true });
-    writeFileSync(resolvePath(REPORT_PATH), `${JSON.stringify(report, null, 2)}\n`);
-  }
+  const failed = report.checks.filter((item) => item.status === 'failed');
+  report.status = failed.length > 0 ? 'FAILED' : 'READY';
+  if (writeReport) writeValidationReport(report);
 
   if (failed.length > 0) {
     process.stderr.write(`OT-75 validation failed with ${failed.length} finding(s).\n`);
@@ -95,6 +115,11 @@ function main() {
 
   process.stdout.write(`OT-75 validation passed with ${report.checks.length} checks.\n`);
   if (writeReport) process.stdout.write(`Wrote ${REPORT_PATH}\n`);
+}
+
+function writeValidationReport(report) {
+  mkdirSync(path.dirname(resolvePath(REPORT_PATH)), { recursive: true });
+  writeFileSync(resolvePath(REPORT_PATH), `${JSON.stringify(report, null, 2)}\n`);
 }
 
 function readJson(filePath) {
@@ -121,6 +146,60 @@ function check(condition, name, report, detail = '') {
     status: condition ? 'passed' : 'failed',
     detail,
   });
+}
+
+function classifyApplicability(contract, changedFiles, branchName) {
+  const normalizedBranch = branchName.replace(/^refs\/heads\//, '');
+  const ot75BranchNames = [contract.task.branch, 'codex/ot80-one-shot-final-convergence'];
+  const branchMatches =
+    ot75BranchNames.includes(normalizedBranch) || /^codex\/ot75(?:[-/]|$)/i.test(normalizedBranch);
+  const ot75ChangedFiles = changedFiles.filter((filePath) =>
+    matchesAnyPrefix(filePath, contract.ownership.allowed_path_prefixes),
+  );
+  const nonOt75ChangedFiles = changedFiles.filter(
+    (filePath) => !matchesAnyPrefix(filePath, contract.ownership.allowed_path_prefixes),
+  );
+
+  if (branchMatches) {
+    return {
+      applies: true,
+      rule: 'ot75_branch',
+      reason: `branch ${normalizedBranch || '(unknown)'} is an OT-75 release readiness branch`,
+      ot75_changed_file_count: ot75ChangedFiles.length,
+      non_ot75_changed_file_count: nonOt75ChangedFiles.length,
+      path_prefixes: contract.ownership.allowed_path_prefixes,
+    };
+  }
+
+  if (ot75ChangedFiles.length > 0 && nonOt75ChangedFiles.length === 0) {
+    return {
+      applies: true,
+      rule: 'ot75_only_paths',
+      reason: 'all changed files are OT-75 release readiness files',
+      ot75_changed_file_count: ot75ChangedFiles.length,
+      non_ot75_changed_file_count: 0,
+      path_prefixes: contract.ownership.allowed_path_prefixes,
+    };
+  }
+
+  return {
+    applies: false,
+    rule: ot75ChangedFiles.length > 0 ? 'mixed_non_ot75_scope' : 'no_ot75_scope',
+    reason:
+      ot75ChangedFiles.length > 0
+        ? 'changed files include non-OT-75 scope on a non-OT-75 branch'
+        : 'no changed files match OT-75 release readiness paths and branch is not OT-75',
+    ot75_changed_file_count: ot75ChangedFiles.length,
+    non_ot75_changed_file_count: nonOt75ChangedFiles.length,
+    path_prefixes: contract.ownership.allowed_path_prefixes,
+  };
+}
+
+function matchesAnyPrefix(filePath, prefixes) {
+  const normalized = filePath.replace(/\\/g, '/');
+  return prefixes.some((prefix) =>
+    prefix.endsWith('/') ? normalized.startsWith(prefix) : normalized === prefix,
+  );
 }
 
 function checkRequiredFiles(contract, report) {

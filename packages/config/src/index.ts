@@ -56,9 +56,15 @@ const envSchema = z.object({
   SESSION_LAST_SEEN_WRITE_INTERVAL_MS: numberFromString.default(5 * 60_000),
   AUTH_CSRF_SECRET: z.string().min(32).optional(),
   MFA_SECRET_ENCRYPTION_KEY: z.string().optional(),
+  ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID: z.string().min(1).max(120).default('local-lifecycle-v1'),
+  ONE_TIME_LIFECYCLE_DELIVERY_KEY: z.string().min(32).optional(),
   OUTBOX_TRANSPORT_MODE: z.enum(['sink', 'mock']).default('sink'),
   ONE_TIME_EMAIL_FROM: z.string().optional(),
   ONE_TIME_EMAIL_REPLY_TO: z.string().optional(),
+  ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: booleanFromString,
+  ONE_TIME_RESEND_TRANSPORT_ENABLED: booleanFromString,
+  ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: z.string().email().optional(),
+  RESEND_API_KEY: z.string().min(1).optional(),
   ONE_TIME_OWNER_TEST_WHATSAPP: z.string().optional(),
   ONE_TIME_OWNER_TEST_EMAIL: z.string().optional(),
   ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY: z.string().min(1).default('one_time_meta_cloud_staging'),
@@ -231,9 +237,20 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
       parsed.AUTH_CSRF_SECRET ?? 'local-only-auth-csrf-secret-for-tests-and-development',
     mfaSecretEncryptionKey:
       parsed.MFA_SECRET_ENCRYPTION_KEY ?? 'test-only-32-byte-mfa-key-do-not-use',
+    lifecycleDeliveryKeyId: parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID,
+    lifecycleDeliveryKey:
+      parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY ??
+      (parsed.NODE_ENV === 'production'
+        ? undefined
+        : 'test-only-lifecycle-delivery-key-do-not-use'),
+    lifecycleDeliveryKeyConfigured: Boolean(parsed.ONE_TIME_LIFECYCLE_DELIVERY_KEY),
     outboxTransportMode: parsed.OUTBOX_TRANSPORT_MODE,
     emailFrom: parsed.ONE_TIME_EMAIL_FROM,
     emailReplyTo: parsed.ONE_TIME_EMAIL_REPLY_TO,
+    deliveryProviderTransportEnabled: parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED,
+    resendTransportEnabled: parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED,
+    deliveryTestCanaryEmail: parsed.ONE_TIME_DELIVERY_TEST_CANARY_EMAIL?.trim().toLowerCase(),
+    resendApiKey: parsed.RESEND_API_KEY,
     ownerTestWhatsapp: parsed.ONE_TIME_OWNER_TEST_WHATSAPP,
     ownerTestEmail: parsed.ONE_TIME_OWNER_TEST_EMAIL,
     whatsappProviderAccountKey: parsed.ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY,

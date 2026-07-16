@@ -18,6 +18,12 @@ The migration contract test now verifies:
 
 It no longer assumes a permanent final migration ID.
 
+Because GitHub's three-way merge surfaced the same stale migration-test hunk as
+a content conflict, OPS-09A created a PR #43-specific merge commit from the
+canonical reference and resolved only this test conflict. The resolution keeps
+the canonical OPS-03A migrations and the OT-100 migration in the required
+presence list.
+
 ## Provider Safety Posture
 
 The OT-100 runtime script was exercised locally and returned the expected

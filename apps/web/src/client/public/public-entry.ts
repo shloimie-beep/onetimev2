@@ -211,6 +211,9 @@ const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
 if (loginForm) {
   const status = loginForm.querySelector<HTMLElement>('[data-form-status]');
   const submit = loginForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const mfaPanel = loginForm.querySelector<HTMLElement>('[data-login-mfa]');
+  const mfaInput = loginForm.querySelector<HTMLInputElement>('#mfa_code');
+  let challengeToken = '';
   const setError = (name: string, message: string) => {
     const field = loginForm.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
     if (field) field.textContent = message;
@@ -227,10 +230,38 @@ if (loginForm) {
     const data = new FormData(loginForm);
     if (submit) {
       submit.disabled = true;
-      submit.textContent = 'Logging in...';
+      submit.textContent = challengeToken ? 'Verifying...' : 'Logging in...';
     }
     if (status) status.textContent = '';
     try {
+      if (challengeToken) {
+        const trimmedCode = String(data.get('mfa_code') ?? '').trim();
+        if (!trimmedCode) {
+          setError('mfa_code', 'Enter an authenticator or recovery code.');
+          mfaInput?.focus();
+          return;
+        }
+        const endpoint = /^\d{6}$/.test(trimmedCode)
+          ? '/api/v1/auth/mfa/challenge'
+          : '/api/v1/auth/mfa/recovery';
+        const mfaResponse = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify(
+            endpoint.endsWith('/challenge')
+              ? { challenge_token: challengeToken, totp_code: trimmedCode }
+              : { challenge_token: challengeToken, recovery_code: trimmedCode },
+          ),
+        });
+        const mfaJson = await mfaResponse.json();
+        if (!mfaResponse.ok || !mfaJson.success) {
+          if (status)
+            status.textContent = mfaJson.message ?? 'Authenticator code was not accepted.';
+          return;
+        }
+        window.location.assign(mfaJson.return_to ?? '/app/crm');
+        return;
+      }
       const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: {
@@ -247,33 +278,13 @@ if (loginForm) {
       const json = await response.json();
       if (!response.ok || !json.success) {
         if (json.code === 'MFA_REQUIRED' && json.challenge_token) {
-          const code = window.prompt('Enter your authenticator or recovery code.');
-          if (!code) {
-            if (status) status.textContent = 'Authenticator or recovery code is required.';
-            return;
+          challengeToken = String(json.challenge_token);
+          if (mfaPanel) mfaPanel.hidden = false;
+          if (mfaInput) {
+            mfaInput.required = true;
+            mfaInput.focus();
           }
-          const trimmedCode = code.trim();
-          const mfaResponse = await fetch(
-            /^\d{6}$/.test(trimmedCode)
-              ? '/api/v1/auth/mfa/challenge'
-              : '/api/v1/auth/mfa/recovery',
-            {
-              method: 'POST',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify(
-                /^\d{6}$/.test(trimmedCode)
-                  ? { challenge_token: json.challenge_token, totp_code: trimmedCode }
-                  : { challenge_token: json.challenge_token, recovery_code: trimmedCode },
-              ),
-            },
-          );
-          const mfaJson = await mfaResponse.json();
-          if (!mfaResponse.ok || !mfaJson.success) {
-            if (status)
-              status.textContent = mfaJson.message ?? 'Authenticator code was not accepted.';
-            return;
-          }
-          window.location.assign(mfaJson.return_to ?? '/app/crm');
+          if (status) status.textContent = 'Enter your authenticator or recovery code.';
           return;
         }
         if (json.field_errors) {
@@ -295,4 +306,290 @@ if (loginForm) {
       }
     }
   });
+}
+
+const activationRoot = document.querySelector<HTMLElement>('[data-activation-root]');
+if (activationRoot) {
+  const token = consumeFragmentToken();
+  const status = activationRoot.querySelector<HTMLElement>('[data-activation-status]');
+  const error = activationRoot.querySelector<HTMLElement>('[data-activation-error]');
+  const form = activationRoot.querySelector<HTMLFormElement>('[data-activation-form]');
+  const mfaPanel = activationRoot.querySelector<HTMLElement>('[data-activation-mfa]');
+  const mfaForm = activationRoot.querySelector<HTMLFormElement>('[data-activation-mfa-form]');
+  const secretNode = activationRoot.querySelector<HTMLElement>('[data-mfa-secret]');
+  const otpauthLink = activationRoot.querySelector<HTMLAnchorElement>('[data-otpauth-link]');
+  const recoveryPanel = activationRoot.querySelector<HTMLElement>('[data-recovery-panel]');
+  const recoveryList = activationRoot.querySelector<HTMLOListElement>('[data-recovery-codes]');
+  const recoveryAck = activationRoot.querySelector<HTMLInputElement>('[data-recovery-ack]');
+  const recoveryContinue = activationRoot.querySelector<HTMLButtonElement>(
+    '[data-recovery-continue]',
+  );
+  const recoveryStatus = activationRoot.querySelector<HTMLElement>('[data-recovery-status]');
+  let handoffToken = '';
+  let enrollmentToken = '';
+
+  if (!token) {
+    showFlowError(error, status, 'This activation link is missing its secure token.');
+  } else {
+    void checkLifecycleToken(token, 'activation', status, form, error);
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(form);
+    if (!form.reportValidity() || !token) return;
+    const data = new FormData(form);
+    if (!passwordsMatch(form, data)) return;
+    setFormStatus(form, '');
+    setSubmitBusy(form, true, 'Continuing...');
+    try {
+      const response = await postJson('/api/v1/account-lifecycle/activate', {
+        token,
+        password: String(data.get('password') ?? ''),
+        csrf_token: String(data.get('csrf_token') ?? ''),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(form, response.json, error);
+        return;
+      }
+      if (response.json.mfa_required) {
+        handoffToken = String(response.json.handoff_token ?? '');
+        enrollmentToken = String(response.json.enrollment_token ?? '');
+        form.hidden = true;
+        if (mfaPanel) mfaPanel.hidden = false;
+        if (secretNode) secretNode.textContent = String(response.json.totp_secret ?? '');
+        if (otpauthLink) {
+          otpauthLink.href = String(response.json.otpauth_url ?? '#');
+        }
+        mfaForm?.querySelector<HTMLInputElement>('#activation_totp')?.focus();
+        if (status) status.textContent = 'Set up MFA to finish activation.';
+        return;
+      }
+      window.location.assign(String(response.json.return_to ?? '/app/parent'));
+    } finally {
+      setSubmitBusy(form, false, 'Continue');
+    }
+  });
+
+  mfaForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(mfaForm);
+    if (!mfaForm.reportValidity() || !handoffToken || !enrollmentToken) return;
+    const data = new FormData(mfaForm);
+    setSubmitBusy(mfaForm, true, 'Verifying...');
+    try {
+      const response = await postJson('/api/v1/account-lifecycle/mfa/activate', {
+        handoff_token: handoffToken,
+        enrollment_token: enrollmentToken,
+        totp_code: String(data.get('totp_code') ?? '').trim(),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(mfaForm, response.json, error);
+        return;
+      }
+      const codes = Array.isArray(response.json.recovery_codes)
+        ? response.json.recovery_codes.map(String)
+        : [];
+      if (recoveryList) {
+        recoveryList.replaceChildren(...codes.map((code) => recoveryCodeItem(code)));
+      }
+      if (mfaPanel) mfaPanel.hidden = true;
+      if (recoveryPanel) recoveryPanel.hidden = false;
+      recoveryAck?.focus();
+    } finally {
+      setSubmitBusy(mfaForm, false, 'Verify code');
+    }
+  });
+
+  recoveryAck?.addEventListener('change', () => {
+    if (recoveryContinue) recoveryContinue.disabled = !recoveryAck.checked;
+  });
+  recoveryContinue?.addEventListener('click', async () => {
+    if (!recoveryAck?.checked || !handoffToken) return;
+    recoveryContinue.disabled = true;
+    if (recoveryStatus) recoveryStatus.textContent = 'Finishing setup...';
+    const response = await postJson('/api/v1/account-lifecycle/mfa/ack', {
+      handoff_token: handoffToken,
+      recovery_codes_saved: true,
+    });
+    if (!response.ok || !response.json.success) {
+      if (recoveryStatus)
+        recoveryStatus.textContent = String(response.json.message ?? 'Setup expired.');
+      recoveryContinue.disabled = false;
+      return;
+    }
+    window.location.assign(String(response.json.return_to ?? '/app/dashboard'));
+  });
+}
+
+const forgotPasswordForm = document.querySelector<HTMLFormElement>('[data-forgot-password-form]');
+if (forgotPasswordForm) {
+  forgotPasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(forgotPasswordForm);
+    if (!forgotPasswordForm.reportValidity()) return;
+    const data = new FormData(forgotPasswordForm);
+    setSubmitBusy(forgotPasswordForm, true, 'Sending...');
+    try {
+      const response = await postJson('/api/v1/account-lifecycle/forgot-password', {
+        email: String(data.get('email') ?? ''),
+        csrf_token: String(data.get('csrf_token') ?? ''),
+        idempotency_key: `forgot-${crypto.randomUUID()}`,
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(forgotPasswordForm, response.json);
+        return;
+      }
+      setFormStatus(
+        forgotPasswordForm,
+        String(response.json.message ?? 'If that email has access, a reset link will be sent.'),
+      );
+    } catch {
+      setFormStatus(forgotPasswordForm, 'If that email has access, a reset link will be sent.');
+    } finally {
+      setSubmitBusy(forgotPasswordForm, false, 'Send reset link');
+    }
+  });
+}
+
+const resetRoot = document.querySelector<HTMLElement>('[data-reset-root]');
+if (resetRoot) {
+  const token = consumeFragmentToken();
+  const status = resetRoot.querySelector<HTMLElement>('[data-reset-status]');
+  const form = resetRoot.querySelector<HTMLFormElement>('[data-reset-password-form]');
+  if (!token) {
+    if (status) status.textContent = 'This reset link is missing its secure token.';
+  } else {
+    void checkLifecycleToken(token, 'password_reset', status, form);
+  }
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(form);
+    if (!form.reportValidity() || !token) return;
+    const data = new FormData(form);
+    if (!passwordsMatch(form, data)) return;
+    setSubmitBusy(form, true, 'Resetting...');
+    try {
+      const response = await postJson('/api/v1/account-lifecycle/reset-password', {
+        token,
+        password: String(data.get('password') ?? ''),
+        csrf_token: String(data.get('csrf_token') ?? ''),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(form, response.json);
+        return;
+      }
+      setFormStatus(form, 'Password reset. You can sign in now.');
+      window.setTimeout(() => window.location.assign('/login'), 650);
+    } finally {
+      setSubmitBusy(form, false, 'Reset password');
+    }
+  });
+}
+
+type JsonResponse = { ok: boolean; json: Record<string, unknown> };
+
+async function postJson(path: string, body: Record<string, unknown>): Promise<JsonResponse> {
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const json = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+  return { ok: response.ok, json };
+}
+
+async function checkLifecycleToken(
+  token: string,
+  flow: 'activation' | 'password_reset',
+  status: HTMLElement | null,
+  form: HTMLFormElement | null,
+  error?: HTMLElement | null,
+) {
+  const response = await postJson('/api/v1/account-lifecycle/token-status', { token, flow });
+  if (!response.ok || !response.json.success) {
+    showFlowError(
+      error ?? null,
+      status,
+      String(response.json.message ?? 'That link is not valid.'),
+    );
+    return;
+  }
+  if (status) status.textContent = 'Secure link verified.';
+  if (form) {
+    form.hidden = false;
+    form.querySelector<HTMLInputElement>('input[type="password"]')?.focus();
+  }
+}
+
+function consumeFragmentToken() {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const token = params.get('token') ?? '';
+  if (window.location.hash) {
+    window.history.replaceState(
+      null,
+      document.title,
+      window.location.pathname + window.location.search,
+    );
+  }
+  return token;
+}
+
+function clearFormErrors(form: HTMLFormElement) {
+  form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((node) => (node.textContent = ''));
+}
+
+function applyApiErrors(
+  form: HTMLFormElement,
+  json: Record<string, unknown>,
+  fallback?: HTMLElement | null,
+) {
+  const fieldErrors = json.field_errors as Record<string, string> | undefined;
+  if (fieldErrors) {
+    Object.entries(fieldErrors).forEach(([name, message]) => {
+      const field = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (field) field.textContent = message;
+    });
+    form.querySelector<HTMLElement>('[data-error-for]:not(:empty)')?.focus();
+    return;
+  }
+  const message = String(json.message ?? 'We could not complete that request.');
+  if (fallback) fallback.textContent = message;
+  setFormStatus(form, message);
+}
+
+function setFormStatus(form: HTMLFormElement, message: string) {
+  const status = form.querySelector<HTMLElement>('[data-form-status]');
+  if (status) status.textContent = message;
+}
+
+function setSubmitBusy(form: HTMLFormElement, busy: boolean, label: string) {
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  if (!button) return;
+  button.disabled = busy;
+  button.textContent = label;
+}
+
+function passwordsMatch(form: HTMLFormElement, data: FormData) {
+  const password = String(data.get('password') ?? '');
+  const confirm = String(data.get('password_confirm') ?? '');
+  if (password !== confirm) {
+    const field = form.querySelector<HTMLElement>('[data-error-for="password_confirm"]');
+    if (field) field.textContent = 'Passwords do not match.';
+    return false;
+  }
+  return true;
+}
+
+function showFlowError(error: HTMLElement | null, status: HTMLElement | null, message: string) {
+  if (status) status.textContent = '';
+  if (error) error.textContent = message;
+}
+
+function recoveryCodeItem(code: string) {
+  const item = document.createElement('li');
+  const codeNode = document.createElement('code');
+  codeNode.textContent = code;
+  item.append(codeNode);
+  return item;
 }

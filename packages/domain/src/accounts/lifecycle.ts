@@ -23,6 +23,7 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { hashPassword } from '../auth/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
+import { createLifecycleDeliveryOutbox } from './lifecycle-delivery.ts';
 
 export class AccountLifecycleError extends Error {
   readonly code: AccountLifecycleErrorCode;
@@ -46,6 +47,20 @@ type TokenIssueWithProof = AccountLifecycleTokenIssueResult & {
   token_for_local_proof?: string;
 };
 
+export type AccountLifecycleTokenInspection =
+  | {
+      ok: true;
+      token_key: string;
+      token_type: AccountLifecycleTokenType;
+      target_role: 'owner' | 'admin' | 'parent' | 'student';
+      expires_at: string;
+      mfa_required: boolean;
+    }
+  | {
+      ok: false;
+      code: 'TOKEN_INVALID' | 'TOKEN_EXPIRED' | 'TOKEN_CONSUMED';
+    };
+
 type TokenRecord = {
   token_key: string;
   token_type: AccountLifecycleTokenType;
@@ -64,7 +79,7 @@ type TokenRecord = {
   metadata: Record<string, unknown>;
 };
 
-const TOKEN_TTL_MS = 60 * 60 * 1000;
+const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 const RESET_TOKEN_TTL_MS = 30 * 60 * 1000;
 
 export async function createOwnerAdminInvitation(
@@ -477,6 +492,49 @@ export async function completePasswordReset(input: {
   });
 }
 
+export async function inspectAccountLifecycleToken(input: {
+  pool: DbPool;
+  config: AppConfig;
+  token: string;
+  expectedTypes?: AccountLifecycleTokenType[];
+  now?: Date;
+}): Promise<AccountLifecycleTokenInspection> {
+  const result = await input.pool.query(
+    `SELECT token_key, token_type, email_normalized, display_name, target_role, subject_user_key,
+            household_key, relationship_key, learner_key, attempts, max_attempts, expires_at,
+            consumed_at, revoked_at, metadata
+       FROM onetime.account_lifecycle_tokens
+      WHERE account_key = $1
+        AND product_key = $2
+        AND token_hash = $3
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, digest(input.token)],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  if (!row) return { ok: false, code: 'TOKEN_INVALID' };
+  const token = mapToken(row);
+  if (input.expectedTypes && !input.expectedTypes.includes(token.token_type)) {
+    return { ok: false, code: 'TOKEN_INVALID' };
+  }
+  try {
+    assertTokenUsable(token, input.now ?? new Date());
+  } catch (error) {
+    if (error instanceof AccountLifecycleError) {
+      if (error.code === 'TOKEN_EXPIRED') return { ok: false, code: 'TOKEN_EXPIRED' };
+      if (error.code === 'TOKEN_CONSUMED') return { ok: false, code: 'TOKEN_CONSUMED' };
+    }
+    return { ok: false, code: 'TOKEN_INVALID' };
+  }
+  return {
+    ok: true,
+    token_key: token.token_key,
+    token_type: token.token_type,
+    target_role: token.target_role,
+    expires_at: token.expires_at.toISOString(),
+    mfa_required: token.target_role === 'owner' || token.target_role === 'admin',
+  };
+}
+
 export async function suspendStudentIdentity(input: {
   pool: DbPool;
   config: AppConfig;
@@ -625,6 +683,17 @@ async function issueAccountToken(
   ]);
   const tokenHash = digest(token);
   const expiresAt = new Date(input.now.getTime() + (input.ttlMs ?? TOKEN_TTL_MS));
+  await revokePriorLifecycleTokens(client, config, {
+    tokenKey,
+    tokenType: input.tokenType,
+    targetRole: input.targetRole,
+    emailNormalized: input.emailNormalized,
+    subjectUserKey: input.subjectUserKey ?? null,
+    householdKey: input.householdKey ?? null,
+    relationshipKey: input.relationshipKey ?? null,
+    learnerKey: input.learnerKey ?? null,
+    now: input.now,
+  });
   await client.query(
     `INSERT INTO onetime.account_lifecycle_tokens
        (token_key, account_key, product_key, token_type, token_hash, email_normalized,
@@ -661,6 +730,17 @@ async function issueAccountToken(
     householdKey: input.householdKey ?? null,
     learnerKey: input.learnerKey ?? null,
   });
+  const outbox = await createLifecycleDeliveryOutbox(client, config, {
+    token,
+    tokenKey,
+    intentKey: delivery.intent_key,
+    tokenType: input.tokenType,
+    recipientEmail: input.emailNormalized,
+    targetRole: input.targetRole,
+    idempotencyKey: input.idempotencyKey,
+    expiresAt,
+    now: input.now,
+  });
   await audit(client, config, {
     actionType: `${input.tokenType}_issued`,
     actorUserKey: input.actorUserKey,
@@ -669,7 +749,10 @@ async function issueAccountToken(
     metadata: {
       target_role: input.targetRole,
       token_ref: tokenRef(tokenKey),
+      lifecycle_delivery_ref: outbox.delivery_key,
+      destination_ref: outbox.destination_ref,
       raw_token_included: false,
+      raw_url_included: false,
       external_send_performed: false,
     },
   });
@@ -686,6 +769,52 @@ async function issueAccountToken(
     result.token_for_local_proof = token;
   }
   return result;
+}
+
+async function revokePriorLifecycleTokens(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    tokenKey: string;
+    tokenType: AccountLifecycleTokenType;
+    targetRole: string;
+    emailNormalized: string | null;
+    subjectUserKey: string | null;
+    householdKey: string | null;
+    relationshipKey: string | null;
+    learnerKey: string | null;
+    now: Date;
+  },
+) {
+  await client.query(
+    `UPDATE onetime.account_lifecycle_tokens
+        SET revoked_at = $11
+      WHERE account_key = $1
+        AND product_key = $2
+        AND token_type = $3
+        AND token_key <> $4
+        AND consumed_at IS NULL
+        AND revoked_at IS NULL
+        AND target_role = $5
+        AND COALESCE(email_normalized, '') = COALESCE($6, '')
+        AND COALESCE(subject_user_key, '') = COALESCE($7, '')
+        AND COALESCE(household_key, '') = COALESCE($8, '')
+        AND COALESCE(relationship_key, '') = COALESCE($9, '')
+        AND COALESCE(learner_key, '') = COALESCE($10, '')`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.tokenType,
+      input.tokenKey,
+      input.targetRole,
+      input.emailNormalized,
+      input.subjectUserKey,
+      input.householdKey,
+      input.relationshipKey,
+      input.learnerKey,
+      input.now,
+    ],
+  );
 }
 
 async function createDeliveryIntent(

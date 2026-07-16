@@ -19,6 +19,7 @@
   "repair_summary": [
     "Repaired stale migration final-ID assertions in tests/integration/telegram-db-foundation.test.ts",
     "Added OPS-09A PR #43 integration delta documenting the no-send provider canary posture",
+    "Created a PR #43-specific merge commit from the canonical reference to resolve the GitHub content conflict without enabling WhatsApp provider sends",
     "Kept OT-100 provider runtime behavior unchanged and blocked on protected config"
   ],
   "tests": [
@@ -28,11 +29,11 @@
     },
     {
       "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts tests/integration/whatsapp/ot100-provider-runtime.test.ts",
-      "outcome": "passed: 2 files / 5 tests"
+      "outcome": "passed pre-merge and post-merge: 2 files / 5 tests"
     },
     {
       "command": "npx vitest run --config vitest.unit.config.ts tests/unit/whatsapp/ot100-meta-provider.test.ts tests/unit/whatsapp/ot85-intent-contract.test.ts",
-      "outcome": "passed: 2 files / 10 tests"
+      "outcome": "passed pre-merge and post-merge: 2 files / 10 tests"
     },
     {
       "command": "npx prettier --write tests/integration/telegram-db-foundation.test.ts",
@@ -48,7 +49,11 @@
     },
     {
       "command": "npm run secret:scan",
-      "outcome": "passed: 905 repo text files"
+      "outcome": "passed post-merge: 921 repo text files"
+    },
+    {
+      "command": "npm run brand:check",
+      "outcome": "passed post-merge"
     },
     {
       "command": "npm run build",
@@ -56,7 +61,7 @@
     },
     {
       "command": "node --import tsx scripts/ot100/whatsapp-runtime-once.ts",
-      "outcome": "passed: returned WAITING_FOR_OT100_WHATSAPP_STAGING_CANARY_CONFIG with external_send_performed=false"
+      "outcome": "passed pre-merge and post-merge: returned WAITING_FOR_OT100_WHATSAPP_STAGING_CANARY_CONFIG with external_send_performed=false"
     },
     {
       "command": "npx prettier --check tests/integration/telegram-db-foundation.test.ts",
@@ -64,11 +69,11 @@
     },
     {
       "command": "npm run test",
-      "outcome": "passed: 30 unit files / 162 tests and 27 integration files / 132 tests"
+      "outcome": "passed post-merge: 30 unit files / 163 tests and 28 integration files / 138 tests"
     },
     {
       "command": "npm run format",
-      "outcome": "blocked by existing repo-wide Windows formatting baseline: Prettier reported 608 unrelated files after OPS-09A artifacts were formatted"
+      "outcome": "blocked by existing repo-wide Windows formatting baseline: Prettier reported 616 unrelated files after the PR-local canonical merge; touched files were formatted"
     }
   ],
   "blocked": [

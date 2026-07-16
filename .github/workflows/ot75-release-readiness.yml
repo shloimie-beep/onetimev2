@@ -41,11 +41,13 @@ jobs:
       - name: Validate OT-75 release readiness
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          OT75_SCOPE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          OT75_SCOPE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           if [ "$BRANCH_NAME" = "codex/ot80-one-shot-final-convergence" ]; then
-            node scripts/ot75/validate-release-readiness.mjs --scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871 --scope-head 9ce81a9c5df4c3eb82af3954705d7b381d294c6e
+            node scripts/ot75/validate-release-readiness.mjs --scope-base d7bf846dda1c27aadd61f51c71aa163c70b2b871 --scope-head 9ce81a9c5df4c3eb82af3954705d7b381d294c6e --write-report
           else
-            node scripts/ot75/validate-release-readiness.mjs
+            node scripts/ot75/validate-release-readiness.mjs --write-report
           fi
 
       - name: Run OT-75 release-only unit tests

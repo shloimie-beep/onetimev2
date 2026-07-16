@@ -49,6 +49,8 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
       '2005_ot86_content_pipeline',
       '2006_ot86b_social_publishing',
       '2007_ot87_stripe_test_entitlements',
+      '2008_ops03a_lifecycle_delivery_outbox',
+      '2009_ops03a_activation_mfa_handoffs',
       '2100_ot100_whatsapp_provider_activation',
     ];
     for (const migrationId of requiredMigrationIds) {

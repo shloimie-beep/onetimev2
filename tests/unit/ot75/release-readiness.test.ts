@@ -78,4 +78,22 @@ describe('OT-75 release readiness contract', () => {
     expect(gates).toContain('--scope-base');
     expect(gates).toContain('OT75_SCOPE_BASE_SHA');
   });
+
+  it('derives pull request scope from GitHub event data and records non-applicability truthfully', () => {
+    const workflow = readFileSync(
+      path.resolve(root, '.github/workflows/ot75-release-readiness.yml'),
+      'utf8',
+    );
+    const validator = readFileSync(
+      path.resolve(root, 'scripts/ot75/validate-release-readiness.mjs'),
+      'utf8',
+    );
+
+    expect(workflow).toContain('github.event.pull_request.base.sha');
+    expect(workflow).toContain('github.event.pull_request.head.sha');
+    expect(workflow).toContain('--write-report');
+    expect(validator).toContain("report.status = 'NOT_APPLICABLE'");
+    expect(validator).toContain("status: 'not_applicable'");
+    expect(validator).toContain('mixed_non_ot75_scope');
+  });
 });
