@@ -57,6 +57,7 @@ export type StudentPortalFeatureProps = {
   resetSignal?: number;
   onLaunchClass?: (action: ProtectedActionDescriptor) => void;
   onOpenContent?: (action: ProtectedActionDescriptor) => void;
+  onSubmitQuestion?: (occurrenceKey: string, body: string) => void;
   onPreviewSupport?: () => void;
   onRetry?: () => void;
 };
@@ -260,13 +261,17 @@ export function StudentPortalFeature({
   resetSignal,
   onLaunchClass,
   onOpenContent,
+  onSubmitQuestion,
   onPreviewSupport,
   onRetry,
 }: StudentPortalFeatureProps) {
   const [sessionMarker, setSessionMarker] = useState(actorFingerprint);
+  const [question, setQuestion] = useState('');
+  const [questionState, setQuestionState] = useState<'idle' | 'sent' | 'blocked'>('idle');
   useEffect(() => {
     setSessionMarker(actorFingerprint);
   }, [actorFingerprint, resetSignal]);
+  const currentClass = dashboard?.upcoming_classes[0] ?? null;
 
   if (viewState !== 'ready' && viewState !== 'success' && !dashboard) {
     return <PortalState role="student" viewState={viewState} onRetry={onRetry} />;
@@ -296,6 +301,45 @@ export function StudentPortalFeature({
         <section className="ot-panel ot-hero-panel" aria-labelledby="student-dashboard-heading">
           <h2 id="student-dashboard-heading">Today</h2>
           <ClassSummary classes={dashboard.upcoming_classes} onLaunch={onLaunchClass} />
+          {currentClass && (
+            <form
+              className="ot-question-form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const body = question.trim();
+                if (body.length < 3 || !onSubmitQuestion) {
+                  setQuestionState('blocked');
+                  return;
+                }
+                onSubmitQuestion(currentClass.class_key, body);
+                setQuestion('');
+                setQuestionState('sent');
+              }}
+            >
+              <label htmlFor="student-question">Question for class</label>
+              <textarea
+                id="student-question"
+                value={question}
+                minLength={3}
+                maxLength={360}
+                rows={3}
+                onChange={(event) => {
+                  setQuestion(event.currentTarget.value);
+                  setQuestionState('idle');
+                }}
+              />
+              <div className="ot-action-row">
+                <button type="submit" className="ot-button" disabled={!onSubmitQuestion}>
+                  Send question
+                </button>
+                {questionState !== 'idle' && (
+                  <span role={questionState === 'blocked' ? 'alert' : 'status'}>
+                    {questionState === 'sent' ? 'Sent' : 'Enter at least three characters.'}
+                  </span>
+                )}
+              </div>
+            </form>
+          )}
         </section>
         <section className="ot-panel" aria-labelledby="student-library-heading">
           <h2 id="student-library-heading">Library</h2>
@@ -485,7 +529,7 @@ function ClassSummary({
                 (onLaunch as (action: ProtectedActionDescriptor) => void)(item.launch_action);
               }}
             >
-              Launch
+              {item.launch_action.label}
             </button>
           )}
         </article>

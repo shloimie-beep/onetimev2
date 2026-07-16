@@ -56,6 +56,19 @@ const envSchema = z.object({
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET: z.string().min(16).optional(),
   ONE_TIME_TELEGRAM_BOT_KEY: z.string().min(1).default('one_time_internal_ops'),
   ONE_TIME_TELEGRAM_ENVIRONMENT: z.enum(['local', 'staging', 'production']).default('staging'),
+  ZOOM_CLASSROOM_ENABLED: booleanFromString,
+  ZOOM_CLASSROOM_PROVIDER_MODE: z.enum(['sink', 'real']).default('sink'),
+  ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: booleanFromString,
+  ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED: booleanFromString.default(true),
+  ZOOM_CLASSROOM_MUTE_ON_JOIN: booleanFromString.default(true),
+  ZOOM_CLASSROOM_CANARY_ENABLED: booleanFromString,
+  ZOOM_CLASSROOM_JOIN_GRANT_TTL_SECONDS: numberFromString.default(90),
+  ZOOM_CLASSROOM_CLASS_DURATION_MINUTES: numberFromString.default(60),
+  ZOOM_CLASSROOM_JOIN_OPEN_OFFSET_MINUTES: numberFromString.default(15),
+  ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES: numberFromString.default(15),
+  ZOOM_MEETING_SDK_KEY: z.string().optional(),
+  ZOOM_MEETING_SDK_SECRET: z.string().optional(),
+  ZOOM_ACCOUNT_ID: z.string().optional(),
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -70,6 +83,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV !== 'test' && realTransportsEnabled) {
     throw new Error('Real transports are outside this task and must remain disabled.');
+  }
+
+  if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && parsed.NODE_ENV !== 'test') {
+    throw new Error('Zoom canary execution is outside this local task and must remain disabled.');
   }
 
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
@@ -138,5 +155,18 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     oneTimeTelegramWebhookSecret: parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET,
     oneTimeTelegramBotKey: parsed.ONE_TIME_TELEGRAM_BOT_KEY,
     oneTimeTelegramEnvironment: parsed.ONE_TIME_TELEGRAM_ENVIRONMENT,
+    zoomClassroomEnabled: parsed.ZOOM_CLASSROOM_ENABLED,
+    zoomClassroomProviderMode: parsed.ZOOM_CLASSROOM_PROVIDER_MODE,
+    zoomClassroomRealProviderEnabled: parsed.ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED,
+    zoomClassroomComponentViewEnabled: parsed.ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED,
+    zoomClassroomMuteOnJoin: parsed.ZOOM_CLASSROOM_MUTE_ON_JOIN,
+    zoomClassroomCanaryEnabled: parsed.ZOOM_CLASSROOM_CANARY_ENABLED,
+    zoomClassroomJoinGrantTtlSeconds: parsed.ZOOM_CLASSROOM_JOIN_GRANT_TTL_SECONDS,
+    zoomClassroomClassDurationMinutes: parsed.ZOOM_CLASSROOM_CLASS_DURATION_MINUTES,
+    zoomClassroomJoinOpenOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_OPEN_OFFSET_MINUTES,
+    zoomClassroomJoinCloseOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES,
+    zoomMeetingSdkKeyConfigured: Boolean(parsed.ZOOM_MEETING_SDK_KEY),
+    zoomMeetingSdkSecretConfigured: Boolean(parsed.ZOOM_MEETING_SDK_SECRET),
+    zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID),
   };
 }

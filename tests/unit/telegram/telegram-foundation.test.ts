@@ -151,7 +151,7 @@ describe('OT-51P identity and commands', () => {
     expect(absent[0]?.text).toContain('authorized owner/admin private chats');
   });
 
-  it('runs supported reads, owner-only audit, feature gates, and refuses ambiguous free text', async () => {
+  it('runs supported reads, owner-only audit, question reads, and refuses ambiguous free text', async () => {
     const context = await buildContext(
       actorFixture([
         'gateway.scope.read',
@@ -172,7 +172,7 @@ describe('OT-51P identity and commands', () => {
 
     expect(scope[0]?.text).toContain('one_time_mishnah_class');
     expect(contact[0]?.text).toContain('Redacted contact');
-    expect(questions[0]?.text).toContain('not enabled');
+    expect(questions[0]?.text).toContain('Questions:');
     expect(ambiguous[0]?.text).toContain('more specific');
     expect(context.audit.events.some((event) => event.outcome === 'completed')).toBe(true);
 

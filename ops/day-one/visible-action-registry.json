@@ -1143,7 +1143,7 @@
     },
     {
       "action_id": "portal.student.class.launch.button",
-      "label": "Launch",
+      "label": "Join class",
       "surface": "button",
       "route": "/app/student",
       "roles": ["student"],
@@ -1170,7 +1170,72 @@
       "readiness_state": "unavailable_by_design",
       "provider_mode": "provider_default_off",
       "external_mutation": false,
-      "test_evidence": ["tests/integration/portals/portal-mount.test.ts"]
+      "test_evidence": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "tests/integration/classroom/zoom-learner-classroom.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.student.classroom.launch_page.retry.button",
+      "label": "Retry",
+      "surface": "button",
+      "route": "/classroom/launch/:grantKey/:secret",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/classroom/launch/bootstrap"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "launch_bootstrap_issued"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
+    },
+    {
+      "action_id": "portal.student.classroom.question.form",
+      "label": "Send question",
+      "surface": "form",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:class:question",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/classroom/questions"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client_generated"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "question_submitted"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "sink",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/classroom/zoom-learner-classroom.test.ts"]
     },
     {
       "action_id": "portal.student.content.open.button",

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export * from './classes/index.ts';
+export * from './classroom/index.ts';
 export * from './content/index.ts';
 export * from './accounts/index.ts';
 export * from './portals/index.ts';

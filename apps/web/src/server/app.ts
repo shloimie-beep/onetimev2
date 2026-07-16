@@ -7,9 +7,16 @@ import { ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
+import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import {
+  classroomAttendanceEventPayloadSchema,
+  classroomLaunchBootstrapPayloadSchema,
+  classroomLaunchBootstrapResponseSchema,
+  classroomQuestionListResponseSchema,
+  classroomQuestionSubmitPayloadSchema,
+  classroomQuestionSubmitResponseSchema,
   contactListQuerySchema,
   contactListResponseSchema,
   contactResponseSchema,
@@ -49,6 +56,8 @@ import {
   createAccountLifecycleCredentialAdapter,
   createContact,
   createClassPortalAccessAdapter,
+  createClassroomPortalAccessAdapter,
+  createClassroomService,
   createContentPortalAccessAdapter,
   createLoginCsrf,
   createParentPortalService,
@@ -74,6 +83,7 @@ import {
   verifyMfaRecoveryChallenge,
   verifySessionCsrf,
   type AuthenticatedSession,
+  PortalServiceError,
   type PortalServiceDeps,
 } from '../../../../packages/domain/src/index.ts';
 import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
@@ -96,6 +106,7 @@ type AppDeps = {
   config: AppConfig;
   pool: DbPool;
   distDir?: string;
+  clock?: () => Date;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
@@ -105,6 +116,7 @@ export function createApp({
   config,
   pool,
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
+  clock,
 }: AppDeps) {
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
@@ -631,20 +643,149 @@ export function createApp({
   });
 
   const portalRepository = createPortalRepository(pool);
+  const classroomRepository = createClassroomRepository(pool);
+  const classroomService = createClassroomService({
+    config,
+    repository: classroomRepository,
+    questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
+    ...(clock ? { clock } : {}),
+  });
   const portalServiceDeps: PortalServiceDeps = {
     repository: portalRepository,
-    classAccess: createClassPortalAccessAdapter({ pool, config }),
+    classAccess: config.zoomClassroomEnabled
+      ? createClassroomPortalAccessAdapter({ classroom: classroomService })
+      : createClassPortalAccessAdapter({ pool, config }),
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
   };
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
   const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
+    isSameOriginPost(req, config) &&
     verifySessionCsrf({
       pool,
       sessionKey: actor.session_key,
       csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
     });
+
+  app.get('/classroom/launch/:grantKey/:secret', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Fstudent');
+      return;
+    }
+    if (session.user.role !== 'student') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenAppHtml('student'));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "script-src 'self'",
+        "style-src 'self'",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+      ].join('; '),
+    );
+    res.status(200).type('html').send(classroomLaunchHtml());
+  });
+
+  app.post('/api/v1/classroom/launch/bootstrap', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = classroomLaunchBootstrapPayloadSchema.parse(req.body);
+      const bootstrap = await classroomService.consumeLaunch({ actor, payload });
+      res.json({
+        success: true,
+        data: classroomLaunchBootstrapResponseSchema.parse(bootstrap),
+      });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/classroom/attendance', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = classroomAttendanceEventPayloadSchema.parse(req.body);
+      await classroomService.recordAttendance(actor, payload);
+      res.json({ success: true });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/classroom/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = classroomQuestionSubmitPayloadSchema.parse(req.body);
+      const result = await classroomService.submitQuestion(actor, payload);
+      res
+        .status(201)
+        .json({ success: true, data: classroomQuestionSubmitResponseSchema.parse(result) });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/classroom/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const occurrenceKey = String(req.query.occurrence_key ?? '');
+      const questions = await classroomService.listOwnQuestions(actor, occurrenceKey);
+      res.json({
+        success: true,
+        data: classroomQuestionListResponseSchema.parse({ questions }),
+      });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.use(
     '/api/v1/portals/parent',
     createParentPortalRouter({
@@ -964,6 +1105,25 @@ async function requireSessionCsrf(
   return true;
 }
 
+function requireSameOriginPost(req: RequestWithTrace, res: Response, config: AppConfig) {
+  if (isSameOriginPost(req, config)) return true;
+  res.status(403).json(publicError('FORBIDDEN', 'Refresh the page and try again.', req.traceId));
+  return false;
+}
+
+function isSameOriginPost(req: Request, config: AppConfig) {
+  const originHeader = req.header('origin');
+  if (!originHeader) return true;
+  try {
+    const expected = new URL(config.publicBaseUrl).origin;
+    return (
+      new URL(originHeader).origin === expected || new URL(originHeader).host === req.header('host')
+    );
+  } catch {
+    return false;
+  }
+}
+
 async function sessionFromRequest(req: Request, pool: DbPool, config: AppConfig) {
   return getSessionByToken({
     pool,
@@ -1142,6 +1302,7 @@ function capabilitiesForPortalRole(role: AuthenticatedSession['user']['role']): 
     return [
       'student:dashboard:read',
       'student:class:launch',
+      'student:class:question',
       'student:support:preview',
       'rewards:read',
       'helper:query',
@@ -1257,9 +1418,38 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof PortalServiceError) {
+    res.status(statusForPortalError(error.code)).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      ...(error.currentVersion ? { current_version: error.currentVersion } : {}),
+      request_id: req.traceId,
+    });
+    return;
+  }
   res
     .status(500)
     .json(publicError('SERVER_ERROR', 'The CRM request could not be completed.', req.traceId));
+}
+
+function statusForPortalError(code: string) {
+  if (code === 'UNAUTHENTICATED') return 401;
+  if (code === 'FORBIDDEN' || code === 'CSRF_REQUIRED') return 403;
+  if (code === 'NOT_FOUND') return 404;
+  if (code === 'VALIDATION_ERROR') return 400;
+  if (
+    code === 'IDEMPOTENCY_CONFLICT' ||
+    code === 'VERSION_CONFLICT' ||
+    code === 'LEARNER_LIMIT_REACHED' ||
+    code === 'ENTITLEMENT_REQUIRED' ||
+    code === 'CONSENT_REQUIRED'
+  ) {
+    return 409;
+  }
+  if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
+  if (code === 'ADAPTER_UNAVAILABLE') return 503;
+  return 500;
 }
 
 function canReadClasses(role: string) {
@@ -1445,6 +1635,33 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
     </section>
   </main>
   <script type="module" src="/assets/public.js"></script>
+</body>
+</html>`;
+}
+
+function classroomLaunchHtml() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>Classroom | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace classroom-launch-page">
+    <section class="state-panel" aria-labelledby="classroom-launch-title">
+      <h1 id="classroom-launch-title">Classroom</h1>
+      <p data-classroom-status role="status">Opening protected classroom.</p>
+      <div data-classroom-sdk-root aria-live="polite"></div>
+      <button class="button button-primary" type="button" data-classroom-retry hidden>Retry</button>
+      <button class="button" type="button" data-classroom-leave hidden>Leave</button>
+    </section>
+  </main>
+  <script type="module" src="/assets/app-classroom-launch.js"></script>
 </body>
 </html>`;
 }
