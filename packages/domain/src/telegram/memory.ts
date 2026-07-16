@@ -271,8 +271,12 @@ export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicatio
 
   async readAction(_actor: CanonicalOneTimeActor, request: BotActionRequest) {
     switch (request.capability) {
+      case 'gateway.status.read':
+        return 'One Time Telegram runtime: sink/mock safe. Writes require confirmation.';
       case 'crm.lead.list':
         return 'Leads: 2 scoped leads. Raw phone and email are not shown in Telegram.';
+      case 'crm.signup.recent':
+        return 'Recent signups: signup_fixture_1 new family lead, contact details redacted.';
       case 'crm.lead.read':
       case 'crm.contact.read_redacted':
         return `Redacted contact ${String(request.args.ref ?? 'ref')}: name fragment only, status new.`;
@@ -290,6 +294,8 @@ export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicatio
         return 'Content pipeline: 3 drafts, 1 needs Rabbi review. No prompts or transcripts exposed.';
       case 'content.item.read':
         return `Content item ${String(request.args.ref ?? 'ref')}: sanitized processing state ready_for_review.`;
+      case 'content.knowledge.read':
+        return `Content readiness ${String(request.args.ref ?? 'ref')}: transcript ready, knowledge pending review.`;
       case 'task.list':
         return `Tasks: showing scoped ${String(request.args.filter ?? 'open')} tasks only.`;
       case 'task.read':
@@ -298,6 +304,14 @@ export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicatio
         return 'Support tickets: 1 open subscriber ticket, redacted subject only.';
       case 'support.ticket.read_redacted':
         return `Ticket ${String(request.args.ref ?? 'ref')}: redacted summary, no full body/contact.`;
+      case 'support.ticket.decision_needed':
+        return 'Decision-needed support tickets: 1 pending operator decision.';
+      case 'social.draft.list':
+        return 'Social drafts: draft_fixture_1 review_needed. Use web route for edits.';
+      case 'social.draft.read':
+        return `Social draft ${String(request.args.ref ?? 'ref')}: review_needed, no Buffer publish from Telegram.`;
+      case 'social.draft.approval_link':
+        return `Approval link for ${String(request.args.ref ?? 'ref')}: /app/social-publishing?intent=approve.`;
       case 'telegram.audit.read_recent':
         return `Recent gateway audit: ${Number(request.args.count ?? 10)} sanitized entries available.`;
       default:
@@ -360,6 +374,9 @@ function previewSummary(request: BotActionRequest) {
   if (request.capability === 'task.update') {
     return `${String(request.args.task_ref ?? 'task')} -> ${String(request.args.status ?? 'updated')}`;
   }
+  if (request.capability === 'class.question.resolve') {
+    return `${String(request.args.question_ref ?? 'question')} -> ${String(request.args.status ?? 'answered')}`;
+  }
   if (request.capability === 'support.ticket.assign_self') {
     return `${String(request.args.ticket_ref ?? 'ticket')} assigned to self`;
   }
@@ -381,6 +398,9 @@ function eventIdsFor(request: BotActionRequest, idempotencyKey: string) {
   }
   if (request.capability === 'class.question.select') {
     return [`evt_question_selected_${stableDigest([idempotencyKey]).slice(0, 16)}`];
+  }
+  if (request.capability === 'class.question.resolve') {
+    return [`evt_question_resolved_${stableDigest([idempotencyKey]).slice(0, 16)}`];
   }
   return [];
 }

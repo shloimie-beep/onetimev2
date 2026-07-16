@@ -13,6 +13,16 @@ export type TelegramSendMessageClient = {
   }): Promise<{ messageRef: string }>;
 };
 
+export type TelegramProtectedChatDirectory = {
+  resolveChatId(chatRef: ChatRef): Promise<string | null>;
+};
+
+export type TelegramBotApiClientOptions = {
+  botToken: string;
+  chatDirectory: TelegramProtectedChatDirectory;
+  fetchImpl?: typeof fetch;
+};
+
 export type OneTimeTelegramTransportOptions = {
   enabled: boolean;
   canaryChatRef?: ChatRef;
@@ -45,6 +55,45 @@ export class OneTimeTelegramTransportAdapter implements BotTransportAdapter {
           }
         : {}),
     });
+  }
+}
+
+export class TelegramBotApiSendMessageClient implements TelegramSendMessageClient {
+  private readonly fetchImpl: typeof fetch;
+
+  constructor(private readonly options: TelegramBotApiClientOptions) {
+    if (!/^\d{6,}:[A-Za-z0-9_-]{20,}$/.test(options.botToken)) {
+      throw new Error('Protected Telegram bot token is missing or malformed.');
+    }
+    this.fetchImpl = options.fetchImpl ?? fetch;
+  }
+
+  async sendMessage(input: Parameters<TelegramSendMessageClient['sendMessage']>[0]) {
+    const chatId = await this.options.chatDirectory.resolveChatId(input.chatRef);
+    if (!chatId || !/^-?\d{5,32}$/.test(chatId)) {
+      throw new Error('Telegram chat is not in the protected allowlist.');
+    }
+    const response = await this.fetchImpl(
+      `https://api.telegram.org/bot${this.options.botToken}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: input.text,
+          parse_mode: undefined,
+          disable_web_page_preview: true,
+          ...(input.replyMarkup ? { reply_markup: input.replyMarkup } : {}),
+        }),
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Telegram send failed with status ${response.status}.`);
+    }
+    const json = (await response.json()) as { result?: { message_id?: number } };
+    return {
+      messageRef: `telegram_message_${redactedRefHash(String(json.result?.message_id ?? 'sent'))}`,
+    };
   }
 }
 
