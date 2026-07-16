@@ -1,0 +1,104 @@
+{
+  "schema_version": "ops07.dayone_matrix.v1",
+  "generated_at": "2026-07-16T22:49:46.059Z",
+  "branch": "codex/ops07-dayone-journey-gates",
+  "rows": [
+    {
+      "id": "lead-signup-crm",
+      "title": "Lead signup to CRM visibility",
+      "status": "PASS",
+      "evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/lead-capture.test.ts",
+        "tests/e2e/crm-core.spec.ts"
+      ],
+      "notes": ["Domain or sink evidence exists in the current base."]
+    },
+    {
+      "id": "owner-login-step-up",
+      "title": "Owner activation/login and trusted-device policy",
+      "status": "DEFERRED_APPROVED",
+      "evidence": [
+        "tests/integration/accounts/account-lifecycle-web.test.ts",
+        "codex/ops03b-email-step-up-login input branch required by OPS-08"
+      ],
+      "notes": ["Owned by another overnight input branch before OPS-08 convergence."]
+    },
+    {
+      "id": "parent-learner-management",
+      "title": "Parent activation, learner access, reset, suspend, restore",
+      "status": "PASS",
+      "evidence": [
+        "tests/ot-52/portal-services.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ],
+      "notes": ["Domain or sink evidence exists in the current base."]
+    },
+    {
+      "id": "student-class-question",
+      "title": "Student class/resource/private-question journey",
+      "status": "PASS",
+      "evidence": [
+        "tests/integration/classroom/zoom-learner-classroom.test.ts",
+        "tests/e2e/ot88-zoom-classroom.spec.ts"
+      ],
+      "notes": ["Domain or sink evidence exists in the current base."]
+    },
+    {
+      "id": "subscriber-support",
+      "title": "Subscriber support create/detail/receipt",
+      "status": "PASS",
+      "evidence": [
+        "tests/integration/support/ot89a-subscriber-support.test.ts",
+        "tests/e2e/support.spec.ts"
+      ],
+      "notes": ["Domain or sink evidence exists in the current base."]
+    },
+    {
+      "id": "communications-single-recipient",
+      "title": "Single-recipient communications draft/send sink",
+      "status": "DEFERRED_APPROVED",
+      "evidence": ["OT-114 branch owns final CRM communications/support completion input"],
+      "notes": ["Owned by another overnight input branch before OPS-08 convergence."]
+    },
+    {
+      "id": "provider-control-status",
+      "title": "Provider control status and webhook readiness",
+      "status": "DEFERRED_APPROVED",
+      "evidence": ["OPS-05 branch owns provider control center and conformance input"],
+      "notes": ["Owned by another overnight input branch before OPS-08 convergence."]
+    },
+    {
+      "id": "worker-reliability",
+      "title": "Worker heartbeat, queue health, recovery, and probes",
+      "status": "DEFERRED_APPROVED",
+      "evidence": ["OPS-06 branch owns reliability and recovery input"],
+      "notes": ["Owned by another overnight input branch before OPS-08 convergence."]
+    },
+    {
+      "id": "real-provider-canaries",
+      "title": "Real staging canaries for email, Zoom, WhatsApp, Telegram, Vimeo, Buffer, Stripe TEST, BNA bridge",
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": [
+        "Protected staging credentials and allowlisted destinations are required; no production or broad-send authorization exists"
+      ],
+      "notes": ["External configuration or human authorization is required."]
+    },
+    {
+      "id": "production-readiness",
+      "title": "Production release, DNS, broad send, live charge, live Buffer publish",
+      "status": "BLOCKED_EXTERNAL",
+      "evidence": [
+        "Packet explicitly forbids production deployment, DNS change, broad send, live charge, and live Buffer publication"
+      ],
+      "notes": ["External configuration or human authorization is required."]
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "pass": 4,
+    "fail": 0,
+    "blocked_external": 2,
+    "deferred_approved": 4
+  }
+}
