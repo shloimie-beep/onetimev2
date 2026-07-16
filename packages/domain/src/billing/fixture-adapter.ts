@@ -198,19 +198,56 @@ function extractObjectRefs(payload: FixtureWebhookPayload): ProviderEventObjectR
   setString(refs, 'provider_customer_ref', object.customer);
   setString(refs, 'provider_subscription_ref', object.subscription ?? object.id);
   if (payload.type.startsWith('invoice.')) setString(refs, 'provider_invoice_ref', object.id);
+  if (payload.type.startsWith('charge.')) setString(refs, 'provider_invoice_ref', object.invoice);
   if (payload.type.startsWith('checkout.'))
     setString(refs, 'provider_checkout_session_ref', object.id);
   setString(refs, 'status', object.status);
-  setString(refs, 'account_key', object.account_key);
-  setString(refs, 'product_key', object.product_key);
+  const metadata = object.metadata && typeof object.metadata === 'object' ? object.metadata : {};
+  setString(
+    refs,
+    'account_key',
+    object.account_key ?? (metadata as Record<string, unknown>).account_key,
+  );
+  setString(
+    refs,
+    'product_key',
+    object.product_key ?? (metadata as Record<string, unknown>).product_key,
+  );
+  setString(
+    refs,
+    'principal_key',
+    object.principal_key ?? (metadata as Record<string, unknown>).principal_key,
+  );
+  setString(refs, 'offer_key', object.offer_key ?? (metadata as Record<string, unknown>).offer_key);
+  setString(
+    refs,
+    'policy_version',
+    object.policy_version ?? (metadata as Record<string, unknown>).policy_version,
+  );
+  setString(refs, 'checkout_request_key', object.client_reference_id);
+  refs.current_period_start = stringValue(object.current_period_start) ?? null;
   refs.current_period_end = stringValue(object.current_period_end) ?? null;
   refs.cancel_at = stringValue(object.cancel_at) ?? null;
   refs.canceled_at = stringValue(object.canceled_at) ?? null;
+  refs.cancel_at_period_end = Boolean(object.cancel_at_period_end);
+  refs.latest_invoice_ref = stringValue(object.latest_invoice) ?? null;
   const amountDue = numberValue(object.amount_due_cents);
   const amountPaid = numberValue(object.amount_paid_cents);
+  const refunded = numberValue(object.refunded_amount_cents);
   if (amountDue !== undefined) refs.amount_due_cents = amountDue;
   if (amountPaid !== undefined) refs.amount_paid_cents = amountPaid;
+  if (refunded !== undefined) refs.refunded_amount_cents = refunded;
   setString(refs, 'currency', object.currency);
+  const disputeState = stringValue(object.dispute_state);
+  if (
+    disputeState === 'none' ||
+    disputeState === 'created' ||
+    disputeState === 'won' ||
+    disputeState === 'lost' ||
+    disputeState === 'closed'
+  ) {
+    refs.dispute_state = disputeState;
+  }
   refs.issued_at = stringValue(object.issued_at) ?? null;
   return refs;
 }

@@ -23,6 +23,8 @@ import {
   getSession,
   getStudentDashboard,
   invokeProtectedAction,
+  createBillingCheckoutSession,
+  createBillingPortalSession,
   previewParentSupport,
   previewStudentSupport,
   runStudentAccessOperation,
@@ -298,6 +300,27 @@ function PortalApp() {
     }
   }
 
+  async function handleBillingAction(kind: 'checkout' | 'portal') {
+    if (!session || !parentDashboard) return;
+    try {
+      setNotice(null);
+      const principalKey = parentDashboard.household.household_key;
+      const result =
+        kind === 'checkout'
+          ? await createBillingCheckoutSession({
+              csrfToken: session.csrf_token,
+              principalKey,
+            })
+          : await createBillingPortalSession({
+              csrfToken: session.csrf_token,
+              principalKey,
+            });
+      window.location.assign(result.redirect_url);
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Billing is unavailable.') });
+    }
+  }
+
   async function handleProtectedAction(action: ProtectedActionDescriptor) {
     if (!session) return;
     try {
@@ -460,6 +483,8 @@ function PortalApp() {
           onArchiveLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'archive')}
           onRestoreLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'restore')}
           onStudentAccessAction={openStudentAccessDialog}
+          onBillingCheckout={() => void handleBillingAction('checkout')}
+          onBillingPortal={() => void handleBillingAction('portal')}
           onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
           onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
           onPreviewSupport={() => window.location.assign('/app/support')}

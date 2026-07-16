@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "status": "blocked_waiting_for_stripe_test_resources",
+  "updated_at": "2026-07-15T20:07:30+03:00",
+  "live_stripe_charges_authorized": false,
+  "cases": [],
+  "notes": [
+    "Canaries were not run because read-only resource validation did not pass.",
+    "Required before canaries: LIVE_STRIPE_CHARGES_AUTHORIZED=NO, validated TEST resources, and ONE_TIME_STRIPE_TEST_CANARY_AUTHORIZED=YES.",
+    "No live charges, live resources, or TEST charges were created."
+  ]
+}

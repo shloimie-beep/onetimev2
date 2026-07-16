@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "updated_at": "2026-07-15T20:07:30+03:00",
+  "selected_migration": "packages/db/migrations/2000_ot87_stripe_test_entitlements.sql",
+  "migrations": [
+    {
+      "path": "packages/db/migrations/2000_ot87_stripe_test_entitlements.sql",
+      "sha256": "414008a7617a0e40fc0e9a97e47ea4181444372130b62b8e8761d7b274bac1da",
+      "purpose": "Additive OT-87 Stripe TEST billing lifecycle, projection, entitlement-access, invoice/refund/dispute, and redirect-vault support."
+    }
+  ],
+  "policy": {
+    "path": "ops/commercial/ot87/family-plan.v1.json",
+    "sha256": "6ec2d58dcc4754341a4fd5709637a57084de8fc04b1d7caae3ed27e2c41b1c2d"
+  }
+}

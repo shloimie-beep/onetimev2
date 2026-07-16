@@ -7,9 +7,11 @@ import { ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
+import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
+import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
 import {
   classroomAttendanceEventPayloadSchema,
   classroomLaunchBootstrapPayloadSchema,
@@ -98,6 +100,18 @@ import {
 import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
 import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
+  parseOt87StripeTestBillingConfig,
+  readOt87StripeRuntimeSecrets,
+} from '../../../../packages/domain/src/billing/config.ts';
+import { createFixtureBillingProviderAdapter } from '../../../../packages/domain/src/billing/fixture-adapter.ts';
+import { createOfficialStripeTestClient } from '../../../../packages/domain/src/billing/stripe-official-client.ts';
+import { createStripeTestBillingProviderAdapter } from '../../../../packages/domain/src/billing/stripe-test-adapter.ts';
+import type {
+  BillingActorContext,
+  BillingAuthorizationAdapter,
+  BillingFeatureConfig,
+} from '../../../../packages/domain/src/billing/types.ts';
+import {
   exposeServerTiming,
   publicError,
   traceMiddleware,
@@ -109,6 +123,7 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
+import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
 
@@ -287,6 +302,30 @@ export function createApp({
       setPrivateNoStore,
     },
   });
+
+  const billingRuntime = createBillingRuntime(config, pool);
+  app.use(
+    '/api/v1/billing',
+    createBillingRouter({
+      config: billingRuntime.config,
+      repositories: billingRuntime.repositories,
+      providerAdapter: billingRuntime.providerAdapter,
+      authorization: billingRuntime.authorization,
+      resolveActor: (req) => billingActorFromRequest(req, pool, config),
+      verifyCsrf: (req) => verifyBillingCsrf(req, pool, config),
+    }),
+  );
+  app.get(/^\/app\/billing\/(?:checkout|portal)\/redirect\/([^/]+)$/, async (req, res) => {
+    setPrivateNoStore(res);
+    const redirectKey = String(req.params[0] ?? '');
+    const providerUrl = await billingRuntime.repositories.consumeRedirect(redirectKey);
+    if (!providerUrl) {
+      res.status(404).type('text').send('Billing redirect expired.');
+      return;
+    }
+    res.redirect(302, providerUrl);
+  });
+
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
@@ -343,6 +382,25 @@ export function createApp({
     setPrivateNoStore(res);
     await sendAppHtml(res, distDir, 'crm');
   });
+
+  app.get(
+    /^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/,
+    async (req: RequestWithTrace, res) => {
+      const session = await sessionFromRequest(req, pool, config);
+      if (!session) {
+        res.redirect(
+          302,
+          `/login?return_to=${encodeURIComponent(
+            safeReturnPath(req.path, config) ?? '/app/billing/checkout/success',
+          )}`,
+        );
+        return;
+      }
+      await ensureSessionCsrfCookie(req, res, pool, config, session);
+      setPrivateNoStore(res);
+      await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm');
+    },
+  );
 
   app.get(
     /^\/app\/(?:dashboard|classes|content|billing)(?:\/.*)?$/,
@@ -809,6 +867,7 @@ export function createApp({
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
+    billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
   };
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
   const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
@@ -1402,6 +1461,208 @@ async function portalActorFromRequest(req: Request, pool: DbPool, config: AppCon
     authorized_households: authorizedHouseholds,
     student_learner: studentLearner,
   } satisfies PortalActorContext;
+}
+
+function createBillingRuntime(config: AppConfig, pool: DbPool) {
+  const repositories = createPostgresBillingRepositories(pool);
+  const billingConfig = parseOt87StripeTestBillingConfig(billingEnv(process.env), {
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    canonicalPublicOrigin: config.publicBaseUrl,
+  });
+  const secrets = readOt87StripeRuntimeSecrets(billingEnv(process.env));
+  const providerAccountRef = billingConfig.expectedProviderAccountRef
+    ? {
+        provider: 'stripe' as const,
+        mode: 'test' as const,
+        provider_account_ref: billingConfig.expectedProviderAccountRef,
+      }
+    : null;
+  const providerAdapter =
+    providerAccountRef && secrets.secretKey && secrets.webhookSecret
+      ? createStripeTestBillingProviderAdapter({
+          providerAccountRef,
+          webhookSecret: secrets.webhookSecret,
+          redirectVault: { store: (entry) => repositories.storeRedirect(entry) },
+          portalConfigurationRef: billingConfig.providerPortalConfigurationRef ?? undefined,
+          client: createOfficialStripeTestClient(secrets.secretKey),
+        })
+      : disabledBillingProviderAdapter();
+  return {
+    config: billingConfig,
+    repositories,
+    providerAdapter,
+    authorization: createBillingAuthorizationAdapter(pool, config),
+  };
+}
+
+function billingEnv(source: NodeJS.ProcessEnv) {
+  const names = [
+    'LIVE_STRIPE_CHARGES_AUTHORIZED',
+    'ENABLE_PAYMENT_TRANSPORT',
+    'ENABLE_STRIPE_TEST_CHECKOUT',
+    'ENABLE_STRIPE_TEST_PORTAL',
+    'ENABLE_STRIPE_TEST_WEBHOOKS',
+    'ENABLE_STRIPE_TEST_WEBHOOK_PROJECTION',
+    'ENABLE_STRIPE_TEST_RECONCILIATION',
+    'ONE_TIME_ENTITLEMENT_EMERGENCY_MODE',
+    'ONE_TIME_BILLING_CANONICAL_PUBLIC_ORIGIN',
+    'ONE_TIME_STRIPE_TEST_SECRET_KEY',
+    'ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET',
+    'ONE_TIME_STRIPE_TEST_ACCOUNT_ID',
+    'ONE_TIME_STRIPE_TEST_PRODUCT_ID',
+    'ONE_TIME_STRIPE_TEST_PRICE_ID',
+    'ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID',
+    'ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID',
+    'ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY',
+  ];
+  return Object.fromEntries(names.map((name) => [name, source[name]]));
+}
+
+function disabledBillingProviderAdapter(): BillingProviderAdapter {
+  const unavailable = async () => {
+    throw new Error('Stripe test billing provider is not configured.');
+  };
+  const fixture = createFixtureBillingProviderAdapter({
+    providerAccountRef: {
+      provider: 'stripe',
+      mode: 'test',
+      provider_account_ref: 'acct_disabled_ot87',
+    },
+  });
+  return {
+    ...fixture,
+    createCheckoutSession: unavailable,
+    createCustomerPortalSession: unavailable,
+    verifyWebhook: unavailable,
+    reconcileBillingPrincipal: async () => ({
+      status: 'failed',
+      reason: 'stripe_test_provider_not_configured',
+    }),
+  };
+}
+
+async function billingActorFromRequest(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+): Promise<BillingActorContext> {
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return { actor_key: 'anonymous', role: 'public', active: false };
+  return {
+    actor_key: session.user.user_key,
+    role: session.user.role,
+    active: true,
+  };
+}
+
+async function verifyBillingCsrf(req: Request, pool: DbPool, config: AppConfig) {
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return false;
+  return verifySessionCsrf({
+    pool,
+    sessionKey: session.session_key,
+    csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+  });
+}
+
+function createBillingAuthorizationAdapter(
+  pool: DbPool,
+  config: AppConfig,
+): BillingAuthorizationAdapter {
+  return {
+    async resolvePrincipal({ actor, requested_principal_key }) {
+      if (!actor.active || actor.role === 'public') return { ok: false, reason: 'anonymous' };
+      if (actor.role === 'parent') {
+        const household = await pool.query(
+          `SELECT 1
+             FROM onetime.portal_guardian_relationships AS relationships
+             JOIN onetime.portal_households AS households
+               ON households.account_key = relationships.account_key
+              AND households.product_key = relationships.product_key
+              AND households.household_key = relationships.household_key
+            WHERE relationships.account_key = $1
+              AND relationships.product_key = $2
+              AND relationships.guardian_user_ref = $3
+              AND relationships.household_key = $4
+              AND relationships.status = 'active'
+              AND relationships.authority <> 'support_only'
+              AND households.status = 'active'
+            LIMIT 1`,
+          [config.accountKey, config.productKey, actor.actor_key, requested_principal_key],
+        );
+        if (!household.rowCount) return { ok: false, reason: 'wrong_scope' };
+        return {
+          ok: true,
+          principal: {
+            principal_key: requested_principal_key,
+            principal_type: 'opaque',
+            account_key: config.accountKey,
+            product_key: config.productKey,
+          },
+          capabilities: ['billing:read', 'billing:checkout', 'billing:portal'],
+        };
+      }
+      if (actor.role === 'owner' || actor.role === 'admin') {
+        const household = await pool.query(
+          `SELECT 1
+             FROM onetime.portal_households
+            WHERE account_key = $1
+              AND product_key = $2
+              AND household_key = $3
+            LIMIT 1`,
+          [config.accountKey, config.productKey, requested_principal_key],
+        );
+        if (!household.rowCount) return { ok: false, reason: 'unknown_principal' };
+        return {
+          ok: true,
+          principal: {
+            principal_key: requested_principal_key,
+            principal_type: 'opaque',
+            account_key: config.accountKey,
+            product_key: config.productKey,
+          },
+          capabilities: ['billing:read', 'billing:reconcile'],
+        };
+      }
+      return { ok: false, reason: 'insufficient_capability' };
+    },
+  };
+}
+
+function createParentBillingSummaryAdapter(
+  config: BillingFeatureConfig,
+  repositories: ReturnType<typeof createPostgresBillingRepositories>,
+): NonNullable<PortalServiceDeps['billing']> {
+  return {
+    summaryForHousehold: async ({ household }) => {
+      const principal = {
+        principal_key: household.household_key,
+        principal_type: 'opaque' as const,
+        account_key: config.offerMappings[0]?.account_key ?? 'one_time',
+        product_key: config.offerMappings[0]?.product_key ?? 'one_time_mishnah_class',
+      };
+      const summary = await repositories.summary(principal);
+      const customerPortalAvailable =
+        config.transportEnabled && config.customerPortalEnabled && Boolean(summary.customer);
+      return {
+        enabled: config.foundationEnabled,
+        summary_label: summary.entitlement?.status ?? 'Not active',
+        plan_truth: 'Family plan — $67/month — up to 3 active learners in one household.',
+        entitlement_status: summary.entitlement?.status ?? null,
+        grants_access: summary.entitlement?.grants_access === true,
+        checkout_available:
+          config.transportEnabled && config.checkoutEnabled && config.offerMappings.length === 1,
+        customer_portal_available: customerPortalAvailable,
+        recovery_required:
+          summary.entitlement?.status === 'suspended' ||
+          summary.subscription?.status === 'past_due' ||
+          summary.subscription?.status === 'unpaid',
+        current_period_end: summary.subscription?.current_period_end ?? null,
+        cancel_at_period_end: summary.subscription?.cancel_at_period_end === true,
+      };
+    },
+  };
 }
 
 async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey: string) {

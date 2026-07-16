@@ -15,6 +15,7 @@ import type {
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import type { LearnerClassAccessAdapter } from '../portals/services.ts';
+import { householdHasLearningAccess } from '../billing/portal-access.ts';
 import { stableKey } from '../lead/normalize.ts';
 import {
   ONE_TIME_CLASS_TIME_ZONE,
@@ -132,7 +133,13 @@ export function createClassPortalAccessAdapter(input: {
   now?: () => Date;
 }): LearnerClassAccessAdapter {
   return {
-    upcomingForLearner: async ({ actor }) => {
+    upcomingForLearner: async ({ actor, learner }) => {
+      const hasAccess = await householdHasLearningAccess({
+        pool: input.pool,
+        accountKey: actor.account_key,
+        productKey: actor.product_key,
+        householdKey: learner.household_key,
+      });
       const rows = await listClassOccurrences({
         pool: input.pool,
         config: {
@@ -143,10 +150,18 @@ export function createClassPortalAccessAdapter(input: {
         limit: 3,
         now: input.now?.() ?? new Date(),
       });
-      if (rows.length > 0) return rows.map((row) => portalSummary(row));
-      return [derivedPortalSummary(input.now?.() ?? new Date())];
+      if (rows.length > 0) return rows.map((row) => portalSummary(row, hasAccess));
+      return [derivedPortalSummary(input.now?.() ?? new Date(), hasAccess)];
     },
-    protectedLaunch: async ({ class_key }) => providerUnavailableAction(class_key),
+    protectedLaunch: async ({ actor, learner, class_key }) => {
+      const hasAccess = await householdHasLearningAccess({
+        pool: input.pool,
+        accountKey: actor.account_key,
+        productKey: actor.product_key,
+        householdKey: learner.household_key,
+      });
+      return hasAccess ? providerUnavailableAction(class_key) : billingRequiredAction(class_key);
+    },
   };
 }
 
@@ -386,17 +401,19 @@ function readinessForOccurrence(occurrenceKey: string): ClassReadiness {
   };
 }
 
-function portalSummary(summary: ClassOccurrenceSummary): UpcomingClassSummary {
+function portalSummary(summary: ClassOccurrenceSummary, hasAccess: boolean): UpcomingClassSummary {
   return {
     class_key: summary.occurrence_key,
     title: summary.title,
     starts_at: summary.starts_at,
-    status: summary.status === 'live' ? 'live' : 'upcoming',
-    launch_action: providerUnavailableAction(summary.occurrence_key),
+    status: hasAccess ? (summary.status === 'live' ? 'live' : 'upcoming') : 'unavailable',
+    launch_action: hasAccess
+      ? providerUnavailableAction(summary.occurrence_key)
+      : billingRequiredAction(summary.occurrence_key),
   };
 }
 
-function derivedPortalSummary(now: Date): UpcomingClassSummary {
+function derivedPortalSummary(now: Date, hasAccess: boolean): UpcomingClassSummary {
   const window = resolveDailyClassWindow(now);
   const occurrenceKey = stableKey('class_occurrence', [
     'derived',
@@ -407,8 +424,10 @@ function derivedPortalSummary(now: Date): UpcomingClassSummary {
     class_key: occurrenceKey,
     title: ONE_TIME_CLASS_TITLE,
     starts_at: window.startsAt.toISOString(),
-    status: 'unavailable',
-    launch_action: providerUnavailableAction(occurrenceKey),
+    status: hasAccess ? 'unavailable' : 'unavailable',
+    launch_action: hasAccess
+      ? providerUnavailableAction(occurrenceKey)
+      : billingRequiredAction(occurrenceKey),
   };
 }
 
@@ -420,6 +439,18 @@ function providerUnavailableAction(classKey: string): ProtectedActionDescriptor 
     method: 'POST',
     href: null,
     launch_token_ref: 'provider_unavailable',
+    expires_at: null,
+  };
+}
+
+function billingRequiredAction(classKey: string): ProtectedActionDescriptor {
+  return {
+    action_key: stableKey('class_billing_required_action', [classKey]),
+    label: 'Billing required',
+    kind: 'class_launch',
+    method: 'POST',
+    href: null,
+    launch_token_ref: 'billing_required',
     expires_at: null,
   };
 }

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "OT-87",
+  "resolved_at": "2026-07-15T19:26:10.6882207+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "remote_url": "https://github.com/webcraft-media/onetimev2.git",
+  "source_branch": "codex/ot83-household-portals-foundation",
+  "source_ref": "refs/remotes/origin/codex/ot83-household-portals-foundation",
+  "source_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "target_branch": "codex/ot87-stripe-test-entitlements",
+  "target_remote_ref": "refs/remotes/origin/codex/ot87-stripe-test-entitlements",
+  "target_remote_status": "absent",
+  "target_starting_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "worktree_path": "C:/Users/User/onetimev2-ot87-stripe-test-entitlements",
+  "git_status_short": "## codex/ot87-stripe-test-entitlements",
+  "node_version": "v24.13.0",
+  "npm_version": "11.6.2",
+  "postgresql_test_availability": {
+    "database_url_configured": false,
+    "test_database_url_configured": false,
+    "ot_test_database_url_configured": false,
+    "postgres_url_configured": false,
+    "status": "not_available_from_initial_environment_presence_check"
+  }
+}

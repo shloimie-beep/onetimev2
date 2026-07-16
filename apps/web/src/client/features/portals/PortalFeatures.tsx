@@ -49,6 +49,8 @@ export type ParentPortalFeatureProps = {
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onOpenContent?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onPreviewSupport?: (learnerKey?: string) => void;
+  onBillingCheckout?: () => void;
+  onBillingPortal?: () => void;
   onRetry?: () => void;
 };
 
@@ -82,6 +84,8 @@ export function ParentPortalFeature({
   onLaunchClass,
   onOpenContent,
   onPreviewSupport,
+  onBillingCheckout,
+  onBillingPortal,
   onRetry,
 }: ParentPortalFeatureProps) {
   const [activeLearnerKey, setActiveLearnerKey] = useState<string | null>(
@@ -174,6 +178,11 @@ export function ParentPortalFeature({
               </div>
             ))}
           </div>
+          <BillingSummaryPanel
+            billing={dashboard.billing}
+            onCheckout={onBillingCheckout}
+            onPortal={onBillingPortal}
+          />
         </section>
 
         {selectedLearner && (
@@ -244,6 +253,68 @@ export function ParentPortalFeature({
             />
             <UpdatesList updates={dashboard.updates[selectedLearner.learner_key] ?? []} />
           </section>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function BillingSummaryPanel({
+  billing,
+  onCheckout,
+  onPortal,
+}: {
+  billing: ParentPortalDashboard['billing'];
+  onCheckout?: (() => void) | undefined;
+  onPortal?: (() => void) | undefined;
+}) {
+  if (!billing.enabled) return null;
+  const status = billing.entitlement_status ?? 'pending';
+  const showCheckout =
+    billing.checkout_available && status !== 'active' && status !== 'scheduled_end';
+  const showPortal = billing.customer_portal_available;
+  return (
+    <section className="ot-subsection" aria-labelledby="billing-heading">
+      <div>
+        <h3 id="billing-heading">Billing</h3>
+        <p>{billing.plan_truth}</p>
+      </div>
+      <dl className="ot-mini-metrics">
+        <div>
+          <dt>Status</dt>
+          <dd>{label(status)}</dd>
+        </div>
+        <div>
+          <dt>Access</dt>
+          <dd>{billing.grants_access ? 'Active' : 'Not active'}</dd>
+        </div>
+      </dl>
+      {billing.current_period_end && (
+        <p className="ot-muted">
+          Current period ends {formatDate(billing.current_period_end)}
+          {billing.cancel_at_period_end ? '. Cancellation scheduled.' : ''}
+        </p>
+      )}
+      {billing.recovery_required && (
+        <p className="ot-warning" role="status">
+          Payment recovery is required before learning access resumes.
+        </p>
+      )}
+      <div className="ot-action-row">
+        {showCheckout && (
+          <button
+            type="button"
+            className="ot-button ot-button-primary"
+            disabled={!onCheckout}
+            onClick={onCheckout}
+          >
+            Start checkout
+          </button>
+        )}
+        {showPortal && (
+          <button type="button" className="ot-button" disabled={!onPortal} onClick={onPortal}>
+            Manage billing
+          </button>
         )}
       </div>
     </section>

@@ -250,6 +250,45 @@ export async function invokeProtectedAction(action: ProtectedActionDescriptor, c
   return json.data;
 }
 
+export async function createBillingCheckoutSession(input: {
+  csrfToken: string;
+  principalKey: string;
+}) {
+  const json = await api<{
+    success: true;
+    data: { redirect_url: string };
+  }>('/api/v1/billing/checkout-sessions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      principal_key: input.principalKey,
+      offer_key: 'family_monthly_usd_67_v1',
+      idempotency_key: createIdempotencyKey(),
+      version: 1,
+    }),
+  });
+  return json.data;
+}
+
+export async function createBillingPortalSession(input: {
+  csrfToken: string;
+  principalKey: string;
+}) {
+  const json = await api<{
+    success: true;
+    data: { redirect_url: string };
+  }>('/api/v1/billing/customer-portal-sessions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      principal_key: input.principalKey,
+      idempotency_key: createIdempotencyKey(),
+      version: 1,
+    }),
+  });
+  return json.data;
+}
+
 export function createIdempotencyKey() {
   if ('crypto' in globalThis && typeof crypto.randomUUID === 'function') {
     return `portal-${crypto.randomUUID()}`;

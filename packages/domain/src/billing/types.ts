@@ -40,16 +40,22 @@ export type BillingFeatureConfig = {
   customerPortalEnabled: boolean;
   webhookIntakeEnabled: boolean;
   reconciliationEnabled: boolean;
+  webhookProjectionEnabled: boolean;
   mode: BillingMode;
   canonicalPublicOrigin: string | null;
   expectedProviderAccountRef: string | null;
   offerMappings: BillingOfferPriceMapping[];
+  policyId: string;
+  policyVersion: string;
+  planTruth: string;
+  entitlementEmergencyMode: 'normal' | 'deny_all';
+  providerPortalConfigurationRef: string | null;
   configFingerprint: string;
 };
 
 export type BillingActorContext = {
   actor_key: string;
-  role: 'owner' | 'admin' | 'crm_agent' | 'viewer' | 'public';
+  role: 'owner' | 'admin' | 'crm_agent' | 'viewer' | 'parent' | 'student' | 'public';
   active: boolean;
 };
 

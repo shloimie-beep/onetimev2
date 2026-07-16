@@ -34,6 +34,10 @@
     "verify": "npm run secret:scan && npm run format && npm run brand:check && npm run lint && npm run typecheck && npm run test && npm run e2e && npm run accessibility && npm run performance",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:verify": "tsx scripts/migrate.ts --verify",
+    "stripe:test:resources:validate": "tsx scripts/ot87-stripe-test-resources.ts validate",
+    "stripe:test:resources:setup": "tsx scripts/ot87-stripe-test-resources.ts setup",
+    "billing:reconcile:test": "tsx scripts/ot87-billing-reconcile-test.ts --scope=family --dry-run",
+    "billing:reconcile:test:apply": "tsx scripts/ot87-billing-reconcile-test.ts --scope=family --apply",
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",
     "version:print": "tsx scripts/print-version.ts"
   },
@@ -48,6 +52,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "sharp": "^0.35.3",
+    "stripe": "^22.3.1",
     "zod": "^4.0.5"
   },
   "devDependencies": {
