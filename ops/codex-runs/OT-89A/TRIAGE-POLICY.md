@@ -91,12 +91,12 @@ Assign when evidence is incomplete, classifications conflict, confidence is belo
 
 BNA computes severity; a subscriber cannot select it. Existing BNA policy takes precedence when it is stricter. Otherwise OT89 uses this default:
 
-| Severity | Criteria | Owner assignment target | Initial subscriber-visible response target | Update target |
-|---|---|---:|---:|---:|
-| `SEV0` | Active security incident, confirmed data loss/corruption, or all active subscribers unable to use a paid critical path | 15 minutes | 30 minutes | Every 30 minutes while active |
-| `SEV1` | Multiple subscribers blocked; an active subscriber blocked from a paid live class starting within 4 hours; or major authentication/payment/provider degradation | 30 minutes | 1 hour | Every 2 hours while active |
-| `SEV2` | Single-account access failure, reproducible product bug without broad outage, billing/content issue, or complaint requiring investigation | 4 business hours | 1 business day | Each business day while active |
-| `SEV3` | Feature request, low-impact issue, informational request, or other non-urgent item | 1 business day | 2 business days | On material state change |
+| Severity | Criteria                                                                                                                                                        | Owner assignment target | Initial subscriber-visible response target |                  Update target |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------: | -----------------------------------------: | -----------------------------: |
+| `SEV0`   | Active security incident, confirmed data loss/corruption, or all active subscribers unable to use a paid critical path                                          |              15 minutes |                                 30 minutes |  Every 30 minutes while active |
+| `SEV1`   | Multiple subscribers blocked; an active subscriber blocked from a paid live class starting within 4 hours; or major authentication/payment/provider degradation |              30 minutes |                                     1 hour |     Every 2 hours while active |
+| `SEV2`   | Single-account access failure, reproducible product bug without broad outage, billing/content issue, or complaint requiring investigation                       |        4 business hours |                             1 business day | Each business day while active |
+| `SEV3`   | Feature request, low-impact issue, informational request, or other non-urgent item                                                                              |          1 business day |                            2 business days |       On material state change |
 
 For this policy, business hours are Sunday through Thursday, 09:00–18:00 in `Asia/Jerusalem`, excluding holidays already configured in BNA. SLA clocks pause only in an explicit `waiting_customer` state. Alert transport failure, internal assignment delay, and BNA worker backlog do not pause the clock.
 
@@ -121,14 +121,14 @@ Only an idempotent `BUG_CANDIDATE` with classification confidence at least `0.85
 
 Allowed operations are exactly:
 
-| Operation code | Typed parameters | Hard limits | Permitted result |
-|---|---|---|---|
-| `READ_BUILD_METADATA` | environment enum, app release, source commit | One environment and one release | Version, commit, build time, deployment state |
-| `READ_HEALTH_STATUS` | service enum from existing registry | Five endpoints, 10-second timeout each | Status code, latency, sanitized health fields |
-| `QUERY_STRUCTURED_LOGS_BY_CORRELATION_ID` | correlation ID, environment, start and end timestamps | Two-hour window, 500 records, structured query API only | Redacted structured events; no arbitrary grep |
-| `READ_FEATURE_FLAG_STATE` | allowlisted flag key, environment | Ten keys | Flag state and config version; never secret values |
-| `READ_PROVIDER_STATUS_CACHE` | provider enum, time window | Twenty-four-hour window | Existing cached provider incident data |
-| `RUN_EXISTING_READ_ONLY_TEST` | test ID from a committed allowlist, source commit | One isolated run, no package installation, no external mutation | Exit status and sanitized test output |
+| Operation code                            | Typed parameters                                      | Hard limits                                                     | Permitted result                                   |
+| ----------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------- |
+| `READ_BUILD_METADATA`                     | environment enum, app release, source commit          | One environment and one release                                 | Version, commit, build time, deployment state      |
+| `READ_HEALTH_STATUS`                      | service enum from existing registry                   | Five endpoints, 10-second timeout each                          | Status code, latency, sanitized health fields      |
+| `QUERY_STRUCTURED_LOGS_BY_CORRELATION_ID` | correlation ID, environment, start and end timestamps | Two-hour window, 500 records, structured query API only         | Redacted structured events; no arbitrary grep      |
+| `READ_FEATURE_FLAG_STATE`                 | allowlisted flag key, environment                     | Ten keys                                                        | Flag state and config version; never secret values |
+| `READ_PROVIDER_STATUS_CACHE`              | provider enum, time window                            | Twenty-four-hour window                                         | Existing cached provider incident data             |
+| `RUN_EXISTING_READ_ONLY_TEST`             | test ID from a committed allowlist, source commit     | One isolated run, no package installation, no external mutation | Exit status and sanitized test output              |
 
 Forbidden operations include arbitrary shell, free-form SQL, package installation, repository modification, branch creation, issue creation, deployment, feature-flag mutation, production database write, secret retrieval, network scanning, and passing ticket text to Codex or a CLI.
 
