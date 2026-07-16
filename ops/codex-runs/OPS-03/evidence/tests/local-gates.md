@@ -13,7 +13,7 @@ Run date: 2026-07-16.
 ## Test Gates
 
 - `npm run unit`: passed, 28 test files / 155 tests.
-- `npm run integration`: passed, 25 test files / 128 tests.
+- `npm run integration`: passed, 26 test files / 129 tests after adding runtime metadata coverage.
 - Focused parent learner-access coverage:
   - `tests/ot-52/portal-services.test.ts`
   - `tests/integration/portals/portal-mount.test.ts`
@@ -22,6 +22,7 @@ Run date: 2026-07-16.
 - `npm run e2e`: passed, 32 Playwright tests.
 - `npm run accessibility`: passed, 9 Playwright tests.
 - `npm run performance`: passed, 7 Playwright tests plus `scripts/check-bundles.ts`.
+- Post-runtime metadata rerun: `npm run e2e`, `npm run accessibility`, and `npm run performance` all passed again.
 
 ## Bundle Checker Output
 

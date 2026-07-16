@@ -1303,15 +1303,77 @@ export function createApp({
     distDir,
   });
 
+  app.use(async (req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      next();
+      return;
+    }
+    const htmlFile = publicHtmlFileForPath(req.path);
+    if (!htmlFile) {
+      next();
+      return;
+    }
+    await sendPublicHtml(res, path.join(distDir, htmlFile), config, req.path);
+  });
+
   app.use(
     express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }),
   );
 
-  app.use((_req, res) => {
-    res.status(404).sendFile(path.join(distDir, '404.html'));
+  app.use(async (_req, res) => {
+    res.status(404);
+    await sendPublicHtml(res, path.join(distDir, '404.html'), config, '/404');
   });
 
   return app;
+}
+
+function publicHtmlFileForPath(pathname: string) {
+  if (pathname === '/') return 'index.html';
+  const staticPages = new Set(['/signup', '/login', '/privacy', '/terms', '/404']);
+  if (staticPages.has(pathname)) return `${pathname.slice(1)}.html`;
+  const appPages = new Set([
+    '/app/crm',
+    '/app/dashboard',
+    '/app/classes',
+    '/app/content',
+    '/app/billing',
+    '/app/parent',
+    '/app/student',
+  ]);
+  if (appPages.has(pathname)) return `${pathname.slice(1)}.html`;
+  return null;
+}
+
+async function sendPublicHtml(
+  res: Response,
+  filePath: string,
+  config: AppConfig,
+  canonicalPath: string,
+) {
+  const html = await readFile(filePath, 'utf8');
+  res
+    .type('html')
+    .set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache')
+    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+}
+
+function rewritePublicMetadata(html: string, publicBaseUrl: string, canonicalPath: string) {
+  const metadataUrl = publicMetadataUrl(publicBaseUrl, canonicalPath);
+  return html
+    .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${metadataUrl}">`)
+    .replace(
+      /<meta property="og:url" content="[^"]*">/,
+      `<meta property="og:url" content="${metadataUrl}">`,
+    );
+}
+
+function publicMetadataUrl(publicBaseUrl: string, canonicalPath: string) {
+  const origin = new URL(publicBaseUrl).origin;
+  if (!canonicalPath.startsWith('/') || canonicalPath.startsWith('//')) {
+    throw new Error('Canonical public metadata paths must be root-relative.');
+  }
+  return new URL(canonicalPath, `${origin}/`).toString();
 }
 
 async function requireApiSession(

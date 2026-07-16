@@ -64,3 +64,5 @@
 - Added explicit staging service config files for web and worker selecting the Dockerfile builder.
 - Second web deployment attempt `f43e7c54-fca3-45d9-8680-d7d63bda5ae4` proved the Dockerfile build but failed runtime health because the image did not include `ops/commercial/ot87/family-plan.v1.json`, which billing loads at startup.
 - Repaired Dockerfile to copy only `ops/commercial` into build/runtime images.
+- Third web deployment attempt `bda2fb52-e7d7-4266-9260-7d941ac71721` and worker deployment `56fa089e-8679-483d-bc09-516783e8bc78` succeeded with Docker builder, but root HTML still emitted production canonical/Open Graph URLs because static pages were built before Railway runtime variables were available.
+- Added runtime HTML metadata rewrite for static public pages, using `config.publicBaseUrl` for canonical and `og:url`.
