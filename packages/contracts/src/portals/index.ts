@@ -73,6 +73,15 @@ export const studentAccessStatusSchema = z.enum([
 ]);
 export type StudentAccessStatus = z.infer<typeof studentAccessStatusSchema>;
 
+export const studentAccessOperationTypeSchema = z.enum([
+  'setup',
+  'reset',
+  'suspend',
+  'restore',
+  'revoke_sessions',
+]);
+export type StudentAccessOperationType = z.infer<typeof studentAccessOperationTypeSchema>;
+
 export const consentStatusSchema = z.enum(['not_required', 'required', 'granted', 'missing']);
 export type ConsentStatus = z.infer<typeof consentStatusSchema>;
 
@@ -105,7 +114,7 @@ export const studentAccessStateSchema = z.object({
   learner_key: opaqueIdSchema,
   status: studentAccessStatusSchema,
   student_user_ref: opaqueIdSchema.nullable(),
-  last_operation_type: z.enum(['setup', 'reset', 'suspend', 'restore']).nullable(),
+  last_operation_type: studentAccessOperationTypeSchema.nullable(),
   last_operation_at: z.string().nullable(),
   version: optimisticVersionSchema,
 });

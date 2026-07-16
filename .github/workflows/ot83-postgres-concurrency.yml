@@ -1,0 +1,76 @@
+name: OT-83 PostgreSQL Concurrency
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ot83-postgres-concurrency.yml'
+      - 'packages/db/migrations/**'
+      - 'packages/db/src/portals/**'
+      - 'packages/domain/src/portals/**'
+      - 'packages/domain/src/accounts/**'
+      - 'packages/contracts/src/portals/**'
+      - 'tests/ot-83/**'
+  push:
+    branches:
+      - codex/ot83-household-portals-foundation
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ot83-postgres-concurrency-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres-concurrency:
+    name: PostgreSQL 16 learner-seat proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run OT-83 PostgreSQL concurrency proof
+        env:
+          OT83_ALLOW_POSTGRES_WRITE: 'true'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: npx tsx tests/ot-83/real-postgres-concurrency.ts
+
+      - name: Upload sanitized OT-83 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ot83-postgres-concurrency-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ops/evidence/ot-83/REAL-POSTGRES-CONCURRENCY.json
+          if-no-files-found: ignore
+          retention-days: 7

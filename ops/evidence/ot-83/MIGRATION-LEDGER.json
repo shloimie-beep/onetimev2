@@ -1,0 +1,10 @@
+{
+  "migrations": [
+    {
+      "file": "packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+      "sha256": "8482E6840B48A579CF7FCF362564488EBCE0B7B7528CB42B175B595FB73BFFF6",
+      "purpose": "Allow revoke_sessions as a student-access operation and last operation type."
+    }
+  ],
+  "rollback_policy": "Forward-fix only; no destructive rollback was authored or run."
+}

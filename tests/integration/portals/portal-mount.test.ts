@@ -173,6 +173,38 @@ describe('OT-71 mounted parent and student portals', () => {
       expect(JSON.stringify(launchJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive/i);
 
       const parent = await loginAs(server.baseUrl, 'parent@example.test', 'ParentPass!234');
+      const revoke = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_alpha/student-access/revoke_sessions`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parent.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': parent.json.csrf_token,
+          },
+          body: JSON.stringify({ idempotency_key: 'portal-student-revoke-sessions-001' }),
+        },
+      );
+      const revokeText = await revoke.text();
+      expect(revoke.status, revokeText).toBe(200);
+      expect(JSON.parse(revokeText)).toMatchObject({
+        success: true,
+        data: {
+          learner_key: 'learner_alpha',
+          status: 'active',
+          last_operation_type: 'revoke_sessions',
+        },
+      });
+      const revokedSession = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
+        headers: { cookie: student.cookies },
+      });
+      expect(revokedSession.status).toBe(401);
+
+      const studentAfterRevoke = await loginAs(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+      );
       const suspend = await fetch(
         `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_alpha/student-access/suspend`,
         {
@@ -187,7 +219,7 @@ describe('OT-71 mounted parent and student portals', () => {
       );
       expect(suspend.status).toBe(200);
       const expired = await fetch(`${server.baseUrl}/api/v1/portals/student/dashboard`, {
-        headers: { cookie: student.cookies },
+        headers: { cookie: studentAfterRevoke.cookies },
       });
       expect(expired.status).toBe(401);
     } finally {

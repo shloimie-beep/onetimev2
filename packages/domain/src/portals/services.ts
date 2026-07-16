@@ -17,6 +17,7 @@ import type {
   RewardBalance,
   RewardEvent,
   StudentAccessOperationPayload,
+  StudentAccessOperationType,
   StudentAccessState,
   StudentPortalDashboard,
   SupportPreview,
@@ -25,6 +26,8 @@ import type {
   UpcomingClassSummary,
 } from '../../../contracts/src/portals/index.ts';
 import { hasPortalCapability } from '../../../contracts/src/portals/index.ts';
+
+export type { StudentAccessOperationType } from '../../../contracts/src/portals/index.ts';
 
 export class PortalServiceError extends Error {
   readonly code: PortalErrorCode;
@@ -46,8 +49,6 @@ export type PortalAuditRecord = {
   learner_key?: string;
   metadata?: Record<string, unknown>;
 };
-
-export type StudentAccessOperationType = 'setup' | 'reset' | 'suspend' | 'restore';
 
 export type CredentialLifecycleResult = {
   operation_ref: string;
@@ -192,6 +193,11 @@ export type StudentCredentialLifecycleAdapter = {
     payload: StudentAccessOperationPayload;
   }): Promise<CredentialLifecycleResult>;
   requestRestore(args: {
+    actor: PortalActorContext;
+    learner: LearnerProfile;
+    payload: StudentAccessOperationPayload;
+  }): Promise<CredentialLifecycleResult>;
+  requestRevokeSessions(args: {
     actor: PortalActorContext;
     learner: LearnerProfile;
     payload: StudentAccessOperationPayload;
@@ -676,7 +682,8 @@ async function runCredentialOperation(
   if (operationType === 'setup') return adapter.requestSetup({ actor, learner, payload });
   if (operationType === 'reset') return adapter.requestReset({ actor, learner, payload });
   if (operationType === 'suspend') return adapter.requestSuspend({ actor, learner, payload });
-  return adapter.requestRestore({ actor, learner, payload });
+  if (operationType === 'restore') return adapter.requestRestore({ actor, learner, payload });
+  return adapter.requestRevokeSessions({ actor, learner, payload });
 }
 
 function assertNoCredentialLeak(result: CredentialLifecycleResult) {

@@ -161,6 +161,12 @@ function depsFor(pool: DbPool): PortalServiceDeps {
         expires_at: null,
         delivery_hint: null,
       }),
+      requestRevokeSessions: async () => ({
+        operation_ref: 'op_revoke_sessions',
+        status: 'active',
+        expires_at: null,
+        delivery_hint: null,
+      }),
     },
   };
 }
