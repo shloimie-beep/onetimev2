@@ -6,6 +6,7 @@ import type {
   NormalizedBotUpdate,
   OneTimeBotApplicationAdapter,
 } from '../../../contracts/src/telegram/types.ts';
+import { sha256 } from './crypto.ts';
 
 const allowedRoles = new Set(['owner', 'admin']);
 
@@ -36,6 +37,9 @@ export class TelegramIdentityResolver {
     });
     if (!mapping) return { allowed: false, reason: 'unmapped_identity' };
     if (mapping.status !== 'active') return { allowed: false, reason: 'mapping_revoked' };
+    if (!mapping.chatRef || !opaqueRefMatches(mapping.chatRef, update.chatRef)) {
+      return { allowed: false, reason: 'unapproved_private_chat' };
+    }
 
     const actor = await this.adapter.resolveActor({
       mapping,
@@ -58,6 +62,9 @@ export class TelegramIdentityResolver {
       return { allowed: false, reason: 'security_version_mismatch' };
     }
     if (capability) {
+      if (capability === 'telegram.audit.read_recent' && actor.role !== 'owner') {
+        return { allowed: false, reason: 'unsupported_role' };
+      }
       const supported = this.adapter.supportedCapabilities();
       if (!supported.includes(capability) || !actor.capabilities.includes(capability)) {
         return { allowed: false, reason: 'capability_not_advertised' };
@@ -76,6 +83,10 @@ export class TelegramIdentityResolver {
       );
       if (!limited.allowed) return { allowed: false, reason: 'rate_limited' };
     }
-    return { allowed: true, actor };
+    return { allowed: true, actor, mapping };
   }
+}
+
+function opaqueRefMatches(stored: string, actual: string) {
+  return stored === actual || stored === `hashed:${sha256(actual)}`;
 }

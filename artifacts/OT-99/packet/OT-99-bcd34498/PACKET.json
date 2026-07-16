@@ -1,0 +1,110 @@
+{
+  "archive_name": "OT-99-CODEX-PACKET.zip",
+  "created_at_utc": "2026-07-16T03:57:12Z",
+  "delivery": {
+    "fallback": {
+      "filename": "OT-99-CODEX-PACKET.zip",
+      "result": "created"
+    },
+    "primary": {
+      "branch": "dropoff/ot-99-bcd34498",
+      "path": "packets/OT-99/OT-99-bcd34498/",
+      "pull_request_title": "[OT-99][PACKET READY] Final semantic convergence",
+      "real_sha": null,
+      "real_url": null,
+      "reason_codes": [
+        "GH_CLI_NOT_INSTALLED",
+        "GIT_REMOTE_NETWORK_UNAVAILABLE",
+        "CONNECTED_GITHUB_ACTIONS_READ_ONLY_FOR_BRANCH_FILE_PR_CREATION"
+      ],
+      "repository": "webcraft-media/onetime-codex-queue",
+      "result": "not_created"
+    }
+  },
+  "entrypoint": "CODEX-PROMPT.md",
+  "expected_graph": {
+    "external_async": {
+      "system": "BNA",
+      "task_id": "OT-89B"
+    },
+    "foundation": [
+      "OT-81",
+      "OT-82",
+      "OT-83",
+      "OT-83R"
+    ],
+    "lanes": {
+      "OT-84": [
+        "OT-88",
+        "OT-89A"
+      ],
+      "OT-85": [],
+      "OT-86A": [
+        "OT-86B"
+      ],
+      "OT-87": []
+    }
+  },
+  "forbidden_actions": [
+    "root_dns_change",
+    "live_stripe_charge",
+    "broad_send",
+    "production_contact_import",
+    "automatic_buffer_post",
+    "hard_delete",
+    "production_declaration_without_evidence_and_authorization",
+    "blanket_ours_or_theirs_conflict_resolution",
+    "whole_lane_deletion",
+    "importing_ot_89b_bna_code_into_one_time"
+  ],
+  "integration_gate": {
+    "mode": "fail_closed",
+    "must_be_remotely_inspectable_before_any_integration_edit": [
+      "OT-83R",
+      "OT-88",
+      "OT-89A"
+    ],
+    "ot_83r_completion_report_required": true,
+    "prompt_launch_is_not_completion_evidence": true
+  },
+  "integrity": {
+    "algorithm": "SHA-256",
+    "manifest": "SHA256SUMS.txt"
+  },
+  "packet_id": "OT-99-bcd34498",
+  "packet_id8": "bcd34498",
+  "required_files": [
+    "PACKET.json",
+    "START-HERE.md",
+    "CODEX-PROMPT.md",
+    "runtime/OT-99-persist-task-state.sh",
+    "runtime/OT-99-discover-remote-state.sh",
+    "runtime/OT-99-discover-remote-state.py",
+    "runtime/OT-99-verify-packet.py",
+    "matrices/OT-99-dependency-merge-matrix.csv",
+    "matrices/OT-99-semantic-collision-matrix.csv",
+    "matrices/OT-99-migration-renumber-matrix.csv",
+    "matrices/OT-99-staging-matrix.csv",
+    "matrices/OT-99-canary-matrix.csv",
+    "matrices/OT-99-rollback-matrix.csv",
+    "schemas/OT-99-candidate-adjudication.schema.json",
+    "schemas/OT-99-release-manifest.schema.json",
+    "docs/OT-99-release-evidence-contract.md",
+    "docs/OT-99-final-report-contract.md",
+    "SHA256SUMS.txt"
+  ],
+  "source_spec": {
+    "filename": "OT-99-FINAL-INTEGRATOR-FACTORY.md",
+    "sha256": "bcd344980046283218da3a42bd2bcaa0c068d09d5140135f6ccfffa96f4ead7e"
+  },
+  "task_id": "OT-99",
+  "title": "Final Semantic Convergence and Staging Packet",
+  "validation": {
+    "checksum_coverage": "passed",
+    "json_parse": "passed",
+    "json_schema_meta_validation": "passed",
+    "python_compile": "passed",
+    "shell_syntax": "passed",
+    "synthetic_remote_discovery_fixture": "passed"
+  }
+}

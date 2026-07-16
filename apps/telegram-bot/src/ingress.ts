@@ -53,7 +53,7 @@ export function createTelegramWebhookHandler(config: TelegramWebhookHandlerConfi
       return json(res, 200, { ok: true, duplicate: result.duplicate });
     } catch (error) {
       if (error instanceof IngressHttpError) return json(res, error.status, { ok: false });
-      return json(res, 400, { ok: false });
+      return json(res, 500, { ok: false });
     }
   };
 }
@@ -178,7 +178,12 @@ function parseBoundedJson(
   body: string,
   limits: { maxDepth: number; maxStringLength: number; maxArrayLength: number },
 ) {
-  const parsed = JSON.parse(body) as unknown;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(body) as unknown;
+  } catch {
+    throw new IngressHttpError(400);
+  }
   validateBounds(parsed, limits, 0);
   return parsed;
 }

@@ -13,6 +13,11 @@ export default defineConfig({
       input: {
         crm: path.resolve(process.cwd(), 'apps/web/src/client/app/crm-entry.tsx'),
         portal: path.resolve(process.cwd(), 'apps/web/src/client/app/portal-entry.tsx'),
+        'classroom-launch': path.resolve(
+          process.cwd(),
+          'apps/web/src/client/classroom/zoom-launch-client.ts',
+        ),
+        support: path.resolve(process.cwd(), 'apps/web/src/client/app/support-entry.ts'),
       },
       output: {
         entryFileNames: 'assets/app-[name].js',

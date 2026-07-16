@@ -1,0 +1,610 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:onetime:action-gateway:event:v1",
+  "title": "One Time Action Gateway Event v1",
+  "description": "Strict, redacted application-domain events for OT-84. Raw Telegram/provider payloads and direct contact data are prohibited.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/classQuestionCreated"
+    },
+    {
+      "$ref": "#/$defs/classQuestionSelected"
+    },
+    {
+      "$ref": "#/$defs/supportTicketReceived"
+    },
+    {
+      "$ref": "#/$defs/contentProcessingStatusChanged"
+    },
+    {
+      "$ref": "#/$defs/leadCreated"
+    },
+    {
+      "$ref": "#/$defs/taskCreated"
+    },
+    {
+      "$ref": "#/$defs/taskUpdated"
+    }
+  ],
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "required": ["account_id", "product_id"],
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "product_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actor": {
+      "type": "object",
+      "required": ["kind", "principal_id", "role", "transport"],
+      "properties": {
+        "kind": {
+          "enum": ["user", "system"]
+        },
+        "principal_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "role": {
+          "enum": ["one_time_owner", "one_time_admin", "system"]
+        },
+        "transport": {
+          "enum": ["telegram", "web", "api", "system"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "baseEvent": {
+      "type": "object",
+      "required": [
+        "specversion",
+        "id",
+        "type",
+        "source",
+        "subject",
+        "time",
+        "datacontenttype",
+        "schema_version",
+        "scope",
+        "actor",
+        "correlation_id",
+        "idempotency_key",
+        "trace_id",
+        "data"
+      ],
+      "properties": {
+        "specversion": {
+          "const": "1.0"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "type": {
+          "enum": [
+            "class.question.created",
+            "class.question.selected",
+            "support.ticket.received",
+            "content.processing.status_changed",
+            "lead.created",
+            "task.created",
+            "task.updated"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 200,
+          "pattern": "^onetime://[a-z0-9][a-z0-9./_-]*$"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 240
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "datacontenttype": {
+          "const": "application/json"
+        },
+        "schema_version": {
+          "const": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "actor": {
+          "$ref": "#/$defs/actor"
+        },
+        "correlation_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "causation_id": {
+          "type": ["string", "null"],
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "idempotency_key": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 200
+        },
+        "trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "data": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "classQuestionCreatedData": {
+      "type": "object",
+      "required": ["question_id", "class_id", "submitted_at", "status"],
+      "properties": {
+        "question_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "class_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "new"
+        },
+        "author_ref": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "excerpt_redacted": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 280
+        }
+      },
+      "additionalProperties": false
+    },
+    "classQuestionSelectedData": {
+      "type": "object",
+      "required": [
+        "question_id",
+        "class_id",
+        "selected_at",
+        "selected_by_principal_id",
+        "selection_revision",
+        "status"
+      ],
+      "properties": {
+        "question_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "class_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "selected_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "selected_by_principal_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "selection_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "const": "selected"
+        },
+        "reason_code": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "supportTicketReceivedData": {
+      "type": "object",
+      "required": [
+        "ticket_id",
+        "subscriber_ref",
+        "received_at",
+        "channel",
+        "status",
+        "priority",
+        "has_attachments"
+      ],
+      "properties": {
+        "ticket_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "subscriber_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "channel": {
+          "enum": ["email", "web", "form", "api", "other"]
+        },
+        "status": {
+          "enum": ["open", "triaged", "pending", "resolved", "closed"]
+        },
+        "priority": {
+          "enum": ["low", "normal", "high", "urgent"]
+        },
+        "subject_redacted": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "has_attachments": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "contentProcessingStatusChangedData": {
+      "type": "object",
+      "required": [
+        "content_id",
+        "pipeline",
+        "previous_status",
+        "status",
+        "changed_at",
+        "attempt",
+        "is_terminal"
+      ],
+      "properties": {
+        "content_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "pipeline": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "previous_status": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "changed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "is_terminal": {
+          "type": "boolean"
+        },
+        "error_code": {
+          "type": ["string", "null"],
+          "pattern": "^[A-Z][A-Z0-9_.-]{1,95}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "leadCreatedData": {
+      "type": "object",
+      "required": ["lead_id", "created_at", "source_channel", "status"],
+      "properties": {
+        "lead_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_channel": {
+          "enum": ["web_signup", "manual", "telegram_admin", "import", "api", "other"]
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "display_label_redacted": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 160
+        }
+      },
+      "additionalProperties": false
+    },
+    "taskCreatedData": {
+      "type": "object",
+      "required": ["task_id", "created_at", "status", "revision"],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "assignee_principal_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "due_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "title_redacted": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 160
+        }
+      },
+      "additionalProperties": false
+    },
+    "taskUpdatedData": {
+      "type": "object",
+      "required": ["task_id", "updated_at", "revision", "changed_fields", "status"],
+      "properties": {
+        "task_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "changed_fields": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["title", "status", "assignee", "due_at", "priority", "notes"]
+          }
+        },
+        "status": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+        },
+        "assignee_principal_id": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "due_at": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        },
+        "title_redacted": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 160
+        }
+      },
+      "additionalProperties": false
+    },
+    "classQuestionCreated": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEvent"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "class.question.created"
+            },
+            "subject": {
+              "type": "string",
+              "pattern": "^classes/[^/]+/questions/[^/]+$"
+            },
+            "data": {
+              "$ref": "#/$defs/classQuestionCreatedData"
+            }
+          }
+        }
+      ]
+    },
+    "classQuestionSelected": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEvent"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "class.question.selected"
+            },
+            "subject": {
+              "type": "string",
+              "pattern": "^classes/[^/]+/questions/[^/]+$"
+            },
+            "data": {
+              "$ref": "#/$defs/classQuestionSelectedData"
+            }
+          }
+        }
+      ]
+    },
+    "supportTicketReceived": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEvent"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "support.ticket.received"
+            },
+            "subject": {
+              "type": "string",
+              "pattern": "^support/tickets/[^/]+$"
+            },
+            "data": {
+              "$ref": "#/$defs/supportTicketReceivedData"
+            }
+          }
+        }
+      ]
+    },
+    "contentProcessingStatusChanged": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEvent"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "content.processing.status_changed"
+            },
+            "subject": {
+              "type": "string",
+              "pattern": "^content/[^/]+$"
+            },
+            "data": {
+              "$ref": "#/$defs/contentProcessingStatusChangedData"
+            }
+          }
+        }
+      ]
+    },
+    "leadCreated": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEvent"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "lead.created"
+            },
+            "subject": {
+              "type": "string",
+              "pattern": "^leads/[^/]+$"
+            },
+            "data": {
+              "$ref": "#/$defs/leadCreatedData"
+            }
+          }
+        }
+      ]
+    },
+    "taskCreated": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEvent"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "task.created"
+            },
+            "subject": {
+              "type": "string",
+              "pattern": "^tasks/[^/]+$"
+            },
+            "data": {
+              "$ref": "#/$defs/taskCreatedData"
+            }
+          }
+        }
+      ]
+    },
+    "taskUpdated": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/baseEvent"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "task.updated"
+            },
+            "subject": {
+              "type": "string",
+              "pattern": "^tasks/[^/]+$"
+            },
+            "data": {
+              "$ref": "#/$defs/taskUpdatedData"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

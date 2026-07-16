@@ -23,10 +23,11 @@ import {
   getSession,
   getStudentDashboard,
   invokeProtectedAction,
-  previewParentSupport,
-  previewStudentSupport,
+  createBillingCheckoutSession,
+  createBillingPortalSession,
   runStudentAccessOperation,
   setParentLearnerArchived,
+  submitClassroomQuestion,
   submitStudentQuestion,
   updateParentLearner,
 } from './portal-api.js';
@@ -297,6 +298,27 @@ function PortalApp() {
     }
   }
 
+  async function handleBillingAction(kind: 'checkout' | 'portal') {
+    if (!session || !parentDashboard) return;
+    try {
+      setNotice(null);
+      const principalKey = parentDashboard.household.household_key;
+      const result =
+        kind === 'checkout'
+          ? await createBillingCheckoutSession({
+              csrfToken: session.csrf_token,
+              principalKey,
+            })
+          : await createBillingPortalSession({
+              csrfToken: session.csrf_token,
+              principalKey,
+            });
+      window.location.assign(result.redirect_url);
+    } catch (error) {
+      setNotice({ kind: 'error', message: errorMessage(error, 'Billing is unavailable.') });
+    }
+  }
+
   async function handleProtectedAction(action: ProtectedActionDescriptor) {
     if (!session) return;
     try {
@@ -338,30 +360,19 @@ function PortalApp() {
     }
   }
 
-  async function handleSupportPreview() {
-    if (!session) return;
+  async function handleClassroomQuestion(occurrenceKey: string, body: string) {
+    if (!session || portalRole !== 'student') return;
     try {
-      const preview =
-        portalRole === 'parent'
-          ? parentDashboard
-            ? await previewParentSupport({
-                csrfToken: session.csrf_token,
-                householdKey: parentDashboard.household.household_key,
-                subject: 'Portal support request',
-                body: `Support requested from ${parentDashboard.household.display_name}.`,
-              })
-            : null
-          : await previewStudentSupport({
-              csrfToken: session.csrf_token,
-              subject: 'Student portal support request',
-              body: 'Support requested from the student portal.',
-            });
-      if (!preview) return;
-      setNotice({ kind: 'info', message: `Support preview ready: ${preview.subject}` });
+      await submitClassroomQuestion({
+        csrfToken: session.csrf_token,
+        occurrenceKey,
+        body,
+      });
+      setNotice({ kind: 'success', message: 'Question sent.' });
       setViewState('success');
     } catch (error) {
       if (handleAuthError(error)) return;
-      setNotice({ kind: 'error', message: errorMessage(error, 'Support preview failed.') });
+      setNotice({ kind: 'error', message: errorMessage(error, 'Question was not sent.') });
       setViewState(stateForError(error));
     }
   }
@@ -442,9 +453,11 @@ function PortalApp() {
           onArchiveLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'archive')}
           onRestoreLearner={(learnerKey) => openLearnerStatusDialog(learnerKey, 'restore')}
           onStudentAccessAction={openStudentAccessDialog}
+          onBillingCheckout={() => void handleBillingAction('checkout')}
+          onBillingPortal={() => void handleBillingAction('portal')}
           onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
           onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
-          onPreviewSupport={() => void handleSupportPreview()}
+          onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
         />
       ) : (
@@ -455,7 +468,10 @@ function PortalApp() {
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
           onSubmitQuestion={(question, classKey) => void handleStudentQuestion(question, classKey)}
-          onPreviewSupport={() => void handleSupportPreview()}
+          onSubmitClassroomQuestion={(occurrenceKey, body) =>
+            void handleClassroomQuestion(occurrenceKey, body)
+          }
+          onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
         />
       )}

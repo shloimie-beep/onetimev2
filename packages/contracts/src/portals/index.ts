@@ -24,6 +24,7 @@ export const portalCapabilitySchema = z.enum([
   'student:class:launch',
   'student:content:open',
   'student:question:create',
+  'student:class:question',
   'student:support:preview',
   'rewards:read',
   'rewards:write',
@@ -209,6 +210,28 @@ export type SupportPreview = z.infer<typeof supportPreviewSchema>;
 export const billingSummarySchema = z.object({
   enabled: z.boolean(),
   summary_label: z.string().trim().max(180).nullable(),
+  plan_truth: z
+    .literal('Family plan — $67/month — up to 3 active learners in one household.')
+    .nullable()
+    .optional(),
+  entitlement_status: z
+    .enum([
+      'pending',
+      'billing_eligible',
+      'active',
+      'suspended',
+      'scheduled_end',
+      'revoked',
+      'manual_review',
+    ])
+    .nullable()
+    .optional(),
+  grants_access: z.boolean().optional(),
+  checkout_available: z.boolean().optional(),
+  customer_portal_available: z.boolean().optional(),
+  recovery_required: z.boolean().optional(),
+  current_period_end: z.string().nullable().optional(),
+  cancel_at_period_end: z.boolean().optional(),
 });
 export type BillingSummary = z.infer<typeof billingSummarySchema>;
 
@@ -319,7 +342,10 @@ export const portalErrorCodeSchema = z.enum([
   'IDEMPOTENCY_CONFLICT',
   'VERSION_CONFLICT',
   'LEARNER_LIMIT_REACHED',
+  'ENTITLEMENT_REQUIRED',
   'CONSENT_REQUIRED',
+  'OCCURRENCE_UNAVAILABLE',
+  'LAUNCH_EXPIRED',
   'ADAPTER_UNAVAILABLE',
   'SERVER_ERROR',
 ]);

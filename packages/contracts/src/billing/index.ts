@@ -110,7 +110,7 @@ export const billingOfferPriceMappingSchema = z
       .length(3)
       .transform((value) => value.toLowerCase()),
     amount_cents: z.number().int().nonnegative(),
-    synthetic: z.literal(true),
+    synthetic: z.boolean(),
   })
   .strict();
 export type BillingOfferPriceMapping = z.infer<typeof billingOfferPriceMappingSchema>;
@@ -148,7 +148,7 @@ export type CheckoutSessionResult = {
   checkout_request_key: string;
   checkout_session_ref: string;
   redirect_url: string;
-  status: 'created' | 'replayed';
+  status: 'started' | 'created' | 'session_created' | 'replayed';
   entitlement_changed: false;
 };
 
@@ -174,11 +174,16 @@ export type BillingSubscriptionProjection = BillingPrincipalRef & {
   provider_customer_ref: string;
   provider_subscription_ref: string;
   status: BillingSubscriptionStatus;
+  current_period_start: string | null;
   current_period_end: string | null;
   cancel_at: string | null;
   canceled_at: string | null;
+  cancel_at_period_end: boolean;
+  latest_invoice_ref: string | null;
+  collection_state: 'paid' | 'payment_failed' | 'payment_action_required' | 'unknown';
   provider_updated_at: string;
   source_event_key: string;
+  projection_version: number;
 };
 
 export type BillingInvoiceSummary = BillingPrincipalRef & {
@@ -187,10 +192,22 @@ export type BillingInvoiceSummary = BillingPrincipalRef & {
   provider_account_ref: string;
   provider_invoice_ref: string;
   provider_subscription_ref: string | null;
-  status: 'draft' | 'open' | 'paid' | 'void' | 'uncollectible' | 'payment_failed' | 'unknown';
+  status:
+    | 'draft'
+    | 'open'
+    | 'paid'
+    | 'void'
+    | 'uncollectible'
+    | 'payment_failed'
+    | 'payment_action_required'
+    | 'refunded'
+    | 'disputed'
+    | 'unknown';
   currency: string;
   amount_due_cents: number;
   amount_paid_cents: number;
+  refunded_amount_cents?: number;
+  dispute_state?: 'none' | 'created' | 'won' | 'lost' | 'closed';
   issued_at: string | null;
   source_event_key: string;
 };
@@ -239,7 +256,7 @@ export type BillingEntitlementProjection = BillingPrincipalRef & {
   reason: string;
   effective_at: string;
   evaluated_at: string;
-  grants_access: false;
+  grants_access: boolean;
 };
 
 export type AppendOnlyBillingAuditEvent = {
@@ -257,7 +274,7 @@ export type BillingSummaryDto = {
   customer: Pick<BillingCustomerProjection, 'status' | 'mode' | 'provider'> | null;
   subscription: Pick<
     BillingSubscriptionProjection,
-    'status' | 'current_period_end' | 'cancel_at' | 'canceled_at'
+    'status' | 'current_period_end' | 'cancel_at' | 'canceled_at' | 'cancel_at_period_end'
   > | null;
   entitlement: Pick<
     BillingEntitlementProjection,
@@ -272,6 +289,9 @@ export type ProviderCheckoutSessionInput = {
   providerAccount: BillingProviderAccountRef;
   offer: BillingOfferPriceMapping;
   idempotencyKey: string;
+  localCheckoutRequestKey?: string;
+  policyVersion?: string;
+  provider_customer_ref?: string;
   successUrl: string;
   cancelUrl: string;
 };
@@ -289,6 +309,7 @@ export type ProviderPortalSessionInput = {
   principal: BillingPrincipalRef;
   providerAccount: BillingProviderAccountRef;
   provider_customer_ref: string;
+  provider_portal_configuration_ref?: string;
   idempotencyKey: string;
   returnUrl: string;
 };
@@ -309,13 +330,22 @@ export type ProviderEventObjectRefs = VerifiedProviderEventEnvelope['object_refs
   status?: string;
   account_key?: string;
   product_key?: string;
+  principal_key?: string;
+  offer_key?: string;
+  policy_version?: string;
+  checkout_request_key?: string;
   current_period_end?: string | null;
+  current_period_start?: string | null;
   cancel_at?: string | null;
   canceled_at?: string | null;
+  cancel_at_period_end?: boolean;
+  latest_invoice_ref?: string | null;
   amount_due_cents?: number;
   amount_paid_cents?: number;
+  refunded_amount_cents?: number;
   currency?: string;
   issued_at?: string | null;
+  dispute_state?: 'none' | 'created' | 'won' | 'lost' | 'closed';
 };
 
 export type ProviderVerifiedEvent = Omit<

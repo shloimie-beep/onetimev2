@@ -106,7 +106,13 @@ describe('OT-72 Stripe test adapter', () => {
             data: { object: { id: 'in_test_ot72', customer: 'cus_test_ot72', amount_paid: 0 } },
           }),
         },
-        customers: { retrieve: async (id) => ({ id }) },
+        customers: {
+          create: async (_params, options) => {
+            expect(options.idempotencyKey).toBe('checkout_ot72_0001:customer');
+            return { id: 'cus_test_ot72', livemode: false };
+          },
+          retrieve: async (id) => ({ id }),
+        },
         subscriptions: { retrieve: async (id) => ({ id, status: 'active' }) },
         invoices: { retrieve: async (id) => ({ id, status: 'paid' }) },
       },
@@ -131,9 +137,9 @@ describe('OT-72 Stripe test adapter', () => {
         checkout: {
           sessions: {
             create: async () => ({
-              id: 'cs_test_live_rejected',
-              url: 'https://checkout.stripe.com/c/pay/cs_test_live_rejected',
-              customer: 'cus_test_live_rejected',
+              id: 'cs_test_ot72_rejected',
+              url: 'https://checkout.stripe.com/c/pay/cs_test_ot72_rejected',
+              customer: 'cus_test_ot72_rejected',
               livemode: true,
             }),
           },
@@ -150,7 +156,10 @@ describe('OT-72 Stripe test adapter', () => {
             throw new Error('unused');
           },
         },
-        customers: { retrieve: async () => null },
+        customers: {
+          create: async () => ({ id: 'cus_test_ot72_rejected', livemode: false }),
+          retrieve: async () => null,
+        },
         subscriptions: { retrieve: async () => null },
         invoices: { retrieve: async () => null },
       },

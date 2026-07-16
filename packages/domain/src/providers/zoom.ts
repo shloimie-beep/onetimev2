@@ -1,5 +1,16 @@
+import { createHash } from 'node:crypto';
 import { z } from 'zod';
+import type { AppConfig } from '../../../config/src/index.ts';
 import type { ProviderReadinessSnapshot } from '../../../contracts/src/providers/events.ts';
+import type {
+  ClassroomLaunchBootstrapResponse,
+  ClassroomSelectedView,
+} from '../../../contracts/src/classroom/index.ts';
+import type {
+  ClassroomEligibility,
+  ClassroomLaunchGrantRecord,
+  ClassroomOccurrenceRecord,
+} from '../classroom/service.ts';
 import { assertNoLiveReference, safeFingerprint, stableProviderKey } from './shared.ts';
 
 export const zoomAdapterConfigSchema = z
@@ -48,6 +59,108 @@ export type ZoomLaunchDescriptor = {
   mute_on_entry_required: true;
 };
 
+export type ZoomRegistrantResolution = {
+  provider: 'zoom';
+  mode: 'sink' | 'real';
+  registration_state: 'sink_ready' | 'disabled' | 'not_configured';
+  registrant_token_ref: string;
+  provider_registrant_ref_digest: string;
+  raw_join_url_present: false;
+};
+
+export type ZoomMeetingLaunchMaterial = ClassroomLaunchBootstrapResponse['sdk'] & {
+  provider_meeting_ref_digest: string;
+  official_sdk_view: ClassroomSelectedView;
+  official_client_method:
+    'ZoomMtg.preLoadWasm.prepareWebSDK.init.join' | 'ZoomMtgEmbedded.createClient.init.join';
+};
+
+export type ZoomMeetingLaunchPort = {
+  resolveLaunchMaterial(input: {
+    config: AppConfig;
+    occurrence: ClassroomOccurrenceRecord;
+    eligibility: ClassroomEligibility;
+    grant: ClassroomLaunchGrantRecord;
+    registrant: ZoomRegistrantResolution;
+    selectedView: ClassroomSelectedView;
+  }): Promise<ZoomMeetingLaunchMaterial>;
+};
+
+export type ZoomRegistrantPort = {
+  resolveRegistrant(input: {
+    config: AppConfig;
+    occurrence: ClassroomOccurrenceRecord;
+    eligibility: ClassroomEligibility;
+    grant: ClassroomLaunchGrantRecord;
+  }): Promise<ZoomRegistrantResolution>;
+};
+
+export type ZoomProviderReadinessPort = {
+  inspectReadiness(input: {
+    config: ZoomAdapterConfig;
+    client?: ZoomReadinessClient | undefined;
+    observedAt?: Date | undefined;
+  }): Promise<ProviderReadinessSnapshot>;
+};
+
+export type ZoomAttendanceReconciliationPort = {
+  reconcileAttendance(input: {
+    accountKey: string;
+    productKey: string;
+    occurrenceKey: string;
+    enabled: boolean;
+  }): Promise<{
+    status: 'disabled' | 'sink_noop' | 'not_configured';
+    external_call_performed: false;
+    reconciled_count: number;
+  }>;
+};
+
+export type ZoomFeatureParticipantPort = {
+  featureParticipant(input: {
+    accountKey: string;
+    productKey: string;
+    occurrenceKey: string;
+    learnerKey: string;
+    enabled: boolean;
+  }): Promise<{
+    status: 'disabled';
+    external_call_performed: false;
+    reason: 'v1_host_controls_only';
+  }>;
+};
+
+export type ReminderDeliveryInput = {
+  accountKey: string;
+  productKey: string;
+  learnerKey: string;
+  occurrenceKey: string;
+  channel: 'portal' | 'email' | 'whatsapp';
+  preference: 'portal' | 'email' | 'whatsapp' | 'both' | 'none';
+  consent: 'granted' | 'not_required' | 'missing' | 'revoked';
+  suppression: 'active' | 'suppressed';
+  attempt: number;
+  idempotencyKey: string;
+};
+
+export type ReminderDeliveryResult = {
+  status: 'sent_sink' | 'suppressed' | 'retry' | 'dead_letter';
+  idempotency_key: string;
+  external_send_performed: false;
+  reason:
+    | 'sink_delivery_recorded'
+    | 'preference_opted_out'
+    | 'consent_required'
+    | 'suppressed'
+    | 'retryable_sink_failure'
+    | 'max_retries_exceeded';
+  next_attempt_at: string | null;
+};
+
+export type ReminderDeliveryPort = {
+  deliverReminder(input: ReminderDeliveryInput, now?: Date): Promise<ReminderDeliveryResult>;
+};
+
 export function oneTimeDailyZoomSchedule() {
   return {
     local_time: '19:00' as const,
@@ -76,6 +189,140 @@ export function buildZoomLaunchDescriptor(
     expires_at: new Date(now.getTime() + ttlMs).toISOString(),
     join_url_included: false,
     mute_on_entry_required: true,
+  };
+}
+
+export function createDeterministicZoomRegistrantPort(): ZoomRegistrantPort {
+  return {
+    async resolveRegistrant(input) {
+      if (!input.config.zoomClassroomEnabled || input.config.zoomClassroomProviderMode !== 'sink') {
+        return {
+          provider: 'zoom',
+          mode: input.config.zoomClassroomProviderMode,
+          registration_state: input.config.zoomClassroomEnabled ? 'not_configured' : 'disabled',
+          registrant_token_ref: stableProviderKey('registrant_unavailable', [
+            input.occurrence.occurrence_key,
+            input.eligibility.learner_key,
+          ]),
+          provider_registrant_ref_digest: digest('registrant_unavailable'),
+          raw_join_url_present: false,
+        };
+      }
+      const tokenRef = stableProviderKey('registrant', [
+        input.occurrence.occurrence_key,
+        input.eligibility.learner_key,
+        input.grant.grant_key,
+      ]);
+      return {
+        provider: 'zoom',
+        mode: 'sink',
+        registration_state: 'sink_ready',
+        registrant_token_ref: tokenRef,
+        provider_registrant_ref_digest: digest(tokenRef),
+        raw_join_url_present: false,
+      };
+    },
+  };
+}
+
+export function createDeterministicZoomMeetingLaunchPort(): ZoomMeetingLaunchPort {
+  return {
+    async resolveLaunchMaterial(input) {
+      if (
+        !input.config.zoomClassroomEnabled ||
+        input.config.zoomClassroomProviderMode !== 'sink' ||
+        input.registrant.registration_state !== 'sink_ready'
+      ) {
+        throw new Error('Zoom Meeting SDK launch material is not configured.');
+      }
+      const seed = [
+        input.occurrence.occurrence_key,
+        input.eligibility.learner_key,
+        input.grant.grant_key,
+      ].join(':');
+      const numberSeed = createHash('sha256').update(seed).digest('hex').slice(0, 10);
+      const numeric = BigInt(`0x${numberSeed}`).toString().slice(0, 9).padEnd(9, '0');
+      const officialClientMethod =
+        input.selectedView === 'component'
+          ? 'ZoomMtgEmbedded.createClient.init.join'
+          : 'ZoomMtg.preLoadWasm.prepareWebSDK.init.join';
+      return {
+        sdk_key_ref: stableProviderKey('sdk_key', [
+          'sink',
+          input.config.accountKey,
+          input.config.productKey,
+        ]),
+        meeting_number: `9${numeric}`,
+        signature: `sink_sig_${createHash('sha256').update(seed).digest('base64url').slice(0, 72)}`,
+        password_ref: stableProviderKey('meeting_password', [input.occurrence.occurrence_key]),
+        registrant_token_ref: input.registrant.registrant_token_ref,
+        role: 0,
+        user_display_name: input.eligibility.display_name,
+        user_email_required: false,
+        leave_url: '/app/student',
+        provider_meeting_ref_digest: digest(`meeting:${input.occurrence.occurrence_key}`),
+        official_sdk_view: input.selectedView,
+        official_client_method: officialClientMethod,
+      };
+    },
+  };
+}
+
+export function createZoomProviderReadinessPort(): ZoomProviderReadinessPort {
+  return {
+    inspectReadiness: inspectZoomReadiness,
+  };
+}
+
+export function createDisabledZoomAttendanceReconciliationPort(): ZoomAttendanceReconciliationPort {
+  return {
+    async reconcileAttendance() {
+      return {
+        status: 'disabled',
+        external_call_performed: false,
+        reconciled_count: 0,
+      };
+    },
+  };
+}
+
+export function createDisabledZoomFeatureParticipantPort(): ZoomFeatureParticipantPort {
+  return {
+    async featureParticipant() {
+      return {
+        status: 'disabled',
+        external_call_performed: false,
+        reason: 'v1_host_controls_only',
+      };
+    },
+  };
+}
+
+export function createDeterministicReminderDeliveryPort(): ReminderDeliveryPort {
+  return {
+    async deliverReminder(input, now = new Date()) {
+      if (input.preference === 'none') {
+        return reminderResult(input, 'suppressed', 'preference_opted_out', null);
+      }
+      if (input.consent === 'missing' || input.consent === 'revoked') {
+        return reminderResult(input, 'suppressed', 'consent_required', null);
+      }
+      if (input.suppression === 'suppressed') {
+        return reminderResult(input, 'suppressed', 'suppressed', null);
+      }
+      if (input.attempt >= 3) {
+        return reminderResult(input, 'dead_letter', 'max_retries_exceeded', null);
+      }
+      if (input.attempt > 0) {
+        return reminderResult(
+          input,
+          'retry',
+          'retryable_sink_failure',
+          new Date(now.getTime() + 5 * 60_000).toISOString(),
+        );
+      }
+      return reminderResult(input, 'sent_sink', 'sink_delivery_recorded', null);
+    },
   };
 }
 
@@ -141,4 +388,23 @@ function snapshot(
     safe_fingerprint: fingerprint,
     observed_at: observedAt.toISOString(),
   };
+}
+
+function reminderResult(
+  input: ReminderDeliveryInput,
+  status: ReminderDeliveryResult['status'],
+  reason: ReminderDeliveryResult['reason'],
+  nextAttemptAt: string | null,
+): ReminderDeliveryResult {
+  return {
+    status,
+    idempotency_key: input.idempotencyKey,
+    external_send_performed: false,
+    reason,
+    next_attempt_at: nextAttemptAt,
+  };
+}
+
+function digest(value: string) {
+  return createHash('sha256').update(value).digest('hex');
 }

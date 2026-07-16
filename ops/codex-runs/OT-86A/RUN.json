@@ -1,0 +1,152 @@
+{
+  "packet_id": "OT-86A",
+  "status": "checkpoint_ready_for_vimeo_canary",
+  "branch": "codex/ot86a-vimeo-content-kb",
+  "base_remote": "origin",
+  "base_ref": "refs/remotes/origin/codex/ot83-household-portals-foundation",
+  "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "worktree": "C:/Users/User/.ot86-worktrees/OT-86A",
+  "started_at": "2026-07-15T16:24:54.146Z",
+  "finished_at": "2026-07-15T17:15:21.808Z",
+  "head_sha": null,
+  "head_sha_note": "Final commit SHA cannot be embedded in its own committed RUN.json without changing the SHA. The pushed branch and draft PR are the immutable final head pointers.",
+  "completed_steps": [
+    "preflight",
+    "packet_checksum_verified",
+    "contract_bundle_copied",
+    "schemas_added",
+    "migration_added",
+    "domain_pipeline_added",
+    "raw_publish_endpoint_added",
+    "vimeo_canary_added",
+    "performance_probe_added",
+    "tests_added",
+    "reports_written",
+    "ready_for_vimeo_canary_checkpoint"
+  ],
+  "commands": [
+    {
+      "command": "git fetch --all --prune",
+      "cwd": "C:/Users/User/onetimev2",
+      "exit_code": 0,
+      "note": "Fetched active webcraft-media/onetimev2 origin remote."
+    },
+    {
+      "command": "git for-each-ref --format='%(refname) %(objectname)' refs/remotes",
+      "cwd": "C:/Users/User/onetimev2",
+      "exit_code": 0,
+      "note": "Resolved exactly one refs/remotes/*/codex/ot83-household-portals-foundation: refs/remotes/origin/codex/ot83-household-portals-foundation a02d1d254ae0d17804fb657079a7871567260ea2."
+    },
+    {
+      "command": "git worktree add -b codex/ot86a-vimeo-content-kb C:/Users/User/.ot86-worktrees/OT-86A origin/codex/ot83-household-portals-foundation",
+      "cwd": "C:/Users/User/onetimev2",
+      "exit_code": 0,
+      "note": "Created dedicated OT-86A worktree."
+    },
+    {
+      "command": "npm install",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0,
+      "note": "Dependencies installed; 0 vulnerabilities."
+    },
+    {
+      "command": "npm run typecheck",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run lint",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/content/ot86-content-pipeline.test.ts tests/integration/content/content-library.test.ts",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0,
+      "note": "2 files, 11 tests passed."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0,
+      "note": "1 file, 2 tests passed."
+    },
+    {
+      "command": "npm run secret:scan",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0,
+      "note": "Passed across 614 repo text files."
+    },
+    {
+      "command": "node --check bin\\ot86-vimeo-canary",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0
+    },
+    {
+      "command": "node bin\\ot86-vimeo-canary --mode read-only --json",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 2,
+      "note": "Expected external-readiness checkpoint: status=unconfigured, writes_performed=false, missing Vimeo capability classes."
+    },
+    {
+      "command": "npx tsx scripts/ot86/content-performance-probe.ts --write-report",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0,
+      "note": "1,000 items / 10,000 sections / 50,000 search documents / 30 samples."
+    },
+    {
+      "command": "npm run brand:check",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run build",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run db:verify",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 1,
+      "note": "Blocked by missing DATABASE_URL in local environment."
+    },
+    {
+      "command": "npm run format",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 1,
+      "note": "Repo-wide existing Prettier baseline failed on 377 files. Targeted OT-86A parseable-file check passed."
+    },
+    {
+      "command": "npx prettier --check apps/web/src/server/app.ts packages/config/src/index.ts packages/contracts/src/content/index.ts packages/contracts/src/content/pipeline.ts packages/domain/src/index.ts packages/domain/src/content/pipeline.ts scripts/ot86/content-performance-probe.ts tests/integration/content/ot86-content-pipeline.test.ts \"contracts/content-pipeline/v1/**/*.{md,json}\" ops/codex-runs/OT-86A/RUN.json ops/codex-runs/OT-86A/DISCOVERY.md ops/codex-runs/OT-86A/OWNED-ROOTS.json ops/codex-runs/OT-86A/PERFORMANCE-PROBE.json",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0
+    },
+    {
+      "command": "npx tsx tests/ot-83/real-postgres-concurrency.ts",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86A",
+      "exit_code": 0,
+      "note": "No explicit Postgres write gate; script produced its own blocked evidence and performed no production mutation."
+    }
+  ],
+  "checkpoint": "READY_FOR_VIMEO_CANARY",
+  "pr_url": "https://github.com/webcraft-media/onetimev2/pull/31",
+  "report_hashes": {
+    "RUN.json": {
+      "sha256": null,
+      "note": "Self-referential hash is not stable inside RUN.json."
+    },
+    "DISCOVERY.md": "d0510cb864bc755d752cd11f9fb3ef55796d2db593409ec7f189927ab7b18e43",
+    "OWNED-ROOTS.json": "8522f3e4f973be2841bc80b00a89e72c2e0653a0b3d21a01ded6e0c3c324483c",
+    "IMPLEMENTATION.md": "a2b99054affbe8388be2f360336988f4039f15f0188bc1365a2859eb67c840d3",
+    "DATA-MODEL.md": "55d97e75ad81c884c9d33f7934fd5e4abf34f3d20c03d84f240aa5463cb11e13",
+    "MIGRATIONS.md": "bbdd1f67071500418e724e9fa74497a3cdf4f305dfb2dc0b431e7eccc216712d",
+    "CONTRACT-VALIDATION.md": "0123c7e0b15d2247673c62abca244739d043595552c7915e36b6c65c1c5f4cb8",
+    "TESTS.md": "90bfe2390ced847a67f40a151aa8c6e6f0978ddc9f9515b352d78ef79d686cbc",
+    "SECURITY-PRIVACY.md": "4e43dc25fdcf0e66a87fcd530ced0fc247c815280bbbe54bff30428eff53cd51",
+    "PERFORMANCE.md": "1ba9970090a7bb147b699990aaf3d0412f9b0ceda97753cf7bd5190be21a2f4d",
+    "PERFORMANCE-PROBE.json": "4ccd8b7d9585c739a6975a7547636900d1406ec386313036e41f91e8f97947e6",
+    "VIMEO-READINESS.md": "fe6ff218d19f8b225a11c5ec6bd74767dbe1c4cb95204f20771bd0ef10a1f559",
+    "PR.md": "27316788e8dc1cd7bb0d600d11e9d37b28a94dca5db99e3af7edf219608c149d",
+    "CHECKPOINT": "a020d24283397b50efef01375ca92ada015f4ac3c99119062c2d0ea4662846dc"
+  }
+}

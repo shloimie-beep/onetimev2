@@ -4,6 +4,8 @@ import type {
   BotAuditSink,
   BotInboxItem,
   BotInboxRepository,
+  BotReply,
+  BotTransportAdapter,
   ConfirmationRecord,
   ConfirmationRepository,
   ConsumerLeaseRepository,
@@ -19,7 +21,8 @@ export class TelegramSqlIdentityMappingRepository implements IdentityMappingRepo
   async findActiveMapping(input: Parameters<IdentityMappingRepository['findActiveMapping']>[0]) {
     const result = await this.pool.query(
       `SELECT mapping_key, bot_key, environment, provider_user_ref_hash, canonical_user_key,
-              account_key, product_key, membership_key, security_version, status
+              chat_ref_hash, account_key, product_key, membership_key, mapping_version,
+              security_version, status
          FROM onetime.telegram_identity_mappings
         WHERE bot_key = $1
           AND environment = $2
@@ -35,10 +38,12 @@ export class TelegramSqlIdentityMappingRepository implements IdentityMappingRepo
       botKey: row.bot_key,
       environment: row.environment,
       providerUserRef: input.providerUserRef,
+      chatRef: `hashed:${String(row.chat_ref_hash)}`,
       canonicalUserKey: row.canonical_user_key,
       accountKey: row.account_key,
       productKey: row.product_key,
       membershipKey: row.membership_key,
+      mappingVersion: Number(row.mapping_version ?? 1),
       securityVersion: Number(row.security_version),
       status: row.status,
     } as TelegramIdentityMapping;
@@ -47,10 +52,13 @@ export class TelegramSqlIdentityMappingRepository implements IdentityMappingRepo
   async upsertProtectedMapping(mapping: TelegramIdentityMapping) {
     await this.pool.query(
       `INSERT INTO onetime.telegram_identity_mappings
-       (mapping_key, bot_key, environment, provider_user_ref_hash, canonical_user_key,
-        account_key, product_key, membership_key, security_version, status)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+       (mapping_key, bot_key, environment, provider_user_ref_hash, chat_ref_hash,
+        canonical_user_key, account_key, product_key, membership_key, mapping_version,
+        security_version, status)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
        ON CONFLICT (mapping_key) DO UPDATE SET
+         chat_ref_hash = EXCLUDED.chat_ref_hash,
+         mapping_version = EXCLUDED.mapping_version,
          security_version = EXCLUDED.security_version,
          status = EXCLUDED.status,
          revoked_at = CASE WHEN EXCLUDED.status = 'revoked' THEN now() ELSE NULL END`,
@@ -59,10 +67,12 @@ export class TelegramSqlIdentityMappingRepository implements IdentityMappingRepo
         mapping.botKey,
         mapping.environment,
         hashOpaque(mapping.providerUserRef),
+        hashOpaque(mapping.chatRef),
         mapping.canonicalUserKey,
         mapping.accountKey,
         mapping.productKey,
         mapping.membershipKey,
+        mapping.mappingVersion,
         mapping.securityVersion,
         mapping.status,
       ],
@@ -86,25 +96,28 @@ export class TelegramSqlInboxRepository implements BotInboxRepository {
     update: Parameters<BotInboxRepository['enqueue']>[0],
     payloadRef: SensitivePayloadRef,
   ) {
-    const inboxKey = `tg_inbox_${hashOpaque(`${update.botKey}:${update.updateId}`).slice(0, 32)}`;
+    const inboxKey = `tg_inbox_${hashOpaque(`${update.botKey}:${update.environment}:${update.updateId}`).slice(0, 32)}`;
     const existing = await this.pool.query(
-      'SELECT inbox_key FROM onetime.telegram_update_inbox WHERE bot_key = $1 AND update_id = $2',
-      [update.botKey, Number(update.updateId)],
+      `SELECT inbox_key
+         FROM onetime.telegram_update_inbox
+        WHERE bot_key = $1 AND environment = $2 AND update_id = $3`,
+      [update.botKey, update.environment, Number(update.updateId)],
     );
     if (existing.rowCount) {
       return { duplicate: true, inboxKey: existing.rows[0].inbox_key as string };
     }
     const result = await this.pool.query(
       `INSERT INTO onetime.telegram_update_inbox
-       (inbox_key, bot_key, environment, update_id, payload_ciphertext, payload_digest,
-        payload_classification, next_attempt_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-       ON CONFLICT (bot_key, update_id) DO NOTHING
+       (inbox_key, bot_key, environment, bot_installation_id, update_id, payload_ciphertext,
+        payload_digest, payload_classification, next_attempt_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+       ON CONFLICT DO NOTHING
        RETURNING inbox_key`,
       [
         inboxKey,
         update.botKey,
         update.environment,
+        `${update.botKey}:${update.environment}`,
         Number(update.updateId),
         payloadRef.ciphertext,
         payloadRef.digest,
@@ -114,8 +127,10 @@ export class TelegramSqlInboxRepository implements BotInboxRepository {
     );
     if (result.rowCount) return { duplicate: false, inboxKey };
     const raced = await this.pool.query(
-      'SELECT inbox_key FROM onetime.telegram_update_inbox WHERE bot_key = $1 AND update_id = $2',
-      [update.botKey, Number(update.updateId)],
+      `SELECT inbox_key
+         FROM onetime.telegram_update_inbox
+        WHERE bot_key = $1 AND environment = $2 AND update_id = $3`,
+      [update.botKey, update.environment, Number(update.updateId)],
     );
     return { duplicate: true, inboxKey: raced.rows[0].inbox_key as string };
   }
@@ -206,10 +221,11 @@ export class TelegramSqlConfirmationRepository implements ConfirmationRepository
     await this.pool.query(
       `INSERT INTO onetime.telegram_confirmations
        (confirmation_key, bot_key, environment, provider_user_ref_hash, chat_ref_hash,
-        actor_user_key, account_key, product_key, capability, action_digest, entity_version,
-        security_version, idempotency_key, payload_ciphertext, payload_digest,
+        actor_user_key, account_key, product_key, capability, source, risk_class, action_digest,
+        entity_version, target_version, mapping_key, mapping_version, role_at_preview,
+        security_version, idempotency_key, preview_digest, payload_ciphertext, payload_digest,
         payload_classification, expires_at)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
        ON CONFLICT (confirmation_key) DO NOTHING`,
       [
         record.confirmationKey,
@@ -221,10 +237,17 @@ export class TelegramSqlConfirmationRepository implements ConfirmationRepository
         record.accountKey,
         record.productKey,
         record.capability,
+        record.source,
+        record.riskClass,
         record.actionDigest,
-        record.entityVersion ?? null,
+        record.targetVersion ?? null,
+        record.targetVersion ?? null,
+        record.mappingKey,
+        record.mappingVersion,
+        record.roleAtPreview,
         record.securityVersion,
         record.idempotencyKey,
+        record.previewDigest,
         record.payloadRef.ciphertext,
         record.payloadRef.digest,
         record.payloadRef.classification,
@@ -236,9 +259,11 @@ export class TelegramSqlConfirmationRepository implements ConfirmationRepository
   async get(confirmationKey: string) {
     const result = await this.pool.query(
       `SELECT confirmation_key, bot_key, environment, provider_user_ref_hash, chat_ref_hash,
-              actor_user_key, account_key, product_key, capability, action_digest,
-              entity_version, security_version, idempotency_key, payload_ciphertext,
-              payload_digest, payload_classification, expires_at, consumed_at, cancelled_at
+              actor_user_key, account_key, product_key, capability, source, risk_class,
+              action_digest, entity_version, target_version, mapping_key, mapping_version,
+              role_at_preview, security_version, idempotency_key, preview_digest,
+              payload_ciphertext, payload_digest, payload_classification, expires_at,
+              consumed_at, cancelled_at, result_json
          FROM onetime.telegram_confirmations
         WHERE confirmation_key = $1`,
       [confirmationKey],
@@ -274,6 +299,16 @@ export class TelegramSqlConfirmationRepository implements ConfirmationRepository
     );
     if (result.rowCount) return 'cancelled';
     return this.afterConfirmationMiss(confirmationKey, now);
+  }
+
+  async recordResult(confirmationKey: string, result: ConfirmationRecord['result'], now: Date) {
+    await this.pool.query(
+      `UPDATE onetime.telegram_confirmations
+          SET result_json = $2::jsonb,
+              consumed_at = COALESCE(consumed_at, $3)
+        WHERE confirmation_key = $1`,
+      [confirmationKey, JSON.stringify(result ?? null), now.toISOString()],
+    );
   }
 
   private async afterConfirmationMiss(confirmationKey: string, now: Date) {
@@ -373,6 +408,41 @@ export class TelegramSqlAuditSink implements BotAuditSink {
   }
 }
 
+export class TelegramSqlResponseOutboxTransportAdapter implements BotTransportAdapter {
+  readonly mode = 'telegram' as const;
+
+  constructor(
+    private readonly pool: DbPool,
+    private readonly scope: { botKey: string; environment: string },
+  ) {}
+
+  async sendReply(reply: BotReply) {
+    const payload = {
+      text: reply.text,
+      buttons: reply.buttons ?? [],
+      correlation_key: reply.correlationKey,
+    };
+    const payloadJson = JSON.stringify(payload);
+    await this.pool.query(
+      `INSERT INTO onetime.telegram_response_outbox
+       (response_key, bot_key, environment, bot_installation_id, chat_ref_hash,
+        correlation_key, payload, payload_digest)
+       VALUES ($1,$2,$3,$4,$5,$6,$7::jsonb,$8)
+       ON CONFLICT (response_key) DO NOTHING`,
+      [
+        `tg_response_${hashOpaque(`${this.scope.botKey}:${this.scope.environment}:${reply.correlationKey}:${reply.chatRef}`).slice(0, 32)}`,
+        this.scope.botKey,
+        this.scope.environment,
+        `${this.scope.botKey}:${this.scope.environment}`,
+        hashOpaque(reply.chatRef),
+        reply.correlationKey,
+        payloadJson,
+        hashOpaque(payloadJson),
+      ],
+    );
+  }
+}
+
 async function selectClaimable(client: Queryable, now: Date) {
   const params = [now.toISOString()];
   const sql = `SELECT inbox_key, lease_generation
@@ -442,9 +512,15 @@ function rowToConfirmation(row: Record<string, unknown>): ConfirmationRecord {
     accountKey: String(row.account_key),
     productKey: String(row.product_key),
     capability: row.capability as never,
+    source: (row.source ?? 'deterministic') as never,
+    riskClass: (row.risk_class ?? 'R1') as never,
     actionDigest: String(row.action_digest),
+    mappingKey: String(row.mapping_key ?? 'legacy_mapping'),
+    mappingVersion: Number(row.mapping_version ?? 1),
+    roleAtPreview: (row.role_at_preview ?? 'owner') as never,
     securityVersion: Number(row.security_version),
     idempotencyKey: String(row.idempotency_key),
+    previewDigest: String(row.preview_digest ?? row.action_digest),
     payloadRef: {
       ciphertext: String(row.payload_ciphertext),
       digest: String(row.payload_digest),
@@ -453,10 +529,13 @@ function rowToConfirmation(row: Record<string, unknown>): ConfirmationRecord {
     expiresAt: toIso(row.expires_at),
   };
   if (row.entity_version !== null && row.entity_version !== undefined) {
-    record.entityVersion = Number(row.entity_version);
+    record.targetVersion = Number(row.target_version ?? row.entity_version);
+  } else if (row.target_version !== null && row.target_version !== undefined) {
+    record.targetVersion = Number(row.target_version);
   }
   if (row.consumed_at) record.consumedAt = toIso(row.consumed_at);
   if (row.cancelled_at) record.cancelledAt = toIso(row.cancelled_at);
+  if (row.result_json) record.result = row.result_json as never;
   return record;
 }
 

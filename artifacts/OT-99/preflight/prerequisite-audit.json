@@ -1,0 +1,62 @@
+﻿{
+    "task_id":  "OT-99",
+    "packet_id":  "OT-99-bcd34498",
+    "generated_at_utc":  "2026-07-16T06:47:24Z",
+    "packet":  {
+                   "source":  "C:\\Users\\User\\Downloads\\OT-99-CODEX-PACKET.zip",
+                   "sha256":  "b00b4c5fa4859d3569bf52489c088455c173bbd6ae22a7a6fa4e6d0a81962a3d",
+                   "extracted_to":  "C:\\Users\\User\\AppData\\Local\\Temp\\codex-ot99-packet-20260716-094107",
+                   "validation":  "passed_independent_and_packet_native"
+               },
+    "repository":  {
+                       "name":  "webcraft-media/onetimev2",
+                       "preflight_branch":  "codex/ot99-gated-preflight-bcd34498",
+                       "base_branch":  "main",
+                       "base_sha":  "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+                       "clean_clone":  "C:\\Users\\User\\onetimev2-ot99-preflight-20260716-0943"
+                   },
+    "state_directory":  "C:\\Users\\User\\AppData\\Local\\Temp\\ot99-state\\20260716T064235Z-610b585f3d22-1fa330ec",
+    "integration_gate":  {
+                             "open":  false,
+                             "action":  "no integration worktree, no merges, no migration renumbering, no staging",
+                             "reason":  "required prerequisites are missing or checkpoint-only"
+                         },
+    "prerequisites":  [
+                          {
+                              "task":  "OT-83R",
+                              "branch":  "codex/ot83r-complete-portals",
+                              "sha":  "04ca004e22b2c1e1ffaf710a3211eabcd3180f32",
+                              "pr":  33,
+                              "report":  "missing",
+                              "ci":  "failure",
+                              "disposition":  "missing completion report and incomplete checkpoint"
+                          },
+                          {
+                              "task":  "OT-88",
+                              "branch":  "codex/ot88-zoom-learner-classroom",
+                              "sha":  "80a67b93c61e9d5fb127789dadc0739917f21555",
+                              "pr":  34,
+                              "report":  "IMPLEMENTATION_PENDING",
+                              "ci":  "failure",
+                              "disposition":  "checkpoint only, not mergeable"
+                          },
+                          {
+                              "task":  "OT-89A",
+                              "branch":  "codex/ot89a-subscriber-support-producer",
+                              "sha":  "0fe1b4668170f608d8763fb52d11b30f0150feb2",
+                              "pr":  36,
+                              "report":  "Not final yet",
+                              "ci":  "failure",
+                              "disposition":  "preimplementation checkpoint only, not mergeable"
+                          },
+                          {
+                              "task":  "OPS-09",
+                              "branch":  "codex/ops09-branch-fleet-ci-repair",
+                              "sha":  "738b0794d9f2420f1c82d2f08ee5b95bbd341244",
+                              "pr":  35,
+                              "report":  "In progress",
+                              "ci":  "unavailable",
+                              "disposition":  "fleet report not complete"
+                          }
+                      ]
+}

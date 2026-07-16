@@ -18,6 +18,11 @@ export type RecordVerifiedEventResult =
   | { status: 'duplicate'; eventKey: string }
   | { status: 'digest_mismatch'; eventKey: string };
 
+export type StartCheckoutResult =
+  | { status: 'started'; checkoutRequestKey: string }
+  | { status: 'replayed'; checkout: CheckoutSessionResult }
+  | { status: 'conflict'; checkoutRequestKey: string };
+
 export function createPostgresBillingRepositories(pool: DbPool) {
   return {
     async upsertProviderAccount(providerAccount: BillingProviderAccountRef) {
@@ -85,6 +90,86 @@ export function createPostgresBillingRepositories(pool: DbPool) {
           }
         : null;
     },
+    async startCheckoutSession(input: {
+      principal: BillingPrincipalRef;
+      offer: BillingOfferPriceMapping;
+      idempotency_key: string;
+      request_fingerprint: string;
+    }): Promise<StartCheckoutResult> {
+      const checkoutRequestKey = stableKey('billing_checkout', [
+        input.principal.account_key,
+        input.principal.product_key,
+        input.principal.principal_key,
+        input.offer.offer_key,
+        input.idempotency_key,
+      ]);
+      return inTransaction(pool, async (client) => {
+        await recordCustomerMappingIfPresent(client, input.principal, input.offer, null);
+        const existing = await client.query(
+          `SELECT checkout_request_key, provider_checkout_session_ref, redirect_url, status,
+                  request_fingerprint
+             FROM onetime.billing_checkout_sessions
+            WHERE account_key = $1
+              AND product_key = $2
+              AND principal_key = $3
+              AND offer_key = $4
+              AND idempotency_key = $5
+            LIMIT 1`,
+          [
+            input.principal.account_key,
+            input.principal.product_key,
+            input.principal.principal_key,
+            input.offer.offer_key,
+            input.idempotency_key,
+          ],
+        );
+        if (existing.rowCount) {
+          const row = existing.rows[0];
+          if (String(row.request_fingerprint ?? '') !== input.request_fingerprint) {
+            return { status: 'conflict', checkoutRequestKey: String(row.checkout_request_key) };
+          }
+          if (row.status !== 'started' && row.provider_checkout_session_ref && row.redirect_url) {
+            return {
+              status: 'replayed',
+              checkout: {
+                checkout_request_key: String(row.checkout_request_key),
+                checkout_session_ref: String(row.provider_checkout_session_ref),
+                redirect_url: String(row.redirect_url),
+                status: 'replayed',
+                entitlement_changed: false,
+              },
+            };
+          }
+          return { status: 'started', checkoutRequestKey: String(row.checkout_request_key) };
+        }
+        await client.query(
+          `INSERT INTO onetime.billing_checkout_sessions
+           (checkout_request_key, account_key, product_key, principal_key, principal_type,
+            offer_key, provider, mode, provider_account_ref, provider_price_ref,
+            provider_customer_ref, provider_checkout_session_ref, idempotency_key, redirect_url,
+            status, request_fingerprint)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$13,$14,$11,
+                   '/app/billing/checkout/pending','started',$12)`,
+          [
+            checkoutRequestKey,
+            input.principal.account_key,
+            input.principal.product_key,
+            input.principal.principal_key,
+            input.principal.principal_type,
+            input.offer.offer_key,
+            input.offer.provider,
+            input.offer.mode,
+            input.offer.provider_account_ref,
+            input.offer.provider_price_ref,
+            input.idempotency_key,
+            input.request_fingerprint,
+            `pending_customer_${checkoutRequestKey}`,
+            `pending_session_${checkoutRequestKey}`,
+          ],
+        );
+        return { status: 'started', checkoutRequestKey };
+      });
+    },
     async recordCheckoutSession(input: {
       principal: BillingPrincipalRef;
       offer: BillingOfferPriceMapping;
@@ -98,6 +183,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         input.principal.account_key,
         input.principal.product_key,
         input.principal.principal_key,
+        input.offer.offer_key,
         input.idempotency_key,
       ]);
       await inTransaction(pool, async (client) => {
@@ -113,9 +199,14 @@ export function createPostgresBillingRepositories(pool: DbPool) {
             offer_key, provider, mode, provider_account_ref, provider_price_ref,
             provider_customer_ref, provider_checkout_session_ref, provider_subscription_ref,
             idempotency_key, redirect_url, status)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'created')
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,'session_created')
            ON CONFLICT (account_key, product_key, principal_key, offer_key, idempotency_key)
-           DO NOTHING`,
+           DO UPDATE SET
+             provider_customer_ref = EXCLUDED.provider_customer_ref,
+             provider_checkout_session_ref = EXCLUDED.provider_checkout_session_ref,
+             provider_subscription_ref = EXCLUDED.provider_subscription_ref,
+             redirect_url = EXCLUDED.redirect_url,
+             status = 'session_created'`,
           [
             checkoutRequestKey,
             input.principal.account_key,
@@ -139,7 +230,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         checkout_request_key: checkoutRequestKey,
         checkout_session_ref: input.provider_checkout_session_ref,
         redirect_url: input.redirect_url,
-        status: 'created',
+        status: 'session_created',
         entitlement_changed: false,
       };
     },
@@ -168,6 +259,45 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         ],
       );
       return result.rows[0]?.provider_customer_ref as string | undefined;
+    },
+    async markCheckoutCompleted(input: {
+      provider_checkout_session_ref: string;
+      provider_customer_ref: string;
+      provider_subscription_ref?: string | undefined;
+    }) {
+      const result = await pool.query(
+        `UPDATE onetime.billing_checkout_sessions
+            SET status = 'completed',
+                completed_at = now(),
+                provider_customer_ref = $2,
+                provider_subscription_ref = COALESCE($3, provider_subscription_ref)
+          WHERE provider_checkout_session_ref = $1
+          RETURNING principal_key, principal_type, account_key, product_key`,
+        [
+          input.provider_checkout_session_ref,
+          input.provider_customer_ref,
+          input.provider_subscription_ref ?? null,
+        ],
+      );
+      const row = result.rows[0];
+      return row
+        ? ({
+            principal_key: String(row.principal_key),
+            principal_type: row.principal_type as BillingPrincipalRef['principal_type'],
+            account_key: String(row.account_key),
+            product_key: String(row.product_key),
+          } satisfies BillingPrincipalRef)
+        : null;
+    },
+    async markCheckoutExpired(input: { provider_checkout_session_ref: string }) {
+      await pool.query(
+        `UPDATE onetime.billing_checkout_sessions
+            SET status = 'expired',
+                expired_at = now()
+          WHERE provider_checkout_session_ref = $1
+            AND status <> 'completed'`,
+        [input.provider_checkout_session_ref],
+      );
     },
     async findPrincipalByCustomer(input: {
       providerAccount: BillingProviderAccountRef;
@@ -263,7 +393,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
     },
     async upsertSubscriptionProjection(input: BillingSubscriptionProjection) {
       const existing = await pool.query(
-        `SELECT provider_updated_at
+        `SELECT provider_updated_at, source_event_key, status
            FROM onetime.billing_subscription_projections
           WHERE account_key = $1
             AND product_key = $2
@@ -286,40 +416,76 @@ export function createPostgresBillingRepositories(pool: DbPool) {
       ) {
         return { status: 'stale' as const };
       }
-      await pool.query(
-        `INSERT INTO onetime.billing_subscription_projections
-         (account_key, product_key, principal_key, principal_type, provider, mode,
-          provider_account_ref, provider_customer_ref, provider_subscription_ref,
-          status, current_period_end, cancel_at, canceled_at, provider_updated_at,
-          source_event_key)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
-         ON CONFLICT (account_key, product_key, provider, mode, provider_subscription_ref)
-         DO UPDATE SET
-           status = EXCLUDED.status,
-           current_period_end = EXCLUDED.current_period_end,
-           cancel_at = EXCLUDED.cancel_at,
-           canceled_at = EXCLUDED.canceled_at,
-           provider_updated_at = EXCLUDED.provider_updated_at,
-           source_event_key = EXCLUDED.source_event_key,
-           updated_at = now()`,
-        [
-          input.account_key,
-          input.product_key,
-          input.principal_key,
-          input.principal_type,
-          input.provider,
-          input.mode,
-          input.provider_account_ref,
-          input.provider_customer_ref,
-          input.provider_subscription_ref,
-          input.status,
-          input.current_period_end,
-          input.cancel_at,
-          input.canceled_at,
-          input.provider_updated_at,
-          input.source_event_key,
-        ],
-      );
+      if (
+        existing.rowCount &&
+        new Date(existing.rows[0].provider_updated_at).getTime() ===
+          new Date(input.provider_updated_at).getTime() &&
+        (String(existing.rows[0].source_event_key) !== input.source_event_key ||
+          String(existing.rows[0].status) !== input.status)
+      ) {
+        return { status: 'contradictory' as const };
+      }
+      const values = [
+        input.account_key,
+        input.product_key,
+        input.principal_key,
+        input.principal_type,
+        input.provider,
+        input.mode,
+        input.provider_account_ref,
+        input.provider_customer_ref,
+        input.provider_subscription_ref,
+        input.status,
+        input.current_period_start,
+        input.current_period_end,
+        input.cancel_at,
+        input.canceled_at,
+        input.cancel_at_period_end,
+        input.latest_invoice_ref,
+        input.collection_state,
+        input.provider_updated_at,
+        input.source_event_key,
+        input.projection_version,
+      ];
+      if (existing.rowCount) {
+        await pool.query(
+          `UPDATE onetime.billing_subscription_projections
+              SET principal_key = $3,
+                  principal_type = $4,
+                  provider_account_ref = $7,
+                  provider_customer_ref = $8,
+                  status = $10,
+                  current_period_start = $11,
+                  current_period_end = $12,
+                  cancel_at = $13,
+                  canceled_at = $14,
+                  cancel_at_period_end = $15,
+                  latest_invoice_ref = $16,
+                  collection_state = $17,
+                  provider_updated_at = $18,
+                  source_event_key = $19,
+                  projection_version = projection_version + 1,
+                  updated_at = now()
+            WHERE account_key = $1
+              AND product_key = $2
+              AND provider = $5
+              AND mode = $6
+              AND provider_subscription_ref = $9`,
+          values,
+        );
+      } else {
+        await pool.query(
+          `INSERT INTO onetime.billing_subscription_projections
+           (account_key, product_key, principal_key, principal_type, provider, mode,
+            provider_account_ref, provider_customer_ref, provider_subscription_ref,
+            status, current_period_start, current_period_end, cancel_at, canceled_at,
+            cancel_at_period_end, latest_invoice_ref, collection_state, provider_updated_at,
+            source_event_key, projection_version)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
+           ON CONFLICT DO NOTHING`,
+          values,
+        );
+      }
       return { status: 'updated' as const };
     },
     async insertInvoiceSummary(input: BillingInvoiceSummary) {
@@ -327,13 +493,16 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         `INSERT INTO onetime.billing_invoice_summaries
          (account_key, product_key, principal_key, principal_type, provider, mode,
           provider_account_ref, provider_invoice_ref, provider_subscription_ref,
-          status, currency, amount_due_cents, amount_paid_cents, issued_at, source_event_key)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+          status, currency, amount_due_cents, amount_paid_cents, refunded_amount_cents,
+          dispute_state, issued_at, source_event_key)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
          ON CONFLICT (account_key, product_key, provider, mode, provider_invoice_ref)
          DO UPDATE SET
            status = EXCLUDED.status,
            amount_due_cents = EXCLUDED.amount_due_cents,
            amount_paid_cents = EXCLUDED.amount_paid_cents,
+           refunded_amount_cents = EXCLUDED.refunded_amount_cents,
+           dispute_state = EXCLUDED.dispute_state,
            source_event_key = EXCLUDED.source_event_key`,
         [
           input.account_key,
@@ -349,6 +518,8 @@ export function createPostgresBillingRepositories(pool: DbPool) {
           input.currency,
           input.amount_due_cents,
           input.amount_paid_cents,
+          input.refunded_amount_cents ?? 0,
+          input.dispute_state ?? 'none',
           input.issued_at,
           input.source_event_key,
         ],
@@ -359,7 +530,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         `INSERT INTO onetime.billing_entitlement_projections
          (entitlement_key, account_key, product_key, principal_key, principal_type,
           status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,false)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
          ON CONFLICT (entitlement_key)
          DO UPDATE SET
            status = EXCLUDED.status,
@@ -368,7 +539,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
            reason = EXCLUDED.reason,
            effective_at = EXCLUDED.effective_at,
            evaluated_at = EXCLUDED.evaluated_at,
-           grants_access = false`,
+           grants_access = EXCLUDED.grants_access`,
         [
           input.entitlement_key,
           input.account_key,
@@ -381,6 +552,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
           input.reason,
           input.effective_at,
           input.evaluated_at,
+          input.grants_access,
         ],
       );
     },
@@ -422,6 +594,86 @@ export function createPostgresBillingRepositories(pool: DbPool) {
       );
       return reconciliationKey;
     },
+    async currentSubscription(principal: BillingPrincipalRef) {
+      const result = await pool.query(
+        `SELECT account_key, product_key, principal_key, principal_type, provider, mode,
+                provider_account_ref, provider_customer_ref, provider_subscription_ref, status,
+                current_period_start, current_period_end, cancel_at, canceled_at,
+                cancel_at_period_end, latest_invoice_ref, collection_state, provider_updated_at,
+                source_event_key, projection_version
+           FROM onetime.billing_subscription_projections
+          WHERE account_key = $1
+            AND product_key = $2
+            AND principal_key = $3
+          ORDER BY provider_updated_at DESC, updated_at DESC
+          LIMIT 1`,
+        [principal.account_key, principal.product_key, principal.principal_key],
+      );
+      const row = result.rows[0];
+      return row ? subscriptionFromRow(principal, row) : null;
+    },
+    async currentInvoiceForSubscription(input: {
+      principal: BillingPrincipalRef;
+      provider_subscription_ref: string | null;
+      provider_invoice_ref?: string | null;
+    }) {
+      const values: unknown[] = [
+        input.principal.account_key,
+        input.principal.product_key,
+        input.principal.principal_key,
+      ];
+      const filters = ['account_key = $1', 'product_key = $2', 'principal_key = $3'];
+      if (input.provider_invoice_ref) {
+        values.push(input.provider_invoice_ref);
+        filters.push(`provider_invoice_ref = $${values.length}`);
+      } else if (input.provider_subscription_ref) {
+        values.push(input.provider_subscription_ref);
+        filters.push(`provider_subscription_ref = $${values.length}`);
+      }
+      const result = await pool.query(
+        `SELECT account_key, product_key, principal_key, principal_type, provider, mode,
+                provider_account_ref, provider_invoice_ref, provider_subscription_ref, status,
+                currency, amount_due_cents, amount_paid_cents, refunded_amount_cents,
+                dispute_state, issued_at, source_event_key
+           FROM onetime.billing_invoice_summaries
+          WHERE ${filters.join(' AND ')}
+          ORDER BY issued_at DESC NULLS LAST, created_at DESC
+          LIMIT 1`,
+        values,
+      );
+      const row = result.rows[0];
+      return row ? invoiceFromRow(input.principal, row) : null;
+    },
+    async storeRedirect(input: {
+      redirectKey: string;
+      provider: 'stripe';
+      mode: 'test';
+      providerUrl: string;
+      expiresAt: Date;
+    }) {
+      await pool.query(
+        `INSERT INTO onetime.billing_redirect_vault
+         (redirect_key, provider, mode, provider_url, expires_at)
+         VALUES ($1,$2,$3,$4,$5)
+         ON CONFLICT (redirect_key)
+         DO UPDATE SET provider_url = EXCLUDED.provider_url,
+                       expires_at = EXCLUDED.expires_at,
+                       consumed_at = NULL`,
+        [input.redirectKey, input.provider, input.mode, input.providerUrl, input.expiresAt],
+      );
+    },
+    async consumeRedirect(redirectKey: string) {
+      const result = await pool.query(
+        `UPDATE onetime.billing_redirect_vault
+            SET consumed_at = now()
+          WHERE redirect_key = $1
+            AND consumed_at IS NULL
+            AND expires_at > now()
+          RETURNING provider_url`,
+        [redirectKey],
+      );
+      return result.rows[0]?.provider_url ? String(result.rows[0].provider_url) : null;
+    },
     async summary(principal: BillingPrincipalRef) {
       const [customer, subscription, entitlement, invoices] = await Promise.all([
         pool.query(
@@ -432,7 +684,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
           [principal.account_key, principal.product_key, principal.principal_key],
         ),
         pool.query(
-          `SELECT status, current_period_end, cancel_at, canceled_at
+          `SELECT status, current_period_end, cancel_at, canceled_at, cancel_at_period_end
              FROM onetime.billing_subscription_projections
             WHERE account_key = $1 AND product_key = $2 AND principal_key = $3
             ORDER BY updated_at DESC
@@ -449,7 +701,8 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         pool.query(
           `SELECT account_key, product_key, principal_key, principal_type, provider, mode,
                   provider_account_ref, provider_invoice_ref, provider_subscription_ref, status,
-                  currency, amount_due_cents, amount_paid_cents, issued_at, source_event_key
+                  currency, amount_due_cents, amount_paid_cents, refunded_amount_cents,
+                  dispute_state, issued_at, source_event_key
              FROM onetime.billing_invoice_summaries
             WHERE account_key = $1 AND product_key = $2 AND principal_key = $3
             ORDER BY issued_at DESC NULLS LAST, created_at DESC
@@ -462,20 +715,7 @@ export function createPostgresBillingRepositories(pool: DbPool) {
         customer: customer.rows[0] ?? null,
         subscription: subscription.rows[0] ?? null,
         entitlement: entitlement.rows[0] ?? null,
-        invoices: invoices.rows.map((row) => ({
-          ...principal,
-          provider: row.provider,
-          mode: row.mode,
-          provider_account_ref: row.provider_account_ref,
-          provider_invoice_ref: row.provider_invoice_ref,
-          provider_subscription_ref: row.provider_subscription_ref,
-          status: row.status,
-          currency: row.currency,
-          amount_due_cents: Number(row.amount_due_cents),
-          amount_paid_cents: Number(row.amount_paid_cents),
-          issued_at: row.issued_at ? new Date(row.issued_at).toISOString() : null,
-          source_event_key: row.source_event_key,
-        })),
+        invoices: invoices.rows.map((row) => invoiceFromRow(principal, row)),
         manual_review: entitlement.rows[0]?.status === 'manual_review',
       };
     },
@@ -515,6 +755,16 @@ async function recordCustomerMapping(
   offer: BillingOfferPriceMapping,
   providerCustomerRef: string,
 ) {
+  await recordCustomerMappingIfPresent(client, principal, offer, providerCustomerRef);
+}
+
+async function recordCustomerMappingIfPresent(
+  client: Queryable,
+  principal: BillingPrincipalRef,
+  offer: BillingOfferPriceMapping,
+  providerCustomerRef: string | null,
+) {
+  if (!providerCustomerRef) return;
   const existing = await client.query(
     `SELECT id
        FROM onetime.billing_principal_customers
@@ -559,6 +809,74 @@ async function recordCustomerMapping(
       providerCustomerRef,
     ],
   );
+}
+
+function subscriptionFromRow(
+  principal: BillingPrincipalRef,
+  row: Record<string, unknown>,
+): BillingSubscriptionProjection {
+  return {
+    ...principal,
+    provider: row.provider as BillingSubscriptionProjection['provider'],
+    mode: row.mode as BillingSubscriptionProjection['mode'],
+    provider_account_ref: String(row.provider_account_ref),
+    provider_customer_ref: String(row.provider_customer_ref),
+    provider_subscription_ref: String(row.provider_subscription_ref),
+    status: row.status as BillingSubscriptionProjection['status'],
+    current_period_start: nullableIso(row.current_period_start),
+    current_period_end: nullableIso(row.current_period_end),
+    cancel_at: nullableIso(row.cancel_at),
+    canceled_at: nullableIso(row.canceled_at),
+    cancel_at_period_end: Boolean(row.cancel_at_period_end),
+    latest_invoice_ref: row.latest_invoice_ref ? String(row.latest_invoice_ref) : null,
+    collection_state: row.collection_state as BillingSubscriptionProjection['collection_state'],
+    provider_updated_at: asIso(row.provider_updated_at),
+    source_event_key: String(row.source_event_key),
+    projection_version: Number(row.projection_version ?? 1),
+  };
+}
+
+function invoiceFromRow(
+  principal: BillingPrincipalRef,
+  row: Record<string, unknown>,
+): BillingInvoiceSummary {
+  const disputeState =
+    row.dispute_state === 'created' ||
+    row.dispute_state === 'won' ||
+    row.dispute_state === 'lost' ||
+    row.dispute_state === 'closed'
+      ? row.dispute_state
+      : 'none';
+  return {
+    ...principal,
+    provider: row.provider as BillingInvoiceSummary['provider'],
+    mode: row.mode as BillingInvoiceSummary['mode'],
+    provider_account_ref: String(row.provider_account_ref),
+    provider_invoice_ref: String(row.provider_invoice_ref),
+    provider_subscription_ref: row.provider_subscription_ref
+      ? String(row.provider_subscription_ref)
+      : null,
+    status: row.status as BillingInvoiceSummary['status'],
+    currency: String(row.currency),
+    amount_due_cents: Number(row.amount_due_cents),
+    amount_paid_cents: Number(row.amount_paid_cents),
+    refunded_amount_cents: Number(row.refunded_amount_cents ?? 0),
+    dispute_state: disputeState,
+    issued_at: nullableIso(row.issued_at),
+    source_event_key: String(row.source_event_key),
+  };
+}
+
+function nullableIso(value: unknown) {
+  if (!value) return null;
+  return asIso(value);
+}
+
+function asIso(value: unknown) {
+  if (value instanceof Date) return value.toISOString();
+  const parsed = new Date(String(value));
+  if (Number.isNaN(parsed.getTime())) return String(value);
+  return parsed.toISOString();
 }
 
 function stableKey(prefix: string, parts: string[]) {

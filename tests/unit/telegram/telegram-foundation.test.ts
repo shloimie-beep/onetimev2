@@ -6,6 +6,7 @@ import {
   asCanonicalUserKey,
   asChatRef,
   asProviderUserRef,
+  botCapabilities,
   type BotCapability,
   type CanonicalOneTimeActor,
   type NormalizedBotUpdate,
@@ -37,7 +38,7 @@ import {
 const botKey = asBotKey('one_time_internal_ops');
 const providerUserRef = asProviderUserRef('telegram_user_fixture');
 const chatRef = asChatRef('telegram_chat_fixture');
-const actor = actorFixture(['product_status', 'upcoming_classes', 'task_create', 'task_update']);
+const actor = actorFixture([...botCapabilities]);
 
 describe('OT-51P ingress boundary', () => {
   it('rejects wrong method, content type, secret, oversized and deep JSON without enqueueing', async () => {
@@ -98,7 +99,7 @@ describe('OT-51P ingress boundary', () => {
       update_id: 51,
       message: {
         message_id: 7,
-        text: 'status',
+        text: '/scope',
         from: { id: 12345, username: 'do-not-store' },
         chat: { id: 67890, type: 'private' },
       },
@@ -124,61 +125,81 @@ describe('OT-51P ingress boundary', () => {
 
 describe('OT-51P identity and commands', () => {
   it('default-denies group, forwarded, unmapped, unsupported roles, and absent capabilities', async () => {
-    const context = await buildContext(actorFixture(['product_status']));
+    const context = await buildContext(actorFixture(['gateway.scope.read']));
     await context.mappings.upsertProtectedMapping(mappingFixture());
 
     const group = await context.engine.handle(
-      updateFixture({ text: 'status', chatContext: 'group' }),
+      updateFixture({ text: '/scope', chatContext: 'group' }),
     );
     expect(group[0]?.text).toContain('authorized owner/admin private chats');
 
     const forwarded = await context.engine.handle(
-      updateFixture({ text: 'status', isForwarded: true }),
+      updateFixture({ text: '/scope', isForwarded: true }),
     );
     expect(forwarded[0]?.text).toContain('authorized owner/admin private chats');
 
-    const unmappedContext = await buildContext(actorFixture(['product_status']));
-    const unmapped = await unmappedContext.engine.handle(updateFixture({ text: 'status' }));
+    const unmappedContext = await buildContext(actorFixture(['gateway.scope.read']));
+    const unmapped = await unmappedContext.engine.handle(updateFixture({ text: '/scope' }));
     expect(unmapped[0]?.text).toContain('authorized owner/admin private chats');
 
-    const viewerContext = await buildContext(actorFixture(['product_status'], 'viewer'));
+    const viewerContext = await buildContext(actorFixture(['gateway.scope.read'], 'viewer'));
     await viewerContext.mappings.upsertProtectedMapping(mappingFixture());
-    const viewer = await viewerContext.engine.handle(updateFixture({ text: 'status' }));
+    const viewer = await viewerContext.engine.handle(updateFixture({ text: '/scope' }));
     expect(viewer[0]?.text).toContain('authorized owner/admin private chats');
 
-    const absent = await context.engine.handle(updateFixture({ text: 'classes' }));
+    const absent = await context.engine.handle(updateFixture({ text: '/classes' }));
     expect(absent[0]?.text).toContain('authorized owner/admin private chats');
   });
 
-  it('runs supported reads and refuses ambiguous free text', async () => {
-    const context = await buildContext(actorFixture(['product_status', 'contact_lookup']));
-    await context.mappings.upsertProtectedMapping(mappingFixture());
-    const status = await context.engine.handle(updateFixture({ text: 'status' }));
-    const contact = await context.engine.handle(
-      updateFixture({ text: 'contacts fictional parent' }),
+  it('runs supported reads, owner-only audit, question reads, and refuses ambiguous free text', async () => {
+    const context = await buildContext(
+      actorFixture([
+        'gateway.scope.read',
+        'crm.contact.read_redacted',
+        'telegram.audit.read_recent',
+        'class.question.list',
+      ]),
     );
+    await context.mappings.upsertProtectedMapping(mappingFixture());
+    const scope = await context.engine.handle(updateFixture({ text: '/scope' }));
+    const contact = await context.engine.handle(
+      updateFixture({ text: '/contact fictional-parent' }),
+    );
+    const questions = await context.engine.handle(updateFixture({ text: '/questions' }));
     const ambiguous = await context.engine.handle(
       updateFixture({ text: 'open or close something' }),
     );
 
-    expect(status[0]?.text).toContain('One Time status');
-    expect(contact[0]?.text).toContain('redacted match');
+    expect(scope[0]?.text).toContain('one_time_mishnah_class');
+    expect(contact[0]?.text).toContain('Redacted contact');
+    expect(questions[0]?.text).toContain('Questions:');
     expect(ambiguous[0]?.text).toContain('more specific');
     expect(context.audit.events.some((event) => event.outcome === 'completed')).toBe(true);
+
+    const adminContext = await buildContext(actorFixture(['telegram.audit.read_recent'], 'admin'));
+    await adminContext.mappings.upsertProtectedMapping(mappingFixture());
+    const auditDenied = await adminContext.engine.handle(updateFixture({ text: '/gateway-audit' }));
+    expect(auditDenied[0]?.text).toContain('authorized owner/admin private chats');
   });
 
-  it('previews, confirms, cancels, expires, and dedupes idempotent task writes', async () => {
+  it('executes deterministic R1 writes and previews, confirms, cancels, expires, and replays NL writes', async () => {
     const context = await buildContext(actor);
     await context.mappings.upsertProtectedMapping(mappingFixture());
 
+    const direct = await context.engine.handle(
+      updateFixture({ updateId: '99', text: '/task-create Quick follow up' }),
+    );
+    expect(direct[0]?.text).toContain('Completed task.create');
+    expect(direct[0]?.buttons).toBeUndefined();
+
     const preview = await context.engine.handle(
-      updateFixture({ updateId: '100', text: 'task create Call parent' }),
+      updateFixture({ updateId: '100', text: 'create task Call parent' }),
     );
     const confirmData = preview[0]?.buttons?.[0]?.callbackData;
     const cancelData = preview[0]?.buttons?.[1]?.callbackData;
-    expect(preview[0]?.text).toContain('Preview task create');
-    expect(confirmData).toMatch(/^confirm:/);
-    expect(cancelData).toMatch(/^cancel:/);
+    expect(preview[0]?.text).toContain('Preview task.create');
+    expect(confirmData).toMatch(/^confirm:v1:/);
+    expect(cancelData).toMatch(/^cancel:v1:/);
 
     const confirmed = await context.engine.handle(
       updateFixture({
@@ -194,12 +215,12 @@ describe('OT-51P identity and commands', () => {
         callbackData: requireString(confirmData),
       }),
     );
-    expect(confirmed[0]?.text).toContain('Task created');
-    expect(duplicate[0]?.text).toContain('already handled');
-    expect(context.adapter.writes.size).toBe(1);
+    expect(confirmed[0]?.text).toContain('Completed task.create');
+    expect(duplicate[0]?.text).toContain('Completed task.create');
+    expect(context.adapter.writes.size).toBe(2);
 
     const cancelPreview = await context.engine.handle(
-      updateFixture({ updateId: '103', text: 'task update task_1 7 done' }),
+      updateFixture({ updateId: '103', text: 'mark task task_1 as done' }),
     );
     const cancelled = await context.engine.handle(
       updateFixture({
@@ -211,7 +232,7 @@ describe('OT-51P identity and commands', () => {
     expect(cancelled[0]?.text).toContain('Cancelled');
 
     const expiredPreview = await context.engine.handle(
-      updateFixture({ updateId: '105', text: 'task create Expire me' }),
+      updateFixture({ updateId: '105', text: 'create task Expire me' }),
       new Date('2026-07-14T10:00:00Z'),
     );
     const expired = await context.engine.handle(
@@ -226,11 +247,11 @@ describe('OT-51P identity and commands', () => {
   });
 
   it('denies confirmation replay when security version changes before confirm', async () => {
-    const mutableActor = actorFixture(['task_create']);
+    const mutableActor = actorFixture(['task.create']);
     const context = await buildContext(mutableActor);
     await context.mappings.upsertProtectedMapping(mappingFixture());
     const preview = await context.engine.handle(
-      updateFixture({ updateId: '200', text: 'task create Check security' }),
+      updateFixture({ updateId: '200', text: 'create task Check security' }),
     );
     mutableActor.securityVersion = 2;
     const denied = await context.engine.handle(
@@ -248,12 +269,12 @@ describe('OT-51P worker and topology', () => {
   it('claims safely, reclaims expired leases, retries, and dead-letters without long-running processes', async () => {
     const context = await buildContext(actor);
     await context.mappings.upsertProtectedMapping(mappingFixture());
-    const payloadRef = await context.codec.encrypt(updateFixture({ text: 'status' }), {
+    const payloadRef = await context.codec.encrypt(updateFixture({ text: '/scope' }), {
       botKey,
       environment: 'local',
       classification: 'normalized_update',
     });
-    const enqueued = await context.inbox.enqueue(updateFixture({ text: 'status' }), payloadRef);
+    const enqueued = await context.inbox.enqueue(updateFixture({ text: '/scope' }), payloadRef);
     const worker = new TelegramBotWorkerEngine(
       context.inbox,
       context.codec,
@@ -272,7 +293,7 @@ describe('OT-51P worker and topology', () => {
     const first = await worker.runOnce(new Date('2026-07-14T10:00:00Z'));
     expect(first).toMatchObject({ claimed: true, disposition: 'completed' });
     expect(context.inbox.state(enqueued.inboxKey)?.status).toBe('completed');
-    expect(context.transport.replies[0]?.text).toContain('One Time status');
+    expect(context.transport.replies[0]?.text).toContain('Scope: account');
 
     const brokenCodec = {
       encrypt: context.codec.encrypt.bind(context.codec),
@@ -281,7 +302,7 @@ describe('OT-51P worker and topology', () => {
       },
     };
     const retryInbox = new MemoryInboxRepository();
-    await retryInbox.enqueue(updateFixture({ updateId: '300', text: 'status' }), payloadRef);
+    await retryInbox.enqueue(updateFixture({ updateId: '300', text: '/scope' }), payloadRef);
     const retryWorker = new TelegramBotWorkerEngine(
       retryInbox,
       brokenCodec,
@@ -386,10 +407,12 @@ function mappingFixture() {
     botKey,
     environment: 'local' as const,
     providerUserRef,
+    chatRef,
     canonicalUserKey: actor.userKey,
     accountKey: 'one_time',
     productKey: 'one_time_mishnah_class',
     membershipKey: 'membership_owner',
+    mappingVersion: 1,
     securityVersion: 1,
     status: 'active' as const,
   };

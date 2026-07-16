@@ -7,6 +7,17 @@ const config = loadConfig({
   ...process.env,
   NODE_ENV: 'test',
   PORT: process.env.PORT ?? '3100',
+  OT89_SUPPORT_ENABLED: process.env.OT89_SUPPORT_ENABLED ?? 'true',
+  OT89_SUPPORT_DELIVERY_MODE: process.env.OT89_SUPPORT_DELIVERY_MODE ?? 'mock',
+  OT89_SUPPORT_BNA_BASE_URL:
+    process.env.OT89_SUPPORT_BNA_BASE_URL ?? `http://127.0.0.1:${process.env.PORT ?? '3100'}`,
+  OT89_MOCK_BNA_ENABLED: process.env.OT89_MOCK_BNA_ENABLED ?? 'true',
+  OT89_SUPPORT_HMAC_KEY_ID: process.env.OT89_SUPPORT_HMAC_KEY_ID ?? 'ot89-onetime-e2e',
+  OT89_SUPPORT_HMAC_SECRET:
+    process.env.OT89_SUPPORT_HMAC_SECRET ?? 'ot89-e2e-producer-secret-do-not-use',
+  OT89_BNA_TO_ONETIME_HMAC_KEY_ID: process.env.OT89_BNA_TO_ONETIME_HMAC_KEY_ID ?? 'ot89-bna-e2e',
+  OT89_BNA_TO_ONETIME_HMAC_SECRET:
+    process.env.OT89_BNA_TO_ONETIME_HMAC_SECRET ?? 'ot89-e2e-consumer-secret-do-not-use',
 });
 const pool = createMemoryPool();
 await runMigrations(pool);
@@ -37,12 +48,22 @@ const parentUserKey = await createAccountUser({
   role: 'parent',
   mfaCapable: false,
 });
+await seedActiveSupportEntitlement(parentUserKey);
 const studentUserKey = await createAccountUser({
   pool,
   config,
   email: process.env.OT_TEST_STUDENT_EMAIL ?? 'ot-student@example.test',
   password: process.env.OT_TEST_STUDENT_PASSWORD ?? 'StudentPassword!234',
   displayName: 'Test Student',
+  role: 'student',
+  mfaCapable: false,
+});
+const zoomStudentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: process.env.OT_TEST_ZOOM_STUDENT_EMAIL ?? 'ot-zoom-student@example.test',
+  password: process.env.OT_TEST_ZOOM_STUDENT_PASSWORD ?? 'ZoomStudentPassword!234',
+  displayName: 'Zoom Test Student',
   role: 'student',
   mfaCapable: false,
 });
@@ -56,7 +77,10 @@ await createAccountUser({
   mfaCapable: false,
 });
 await seedDayOneBrowserRecords();
-const app = createApp({ config, pool });
+const testClock = process.env.OT_TEST_CLOCK
+  ? () => new Date(String(process.env.OT_TEST_CLOCK))
+  : undefined;
+const app = createApp({ config, pool, ...(testClock ? { clock: testClock } : {}) });
 const server = app.listen(config.port);
 
 process.on('SIGTERM', async () => {
@@ -68,7 +92,9 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.portal_households
        (household_key, account_key, product_key, display_name)
-     VALUES ('e2e_household_alpha', $1, $2, 'E2E Alpha Family')`,
+      VALUES
+        ('e2e_household_alpha', $1, $2, 'E2E Alpha Family'),
+        ('e2e_household_zoom', $1, $2, 'E2E Zoom Family')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
@@ -82,26 +108,58 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.portal_learners
        (learner_key, account_key, product_key, household_key, display_name, grade_label)
-     VALUES
-       ('e2e_learner_alpha', $1, $2, 'e2e_household_alpha', 'E2E Alpha Learner', '6'),
-       ('e2e_learner_beta', $1, $2, 'e2e_household_alpha', 'E2E Beta Learner', '5')`,
+      VALUES
+        ('e2e_learner_alpha', $1, $2, 'e2e_household_alpha', 'E2E Alpha Learner', '6'),
+        ('e2e_learner_beta', $1, $2, 'e2e_household_alpha', 'E2E Beta Learner', '5'),
+        ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
     `INSERT INTO onetime.portal_student_access_state
        (access_state_key, account_key, product_key, household_key, learner_key, student_user_ref,
         status)
-     VALUES
-       ('e2e_access_alpha', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3, 'active'),
-       ('e2e_access_beta', $1, $2, 'e2e_household_alpha', 'e2e_learner_beta', NULL,
-        'not_configured')`,
-    [config.accountKey, config.productKey, studentUserKey],
+      VALUES
+        ('e2e_access_alpha', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3, 'active'),
+        ('e2e_access_beta', $1, $2, 'e2e_household_alpha', 'e2e_learner_beta', NULL,
+         'not_configured'),
+        ('e2e_access_zoom', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4, 'active')`,
+    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
   );
   await pool.query(
     `INSERT INTO onetime.account_learner_identity_links
-       (link_key, account_key, product_key, household_key, learner_key, user_key)
-     VALUES ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3)`,
-    [config.accountKey, config.productKey, studentUserKey],
+        (link_key, account_key, product_key, household_key, learner_key, user_key)
+       VALUES
+        ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3),
+        ('e2e_link_zoom_student', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4)`,
+    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.classroom_household_entitlements
+       (entitlement_key, account_key, product_key, household_key, entitlement_state)
+      VALUES
+        ('e2e_entitlement_alpha', $1, $2, 'e2e_household_alpha', 'active'),
+        ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.billing_entitlement_projections
+       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
+        policy_version, source, reason, effective_at, evaluated_at, grants_access)
+     VALUES (
+       'billing_entitlement:' || $1 || ':' || $2 || ':e2e_household_alpha',
+       $1,
+       $2,
+       'e2e_household_alpha',
+       'opaque',
+       'active',
+       '2026-07-15.1',
+       'test_fixture_paid_invoice',
+       'active_paid_current_invoice',
+       '2026-07-15T12:00:00.000Z',
+       '2026-07-15T12:00:01.000Z',
+       true
+     )`,
+    [config.accountKey, config.productKey],
   );
   await pool.query(
     `INSERT INTO onetime.class_series
@@ -187,4 +245,31 @@ async function seedDayOneBrowserRecords() {
     [config.accountKey, config.productKey],
   );
   void ownerUserKey;
+}
+
+async function seedActiveSupportEntitlement(userKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.billing_entitlement_projections
+       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
+        policy_version, source, reason, effective_at, evaluated_at)
+     VALUES ($1,$2,$3,$4,'account_user','active','test-policy','test','active',now(),now())`,
+    [`e2e_entitlement_${userKey.slice(0, 16)}`, config.accountKey, config.productKey, userKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.billing_subscription_projections
+       (account_key, product_key, principal_key, principal_type, provider, mode,
+        provider_account_ref, provider_customer_ref, provider_subscription_ref, status,
+        current_period_end, provider_updated_at, source_event_key)
+     VALUES ($1,$2,$3,'account_user','stripe','test','acct_e2e_support',$4,$5,'active',
+        $6::timestamptz,now(),$7)`,
+    [
+      config.accountKey,
+      config.productKey,
+      userKey,
+      `cus_support_${userKey.slice(0, 12)}`,
+      `sub_support_${userKey.slice(0, 12)}`,
+      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      `evt_support_${userKey.slice(0, 12)}`,
+    ],
+  );
 }

@@ -208,6 +208,7 @@ describe('OT-71 content library outcome admission', () => {
         lifecycle_state: 'review_needed',
       },
     });
+    await grantHouseholdBillingAccess('household_alpha');
 
     const adapter = createContentPortalAccessAdapter({ pool, config });
     const actor = {
@@ -265,6 +266,29 @@ describe('OT-71 content library outcome admission', () => {
     expect(tiny).toHaveLength(2);
   });
 });
+
+async function grantHouseholdBillingAccess(householdKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.billing_entitlement_projections
+       (entitlement_key, account_key, product_key, principal_key, principal_type,
+        status, policy_version, source, reason, effective_at, evaluated_at, grants_access)
+     VALUES (
+       'billing_entitlement:' || $1 || ':' || $2 || ':' || $3,
+       $1,
+       $2,
+       $3,
+       'opaque',
+       'active',
+       '2026-07-15.1',
+       'test_fixture_paid_invoice',
+       'active_paid_current_invoice',
+       '2026-07-15T12:00:00.000Z',
+       '2026-07-15T12:00:01.000Z',
+       true
+     )`,
+    [config.accountKey, config.productKey, householdKey],
+  );
+}
 
 describe('OT-71 content library APIs', () => {
   it('requires owner/admin sessions and CSRF for local outcome admission', async () => {

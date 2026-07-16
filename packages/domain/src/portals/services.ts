@@ -160,6 +160,7 @@ export type LearnerClassAccessAdapter = {
     actor: PortalActorContext;
     learner: LearnerProfile;
     class_key: string;
+    idempotency_key?: string | undefined;
   }): Promise<ProtectedActionDescriptor>;
 };
 
@@ -532,7 +533,11 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
       };
     },
 
-    async protectedClassLaunch(actor: PortalActorContext, classKey: string) {
+    async protectedClassLaunch(
+      actor: PortalActorContext,
+      classKey: string,
+      payload: { idempotency_key?: string | undefined } = {},
+    ) {
       const subject = requireStudentSubject(actor, 'student:class:launch');
       const learner = await requireLearner(
         deps.repository,
@@ -541,7 +546,12 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         subject.learner_key,
       );
       return safeActionDescriptor(
-        await deps.classAccess.protectedLaunch({ actor, learner, class_key: classKey }),
+        await deps.classAccess.protectedLaunch({
+          actor,
+          learner,
+          class_key: classKey,
+          ...(payload.idempotency_key ? { idempotency_key: payload.idempotency_key } : {}),
+        }),
       );
     },
 

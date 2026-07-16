@@ -1,0 +1,41 @@
+{
+  "packet_id": "OT-86B",
+  "branch": "codex/ot86b-buffer-social",
+  "base_sha": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065",
+  "current_head_sha": "pending until final commit/push",
+  "generated_utc": "2026-07-15T17:50:30Z",
+  "allowed_roots": [
+    ".env.example",
+    "apps/web/src/server/app.ts",
+    "bin/ot86-buffer-canary",
+    "contracts/social-publishing/v1/**",
+    "ops/codex-runs/OT-86B/**",
+    "packages/config/src/index.ts",
+    "packages/contracts/src/index.ts",
+    "packages/contracts/src/social/**",
+    "packages/db/migrations/2100_ot86b_social_publishing.sql",
+    "packages/domain/src/index.ts",
+    "packages/domain/src/social/**",
+    "scripts/ot86/social-performance-probe.ts",
+    "tests/integration/social/**",
+    "tests/integration/telegram-db-foundation.test.ts"
+  ],
+  "changed_paths": [
+    ".env.example",
+    "apps/web/src/server/app.ts",
+    "bin/ot86-buffer-canary",
+    "contracts/social-publishing/v1/",
+    "ops/codex-runs/OT-86B/",
+    "packages/config/src/index.ts",
+    "packages/contracts/src/index.ts",
+    "packages/contracts/src/social/index.ts",
+    "packages/contracts/src/social/publishing.ts",
+    "packages/db/migrations/2100_ot86b_social_publishing.sql",
+    "packages/domain/src/index.ts",
+    "packages/domain/src/social/publishing.ts",
+    "scripts/ot86/social-performance-probe.ts",
+    "tests/integration/social/ot86b-social-publishing.test.ts",
+    "tests/integration/telegram-db-foundation.test.ts"
+  ],
+  "scope_result": "pass"
+}

@@ -1,0 +1,1276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:onetime:telegram:intent-compiler-output:v1",
+  "title": "One Time Telegram Intent Compiler Output v1",
+  "description": "A sealed typed-action union. Scope, role, principal, SQL, shell, URL, service and arbitrary tool fields are intentionally absent and rejected.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/action01"
+    },
+    {
+      "$ref": "#/$defs/action02"
+    },
+    {
+      "$ref": "#/$defs/action03"
+    },
+    {
+      "$ref": "#/$defs/action04"
+    },
+    {
+      "$ref": "#/$defs/action05"
+    },
+    {
+      "$ref": "#/$defs/action06"
+    },
+    {
+      "$ref": "#/$defs/action07"
+    },
+    {
+      "$ref": "#/$defs/action08"
+    },
+    {
+      "$ref": "#/$defs/action09"
+    },
+    {
+      "$ref": "#/$defs/action10"
+    },
+    {
+      "$ref": "#/$defs/action11"
+    },
+    {
+      "$ref": "#/$defs/action12"
+    },
+    {
+      "$ref": "#/$defs/action13"
+    },
+    {
+      "$ref": "#/$defs/action14"
+    },
+    {
+      "$ref": "#/$defs/action15"
+    },
+    {
+      "$ref": "#/$defs/action16"
+    },
+    {
+      "$ref": "#/$defs/action17"
+    },
+    {
+      "$ref": "#/$defs/action18"
+    },
+    {
+      "$ref": "#/$defs/action19"
+    },
+    {
+      "$ref": "#/$defs/action20"
+    },
+    {
+      "$ref": "#/$defs/action21"
+    },
+    {
+      "$ref": "#/$defs/action22"
+    },
+    {
+      "$ref": "#/$defs/action23"
+    },
+    {
+      "$ref": "#/$defs/action24"
+    },
+    {
+      "$ref": "#/$defs/action25"
+    },
+    {
+      "$ref": "#/$defs/action26"
+    },
+    {
+      "$ref": "#/$defs/action27"
+    },
+    {
+      "$ref": "#/$defs/action28"
+    }
+  ],
+  "$defs": {
+    "action01": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "gateway.help"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action02": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "gateway.identity.read_self"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action03": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "gateway.scope.read"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action04": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "crm.lead.list"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action05": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "crm.lead.read"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "lead_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["lead_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action06": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "crm.lead.create"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "display_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "maxLength": 254
+            },
+            "phone": {
+              "type": "string",
+              "minLength": 7,
+              "maxLength": 32,
+              "pattern": "^[0-9+(). -]+$"
+            },
+            "source_note": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            }
+          },
+          "additionalProperties": false,
+          "required": ["display_name"],
+          "anyOf": [
+            {
+              "required": ["email"]
+            },
+            {
+              "required": ["phone"]
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action07": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "crm.contact.read_redacted"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "contact_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["contact_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action08": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "crm.lead_tag.list"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "lead_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["lead_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action09": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "crm.lead_tag.add"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "lead_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "additionalProperties": false,
+          "required": ["lead_ref", "tag"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action10": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "crm.lead_tag.remove"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "lead_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "tag": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "additionalProperties": false,
+          "required": ["lead_ref", "tag"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action11": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "class.schedule.read"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action12": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "class.status.read"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "class_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["class_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action13": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "class.status.update"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "class_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "status": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+            },
+            "expected_revision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": ["class_ref", "status"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action14": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "content.pipeline.read"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action15": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "content.item.read"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "content_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["content_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action16": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "content.item.retry"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "content_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expected_revision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": ["content_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action17": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "task.list"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action18": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "task.read"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "task_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["task_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action19": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "task.create"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "due_at": {
+              "type": ["string", "null"],
+              "format": "date-time"
+            },
+            "assignee": {
+              "enum": ["self", "unassigned"]
+            },
+            "priority": {
+              "enum": ["low", "normal", "high", "urgent"]
+            }
+          },
+          "additionalProperties": false,
+          "required": ["title"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action20": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "task.update"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "task_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expected_revision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "changes": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                "status": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+                },
+                "due_at": {
+                  "type": ["string", "null"],
+                  "format": "date-time"
+                },
+                "assignee": {
+                  "enum": ["self", "unassigned"]
+                },
+                "priority": {
+                  "enum": ["low", "normal", "high", "urgent"]
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false,
+          "required": ["task_ref", "changes"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action21": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "support.ticket.list"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action22": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "support.ticket.read_redacted"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "ticket_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["ticket_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action23": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "support.ticket.assign_self"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "ticket_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expected_revision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": ["ticket_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action24": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "support.ticket.status.update"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "ticket_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "status": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._-]{0,63}$"
+            },
+            "expected_revision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": ["ticket_ref", "status"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action25": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "class.question.list"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "action26": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "class.question.read_redacted"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "question_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["question_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action27": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "class.question.select"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "question_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expected_revision": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false,
+          "required": ["question_ref"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "action28": {
+      "type": "object",
+      "required": ["version", "source", "action", "arguments", "confidence", "compiler_trace_id"],
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "source": {
+          "enum": ["deterministic", "natural_language_rules", "natural_language_provider"]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "compiler_trace_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        },
+        "action": {
+          "const": "telegram.audit.read_recent"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -59,6 +59,10 @@ export type StripeTestClient = {
     constructEvent(rawBody: Buffer, signatureHeader: string, secret: string): StripeTestEvent;
   };
   customers: {
+    create(
+      params: Record<string, unknown>,
+      options: { idempotencyKey: string },
+    ): Promise<{ id: string; livemode?: boolean }>;
     retrieve(providerCustomerRef: string): Promise<{ id: string; deleted?: boolean } | null>;
   };
   subscriptions: {
@@ -86,6 +90,7 @@ export type StripeTestAdapterOptions = {
   webhookSecret: string;
   providerAccountRef: BillingProviderAccountRef;
   redirectVault: StripeRedirectVault;
+  portalConfigurationRef?: string | undefined;
   checkoutTtlMs?: number;
   portalTtlMs?: number;
   clock?: () => Date;
@@ -96,6 +101,9 @@ export function createStripeTestBillingProviderAdapter(
 ): BillingProviderAdapter {
   assertTestProviderAccount(options.providerAccountRef);
   assertNoLiveReference('stripe webhook secret', options.webhookSecret);
+  if (options.portalConfigurationRef) {
+    assertNoLiveReference('stripe portal configuration', options.portalConfigurationRef);
+  }
   const clock = options.clock ?? (() => new Date());
 
   return {
@@ -106,16 +114,32 @@ export function createStripeTestBillingProviderAdapter(
       assertTestProviderAccount(input.providerAccount);
       assertSameProviderAccount(input.providerAccount, options.providerAccountRef);
       assertNoLiveReference('stripe price', input.offer.provider_price_ref);
+      const customerRef =
+        input.provider_customer_ref ??
+        (await createTestCustomer({
+          client: options.client,
+          principal: input.principal,
+          idempotencyKey: input.idempotencyKey,
+          policyVersion: input.policyVersion ?? '2026-07-15.1',
+        }));
+      assertNoLiveReference('stripe customer', customerRef);
+      const metadata = principalMetadata(
+        input.principal,
+        input.offer.offer_key,
+        input.policyVersion ?? '2026-07-15.1',
+      );
       const session = await options.client.checkout.sessions.create(
         {
           mode: 'subscription',
+          customer: customerRef,
           line_items: [{ price: input.offer.provider_price_ref, quantity: 1 }],
           success_url: input.successUrl,
           cancel_url: input.cancelUrl,
-          client_reference_id: input.principal.principal_key,
-          metadata: principalMetadata(input.principal, input.offer.offer_key),
+          client_reference_id: input.localCheckoutRequestKey ?? input.principal.principal_key,
+          allow_promotion_codes: false,
+          metadata,
           subscription_data: {
-            metadata: principalMetadata(input.principal, input.offer.offer_key),
+            metadata,
           },
         },
         { idempotencyKey: input.idempotencyKey },
@@ -123,7 +147,7 @@ export function createStripeTestBillingProviderAdapter(
       const url = requireProviderUrl(session.url, 'checkout');
       rejectLiveMode(session.livemode);
       assertNoLiveReference('stripe checkout session', session.id);
-      const customerRef = providerRefFrom(session.customer, 'customer');
+      const returnedCustomerRef = providerRefFrom(session.customer, 'customer');
       const subscriptionRef = optionalProviderRefFrom(session.subscription, 'subscription');
       const redirectUrl = await storeRedirect({
         vault: options.redirectVault,
@@ -135,7 +159,7 @@ export function createStripeTestBillingProviderAdapter(
       });
       return {
         provider_checkout_session_ref: session.id,
-        provider_customer_ref: customerRef,
+        provider_customer_ref: returnedCustomerRef,
         ...(subscriptionRef ? { provider_subscription_ref: subscriptionRef } : {}),
         redirect_url: redirectUrl,
         mode: 'test',
@@ -148,9 +172,13 @@ export function createStripeTestBillingProviderAdapter(
       assertTestProviderAccount(input.providerAccount);
       assertSameProviderAccount(input.providerAccount, options.providerAccountRef);
       assertNoLiveReference('stripe customer', input.provider_customer_ref);
+      const configuration =
+        input.provider_portal_configuration_ref ?? options.portalConfigurationRef ?? undefined;
+      if (configuration) assertNoLiveReference('stripe portal configuration', configuration);
       const session = await options.client.billingPortal.sessions.create(
         {
           customer: input.provider_customer_ref,
+          ...(configuration ? { configuration } : {}),
           return_url: input.returnUrl,
         },
         { idempotencyKey: input.idempotencyKey },
@@ -246,13 +274,18 @@ function assertSameProviderAccount(
   }
 }
 
-function principalMetadata(principal: BillingPrincipalRef, offerKey: string) {
+function principalMetadata(
+  principal: BillingPrincipalRef,
+  offerKey: string,
+  policyVersion: string,
+) {
   return {
     account_key: principal.account_key,
     product_key: principal.product_key,
     principal_key: principal.principal_key,
     principal_type: principal.principal_type,
     offer_key: offerKey,
+    policy_version: policyVersion,
   };
 }
 
@@ -307,23 +340,96 @@ async function storeRedirect(input: {
 
 function extractObjectRefs(event: StripeTestEvent): ProviderEventObjectRefs {
   const object = event.data.object;
+  const metadata = object.metadata && typeof object.metadata === 'object' ? object.metadata : {};
+  const subscriptionDetails =
+    object.subscription_details && typeof object.subscription_details === 'object'
+      ? object.subscription_details
+      : {};
   const refs: ProviderEventObjectRefs = {};
   setString(refs, 'provider_customer_ref', object.customer);
   setString(refs, 'provider_subscription_ref', object.subscription ?? object.id);
   if (event.type.startsWith('invoice.')) setString(refs, 'provider_invoice_ref', object.id);
+  if (event.type.startsWith('charge.')) setString(refs, 'provider_invoice_ref', object.invoice);
   if (event.type.startsWith('checkout.'))
     setString(refs, 'provider_checkout_session_ref', object.id);
   setString(refs, 'status', object.status);
-  setString(refs, 'account_key', object.account_key ?? object.metadata_account_key);
-  setString(refs, 'product_key', object.product_key ?? object.metadata_product_key);
+  setString(
+    refs,
+    'account_key',
+    object.account_key ?? (metadata as Record<string, unknown>).account_key,
+  );
+  setString(
+    refs,
+    'product_key',
+    object.product_key ?? (metadata as Record<string, unknown>).product_key,
+  );
+  setString(
+    refs,
+    'principal_key',
+    object.principal_key ?? (metadata as Record<string, unknown>).principal_key,
+  );
+  setString(refs, 'offer_key', object.offer_key ?? (metadata as Record<string, unknown>).offer_key);
+  setString(
+    refs,
+    'policy_version',
+    object.policy_version ??
+      (metadata as Record<string, unknown>).policy_version ??
+      (subscriptionDetails as Record<string, unknown>).metadata_policy_version,
+  );
+  setString(refs, 'checkout_request_key', object.client_reference_id);
+  refs.current_period_start = isoFromValue(object.current_period_start);
   refs.current_period_end = isoFromValue(object.current_period_end);
   refs.cancel_at = isoFromValue(object.cancel_at);
   refs.canceled_at = isoFromValue(object.canceled_at);
+  refs.cancel_at_period_end = Boolean(object.cancel_at_period_end);
+  refs.latest_invoice_ref = stringFromValue(object.latest_invoice);
   setNumber(refs, 'amount_due_cents', object.amount_due);
   setNumber(refs, 'amount_paid_cents', object.amount_paid);
+  setNumber(refs, 'refunded_amount_cents', object.amount_refunded);
   setString(refs, 'currency', object.currency);
+  const disputeState = stringFromValue(object.dispute_state ?? object.status);
+  if (
+    event.type.startsWith('charge.dispute.') &&
+    (disputeState === 'created' ||
+      disputeState === 'won' ||
+      disputeState === 'lost' ||
+      disputeState === 'closed')
+  ) {
+    refs.dispute_state = disputeState;
+  }
   refs.issued_at = isoFromValue(object.created);
   return refs;
+}
+
+async function createTestCustomer(input: {
+  client: StripeTestClient;
+  principal: BillingPrincipalRef;
+  idempotencyKey: string;
+  policyVersion: string;
+}) {
+  const customer = await input.client.customers.create(
+    {
+      metadata: {
+        account_key: input.principal.account_key,
+        product_key: input.principal.product_key,
+        principal_key: input.principal.principal_key,
+        principal_type: input.principal.principal_type,
+        policy_version: input.policyVersion,
+      },
+    },
+    { idempotencyKey: `${input.idempotencyKey}:customer` },
+  );
+  rejectLiveMode(Boolean(customer.livemode));
+  assertNoLiveReference('stripe customer', customer.id);
+  return customer.id;
+}
+
+function stringFromValue(value: unknown) {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (value && typeof value === 'object' && 'id' in value && typeof value.id === 'string') {
+    return value.id;
+  }
+  return null;
 }
 
 function isoFromValue(value: unknown) {

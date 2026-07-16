@@ -1,0 +1,8 @@
+TASK_ID,AREA,REQUIRED_ISOLATION_PROOF,AUTHORIZED_ACTION,BLOCKED_STATE,EVIDENCE
+OT-99,Hostname and DNS,Distinct staging hostname and no root DNS mutation,Deploy only to existing authorized staging target,not_authorized or isolation_unproven,DNS and deployment target readback
+OT-99,Artifact identity,Build and deploy exact remote OT-99 PR SHA,Read back SHA and artifact digest from environment,sha_mismatch,"Remote branch head, build digest, health/build metadata"
+OT-99,Database,Disposable or dedicated non-production PostgreSQL 16 database,Run staging migrations and smoke tests,shared_or_production_database,Connection target classification and migration ledger readback
+OT-99,Storage and queues,"Non-production buckets, queues, topics, and dead-letter targets",Use isolated staging resources,resource_isolation_unproven,Resource identifiers and no-production assertion
+OT-99,Provider credentials,"Sandbox, test, designated test tenant, or provider-off",Enable only separately authorized providers,missing_credentials or canary_not_authorized,Credential class without secret values
+OT-99,Contacts and data,Synthetic accounts and no production contact import,Use seeded synthetic households and test destinations,production_data_present,Seed manifest and PII scan
+OT-99,Core availability,"Landing, signup, CRM, and portals independent of providers",Run provider-off journeys,core_degraded,Browser and uptime evidence

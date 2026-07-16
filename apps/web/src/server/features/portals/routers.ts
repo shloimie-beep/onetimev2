@@ -3,6 +3,7 @@ import { ZodError, z } from 'zod';
 import {
   createLearnerPayloadSchema,
   helperQueryPayloadSchema,
+  idempotencyKeySchema,
   learnerProfileSchema,
   parentLearnerMaterialsSchema,
   parentPortalDashboardSchema,
@@ -25,6 +26,12 @@ import {
 } from '../../../../../../packages/domain/src/portals/services.ts';
 
 type PortalRequest = Request & { traceId?: string };
+
+const protectedLaunchPayloadSchema = z
+  .object({
+    idempotency_key: idempotencyKeySchema.optional(),
+  })
+  .strict();
 
 export type PortalActorResolver = (req: Request) => Promise<PortalActorContext | null>;
 export type PortalCsrfVerifier = (
@@ -95,7 +102,11 @@ type ParentPortalService = {
 
 type StudentPortalService = {
   dashboard(actor: PortalActorContext): Promise<unknown>;
-  protectedClassLaunch(actor: PortalActorContext, classKey: string): Promise<unknown>;
+  protectedClassLaunch(
+    actor: PortalActorContext,
+    classKey: string,
+    payload?: z.infer<typeof protectedLaunchPayloadSchema>,
+  ): Promise<unknown>;
   protectedContentOpen(actor: PortalActorContext, itemKey: string): Promise<unknown>;
   helperQuery(
     actor: PortalActorContext,
@@ -350,10 +361,11 @@ export function createStudentPortalRouter(deps: StudentPortalRouterDeps) {
       const actor = await requireWriteActor(req, res, deps);
       if (!actor) return;
       const classKey = parseParam(req.params.classKey);
+      const payload = protectedLaunchPayloadSchema.parse(req.body ?? {});
       sendData(
         res,
         protectedActionDescriptorSchema,
-        await deps.service.protectedClassLaunch(actor, classKey),
+        await deps.service.protectedClassLaunch(actor, classKey, payload),
       );
     }),
   );
@@ -519,10 +531,12 @@ function statusForError(code: PortalErrorCode) {
     code === 'IDEMPOTENCY_CONFLICT' ||
     code === 'VERSION_CONFLICT' ||
     code === 'LEARNER_LIMIT_REACHED' ||
+    code === 'ENTITLEMENT_REQUIRED' ||
     code === 'CONSENT_REQUIRED'
   ) {
     return 409;
   }
+  if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
   if (code === 'ADAPTER_UNAVAILABLE') return 503;
   return 500;
 }

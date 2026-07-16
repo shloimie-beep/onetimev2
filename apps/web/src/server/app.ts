@@ -5,9 +5,20 @@ import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
+import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
+import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
+import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
+import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
+import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
 import {
+  classroomAttendanceEventPayloadSchema,
+  classroomLaunchBootstrapPayloadSchema,
+  classroomLaunchBootstrapResponseSchema,
+  classroomQuestionListResponseSchema,
+  classroomQuestionSubmitPayloadSchema,
+  classroomQuestionSubmitResponseSchema,
   contactListQuerySchema,
   contactListResponseSchema,
   contactResponseSchema,
@@ -29,6 +40,8 @@ import {
   classOccurrenceDetailResponseSchema,
   classOccurrenceListQuerySchema,
   classOccurrenceListResponseSchema,
+  ot86bReadinessResponseSchema,
+  ot86bSocialDraftListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
 import type {
   PortalActorContext,
@@ -47,10 +60,13 @@ import {
   createAccountLifecycleCredentialAdapter,
   createContact,
   createClassPortalAccessAdapter,
+  createClassroomPortalAccessAdapter,
+  createClassroomService,
   createContentPortalAccessAdapter,
   createLoginCsrf,
   createParentPortalService,
   createSession,
+  consumeWhatsAppAccountLink,
   createStudentPortalService,
   getClassOccurrenceDetail,
   getContentItemDetail,
@@ -62,18 +78,39 @@ import {
   listAssignableUsers,
   listContacts,
   ownerAdminVisibleActions,
+  inspectOt86bBufferReadinessFromEnv,
+  listOt86bSocialDrafts,
+  receiveOt86PublicationManifest,
+  receiveOt86bSocialEvent,
   replaceMfaRecoveryCodes,
   revokeMfaFactors,
   revokeSession,
   rotateSessionCsrf,
+  receiveWhatsAppWebhook,
   updateContact,
   verifyLoginCsrf,
   verifyMfaChallenge,
   verifyMfaRecoveryChallenge,
   verifySessionCsrf,
+  verifyWhatsAppWebhookChallenge,
   type AuthenticatedSession,
+  PortalServiceError,
   type PortalServiceDeps,
 } from '../../../../packages/domain/src/index.ts';
+import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
+import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
+import {
+  parseOt87StripeTestBillingConfig,
+  readOt87StripeRuntimeSecrets,
+} from '../../../../packages/domain/src/billing/config.ts';
+import { createFixtureBillingProviderAdapter } from '../../../../packages/domain/src/billing/fixture-adapter.ts';
+import { createOfficialStripeTestClient } from '../../../../packages/domain/src/billing/stripe-official-client.ts';
+import { createStripeTestBillingProviderAdapter } from '../../../../packages/domain/src/billing/stripe-test-adapter.ts';
+import type {
+  BillingActorContext,
+  BillingAuthorizationAdapter,
+  BillingFeatureConfig,
+} from '../../../../packages/domain/src/billing/types.ts';
 import {
   exposeServerTiming,
   publicError,
@@ -86,12 +123,15 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
+import { createBillingRouter } from './features/billing/router.ts';
+import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
 
 type AppDeps = {
   config: AppConfig;
   pool: DbPool;
   distDir?: string;
+  clock?: () => Date;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
@@ -101,6 +141,7 @@ export function createApp({
   config,
   pool,
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
+  clock,
 }: AppDeps) {
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
@@ -123,6 +164,168 @@ export function createApp({
     }),
   );
   app.use(traceMiddleware);
+  if (config.oneTimeTelegramWebhookEnabled) {
+    const telegramWebhook = createTelegramWebhookHandler({
+      botKey: asBotKey(config.oneTimeTelegramBotKey),
+      environment: config.oneTimeTelegramEnvironment,
+      secretToken: config.oneTimeTelegramWebhookSecret ?? '',
+      contentType: 'application/json',
+      maxBytes: 32 * 1024,
+      maxDepth: 12,
+      maxStringLength: 1000,
+      maxArrayLength: 32,
+      inbox: new TelegramSqlInboxRepository(pool),
+      codec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:telegram-payload-v1`),
+    });
+    app.post('/api/v1/telegram/one-time/webhook', (req, res) => {
+      void telegramWebhook(req, res).catch(() => {
+        if (!res.headersSent) res.status(500).json({ ok: false });
+      });
+    });
+  }
+
+  app.get('/api/v1/whatsapp/meta/webhook', (req, res) => {
+    const challenge = verifyWhatsAppWebhookChallenge(config, req.query);
+    if (!challenge) {
+      res.status(403).json(publicError('INVALID_VERIFY_TOKEN', 'Webhook verification failed.'));
+      return;
+    }
+    res.status(200).type('text/plain').send(challenge);
+  });
+
+  app.post(
+    '/api/v1/whatsapp/meta/webhook',
+    express.raw({ type: '*/*', limit: '128kb' }),
+    async (req: RequestWithTrace, res) => {
+      const result = await withTiming(req, 'whatsapp_webhook', () =>
+        receiveWhatsAppWebhook({
+          pool,
+          config,
+          rawBody: req.body,
+          signatureHeader: req.header('x-hub-signature-256') ?? undefined,
+        }),
+      );
+      res.status(result.status).json({
+        success: result.ok,
+        code: result.code,
+        accepted: result.accepted,
+        duplicates: result.duplicates,
+        processed: result.processed,
+        request_id: req.traceId,
+      });
+    },
+  );
+
+  app.post(
+    '/internal/content-publications/v1/manifests',
+    express.raw({ type: 'application/json', limit: '2mb' }),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const secrets = ot86PublishSecrets(config);
+      if (secrets.length < 1) {
+        res.status(503).json({
+          success: false,
+          code: 'OT86_PUBLISH_SIGNING_UNCONFIGURED',
+          message: 'Content publication intake is not configured.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const result = await receiveOt86PublicationManifest({
+        pool,
+        rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
+        headers: {
+          contentType: req.header('content-type') ?? null,
+          keyId: req.header('x-ot86-key-id') ?? null,
+          timestamp: req.header('x-ot86-timestamp') ?? null,
+          deliveryId: req.header('x-ot86-delivery-id') ?? null,
+          signature: req.header('x-ot86-signature') ?? null,
+        },
+        secrets,
+      });
+      res.status(result.status).json({
+        success: result.status === 200 || result.status === 202,
+        code: result.code,
+        message: result.message,
+        receipt_state: result.receipt_state,
+        request_id: req.traceId,
+      });
+    },
+  );
+
+  app.post(
+    '/internal/social-publishing/v1/events',
+    express.raw({ type: 'application/json', limit: '512kb' }),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const secrets = ot86PublishSecrets(config);
+      if (secrets.length < 1) {
+        res.status(503).json({
+          success: false,
+          code: 'OT86_SOCIAL_SIGNING_UNCONFIGURED',
+          message: 'Social event intake is not configured.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const result = await receiveOt86bSocialEvent({
+        pool,
+        rawBody: Buffer.isBuffer(req.body) ? req.body : Buffer.from(''),
+        headers: {
+          contentType: req.header('content-type') ?? null,
+          keyId: req.header('x-ot86-key-id') ?? null,
+          timestamp: req.header('x-ot86-timestamp') ?? null,
+          deliveryId: req.header('x-ot86-delivery-id') ?? null,
+          signature: req.header('x-ot86-signature') ?? null,
+        },
+        secrets,
+      });
+      res.status(result.status).json({
+        success: result.status === 200 || result.status === 202,
+        code: result.code,
+        message: result.message,
+        receipt_state: result.receipt_state,
+        request_id: req.traceId,
+      });
+    },
+  );
+
+  registerSupportRoutes({
+    app,
+    config,
+    pool,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      ensureSessionCsrfCookie: (req, res, session) =>
+        ensureSessionCsrfCookie(req, res, pool, config, session),
+      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      setPrivateNoStore,
+    },
+  });
+
+  const billingRuntime = createBillingRuntime(config, pool);
+  app.use(
+    '/api/v1/billing',
+    createBillingRouter({
+      config: billingRuntime.config,
+      repositories: billingRuntime.repositories,
+      providerAdapter: billingRuntime.providerAdapter,
+      authorization: billingRuntime.authorization,
+      resolveActor: (req) => billingActorFromRequest(req, pool, config),
+      verifyCsrf: (req) => verifyBillingCsrf(req, pool, config),
+    }),
+  );
+  app.get(/^\/app\/billing\/(?:checkout|portal)\/redirect\/([^/]+)$/, async (req, res) => {
+    setPrivateNoStore(res);
+    const redirectKey = String(req.params[0] ?? '');
+    const providerUrl = await billingRuntime.repositories.consumeRedirect(redirectKey);
+    if (!providerUrl) {
+      res.status(404).type('text').send('Billing redirect expired.');
+      return;
+    }
+    res.redirect(302, providerUrl);
+  });
+
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
@@ -179,6 +382,25 @@ export function createApp({
     setPrivateNoStore(res);
     await sendAppHtml(res, distDir, 'crm');
   });
+
+  app.get(
+    /^\/app\/billing\/checkout\/(?:success|cancel)(?:\/.*)?$/,
+    async (req: RequestWithTrace, res) => {
+      const session = await sessionFromRequest(req, pool, config);
+      if (!session) {
+        res.redirect(
+          302,
+          `/login?return_to=${encodeURIComponent(
+            safeReturnPath(req.path, config) ?? '/app/billing/checkout/success',
+          )}`,
+        );
+        return;
+      }
+      await ensureSessionCsrfCookie(req, res, pool, config, session);
+      setPrivateNoStore(res);
+      await sendAppHtml(res, distDir, session.user.role === 'parent' ? 'parent' : 'crm');
+    },
+  );
 
   app.get(
     /^\/app\/(?:dashboard|classes|content|billing)(?:\/.*)?$/,
@@ -581,6 +803,28 @@ export function createApp({
     });
   });
 
+  app.post('/api/v1/whatsapp/account-link/consume', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const linkToken = typeof req.body?.link_token === 'string' ? req.body.link_token.trim() : '';
+    const householdKey =
+      typeof req.body?.household_key === 'string' ? req.body.household_key.trim() : '';
+    if (!linkToken || !householdKey) {
+      res
+        .status(400)
+        .json(publicError('VALIDATION_ERROR', 'Submit a link token and household.', req.traceId));
+      return;
+    }
+    const result = await withTiming(req, 'whatsapp_account_link', () =>
+      consumeWhatsAppAccountLink({ pool, config, session, linkToken, householdKey }),
+    );
+    res
+      .status(result.ok ? 200 : 403)
+      .json({ success: result.ok, ...result, request_id: req.traceId });
+  });
+
   app.get('/api/v1/dashboard/owner', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -608,20 +852,150 @@ export function createApp({
   });
 
   const portalRepository = createPortalRepository(pool);
+  const classroomRepository = createClassroomRepository(pool);
+  const classroomService = createClassroomService({
+    config,
+    repository: classroomRepository,
+    questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
+    ...(clock ? { clock } : {}),
+  });
   const portalServiceDeps: PortalServiceDeps = {
     repository: portalRepository,
-    classAccess: createClassPortalAccessAdapter({ pool, config }),
+    classAccess: config.zoomClassroomEnabled
+      ? createClassroomPortalAccessAdapter({ classroom: classroomService })
+      : createClassPortalAccessAdapter({ pool, config }),
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
+    billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
   };
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
   const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
+    isSameOriginPost(req, config) &&
     verifySessionCsrf({
       pool,
       sessionKey: actor.session_key,
       csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
     });
+
+  app.get('/classroom/launch/:grantKey/:secret', async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, '/login?return_to=%2Fapp%2Fstudent');
+      return;
+    }
+    if (session.user.role !== 'student') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenAppHtml('student'));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "script-src 'self'",
+        "style-src 'self'",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'none'",
+      ].join('; '),
+    );
+    res.status(200).type('html').send(classroomLaunchHtml());
+  });
+
+  app.post('/api/v1/classroom/launch/bootstrap', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = classroomLaunchBootstrapPayloadSchema.parse(req.body);
+      const bootstrap = await classroomService.consumeLaunch({ actor, payload });
+      res.json({
+        success: true,
+        data: classroomLaunchBootstrapResponseSchema.parse(bootstrap),
+      });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/classroom/attendance', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = classroomAttendanceEventPayloadSchema.parse(req.body);
+      await classroomService.recordAttendance(actor, payload);
+      res.json({ success: true });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/classroom/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = classroomQuestionSubmitPayloadSchema.parse(req.body);
+      const result = await classroomService.submitQuestion(actor, payload);
+      res
+        .status(201)
+        .json({ success: true, data: classroomQuestionSubmitResponseSchema.parse(result) });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/classroom/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const occurrenceKey = String(req.query.occurrence_key ?? '');
+      const questions = await classroomService.listOwnQuestions(actor, occurrenceKey);
+      res.json({
+        success: true,
+        data: classroomQuestionListResponseSchema.parse({ questions }),
+      });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.use(
     '/api/v1/portals/parent',
     createParentPortalRouter({
@@ -808,6 +1182,38 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/social-publishing/readiness', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canUseSocialPublishing(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot manage social publishing.', req.traceId));
+      return;
+    }
+    const readiness = inspectOt86bBufferReadinessFromEnv(ot86bBufferEnv(config));
+    res.json(ot86bReadinessResponseSchema.parse({ success: true, readiness }));
+  });
+
+  app.get('/api/v1/social-publishing/drafts', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canUseSocialPublishing(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view social drafts.', req.traceId));
+      return;
+    }
+    const drafts = await withTiming(req, 'db', () =>
+      listOt86bSocialDrafts({ pool, tenantId: config.accountKey, limit: 25 }),
+    );
+    res.json(
+      ot86bSocialDraftListResponseSchema.parse({ success: true, drafts, next_cursor: null }),
+    );
+  });
+
   app.post('/api/v1/crm/contacts', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -941,6 +1347,25 @@ async function requireSessionCsrf(
   return true;
 }
 
+function requireSameOriginPost(req: RequestWithTrace, res: Response, config: AppConfig) {
+  if (isSameOriginPost(req, config)) return true;
+  res.status(403).json(publicError('FORBIDDEN', 'Refresh the page and try again.', req.traceId));
+  return false;
+}
+
+function isSameOriginPost(req: Request, config: AppConfig) {
+  const originHeader = req.header('origin');
+  if (!originHeader) return true;
+  try {
+    const expected = new URL(config.publicBaseUrl).origin;
+    return (
+      new URL(originHeader).origin === expected || new URL(originHeader).host === req.header('host')
+    );
+  } catch {
+    return false;
+  }
+}
+
 async function sessionFromRequest(req: Request, pool: DbPool, config: AppConfig) {
   return getSessionByToken({
     pool,
@@ -1038,6 +1463,208 @@ async function portalActorFromRequest(req: Request, pool: DbPool, config: AppCon
   } satisfies PortalActorContext;
 }
 
+function createBillingRuntime(config: AppConfig, pool: DbPool) {
+  const repositories = createPostgresBillingRepositories(pool);
+  const billingConfig = parseOt87StripeTestBillingConfig(billingEnv(process.env), {
+    accountKey: config.accountKey,
+    productKey: config.productKey,
+    canonicalPublicOrigin: config.publicBaseUrl,
+  });
+  const secrets = readOt87StripeRuntimeSecrets(billingEnv(process.env));
+  const providerAccountRef = billingConfig.expectedProviderAccountRef
+    ? {
+        provider: 'stripe' as const,
+        mode: 'test' as const,
+        provider_account_ref: billingConfig.expectedProviderAccountRef,
+      }
+    : null;
+  const providerAdapter =
+    providerAccountRef && secrets.secretKey && secrets.webhookSecret
+      ? createStripeTestBillingProviderAdapter({
+          providerAccountRef,
+          webhookSecret: secrets.webhookSecret,
+          redirectVault: { store: (entry) => repositories.storeRedirect(entry) },
+          portalConfigurationRef: billingConfig.providerPortalConfigurationRef ?? undefined,
+          client: createOfficialStripeTestClient(secrets.secretKey),
+        })
+      : disabledBillingProviderAdapter();
+  return {
+    config: billingConfig,
+    repositories,
+    providerAdapter,
+    authorization: createBillingAuthorizationAdapter(pool, config),
+  };
+}
+
+function billingEnv(source: NodeJS.ProcessEnv) {
+  const names = [
+    'LIVE_STRIPE_CHARGES_AUTHORIZED',
+    'ENABLE_PAYMENT_TRANSPORT',
+    'ENABLE_STRIPE_TEST_CHECKOUT',
+    'ENABLE_STRIPE_TEST_PORTAL',
+    'ENABLE_STRIPE_TEST_WEBHOOKS',
+    'ENABLE_STRIPE_TEST_WEBHOOK_PROJECTION',
+    'ENABLE_STRIPE_TEST_RECONCILIATION',
+    'ONE_TIME_ENTITLEMENT_EMERGENCY_MODE',
+    'ONE_TIME_BILLING_CANONICAL_PUBLIC_ORIGIN',
+    'ONE_TIME_STRIPE_TEST_SECRET_KEY',
+    'ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET',
+    'ONE_TIME_STRIPE_TEST_ACCOUNT_ID',
+    'ONE_TIME_STRIPE_TEST_PRODUCT_ID',
+    'ONE_TIME_STRIPE_TEST_PRICE_ID',
+    'ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID',
+    'ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID',
+    'ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY',
+  ];
+  return Object.fromEntries(names.map((name) => [name, source[name]]));
+}
+
+function disabledBillingProviderAdapter(): BillingProviderAdapter {
+  const unavailable = async () => {
+    throw new Error('Stripe test billing provider is not configured.');
+  };
+  const fixture = createFixtureBillingProviderAdapter({
+    providerAccountRef: {
+      provider: 'stripe',
+      mode: 'test',
+      provider_account_ref: 'acct_disabled_ot87',
+    },
+  });
+  return {
+    ...fixture,
+    createCheckoutSession: unavailable,
+    createCustomerPortalSession: unavailable,
+    verifyWebhook: unavailable,
+    reconcileBillingPrincipal: async () => ({
+      status: 'failed',
+      reason: 'stripe_test_provider_not_configured',
+    }),
+  };
+}
+
+async function billingActorFromRequest(
+  req: Request,
+  pool: DbPool,
+  config: AppConfig,
+): Promise<BillingActorContext> {
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return { actor_key: 'anonymous', role: 'public', active: false };
+  return {
+    actor_key: session.user.user_key,
+    role: session.user.role,
+    active: true,
+  };
+}
+
+async function verifyBillingCsrf(req: Request, pool: DbPool, config: AppConfig) {
+  const session = await sessionFromRequest(req, pool, config);
+  if (!session) return false;
+  return verifySessionCsrf({
+    pool,
+    sessionKey: session.session_key,
+    csrfToken: req.header('x-csrf-token') ?? req.body?.csrf_token,
+  });
+}
+
+function createBillingAuthorizationAdapter(
+  pool: DbPool,
+  config: AppConfig,
+): BillingAuthorizationAdapter {
+  return {
+    async resolvePrincipal({ actor, requested_principal_key }) {
+      if (!actor.active || actor.role === 'public') return { ok: false, reason: 'anonymous' };
+      if (actor.role === 'parent') {
+        const household = await pool.query(
+          `SELECT 1
+             FROM onetime.portal_guardian_relationships AS relationships
+             JOIN onetime.portal_households AS households
+               ON households.account_key = relationships.account_key
+              AND households.product_key = relationships.product_key
+              AND households.household_key = relationships.household_key
+            WHERE relationships.account_key = $1
+              AND relationships.product_key = $2
+              AND relationships.guardian_user_ref = $3
+              AND relationships.household_key = $4
+              AND relationships.status = 'active'
+              AND relationships.authority <> 'support_only'
+              AND households.status = 'active'
+            LIMIT 1`,
+          [config.accountKey, config.productKey, actor.actor_key, requested_principal_key],
+        );
+        if (!household.rowCount) return { ok: false, reason: 'wrong_scope' };
+        return {
+          ok: true,
+          principal: {
+            principal_key: requested_principal_key,
+            principal_type: 'opaque',
+            account_key: config.accountKey,
+            product_key: config.productKey,
+          },
+          capabilities: ['billing:read', 'billing:checkout', 'billing:portal'],
+        };
+      }
+      if (actor.role === 'owner' || actor.role === 'admin') {
+        const household = await pool.query(
+          `SELECT 1
+             FROM onetime.portal_households
+            WHERE account_key = $1
+              AND product_key = $2
+              AND household_key = $3
+            LIMIT 1`,
+          [config.accountKey, config.productKey, requested_principal_key],
+        );
+        if (!household.rowCount) return { ok: false, reason: 'unknown_principal' };
+        return {
+          ok: true,
+          principal: {
+            principal_key: requested_principal_key,
+            principal_type: 'opaque',
+            account_key: config.accountKey,
+            product_key: config.productKey,
+          },
+          capabilities: ['billing:read', 'billing:reconcile'],
+        };
+      }
+      return { ok: false, reason: 'insufficient_capability' };
+    },
+  };
+}
+
+function createParentBillingSummaryAdapter(
+  config: BillingFeatureConfig,
+  repositories: ReturnType<typeof createPostgresBillingRepositories>,
+): NonNullable<PortalServiceDeps['billing']> {
+  return {
+    summaryForHousehold: async ({ household }) => {
+      const principal = {
+        principal_key: household.household_key,
+        principal_type: 'opaque' as const,
+        account_key: config.offerMappings[0]?.account_key ?? 'one_time',
+        product_key: config.offerMappings[0]?.product_key ?? 'one_time_mishnah_class',
+      };
+      const summary = await repositories.summary(principal);
+      const customerPortalAvailable =
+        config.transportEnabled && config.customerPortalEnabled && Boolean(summary.customer);
+      return {
+        enabled: config.foundationEnabled,
+        summary_label: summary.entitlement?.status ?? 'Not active',
+        plan_truth: 'Family plan — $67/month — up to 3 active learners in one household.',
+        entitlement_status: summary.entitlement?.status ?? null,
+        grants_access: summary.entitlement?.grants_access === true,
+        checkout_available:
+          config.transportEnabled && config.checkoutEnabled && config.offerMappings.length === 1,
+        customer_portal_available: customerPortalAvailable,
+        recovery_required:
+          summary.entitlement?.status === 'suspended' ||
+          summary.subscription?.status === 'past_due' ||
+          summary.subscription?.status === 'unpaid',
+        current_period_end: summary.subscription?.current_period_end ?? null,
+        cancel_at_period_end: summary.subscription?.cancel_at_period_end === true,
+      };
+    },
+  };
+}
+
 async function parentHouseholdSubjects(pool: DbPool, config: AppConfig, userKey: string) {
   const result = await pool.query(
     `SELECT relationships.household_key, relationships.relationship_key,
@@ -1122,6 +1749,7 @@ function capabilitiesForPortalRole(role: AuthenticatedSession['user']['role']): 
       'student:class:launch',
       'student:content:open',
       'student:question:create',
+      'student:class:question',
       'student:support:preview',
       'rewards:read',
       'helper:query',
@@ -1237,9 +1865,38 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof PortalServiceError) {
+    res.status(statusForPortalError(error.code)).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      ...(error.currentVersion ? { current_version: error.currentVersion } : {}),
+      request_id: req.traceId,
+    });
+    return;
+  }
   res
     .status(500)
     .json(publicError('SERVER_ERROR', 'The CRM request could not be completed.', req.traceId));
+}
+
+function statusForPortalError(code: string) {
+  if (code === 'UNAUTHENTICATED') return 401;
+  if (code === 'FORBIDDEN' || code === 'CSRF_REQUIRED') return 403;
+  if (code === 'NOT_FOUND') return 404;
+  if (code === 'VALIDATION_ERROR') return 400;
+  if (
+    code === 'IDEMPOTENCY_CONFLICT' ||
+    code === 'VERSION_CONFLICT' ||
+    code === 'LEARNER_LIMIT_REACHED' ||
+    code === 'ENTITLEMENT_REQUIRED' ||
+    code === 'CONSENT_REQUIRED'
+  ) {
+    return 409;
+  }
+  if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
+  if (code === 'ADAPTER_UNAVAILABLE') return 503;
+  return 500;
 }
 
 function canReadClasses(role: string) {
@@ -1252,6 +1909,35 @@ function canReadContentLibrary(role: string) {
 
 function canUseOwnerDashboard(role: string) {
   return role === 'owner' || role === 'admin';
+}
+
+function canUseSocialPublishing(role: string) {
+  return role === 'owner' || role === 'admin';
+}
+
+function ot86PublishSecrets(config: AppConfig) {
+  const current =
+    config.ot86PublishSigningKeyId && config.ot86PublishSigningSecret
+      ? [{ keyId: config.ot86PublishSigningKeyId, secret: config.ot86PublishSigningSecret }]
+      : [];
+  const previous =
+    config.ot86PreviousPublishSigningKeyId && config.ot86PreviousPublishSigningSecret
+      ? [
+          {
+            keyId: config.ot86PreviousPublishSigningKeyId,
+            secret: config.ot86PreviousPublishSigningSecret,
+          },
+        ]
+      : [];
+  return [...current, ...previous];
+}
+
+function ot86bBufferEnv(config: AppConfig): NodeJS.ProcessEnv {
+  return {
+    BUFFER_ACCESS_TOKEN: config.bufferAccessToken,
+    BUFFER_ORGANIZATION_ID: config.bufferOrganizationId,
+    BUFFER_DESTINATION_IDS: config.bufferDestinationIds,
+  };
 }
 
 function hashCookieValue(value: string) {
@@ -1425,6 +2111,33 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
     </section>
   </main>
   <script type="module" src="/assets/public.js"></script>
+</body>
+</html>`;
+}
+
+function classroomLaunchHtml() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>Classroom | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace classroom-launch-page">
+    <section class="state-panel" aria-labelledby="classroom-launch-title">
+      <h1 id="classroom-launch-title">Classroom</h1>
+      <p data-classroom-status role="status">Opening protected classroom.</p>
+      <div data-classroom-sdk-root aria-live="polite"></div>
+      <button class="button button-primary" type="button" data-classroom-retry hidden>Retry</button>
+      <button class="button" type="button" data-classroom-leave hidden>Leave</button>
+    </section>
+  </main>
+  <script type="module" src="/assets/app-classroom-launch.js"></script>
 </body>
 </html>`;
 }

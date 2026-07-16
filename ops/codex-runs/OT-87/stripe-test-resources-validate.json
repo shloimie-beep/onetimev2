@@ -1,0 +1,27 @@
+{
+  "command": "validate",
+  "ok": false,
+  "status": "waiting_for_stripe_test_resources",
+  "mode": "test",
+  "checked_at": "2026-07-15T17:03:34.643Z",
+  "dry_run": true,
+  "apply": false,
+  "account_fingerprint": null,
+  "missing": [
+    "secret_key",
+    "account",
+    "product",
+    "price",
+    "portal_configuration",
+    "webhook_endpoint"
+  ],
+  "failures": [],
+  "resources": {},
+  "mutations": {
+    "attempted": 0,
+    "applied": 0,
+    "live_calls": 0,
+    "live_resources": 0,
+    "live_charges": 0
+  }
+}

@@ -19,6 +19,14 @@ export {
   scheduleClassFulfillmentForLead,
 } from './classes/service.ts';
 export {
+  CLASSROOM_HOST_POLICY_VERSION,
+  CLASSROOM_POLICY_VERSION,
+  createClassroomPortalAccessAdapter,
+  createClassroomService,
+  type ClassroomRepository,
+  type ClassroomService,
+} from './classroom/service.ts';
+export {
   ContentIdempotencyConflictError,
   admitContentOutcome,
   createContentPortalAccessAdapter,
@@ -26,6 +34,50 @@ export {
   listContentLibrary,
   redactProviderMetadata,
 } from './content/service.ts';
+export {
+  OT86_ALLOWED_TRANSITIONS,
+  Ot86ContentPipelineError,
+  applyNextOt86Publication,
+  approveOt86ContentVersion,
+  canonicalJson,
+  createOt86CandidateVersion,
+  createOt86ContentItem,
+  emitOt86ApprovedForSocialEvent,
+  inspectOt86VimeoReadinessFromEnv,
+  receiveOt86PublicationManifest,
+  recordOt86ProviderEventReceipt,
+  retrieveOt86ApprovedContent,
+  sanitizeOt86ProviderError,
+  signOt86Manifest,
+  stableOt86Key,
+  transitionOt86ContentState,
+  validateOt86ManifestChecksum,
+  withOt86ManifestChecksum,
+  type Ot86PublishReceiptResult,
+  type Ot86SigningSecret,
+} from './content/pipeline.ts';
+export {
+  OT86B_ALLOWED_TRANSITIONS,
+  Ot86bSocialPublishingError,
+  approveAndScheduleOt86bDraft,
+  createUnconfiguredBufferAdapter,
+  dispatchNextOt86bSocialEvent,
+  editOt86bDraftRevision,
+  generateNextOt86bDraftJob,
+  inspectOt86bBufferReadinessFromEnv,
+  listOt86bSocialDrafts,
+  receiveOt86bSocialEvent,
+  requestOt86bRetraction,
+  runOt86bSchedulerOnce,
+  sanitizeOt86bProviderError,
+  validateOt86bDraftRevisionChecksum,
+  validateOt86bPublishCommand,
+  validateOt86bSocialEventChecksum,
+  withOt86bSocialDraftRevisionChecksum,
+  type Ot86bBufferAdapter,
+  type Ot86bProviderResult,
+  type Ot86bSocialEventReceiptResult,
+} from './social/publishing.ts';
 export {
   AccountLifecycleError,
   acceptOwnerAdminInvitation,
@@ -85,3 +137,53 @@ export {
   listContacts,
   updateContact,
 } from './crm/service.ts';
+export { createOneTimeTelegramApplicationAdapter } from './telegram/application-adapter.ts';
+export {
+  SupportAttachmentError,
+  normalizeSupportAttachments,
+  type NormalizedSupportAttachment,
+} from './support/attachments.ts';
+export {
+  OT89_ATTACHMENT_TARGET_PREFIX,
+  OT89_EVENT_TARGET,
+  OT89_STATUS_TARGET,
+  createOt89Nonce,
+  createOt89SignedHeaders,
+  ot89CanonicalString,
+  sha256Hex,
+  signOt89Request,
+  verifyOt89Signature,
+} from './support/hmac.ts';
+export { createSupportId, isOt89Id } from './support/ids.ts';
+export { redactSupportText, supportPrivacy } from './support/redaction.ts';
+export {
+  SupportSubmissionError,
+  attachmentRequestTarget,
+  createSupportSubmission,
+  getAuthorizedSupportAttachment,
+  hasActiveSupportEntitlement,
+  ingestMockBnaSupportEvent,
+  isSupportSubmissionAvailable,
+  readMockBnaStatus,
+  readSupportReceipt,
+  type SupportReceiptProjection,
+} from './support/service.ts';
+export {
+  SUPPORT_CLAIM_BATCH_SQL,
+  refreshSupportStatusProjection,
+  requeueSupportDeadLetter,
+  runSupportDeliveryBatch,
+  type SupportDeliverySummary,
+} from './support/worker.ts';
+export {
+  consumeWhatsAppAccountLink,
+  digestForTests as whatsappDigestForTests,
+  evaluateWhatsAppCanaryReadiness,
+  ingestWhatsAppProviderEvents,
+  processPendingWhatsAppInbox,
+  processQueuedWhatsAppOutbox,
+  receiveWhatsAppWebhook,
+  verifyWhatsAppWebhookChallenge,
+} from './whatsapp/service.ts';
+export { MetaWhatsAppCloudAdapter, SinkWhatsAppProviderAdapter } from './whatsapp/provider.ts';
+export { compileWhatsAppIntent } from './whatsapp/intent.ts';

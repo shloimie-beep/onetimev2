@@ -1,0 +1,174 @@
+{
+  "packet_id": "OT-86B",
+  "status": "checkpoint_waiting_for_buffer_accounts",
+  "branch": "codex/ot86b-buffer-social",
+  "base_branch": "codex/ot86a-vimeo-content-kb",
+  "base_remote": "origin",
+  "base_ref": "refs/remotes/origin/codex/ot86a-vimeo-content-kb",
+  "base_sha": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065",
+  "worktree": "C:/Users/User/.ot86-worktrees/OT-86B",
+  "started_at": "2026-07-15T17:23:00.000Z",
+  "finished_at": "2026-07-15T18:01:42.000Z",
+  "head_sha": null,
+  "head_sha_note": "Final commit SHA cannot be embedded in its own committed RUN.json without changing the SHA. The pushed branch and draft PR are the immutable final head pointers.",
+  "completed_steps": [
+    "preflight",
+    "packet_checksum_verified_before_phase_start",
+    "ot86a_remote_base_verified",
+    "worktree_created",
+    "contract_bundle_copied",
+    "schemas_added",
+    "migration_added",
+    "domain_social_pipeline_added",
+    "raw_social_event_endpoint_added",
+    "owner_admin_readiness_and_draft_list_apis_added",
+    "buffer_canary_added",
+    "performance_probe_added",
+    "tests_added",
+    "reports_written",
+    "branch_pushed",
+    "draft_pr_created",
+    "waiting_for_buffer_accounts_checkpoint"
+  ],
+  "commands": [
+    {
+      "command": "git fetch --all --prune",
+      "cwd": "C:/Users/User/onetimev2",
+      "exit_code": 0
+    },
+    {
+      "command": "git for-each-ref --format=\"%(refname) %(objectname)\" refs/remotes/origin/codex/ot86a-vimeo-content-kb",
+      "cwd": "C:/Users/User/onetimev2",
+      "exit_code": 0,
+      "note": "Resolved exactly one remote OT-86A base ref: refs/remotes/origin/codex/ot86a-vimeo-content-kb 87a1bb7ffd6a2fa0d016a1831894d430aa2ee065."
+    },
+    {
+      "command": "git worktree add -b codex/ot86b-buffer-social C:/Users/User/.ot86-worktrees/OT-86B origin/codex/ot86a-vimeo-content-kb",
+      "cwd": "C:/Users/User/onetimev2",
+      "exit_code": 0
+    },
+    {
+      "command": "npm install",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run typecheck",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run lint",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/social/ot86b-social-publishing.test.ts",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "1 file, 7 tests passed."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/content/ot86-content-pipeline.test.ts tests/integration/content/content-library.test.ts",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "2 files, 11 tests passed."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "1 file, 2 tests passed."
+    },
+    {
+      "command": "npx tsx scripts/ot86/social-performance-probe.ts --write-report",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "10,000 sources / 50,000 revisions / 10,000 approvals / 10,000 scheduled commands; all p95 budgets passed."
+    },
+    {
+      "command": "npm run brand:check",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run build",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0
+    },
+    {
+      "command": "npm run secret:scan",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "Passed across 665 repo text files."
+    },
+    {
+      "command": "node --check bin\\ot86-buffer-canary",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0
+    },
+    {
+      "command": "node bin\\ot86-buffer-canary --mode read-only --json; Write-Output \"LASTEXITCODE=$LASTEXITCODE\"; exit 0",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "Wrapper exit 0; canary LASTEXITCODE=2 with status=unconfigured, writes_performed=false, missing access_token/organization_id/destination_ids."
+    },
+    {
+      "command": "npm run db:verify",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 1,
+      "note": "Blocked by missing DATABASE_URL in local environment."
+    },
+    {
+      "command": "npm run format",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 1,
+      "note": "Repo-wide existing Prettier baseline failed on 420 files at run time. Targeted OT-86B parseable-file check passed."
+    },
+    {
+      "command": "npx prettier --check apps/web/src/server/app.ts packages/config/src/index.ts packages/contracts/src/index.ts packages/contracts/src/social/index.ts packages/contracts/src/social/publishing.ts packages/domain/src/index.ts packages/domain/src/social/publishing.ts scripts/ot86/social-performance-probe.ts tests/integration/social/ot86b-social-publishing.test.ts tests/integration/telegram-db-foundation.test.ts \"contracts/social-publishing/v1/**/*.{md,json}\" ops/codex-runs/OT-86B/PERFORMANCE-PROBE.json",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0
+    },
+    {
+      "command": "git push -u origin codex/ot86b-buffer-social",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "Created origin/codex/ot86b-buffer-social before the PR URL ledger amend."
+    },
+    {
+      "command": "GitHub connector _create_pull_request",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "Created draft PR #32 targeting codex/ot86a-vimeo-content-kb from codex/ot86b-buffer-social."
+    },
+    {
+      "command": "git push --force-with-lease origin codex/ot86b-buffer-social",
+      "cwd": "C:/Users/User/.ot86-worktrees/OT-86B",
+      "exit_code": 0,
+      "note": "Updated the remote branch after amending RUN.json with the draft PR URL; final head is represented by the pushed branch and PR pointer."
+    }
+  ],
+  "checkpoint": "WAITING_FOR_BUFFER_ACCOUNTS",
+  "pr_url": "https://github.com/webcraft-media/onetimev2/pull/32",
+  "report_hashes": {
+    "RUN.json": {
+      "sha256": null,
+      "note": "Self-referential hash is not stable inside RUN.json."
+    },
+    "BUFFER-READINESS.md": "ae09e9d341b787666c07fd29b89db6e18561d4c0a0973a67eeb34162c79962f5",
+    "CHECKPOINT": "de1354f02f7d240aebceb3044451d50f44d573977fc868c9b8c0fcf83a55e92b",
+    "CONTRACT-VALIDATION.md": "6c55000c8a4de78e43d72eb0df413a6012f5699e74fc3872a59759a336771233",
+    "DATA-MODEL.md": "ac4be7006e11771a107fda300e9ffb1e0c253ea463aeb2a31c390f1db4ce9b4c",
+    "DISCOVERY.md": "2bc6bc9dfd2e768b079691371d68774931272ce52c30ef7fd7cc269bdc3761cc",
+    "IMPLEMENTATION.md": "ac9a9cf977eb084a71aee1ff4f19a0146e0813cb4444022bdca7e1cccc5fe21a",
+    "MIGRATIONS.md": "92b80951e447825cc7337cf2d033727b848ee0d5f51d8c283953570c9b31d338",
+    "OT86A-REGRESSION.md": "81fb3a1171024fc1c4c110d1ffd6a4d6939f61c232d2f5ff1290c0488b1e0b19",
+    "OWNED-ROOTS.json": "98a311b1c2f5e2467e8a82c4fa460784338fef3eb74d3231945607f8a4c2ac58",
+    "PERFORMANCE.md": "93f8a77defa2cf5716194774da20678a2dcf34ff28b786b3548491026bd0821f",
+    "PERFORMANCE-PROBE.json": "73de411de3e36f81c0ed6e9a115f0f029bd4e92f038fcbe479994f03c4650c25",
+    "PR.md": "d99902e8344da4c9aaca93b3aab130509e860b898af405c36b79238b840a1538",
+    "SECURITY-PRIVACY.md": "24fa918f69711753e0cba140b4133ecbf0b79bd76b819acb3f01e9a32d8f22e5",
+    "TESTS.md": "b15ba8e0216325af7a87625ab381354e6a4389ee75862217bbcd1d5da545bd5e"
+  }
+}

@@ -1,0 +1,6 @@
+OT-99 repository: webcraft-media/onetimev2
+OT-99 default branch: main 610b585f3d221addd4e7b824c92a5cc256cffcf9
+OT-99 machine inspection gate: OPEN_FOR_SEMANTIC_REVIEW
+OT-99 OT-83R: origin/codex/ot83r-complete-portals 479a9b2a47a6f0cd4ba74558eac8414417883e2c reports=15
+OT-99 OT-88: origin/codex/ot88-zoom-learner-classroom f59f20afb0def3bacc5bf46fe5ca64f0c91c3a35 reports=6
+OT-99 OT-89A: origin/codex/ot89a-subscriber-support-producer 23d89704409ff08ea6e249b69b89875cd9905c30 reports=2

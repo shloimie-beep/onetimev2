@@ -81,6 +81,26 @@
   display: grid;
   gap: 10px;
 }
+.ot-question-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.ot-question-form label {
+  color: var(--ot-portal-yellow);
+  font-weight: 700;
+}
+.ot-question-form textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+}
 .ot-learner-card,
 .ot-item {
   width: 100%;
@@ -244,6 +264,28 @@
 .ot-dialog-actions {
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+.ot-mini-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  width: 100%;
+}
+.ot-mini-metrics div {
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+}
+.ot-mini-metrics dt {
+  color: var(--ot-portal-muted);
+  font-size: 0.82rem;
+}
+.ot-mini-metrics dd {
+  margin: 4px 0 0;
+  color: #ffffff;
+  font-weight: 800;
 }
 @media (max-width: 760px) {
   .ot-portal {
