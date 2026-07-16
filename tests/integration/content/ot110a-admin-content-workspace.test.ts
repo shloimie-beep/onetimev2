@@ -1,23 +1,24 @@
+import { createHash } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
   activateOt110aPromptVersion,
-  activateTotpEnrollment,
   admitContentOutcome,
   createAccountUser,
   createOt110aGeneratedArtifact,
+  createOt110aIntegratedProviderPorts,
   createOt110aPromptPatch,
+  decryptAuthEmailChallengeDeliveryPayloadForTests,
   getOt110aContentCreateWorkspace,
   getOt110aContentWorkspaceOverview,
   grantOt110aContentAdminCapability,
   listOt110aPromptTemplates,
   previewOt110aPromptPatch,
-  provisionTotpEnrollment,
+  registerOt109Source,
   resolveOt110aContentAdminActor,
   rollbackOt110aPromptVersion,
-  totpCode,
 } from '../../../packages/domain/src/index.ts';
 
 let pool: DbPool;
@@ -59,7 +60,7 @@ afterEach(async () => {
 });
 
 describe('OT-110A admin Content workspace domain', () => {
-  it('uses explicit capabilities, provider-off ports, and immutable prompt versions', async () => {
+  it('uses explicit capabilities, integrated provider ports, and immutable prompt versions', async () => {
     const ownerUserKey = await createAccountUser({
       pool,
       config,
@@ -83,6 +84,21 @@ describe('OT-110A admin Content workspace domain', () => {
       config,
       payload: contentOutcome,
       actorUserKey: ownerUserKey,
+    });
+    const ot109Source = await registerOt109Source({
+      pool,
+      source: {
+        idempotency_key: 'idem_ot110a_ot109_bridge_001',
+        source_kind: 'private_vimeo_reference',
+        source_reference: 'vimeo:private-bridge-001',
+        source_sha256: digest('ot110a-ot109-bridge-source'),
+        original_name: 'OT-109 bridge source.mp4',
+        byte_length: null,
+        submitted_by_actor_id: 'actor_owner_admin_001',
+        provenance: {
+          intake_channel: 'ops04c_bridge_test',
+        },
+      },
     });
 
     const owner = await resolveOt110aContentAdminActor({
@@ -130,12 +146,33 @@ describe('OT-110A admin Content workspace domain', () => {
     });
     expect(explicitAdmin.capabilities).toContain('prompt.manage');
 
-    const overview = await getOt110aContentWorkspaceOverview({ pool, config, actor: owner });
-    expect(overview.provider_ports.every((port) => port.mode === 'provider_off')).toBe(true);
+    const overview = await getOt110aContentWorkspaceOverview({
+      pool,
+      config,
+      actor: owner,
+      ports: createOt110aIntegratedProviderPorts(config),
+    });
     expect(overview.provider_ports.every((port) => port.can_mutate_provider === false)).toBe(true);
-    expect(overview.sources[0]).toMatchObject({
+    expect(new Set(overview.provider_ports.map((port) => port.port))).toEqual(
+      new Set(['vimeo', 'generation', 'knowledge_index', 'buffer', 'telegram']),
+    );
+    expect(overview.provider_ports.find((port) => port.port === 'knowledge_index')).toMatchObject({
+      mode: 'ready',
+      state: 'available',
+    });
+    expect(
+      overview.sources.find((source) => source.source_key === contentOutcome.item_key),
+    ).toMatchObject({
       source_key: contentOutcome.item_key,
       lifecycle_stage: 'transcript_review',
+    });
+    const ot109Summary = overview.sources.find(
+      (source) => source.source_key === ot109Source.source_key,
+    );
+    expect(ot109Summary).toMatchObject({
+      lifecycle_stage: 'private_source',
+      provider_state: 'ot109_private_reference',
+      latest_revision_key: null,
     });
 
     const createWorkspace = await getOt110aContentCreateWorkspace({
@@ -143,6 +180,9 @@ describe('OT-110A admin Content workspace domain', () => {
       config,
       actor: owner,
     });
+    expect(createWorkspace.eligible_sources.map((source) => source.source_key)).not.toContain(
+      ot109Source.source_key,
+    );
     const lessonTemplate = createWorkspace.prompt_templates.find(
       (template) => template.template_key === 'ot110a.lesson_summary',
     );
@@ -218,27 +258,15 @@ describe('OT-110A admin Content workspace domain', () => {
 describe('OT-110A admin Content workspace API', () => {
   it('denies parent users and serves owner workspace without provider secrets', async () => {
     await admitContentOutcome({ pool, config, payload: contentOutcome });
-    const ownerUserKey = await createAccountUser({
+    await createAccountUser({
       pool,
       config,
       email: 'ot110a-api-owner@example.test',
       password: 'OwnerPass!234',
       displayName: 'Owner API',
       role: 'owner',
-      mfaCapable: true,
+      mfaCapable: false,
     });
-    const ownerEnrollment = await provisionTotpEnrollment({
-      pool,
-      config,
-      userKey: ownerUserKey,
-    });
-    const ownerActivation = await activateTotpEnrollment({
-      pool,
-      config,
-      enrollmentToken: ownerEnrollment.enrollmentToken,
-      code: totpCode(ownerEnrollment.secret),
-    });
-    expect(ownerActivation).not.toBe(false);
     await createAccountUser({
       pool,
       config,
@@ -250,14 +278,7 @@ describe('OT-110A admin Content workspace API', () => {
     });
     const server = await listenForTest(createApp({ config, pool }));
     try {
-      const owner = await loginAs(
-        server.baseUrl,
-        'ot110a-api-owner@example.test',
-        'OwnerPass!234',
-        {
-          totpSecret: ownerEnrollment.secret,
-        },
-      );
+      const owner = await loginAs(server.baseUrl, 'ot110a-api-owner@example.test', 'OwnerPass!234');
       const parent = await loginAs(server.baseUrl, 'ot110a-parent@example.test', 'ParentPass!234');
 
       const denied = await fetch(`${server.baseUrl}/api/v1/admin/content/workspace`, {
@@ -273,11 +294,17 @@ describe('OT-110A admin Content workspace API', () => {
       expect(workspace.headers.get('cache-control')).toContain('no-store');
       const json = JSON.parse(workspaceText) as {
         success: true;
-        provider_ports: Array<{ mode: string; can_mutate_provider: boolean }>;
+        provider_ports: Array<{ port: string; mode: string; can_mutate_provider: boolean }>;
         sources: Array<{ source_key: string }>;
       };
-      expect(json.provider_ports.every((port) => port.mode === 'provider_off')).toBe(true);
       expect(json.provider_ports.every((port) => port.can_mutate_provider === false)).toBe(true);
+      expect(json.provider_ports.map((port) => port.port).sort()).toEqual([
+        'buffer',
+        'generation',
+        'knowledge_index',
+        'telegram',
+        'vimeo',
+      ]);
       expect(json.sources.map((source) => source.source_key)).toContain(contentOutcome.item_key);
     } finally {
       await server.close();
@@ -300,12 +327,7 @@ async function listenForTest(app: ReturnType<typeof createApp>) {
   };
 }
 
-async function loginAs(
-  baseUrl: string,
-  email: string,
-  password: string,
-  options: { totpSecret?: string } = {},
-) {
+async function loginAs(baseUrl: string, email: string, password: string) {
   const csrf = await getLoginCsrf(baseUrl);
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -316,22 +338,23 @@ async function loginAs(
     },
     body: JSON.stringify({ email, password, csrf_token: csrf.token }),
   });
-  if (response.status === 403 && options.totpSecret) {
+  if (response.status === 403) {
     const challenge = (await response.json()) as { code?: string; challenge_token?: string };
-    expect(challenge.code).toBe('MFA_REQUIRED');
+    expect(challenge.code).toBe('EMAIL_CHALLENGE_REQUIRED');
     expect(challenge.challenge_token).toBeTruthy();
-    const mfa = await fetch(`${baseUrl}/api/v1/auth/mfa/challenge`, {
+    const payload = await latestEmailChallengePayload();
+    const verified = await fetch(`${baseUrl}/api/v1/auth/email-challenge/verify`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         challenge_token: challenge.challenge_token,
-        totp_code: totpCode(options.totpSecret),
+        code: String(payload.code),
       }),
     });
-    expect(mfa.status).toBe(200);
+    expect(verified.status).toBe(200);
     return {
-      cookies: mergeCookies(csrf.cookies, cookieHeader(mfa.headers)),
-      json: (await mfa.json()) as { csrf_token: string },
+      cookies: mergeCookies(csrf.cookies, cookieHeader(verified.headers)),
+      json: (await verified.json()) as { csrf_token: string },
     };
   }
   expect(response.status).toBe(200);
@@ -339,6 +362,25 @@ async function loginAs(
     cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
     json: (await response.json()) as { csrf_token: string },
   };
+}
+
+async function latestEmailChallengePayload() {
+  const result = await pool.query(
+    `SELECT nonce, ciphertext, auth_tag
+       FROM onetime.auth_email_challenge_delivery_outbox
+      WHERE nonce IS NOT NULL
+        AND ciphertext IS NOT NULL
+        AND auth_tag IS NOT NULL
+      ORDER BY created_at DESC
+      LIMIT 1`,
+  );
+  const row = result.rows[0];
+  if (!row) throw new Error('missing auth email challenge payload');
+  return decryptAuthEmailChallengeDeliveryPayloadForTests(config, {
+    nonce: String(row.nonce),
+    ciphertext: String(row.ciphertext),
+    auth_tag: String(row.auth_tag),
+  });
 }
 
 async function getLoginCsrf(baseUrl: string) {
@@ -365,4 +407,8 @@ function mergeCookies(...headers: string[]) {
     }
   }
   return [...cookies.entries()].map(([key, value]) => `${key}=${value}`).join('; ');
+}
+
+function digest(value: string) {
+  return createHash('sha256').update(value).digest('hex');
 }

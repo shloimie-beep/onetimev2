@@ -93,7 +93,7 @@ import {
   createContentPortalAccessAdapter,
   createLoginCsrf,
   createOt110aGeneratedArtifact,
-  createOt110aProviderOffPorts,
+  createOt110aIntegratedProviderPorts,
   createOt110aPromptPatch,
   createParentPortalService,
   createSession,
@@ -1394,7 +1394,7 @@ export function createApp({
           config,
           actor,
           query,
-          ports: createOt110aProviderOffPorts(),
+          ports: createOt110aIntegratedProviderPorts(config),
         }),
       );
       res.json(contentAdminOverviewResponseSchema.parse({ success: true, ...workspace }));
@@ -1414,7 +1414,7 @@ export function createApp({
           pool,
           config,
           actor,
-          ports: createOt110aProviderOffPorts(),
+          ports: createOt110aIntegratedProviderPorts(config),
         }),
       );
       res.json(contentAdminProcessingResponseSchema.parse({ success: true, ...queue }));
@@ -1434,7 +1434,7 @@ export function createApp({
           pool,
           config,
           actor,
-          ports: createOt110aProviderOffPorts(),
+          ports: createOt110aIntegratedProviderPorts(config),
         }),
       );
       res.json(contentAdminCreateWorkspaceResponseSchema.parse({ success: true, ...workspace }));
@@ -1457,14 +1457,14 @@ export function createApp({
           config,
           actor,
           payload,
-          ports: createOt110aProviderOffPorts(),
+          ports: createOt110aIntegratedProviderPorts(config),
         }),
       );
       res.status(202).json(
         contentAdminCreateGenerationResponseSchema.parse({
           success: true,
           artifact,
-          provider_ports: [createOt110aProviderOffPorts().generation.inspect()],
+          provider_ports: [createOt110aIntegratedProviderPorts(config).generation.inspect()],
         }),
       );
     } catch (error) {
@@ -1483,7 +1483,7 @@ export function createApp({
           pool,
           config,
           actor,
-          ports: createOt110aProviderOffPorts(),
+          ports: createOt110aIntegratedProviderPorts(config),
         }),
       );
       res.json(contentAdminSocialWorkspaceResponseSchema.parse({ success: true, ...workspace }));
@@ -1503,7 +1503,7 @@ export function createApp({
           pool,
           config,
           actor,
-          ports: createOt110aProviderOffPorts(),
+          ports: createOt110aIntegratedProviderPorts(config),
         }),
       );
       res.json(contentAdminKnowledgeResponseSchema.parse({ success: true, ...workspace }));
@@ -1719,7 +1719,7 @@ export function createApp({
           config,
           actor,
           sourceKey: String(req.params.sourceKey),
-          ports: createOt110aProviderOffPorts(),
+          ports: createOt110aIntegratedProviderPorts(config),
         }),
       );
       if (!source) {
@@ -3003,7 +3003,7 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
         </div>
         <div class="email-challenge" data-email-challenge hidden>
           <div class="field">
-            <label for="email_code">Email code</label>
+            <label for="email_code">Verification code</label>
             <input id="email_code" name="email_code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}">
             <p tabindex="-1" class="error" data-error-for="email_code"></p>
           </div>

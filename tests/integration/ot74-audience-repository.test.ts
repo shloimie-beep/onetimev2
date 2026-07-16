@@ -252,7 +252,7 @@ describe('OT-74 legacy audience PostgreSQL repository', () => {
     });
     expect(pause).toMatchObject({ status: 'paused', replayed: false });
     await expectScalar(
-      "SELECT COUNT(*) FROM onetime.schema_migrations WHERE id = '2010_ot111_legacy_activation_campaign'",
+      "SELECT COUNT(*) FROM onetime.schema_migrations WHERE id = '2014_ot111_legacy_activation_campaign'",
       '1',
     );
     await expectScalar('SELECT COUNT(*) FROM onetime.legacy_activation_campaigns', '1');

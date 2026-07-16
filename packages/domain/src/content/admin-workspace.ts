@@ -21,6 +21,13 @@ import type {
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { stableKey } from '../lead/normalize.ts';
+import {
+  inspectOt106BufferReadiness,
+  loadOt106RuntimeConfigFromEnv,
+} from '../social/buffer-runtime.ts';
+import { telegramTransportReadiness } from '../telegram/transport.ts';
+import { OT109_SCOPE } from './publisher.ts';
+import { inspectOt104rVimeoReadinessFromEnv } from './vimeo-private-runtime.ts';
 
 const OWNER_CAPABILITIES: ContentAdminCapability[] = [
   'content.view',
@@ -190,6 +197,43 @@ export function createOt110aProviderOffPorts(): Ot110aProviderPorts {
   };
 }
 
+export function createOt110aIntegratedProviderPorts(
+  config: AppConfig,
+  env: NodeJS.ProcessEnv = process.env,
+): Ot110aProviderPorts {
+  const providerOff = createOt110aProviderOffPorts();
+  return {
+    ...providerOff,
+    vimeo: {
+      inspect: () => statusFromOt104rVimeoReadiness(inspectOt104rVimeoReadinessFromEnv(env)),
+    },
+    knowledge: {
+      inspect: () => ({
+        port: 'knowledge_index',
+        mode: 'ready',
+        state: 'available',
+        label: 'Student helper uses approved entitled content with citations',
+        missing_variables: [],
+        can_mutate_provider: false,
+      }),
+    },
+    buffer: {
+      inspect: () =>
+        statusFromOt106BufferReadiness(
+          inspectOt106BufferReadiness(
+            loadOt106RuntimeConfigFromEnv(env, {
+              accountKey: config.accountKey,
+              productKey: config.productKey,
+            }),
+          ),
+        ),
+    },
+    telegram: {
+      inspect: () => statusFromTelegramReadiness(config, env),
+    },
+  };
+}
+
 export async function resolveOt110aContentAdminActor(input: {
   pool: DbPool;
   config: AppConfig;
@@ -335,10 +379,12 @@ export async function getOt110aContentCreateWorkspace(input: {
   });
   return {
     provider_ports: providerPortStatuses(input.ports),
-    eligible_sources: listed.sources.filter((source) =>
-      ['transcript_review', 'derivative_generation', 'artifact_review', 'published'].includes(
-        source.lifecycle_stage,
-      ),
+    eligible_sources: listed.sources.filter(
+      (source) =>
+        Boolean(source.latest_revision_key) &&
+        ['transcript_review', 'derivative_generation', 'artifact_review', 'published'].includes(
+          source.lifecycle_stage,
+        ),
     ),
     prompt_templates: await listOt110aPromptTemplates({
       pool: input.pool,
@@ -997,7 +1043,13 @@ async function listOt110aContentSourcesInternal(input: {
       OFFSET $${offsetIndex}`,
     values,
   );
-  const mapped = result.rows.map(sourceSummaryFromRow);
+  const ot109Sources =
+    offset === 0
+      ? await listOt109PublisherSourceSummaries(input.pool, input.query, result.rows)
+      : [];
+  const mapped = [...result.rows.map(sourceSummaryFromRow), ...ot109Sources].sort((left, right) =>
+    compareContentSources(left, right, input.query.sort),
+  );
   const filtered = input.query.lifecycle_stage
     ? mapped.filter((source) => source.lifecycle_stage === input.query.lifecycle_stage)
     : mapped;
@@ -1009,6 +1061,80 @@ async function listOt110aContentSourcesInternal(input: {
       next_cursor: result.rows.length > limit ? String(offset + limit) : null,
     },
   };
+}
+
+async function listOt109PublisherSourceSummaries(
+  pool: DbPool,
+  query: Partial<ContentAdminWorkspaceQuery>,
+  contentRows: Record<string, unknown>[],
+): Promise<ContentAdminSourceSummary[]> {
+  if (query.item_type && query.item_type !== 'video') return [];
+  const knownSourceKeys = new Set(contentRows.map((row) => String(row.content_item_key)));
+  const result = await pool.query(
+    `SELECT sources.source_key,
+            sources.source_kind,
+            sources.original_name,
+            sources.state,
+            sources.current_transcript_key,
+            sources.current_version_key,
+            sources.safe_reason_code,
+            sources.retry_count,
+            sources.updated_at,
+            COALESCE(MAX(versions.revision_number), 0)::int AS latest_revision_number,
+            COALESCE(COUNT(DISTINCT CASE
+              WHEN versions.version_state = 'draft_generated' THEN versions.version_key
+              ELSE NULL
+            END), 0)::int AS artifact_drafts,
+            COALESCE(COUNT(DISTINCT CASE
+              WHEN reviews.decision_state IN ('pending','regenerate_requested') THEN reviews.review_key
+              ELSE NULL
+            END), 0)::int AS artifact_review_needed,
+            COALESCE(COUNT(DISTINCT CASE
+              WHEN reviews.decision_state = 'approved' THEN reviews.review_key
+              ELSE NULL
+            END), 0)::int AS artifact_approved,
+            COALESCE(COUNT(DISTINCT CASE
+              WHEN publications.active_state = 'active' THEN publications.publication_key
+              ELSE NULL
+            END), 0)::int AS artifact_published,
+            COALESCE(COUNT(DISTINCT CASE
+              WHEN publications.channel = 'social_manifest'
+               AND publications.active_state = 'active' THEN publications.publication_key
+              ELSE NULL
+            END), 0)::int AS social_published,
+            MAX(CASE
+              WHEN publications.active_state = 'active' THEN publications.version_key
+              ELSE NULL
+            END) AS published_revision_key
+       FROM onetime.ot109_sources AS sources
+       LEFT JOIN onetime.ot109_derivative_versions AS versions
+         ON versions.source_key = sources.source_key
+       LEFT JOIN onetime.ot109_artifact_reviews AS reviews
+         ON reviews.version_key = versions.version_key
+       LEFT JOIN onetime.ot109_publications AS publications
+         ON publications.source_key = sources.source_key
+      WHERE sources.account_key = $1
+        AND sources.product_key = $2
+      GROUP BY sources.source_key, sources.source_kind, sources.original_name, sources.state,
+               sources.current_transcript_key, sources.current_version_key,
+               sources.safe_reason_code, sources.retry_count, sources.updated_at
+      ORDER BY sources.updated_at DESC, sources.source_key ASC
+      LIMIT 50`,
+    [OT109_SCOPE.account_key, OT109_SCOPE.product_key],
+  );
+  const search = String(query.search ?? '')
+    .trim()
+    .toLowerCase();
+  return result.rows
+    .filter((row) => !knownSourceKeys.has(String(row.source_key)))
+    .map(sourceSummaryFromOt109Row)
+    .filter((source) => {
+      if (search && !`${source.title} ${source.source_key}`.toLowerCase().includes(search)) {
+        return false;
+      }
+      if (query.lifecycle_stage && source.lifecycle_stage !== query.lifecycle_stage) return false;
+      return true;
+    });
 }
 
 function sourceSummaryFromRow(row: Record<string, unknown>): ContentAdminSourceSummary {
@@ -1499,6 +1625,59 @@ function lifecycleStageFor(
   return 'private_source';
 }
 
+function lifecycleStageForOt109State(
+  state: string,
+  artifactCounts: ContentAdminSourceSummary['artifact_counts'],
+  socialPublished: number,
+): ContentAdminLifecycleStage {
+  if (state === 'retryable_failure' || state === 'blocked' || state === 'dead_lettered') {
+    return 'failed';
+  }
+  if (
+    state === 'media_intake_processing' ||
+    state === 'vimeo_reference_accepted' ||
+    state === 'transcoding'
+  ) {
+    return 'vimeo_processing';
+  }
+  if (state === 'awaiting_transcript' || state === 'transcript_processing') {
+    return 'transcript_received';
+  }
+  if (state === 'transcript_ready_unapproved') return 'transcript_review';
+  if (state === 'derivatives_generated' || artifactCounts.drafts > 0) {
+    return 'derivative_generation';
+  }
+  if (state === 'approved_for_social' && socialPublished === 0) return 'social_approval';
+  if (state === 'published') return 'published';
+  if (
+    state === 'human_review_required' ||
+    state === 'approved_for_library' ||
+    state === 'approved_for_helper' ||
+    artifactCounts.review_needed > 0 ||
+    artifactCounts.approved > 0 ||
+    artifactCounts.published > 0
+  ) {
+    return 'artifact_review';
+  }
+  return 'private_source';
+}
+
+function compareContentSources(
+  left: ContentAdminSourceSummary,
+  right: ContentAdminSourceSummary,
+  sort: Partial<ContentAdminWorkspaceQuery>['sort'],
+) {
+  if (sort === 'title_asc') {
+    return left.title.localeCompare(right.title) || left.source_key.localeCompare(right.source_key);
+  }
+  const leftTime = Date.parse(left.updated_at);
+  const rightTime = Date.parse(right.updated_at);
+  if (sort === 'updated_asc') {
+    return leftTime - rightTime || left.source_key.localeCompare(right.source_key);
+  }
+  return rightTime - leftTime || left.source_key.localeCompare(right.source_key);
+}
+
 function providerStateFor(lifecycleState: string) {
   if (lifecycleState === 'transcribing' || lifecycleState === 'processing')
     return 'sink_processing';
@@ -1506,10 +1685,43 @@ function providerStateFor(lifecycleState: string) {
   return 'provider_off_reference';
 }
 
+function providerStateForOt109State(state: string) {
+  if (
+    state === 'media_intake_processing' ||
+    state === 'vimeo_reference_accepted' ||
+    state === 'transcoding'
+  ) {
+    return 'sink_processing';
+  }
+  if (state === 'retryable_failure' || state === 'blocked' || state === 'dead_lettered') {
+    return 'provider_off_failure';
+  }
+  return 'ot109_private_reference';
+}
+
 function transcriptStateFor(lifecycleState: string) {
   if (lifecycleState === 'received' || lifecycleState === 'transcribing') return 'waiting';
   if (lifecycleState === 'review_needed') return 'human_review_needed';
   if (lifecycleState === 'failed') return 'failed';
+  return 'received';
+}
+
+function transcriptStateForOt109State(state: string) {
+  if (
+    state === 'source_registered' ||
+    state === 'awaiting_media_intake' ||
+    state === 'media_intake_processing' ||
+    state === 'vimeo_reference_accepted' ||
+    state === 'transcoding' ||
+    state === 'awaiting_transcript' ||
+    state === 'transcript_processing'
+  ) {
+    return 'waiting';
+  }
+  if (state === 'transcript_ready_unapproved') return 'human_review_needed';
+  if (state === 'retryable_failure' || state === 'blocked' || state === 'dead_lettered') {
+    return 'failed';
+  }
   return 'received';
 }
 
@@ -1521,6 +1733,12 @@ function artifactStateFor(artifactCounts: ContentAdminSourceSummary['artifact_co
   return 'not_started';
 }
 
+function truncateContentAdminTitle(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return 'Rabbi content source';
+  return trimmed.length <= 180 ? trimmed : trimmed.slice(0, 177).trimEnd() + '...';
+}
+
 function providerPortStatuses(ports = createOt110aProviderOffPorts()) {
   return [
     ports.vimeo.inspect(),
@@ -1529,6 +1747,149 @@ function providerPortStatuses(ports = createOt110aProviderOffPorts()) {
     ports.buffer.inspect(),
     ports.telegram.inspect(),
   ];
+}
+
+function statusFromOt104rVimeoReadiness(
+  readiness: ReturnType<typeof inspectOt104rVimeoReadinessFromEnv>,
+): ContentAdminProviderPortStatus {
+  return {
+    port: 'vimeo',
+    mode:
+      readiness.mode === 'sink'
+        ? 'sink'
+        : readiness.configured
+          ? readiness.state === 'ready'
+            ? 'ready'
+            : 'degraded'
+          : 'provider_off',
+    state: ot104rContentPortState(readiness.state),
+    label:
+      readiness.configured && readiness.state === 'degraded'
+        ? 'Vimeo runtime is configured; read-only canary proof is still required'
+        : readiness.mode === 'off'
+          ? 'Vimeo runtime is off; local content tools remain available'
+          : 'Vimeo runtime is not fully configured',
+    missing_variables: readiness.missing_variable_names.slice(0, 20),
+    can_mutate_provider: false,
+  };
+}
+
+function sourceSummaryFromOt109Row(row: Record<string, unknown>): ContentAdminSourceSummary {
+  const state = String(row.state);
+  const artifactCounts = {
+    drafts: Number(row.artifact_drafts ?? 0),
+    review_needed: Math.max(
+      Number(row.artifact_review_needed ?? 0),
+      state === 'human_review_required' ? 1 : 0,
+    ),
+    approved: Number(row.artifact_approved ?? 0),
+    published: Number(row.artifact_published ?? 0),
+  };
+  const socialPublished = Number(row.social_published ?? 0);
+  const lifecycleStage = lifecycleStageForOt109State(state, artifactCounts, socialPublished);
+  const currentVersionKey = nullableString(row.current_version_key);
+  return {
+    source_key: String(row.source_key),
+    title: truncateContentAdminTitle(
+      String(row.original_name ?? row.source_key ?? 'Rabbi content source'),
+    ),
+    item_type: 'video',
+    lifecycle_stage: lifecycleStage,
+    provider_state: providerStateForOt109State(state),
+    transcript_state: transcriptStateForOt109State(state),
+    artifact_state: artifactStateFor(artifactCounts),
+    social_state:
+      socialPublished > 0
+        ? 'published'
+        : state === 'approved_for_social'
+          ? 'exact_revision_review_needed'
+          : 'idle',
+    buffer_state: socialPublished > 0 ? 'social_manifest_published' : 'provider_off',
+    latest_revision_number: Number(row.latest_revision_number ?? 0),
+    latest_revision_key: currentVersionKey,
+    published_revision_key: nullableString(row.published_revision_key),
+    artifact_counts: artifactCounts,
+    retry_eligible: state === 'retryable_failure',
+    updated_at: asDate(row.updated_at).toISOString(),
+  };
+}
+
+function ot104rContentPortState(
+  state: ReturnType<typeof inspectOt104rVimeoReadinessFromEnv>['state'],
+): ContentAdminProviderPortStatus['state'] {
+  if (state === 'ready') return 'available';
+  if (state === 'auth_invalid') return 'error';
+  if (state === 'degraded' || state === 'permission_missing' || state === 'fixture_missing') {
+    return 'blocked';
+  }
+  return 'unconfigured';
+}
+
+function statusFromOt106BufferReadiness(
+  readiness: ReturnType<typeof inspectOt106BufferReadiness>,
+): ContentAdminProviderPortStatus {
+  return {
+    port: 'buffer',
+    mode:
+      readiness.mode === 'sink'
+        ? 'sink'
+        : readiness.state === 'ready_to_create_drafts' || readiness.state === 'ready_to_schedule'
+          ? 'ready'
+          : 'provider_off',
+    state:
+      readiness.state === 'sink_ready' ||
+      readiness.state === 'ready_to_create_drafts' ||
+      readiness.state === 'ready_to_schedule'
+        ? 'available'
+        : 'unconfigured',
+    label:
+      readiness.state === 'sink_ready'
+        ? 'Buffer sink runtime can queue exact-revision draft proof'
+        : readiness.can_create_draft
+          ? 'Buffer runtime is configured for exact-revision drafts'
+          : 'Buffer runtime is disabled or missing protected configuration',
+    missing_variables: readiness.missing_capability_classes
+      .map((value) => ot106MissingVariableLabel(value))
+      .slice(0, 20),
+    can_mutate_provider: false,
+  };
+}
+
+function statusFromTelegramReadiness(
+  config: AppConfig,
+  env: NodeJS.ProcessEnv,
+): ContentAdminProviderPortStatus {
+  const tokenConfigured =
+    env.ONE_TIME_TELEGRAM_TOKEN_CONFIGURED === 'true' || Boolean(env.ONE_TIME_TELEGRAM_BOT_TOKEN);
+  const ownerMappingConfigured = env.ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED === 'true';
+  const canaryChatConfigured = env.ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED === 'true';
+  const readiness = telegramTransportReadiness({
+    enabled: config.oneTimeTelegramWebhookEnabled,
+    botKey: config.oneTimeTelegramBotKey,
+    environment: config.oneTimeTelegramEnvironment,
+    tokenConfigured,
+    ownerMappingConfigured,
+    singleConsumerGate: true,
+    canaryChatConfigured,
+  });
+  const missing = [
+    !config.oneTimeTelegramWebhookEnabled ? 'ONE_TIME_TELEGRAM_WEBHOOK_ENABLED' : null,
+    !config.oneTimeTelegramWebhookSecret ? 'ONE_TIME_TELEGRAM_WEBHOOK_SECRET' : null,
+    !tokenConfigured ? 'ONE_TIME_TELEGRAM_TOKEN_CONFIGURED' : null,
+    !ownerMappingConfigured ? 'ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED' : null,
+    !canaryChatConfigured ? 'ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED' : null,
+  ].filter((value): value is string => Boolean(value));
+  return {
+    port: 'telegram',
+    mode: readiness.readiness_state === 'configured' ? 'ready' : 'provider_off',
+    state: readiness.readiness_state === 'configured' ? 'available' : 'unconfigured',
+    label:
+      readiness.readiness_state === 'configured'
+        ? 'Telegram admin runtime is configured for allowlisted canary proof'
+        : 'Telegram admin runtime is disabled until protected config and mapping exist',
+    missing_variables: missing,
+    can_mutate_provider: false,
+  };
 }
 
 function providerOffStatus(
@@ -1543,6 +1904,14 @@ function providerOffStatus(
     missing_variables: missingVariables,
     can_mutate_provider: false,
   };
+}
+
+function ot106MissingVariableLabel(value: string) {
+  if (value === 'provider_mode') return 'OT106_BUFFER_PROVIDER_MODE';
+  if (value === 'channel_aliases') return 'OT106_BUFFER_CHANNEL_ALIASES';
+  if (value === 'access_token') return 'BUFFER_ACCESS_TOKEN';
+  if (value === 'organization_id') return 'BUFFER_ORGANIZATION_ID';
+  return value;
 }
 
 function requireCapability(actor: Ot110aContentAdminActor, capability: ContentAdminCapability) {

@@ -38,6 +38,7 @@ export {
   Ot110aContentWorkspaceError,
   activateOt110aPromptVersion,
   createOt110aGeneratedArtifact,
+  createOt110aIntegratedProviderPorts,
   createOt110aProviderOffPorts,
   createOt110aPromptPatch,
   getOt110aContentCreateWorkspace,
