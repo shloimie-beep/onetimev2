@@ -168,6 +168,7 @@ import type {
   BillingFeatureConfig,
 } from '../../../../packages/domain/src/billing/types.ts';
 import {
+  collectOpsReadiness,
   exposeServerTiming,
   publicError,
   traceMiddleware,
@@ -182,6 +183,7 @@ import { createParentPortalRouter, createStudentPortalRouter } from './features/
 import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
+import { registerOpsRoutes } from './ops-routes.ts';
 
 type AppDeps = {
   config: AppConfig;
@@ -435,17 +437,31 @@ export function createApp({
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
+  registerOpsRoutes({
+    app,
+    config,
+    pool,
+    sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+    setPrivateNoStore,
+    ...(clock ? { clock } : {}),
+  });
+
   app.get('/health', (_req, res) => {
     res.json({ ok: true, service: 'onetime-web' });
   });
 
   app.get('/ready', async (req: RequestWithTrace, res) => {
-    try {
-      await withTiming(req, 'db', () => pool.query('SELECT 1'));
-      res.json({ ok: true });
-    } catch {
-      res.status(503).json({ ok: false });
-    }
+    const readiness = await withTiming(req, 'ops_ready', () =>
+      collectOpsReadiness({ pool, config, ...(clock ? { now: clock() } : {}) }),
+    );
+    res.status(readiness.ok ? 200 : 503).json({
+      ok: readiness.ok,
+      service: 'onetime-web',
+      generated_at: readiness.generated_at,
+      dependencies: readiness.dependencies,
+      optional_dependencies: readiness.optional_dependencies,
+      blockers: readiness.blockers,
+    });
   });
 
   app.get('/version', (_req, res) => {
