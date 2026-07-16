@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
@@ -9,9 +11,13 @@ import type {
 import {
   ParentPortalFeature,
   StudentPortalFeature,
-  portalFeatureStyles,
   type PortalViewState,
 } from '../../apps/web/src/client/features/portals/PortalFeatures.tsx';
+
+const portalFeatureStyles = readFileSync(
+  path.resolve(process.cwd(), 'packages/brand-system/src/styles/portal.css'),
+  'utf8',
+);
 
 describe('OT-52P portal UI modules', () => {
   it('renders parent controls without raw provider URLs or central shell assumptions', () => {

@@ -1,0 +1,304 @@
+{
+  "packet": {
+    "id": "OT-82",
+    "title": "One Time Brand and Shell Foundation",
+    "packet_version": "1.0.0",
+    "generated_at": "2026-07-15T14:19:58+03:00",
+    "artifact_name": "OT82-brand-system-codex-packet.zip",
+    "source_specification": "PRO-01-BRAND-SYSTEM-FACTORY.md",
+    "digest_algorithm": "SHA-256"
+  },
+  "repository": {
+    "full_name": "webcraft-media/onetimev2",
+    "canonical_origin_https": "https://github.com/webcraft-media/onetimev2.git",
+    "default_branch_observed": "main",
+    "required_dependency_branch": "codex/ot81-dayone-certification-staging",
+    "required_product_branch": "codex/ot82-brand-system-foundation",
+    "required_checkpoint_branch": "codex/ot82-brand-system-foundation-checkpoint",
+    "required_stacked_pr_base": "codex/ot81-dayone-certification-staging",
+    "required_draft_pr_title": "OT82: One Time brand system foundation",
+    "resolve_dependency_head_at_runtime": true,
+    "dependency_branch_observed_remote_on_2026_07_15": false,
+    "force_push_allowed": false,
+    "hard_reset_allowed": false,
+    "clean_external_worktree_required": true
+  },
+  "historical_provenance": {
+    "ot73": {
+      "pull_request": 19,
+      "title": "OT-73 corrected landing addendum",
+      "branch": "codex/ot73-landing-intent-reconciliation",
+      "head_sha_observed": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "base_branch_observed": "codex/ot60r-recovery-convergence",
+      "base_sha_observed": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "status_observed": "open_draft",
+      "use": "audit provenance only; never substitute for the OT82 dependency base"
+    },
+    "ot80": {
+      "pull_request": 23,
+      "title": "OT80 final convergence candidate",
+      "branch": "codex/ot80-one-shot-final-convergence",
+      "head_sha_observed": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+      "product_source_candidate_sha_recorded_in_pr": "b753d50ca562c01cfa8619762254e70c90b0105f",
+      "base_branch_observed": "codex/ot60r-recovery-convergence",
+      "base_sha_observed": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "status_observed": "open_draft_not_ready",
+      "use": "audit provenance only; never substitute for the OT82 dependency base"
+    }
+  },
+  "canonical_architecture": {
+    "workspace_package_directory": "packages/brand-system",
+    "workspace_package_name": "@onetime/brand-system",
+    "manifest_schema_path": "packages/brand-system/manifest/one-time-brand.schema.json",
+    "manifest_path": "packages/brand-system/manifest/one-time-brand.v1.json",
+    "manifest_version": "1.0.0",
+    "static_entrypoint": "packages/brand-system/src/static.ts",
+    "react_entrypoint": "packages/brand-system/src/react.tsx",
+    "token_css_path": "packages/brand-system/src/tokens.css",
+    "token_typescript_path": "packages/brand-system/src/tokens.ts",
+    "route_registry_path": "packages/brand-system/src/route-branding.ts",
+    "primitive_root": "packages/brand-system/src/primitives",
+    "shell_root": "packages/brand-system/src/shells",
+    "style_root": "packages/brand-system/src/styles",
+    "single_token_store": true,
+    "public_react_allowed": false,
+    "runtime_bna_dependency_allowed": false,
+    "runtime_external_font_dependency_allowed": false
+  },
+  "manifest_required_sections": [
+    "schemaVersion",
+    "version",
+    "product",
+    "brand",
+    "provenance",
+    "assets",
+    "fonts",
+    "tokens",
+    "components",
+    "shells",
+    "routes",
+    "ticker",
+    "accessibility",
+    "deprecations",
+    "compatibility"
+  ],
+  "token_categories": [
+    "color",
+    "typography",
+    "spacing",
+    "radius",
+    "border",
+    "shadow",
+    "motion",
+    "focus",
+    "layers",
+    "breakpoints",
+    "safeAreas",
+    "componentSizes"
+  ],
+  "required_primitives": [
+    "Logo",
+    "Button",
+    "Link",
+    "Input",
+    "Select",
+    "Checkbox",
+    "Alert",
+    "Badge",
+    "Card",
+    "ListCardRow",
+    "Table",
+    "Drawer",
+    "Dialog",
+    "EmptyState",
+    "LoadingState",
+    "ErrorState",
+    "FilterStrip",
+    "Footer",
+    "Header",
+    "Toolbar"
+  ],
+  "shells": {
+    "public-marketing": {
+      "routes": ["/", "/privacy", "/terms", "/404.html"],
+      "ticker_routes": ["/"]
+    },
+    "auth": {
+      "routes": ["/signup", "/login"],
+      "ticker_routes": []
+    },
+    "owner-admin": {
+      "routes": ["/app/crm", "/app/dashboard", "/app/classes", "/app/content", "/app/billing"],
+      "ticker_routes": []
+    },
+    "parent": {
+      "routes": ["/app/parent"],
+      "ticker_routes": []
+    },
+    "student": {
+      "routes": ["/app/student"],
+      "ticker_routes": []
+    }
+  },
+  "ticker": {
+    "approved_route_allowlist": ["/"],
+    "accessible_copy_meaning": "Join now — free until Rosh Hashanah",
+    "destination": "/signup",
+    "timezone": "Asia/Jerusalem",
+    "motion_enabled_behavior": "moving repeated track",
+    "reduced_motion_behavior": "one static fully readable item",
+    "prohibited_landing_fragments": [
+      "$67/month afterward",
+      "$67",
+      "monthly price",
+      "trial",
+      "No card today"
+    ]
+  },
+  "assets": {
+    "canonical_logo_public_path": "/assets/brand/onetimelogo.webp",
+    "canonical_logo_repository_path": "apps/web/public/assets/brand/onetimelogo.webp",
+    "font_directory": "apps/web/public/assets/fonts",
+    "dm_serif_required_self_hosted": true,
+    "non_system_fonts_must_be_self_hosted": true,
+    "font_license_and_provenance_required": true,
+    "woff2_total_raw_byte_ceiling": 250000
+  },
+  "visual": {
+    "browser": "Chromium",
+    "device_scale_factor": 1,
+    "viewports": [
+      {
+        "id": "mobile-360",
+        "width": 360,
+        "height": 800
+      },
+      {
+        "id": "mobile-390",
+        "width": 390,
+        "height": 844
+      },
+      {
+        "id": "tablet",
+        "width": 768,
+        "height": 1024
+      },
+      {
+        "id": "desktop",
+        "width": 1440,
+        "height": 1000
+      }
+    ],
+    "surfaces": ["landing", "signup", "login", "crm", "parent", "student"],
+    "modes": [
+      "default",
+      "loading",
+      "empty",
+      "error",
+      "drawer",
+      "dialog",
+      "rtl",
+      "reduced-motion",
+      "zoom-200",
+      "keyboard-focus"
+    ],
+    "screenshot_root": "ops/evidence/ot-82/screenshots",
+    "mobile_initial_scroll_y": 0,
+    "minimum_touch_target_css_px": 44
+  },
+  "bundle_budgets": {
+    "public_js_raw_max_bytes": 45000,
+    "public_css_raw_max_bytes": 35000,
+    "public_react_allowed": false,
+    "public_authenticated_bundle_reference_allowed": false,
+    "woff2_total_raw_max_bytes": 250000,
+    "authenticated_entry_raw_growth_max_bytes": 20000,
+    "authenticated_entry_raw_growth_max_percent": 10,
+    "authenticated_css_total_raw_growth_max_bytes": 15000,
+    "lcp_max_ms": 2500,
+    "cls_max": 0.1,
+    "horizontal_overflow_allowed": false
+  },
+  "ci": {
+    "root_script": "brand:check",
+    "dedicated_workflow_path": ".github/workflows/ot82-brand-system.yml",
+    "must_validate": [
+      "manifest_schema",
+      "token_output_drift",
+      "raw_ui_colors",
+      "font_family_ownership",
+      "external_font_urls",
+      "duplicate_core_components",
+      "route_local_header_footer_button_toolbar",
+      "runtime_injected_route_css",
+      "route_shell_assignments",
+      "ticker_allowlist",
+      "route_css_duplication",
+      "public_react_leakage",
+      "bundle_budgets"
+    ],
+    "narrow_exception_registry_required": true,
+    "allowed_exception_classes": [
+      "svg_and_raster_asset_data",
+      "canonical_brand_assets",
+      "font_binaries_and_licenses",
+      "test_fixtures",
+      "screenshots_and_ot82_evidence",
+      "non_shipping_snapshot_data",
+      "transparent_currentColor_inherit"
+    ],
+    "wildcard_application_source_exemptions_allowed": false
+  },
+  "run_state": {
+    "directory": "ops/codex-runs/OT-82",
+    "required_before_product_edits": [
+      "ORIGINAL-PROMPT.md",
+      "INPUTS.json",
+      "STATE.json",
+      "RESUME.md",
+      "FINAL-REPORT.md",
+      "packet/CODEX-PROMPT.md",
+      "packet/DECISIONS.json",
+      "packet/FILE-OWNERSHIP.md",
+      "packet/ACCEPTANCE-MATRIX.md",
+      "packet/VISUAL-MATRIX.md",
+      "packet/SOURCES.md",
+      "packet/SHA256SUMS.txt"
+    ],
+    "waiting_marker": "READY_WAITING_FOR_BASE",
+    "waiting_state": "ready_waiting_for_base",
+    "completion_state": "complete"
+  },
+  "evidence": {
+    "directory": "ops/evidence/ot-82",
+    "required_files": [
+      "acceptance/acceptance-results.json",
+      "acceptance/acceptance-results.md",
+      "brand-audit.json",
+      "brand-audit.md",
+      "bundle-report.json",
+      "bundle-report.md",
+      "network-report.json",
+      "interaction-report.json",
+      "accessibility-report.json",
+      "visual-index.md",
+      "conflict-ledger.md",
+      "migration-status.md"
+    ]
+  },
+  "safety": {
+    "deployment_allowed": false,
+    "provider_mutation_allowed": false,
+    "production_database_mutation_allowed": false,
+    "dns_or_railway_mutation_allowed": false,
+    "bna_repository_mutation_allowed": false,
+    "real_send_allowed": false,
+    "real_payment_allowed": false,
+    "real_account_or_access_mutation_allowed": false,
+    "allowed_external_mutations": [
+      "push codex/ot82-brand-system-foundation-checkpoint when waiting",
+      "push codex/ot82-brand-system-foundation when implementing",
+      "open or update the stacked draft pull request"
+    ]
+  }
+}

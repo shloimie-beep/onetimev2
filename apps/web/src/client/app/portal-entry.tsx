@@ -10,7 +10,6 @@ import type {
 import {
   ParentPortalFeature,
   StudentPortalFeature,
-  portalFeatureStyles,
   type PortalViewState,
 } from '../features/portals/PortalFeatures.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
@@ -49,7 +48,6 @@ function PortalApp() {
     null;
 
   useEffect(() => {
-    installPortalStyles();
     void load();
   }, []);
 
@@ -279,14 +277,6 @@ function stateForError(error: unknown): PortalViewState {
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
-}
-
-function installPortalStyles() {
-  if (document.getElementById('ot-portal-feature-styles')) return;
-  const style = document.createElement('style');
-  style.id = 'ot-portal-feature-styles';
-  style.textContent = portalFeatureStyles;
-  document.head.append(style);
 }
 
 const root = document.getElementById('portal-root');

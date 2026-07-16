@@ -1,6 +1,13 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
+  escapeHtml,
+  renderCampaignTicker,
+  renderPageShell,
+  renderPublicFooter,
+  renderPublicHeader,
+} from '@onetime/brand-system/static';
+import {
   campaign,
   campaignTicker,
   landingContent,
@@ -10,87 +17,34 @@ import {
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;');
-}
-
 function pageShell(
   title: string,
   body: string,
   options: { description?: string; app?: boolean; appEntry?: 'crm' | 'portal' } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
-  const appEntry = options.appEntry ?? 'crm';
-  const script = options.app ? `/assets/app-${appEntry}.js` : '/assets/public.js';
-  const stylesheet = options.app ? '/assets/app-crm.css' : '/assets/public.css';
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(title)}</title>
-  <meta name="description" content="${escapeHtml(description)}">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="${escapeHtml(landingContent.seo.canonical)}">
-  <meta property="og:title" content="${escapeHtml(landingContent.seo.ogTitle)}">
-  <meta property="og:description" content="${escapeHtml(landingContent.seo.ogDescription)}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="${escapeHtml(landingContent.seo.canonical)}">
-  <meta name="theme-color" content="#050505">
-  <link rel="stylesheet" href="${stylesheet}">
-</head>
-<body>
-${body}
-<script type="module" src="${script}"></script>
-</body>
-</html>`;
+  return renderPageShell({
+    title,
+    body,
+    description,
+    canonical: landingContent.seo.canonical,
+    ogTitle: landingContent.seo.ogTitle,
+    ogDescription: landingContent.seo.ogDescription,
+    ...(options.app === undefined ? {} : { app: options.app }),
+    ...(options.appEntry === undefined ? {} : { appEntry: options.appEntry }),
+  });
 }
 
 function header() {
-  const drawerLinks = sharedNav
-    .map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`)
-    .join('');
-  return `<header class="site-header">
-  <a class="brand-lockup" href="/" aria-label="One Time Mishnayos home">
-    <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
-    <span><strong>One Time Mishnayos</strong><small>Worldwide Mishnah Learning</small></span>
-  </a>
-  <nav class="header-actions" aria-label="Primary">
-    <a class="text-link" href="/login">Member Login</a>
-    <a class="button button-primary" href="/signup">Sign Up Now</a>
-    <button class="icon-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-drawer" data-drawer-toggle><span></span><span></span><span></span></button>
-  </nav>
-</header>
-<div class="drawer-overlay" hidden data-drawer-overlay></div>
-<aside class="drawer" id="site-drawer" hidden data-drawer aria-label="One Time Menu">
-  <button class="icon-button drawer-close" type="button" aria-label="Close navigation" data-drawer-close><span></span><span></span></button>
-  <h2>One Time Menu</h2>
-  <nav>${drawerLinks}</nav>
-  <p>Live Mishnayos with Rabbi Eli Scheller from Eretz Yisrael.</p>
-</aside>`;
+  return renderPublicHeader(sharedNav);
 }
 
 function footer() {
-  return `<footer class="site-footer">
-  <div class="footer-brand"><img src="/assets/brand/onetimelogo.webp" width="40" height="40" alt="" aria-hidden="true"><p>${escapeHtml(landingContent.footer.line)}</p></div>
-  <nav aria-label="Footer">${landingContent.footer.links
-    .map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`)
-    .join('')}</nav>
-</footer>`;
+  return renderPublicFooter(landingContent.footer.links, landingContent.footer.line);
 }
 
 function ticker() {
-  const copy = campaignTicker();
-  if (!copy) return '';
-  const items = Array.from(
-    { length: 6 },
-    () => `<span class="campaign-ticker-item">${escapeHtml(copy)}</span>`,
-  ).join('');
-  return `<div class="campaign-ticker-shell" role="region" aria-label="Campaign countdown"><a class="campaign-ticker" href="/signup" aria-label="${escapeHtml(copy)}" data-campaign-deadline="${escapeHtml(campaign.deadlineDate)}"><span class="campaign-ticker-track" aria-hidden="true">${items}</span></a></div>`;
+  return renderCampaignTicker(campaignTicker(), campaign.deadlineDate);
 }
 
 function landingPage() {

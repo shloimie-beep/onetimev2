@@ -1,0 +1,222 @@
+{
+  "$schema": "./one-time-brand.schema.json",
+  "schemaVersion": "1.0.0",
+  "version": "1.0.0",
+  "product": {
+    "id": "one_time_mishnah_class",
+    "name": "One Time Mishnayos",
+    "workspacePolicy": "Standalone One Time product. No BNA runtime styling, assets, cookies, sessions, providers, or control plane."
+  },
+  "brand": {
+    "id": "one-time",
+    "name": "One Time",
+    "positioning": "Black and yellow Torah-learning product identity with restrained ice-blue support accent."
+  },
+  "provenance": {
+    "ot73": {
+      "branch": "codex/ot73-landing-intent-reconciliation",
+      "headShaObserved": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "use": "Landing and campaign provenance only"
+    },
+    "ot80": {
+      "branch": "codex/ot80-one-shot-final-convergence",
+      "headShaObserved": "741af0c08ee1d43be4e220b7c6e4c77a2330adc2",
+      "use": "Convergence and raw-value audit provenance only"
+    },
+    "ot81Base": {
+      "branch": "codex/ot81-dayone-certification-staging",
+      "sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546"
+    }
+  },
+  "assets": {
+    "logo": {
+      "id": "one-time-logo",
+      "path": "/assets/brand/onetimelogo.webp",
+      "repositoryPath": "apps/web/public/assets/brand/onetimelogo.webp",
+      "intrinsicBytes": 27472,
+      "usage": ["public-marketing", "auth", "owner-admin", "parent", "student"]
+    }
+  },
+  "fonts": {
+    "display": {
+      "family": "DM Serif Display",
+      "source": "/assets/fonts/dm-serif-display-latin.woff2",
+      "repositoryPath": "apps/web/public/assets/fonts/dm-serif-display-latin.woff2",
+      "licensePath": "apps/web/public/assets/fonts/dm-serif-display-OFL.txt",
+      "weight": "400",
+      "style": "normal",
+      "display": "swap",
+      "bytes": 24744
+    },
+    "body": {
+      "family": "system-ui",
+      "decision": "Use a local system stack for body text; no external or CDN font request is allowed."
+    }
+  },
+  "tokens": {
+    "color": {
+      "background": "#050505",
+      "surface": "#0d1a20",
+      "surfaceRaised": "#071117",
+      "surfaceMuted": "#122229",
+      "text": "#ffffff",
+      "textWarm": "#f8faf7",
+      "textMuted": "#c8d6d9",
+      "textDisabled": "#a5aea9",
+      "action": "#ffd21f",
+      "actionAuthenticated": "#ede518",
+      "actionSoft": "#ffe680",
+      "accent": "#7ed7e8",
+      "accentAuthenticated": "#86e8ff",
+      "border": "#34464d",
+      "borderStrong": "#66777d",
+      "success": "#65d6a6",
+      "danger": "#ff7474",
+      "dangerText": "#8a331c"
+    },
+    "typography": {
+      "display": "'DM Serif Display', Georgia, 'Times New Roman', serif",
+      "body": "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    },
+    "spacing": {
+      "1": "4px",
+      "2": "8px",
+      "3": "12px",
+      "4": "16px",
+      "5": "24px",
+      "6": "32px",
+      "7": "48px",
+      "8": "76px"
+    },
+    "radius": {
+      "control": "8px",
+      "panel": "12px",
+      "pill": "999px"
+    },
+    "border": {
+      "default": "1px solid var(--ot-color-border)",
+      "strong": "1px solid var(--ot-color-border-strong)",
+      "action": "1px solid var(--ot-color-action-auth)"
+    },
+    "shadow": {
+      "panel": "0 18px 46px rgba(0, 0, 0, 0.38)",
+      "drawer": "0 24px 72px rgba(0, 0, 0, 0.52)"
+    },
+    "motion": {
+      "standard": "120ms cubic-bezier(0.2, 0, 0, 1)",
+      "ticker": "26s linear infinite"
+    },
+    "focus": {
+      "width": "3px",
+      "offset": "3px",
+      "color": "#86e8ff"
+    },
+    "layers": {
+      "header": 100,
+      "ticker": 19,
+      "drawerOverlay": 800,
+      "drawer": 810,
+      "skipLink": 1001
+    },
+    "breakpoints": {
+      "mobile": "520px",
+      "tablet": "820px",
+      "desktop": "1200px"
+    },
+    "safeAreas": {
+      "top": "env(safe-area-inset-top)",
+      "bottom": "env(safe-area-inset-bottom)",
+      "left": "env(safe-area-inset-left)",
+      "right": "env(safe-area-inset-right)"
+    },
+    "componentSizes": {
+      "touchTarget": "44px",
+      "publicLogoMobile": "48px",
+      "publicLogoDesktop": "64px",
+      "appLogo": "40px"
+    }
+  },
+  "components": {
+    "required": [
+      "Logo",
+      "Button",
+      "Link",
+      "Input",
+      "Select",
+      "Checkbox",
+      "Alert",
+      "Badge",
+      "Card",
+      "ListCardRow",
+      "Table",
+      "Drawer",
+      "Dialog",
+      "EmptyState",
+      "LoadingState",
+      "ErrorState",
+      "FilterStrip",
+      "Footer",
+      "Header",
+      "Toolbar"
+    ],
+    "sizes": ["compact", "default", "large"],
+    "variants": ["primary", "secondary", "text", "danger", "neutral"]
+  },
+  "shells": {
+    "public-marketing": { "chrome": ["header", "ticker-allowlist", "footer"] },
+    "auth": { "chrome": ["header", "footer"], "ticker": false },
+    "owner-admin": { "chrome": ["app-header", "app-sidebar", "app-footer"], "ticker": false },
+    "parent": { "chrome": ["app-header", "parent-content", "app-footer"], "ticker": false },
+    "student": { "chrome": ["app-header", "student-content", "app-footer"], "ticker": false }
+  },
+  "routes": {
+    "/": "public-marketing",
+    "/signup": "auth",
+    "/login": "auth",
+    "/privacy": "public-marketing",
+    "/terms": "public-marketing",
+    "/404.html": "public-marketing",
+    "/app/crm": "owner-admin",
+    "/app/dashboard": "owner-admin",
+    "/app/classes": "owner-admin",
+    "/app/content": "owner-admin",
+    "/app/billing": "owner-admin",
+    "/app/parent": "parent",
+    "/app/student": "student"
+  },
+  "ticker": {
+    "allowlist": ["/"],
+    "copyMeaning": "Join now - free until Rosh Hashanah",
+    "destination": "/signup",
+    "timezone": "Asia/Jerusalem",
+    "deadlineSource": "packages/domain/src/landing/content.ts",
+    "motionEnabled": "moving repeated track",
+    "reducedMotion": "one static readable item",
+    "prohibitedLandingFragments": [
+      "$67/month afterward",
+      "$67",
+      "monthly price",
+      "trial",
+      "No card today"
+    ]
+  },
+  "accessibility": {
+    "contrast": "WCAG 2.2 AA",
+    "focusVisible": true,
+    "touchTargetCssPx": 44,
+    "reducedMotion": true,
+    "rtlLogicalSpacing": true,
+    "noColorOnlyState": true
+  },
+  "deprecations": {
+    "routeLocalTokens": "Route-local raw palettes and font-family declarations are not allowed.",
+    "runtimeStyleInjection": "Route-wide runtime style injection is not allowed.",
+    "duplicatePrimitives": "Core headers, footers, buttons, toolbars, drawers, dialogs, cards, form controls, tables, and states belong in the brand-system package."
+  },
+  "compatibility": {
+    "staticEntrypoint": "@onetime/brand-system/static",
+    "reactEntrypoint": "@onetime/brand-system/react",
+    "publicReactAllowed": false,
+    "offlineUsable": true
+  }
+}

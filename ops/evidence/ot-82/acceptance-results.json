@@ -1,0 +1,56 @@
+{
+  "run_id": "OT-82",
+  "status": "review_ready_with_inherited_format_blocker",
+  "results": [
+    {
+      "id": "brand-package",
+      "status": "pass",
+      "evidence": "packages/brand-system"
+    },
+    {
+      "id": "manifest-schema-tokens",
+      "status": "pass",
+      "evidence": "npm run brand:check; tests/unit/brand-system/brand-system.test.ts"
+    },
+    {
+      "id": "route-migration",
+      "status": "pass",
+      "evidence": "ops/evidence/ot-82/migration-status.md"
+    },
+    {
+      "id": "ticker-allowlist",
+      "status": "pass",
+      "evidence": "tests/e2e/brand-system.spec.ts"
+    },
+    {
+      "id": "visual-matrix-focused",
+      "status": "pass",
+      "evidence": "ops/evidence/ot-82/visual-index.md and screenshots"
+    },
+    {
+      "id": "public-react-leakage",
+      "status": "pass",
+      "evidence": "npm run brand:check; npm run e2e"
+    },
+    {
+      "id": "accessibility",
+      "status": "pass",
+      "evidence": "ops/evidence/ot-82/accessibility-report.json"
+    },
+    {
+      "id": "performance",
+      "status": "pass_after_rerun",
+      "evidence": "ops/evidence/ot-82/validation-report.md"
+    },
+    {
+      "id": "network-isolation",
+      "status": "pass",
+      "evidence": "ops/evidence/ot-82/network-report.json"
+    },
+    {
+      "id": "full-format",
+      "status": "blocked_inherited_base",
+      "evidence": "npm run format reports 334 inherited non-OT82 files; OT82 changed files pass scoped Prettier"
+    }
+  ]
+}

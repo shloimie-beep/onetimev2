@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
@@ -176,7 +177,7 @@ export function createApp({
     }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
-    res.sendFile(path.join(distDir, 'app', 'crm.html'));
+    await sendAppHtml(res, distDir, 'crm');
   });
 
   app.get(
@@ -199,7 +200,7 @@ export function createApp({
       }
       await ensureSessionCsrfCookie(req, res, pool, config, session);
       setPrivateNoStore(res);
-      res.sendFile(path.join(distDir, 'app', 'crm.html'));
+      await sendAppHtml(res, distDir, 'crm');
     },
   );
 
@@ -997,7 +998,21 @@ async function serveProtectedAppShell(
   }
   await ensureSessionCsrfCookie(req, res, input.pool, input.config, session);
   setPrivateNoStore(res);
-  res.sendFile(path.join(input.distDir, 'app', `${input.appPage}.html`));
+  await sendAppHtml(res, input.distDir, input.appPage);
+}
+
+async function sendAppHtml(res: Response, distDir: string, appPage: 'crm' | 'parent' | 'student') {
+  try {
+    const html = await readFile(path.join(distDir, 'app', `${appPage}.html`), 'utf8');
+    res.status(200).type('html').send(html);
+  } catch {
+    res
+      .status(500)
+      .type('text')
+      .send(
+        `Built ${appPage} app shell is unavailable. Run npm run build before serving protected app routes.`,
+      );
+  }
 }
 
 async function portalActorFromRequest(req: Request, pool: DbPool, config: AppConfig) {
