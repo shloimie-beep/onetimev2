@@ -23,12 +23,12 @@ Verified:
 - `npx vitest run --config vitest.integration.config.ts tests/integration/content/ot109-rabbi-content-publisher.test.ts`
 - `npm run lint`
 - `npm run secret:scan`
-- `git diff --check`
 - Touched-file Prettier check for OT-109 TS/MD/JSON files
 
 Known baseline:
 
 - `npm run format` reports 596 pre-existing unrelated repo formatting warnings. OT-109 touched-file Prettier check passed.
+- Exact `ORIGINAL-PROMPT.md` preservation keeps the source file hash `18c52c81863662f73117e7b6b2911bd87d84dfc1c4dea5537a9353cc16239265`, including its extra blank line at EOF.
 
 Remaining gates:
 

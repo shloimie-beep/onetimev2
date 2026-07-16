@@ -50,7 +50,8 @@
     },
     {
       "command": "git diff --check",
-      "status": "passed"
+      "status": "raw_prompt_warning",
+      "note": "Exact ORIGINAL-PROMPT.md preservation includes the source file's extra blank line at EOF."
     },
     {
       "command": "npx prettier --check <OT-109 touched TS/MD/JSON files>",
@@ -80,5 +81,5 @@
       "reason": "Local pg-mem migration path covered; production DATABASE_URL migration is intentionally not run from this task."
     }
   ],
-  "last_updated": "2026-07-16T22:58:00+03:00"
+  "last_updated": "2026-07-16T23:01:00+03:00"
 }
