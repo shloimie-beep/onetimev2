@@ -17,6 +17,7 @@ export default defineConfig({
           process.cwd(),
           'apps/web/src/client/classroom/zoom-launch-client.ts',
         ),
+        support: path.resolve(process.cwd(), 'apps/web/src/client/app/support-entry.ts'),
       },
       output: {
         entryFileNames: 'assets/app-[name].js',

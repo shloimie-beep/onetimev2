@@ -462,7 +462,7 @@ function PortalApp() {
           onStudentAccessAction={openStudentAccessDialog}
           onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
           onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
-          onPreviewSupport={() => void handleSupportPreview()}
+          onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
         />
       ) : (
@@ -476,7 +476,7 @@ function PortalApp() {
           onSubmitClassroomQuestion={(occurrenceKey, body) =>
             void handleClassroomQuestion(occurrenceKey, body)
           }
-          onPreviewSupport={() => void handleSupportPreview()}
+          onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
         />
       )}

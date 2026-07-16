@@ -854,6 +854,99 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
+      "action_id": "support.view.route",
+      "label": "Subscriber Support",
+      "surface": "route",
+      "route": "/app/support",
+      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
+      "capability": "support:ticket:create",
+      "handler": {
+        "method": "GET",
+        "path": "/app/support"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_route_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized or non-subscriber accounts see only the public lead path.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+    },
+    {
+      "action_id": "support.submit.form",
+      "label": "Submit support request",
+      "surface": "form",
+      "route": "/app/support",
+      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
+      "capability": "support:ticket:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/support/tickets"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "support_submission_accepted"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Durable receipt and local status projection are committed.",
+        "error": "The request could not be completed or delivery is delayed.",
+        "permission": "Server-side active entitlement recheck blocks non-subscribers.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+    },
+    {
+      "action_id": "support.receipt.view.route",
+      "label": "Support Receipt",
+      "surface": "route",
+      "route": "/app/support/receipts/:receiptId",
+      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
+      "capability": "support:ticket:status",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/support/receipts/:receiptId/status"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "support_status_projection_read"
+      },
+      "states": {
+        "loading": "Loading bounded local status.",
+        "success": "Cached same-account status is visible.",
+        "error": "The local receipt could not be found.",
+        "permission": "Cross-account and cross-user receipt reads are denied.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "mock_or_disabled_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+    },
+    {
       "action_id": "portal.parent.view.route",
       "label": "Parent Portal",
       "surface": "route",
@@ -1077,7 +1170,7 @@
       ]
     },
     {
-      "action_id": "portal.parent.support.preview.button",
+      "action_id": "portal.parent.support.open.button",
       "label": "Technical support",
       "surface": "button",
       "route": "/app/parent",
@@ -1093,7 +1186,7 @@
       },
       "audit": {
         "mode": "none",
-        "event": "support_preview_local_only"
+        "event": "support_route_open"
       },
       "states": {
         "loading": "Loading bounded local data.",
@@ -1102,10 +1195,10 @@
         "permission": "Unauthorized roles are denied by server session scope.",
         "offline": "No protected cached data is used while offline."
       },
-      "readiness_state": "unavailable_by_design",
+      "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
+      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
     },
     {
       "action_id": "portal.student.view.route",
@@ -1272,7 +1365,7 @@
       ]
     },
     {
-      "action_id": "portal.student.support.preview.button",
+      "action_id": "portal.student.support.open.button",
       "label": "Technical help",
       "surface": "button",
       "route": "/app/student",
@@ -1288,7 +1381,7 @@
       },
       "audit": {
         "mode": "none",
-        "event": "support_preview_local_only"
+        "event": "support_route_open"
       },
       "states": {
         "loading": "Loading bounded local data.",
@@ -1297,10 +1390,10 @@
         "permission": "Unauthorized roles are denied by server session scope.",
         "offline": "No protected cached data is used while offline."
       },
-      "readiness_state": "unavailable_by_design",
+      "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": ["tests/ot-52/portal-ui.test.ts"]
+      "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
     }
   ]
 }

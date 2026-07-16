@@ -1,23 +1,26 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const port = process.env.PORT ?? '3100';
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: '.',
   timeout: 30_000,
   fullyParallel: false,
   use: {
-    baseURL: 'http://127.0.0.1:3100',
+    baseURL,
     trace: 'retain-on-failure',
   },
   webServer: {
     command: 'node --import tsx tests/support/test-server.ts',
-    url: 'http://127.0.0.1:3100/health',
+    url: `${baseURL}/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 30_000,
     env: {
       NODE_ENV: 'test',
       OT_TEST_DATABASE: 'memory',
       RUN_MIGRATIONS_ON_STARTUP: 'true',
-      PORT: '3100',
+      PORT: port,
       LOGIN_IDENTIFIER_RATE_LIMIT_MAX: '50',
       LOGIN_IP_RATE_LIMIT_MAX: '100',
       ZOOM_CLASSROOM_ENABLED: 'true',

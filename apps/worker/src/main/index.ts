@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { createPgPool } from '../../../../packages/db/src/index.ts';
+import { runSupportDeliveryBatch } from '../../../../packages/domain/src/index.ts';
 import { loadDeliveryWorkerConfig } from '../delivery/config.ts';
 import { createDeliveryLogger } from '../delivery/logger.ts';
 import { PollingLoopControl, runNonOverlappingPollingLoop } from '../delivery/loop.ts';
@@ -11,7 +12,7 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
   const config = loadDeliveryWorkerConfig(source);
   const pool = createPgPool(config.appConfig);
   try {
-    return await runDeliveryBatch({
+    const delivery = await runDeliveryBatch({
       repository: new PostgresDeliveryRepository(pool),
       router: new SinkDeliveryRouter(),
       logger: createDeliveryLogger(),
@@ -26,6 +27,18 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
         maxAttempts: config.maxAttempts,
       },
     });
+    const support = await runSupportDeliveryBatch({
+      pool,
+      config: config.appConfig,
+      options: {
+        batchSize: config.batchSize,
+        claimLeaseMs: config.claimLeaseMs,
+        requestTimeoutMs: config.providerTimeoutMs,
+        maxAttempts: 12,
+        maxAgeMs: 172_800_000,
+      },
+    });
+    return { ...delivery, support };
   } finally {
     await pool.end();
   }
@@ -68,6 +81,17 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
               maxAttempts: config.maxAttempts,
             },
           });
+          await runSupportDeliveryBatch({
+            pool,
+            config: config.appConfig,
+            options: {
+              batchSize: config.batchSize,
+              claimLeaseMs: config.claimLeaseMs,
+              requestTimeoutMs: config.providerTimeoutMs,
+              maxAttempts: 12,
+              maxAgeMs: 172_800_000,
+            },
+          });
         } catch (error) {
           void error;
           logger.error('delivery_batch_failed', {
@@ -87,7 +111,9 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
 
 if (process.argv.includes('--once')) {
   const summary = await runOutboxWorkerOnce();
-  process.stdout.write(`sink_delivered=${summary.sinkDelivered}\n`);
+  process.stdout.write(
+    `sink_delivered=${summary.sinkDelivered}\nsupport_delivered=${summary.support.delivered}\n`,
+  );
 } else {
   await runContinuously();
 }

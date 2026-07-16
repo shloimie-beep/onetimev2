@@ -100,6 +100,7 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
+import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
 
 type AppDeps = {
@@ -158,6 +159,18 @@ export function createApp({
       });
     });
   }
+  registerSupportRoutes({
+    app,
+    config,
+    pool,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      ensureSessionCsrfCookie: (req, res, session) =>
+        ensureSessionCsrfCookie(req, res, pool, config, session),
+      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      setPrivateNoStore,
+    },
+  });
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 
