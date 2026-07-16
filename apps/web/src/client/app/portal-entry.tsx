@@ -20,7 +20,10 @@ import {
   getSession,
   getStudentDashboard,
   invokeProtectedAction,
+  previewParentSupport,
+  previewStudentSupport,
   runStudentAccessOperation,
+  submitStudentQuestion,
 } from './portal-api.js';
 import './crm.css';
 
@@ -150,6 +153,52 @@ function PortalApp() {
     }
   }
 
+  async function handleStudentQuestion(question: string, classKey?: string | undefined) {
+    if (!session || portalRole !== 'student') return;
+    try {
+      await submitStudentQuestion({
+        csrfToken: session.csrf_token,
+        question,
+        classKey,
+      });
+      setStudentDashboard(await getStudentDashboard());
+      setNotice({ kind: 'success', message: 'Question submitted.' });
+      setViewState('success');
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Question was not submitted.') });
+      setViewState(stateForError(error));
+    }
+  }
+
+  async function handleSupportPreview() {
+    if (!session) return;
+    try {
+      const preview =
+        portalRole === 'parent'
+          ? parentDashboard
+            ? await previewParentSupport({
+                csrfToken: session.csrf_token,
+                householdKey: parentDashboard.household.household_key,
+                subject: 'Portal support request',
+                body: `Support requested from ${parentDashboard.household.display_name}.`,
+              })
+            : null
+          : await previewStudentSupport({
+              csrfToken: session.csrf_token,
+              subject: 'Student portal support request',
+              body: 'Support requested from the student portal.',
+            });
+      if (!preview) return;
+      setNotice({ kind: 'info', message: `Support preview ready: ${preview.subject}` });
+      setViewState('success');
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Support preview failed.') });
+      setViewState(stateForError(error));
+    }
+  }
+
   function handleLoadError(error: unknown) {
     if (handleAuthError(error)) return;
     setNotice({ kind: 'error', message: errorMessage(error, 'Portal could not load.') });
@@ -224,9 +273,7 @@ function PortalApp() {
             void handleStudentAccessAction(learnerKey, action)
           }
           onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
-          onPreviewSupport={() =>
-            setNotice({ kind: 'info', message: 'Support preview is local-only right now.' })
-          }
+          onPreviewSupport={() => void handleSupportPreview()}
           onRetry={() => void load()}
         />
       ) : (
@@ -236,9 +283,8 @@ function PortalApp() {
           actorFingerprint={actorFingerprint}
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
-          onPreviewSupport={() =>
-            setNotice({ kind: 'info', message: 'Support preview is local-only right now.' })
-          }
+          onSubmitQuestion={(question, classKey) => void handleStudentQuestion(question, classKey)}
+          onPreviewSupport={() => void handleSupportPreview()}
           onRetry={() => void load()}
         />
       )}

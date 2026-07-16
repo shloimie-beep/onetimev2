@@ -433,6 +433,17 @@ export function createParentPortalService(deps: PortalServiceDeps) {
       );
     },
 
+    async protectedContentOpen(
+      actor: PortalActorContext,
+      householdKey: string,
+      learnerKey: string,
+      itemKey: string,
+    ) {
+      requireParentHousehold(actor, householdKey, 'parent:content:open');
+      const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
+      return contentOpenForLearner(deps, actor, learner, itemKey);
+    },
+
     async learnerMaterials(actor: PortalActorContext, householdKey: string, learnerKey: string) {
       requireParentHousehold(actor, householdKey, 'parent:household:read');
       const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
@@ -534,6 +545,17 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
       return safeActionDescriptor(
         await deps.classAccess.protectedLaunch({ actor, learner, class_key: classKey }),
       );
+    },
+
+    async protectedContentOpen(actor: PortalActorContext, itemKey: string) {
+      const subject = requireStudentSubject(actor, 'student:content:open');
+      const learner = await requireLearner(
+        deps.repository,
+        actor,
+        subject.household_key,
+        subject.learner_key,
+      );
+      return contentOpenForLearner(deps, actor, learner, itemKey);
     },
 
     async helperAvailability(actor: PortalActorContext) {
@@ -731,6 +753,52 @@ function assertNoCredentialLeak(result: CredentialLifecycleResult) {
       );
     }
   }
+}
+
+async function contentOpenForLearner(
+  deps: PortalServiceDeps,
+  actor: PortalActorContext,
+  learner: LearnerProfile,
+  itemKey: string,
+) {
+  const [library, reviewSheets] = await Promise.all([
+    deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
+    deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
+  ]);
+  const item = safeLibraryItems([...library, ...reviewSheets]).find(
+    (entry) => entry.item_key === itemKey,
+  );
+  if (!item?.open_action) {
+    throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+  }
+  return protectedContentUnavailableAction(learner, item);
+}
+
+function protectedContentUnavailableAction(
+  learner: LearnerProfile,
+  item: LibraryItem,
+): ProtectedActionDescriptor {
+  const kind =
+    item.item_type === 'sheet' || item.item_type === 'review'
+      ? 'review_sheet_open'
+      : 'content_open';
+  const digest = fingerprint({
+    learner_key: learner.learner_key,
+    item_key: item.item_key,
+    kind,
+  }).slice(0, 32);
+  return {
+    action_key: `portal_${kind}_${digest}`,
+    label:
+      kind === 'review_sheet_open'
+        ? 'Review sheet provider unavailable'
+        : 'Content provider unavailable',
+    kind,
+    method: 'GET',
+    href: null,
+    launch_token_ref: `content_unavailable_${digest}`,
+    expires_at: null,
+  };
 }
 
 function safeClassSummaries(classes: UpcomingClassSummary[]) {

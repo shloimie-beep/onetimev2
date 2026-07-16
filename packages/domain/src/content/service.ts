@@ -144,6 +144,7 @@ export function createContentPortalAccessAdapter(input: {
         pool: input.pool,
         accountKey: actor.account_key,
         productKey: actor.product_key,
+        actorRole: actor.actor_role,
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['video', 'source'],
@@ -153,6 +154,7 @@ export function createContentPortalAccessAdapter(input: {
         pool: input.pool,
         accountKey: actor.account_key,
         productKey: actor.product_key,
+        actorRole: actor.actor_role,
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['sheet', 'review'],
@@ -427,6 +429,7 @@ async function portalItemsForLearner(input: {
   pool: DbPool;
   accountKey: string;
   productKey: string;
+  actorRole: string;
   learnerKey: string;
   householdKey: string;
   itemTypes: ContentItemType[];
@@ -458,7 +461,13 @@ async function portalItemsForLearner(input: {
     title: String(row.title),
     item_type: String(row.item_type) as LibraryItem['item_type'],
     status: 'published' as const,
-    open_action: contentOpenAction(String(row.content_item_key), String(row.item_type)),
+    open_action: contentOpenAction(
+      String(row.content_item_key),
+      String(row.item_type),
+      input.actorRole,
+      input.householdKey,
+      input.learnerKey,
+    ),
   }));
 }
 
@@ -579,14 +588,26 @@ async function recordContentAudit(
   );
 }
 
-function contentOpenAction(itemKey: string, itemType: string): ProtectedActionDescriptor {
+function contentOpenAction(
+  itemKey: string,
+  itemType: string,
+  actorRole: string,
+  householdKey: string,
+  learnerKey: string,
+): ProtectedActionDescriptor {
   const kind = itemType === 'review' || itemType === 'sheet' ? 'review_sheet_open' : 'content_open';
+  const href =
+    actorRole === 'parent'
+      ? `/api/v1/portals/parent/households/${encodeURIComponent(
+          householdKey,
+        )}/learners/${encodeURIComponent(learnerKey)}/content/${encodeURIComponent(itemKey)}/open`
+      : `/api/v1/portals/student/content/${encodeURIComponent(itemKey)}/open`;
   return {
     action_key: stableKey('content_open_action', [itemKey, kind]),
     label: kind === 'review_sheet_open' ? 'Open review sheet' : 'Open content',
     kind,
     method: 'GET',
-    href: `/api/v1/content/library/${encodeURIComponent(itemKey)}/open`,
+    href,
     launch_token_ref: stableKey('content_launch_ref', [itemKey]),
     expires_at: null,
   };

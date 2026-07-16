@@ -15,7 +15,13 @@ let lastStudentLaunchActor: PortalActorContext | null;
 const parentActor = actor('parent');
 const studentActor: PortalActorContext = {
   ...actor('student'),
-  capabilities: ['student:dashboard:read', 'student:class:launch', 'student:support:preview'],
+  capabilities: [
+    'student:dashboard:read',
+    'student:class:launch',
+    'student:content:open',
+    'student:question:create',
+    'student:support:preview',
+  ],
   student_learner: {
     learner_key: 'learner_student_self',
     household_key: 'household_alpha',
@@ -157,6 +163,54 @@ describe('OT-52P portal routers', () => {
       },
     });
   });
+
+  it('protects student questions with CSRF and keeps content-open learner scoped', async () => {
+    const blocked = await fetch(`${baseUrl}/api/v1/portals/student/questions`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-actor': 'student' },
+      body: JSON.stringify({
+        idempotency_key: 'student-question-blocked',
+        question: 'Blocked question',
+      }),
+    });
+    expect(blocked.status).toBe(403);
+
+    const submitted = await fetch(`${baseUrl}/api/v1/portals/student/questions`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-actor': 'student',
+        'x-csrf-token': 'valid-csrf',
+      },
+      body: JSON.stringify({
+        idempotency_key: 'student-question-router',
+        question: 'What does the Mishnah mean?',
+        class_key: 'class_week_001',
+      }),
+    });
+    expect(submitted.status).toBe(201);
+    expect(await submitted.json()).toMatchObject({
+      success: true,
+      data: {
+        learner_key: 'learner_student_self',
+        status: 'submitted',
+      },
+    });
+
+    const opened = await fetch(`${baseUrl}/api/v1/portals/student/content/library_week_001/open`, {
+      headers: { 'x-actor': 'student' },
+    });
+    const openedJson = await opened.json();
+    expect(opened.status).toBe(200);
+    expect(JSON.stringify(openedJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive/i);
+    expect(openedJson).toMatchObject({
+      success: true,
+      data: {
+        kind: 'content_open',
+        href: null,
+      },
+    });
+  });
 });
 
 async function resolveActor(req: Request): Promise<PortalActorContext | null> {
@@ -198,6 +252,12 @@ function parentService() {
       version: 2,
     }),
     protectedClassLaunch: async () => action(),
+    protectedContentOpen: async () => ({
+      ...action(),
+      kind: 'content_open' as const,
+      href: null,
+      launch_token_ref: 'content_unavailable_router',
+    }),
     learnerMaterials: async () => ({
       learner: learner('learner_router_created', 'Allowed Learner'),
       library: [],
@@ -235,12 +295,19 @@ function studentService() {
       },
       rewards: { learner_key: 'learner_student_self', balance: 0, event_count: 0 },
       updates: [],
+      questions: [],
       helper: { available: false, reason: 'Unavailable', scope_label: 'Portal helper' },
     }),
     protectedClassLaunch: async (requestActor: PortalActorContext) => {
       lastStudentLaunchActor = requestActor;
       return action();
     },
+    protectedContentOpen: async () => ({
+      ...action(),
+      kind: 'content_open' as const,
+      href: null,
+      launch_token_ref: 'content_unavailable_router',
+    }),
     helperQuery: async () => ({ answer: 'Scoped answer', source_refs: ['source_ref_1'] }),
     supportPreview: async () => ({
       preview_key: 'support_preview_router',
@@ -248,6 +315,17 @@ function studentService() {
       body: 'Message',
       external_send_performed: false,
     }),
+    submitQuestion: async () => ({
+      question_key: 'question_router',
+      learner_key: 'learner_student_self',
+      class_key: 'class_week_001',
+      question: 'What does the Mishnah mean?',
+      status: 'submitted',
+      answer_preview: null,
+      submitted_at: '2026-07-14T09:00:00.000Z',
+      answered_at: null,
+    }),
+    questions: async () => [],
   };
 }
 
@@ -333,6 +411,7 @@ function actor(role: PortalActorContext['actor_role']): PortalActorContext {
       'parent:learner:archive',
       'parent:student-access:manage',
       'parent:class:launch',
+      'parent:content:open',
       'parent:support:preview',
       'rewards:read',
       'rewards:write',

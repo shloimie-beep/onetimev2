@@ -11,6 +11,7 @@ import type {
   RewardBalance,
   RewardEvent,
   StudentAccessState,
+  StudentQuestion,
   StudentPortalDashboard,
   UpcomingClassSummary,
 } from '../../../../../../packages/contracts/src/portals/index.ts';
@@ -57,6 +58,7 @@ export type StudentPortalFeatureProps = {
   resetSignal?: number;
   onLaunchClass?: (action: ProtectedActionDescriptor) => void;
   onOpenContent?: (action: ProtectedActionDescriptor) => void;
+  onSubmitQuestion?: (question: string, classKey?: string | undefined) => void;
   onPreviewSupport?: () => void;
   onRetry?: () => void;
 };
@@ -260,6 +262,7 @@ export function StudentPortalFeature({
   resetSignal,
   onLaunchClass,
   onOpenContent,
+  onSubmitQuestion,
   onPreviewSupport,
   onRetry,
 }: StudentPortalFeatureProps) {
@@ -304,6 +307,14 @@ export function StudentPortalFeature({
         <section className="ot-panel" aria-labelledby="student-progress-heading">
           <h2 id="student-progress-heading">Progress</h2>
           <ProgressSummaryView progress={dashboard.progress} rewards={dashboard.rewards} />
+        </section>
+        <section className="ot-panel" aria-labelledby="student-questions-heading">
+          <h2 id="student-questions-heading">Questions</h2>
+          <QuestionPanel
+            questions={dashboard.questions}
+            upcoming={dashboard.upcoming_classes}
+            onSubmitQuestion={onSubmitQuestion}
+          />
         </section>
         <section className="ot-panel" aria-labelledby="student-updates-heading">
           <h2 id="student-updates-heading">Updates</h2>
@@ -555,6 +566,76 @@ function ContentList({
           </article>
         );
       })}
+    </div>
+  );
+}
+
+function QuestionPanel({
+  questions,
+  upcoming,
+  onSubmitQuestion,
+}: {
+  questions: StudentQuestion[];
+  upcoming: UpcomingClassSummary[];
+  onSubmitQuestion?: ((question: string, classKey?: string | undefined) => void) | undefined;
+}) {
+  const [draft, setDraft] = useState('');
+  const [classKey, setClassKey] = useState(upcoming[0]?.class_key ?? '');
+  const trimmed = draft.trim();
+  return (
+    <div className="ot-stack">
+      <form
+        className="ot-question-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!trimmed || !onSubmitQuestion) return;
+          onSubmitQuestion(trimmed, classKey || undefined);
+          setDraft('');
+        }}
+      >
+        {upcoming.length > 0 && (
+          <label className="ot-field">
+            <span>Class</span>
+            <select value={classKey} onChange={(event) => setClassKey(event.currentTarget.value)}>
+              {upcoming.map((item) => (
+                <option key={item.class_key} value={item.class_key}>
+                  {item.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        <label className="ot-field">
+          <span>Question</span>
+          <textarea
+            value={draft}
+            maxLength={800}
+            rows={4}
+            onChange={(event) => setDraft(event.currentTarget.value)}
+          />
+        </label>
+        <button
+          type="submit"
+          className="ot-button ot-button-primary"
+          disabled={!trimmed || !onSubmitQuestion}
+        >
+          Submit question
+        </button>
+      </form>
+      {questions.length === 0 ? (
+        <p className="ot-muted">Submitted questions will appear here.</p>
+      ) : (
+        questions.map((question) => (
+          <article className="ot-item ot-update" key={question.question_key}>
+            <div>
+              <strong>{label(question.status)}</strong>
+              <p>{question.question}</p>
+              {question.answer_preview && <p>{question.answer_preview}</p>}
+            </div>
+            <span>{formatDate(question.submitted_at)}</span>
+          </article>
+        ))
+      )}
     </div>
   );
 }

@@ -1,0 +1,354 @@
+{
+  "schema_version": "onetime.ot83r.portal_route_action_registry.v1",
+  "task_id": "OT-83R",
+  "generated_at": "2026-07-16T12:00:00+03:00",
+  "external_mutations_performed": false,
+  "provider_mode": "typed_default_off_adapters",
+  "routes": [
+    {
+      "route_id": "portal.parent.shell",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:household:read",
+      "handler": "apps/web/src/server/app.ts::serveProtectedAppShell(parent)",
+      "readiness_state": "ready",
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/integration/portals/portal-mount.test.ts"]
+    },
+    {
+      "route_id": "portal.student.shell",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:dashboard:read",
+      "handler": "apps/web/src/server/app.ts::serveProtectedAppShell(student)",
+      "readiness_state": "ready",
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/integration/portals/portal-mount.test.ts"]
+    },
+    {
+      "route_id": "portal.parent.dashboard.api",
+      "route": "/api/v1/portals/parent/dashboard",
+      "roles": ["parent"],
+      "capability": "parent:household:read",
+      "handler": "apps/web/src/server/features/portals/routers.ts::createParentPortalRouter",
+      "readiness_state": "ready",
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+    },
+    {
+      "route_id": "portal.student.dashboard.api",
+      "route": "/api/v1/portals/student/dashboard",
+      "roles": ["student"],
+      "capability": "student:dashboard:read",
+      "handler": "apps/web/src/server/features/portals/routers.ts::createStudentPortalRouter",
+      "readiness_state": "ready",
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+    }
+  ],
+  "actions": [
+    {
+      "action_id": "auth.login.form",
+      "label": "Login",
+      "surface": "form",
+      "route": "/login",
+      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
+      "capability": "auth:session:create",
+      "handler": { "method": "POST", "path": "/api/v1/auth/login" },
+      "confirmation": { "required": false, "reason": "Credential submission is the action." },
+      "audit": { "mode": "auth_audit", "event": "login_succeeded" },
+      "idempotency": { "required": false, "key_source": null },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/integration/auth-crm.test.ts"]
+    },
+    {
+      "action_id": "auth.logout.button",
+      "label": "Logout",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["owner", "admin", "crm_agent", "viewer", "parent", "student"],
+      "capability": "auth:session:revoke",
+      "handler": { "method": "POST", "path": "/api/v1/auth/logout" },
+      "confirmation": { "required": false, "reason": "Session-only revocation." },
+      "audit": { "mode": "auth_audit", "event": "session_revoked" },
+      "idempotency": { "required": false, "key_source": null },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+    },
+    {
+      "action_id": "account.parent_activation.accept",
+      "label": "Activate parent account",
+      "surface": "form",
+      "route": "/login",
+      "roles": ["anonymous"],
+      "capability": "account-lifecycle:parent-activation:accept",
+      "handler": {
+        "method": "DOMAIN",
+        "path": "packages/domain/src/accounts/lifecycle.ts::acceptParentActivation"
+      },
+      "confirmation": { "required": false, "reason": "Single-use token plus password completion." },
+      "audit": { "mode": "account_lifecycle_audit", "event": "parent_activation_accepted" },
+      "idempotency": { "required": false, "key_source": "single-use lifecycle token" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/integration/accounts/account-lifecycle.test.ts"],
+      "negative_tests": ["tests/integration/accounts/account-lifecycle.test.ts"]
+    },
+    {
+      "action_id": "account.student_setup.accept",
+      "label": "Activate student account",
+      "surface": "form",
+      "route": "/login",
+      "roles": ["anonymous"],
+      "capability": "account-lifecycle:student-setup:accept",
+      "handler": {
+        "method": "DOMAIN",
+        "path": "packages/domain/src/accounts/lifecycle.ts::acceptStudentSetup"
+      },
+      "confirmation": { "required": false, "reason": "Single-use token plus password completion." },
+      "audit": { "mode": "account_lifecycle_audit", "event": "student_setup_accepted" },
+      "idempotency": { "required": false, "key_source": "single-use lifecycle token" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/integration/accounts/account-lifecycle.test.ts"],
+      "negative_tests": ["tests/integration/accounts/account-lifecycle.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.learner.create",
+      "label": "Add learner",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:learner:create",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/households/:householdKey/learners"
+      },
+      "confirmation": { "required": false, "reason": "Creates a named learner profile only." },
+      "audit": { "mode": "portal_audit", "event": "learner_created" },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": [
+        "tests/ot-52/portal-services.test.ts",
+        "tests/ot-52/portal-router.test.ts"
+      ],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.learner.update",
+      "label": "Edit learner",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:learner:update",
+      "handler": {
+        "method": "PATCH",
+        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey"
+      },
+      "confirmation": {
+        "required": false,
+        "reason": "Optimistic version protects concurrent edits."
+      },
+      "audit": { "mode": "portal_audit", "event": "learner_updated" },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/ot-52/portal-services.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.learner.archive_restore",
+      "label": "Archive or restore learner",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:learner:archive",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/(archive|restore)"
+      },
+      "confirmation": { "required": true, "reason": "Changes active-seat availability." },
+      "audit": { "mode": "portal_audit", "event": "learner_archived_or_active" },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/ot-52/portal-services.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.student_access.manage",
+      "label": "Setup, reset, suspend, restore, or revoke student access",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:student-access:manage",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/student-access/:operation"
+      },
+      "confirmation": {
+        "required": true,
+        "reason": "Changes learner login state or revokes sessions."
+      },
+      "audit": {
+        "mode": "portal_audit_and_account_lifecycle_audit",
+        "event": "student_access_operation"
+      },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts", "tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.class.launch",
+      "label": "Launch class",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:class:launch",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/classes/:classKey/launch"
+      },
+      "confirmation": {
+        "required": false,
+        "reason": "Returns an opaque app launch descriptor only."
+      },
+      "audit": { "mode": "portal_audit", "event": "parent_class_launch_attempt" },
+      "idempotency": { "required": false, "key_source": null },
+      "readiness_state": "default_off_adapter_ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/ot-52/portal-services.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.content.open",
+      "label": "Open content or review sheet",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:content:open",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/portals/parent/households/:householdKey/learners/:learnerKey/content/:itemKey/open"
+      },
+      "confirmation": {
+        "required": false,
+        "reason": "Returns an opaque app launch descriptor only."
+      },
+      "audit": { "mode": "local_read", "event": "parent_content_open_attempt" },
+      "idempotency": { "required": false, "key_source": null },
+      "readiness_state": "default_off_adapter_ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/ot-52/portal-services.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.parent.support.preview",
+      "label": "Technical support",
+      "surface": "button",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "parent:support:preview",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/portals/parent/households/:householdKey/support/preview"
+      },
+      "confirmation": {
+        "required": false,
+        "reason": "Preview only; external_send_performed is false."
+      },
+      "audit": { "mode": "local_preview", "event": "support_preview_created" },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/ot-52/portal-router.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+    },
+    {
+      "action_id": "portal.student.class.launch",
+      "label": "Launch",
+      "surface": "button",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:class:launch",
+      "handler": { "method": "POST", "path": "/api/v1/portals/student/classes/:classKey/launch" },
+      "confirmation": {
+        "required": false,
+        "reason": "Returns an opaque app launch descriptor only."
+      },
+      "audit": { "mode": "local_read", "event": "student_class_launch_attempt" },
+      "idempotency": { "required": false, "key_source": null },
+      "readiness_state": "default_off_adapter_ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/integration/portals/portal-mount.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+    },
+    {
+      "action_id": "portal.student.content.open",
+      "label": "Open",
+      "surface": "button",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:content:open",
+      "handler": { "method": "GET", "path": "/api/v1/portals/student/content/:itemKey/open" },
+      "confirmation": {
+        "required": false,
+        "reason": "Returns an opaque app launch descriptor only."
+      },
+      "audit": { "mode": "local_read", "event": "student_content_open_attempt" },
+      "idempotency": { "required": false, "key_source": null },
+      "readiness_state": "default_off_adapter_ready",
+      "external_mutation": false,
+      "positive_tests": [
+        "tests/ot-52/portal-router.test.ts",
+        "tests/ot-52/portal-services.test.ts"
+      ],
+      "negative_tests": ["tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.student.question.submit",
+      "label": "Submit question",
+      "surface": "form",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:question:create",
+      "handler": { "method": "POST", "path": "/api/v1/portals/student/questions" },
+      "confirmation": { "required": false, "reason": "Creates a private learner question." },
+      "audit": { "mode": "portal_audit", "event": "student_question_submitted" },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": [
+        "tests/ot-52/portal-router.test.ts",
+        "tests/ot-52/portal-services.test.ts"
+      ],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts", "tests/ot-52/portal-services.test.ts"]
+    },
+    {
+      "action_id": "portal.student.support.preview",
+      "label": "Technical help",
+      "surface": "button",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:support:preview",
+      "handler": { "method": "POST", "path": "/api/v1/portals/student/support/preview" },
+      "confirmation": {
+        "required": false,
+        "reason": "Preview only; external_send_performed is false."
+      },
+      "audit": { "mode": "local_preview", "event": "support_preview_created" },
+      "idempotency": { "required": true, "key_source": "client-generated idempotency_key" },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/ot-52/portal-router.test.ts"],
+      "negative_tests": ["tests/ot-52/portal-router.test.ts"]
+    }
+  ]
+}

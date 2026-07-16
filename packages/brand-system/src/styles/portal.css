@@ -76,7 +76,8 @@
   justify-content: space-between;
 }
 .ot-learner-list,
-.ot-stack {
+.ot-stack,
+.ot-question-form {
   display: grid;
   gap: 10px;
 }
@@ -170,6 +171,29 @@
   margin: 4px 0 0;
   font-size: 1.35rem;
   font-weight: 800;
+}
+.ot-field {
+  display: grid;
+  gap: 6px;
+}
+.ot-field span {
+  color: var(--ot-portal-muted);
+  font-weight: 700;
+}
+.ot-field select,
+.ot-field textarea {
+  width: 100%;
+  min-height: 44px;
+  color: var(--ot-portal-ink);
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+}
+.ot-field textarea {
+  resize: vertical;
+  overflow-wrap: anywhere;
 }
 @media (max-width: 760px) {
   .ot-portal {

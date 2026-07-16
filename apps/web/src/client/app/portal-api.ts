@@ -4,7 +4,9 @@ import type {
   ProtectedActionDescriptor,
   SessionUser,
   StudentAccessState,
+  StudentQuestion,
   StudentPortalDashboard,
+  SupportPreview,
 } from '@onetime/contracts';
 
 export type ApiSession = {
@@ -73,6 +75,67 @@ export async function runStudentAccessOperation(input: {
 export async function getStudentDashboard() {
   const json = await api<{ success: true; data: StudentPortalDashboard }>(
     '/api/v1/portals/student/dashboard',
+  );
+  return json.data;
+}
+
+export async function submitStudentQuestion(input: {
+  csrfToken: string;
+  question: string;
+  classKey?: string | undefined;
+}) {
+  const json = await api<{ success: true; data: StudentQuestion }>(
+    '/api/v1/portals/student/questions',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        question: input.question,
+        ...(input.classKey ? { class_key: input.classKey } : {}),
+      }),
+    },
+  );
+  return json.data;
+}
+
+export async function previewParentSupport(input: {
+  csrfToken: string;
+  householdKey: string;
+  subject: string;
+  body: string;
+}) {
+  const json = await api<{ success: true; data: SupportPreview }>(
+    `/api/v1/portals/parent/households/${encodeURIComponent(input.householdKey)}/support/preview`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        subject: input.subject,
+        body: input.body,
+      }),
+    },
+  );
+  return json.data;
+}
+
+export async function previewStudentSupport(input: {
+  csrfToken: string;
+  subject: string;
+  body: string;
+}) {
+  const json = await api<{ success: true; data: SupportPreview }>(
+    '/api/v1/portals/student/support/preview',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        idempotency_key: createIdempotencyKey(),
+        subject: input.subject,
+        body: input.body,
+      }),
+    },
   );
   return json.data;
 }

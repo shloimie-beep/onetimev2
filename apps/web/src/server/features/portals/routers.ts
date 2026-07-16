@@ -10,6 +10,8 @@ import {
   studentAccessOperationTypeSchema,
   studentAccessOperationPayloadSchema,
   studentAccessStateSchema,
+  studentQuestionPayloadSchema,
+  studentQuestionSchema,
   studentPortalDashboardSchema,
   supportPreviewSchema,
   supportRequestPayloadSchema,
@@ -68,6 +70,12 @@ type ParentPortalService = {
     learnerKey: string,
     classKey: string,
   ): Promise<unknown>;
+  protectedContentOpen(
+    actor: PortalActorContext,
+    householdKey: string,
+    learnerKey: string,
+    itemKey: string,
+  ): Promise<unknown>;
   learnerMaterials(
     actor: PortalActorContext,
     householdKey: string,
@@ -88,6 +96,7 @@ type ParentPortalService = {
 type StudentPortalService = {
   dashboard(actor: PortalActorContext): Promise<unknown>;
   protectedClassLaunch(actor: PortalActorContext, classKey: string): Promise<unknown>;
+  protectedContentOpen(actor: PortalActorContext, itemKey: string): Promise<unknown>;
   helperQuery(
     actor: PortalActorContext,
     payload: z.infer<typeof helperQueryPayloadSchema>,
@@ -96,6 +105,11 @@ type StudentPortalService = {
     actor: PortalActorContext,
     payload: z.infer<typeof supportRequestPayloadSchema>,
   ): Promise<unknown>;
+  submitQuestion(
+    actor: PortalActorContext,
+    payload: z.infer<typeof studentQuestionPayloadSchema>,
+  ): Promise<unknown>;
+  questions(actor: PortalActorContext): Promise<unknown>;
 };
 
 export type ParentPortalRouterDeps = {
@@ -116,6 +130,7 @@ const helperAnswerSchema = z.object({
   answer: z.string().trim().min(1).max(2400),
   source_refs: z.array(z.string().trim().min(1).max(180)).max(20),
 });
+const studentQuestionListSchema = z.array(studentQuestionSchema);
 export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
   const router = express.Router();
   router.use(noStore);
@@ -252,6 +267,22 @@ export function createParentPortalRouter(deps: ParentPortalRouterDeps) {
   );
 
   router.get(
+    '/households/:householdKey/learners/:learnerKey/content/:itemKey/open',
+    asyncRoute(async (req, res) => {
+      const actor = await requireActor(req, res, deps.resolveActor);
+      if (!actor) return;
+      const householdKey = parseParam(req.params.householdKey);
+      const learnerKey = parseParam(req.params.learnerKey);
+      const itemKey = parseParam(req.params.itemKey);
+      sendData(
+        res,
+        protectedActionDescriptorSchema,
+        await deps.service.protectedContentOpen(actor, householdKey, learnerKey, itemKey),
+      );
+    }),
+  );
+
+  router.get(
     '/households/:householdKey/learners/:learnerKey/materials',
     asyncRoute(async (req, res) => {
       const actor = await requireActor(req, res, deps.resolveActor);
@@ -323,6 +354,43 @@ export function createStudentPortalRouter(deps: StudentPortalRouterDeps) {
         res,
         protectedActionDescriptorSchema,
         await deps.service.protectedClassLaunch(actor, classKey),
+      );
+    }),
+  );
+
+  router.get(
+    '/content/:itemKey/open',
+    asyncRoute(async (req, res) => {
+      const actor = await requireActor(req, res, deps.resolveActor);
+      if (!actor) return;
+      const itemKey = parseParam(req.params.itemKey);
+      sendData(
+        res,
+        protectedActionDescriptorSchema,
+        await deps.service.protectedContentOpen(actor, itemKey),
+      );
+    }),
+  );
+
+  router.get(
+    '/questions',
+    asyncRoute(async (req, res) => {
+      const actor = await requireActor(req, res, deps.resolveActor);
+      if (!actor) return;
+      sendData(res, studentQuestionListSchema, await deps.service.questions(actor));
+    }),
+  );
+
+  router.post(
+    '/questions',
+    asyncRoute(async (req, res) => {
+      const actor = await requireWriteActor(req, res, deps);
+      if (!actor) return;
+      const payload = studentQuestionPayloadSchema.parse(req.body);
+      sendData(
+        res.status(201),
+        studentQuestionSchema,
+        await deps.service.submitQuestion(actor, payload),
       );
     }),
   );

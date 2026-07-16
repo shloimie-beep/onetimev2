@@ -194,6 +194,7 @@ export function studentDashboard(): StudentPortalDashboard {
     },
     rewards: { learner_key: 'learner_student_self', balance: 6, event_count: 2 },
     updates: [update('update_student_self', 'student')],
+    questions: [],
     helper: {
       available: false,
       reason: 'Student helper is not connected yet.',
