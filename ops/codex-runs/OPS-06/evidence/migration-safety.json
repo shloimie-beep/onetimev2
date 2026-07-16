@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-16T22:55:47.569Z",
+  "generated_at": "2026-07-16T23:29:40.832Z",
   "status": "passed",
-  "local_count": 25,
+  "local_count": 34,
   "remote_sources_scanned": [
     "origin/codex/crm-core-v1",
     "origin/codex/foundation-landing-lead-v1",
@@ -14,6 +14,9 @@
     "origin/codex/ops03b-email-step-up-login",
     "origin/codex/ops04p-provider-readiness-inventory",
     "origin/codex/ops05-observability-runbooks",
+    "origin/codex/ops05-provider-control-center",
+    "origin/codex/ops06-reliability-observability",
+    "origin/codex/ops07-dayone-journey-gates",
     "origin/codex/ops09-branch-fleet-ci-repair",
     "origin/codex/ot100-whatsapp-public-provider-activation",
     "origin/codex/ot101r-telegram-admin-runtime",
@@ -26,6 +29,8 @@
     "origin/codex/ot109-rabbi-content-publisher",
     "origin/codex/ot110a-admin-content-workspace",
     "origin/codex/ot111-legacy-activation-campaign",
+    "origin/codex/ot112-premium-product-system",
+    "origin/codex/ot114-crm-communications-support",
     "origin/codex/ot34-first-slice-core-hardening",
     "origin/codex/ot35-app-shell-crm-clarity",
     "origin/codex/ot36-delivery-sink-foundation",
@@ -90,6 +95,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ops09-branch-fleet-ci-repair:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/0001_onetime_lead_slice.sql",
@@ -102,6 +110,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ot34-first-slice-core-hardening:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ot35-app-shell-crm-clarity:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/ot36-delivery-sink-foundation:packages/db/migrations/0001_onetime_lead_slice.sql",
@@ -161,6 +171,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/0002_crm_auth_core.sql",
@@ -172,6 +185,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot34-first-slice-core-hardening:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot35-app-shell-crm-clarity:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/ot36-delivery-sink-foundation:packages/db/migrations/0002_crm_auth_core.sql",
@@ -230,6 +245,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/0003_ot27_security_crm_repair.sql",
@@ -241,6 +259,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot60r-recovery-convergence:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/ot72-provider-sandbox-train:packages/db/migrations/0003_ot27_security_crm_repair.sql",
@@ -283,6 +303,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/0004_delivery_worker_claim_index.sql",
@@ -294,6 +317,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot36-delivery-sink-foundation:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot40-school-receipt-worker-correction:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/ot60r-recovery-convergence:packages/db/migrations/0004_delivery_worker_claim_index.sql",
@@ -337,6 +362,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1000_ot42_crm_module_v1.sql",
@@ -348,6 +376,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot60r-recovery-convergence:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/ot72-provider-sandbox-train:packages/db/migrations/1000_ot42_crm_module_v1.sql",
@@ -388,6 +418,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
@@ -399,6 +432,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot80-one-shot-final-convergence:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot81-dayone-certification-and-staging:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
@@ -431,6 +466,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
@@ -442,6 +480,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot74-audience-reconciliation:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot80-one-shot-final-convergence:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot81-dayone-certification-and-staging:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
@@ -474,6 +514,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1300_ot46_billing_foundation.sql",
@@ -485,6 +528,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot46p-isolated-stripe-foundation:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot60r-recovery-convergence:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/1300_ot46_billing_foundation.sql",
@@ -525,6 +570,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1400_ot71_content_library.sql",
@@ -536,6 +584,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot80-one-shot-final-convergence:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot81-dayone-certification-and-staging:packages/db/migrations/1400_ot71_content_library.sql",
@@ -568,6 +618,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1500_ot52_portal_households_learners.sql",
@@ -579,6 +632,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot52p-isolated-parent-student-portals:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot60r-recovery-convergence:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/1500_ot52_portal_households_learners.sql",
@@ -619,6 +674,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
@@ -630,6 +688,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot51p-isolated-telegram-bot:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot60r-recovery-convergence:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
@@ -670,6 +730,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1700_ot71_account_lifecycle.sql",
@@ -681,6 +744,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot71-product-core-train:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot80-one-shot-final-convergence:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot81-dayone-certification-and-staging:packages/db/migrations/1700_ot71_account_lifecycle.sql",
@@ -708,10 +773,14 @@
       "paths": [
         "worktree:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ops-04-legacy-audience-migration:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/ops-06-ops-06-20260716t052821z-752266af:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1800_ot72_provider_truth.sql",
@@ -723,6 +792,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot80-one-shot-final-convergence:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot81-dayone-certification-and-staging:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot81-dayone-certification-staging:packages/db/migrations/1800_ot72_provider_truth.sql",
@@ -754,6 +825,9 @@
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ops05-observability-runbooks:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
@@ -765,6 +839,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot83-household-portals-foundation:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot83r-complete-portals:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot84-telegram-action-gateway:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
@@ -789,6 +865,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2000_ot83r_student_question_seam.sql",
@@ -800,6 +879,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ot83r-complete-portals:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2000_ot83r_student_question_seam.sql"
@@ -816,6 +897,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
@@ -827,6 +911,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql"
       ]
@@ -842,6 +928,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
@@ -853,6 +942,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql"
       ]
@@ -868,6 +959,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
@@ -879,6 +973,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql"
       ]
@@ -894,6 +990,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
@@ -905,6 +1004,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql"
       ]
@@ -920,6 +1021,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2005_ot86_content_pipeline.sql",
@@ -931,6 +1035,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2005_ot86_content_pipeline.sql"
       ]
@@ -946,6 +1052,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2006_ot86b_social_publishing.sql",
@@ -957,6 +1066,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2006_ot86b_social_publishing.sql"
       ]
@@ -972,6 +1083,9 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
@@ -983,6 +1097,8 @@
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql"
       ]
@@ -998,6 +1114,10 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ot104r-vimeo-private-runtime:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
@@ -1005,6 +1125,8 @@
         "origin/codex/ot107-student-ai-class-helper:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql"
       ]
     },
@@ -1019,6 +1141,10 @@
         "origin/codex/ops03-staging-readiness-repair:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ops04p-provider-readiness-inventory:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/ops05-provider-control-center:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/ops06-reliability-observability:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/ops07-dayone-journey-gates:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ot101r-telegram-admin-runtime:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ot104r-vimeo-private-runtime:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
@@ -1026,7 +1152,111 @@
         "origin/codex/ot107-student-ai-class-helper:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ot110a-admin-content-workspace:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/ot112-premium-product-system:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/ot114-crm-communications-support:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql"
+      ]
+    },
+    {
+      "id": "2010_ops03b_email_step_up_login",
+      "checksums": [
+        "573cb9b192abce880c9f24d62f3abf63e3f5dd4eeea9f113ceb55d43ba293f1d",
+        "084398c11ac8f14c3266889b732c15bd6d73f2156e8c27dac5c6525f2e03b7c5"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
+        "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2010_ops03b_email_step_up_login.sql"
+      ]
+    },
+    {
+      "id": "2011_ot101r_telegram_admin_runtime",
+      "checksums": [
+        "48ac8aea3f94a222ba93c83c3c40f53441ac7751f29821a46dca294fc91b84f0",
+        "94e546420209f8a1d3c5e9b4252628f58cb1110862580f730c94cada26927f93"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql"
+      ]
+    },
+    {
+      "id": "2012_ot104r_vimeo_private_runtime",
+      "checksums": [
+        "5b655cffcfb2e9230608e02659fd2136b95f705cf6258d5ffd54fb28097617a0",
+        "63d9458f3a3333fb9d76859c755bb7f156f0cdfd85a94028c0ad120f5911e549"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql"
+      ]
+    },
+    {
+      "id": "2013_ot110a_admin_content_workspace",
+      "checksums": [
+        "34837ed9951b1b4ad4c20d939f346bd991b1042451533d506f8dadcb8a090076",
+        "98490714a97c3051ad67371f19d1ba04d99b752d558880783fde798223360b80"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2013_ot110a_admin_content_workspace.sql"
+      ]
+    },
+    {
+      "id": "2014_ot111_legacy_activation_campaign",
+      "checksums": [
+        "6f0a6ab52c395e5f015ac2d4dfc7cea6229abeeeac967838d29961ac6bd5d53c",
+        "1d979888e4636207dae98d66f31628179a8412e5d0419fdf8b72bf21e02cc5be"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql"
+      ]
+    },
+    {
+      "id": "2100_ot100_whatsapp_provider_activation",
+      "checksums": [
+        "05a01dd9f19330f2aad460ba4235ec068dda5f640fc1c7047d67b1f0999a658d",
+        "1e0690950dcba1fc06864a0e0acb3846feeafcdb408eb5c1b7b03def49f244e5"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
+        "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql"
+      ]
+    },
+    {
+      "id": "2130_ot103_zoom_provider",
+      "checksums": [
+        "23c5c0abdf0236a42abb8eeec985e68afcfc1bc69b49e8bf201d65c683505c8d",
+        "00be90db4e75a0bb6b05c1ac2530165f28aeffb7dd0ae3ee5572aafda06cb980"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2130_ot103_zoom_provider.sql",
+        "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2130_ot103_zoom_provider.sql"
+      ]
+    },
+    {
+      "id": "2160_ot106_buffer_social_publishing",
+      "checksums": [
+        "e3c6be9a95d15a34b69f5866309e5c8c3c61a3205ad4798363900dd8a9c82638",
+        "8ae1ee9387ef09e8519145231e51a4fd569ef8539c251d470594ec192b7d884e"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
+        "origin/codex/ot106-buffer-social-publishing-runtime:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2160_ot106_buffer_social_publishing.sql"
+      ]
+    },
+    {
+      "id": "2190_ot109_rabbi_content_publisher",
+      "checksums": [
+        "8d09ec94936ac769e5df6eb68a6c6eaef00c1da0917705baa46074e004295886",
+        "bedc4cea72327565d95914c26eeae8c572452987a0dfdad48f60ea5cf466fead"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
+        "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql"
       ]
     }
   ],

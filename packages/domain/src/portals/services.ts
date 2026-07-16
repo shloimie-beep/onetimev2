@@ -264,8 +264,13 @@ export type PortalServiceDeps = {
   idGenerator?: () => string;
 };
 
+const PARENT_HELPER_PREPARING_MESSAGE =
+  'Portal helper is being prepared for your household. Send a support request and we will route it for review.';
+const STUDENT_HELPER_PREPARING_MESSAGE =
+  'Class Helper is being prepared for this class. Send a private question and we will route it for review.';
+
 export function createParentPortalService(deps: PortalServiceDeps) {
-  const helper = deps.helper ?? unavailableHelper('Parent helper is not connected yet.');
+  const helper = deps.helper ?? unavailableHelper(PARENT_HELPER_PREPARING_MESSAGE);
   const support = deps.support ?? localSupportPreview(deps.idGenerator);
   const billing = deps.billing ?? disabledBilling();
 
@@ -477,10 +482,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
     ) {
       requireParentHousehold(actor, householdKey, 'helper:query');
       if (!helper.query) {
-        throw new PortalServiceError(
-          'ADAPTER_UNAVAILABLE',
-          'The parent helper is not connected yet.',
-        );
+        throw new PortalServiceError('ADAPTER_UNAVAILABLE', PARENT_HELPER_PREPARING_MESSAGE);
       }
       const household = await requireHousehold(deps.repository, actor, householdKey);
       return helper.query({ actor, household, payload });
@@ -499,7 +501,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
 }
 
 export function createStudentPortalService(deps: PortalServiceDeps) {
-  const helper = deps.helper ?? unavailableHelper('Student helper is not connected yet.');
+  const helper = deps.helper ?? unavailableHelper(STUDENT_HELPER_PREPARING_MESSAGE);
   const support = deps.support ?? localSupportPreview(deps.idGenerator);
 
   return {
@@ -581,10 +583,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
     async helperQuery(actor: PortalActorContext, payload: HelperQueryPayload) {
       const subject = requireStudentSubject(actor, 'helper:query');
       if (!helper.query) {
-        throw new PortalServiceError(
-          'ADAPTER_UNAVAILABLE',
-          'The student helper is not connected yet.',
-        );
+        throw new PortalServiceError('ADAPTER_UNAVAILABLE', STUDENT_HELPER_PREPARING_MESSAGE);
       }
       const learner = await requireLearner(
         deps.repository,

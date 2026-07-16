@@ -34,6 +34,9 @@ import {
 } from './portal-api.js';
 import './crm.css';
 
+const HELPER_PREPARING_MESSAGE =
+  'Class Helper is being prepared for this class. Send a private question and we will route it for review.';
+
 type Notice = {
   kind: 'info' | 'success' | 'error';
   message: string;
@@ -363,7 +366,7 @@ function PortalApp() {
 
   async function handleStudentHelper(question: string) {
     if (!session || portalRole !== 'student') {
-      throw new Error('Class Helper is unavailable.');
+      throw new Error(HELPER_PREPARING_MESSAGE);
     }
     try {
       return await queryStudentHelper({
@@ -372,7 +375,7 @@ function PortalApp() {
       });
     } catch (error) {
       if (handleAuthError(error)) throw error;
-      setNotice({ kind: 'error', message: errorMessage(error, 'Class Helper is unavailable.') });
+      setNotice({ kind: 'error', message: errorMessage(error, HELPER_PREPARING_MESSAGE) });
       setViewState(stateForError(error));
       throw error;
     }

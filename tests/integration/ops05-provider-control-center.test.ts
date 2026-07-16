@@ -3,16 +3,13 @@ import { createApp } from '../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import {
-  activateTotpEnrollment,
   createAccountUser,
-  provisionTotpEnrollment,
-  totpCode,
+  decryptAuthEmailChallengeDeliveryPayloadForTests,
 } from '../../packages/domain/src/index.ts';
 
 let pool: DbPool;
 let config: AppConfig;
 let server: Awaited<ReturnType<typeof listenForTest>>;
-let ownerTotpSecret: string;
 
 const now = new Date('2026-07-17T05:30:00.000Z');
 
@@ -34,7 +31,7 @@ beforeEach(async () => {
   });
   pool = createMemoryPool();
   await runMigrations(pool);
-  const ownerUserKey = await createAccountUser({
+  await createAccountUser({
     pool,
     config,
     email: 'owner@example.test',
@@ -43,15 +40,6 @@ beforeEach(async () => {
     role: 'owner',
     mfaCapable: true,
   });
-  const enrollment = await provisionTotpEnrollment({ pool, config, userKey: ownerUserKey });
-  ownerTotpSecret = enrollment.secret;
-  const activated = await activateTotpEnrollment({
-    pool,
-    config,
-    enrollmentToken: enrollment.enrollmentToken,
-    code: totpCode(enrollment.secret),
-  });
-  expect(activated).not.toBe(false);
   await createAccountUser({
     pool,
     config,
@@ -85,7 +73,7 @@ describe('OPS-05 provider control center API', () => {
     );
     expect(viewerResponse.status).toBe(403);
 
-    const owner = await loginAs('owner@example.test', 'OwnerPass!234', ownerTotpSecret);
+    const owner = await loginAs('owner@example.test', 'OwnerPass!234');
     const response = await fetch(
       `${server.baseUrl}/api/internal/operations/provider-control-center/v1`,
       {
@@ -121,7 +109,7 @@ describe('OPS-05 provider control center API', () => {
   });
 
   it('dry-runs canary plans only with owner CSRF, recent assurance, and allowlisted fixture', async () => {
-    const owner = await loginAs('owner@example.test', 'OwnerPass!234', ownerTotpSecret);
+    const owner = await loginAs('owner@example.test', 'OwnerPass!234');
     const payload = {
       provider: 'resend_email',
       idempotency_key: 'ops05-canary-plan',
@@ -176,7 +164,7 @@ async function canaryPlan(
   });
 }
 
-async function loginAs(email: string, password: string, totpSecret?: string) {
+async function loginAs(email: string, password: string) {
   const csrf = await getLoginCsrf();
   const response = await fetch(`${server.baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -187,21 +175,22 @@ async function loginAs(email: string, password: string, totpSecret?: string) {
     },
     body: JSON.stringify({ email, password, csrf_token: csrf.token }),
   });
-  if (response.status === 403 && totpSecret) {
+  if (response.status === 403) {
     const challenge = (await response.json()) as { code?: string; challenge_token?: string };
-    expect(challenge.code).toBe('MFA_REQUIRED');
-    const mfa = await fetch(`${server.baseUrl}/api/v1/auth/mfa/challenge`, {
+    expect(challenge.code).toBe('EMAIL_CHALLENGE_REQUIRED');
+    const payload = await latestEmailChallengePayload();
+    const verified = await fetch(`${server.baseUrl}/api/v1/auth/email-challenge/verify`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         challenge_token: challenge.challenge_token,
-        totp_code: totpCode(totpSecret),
+        code: String(payload.code),
       }),
     });
-    expect(mfa.status).toBe(200);
+    expect(verified.status).toBe(200);
     return {
-      cookies: mergeCookies(csrf.cookies, cookieHeader(mfa.headers)),
-      json: (await mfa.json()) as { csrf_token: string },
+      cookies: mergeCookies(csrf.cookies, cookieHeader(verified.headers)),
+      json: (await verified.json()) as { csrf_token: string },
     };
   }
   expect(response.status).toBe(200);
@@ -209,6 +198,25 @@ async function loginAs(email: string, password: string, totpSecret?: string) {
     cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
     json: (await response.json()) as { csrf_token: string },
   };
+}
+
+async function latestEmailChallengePayload() {
+  const result = await pool.query(
+    `SELECT nonce, ciphertext, auth_tag
+       FROM onetime.auth_email_challenge_delivery_outbox
+      WHERE nonce IS NOT NULL
+        AND ciphertext IS NOT NULL
+        AND auth_tag IS NOT NULL
+      ORDER BY created_at DESC
+      LIMIT 1`,
+  );
+  const row = result.rows[0];
+  if (!row) throw new Error('missing auth email challenge payload');
+  return decryptAuthEmailChallengeDeliveryPayloadForTests(config, {
+    nonce: String(row.nonce),
+    ciphertext: String(row.ciphertext),
+    auth_tag: String(row.auth_tag),
+  });
 }
 
 async function getLoginCsrf() {

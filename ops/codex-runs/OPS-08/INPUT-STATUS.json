@@ -1,0 +1,96 @@
+{
+  "run_id": "OPS-08",
+  "generated_at_utc": "2026-07-16T23:32:12Z",
+  "readiness": "PARTIALLY_READY_FOR_OPERATOR_TESTING",
+  "github_metadata_status": {
+    "git_refs": "available",
+    "github_connector": "unavailable_for_repo_metadata",
+    "gh_cli": "unavailable_due_invalid_keyring_token",
+    "checks_api": "not_available_to_ops08",
+    "notes": "OPS-08 verified heads through git refs and merge-tree probes. GitHub check conclusions were not available through the local connector/CLI."
+  },
+  "status_by_input": [
+    {
+      "id": "OPS-04C",
+      "sha": "5cc3849c2d0d6909bed038a8e9e8ef666ed5003e",
+      "status": "merged"
+    },
+    {
+      "id": "PR-42",
+      "sha": "3fe848809e8d958c7c839452d73cf0f90916147c",
+      "status": "merged"
+    },
+    {
+      "id": "PR-43",
+      "sha": "dc05747d55413149743a4c4c6b0223912c29b8eb",
+      "status": "merged"
+    },
+    {
+      "id": "PR-44",
+      "sha": "3871c38b75e7fc866f572ec80d3b2ec37cde6b6e",
+      "status": "blocked_not_merged",
+      "blocker": "merge-tree conflicts and no green check evidence; OT-113 remains blocked"
+    },
+    {
+      "id": "PR-45",
+      "sha": "10cee196dbb6628edd9bacb6e224646d7bf39e70",
+      "status": "merged"
+    },
+    {
+      "id": "PR-46",
+      "sha": "4155ee706fce2eabc6db5225b5c8ce41a8c1dfd1",
+      "status": "inherited_through_ops04c_not_separately_repaired"
+    },
+    {
+      "id": "PR-47",
+      "sha": "c64a58ae9a72515fc6135cc2be0f72340c30f49c",
+      "status": "merged"
+    },
+    {
+      "id": "PR-48",
+      "sha": "a62d6a73553e175871f6d3124badb96573cdabe7",
+      "status": "inherited_through_ops04c_not_separately_repaired"
+    },
+    {
+      "id": "OT-112/PR-57",
+      "sha": "ae1c7cbc05e2ed6263c9943d64a6a738e5ffb6c7",
+      "status": "merged"
+    },
+    {
+      "id": "OPS-05/PR-56",
+      "sha": "c04a9a5cc3020f4c6622e49963f028d469d48800",
+      "status": "merged"
+    },
+    {
+      "id": "OPS-06/PR-58",
+      "sha": "aa17fed49b936ccc2fbfafad7826af39c1754b12",
+      "status": "merged"
+    },
+    {
+      "id": "OPS-07/PR-55",
+      "sha": "ce831f0e81a919a53934b50e4f843977649379cf",
+      "status": "merged_with_ops08_fixes"
+    },
+    {
+      "id": "OT-114",
+      "sha": "096dd614c9493cec1c29851e14f56166863ad26b",
+      "status": "observed_ready_not_merged",
+      "blocker": "merge-tree conflict in apps/web/src/server/app.ts"
+    },
+    {
+      "id": "OT-113",
+      "sha": null,
+      "status": "blocked_absent_remote"
+    },
+    {
+      "id": "BNA-OPS-02",
+      "sha": null,
+      "status": "blocked_absent_remote_for_canary"
+    }
+  ],
+  "latest_remote_poll": {
+    "utc": "2026-07-16T23:32:12Z",
+    "pr44_head": "3871c38b75e7fc866f572ec80d3b2ec37cde6b6e",
+    "ot114_head": "096dd614c9493cec1c29851e14f56166863ad26b"
+  }
+}

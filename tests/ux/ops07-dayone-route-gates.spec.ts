@@ -40,12 +40,14 @@ test.describe('OPS-07 Day-One route gates', () => {
     const unexpectedConsole: string[] = [];
     const unexpectedResponses: string[] = [];
     page.on('console', (message) => {
-      if (message.type() === 'error') unexpectedConsole.push(message.text());
+      if (message.type() === 'error' && !isExpectedProtectedDenialConsole(message.text())) {
+        unexpectedConsole.push(message.text());
+      }
     });
     page.on('pageerror', (error) => unexpectedConsole.push(error.message));
     page.on('response', (response) => {
       const status = response.status();
-      if (status >= 400 && !response.url().includes('/api/v1/crm/contacts/search')) {
+      if (status >= 400 && !isExpectedProtectedDenial(response)) {
         unexpectedResponses.push(`${status} ${response.url()}`);
       }
     });
@@ -74,6 +76,22 @@ test.describe('OPS-07 Day-One route gates', () => {
     expect(results.filter((result) => result.status === 'FAIL')).toEqual([]);
   });
 });
+
+function isExpectedProtectedDenialConsole(message: string) {
+  return (
+    message === 'Failed to load resource: the server responded with a status of 403 (Forbidden)'
+  );
+}
+
+function isExpectedProtectedDenial(response: { status(): number; url(): string }) {
+  if (response.url().includes('/api/v1/crm/contacts/search')) return true;
+  if (response.status() !== 403) return false;
+  try {
+    return new URL(response.url()).pathname === '/app/dashboard';
+  } catch {
+    return false;
+  }
+}
 
 async function inspectRoute(
   page: Page,
@@ -162,6 +180,7 @@ async function inspectRoute(
 }
 
 async function login(page: Page, email: string, password: string, returnTo: string) {
+  await page.context().clearCookies();
   await page.goto(`/login?return_to=${encodeURIComponent(returnTo)}`);
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);

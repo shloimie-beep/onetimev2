@@ -754,7 +754,7 @@ img {
   border: 1px solid rgba(255, 210, 31, 0.2);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
-  opacity: 0.62;
+  opacity: 1;
   scroll-snap-align: center;
   transform: scale(0.92);
   transition:

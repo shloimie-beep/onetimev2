@@ -721,7 +721,11 @@ function ClassHelperPanel({
             })
             .catch((caught: unknown) => {
               setState('error');
-              setError(caught instanceof Error ? caught.message : 'Class Helper is unavailable.');
+              setError(
+                caught instanceof Error
+                  ? caught.message
+                  : 'Class Helper is being prepared for this class. Send a private question and we will route it for review.',
+              );
             });
         }}
       >

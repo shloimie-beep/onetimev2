@@ -989,31 +989,28 @@ function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['a
   const visible = actions.filter((action) => action.roles.includes('owner'));
   return (
     <section className="action-registry" aria-labelledby="action-registry-title">
-      <h2 id="action-registry-title">Visible action registry</h2>
+      <h2 id="action-registry-title">Operator action coverage</h2>
       <div className="action-registry-grid">
         {visible.map((action) => (
           <article key={action.action_id}>
             <h3>{action.label}</h3>
-            <p>{action.action_id}</p>
             <dl>
               <div>
-                <dt>Capability</dt>
-                <dd>{action.capability}</dd>
+                <dt>Area</dt>
+                <dd>{formatRegistryLabel(action.capability)}</dd>
               </div>
               <div>
-                <dt>Handler</dt>
+                <dt>Control</dt>
+                <dd>{action.handler.method === 'GET' ? 'Read-only view' : 'Protected update'}</dd>
+              </div>
+              <div>
+                <dt>Activity record</dt>
+                <dd>Recorded for operator review.</dd>
+              </div>
+              <div>
+                <dt>Duplicate protection</dt>
                 <dd>
-                  {action.handler.method} {action.handler.path}
-                </dd>
-              </div>
-              <div>
-                <dt>Audit</dt>
-                <dd>{action.audit.event}</dd>
-              </div>
-              <div>
-                <dt>Idempotency</dt>
-                <dd>
-                  {action.idempotency.required ? action.idempotency.key_source : 'Not required'}
+                  {action.idempotency.required ? 'Duplicate taps are ignored.' : 'Read-only safe.'}
                 </dd>
               </div>
             </dl>
@@ -1022,6 +1019,14 @@ function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['a
       </div>
     </section>
   );
+}
+
+function formatRegistryLabel(value: string) {
+  return value
+    .replace(/[_:/.-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function ReadOnlySkeleton({ label }: { label: string }) {

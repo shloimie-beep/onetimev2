@@ -92,9 +92,9 @@ export function AppShell({
   }, [drawerOpen]);
 
   const shellUser = user ?? {
-    displayName: 'Signed out',
-    email: 'Session expired',
-    roleLabel: sessionExpired ? 'Session expired' : 'Checking session',
+    displayName: 'One Time',
+    email: sessionExpired ? 'Sign in again to continue' : 'Preparing your workspace',
+    roleLabel: sessionExpired ? 'Needs sign-in' : 'Secure workspace',
   };
   const currentItem = navItems.find((item) => item.current) ??
     navItems[0] ?? {
