@@ -34,6 +34,19 @@ This preserves the intentional separation between ordinary Class Helper queries
 and explicit private-question submission. It does not reintroduce the old direct
 `Submit question` flow and does not weaken the helper/private-question boundary.
 
+## Known Mergeability Blocker
+
+After the scoped repair was pushed, GitHub reported
+`mergeStateStatus=DIRTY` for PR #44. Local `git merge-tree` identifies the
+shared migration proof hunk in
+`tests/integration/telegram-db-foundation.test.ts` as the conflict surface
+against `codex/ops03-staging-readiness-repair`.
+
+OPS-09A did not create a broad canonical merge commit for PR #44 after the
+operator nudge to keep this branch scoped to the private-question compatibility
+fix. OT-113/OPS-08 can proceed with this explicit blocker rather than receiving
+a widened leaf branch.
+
 ## Provider Safety Posture
 
 No live AI provider canary, provider mutation, production/staging database

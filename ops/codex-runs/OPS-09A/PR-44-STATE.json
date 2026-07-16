@@ -7,9 +7,11 @@
   "canonical_reference_branch": "codex/ops03-staging-readiness-repair",
   "canonical_reference_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
   "before_head_sha": "560a07c66baddc99df38441299f3e57107d02137",
+  "scoped_repair_head_sha": "9247f5098b4d06c0cbaafca4b704beb00b9fe66a",
   "expected_packet_head_sha": "560a07c66baddc99df38441299f3e57107d02137",
   "remote_head_advanced_before_repair": false,
-  "status": "local_repair_verified_pending_push",
+  "github_merge_state_after_scoped_repair": "DIRTY",
+  "status": "scoped_repair_pushed_merge_blocked",
   "semantic_scope_preserved": [
     "OT-107 Class Helper remains separate from explicit private-question submission",
     "private questions still require preview and Send private question confirmation",
@@ -19,7 +21,8 @@
   "repair_summary": [
     "Repaired stale migration final-ID assertions in tests/integration/telegram-db-foundation.test.ts",
     "Updated the OT-83R student portal e2e to exercise the OT-107 private-question preview and confirmation flow instead of the removed direct Submit question path",
-    "Cleaned generated Playwright screenshot/evidence churn from the worktree before commit"
+    "Cleaned generated Playwright screenshot/evidence churn from the worktree before commit",
+    "Did not create a broad PR #44 canonical merge commit after operator nudge to keep the branch scoped to the private-question compatibility fix"
   ],
   "tests": [
     {
@@ -84,6 +87,11 @@
       "id": "BLOCK-OT107-001",
       "scope": "live AI provider canary only",
       "reason": "protected live AI provider credentials and explicit canary approval are not present"
+    },
+    {
+      "id": "BLOCK-OT107-002",
+      "scope": "GitHub mergeability",
+      "reason": "GitHub reports PR #44 mergeStateStatus=DIRTY after the scoped repair. Local merge-tree identifies the shared migration proof hunk against codex/ops03-staging-readiness-repair as the conflict surface. A broad canonical merge commit was intentionally not added to preserve the operator-requested narrow OT-107 scope."
     }
   ],
   "guardrails": {
