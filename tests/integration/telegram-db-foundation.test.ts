@@ -46,22 +46,22 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
     expect(first.some((migration) => migration.id === '2000_ot83r_student_question_seam')).toBe(
       true,
     );
-    expect(first.some((migration) => migration.id === '2000_ot84_telegram_action_gateway')).toBe(
+    expect(first.some((migration) => migration.id === '2001_ot84_telegram_action_gateway')).toBe(
       true,
     );
-    expect(first.some((migration) => migration.id === '2100_ot88_zoom_learner_classroom')).toBe(
+    expect(first.some((migration) => migration.id === '2002_ot88_zoom_learner_classroom')).toBe(
       true,
     );
-    expect(first.some((migration) => migration.id === '2000_ot85_whatsapp_assistant')).toBe(true);
-    expect(first.some((migration) => migration.id === '2000_ot86_content_pipeline')).toBe(true);
-    expect(first.some((migration) => migration.id === '2100_ot86b_social_publishing')).toBe(true);
-    expect(first.some((migration) => migration.id === '2000_ot87_stripe_test_entitlements')).toBe(
+    expect(first.some((migration) => migration.id === '2004_ot85_whatsapp_assistant')).toBe(true);
+    expect(first.some((migration) => migration.id === '2005_ot86_content_pipeline')).toBe(true);
+    expect(first.some((migration) => migration.id === '2006_ot86b_social_publishing')).toBe(true);
+    expect(first.some((migration) => migration.id === '2007_ot87_stripe_test_entitlements')).toBe(
       true,
     );
     expect(
-      first.some((migration) => migration.id === '2100_ot89a_subscriber_support_producer'),
+      first.some((migration) => migration.id === '2003_ot89a_subscriber_support_producer'),
     ).toBe(true);
-    expect(first.at(-1)?.id).toBe('2100_ot89a_subscriber_support_producer');
+    expect(first.at(-1)?.id).toBe('2007_ot87_stripe_test_entitlements');
     const applied = await pool.query(
       `SELECT checksum
          FROM onetime.schema_migrations
@@ -71,13 +71,13 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
           '1800_ot72_provider_truth',
           '1900_ot83_household_portal_foundation',
           '2000_ot83r_student_question_seam',
-          '2000_ot84_telegram_action_gateway',
-          '2000_ot85_whatsapp_assistant',
-          '2000_ot86_content_pipeline',
-          '2000_ot87_stripe_test_entitlements',
-          '2100_ot86b_social_publishing',
-          '2100_ot88_zoom_learner_classroom',
-          '2100_ot89a_subscriber_support_producer'
+          '2001_ot84_telegram_action_gateway',
+          '2002_ot88_zoom_learner_classroom',
+          '2003_ot89a_subscriber_support_producer',
+          '2004_ot85_whatsapp_assistant',
+          '2005_ot86_content_pipeline',
+          '2006_ot86b_social_publishing',
+          '2007_ot87_stripe_test_entitlements'
         )`,
     );
     expect(applied.rowCount).toBe(12);
