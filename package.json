@@ -36,6 +36,7 @@
     "db:verify": "tsx scripts/migrate.ts --verify",
     "stripe:test:resources:validate": "tsx scripts/ot87-stripe-test-resources.ts validate",
     "stripe:test:resources:setup": "tsx scripts/ot87-stripe-test-resources.ts setup",
+    "stripe:test:canary": "tsx scripts/ot105-stripe-test-canary.ts",
     "billing:reconcile:test": "tsx scripts/ot87-billing-reconcile-test.ts --scope=family --dry-run",
     "billing:reconcile:test:apply": "tsx scripts/ot87-billing-reconcile-test.ts --scope=family --apply",
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",

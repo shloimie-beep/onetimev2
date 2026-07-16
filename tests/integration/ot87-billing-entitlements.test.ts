@@ -202,6 +202,7 @@ function enabledConfig(): BillingFeatureConfig {
     mode: 'test',
     canonicalPublicOrigin: 'https://join.onetimeonetime.com',
     expectedProviderAccountRef: providerAccount.provider_account_ref,
+    expectedProviderProductRef: 'prod_fixture_ot87',
     providerPortalConfigurationRef: 'bpc_fixture_ot87',
     policyId: 'ot87-family-monthly-usd-67-v1',
     policyVersion: '2026-07-15.1',

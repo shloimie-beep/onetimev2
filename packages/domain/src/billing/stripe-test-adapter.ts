@@ -371,6 +371,16 @@ function extractObjectRefs(event: StripeTestEvent): ProviderEventObjectRefs {
   setString(refs, 'offer_key', object.offer_key ?? (metadata as Record<string, unknown>).offer_key);
   setString(
     refs,
+    'provider_price_ref',
+    object.provider_price_ref ?? object.price ?? firstNestedRef(object, 'price'),
+  );
+  setString(
+    refs,
+    'provider_product_ref',
+    object.provider_product_ref ?? object.product ?? firstNestedRef(object, 'product'),
+  );
+  setString(
+    refs,
     'policy_version',
     object.policy_version ??
       (metadata as Record<string, unknown>).policy_version ??
@@ -463,4 +473,35 @@ function setNumber<T extends keyof ProviderEventObjectRefs>(
   if (typeof value === 'number' && Number.isFinite(value)) {
     (refs as Record<string, number>)[key] = Math.trunc(value);
   }
+}
+
+function firstNestedRef(object: Record<string, unknown>, label: 'price' | 'product') {
+  const direct = object[label];
+  const directRef = stringFromValue(direct);
+  if (directRef) return directRef;
+  const lines = object.lines;
+  const line = firstDataObject(lines);
+  const linePrice = stringFromValue(line?.price);
+  if (label === 'price' && linePrice) return linePrice;
+  const lineProduct = stringFromValue(
+    line?.product ?? (line?.price as Record<string, unknown>)?.product,
+  );
+  if (label === 'product' && lineProduct) return lineProduct;
+  const items = object.items;
+  const item = firstDataObject(items);
+  const itemPrice = stringFromValue(item?.price);
+  if (label === 'price' && itemPrice) return itemPrice;
+  const itemProduct = stringFromValue(
+    item?.product ?? (item?.price as Record<string, unknown>)?.product,
+  );
+  if (label === 'product' && itemProduct) return itemProduct;
+  return null;
+}
+
+function firstDataObject(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const data = (value as Record<string, unknown>).data;
+  if (!Array.isArray(data)) return undefined;
+  const first = data.find((item) => item && typeof item === 'object');
+  return first as Record<string, unknown> | undefined;
 }

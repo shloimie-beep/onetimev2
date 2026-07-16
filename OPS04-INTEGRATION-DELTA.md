@@ -54,3 +54,47 @@ Required follow-up wiring:
 - Add the actual Zoom Meeting SDK package and switch `apps/web/src/client/classroom/zoom-sdk-adapter.ts` from the deterministic panel to a lazy SDK import only on the classroom route.
 - Keep learner role `0`; owner/host start with ZAK remains a separate protected owner capability and must not share the student launch path.
 - Keep raw `start_url`, reusable passcodes, access tokens, SDK secret, ZAK, private provider URLs, and raw join URLs out of logs, audits, dashboards, and non-classroom responses.
+
+## OT-105 Stripe TEST Billing
+
+OT-105 exports the billing integration factories from `packages/domain/src/index.ts`
+and billing DTO/contracts from `packages/contracts/src/index.ts` so the final
+conductor can wire billing through public package surfaces.
+
+### Use These Factories
+
+- `parseOt87StripeTestBillingConfig`
+- `readOt87StripeRuntimeSecrets`
+- `billingConfigSnapshot`
+- `createOfficialStripeTestClient`
+- `createStripeTestBillingProviderAdapter`
+- `createBillingServices`
+- `createFixtureBillingProviderAdapter`
+- `loadOt87CommercialPolicy`
+- `evaluateBillingEntitlement`
+- `householdHasLearningAccess`
+
+### Mount Order
+
+Mount `/api/v1/billing/webhooks/provider` with raw body handling before any
+global JSON parser. The current app mounts `createBillingRouter` before
+`express.json`, and the router applies `express.raw({ type: '*/*', limit:
+'64kb' })` to the provider webhook route.
+
+### Staging Webhook
+
+The corrected TEST webhook endpoint is:
+
+```text
+https://ot99-web-staging.up.railway.app/api/v1/billing/webhooks/provider
+```
+
+Do not wire Stripe to the homepage, Checkout success URL, or public landing
+redirect.
+
+### Stripe Guardrails
+
+- Stripe mode remains TEST only.
+- `LIVE_STRIPE_CHARGES_AUTHORIZED` must equal `NO` before test transport is enabled.
+- Missing protected TEST configuration blocks only the external provider canary.
+- No live Stripe action, real charge, credential write, production DB mutation, deployment, DNS/Railway mutation, or access grant is authorized by this delta.
