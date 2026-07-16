@@ -38,6 +38,7 @@ const parentActor: PortalActorContext = {
     'parent:learner:archive',
     'parent:student-access:manage',
     'parent:class:launch',
+    'parent:content:open',
     'parent:support:preview',
     'rewards:read',
     'rewards:write',
@@ -144,8 +145,17 @@ describe('OT-52P parent and student portal services', () => {
 
     const dashboard = await parentService.dashboard(parentActor, householdKey);
     expect(dashboard.learners.map((learner) => learner.learner_key).sort()).toEqual(
-      [learner2.learner_key, learner3.learner_key, learner4.learner_key].sort(),
+      [
+        learner1.learner_key,
+        learner2.learner_key,
+        learner3.learner_key,
+        learner4.learner_key,
+      ].sort(),
     );
+    expect(
+      dashboard.learners.find((learner) => learner.learner_key === learner1.learner_key)
+        ?.learner_status,
+    ).toBe('archived');
     expect(dashboard.household.active_learner_count).toBe(3);
   });
 
@@ -199,6 +209,53 @@ describe('OT-52P parent and student portal services', () => {
     const launch = await studentService.protectedClassLaunch(studentActor, 'class_week_001');
     expect(launch.href).toMatch(/^\/api\/v1\/portals\//);
     expect(JSON.stringify(launch)).not.toMatch(/https?:\/\/|zoom|meet/i);
+  });
+
+  it('submits private student questions idempotently without exposing them to parents', async () => {
+    const learner = await createLearner('Question Learner', 'question-learner-create');
+    const studentActor = studentActorFor(learner.learner_key);
+    const submitted = await studentService.submitQuestion(studentActor, {
+      idempotency_key: 'student-question-001',
+      question: 'What is the main point of the Mishnah?',
+      class_key: 'class_week_001',
+    });
+    const replay = await studentService.submitQuestion(studentActor, {
+      idempotency_key: 'student-question-001',
+      question: 'What is the main point of the Mishnah?',
+      class_key: 'class_week_001',
+    });
+
+    expect(replay.question_key).toBe(submitted.question_key);
+    expect(
+      (await studentService.questions(studentActor)).map((entry) => entry.question_key),
+    ).toEqual([submitted.question_key]);
+    await expect(
+      deps.repository.listStudentQuestions({
+        actor: parentActor,
+        learner_key: learner.learner_key,
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    await expect(
+      studentService.submitQuestion(studentActorFor('learner_sibling_attempt'), {
+        idempotency_key: 'student-question-sibling',
+        question: 'Sibling attempt',
+      }),
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+  });
+
+  it('opens protected content only after learner entitlement checks', async () => {
+    const learner = await createLearner('Content Learner', 'content-learner-create');
+    const studentActor = studentActorFor(learner.learner_key);
+    const opened = await studentService.protectedContentOpen(
+      studentActor,
+      `library_${learner.learner_key}`,
+    );
+
+    expect(opened).toMatchObject({ kind: 'content_open', href: null });
+    expect(JSON.stringify(opened)).not.toMatch(/https?:\/\/|zoom|vimeo|drive/i);
+    await expect(
+      studentService.protectedContentOpen(studentActor, 'library_learner_sibling'),
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
   });
 
   it('keeps rewards immutable, idempotent, and unavailable to student actors', async () => {
@@ -389,8 +446,11 @@ function studentActorFor(learnerKey: string): PortalActorContext {
     capabilities: [
       'student:dashboard:read',
       'student:class:launch',
+      'student:content:open',
+      'student:question:create',
       'student:support:preview',
       'rewards:read',
+      'helper:query',
     ],
     authorized_households: [],
     student_learner: {

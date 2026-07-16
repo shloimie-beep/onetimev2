@@ -1110,6 +1110,7 @@ function capabilitiesForPortalRole(role: AuthenticatedSession['user']['role']): 
       'parent:learner:archive',
       'parent:student-access:manage',
       'parent:class:launch',
+      'parent:content:open',
       'parent:support:preview',
       'rewards:read',
       'helper:query',
@@ -1119,6 +1120,8 @@ function capabilitiesForPortalRole(role: AuthenticatedSession['user']['role']): 
     return [
       'student:dashboard:read',
       'student:class:launch',
+      'student:content:open',
+      'student:question:create',
       'student:support:preview',
       'rewards:read',
       'helper:query',

@@ -241,7 +241,7 @@ describe('OT-71 content library outcome admission', () => {
     expect(library.map((item) => item.item_key)).toEqual(['portal_video']);
     expect(reviews.map((item) => item.item_key)).toEqual(['portal_review']);
     expect(JSON.stringify({ library, reviews })).not.toMatch(/https?:\/\/|vimeo|drive|zoom/i);
-    expect(library[0]?.open_action?.href).toBe('/api/v1/content/library/portal_video/open');
+    expect(library[0]?.open_action?.href).toBe('/api/v1/portals/student/content/portal_video/open');
     expect(reviews[0]?.open_action?.kind).toBe('review_sheet_open');
   });
 

@@ -213,6 +213,7 @@ function studentDashboard(): StudentPortalDashboard {
     },
     rewards: { learner_key: 'learner_student_self', balance: 6, event_count: 2 },
     updates: [],
+    questions: [],
     helper: {
       available: false,
       reason: 'Student helper is not connected yet.',

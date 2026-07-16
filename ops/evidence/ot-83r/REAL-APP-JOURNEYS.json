@@ -1,0 +1,42 @@
+{
+  "status": "completed",
+  "generated_at": "2026-07-16T11:11:55.589Z",
+  "journeys": [
+    "parent add/fourth-seat denial/edit/archive/restore/student-access/content-open",
+    "student content-open/questions/session-expiry/sibling-household-role-denial/provider-url-guard"
+  ],
+  "evidence": [
+    {
+      "name": "parent-after-journey",
+      "viewport": "390x844",
+      "screenshot": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-390x844.png",
+      "critical_or_serious_a11y": 0,
+      "horizontal_overflow": false,
+      "provider_url_leakage": false
+    },
+    {
+      "name": "parent-after-journey",
+      "viewport": "1440x1000",
+      "screenshot": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\real-app-screenshots\\parent-after-journey-1440x1000.png",
+      "critical_or_serious_a11y": 0,
+      "horizontal_overflow": false,
+      "provider_url_leakage": false
+    },
+    {
+      "name": "student-after-journey",
+      "viewport": "390x844",
+      "screenshot": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-390x844.png",
+      "critical_or_serious_a11y": 0,
+      "horizontal_overflow": false,
+      "provider_url_leakage": false
+    },
+    {
+      "name": "student-after-journey",
+      "viewport": "1440x1000",
+      "screenshot": "C:\\Users\\User\\OneTimeOneTime-ot83r-complete-portals\\ops\\evidence\\ot-83r\\real-app-screenshots\\student-after-journey-1440x1000.png",
+      "critical_or_serious_a11y": 0,
+      "horizontal_overflow": false,
+      "provider_url_leakage": false
+    }
+  ]
+}

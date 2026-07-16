@@ -11,6 +11,7 @@ import type {
   RewardBalance,
   RewardEvent,
   StudentAccessState,
+  StudentQuestion,
   StudentPortalDashboard,
   UpcomingClassSummary,
 } from '../../../../../../packages/contracts/src/portals/index.ts';
@@ -46,6 +47,7 @@ export type ParentPortalFeatureProps = {
     action: 'setup' | 'reset' | 'suspend' | 'restore' | 'revoke_sessions',
   ) => void;
   onLaunchClass?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
+  onOpenContent?: (learnerKey: string, action: ProtectedActionDescriptor) => void;
   onPreviewSupport?: (learnerKey?: string) => void;
   onRetry?: () => void;
 };
@@ -57,6 +59,7 @@ export type StudentPortalFeatureProps = {
   resetSignal?: number;
   onLaunchClass?: (action: ProtectedActionDescriptor) => void;
   onOpenContent?: (action: ProtectedActionDescriptor) => void;
+  onSubmitQuestion?: (question: string, classKey?: string | undefined) => void;
   onPreviewSupport?: () => void;
   onRetry?: () => void;
 };
@@ -76,6 +79,7 @@ export function ParentPortalFeature({
   onRestoreLearner,
   onStudentAccessAction,
   onLaunchClass,
+  onOpenContent,
   onPreviewSupport,
   onRetry,
 }: ParentPortalFeatureProps) {
@@ -107,15 +111,11 @@ export function ParentPortalFeature({
         <div className="ot-empty">
           <h2>No learners yet</h2>
           <p>Add a learner to begin protected class access, progress, and updates.</p>
-          <button
-            type="button"
-            className="ot-button ot-button-primary"
-            disabled={!onCreateLearner}
-            title={onCreateLearner ? 'Add learner' : 'Learner creation is unavailable in V1'}
-            onClick={onCreateLearner}
-          >
-            Add learner
-          </button>
+          {onCreateLearner && (
+            <button type="button" className="ot-button ot-button-primary" onClick={onCreateLearner}>
+              Add learner
+            </button>
+          )}
         </div>
       </section>
     );
@@ -136,16 +136,17 @@ export function ParentPortalFeature({
               <h2 id="household-heading">Household</h2>
               <p>Consent: {label(dashboard.household.consent_status)}</p>
             </div>
-            <button
-              type="button"
-              className="ot-icon-button"
-              aria-label="Add learner"
-              title="Add learner"
-              disabled={dashboard.household.learner_limit_reached || !onCreateLearner}
-              onClick={onCreateLearner}
-            >
-              +
-            </button>
+            {onCreateLearner && (
+              <button
+                type="button"
+                className="ot-icon-button"
+                aria-label="Add learner"
+                title="Add learner"
+                onClick={onCreateLearner}
+              >
+                +
+              </button>
+            )}
           </div>
           {dashboard.household.learner_limit_reached && (
             <p className="ot-warning" role="status">
@@ -182,40 +183,34 @@ export function ParentPortalFeature({
                 <p>{selectedLearner.hebrew_name ?? 'Learner profile'}</p>
               </div>
               <div className="ot-action-row">
-                <button
-                  type="button"
-                  className="ot-button"
-                  disabled={!onEditLearner}
-                  title={onEditLearner ? 'Edit learner' : 'Learner editing is unavailable in V1'}
-                  onClick={() => onEditLearner?.(selectedLearner.learner_key)}
-                >
-                  Edit
-                </button>
-                {selectedLearner.learner_status === 'archived' ? (
+                {onEditLearner && (
                   <button
                     type="button"
                     className="ot-button"
-                    disabled={!onRestoreLearner}
-                    title={
-                      onRestoreLearner ? 'Restore learner' : 'Learner restore is unavailable in V1'
-                    }
-                    onClick={() => onRestoreLearner?.(selectedLearner.learner_key)}
+                    onClick={() => onEditLearner(selectedLearner.learner_key)}
                   >
-                    Restore
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="ot-button"
-                    disabled={!onArchiveLearner}
-                    title={
-                      onArchiveLearner ? 'Archive learner' : 'Learner archive is unavailable in V1'
-                    }
-                    onClick={() => onArchiveLearner?.(selectedLearner.learner_key)}
-                  >
-                    Archive
+                    Edit
                   </button>
                 )}
+                {selectedLearner.learner_status === 'archived'
+                  ? onRestoreLearner && (
+                      <button
+                        type="button"
+                        className="ot-button"
+                        onClick={() => onRestoreLearner(selectedLearner.learner_key)}
+                      >
+                        Restore
+                      </button>
+                    )
+                  : onArchiveLearner && (
+                      <button
+                        type="button"
+                        className="ot-button"
+                        onClick={() => onArchiveLearner(selectedLearner.learner_key)}
+                      >
+                        Archive
+                      </button>
+                    )}
               </div>
             </div>
             <StudentAccessControls
@@ -232,6 +227,7 @@ export function ParentPortalFeature({
               library={selectedMaterials?.library ?? []}
               reviewSheets={selectedMaterials?.review_sheets ?? []}
               helper={dashboard.helper}
+              onOpen={(action) => onOpenContent?.(selectedLearner.learner_key, action)}
               onPreviewSupport={() => onPreviewSupport?.(selectedLearner.learner_key)}
             />
           </section>
@@ -260,6 +256,7 @@ export function StudentPortalFeature({
   resetSignal,
   onLaunchClass,
   onOpenContent,
+  onSubmitQuestion,
   onPreviewSupport,
   onRetry,
 }: StudentPortalFeatureProps) {
@@ -304,6 +301,14 @@ export function StudentPortalFeature({
         <section className="ot-panel" aria-labelledby="student-progress-heading">
           <h2 id="student-progress-heading">Progress</h2>
           <ProgressSummaryView progress={dashboard.progress} rewards={dashboard.rewards} />
+        </section>
+        <section className="ot-panel" aria-labelledby="student-questions-heading">
+          <h2 id="student-questions-heading">Questions</h2>
+          <QuestionPanel
+            questions={dashboard.questions}
+            upcoming={dashboard.upcoming_classes}
+            onSubmitQuestion={onSubmitQuestion}
+          />
         </section>
         <section className="ot-panel" aria-labelledby="student-updates-heading">
           <h2 id="student-updates-heading">Updates</h2>
@@ -413,30 +418,36 @@ function StudentAccessControls({
 }) {
   const status = access?.status ?? 'not_configured';
   const actions = useMemo(() => {
+    if (learner.learner_status === 'archived') return [] as const;
     if (status === 'not_configured' || status === 'disabled') return ['setup'] as const;
     if (status === 'suspended') return ['restore', 'reset'] as const;
     return ['reset', 'revoke_sessions', 'suspend'] as const;
-  }, [status]);
+  }, [learner.learner_status, status]);
   return (
     <section className="ot-subsection" aria-labelledby="student-access-heading">
       <div>
         <h3 id="student-access-heading">Student access</h3>
-        <p>Status: {label(status)}</p>
+        <p>
+          Status:{' '}
+          {learner.learner_status === 'archived'
+            ? 'Paused while learner is archived'
+            : label(status)}
+        </p>
       </div>
-      <div className="ot-action-row">
-        {actions.map((action) => (
-          <button
-            type="button"
-            className={action === 'suspend' ? 'ot-button ot-button-danger' : 'ot-button'}
-            key={action}
-            disabled={!onAction}
-            title={onAction ? label(action) : 'Student access action is unavailable'}
-            onClick={() => onAction?.(learner.learner_key, action)}
-          >
-            {label(action)}
-          </button>
-        ))}
-      </div>
+      {onAction && actions.length > 0 && (
+        <div className="ot-action-row">
+          {actions.map((action) => (
+            <button
+              type="button"
+              className={action === 'suspend' ? 'ot-button ot-button-danger' : 'ot-button'}
+              key={action}
+              onClick={() => onAction(learner.learner_key, action)}
+            >
+              {label(action)}
+            </button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
@@ -467,14 +478,13 @@ function ClassSummary({
               {item.starts_at ? ` - ${formatDate(item.starts_at)}` : ''}
             </span>
           </div>
-          {item.launch_action && (
+          {item.launch_action && onLaunch && (
             <button
               type="button"
               className="ot-button ot-button-primary"
-              disabled={!onLaunch}
-              title={onLaunch ? item.launch_action.label : 'Class launch is unavailable'}
+              title={item.launch_action.label}
               onClick={() => {
-                if (!item.launch_action || !onLaunch) return;
+                if (!item.launch_action) return;
                 if (learner) {
                   (onLaunch as (learnerKey: string, action: ProtectedActionDescriptor) => void)(
                     learner.learner_key,
@@ -498,27 +508,25 @@ function MaterialsSummary({
   library,
   reviewSheets,
   helper,
+  onOpen,
   onPreviewSupport,
 }: {
   library: LibraryItem[];
   reviewSheets: LibraryItem[];
   helper: HelperAvailability;
+  onOpen?: ((action: ProtectedActionDescriptor) => void) | undefined;
   onPreviewSupport?: (() => void) | undefined;
 }) {
   return (
     <section className="ot-subsection" aria-labelledby="materials-heading">
       <h3 id="materials-heading">Materials</h3>
-      <ContentList items={[...library, ...reviewSheets]} />
+      <ContentList items={[...library, ...reviewSheets]} onOpen={onOpen} />
       <HelperState helper={helper} />
-      <button
-        type="button"
-        className="ot-button"
-        disabled={!onPreviewSupport}
-        title={onPreviewSupport ? 'Technical support' : 'Technical support is unavailable'}
-        onClick={onPreviewSupport}
-      >
-        Technical support
-      </button>
+      {onPreviewSupport && (
+        <button type="button" className="ot-button" onClick={onPreviewSupport}>
+          Technical support
+        </button>
+      )}
     </section>
   );
 }
@@ -541,13 +549,12 @@ function ContentList({
               <strong>{item.title}</strong>
               <span>{label(item.item_type)}</span>
             </div>
-            {action && (
+            {action && onOpen && (
               <button
                 type="button"
                 className="ot-button"
-                disabled={!onOpen}
-                title={onOpen ? action.label : 'Content opening is unavailable'}
-                onClick={() => onOpen?.(action)}
+                title={action.label}
+                onClick={() => onOpen(action)}
               >
                 Open
               </button>
@@ -555,6 +562,76 @@ function ContentList({
           </article>
         );
       })}
+    </div>
+  );
+}
+
+function QuestionPanel({
+  questions,
+  upcoming,
+  onSubmitQuestion,
+}: {
+  questions: StudentQuestion[];
+  upcoming: UpcomingClassSummary[];
+  onSubmitQuestion?: ((question: string, classKey?: string | undefined) => void) | undefined;
+}) {
+  const [draft, setDraft] = useState('');
+  const [classKey, setClassKey] = useState(upcoming[0]?.class_key ?? '');
+  const trimmed = draft.trim();
+  return (
+    <div className="ot-stack">
+      <form
+        className="ot-question-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!trimmed || !onSubmitQuestion) return;
+          onSubmitQuestion(trimmed, classKey || undefined);
+          setDraft('');
+        }}
+      >
+        {upcoming.length > 0 && (
+          <label className="ot-field">
+            <span>Class</span>
+            <select value={classKey} onChange={(event) => setClassKey(event.currentTarget.value)}>
+              {upcoming.map((item) => (
+                <option key={item.class_key} value={item.class_key}>
+                  {item.title}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        <label className="ot-field">
+          <span>Question</span>
+          <textarea
+            value={draft}
+            maxLength={800}
+            rows={4}
+            onChange={(event) => setDraft(event.currentTarget.value)}
+          />
+        </label>
+        <button
+          type="submit"
+          className="ot-button ot-button-primary"
+          disabled={!trimmed || !onSubmitQuestion}
+        >
+          Submit question
+        </button>
+      </form>
+      {questions.length === 0 ? (
+        <p className="ot-muted">Submitted questions will appear here.</p>
+      ) : (
+        questions.map((question) => (
+          <article className="ot-item ot-update" key={question.question_key}>
+            <div>
+              <strong>{label(question.status)}</strong>
+              <p>{question.question}</p>
+              {question.answer_preview && <p>{question.answer_preview}</p>}
+            </div>
+            <span>{formatDate(question.submitted_at)}</span>
+          </article>
+        ))
+      )}
     </div>
   );
 }

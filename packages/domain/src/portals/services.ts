@@ -19,6 +19,8 @@ import type {
   StudentAccessOperationPayload,
   StudentAccessOperationType,
   StudentAccessState,
+  StudentQuestion,
+  StudentQuestionPayload,
   StudentPortalDashboard,
   SupportPreview,
   SupportRequestPayload,
@@ -129,6 +131,17 @@ export type PortalRepository = {
     learner_key: string;
     limit?: number;
   }): Promise<RewardEvent[]>;
+  listStudentQuestions(args: {
+    actor: PortalActorContext;
+    learner_key: string;
+    limit?: number;
+  }): Promise<StudentQuestion[]>;
+  submitStudentQuestion(args: {
+    actor: PortalActorContext;
+    learner_key: string;
+    payload: StudentQuestionPayload;
+    request_fingerprint: string;
+  }): Promise<StudentQuestion>;
   addRewardEvent(args: {
     actor: PortalActorContext;
     input: RewardWriteInput;
@@ -249,8 +262,6 @@ export type PortalServiceDeps = {
   idGenerator?: () => string;
 };
 
-const MAX_ACTIVE_LEARNERS = 3;
-
 export function createParentPortalService(deps: PortalServiceDeps) {
   const helper = deps.helper ?? unavailableHelper('Parent helper is not connected yet.');
   const support = deps.support ?? localSupportPreview(deps.idGenerator);
@@ -266,9 +277,9 @@ export function createParentPortalService(deps: PortalServiceDeps) {
       const learners = await deps.repository.listLearners({
         actor,
         household_key: householdKey,
-        include_archived: false,
+        include_archived: true,
       });
-      const visibleLearners = learners.slice(0, MAX_ACTIVE_LEARNERS);
+      const visibleLearners = learners.slice(0, 12);
       const studentAccess = await Promise.all(
         visibleLearners.map((learner) =>
           deps.repository.getStudentAccessState({ actor, learner_key: learner.learner_key }),
@@ -420,6 +431,17 @@ export function createParentPortalService(deps: PortalServiceDeps) {
       );
     },
 
+    async protectedContentOpen(
+      actor: PortalActorContext,
+      householdKey: string,
+      learnerKey: string,
+      itemKey: string,
+    ) {
+      requireParentHousehold(actor, householdKey, 'parent:content:open');
+      const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
+      return contentOpenForLearner(deps, actor, learner, itemKey);
+    },
+
     async learnerMaterials(actor: PortalActorContext, householdKey: string, learnerKey: string) {
       requireParentHousehold(actor, householdKey, 'parent:household:read');
       const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
@@ -487,7 +509,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         subject.household_key,
         subject.learner_key,
       );
-      const [upcoming, library, reviewSheets, progress, rewards, updates, helperState] =
+      const [upcoming, library, reviewSheets, progress, rewards, updates, questions, helperState] =
         await Promise.all([
           deps.classAccess.upcomingForLearner({ actor, learner }),
           deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
@@ -495,6 +517,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
           deps.progress.progressForLearner({ actor, learner }),
           deps.repository.getRewardBalance({ actor, learner_key: learner.learner_key }),
           mergedUpdates(deps.repository, deps, actor, learner, 'student'),
+          deps.repository.listStudentQuestions({ actor, learner_key: learner.learner_key }),
           helper.availability({ actor, learner }),
         ]);
       return {
@@ -504,6 +527,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         progress,
         rewards,
         updates,
+        questions,
         helper: helperState,
       };
     },
@@ -519,6 +543,17 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
       return safeActionDescriptor(
         await deps.classAccess.protectedLaunch({ actor, learner, class_key: classKey }),
       );
+    },
+
+    async protectedContentOpen(actor: PortalActorContext, itemKey: string) {
+      const subject = requireStudentSubject(actor, 'student:content:open');
+      const learner = await requireLearner(
+        deps.repository,
+        actor,
+        subject.household_key,
+        subject.learner_key,
+      );
+      return contentOpenForLearner(deps, actor, learner, itemKey);
     },
 
     async helperAvailability(actor: PortalActorContext) {
@@ -558,6 +593,26 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         subject.learner_key,
       );
       return support.preview({ actor, learner, payload });
+    },
+
+    async submitQuestion(actor: PortalActorContext, payload: StudentQuestionPayload) {
+      const subject = requireStudentSubject(actor, 'student:question:create');
+      await requireLearner(deps.repository, actor, subject.household_key, subject.learner_key);
+      return deps.repository.submitStudentQuestion({
+        actor,
+        learner_key: subject.learner_key,
+        payload,
+        request_fingerprint: fingerprint(payload),
+      });
+    },
+
+    async questions(actor: PortalActorContext) {
+      const subject = requireStudentSubject(actor, 'student:dashboard:read');
+      await requireLearner(deps.repository, actor, subject.household_key, subject.learner_key);
+      return deps.repository.listStudentQuestions({
+        actor,
+        learner_key: subject.learner_key,
+      });
     },
   };
 }
@@ -696,6 +751,52 @@ function assertNoCredentialLeak(result: CredentialLifecycleResult) {
       );
     }
   }
+}
+
+async function contentOpenForLearner(
+  deps: PortalServiceDeps,
+  actor: PortalActorContext,
+  learner: LearnerProfile,
+  itemKey: string,
+) {
+  const [library, reviewSheets] = await Promise.all([
+    deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
+    deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
+  ]);
+  const item = safeLibraryItems([...library, ...reviewSheets]).find(
+    (entry) => entry.item_key === itemKey,
+  );
+  if (!item?.open_action) {
+    throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+  }
+  return protectedContentUnavailableAction(learner, item);
+}
+
+function protectedContentUnavailableAction(
+  learner: LearnerProfile,
+  item: LibraryItem,
+): ProtectedActionDescriptor {
+  const kind =
+    item.item_type === 'sheet' || item.item_type === 'review'
+      ? 'review_sheet_open'
+      : 'content_open';
+  const digest = fingerprint({
+    learner_key: learner.learner_key,
+    item_key: item.item_key,
+    kind,
+  }).slice(0, 32);
+  return {
+    action_key: `portal_${kind}_${digest}`,
+    label:
+      kind === 'review_sheet_open'
+        ? 'Review sheet provider unavailable'
+        : 'Content provider unavailable',
+    kind,
+    method: 'GET',
+    href: null,
+    launch_token_ref: `content_unavailable_${digest}`,
+    expires_at: null,
+  };
 }
 
 function safeClassSummaries(classes: UpcomingClassSummary[]) {

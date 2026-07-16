@@ -9,6 +9,8 @@ import type {
   RewardBalance,
   RewardEvent,
   StudentAccessState,
+  StudentQuestion,
+  StudentQuestionPayload,
   UpdateLearnerPayload,
 } from '../../../contracts/src/portals/index.ts';
 import {
@@ -62,6 +64,15 @@ export function createPortalRepository(pool: DbPool): PortalRepository {
     listUpdates: (args) => listUpdates(pool, args.actor, args.learner_key, args.audience),
     getRewardBalance: (args) => getRewardBalance(pool, args.actor, args.learner_key),
     listRewardEvents: (args) => listRewardEvents(pool, args.actor, args.learner_key, args.limit),
+    listStudentQuestions: (args) =>
+      listStudentQuestions(pool, args.actor, args.learner_key, args.limit),
+    submitStudentQuestion: (args) =>
+      submitStudentQuestion(pool, {
+        actor: args.actor,
+        learnerKey: args.learner_key,
+        payload: args.payload,
+        requestFingerprint: args.request_fingerprint,
+      }),
     addRewardEvent: (args) =>
       addRewardEvent(pool, args.actor, args.input, args.source_type, args.request_fingerprint),
     recordAudit: (record) => recordAudit(pool, record),
@@ -581,6 +592,97 @@ async function listRewardEvents(
   return result.rows.map((row) => mapRewardEvent(row as Record<string, unknown>));
 }
 
+async function listStudentQuestions(
+  target: DbPool | Queryable,
+  actor: PortalActorContext,
+  learnerKey: string,
+  limit = 20,
+): Promise<StudentQuestion[]> {
+  assertActorCanReadQuestions(actor, learnerKey);
+  const result = await target.query(
+    `SELECT question_key, learner_key, class_key, question_text, question_status,
+            answer_preview, created_at, answered_at
+       FROM onetime.portal_student_questions
+      WHERE account_key = $1
+        AND product_key = $2
+        AND learner_key = $3
+      ORDER BY created_at DESC, question_key DESC
+      LIMIT $4`,
+    [actor.account_key, actor.product_key, learnerKey, limit],
+  );
+  return result.rows.map((row) => mapStudentQuestion(row as Record<string, unknown>));
+}
+
+async function submitStudentQuestion(
+  pool: DbPool,
+  args: {
+    actor: PortalActorContext;
+    learnerKey: string;
+    payload: StudentQuestionPayload;
+    requestFingerprint: string;
+  },
+): Promise<StudentQuestion> {
+  assertActorCanWriteQuestion(args.actor, args.learnerKey);
+  return inTransaction(pool, async (client) => {
+    const scope = `student-question.submit:${args.learnerKey}`;
+    const replay = await readIdempotency<StudentQuestion>(
+      client,
+      args.actor,
+      scope,
+      args.payload.idempotency_key,
+      args.requestFingerprint,
+    );
+    if (replay) return replay;
+
+    const learner = await findLearnerForUpdate(client, args.actor, args.learnerKey);
+    if (!learner) {
+      throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+    }
+    assertActorCanWriteQuestion(args.actor, args.learnerKey);
+
+    const inserted = await client.query(
+      `INSERT INTO onetime.portal_student_questions
+       (question_key, account_key, product_key, household_key, learner_key,
+        submitted_by_user_ref, class_key, question_text, idempotency_key, request_hash)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+       RETURNING question_key, learner_key, class_key, question_text, question_status,
+                 answer_preview, created_at, answered_at`,
+      [
+        `student_question_${randomUUID()}`,
+        args.actor.account_key,
+        args.actor.product_key,
+        String(learner.household_key),
+        args.learnerKey,
+        args.actor.actor_user_ref,
+        args.payload.class_key ?? null,
+        args.payload.question,
+        args.payload.idempotency_key,
+        args.requestFingerprint,
+      ],
+    );
+    const question = mapStudentQuestion(inserted.rows[0] as Record<string, unknown>);
+    await writeIdempotency(
+      client,
+      args.actor,
+      scope,
+      args.payload.idempotency_key,
+      args.requestFingerprint,
+      question,
+    );
+    await recordAudit(client, {
+      action_type: 'student_question_submitted',
+      actor: args.actor,
+      household_key: String(learner.household_key),
+      learner_key: args.learnerKey,
+      metadata: {
+        question_key: question.question_key,
+        class_key: question.class_key,
+      },
+    });
+    return question;
+  });
+}
+
 async function addRewardEvent(
   pool: DbPool,
   actor: PortalActorContext,
@@ -829,6 +931,19 @@ function mapRewardEvent(row: Record<string, unknown>): RewardEvent {
   };
 }
 
+function mapStudentQuestion(row: Record<string, unknown>): StudentQuestion {
+  return {
+    question_key: String(row.question_key),
+    learner_key: String(row.learner_key),
+    class_key: nullableString(row.class_key),
+    question: String(row.question_text),
+    status: row.question_status as StudentQuestion['status'],
+    answer_preview: nullableString(row.answer_preview),
+    submitted_at: toIso(row.created_at),
+    answered_at: toNullableIso(row.answered_at),
+  };
+}
+
 function toIso(value: unknown) {
   if (value instanceof Date) return value.toISOString();
   return new Date(String(value)).toISOString();
@@ -854,5 +969,28 @@ function assertActorCanAccessLearner(actor: PortalActorContext, learner: Record<
   );
   if (!authorized) {
     throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+  }
+}
+
+function assertActorCanReadQuestions(actor: PortalActorContext, learnerKey: string) {
+  if (actor.actor_role === 'student') {
+    if (actor.student_learner?.learner_key !== learnerKey) {
+      throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+    }
+    return;
+  }
+  if (
+    actor.actor_role === 'owner' ||
+    actor.actor_role === 'admin' ||
+    actor.actor_role === 'support'
+  ) {
+    return;
+  }
+  throw new PortalServiceError('FORBIDDEN', 'Private student questions are not visible here.');
+}
+
+function assertActorCanWriteQuestion(actor: PortalActorContext, learnerKey: string) {
+  if (actor.actor_role !== 'student' || actor.student_learner?.learner_key !== learnerKey) {
+    throw new PortalServiceError('FORBIDDEN', 'This question requires the student session.');
   }
 }

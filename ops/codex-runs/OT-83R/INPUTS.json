@@ -1,0 +1,25 @@
+{
+  "task_id": "OT-83R",
+  "started_at": "2026-07-16T07:27:20.5070938+03:00",
+  "source_prompt": "ops/codex-runs/OT-83R/ORIGINAL-PROMPT.md",
+  "source_sha256": "4AE2839861A4E0C98772FE36AE9EBC8E0B3174FE703847AE120278AF957B43CA",
+  "external_repository": "https://github.com/webcraft-media/onetimev2.git",
+  "existing_pr": "https://github.com/webcraft-media/onetimev2/pull/27",
+  "existing_pr_number": 27,
+  "existing_pr_base": "codex/ot82-brand-system-foundation",
+  "existing_pr_head_branch": "codex/ot83-household-portals-foundation",
+  "last_audited_ot83_head": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "fetched_ot83_head": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "continuation_branch": "codex/ot83r-complete-portals",
+  "continuation_worktree": "C:/Users/User/OneTimeOneTime-ot83r-complete-portals",
+  "guardrails": {
+    "bna_product_code_edited": false,
+    "production_database_mutation": false,
+    "provider_mutation": false,
+    "external_send": false,
+    "stripe_charge_or_payment_mutation": false,
+    "railway_or_dns_change": false,
+    "real_user_creation": false,
+    "deployment": false
+  }
+}

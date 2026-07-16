@@ -46,6 +46,15 @@ const studentUserKey = await createAccountUser({
   role: 'student',
   mfaCapable: false,
 });
+await createAccountUser({
+  pool,
+  config,
+  email: process.env.OT_TEST_VIEWER_EMAIL ?? 'viewer@example.test',
+  password: process.env.OT_TEST_VIEWER_PASSWORD ?? 'ViewerPass!234',
+  displayName: 'Viewer User',
+  role: 'viewer',
+  mfaCapable: false,
+});
 await seedDayOneBrowserRecords();
 const app = createApp({ config, pool });
 const server = app.listen(config.port);
@@ -119,12 +128,41 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.content_items
        (content_item_key, account_key, product_key, occurrence_key, title, item_type,
-        lifecycle_state)
+        lifecycle_state, latest_revision_number, latest_revision_key, published_revision_key,
+        published_at)
      VALUES
        ('e2e_recording_001', $1, $2, 'e2e_class_occurrence', 'E2E Recording', 'video',
-        'published'),
+        'published', 1, 'e2e_recording_001_rev1', 'e2e_recording_001_rev1', now()),
        ('e2e_review_001', $1, $2, 'e2e_class_occurrence', 'E2E Review Sheet', 'review',
-        'review_needed')`,
+        'published', 1, 'e2e_review_001_rev1', 'e2e_review_001_rev1', now()),
+       ('e2e_sibling_private', $1, $2, 'e2e_class_occurrence', 'Sibling Private Recording',
+        'video', 'published', 1, 'e2e_sibling_private_rev1', 'e2e_sibling_private_rev1',
+        now())`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.content_revisions
+       (revision_key, account_key, product_key, content_item_key, outcome_event_key,
+        revision_number, lifecycle_state, published_at)
+     VALUES
+       ('e2e_recording_001_rev1', $1, $2, 'e2e_recording_001', 'e2e_recording_001_outcome',
+        1, 'published', now()),
+       ('e2e_review_001_rev1', $1, $2, 'e2e_review_001', 'e2e_review_001_outcome',
+        1, 'published', now()),
+       ('e2e_sibling_private_rev1', $1, $2, 'e2e_sibling_private',
+        'e2e_sibling_private_outcome', 1, 'published', now())`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.content_item_entitlements
+       (entitlement_key, account_key, product_key, content_item_key, audience, household_key,
+        learner_key)
+     VALUES
+       ('e2e_recording_all_active', $1, $2, 'e2e_recording_001', 'all_active_learners', NULL,
+        NULL),
+       ('e2e_review_all_active', $1, $2, 'e2e_review_001', 'all_active_learners', NULL, NULL),
+       ('e2e_sibling_private_beta', $1, $2, 'e2e_sibling_private', 'learner', NULL,
+        'e2e_learner_beta')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(

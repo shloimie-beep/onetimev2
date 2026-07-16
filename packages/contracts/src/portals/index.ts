@@ -18,9 +18,12 @@ export const portalCapabilitySchema = z.enum([
   'parent:learner:archive',
   'parent:student-access:manage',
   'parent:class:launch',
+  'parent:content:open',
   'parent:support:preview',
   'student:dashboard:read',
   'student:class:launch',
+  'student:content:open',
+  'student:question:create',
   'student:support:preview',
   'rewards:read',
   'rewards:write',
@@ -209,9 +212,29 @@ export const billingSummarySchema = z.object({
 });
 export type BillingSummary = z.infer<typeof billingSummarySchema>;
 
+export const studentQuestionStatusSchema = z.enum([
+  'submitted',
+  'in_review',
+  'answered',
+  'archived',
+]);
+export type StudentQuestionStatus = z.infer<typeof studentQuestionStatusSchema>;
+
+export const studentQuestionSchema = z.object({
+  question_key: opaqueIdSchema,
+  learner_key: opaqueIdSchema,
+  class_key: opaqueIdSchema.nullable(),
+  question: z.string().trim().min(1).max(800),
+  status: studentQuestionStatusSchema,
+  answer_preview: z.string().trim().max(1200).nullable(),
+  submitted_at: z.string(),
+  answered_at: z.string().nullable(),
+});
+export type StudentQuestion = z.infer<typeof studentQuestionSchema>;
+
 export const parentPortalDashboardSchema = z.object({
   household: householdOverviewSchema,
-  learners: z.array(learnerProfileSchema).max(3),
+  learners: z.array(learnerProfileSchema).max(12),
   student_access: z.array(studentAccessStateSchema),
   upcoming_classes: z.record(z.string(), z.array(upcomingClassSummarySchema)),
   rewards: z.record(z.string(), rewardBalanceSchema),
@@ -238,6 +261,7 @@ export const studentPortalDashboardSchema = z.object({
   progress: progressSummarySchema,
   rewards: rewardBalanceSchema,
   updates: z.array(administrativeUpdateSchema),
+  questions: z.array(studentQuestionSchema),
   helper: helperAvailabilitySchema,
 });
 export type StudentPortalDashboard = z.infer<typeof studentPortalDashboardSchema>;
@@ -278,6 +302,13 @@ export const supportRequestPayloadSchema = z.object({
   body: z.string().trim().min(1).max(1200),
 });
 export type SupportRequestPayload = z.infer<typeof supportRequestPayloadSchema>;
+
+export const studentQuestionPayloadSchema = z.object({
+  idempotency_key: idempotencyKeySchema,
+  question: z.string().trim().min(1).max(800),
+  class_key: opaqueIdSchema.optional(),
+});
+export type StudentQuestionPayload = z.infer<typeof studentQuestionPayloadSchema>;
 
 export const portalErrorCodeSchema = z.enum([
   'UNAUTHENTICATED',
