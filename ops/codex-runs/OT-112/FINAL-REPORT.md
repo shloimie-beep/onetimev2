@@ -1,6 +1,6 @@
 # OT-112 Final Report
 
-Status: `implemented_verification_passed_pr_pending`
+Status: `draft_pr_opened`
 
 ## Identity
 
@@ -9,8 +9,11 @@ Status: `implemented_verification_passed_pr_pending`
 - Branch: `codex/ot112-premium-product-system`
 - Base branch: `codex/ops03-staging-readiness-repair`
 - Base SHA: `fb5f5eebc539afc9e93833e9417ee67524d62c36`
-- Head SHA: pending
-- Draft PR: pending
+- Implementation SHA: `8e292b2df6bab3ca1cd34410fa8a68bbd1c2a599`
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/57`
+
+Note: this report metadata is committed after the implementation commit, so the
+final branch head may be the later handoff commit.
 
 ## Scope
 
