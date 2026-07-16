@@ -62,3 +62,5 @@
 - First OPS-03 web deployment attempt `40fc8171-0a4e-42d3-ae31-80252a5281a8` failed before build because Railway retained a service config pointer to `railway.web.staging.json`, which was absent from the repo.
 - Existing green Nixpacks web deployment `e2821230-66ed-4dca-87f5-a01a4137b4df` remained active/running after that failed attempt.
 - Added explicit staging service config files for web and worker selecting the Dockerfile builder.
+- Second web deployment attempt `f43e7c54-fca3-45d9-8680-d7d63bda5ae4` proved the Dockerfile build but failed runtime health because the image did not include `ops/commercial/ot87/family-plan.v1.json`, which billing loads at startup.
+- Repaired Dockerfile to copy only `ops/commercial` into build/runtime images.

@@ -15,3 +15,18 @@ Repair:
 - Both service config files select `DOCKERFILE` builder and `Dockerfile`.
 
 Docker build proof is pending the next successful Railway deployment.
+
+## Runtime File Repair
+
+Second OPS-03 web deploy attempt:
+
+- Deployment ID: `f43e7c54-fca3-45d9-8680-d7d63bda5ae4`
+- Dockerfile build: succeeded.
+- Docker image digest reported by Railway build logs: `sha256:664187da5fda5268046ce6482c2c48409e55268db07ed005988cde62bb82c7d8`
+- Runtime health: failed.
+- Root cause: `/app/ops/commercial/ot87/family-plan.v1.json` was absent from the Docker runtime image.
+
+Repair:
+
+- Dockerfile now copies `ops/commercial` into the build and runtime stages.
+- The production image still does not copy `tests/`.

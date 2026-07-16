@@ -4,6 +4,7 @@ COPY package.json package-lock.json* ./
 COPY apps ./apps
 COPY packages ./packages
 COPY scripts ./scripts
+COPY ops/commercial ./ops/commercial
 COPY tsconfig.typecheck.json ./
 COPY eslint.config.js ./
 COPY .prettierrc.json ./
@@ -19,6 +20,7 @@ COPY --from=base /app/dist ./dist
 COPY --from=base /app/apps ./apps
 COPY --from=base /app/packages ./packages
 COPY --from=base /app/scripts ./scripts
+COPY --from=base /app/ops/commercial ./ops/commercial
 COPY --from=base /app/packages/db/migrations ./packages/db/migrations
 EXPOSE 3000
 CMD ["node", "scripts/railway-start.mjs"]
