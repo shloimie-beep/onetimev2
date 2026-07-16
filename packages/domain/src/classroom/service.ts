@@ -309,9 +309,11 @@ export function createClassroomService(deps: ClassroomServiceDeps) {
         occurrenceKey: occurrence.occurrence_key,
         idempotencyKey,
       });
-      const expiresAt = new Date(
-        now.getTime() + Math.max(30, deps.config.zoomClassroomJoinGrantTtlSeconds) * 1000,
+      const grantTtlSeconds = Math.min(
+        5 * 60,
+        Math.max(30, deps.config.zoomClassroomJoinGrantTtlSeconds),
       );
+      const expiresAt = new Date(now.getTime() + grantTtlSeconds * 1000);
       const grant = await deps.repository.issueLaunchGrant({
         actor: args.actor,
         eligibility,

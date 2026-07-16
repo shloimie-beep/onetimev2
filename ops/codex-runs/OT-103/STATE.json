@@ -1,0 +1,55 @@
+{
+  "task_id": "OT-103",
+  "title": "Zoom Classroom and Daily-Class Fulfillment",
+  "repository": "webcraft-media/onetimev2",
+  "base_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "branch": "codex/ot103-zoom-classroom-fulfillment",
+  "worktree": "C:/Users/User/.ot103-worktrees/OT-103",
+  "draft_pr_base": "codex/ops03-staging-readiness-repair",
+  "status": "local_verified_pending_push_and_pr",
+  "started_at": "2026-07-16T19:17:00+03:00",
+  "mode": "off_sink_default",
+  "external_mutations_performed": false,
+  "canary_status": "blocked_for_canary_only_missing_authorization_or_credentials",
+  "owned_roots": [
+    "ops/codex-runs/OT-103/",
+    "packages/domain/src/providers/zoom*",
+    "packages/domain/src/classroom/",
+    "packages/contracts/src/classroom/",
+    "packages/db/src/classroom/",
+    "packages/db/migrations/2130_ot103_zoom_provider.sql",
+    "apps/web/src/client/app/classroom/",
+    "tests/unit/classroom/",
+    "tests/integration/classroom/",
+    "tests/e2e/*classroom*",
+    "tests/accessibility/*classroom*",
+    "tests/performance/*classroom*"
+  ],
+  "forbidden_roots": [
+    ".env.example",
+    "package.json",
+    "package-lock.json",
+    "apps/worker/src/main/index.ts",
+    "railway.json",
+    "railway.web.staging.json",
+    "railway.worker.staging.json"
+  ],
+  "verification": {
+    "typecheck": "passed: npm run typecheck",
+    "lint": "passed: npm run lint",
+    "build": "passed: npm run build",
+    "secret_scan": "passed: npm run secret:scan",
+    "diff_check": "passed: git diff --check",
+    "format": "passed for touched files with npx prettier --check; repository-wide npm run format has baseline unrelated files needing formatting",
+    "unit": "passed: npx vitest run --config vitest.unit.config.ts tests/unit/classroom/classroom-contracts.test.ts tests/unit/classroom/ot103-zoom-provider.test.ts",
+    "integration": [
+      "passed: npx vitest run --config vitest.integration.config.ts tests/integration/classroom/zoom-learner-classroom.test.ts",
+      "passed: npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts"
+    ],
+    "e2e": "passed: npx playwright test tests/e2e/ot88-zoom-classroom.spec.ts",
+    "accessibility_performance": "passed: npx playwright test tests/accessibility/ot88-zoom-classroom-a11y.spec.ts tests/performance/ot88-zoom-classroom-performance.spec.ts"
+  },
+  "draft_pr_url": null,
+  "pushed_sha": null,
+  "updated_at": "2026-07-16T22:36:51+03:00"
+}
