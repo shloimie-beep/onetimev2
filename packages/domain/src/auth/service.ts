@@ -5,6 +5,7 @@ import {
   createHash,
   createHmac,
   randomBytes,
+  randomInt,
   randomUUID,
   timingSafeEqual,
 } from 'node:crypto';
@@ -23,13 +24,22 @@ const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const DUMMY_PASSWORD_HASH = hashPassword('dummy-password-used-only-to-balance-login-timing');
 const RECOVERY_CODE_COUNT = 10;
 const POST_ACTIVATION_MFA_HANDOFF_TTL_MS = 15 * 60 * 1000;
+const EMAIL_CHALLENGE_TTL_MS = 10 * 60 * 1000;
+const TRUSTED_DEVICE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const EMAIL_ASSURANCE_MAX_AGE_MS = 10 * 60 * 1000;
+const EMAIL_CHALLENGE_DELIVERY_KEY_VERSION = 1;
+const EMAIL_CHALLENGE_DELIVERY_BATCH_SIZE = 10;
+const EMAIL_CHALLENGE_DELIVERY_LEASE_MS = 120_000;
 
-type AssuranceMethod = 'password' | 'totp' | 'recovery_code';
+type AssuranceMethod =
+  'password' | 'totp' | 'recovery_code' | 'email_challenge' | 'email_link' | 'trusted_device';
 
 export type AuthenticatedSession = {
   session_key: string;
   user: SessionUser;
   expires_at: string;
+  assurance_method: AssuranceMethod;
+  assurance_at: string | null;
 };
 
 export type CreatedSession = AuthenticatedSession & {
@@ -37,16 +47,31 @@ export type CreatedSession = AuthenticatedSession & {
   csrf_token: string;
 };
 
-export type AuthFailureCode = 'INVALID_CREDENTIALS' | 'RATE_LIMITED' | 'MFA_REQUIRED' | 'DISABLED';
+export type AuthFailureCode =
+  'INVALID_CREDENTIALS' | 'RATE_LIMITED' | 'EMAIL_CHALLENGE_REQUIRED' | 'DISABLED';
 
 export type LoginResult =
-  | { ok: true; user: SessionUser }
+  | { ok: true; user: SessionUser; assuranceMethod?: AssuranceMethod }
   | {
       ok: false;
       code: AuthFailureCode;
       retry_after_seconds?: number;
       challenge_token?: string;
+      challenge_expires_at?: string;
+      delivery_state?: string;
     };
+
+export type AuthEmailChallengeDeliveryBatchSummary = {
+  claimed: number;
+  sink_delivered: number;
+  provider_delivered: number;
+  expired: number;
+  retried: number;
+  dead_lettered: number;
+  lease_lost: number;
+  external_send_performed: boolean;
+  raw_token_logged: false;
+};
 
 export function resetAuthRateLimitForTests() {
   // Durable rate-limit state is stored in the test database and resets with the pool.
@@ -153,6 +178,7 @@ export async function authenticateUser({
   password,
   ip,
   userAgent,
+  trustedDeviceToken,
 }: {
   pool: DbPool;
   config: AppConfig;
@@ -160,6 +186,7 @@ export async function authenticateUser({
   password: string;
   ip?: string | undefined;
   userAgent?: string | undefined;
+  trustedDeviceToken?: string | undefined;
 }): Promise<LoginResult> {
   const emailNormalized = normalizeEmail(email);
   const emailHash = stableKey('email', [emailNormalized]);
@@ -245,33 +272,66 @@ export async function authenticateUser({
   }
 
   if (['owner', 'admin'].includes(row.role)) {
-    const challengeToken = await createMfaChallengeForUser({
-      pool,
-      config,
-      userKey: row.user_key,
-      ip,
-      userAgent,
-    });
-    if (!challengeToken) {
-      await insertAuthAudit(pool, config, {
-        eventType: 'login_blocked_mfa_required',
+    if (
+      trustedDeviceToken &&
+      (await verifyTrustedDeviceForUser({
+        pool,
+        config,
         userKey: row.user_key,
-        success: false,
-        reason: 'MFA_REQUIRED',
+        trustedDeviceToken,
+        userAgent,
+        ip,
+      }))
+    ) {
+      await insertAuthAudit(pool, config, {
+        eventType: 'login_succeeded_trusted_device',
+        userKey: row.user_key,
+        success: true,
         ip,
         userAgent,
       });
-      return { ok: false, code: 'MFA_REQUIRED' };
+      return { ok: true, user: rowToSessionUser(row), assuranceMethod: 'trusted_device' };
     }
-    await insertAuthAudit(pool, config, {
-      eventType: 'login_password_mfa_challenge',
+
+    const challenge = await createEmailChallengeForUser({
+      pool,
+      config,
       userKey: row.user_key,
-      success: true,
-      reason: 'MFA_REQUIRED',
+      emailNormalized,
+      role: String(row.role),
+      securityVersion: Number(row.security_version ?? 1),
       ip,
       userAgent,
     });
-    return { ok: false, code: 'MFA_REQUIRED', challenge_token: challengeToken };
+    if (!challenge.ok) {
+      await insertAuthAudit(pool, config, {
+        eventType: 'login_email_challenge_rate_limited',
+        userKey: row.user_key,
+        success: false,
+        reason: 'RATE_LIMITED',
+        ip,
+        userAgent,
+        metadata: { budget_scope: challenge.scope ?? null },
+      });
+      return challenge.retryAfterSeconds
+        ? { ok: false, code: 'RATE_LIMITED', retry_after_seconds: challenge.retryAfterSeconds }
+        : { ok: false, code: 'RATE_LIMITED' };
+    }
+    await insertAuthAudit(pool, config, {
+      eventType: 'login_password_email_challenge',
+      userKey: row.user_key,
+      success: true,
+      reason: 'EMAIL_CHALLENGE_REQUIRED',
+      ip,
+      userAgent,
+    });
+    return {
+      ok: false,
+      code: 'EMAIL_CHALLENGE_REQUIRED',
+      challenge_token: challenge.challengeToken,
+      challenge_expires_at: challenge.expiresAt,
+      delivery_state: challenge.deliveryState,
+    };
   }
 
   await insertAuthAudit(pool, config, {
@@ -305,6 +365,8 @@ export async function createSession({
   const csrfToken = token();
   const sessionKey = `sess_${randomUUID()}`;
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  const assuranceAt = new Date();
+  const resolvedAssuranceMethod = assuranceMethod ?? 'password';
   const userVersion = await pool.query(
     `SELECT security_version
        FROM onetime.account_users
@@ -317,7 +379,7 @@ export async function createSession({
      (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
       user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
       assurance_method, assurance_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,now())`,
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
     [
       sessionKey,
       config.accountKey,
@@ -330,7 +392,8 @@ export async function createSession({
       expiresAt.toISOString(),
       rotatedFromSessionKey ?? null,
       securityVersion,
-      assuranceMethod ?? (['owner', 'admin'].includes(user.role) ? 'totp' : 'password'),
+      resolvedAssuranceMethod,
+      assuranceAt.toISOString(),
     ],
   );
   await insertAuthAudit(pool, config, {
@@ -347,6 +410,8 @@ export async function createSession({
     csrf_token: csrfToken,
     user,
     expires_at: expiresAt.toISOString(),
+    assurance_method: resolvedAssuranceMethod,
+    assurance_at: assuranceAt.toISOString(),
   };
 }
 
@@ -363,7 +428,8 @@ export async function getSessionByToken({
 }): Promise<AuthenticatedSession | null> {
   if (!sessionToken) return null;
   const result = await pool.query(
-    `SELECT sessions.session_key, sessions.expires_at,
+    `SELECT sessions.session_key, sessions.expires_at, sessions.assurance_method,
+            sessions.assurance_at,
             sessions.last_seen_at,
             users.user_key, users.email_normalized, users.display_name, users.role,
             users.mfa_capable, users.security_version
@@ -396,6 +462,8 @@ export async function getSessionByToken({
   return {
     session_key: row.session_key,
     expires_at: toIso(row.expires_at),
+    assurance_method: String(row.assurance_method ?? 'password') as AssuranceMethod,
+    assurance_at: row.assurance_at ? toIso(row.assurance_at) : null,
     user: rowToSessionUser(row),
   };
 }
@@ -527,6 +595,259 @@ export async function revokeUserSessions({
       reason,
     });
   });
+}
+
+export async function verifyEmailChallengeCode({
+  pool,
+  config,
+  challengeToken,
+  code,
+  trustDevice,
+  ip,
+  userAgent,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  challengeToken: string;
+  code: string;
+  trustDevice?: boolean | undefined;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+}): Promise<LoginResult & { trustedDeviceToken?: string; trustedDeviceExpiresAt?: string }> {
+  return consumeAuthEmailChallenge({
+    pool,
+    config,
+    hashColumn: 'challenge_token_hash',
+    tokenValue: challengeToken,
+    code,
+    trustDevice,
+    assuranceMethod: 'email_challenge',
+    ip,
+    userAgent,
+  });
+}
+
+export async function verifyEmailChallengeLink({
+  pool,
+  config,
+  linkToken,
+  trustDevice,
+  ip,
+  userAgent,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  linkToken: string;
+  trustDevice?: boolean | undefined;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+}): Promise<LoginResult & { trustedDeviceToken?: string; trustedDeviceExpiresAt?: string }> {
+  return consumeAuthEmailChallenge({
+    pool,
+    config,
+    hashColumn: 'link_token_hash',
+    tokenValue: linkToken,
+    trustDevice,
+    assuranceMethod: 'email_link',
+    ip,
+    userAgent,
+  });
+}
+
+export async function resendEmailChallenge({
+  pool,
+  config,
+  challengeToken,
+  ip,
+  userAgent,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  challengeToken: string;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+}): Promise<
+  | {
+      ok: true;
+      challengeToken: string;
+      expiresAt: string;
+      deliveryState: string;
+    }
+  | {
+      ok: false;
+      code: 'INVALID_CREDENTIALS' | 'RATE_LIMITED';
+      retryAfterSeconds?: number;
+    }
+> {
+  const current = await pool.query(
+    `SELECT challenges.user_key, users.email_normalized, users.role, users.security_version
+       FROM onetime.auth_email_challenges AS challenges
+       JOIN onetime.account_users AS users
+         ON users.user_key = challenges.user_key
+        AND users.account_key = challenges.account_key
+        AND users.product_key = challenges.product_key
+      WHERE challenges.account_key = $1
+        AND challenges.product_key = $2
+        AND challenges.challenge_token_hash = $3
+        AND challenges.consumed_at IS NULL
+        AND challenges.superseded_at IS NULL
+        AND challenges.expires_at > now()
+        AND users.status = 'active'
+        AND users.role IN ('owner', 'admin')
+      LIMIT 1`,
+    [config.accountKey, config.productKey, hashValue(challengeToken)],
+  );
+  const row = current.rows[0];
+  if (!row) return { ok: false, code: 'INVALID_CREDENTIALS' };
+  const issued = await createEmailChallengeForUser({
+    pool,
+    config,
+    userKey: String(row.user_key),
+    emailNormalized: String(row.email_normalized),
+    role: String(row.role),
+    securityVersion: Number(row.security_version ?? 1),
+    ip,
+    userAgent,
+    reason: 'resend',
+  });
+  if (!issued.ok) {
+    return issued.retryAfterSeconds
+      ? { ok: false, code: 'RATE_LIMITED', retryAfterSeconds: issued.retryAfterSeconds }
+      : { ok: false, code: 'RATE_LIMITED' };
+  }
+  return issued;
+}
+
+export async function revokeTrustedDevice({
+  pool,
+  config,
+  trustedDeviceToken,
+  userKey,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  trustedDeviceToken?: string | undefined;
+  userKey?: string | undefined;
+}) {
+  if (!trustedDeviceToken) return false;
+  const result = await pool.query(
+    `UPDATE onetime.auth_trusted_devices
+        SET revoked_at = COALESCE(revoked_at, now())
+      WHERE account_key = $1
+        AND product_key = $2
+        AND token_hash = $3
+        AND ($4::text IS NULL OR user_key = $4)
+        AND revoked_at IS NULL
+      RETURNING user_key`,
+    [config.accountKey, config.productKey, hashValue(trustedDeviceToken), userKey ?? null],
+  );
+  const revokedUserKey = result.rows[0]?.user_key;
+  if (revokedUserKey) {
+    await insertAuthAudit(pool, config, {
+      eventType: 'trusted_device_revoked',
+      userKey: String(revokedUserKey),
+      success: true,
+    });
+  }
+  return Boolean(result.rowCount);
+}
+
+export async function verifyRecentEmailAssurance({
+  pool,
+  sessionKey,
+  maxAgeMs = EMAIL_ASSURANCE_MAX_AGE_MS,
+}: {
+  pool: DbPool;
+  sessionKey: string;
+  maxAgeMs?: number | undefined;
+}) {
+  const result = await pool.query(
+    `SELECT assurance_method, assurance_at
+       FROM onetime.user_sessions
+      WHERE session_key = $1
+        AND revoked_at IS NULL
+        AND expires_at > now()
+      LIMIT 1`,
+    [sessionKey],
+  );
+  const row = result.rows[0];
+  if (!row?.assurance_at) return false;
+  const method = String(row.assurance_method ?? '');
+  if (method !== 'email_challenge' && method !== 'email_link') return false;
+  const assuranceAt = new Date(String(row.assurance_at));
+  return Date.now() - assuranceAt.getTime() <= maxAgeMs;
+}
+
+export async function runAuthEmailChallengeDeliveryOutboxBatch(input: {
+  pool: DbPool;
+  config: AppConfig;
+  now?: Date;
+  limit?: number;
+  leaseMs?: number;
+  workerId?: string;
+}): Promise<AuthEmailChallengeDeliveryBatchSummary> {
+  const now = input.now ?? new Date();
+  const expired = await expireAuthEmailChallengeDeliveries(input.pool, input.config, now);
+  const claims = await claimAuthEmailChallengeDeliveries(input.pool, input.config, {
+    now,
+    limit: input.limit ?? EMAIL_CHALLENGE_DELIVERY_BATCH_SIZE,
+    leaseMs: input.leaseMs ?? EMAIL_CHALLENGE_DELIVERY_LEASE_MS,
+    workerId: input.workerId ?? `auth-email-worker-${randomUUID()}`,
+  });
+  const summary: AuthEmailChallengeDeliveryBatchSummary = {
+    claimed: claims.length,
+    sink_delivered: 0,
+    provider_delivered: 0,
+    expired,
+    retried: 0,
+    dead_lettered: 0,
+    lease_lost: 0,
+    external_send_performed: false,
+    raw_token_logged: false,
+  };
+  for (const claim of claims) {
+    try {
+      const payload = decryptEmailChallengeDeliveryPayload(input.config, claim);
+      const providerMessageRefHash = await deliverAuthEmailChallengePayload(
+        input.config,
+        claim,
+        payload,
+      );
+      const completed = await completeAuthEmailChallengeDelivery(input.pool, input.config, claim, {
+        state: providerMessageRefHash ? 'provider_delivered' : 'sink_delivered',
+        now,
+        providerMessageRefHash:
+          providerMessageRefHash ?? destinationReference(`sink:${claim.delivery_key}`),
+      });
+      if (!completed) summary.lease_lost += 1;
+      else if (providerMessageRefHash) {
+        summary.provider_delivered += 1;
+        summary.external_send_performed = true;
+      } else summary.sink_delivered += 1;
+    } catch (error) {
+      const terminal = claim.attempts >= claim.max_attempts;
+      const completed = await failAuthEmailChallengeDelivery(input.pool, input.config, claim, {
+        state: terminal ? 'dead_letter' : 'retry',
+        now,
+        errorCode: safeDeliveryErrorCode(error),
+      });
+      if (!completed) summary.lease_lost += 1;
+      else if (terminal) summary.dead_lettered += 1;
+      else summary.retried += 1;
+    }
+  }
+  return summary;
+}
+
+export function decryptAuthEmailChallengeDeliveryPayloadForTests(
+  config: AppConfig,
+  row: {
+    nonce: string;
+    ciphertext: string;
+    auth_tag: string;
+  },
+): Record<string, unknown> {
+  return decryptEmailChallengeDeliveryPayload(config, row);
 }
 
 export async function provisionTotpEnrollment({
@@ -1158,6 +1479,812 @@ function recoveryCodeHash(config: AppConfig, userKey: unknown, code: string) {
 function toIso(value: unknown) {
   if (value instanceof Date) return value.toISOString();
   return new Date(String(value)).toISOString();
+}
+
+type EmailChallengeIssueResult =
+  | {
+      ok: true;
+      challengeToken: string;
+      expiresAt: string;
+      deliveryState: string;
+    }
+  | {
+      ok: false;
+      retryAfterSeconds?: number;
+      scope?: string;
+    };
+
+type AuthEmailChallengeDeliveryClaim = {
+  id: string;
+  delivery_key: string;
+  challenge_key: string;
+  purpose: string;
+  destination_email: string;
+  nonce: string;
+  ciphertext: string;
+  auth_tag: string;
+  attempts: number;
+  max_attempts: number;
+  lease_expires_at: Date;
+  encrypted_payload_expires_at: Date;
+};
+
+async function createEmailChallengeForUser({
+  pool,
+  config,
+  userKey,
+  emailNormalized,
+  role,
+  securityVersion,
+  ip,
+  userAgent,
+  reason = 'login',
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  userKey: string;
+  emailNormalized: string;
+  role: string;
+  securityVersion: number;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+  reason?: 'login' | 'resend';
+}): Promise<EmailChallengeIssueResult> {
+  const emailHash = stableKey('email', [emailNormalized]);
+  const rateLimit = await consumeRateLimitBudgets({
+    pool,
+    config,
+    budgets: [
+      {
+        scope: 'login_email_challenge_user',
+        subject: userKey,
+        limit: config.loginIdentifierRateLimitMax,
+        windowMs: config.loginRateLimitWindowMs,
+      },
+      {
+        scope: 'login_email_challenge_identifier',
+        subject: emailHash,
+        limit: config.loginIdentifierRateLimitMax,
+        windowMs: config.loginRateLimitWindowMs,
+      },
+      {
+        scope: 'login_email_challenge_ip',
+        subject: ip ?? 'unknown',
+        limit: config.loginIpRateLimitMax,
+        windowMs: config.loginRateLimitWindowMs,
+      },
+      {
+        scope: 'login_email_challenge_account_product',
+        subject: `${config.accountKey}:${config.productKey}`,
+        limit: config.loginAccountRateLimitMax,
+        windowMs: config.loginRateLimitWindowMs,
+      },
+    ],
+  });
+  if (!rateLimit.allowed) {
+    return {
+      ok: false,
+      ...(rateLimit.retryAfterSeconds ? { retryAfterSeconds: rateLimit.retryAfterSeconds } : {}),
+      ...(rateLimit.scope ? { scope: rateLimit.scope } : {}),
+    };
+  }
+
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + EMAIL_CHALLENGE_TTL_MS);
+  const challengeToken = token();
+  const linkToken = token();
+  const code = emailChallengeCode();
+  const challengeKey = `email_challenge_${randomUUID()}`;
+  const destinationRef = destinationReference(emailNormalized);
+
+  return inTransaction(pool, async (client) => {
+    const superseded = await client.query(
+      `UPDATE onetime.auth_email_challenges
+          SET superseded_at = $5
+        WHERE account_key = $1
+          AND product_key = $2
+          AND user_key = $3
+          AND challenge_key <> $4
+          AND consumed_at IS NULL
+          AND superseded_at IS NULL
+        RETURNING challenge_key`,
+      [config.accountKey, config.productKey, userKey, challengeKey, now],
+    );
+    for (const row of superseded.rows) {
+      await client.query(
+        `UPDATE onetime.auth_email_challenge_delivery_outbox
+            SET state = 'superseded',
+                nonce = NULL,
+                ciphertext = NULL,
+                auth_tag = NULL,
+                cleared_at = $4,
+                updated_at = $4
+          WHERE account_key = $1
+            AND product_key = $2
+            AND challenge_key = $3
+            AND state IN ('queued', 'leased', 'retry', 'provider_off')`,
+        [config.accountKey, config.productKey, String(row.challenge_key), now],
+      );
+    }
+    await client.query(
+      `INSERT INTO onetime.auth_email_challenges
+         (challenge_key, account_key, product_key, user_key, challenge_token_hash,
+          link_token_hash, code_hash, destination_ref, security_version, expires_at,
+          ip_hash, user_agent_hash, metadata)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13::jsonb)`,
+      [
+        challengeKey,
+        config.accountKey,
+        config.productKey,
+        userKey,
+        hashValue(challengeToken),
+        hashValue(linkToken),
+        emailCodeHash(config, userKey, code),
+        destinationRef,
+        securityVersion,
+        expiresAt,
+        ip ? hashValue(ip) : null,
+        userAgent ? hashValue(userAgent) : null,
+        JSON.stringify({
+          policy_version: 'ops03b-email-step-up-v1',
+          reason,
+          target_role: role,
+          raw_code_included: false,
+          raw_token_included: false,
+        }),
+      ],
+    );
+    const delivery = await createAuthEmailChallengeDeliveryOutbox(client, config, {
+      challengeKey,
+      code,
+      linkToken,
+      recipientEmail: emailNormalized,
+      targetRole: role,
+      destinationRef,
+      expiresAt,
+      now,
+    });
+    await insertAuthAudit(client, config, {
+      eventType: 'auth_email_challenge_created',
+      userKey,
+      success: true,
+      ip,
+      userAgent,
+      metadata: {
+        delivery_state: delivery.state,
+        expires_at: expiresAt.toISOString(),
+        raw_code_included: false,
+        raw_token_included: false,
+      },
+    });
+    return {
+      ok: true,
+      challengeToken,
+      expiresAt: expiresAt.toISOString(),
+      deliveryState: delivery.state,
+    };
+  });
+}
+
+async function consumeAuthEmailChallenge({
+  pool,
+  config,
+  hashColumn,
+  tokenValue,
+  code,
+  trustDevice,
+  assuranceMethod,
+  ip,
+  userAgent,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  hashColumn: 'challenge_token_hash' | 'link_token_hash';
+  tokenValue: string;
+  code?: string | undefined;
+  trustDevice?: boolean | undefined;
+  assuranceMethod: 'email_challenge' | 'email_link';
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+}): Promise<LoginResult & { trustedDeviceToken?: string; trustedDeviceExpiresAt?: string }> {
+  return inTransaction(pool, async (client) => {
+    const result = await client.query(
+      `SELECT challenges.challenge_key, challenges.user_key, challenges.code_hash,
+              challenges.attempts, challenges.max_attempts, challenges.security_version,
+              users.email_normalized, users.display_name, users.role, users.mfa_capable,
+              users.status, users.security_version AS user_security_version
+         FROM onetime.auth_email_challenges AS challenges
+         JOIN onetime.account_users AS users
+           ON users.user_key = challenges.user_key
+          AND users.account_key = challenges.account_key
+          AND users.product_key = challenges.product_key
+        WHERE challenges.account_key = $1
+          AND challenges.product_key = $2
+          AND challenges.${hashColumn} = $3
+          AND challenges.consumed_at IS NULL
+          AND challenges.superseded_at IS NULL
+          AND challenges.expires_at > now()
+          AND users.status = 'active'
+          AND users.role IN ('owner', 'admin')
+          AND users.security_version = challenges.security_version
+        LIMIT 1
+        FOR UPDATE`,
+      [config.accountKey, config.productKey, hashValue(tokenValue)],
+    );
+    const row = result.rows[0];
+    if (!row) return { ok: false, code: 'INVALID_CREDENTIALS' };
+    const attempts = Number(row.attempts ?? 0);
+    const maxAttempts = Number(row.max_attempts ?? 5);
+    if (attempts >= maxAttempts) return { ok: false, code: 'RATE_LIMITED' };
+    if (hashColumn === 'challenge_token_hash') {
+      const submitted = String(code ?? '').trim();
+      if (
+        !/^\d{6}$/.test(submitted) ||
+        emailCodeHash(config, row.user_key, submitted) !== row.code_hash
+      ) {
+        await client.query(
+          'UPDATE onetime.auth_email_challenges SET attempts = attempts + 1 WHERE challenge_key = $1',
+          [row.challenge_key],
+        );
+        await insertAuthAudit(client, config, {
+          eventType: 'auth_email_challenge_failed',
+          userKey: row.user_key,
+          success: false,
+          reason: 'INVALID_CREDENTIALS',
+          ip,
+          userAgent,
+        });
+        return attempts + 1 >= maxAttempts
+          ? { ok: false, code: 'RATE_LIMITED' }
+          : { ok: false, code: 'INVALID_CREDENTIALS' };
+      }
+    }
+
+    await client.query(
+      'UPDATE onetime.auth_email_challenges SET consumed_at = now() WHERE challenge_key = $1',
+      [row.challenge_key],
+    );
+    let trustedDevice: { token: string; expiresAt: string } | null = null;
+    if (trustDevice) {
+      trustedDevice = await createTrustedDeviceForUser(client, config, {
+        userKey: String(row.user_key),
+        securityVersion: Number(row.user_security_version ?? row.security_version ?? 1),
+        ip,
+        userAgent,
+      });
+    }
+    await insertAuthAudit(client, config, {
+      eventType:
+        assuranceMethod === 'email_link'
+          ? 'auth_email_link_succeeded'
+          : 'auth_email_challenge_succeeded',
+      userKey: row.user_key,
+      success: true,
+      ip,
+      userAgent,
+      metadata: { trusted_device_created: Boolean(trustedDevice) },
+    });
+    return {
+      ok: true,
+      user: rowToSessionUser(row),
+      assuranceMethod,
+      ...(trustedDevice
+        ? {
+            trustedDeviceToken: trustedDevice.token,
+            trustedDeviceExpiresAt: trustedDevice.expiresAt,
+          }
+        : {}),
+    };
+  });
+}
+
+async function verifyTrustedDeviceForUser({
+  pool,
+  config,
+  userKey,
+  trustedDeviceToken,
+  userAgent,
+  ip,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  userKey: string;
+  trustedDeviceToken: string;
+  userAgent?: string | undefined;
+  ip?: string | undefined;
+}) {
+  const result = await pool.query(
+    `SELECT devices.device_key
+       FROM onetime.auth_trusted_devices AS devices
+       JOIN onetime.account_users AS users
+         ON users.user_key = devices.user_key
+        AND users.account_key = devices.account_key
+        AND users.product_key = devices.product_key
+      WHERE devices.account_key = $1
+        AND devices.product_key = $2
+        AND devices.user_key = $3
+        AND devices.token_hash = $4
+        AND devices.revoked_at IS NULL
+        AND devices.trusted_until > now()
+        AND devices.security_version = users.security_version
+        AND users.status = 'active'
+        AND users.role IN ('owner', 'admin')
+        AND (devices.user_agent_hash IS NULL OR devices.user_agent_hash = $5)
+      LIMIT 1`,
+    [
+      config.accountKey,
+      config.productKey,
+      userKey,
+      hashValue(trustedDeviceToken),
+      userAgent ? hashValue(userAgent) : null,
+    ],
+  );
+  const deviceKey = result.rows[0]?.device_key;
+  if (!deviceKey) return false;
+  await pool.query(
+    `UPDATE onetime.auth_trusted_devices
+        SET last_used_at = now()
+      WHERE device_key = $1`,
+    [deviceKey],
+  );
+  await insertAuthAudit(pool, config, {
+    eventType: 'trusted_device_accepted',
+    userKey,
+    success: true,
+    ip,
+    userAgent,
+  });
+  return true;
+}
+
+async function createTrustedDeviceForUser(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    userKey: string;
+    securityVersion: number;
+    ip?: string | undefined;
+    userAgent?: string | undefined;
+  },
+) {
+  const deviceToken = token();
+  const expiresAt = new Date(Date.now() + TRUSTED_DEVICE_TTL_MS);
+  await client.query(
+    `INSERT INTO onetime.auth_trusted_devices
+       (device_key, account_key, product_key, user_key, token_hash, user_agent_hash,
+        ip_hash, security_version, trusted_until, metadata)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb)`,
+    [
+      `trusted_device_${randomUUID()}`,
+      config.accountKey,
+      config.productKey,
+      input.userKey,
+      hashValue(deviceToken),
+      input.userAgent ? hashValue(input.userAgent) : null,
+      input.ip ? hashValue(input.ip) : null,
+      input.securityVersion,
+      expiresAt,
+      JSON.stringify({
+        policy_version: 'ops03b-trusted-device-v1',
+        raw_token_included: false,
+      }),
+    ],
+  );
+  return { token: deviceToken, expiresAt: expiresAt.toISOString() };
+}
+
+async function createAuthEmailChallengeDeliveryOutbox(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    challengeKey: string;
+    code: string;
+    linkToken: string;
+    recipientEmail: string;
+    targetRole: string;
+    destinationRef: string;
+    expiresAt: Date;
+    now: Date;
+  },
+) {
+  const deliveryKey = stableKey('auth_email_challenge_delivery_outbox', [
+    config.accountKey,
+    config.productKey,
+    input.challengeKey,
+  ]);
+  const encrypted = encryptEmailChallengeDeliveryPayload(config, {
+    schema_version: 1,
+    purpose: 'owner_admin_login_step_up',
+    challenge_key: input.challengeKey,
+    code: input.code,
+    login_url: emailChallengeUrl(config, input.linkToken),
+    fragment_parameter: 'email_challenge_token',
+    target_role: input.targetRole,
+    issued_at: input.now.toISOString(),
+    expires_at: input.expiresAt.toISOString(),
+  });
+  await client.query(
+    `INSERT INTO onetime.auth_email_challenge_delivery_outbox
+       (delivery_key, account_key, product_key, challenge_key, purpose, channel,
+        transport_mode, destination_ref, key_id, key_version, nonce, ciphertext, auth_tag,
+        encrypted_payload_expires_at, state, attempts, max_attempts, next_attempt_at,
+        idempotency_key, metadata, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,'owner_admin_login_step_up','email','sink',$5,$6,$7,$8,$9,$10,$11,
+        'queued',0,5,$12,$13,$14::jsonb,$15,$15)`,
+    [
+      deliveryKey,
+      config.accountKey,
+      config.productKey,
+      input.challengeKey,
+      input.destinationRef,
+      config.lifecycleDeliveryKeyId,
+      EMAIL_CHALLENGE_DELIVERY_KEY_VERSION,
+      encrypted.nonce,
+      encrypted.ciphertext,
+      encrypted.authTag,
+      input.expiresAt,
+      input.now,
+      input.challengeKey,
+      JSON.stringify({
+        policy_version: 'ops03b-auth-email-challenge-delivery-v1',
+        raw_code_included: false,
+        raw_token_included: false,
+        raw_url_included: false,
+        destination_ref: input.destinationRef,
+      }),
+      input.now,
+    ],
+  );
+  return { deliveryKey, state: 'queued' };
+}
+
+function encryptEmailChallengeDeliveryPayload(config: AppConfig, payload: Record<string, unknown>) {
+  const nonce = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', emailChallengeDeliveryKey(config), nonce);
+  const ciphertext = Buffer.concat([
+    cipher.update(JSON.stringify(payload), 'utf8'),
+    cipher.final(),
+  ]);
+  return {
+    nonce: nonce.toString('base64url'),
+    ciphertext: ciphertext.toString('base64url'),
+    authTag: cipher.getAuthTag().toString('base64url'),
+  };
+}
+
+function decryptEmailChallengeDeliveryPayload(
+  config: AppConfig,
+  row: { nonce: string; ciphertext: string; auth_tag: string },
+): Record<string, unknown> {
+  const decipher = createDecipheriv(
+    'aes-256-gcm',
+    emailChallengeDeliveryKey(config),
+    Buffer.from(row.nonce, 'base64url'),
+  );
+  decipher.setAuthTag(Buffer.from(row.auth_tag, 'base64url'));
+  const text = Buffer.concat([
+    decipher.update(Buffer.from(row.ciphertext, 'base64url')),
+    decipher.final(),
+  ]).toString('utf8');
+  const parsed = JSON.parse(text) as unknown;
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('Auth email challenge payload did not decrypt to an object.');
+  }
+  return parsed as Record<string, unknown>;
+}
+
+function emailChallengeDeliveryKey(config: AppConfig) {
+  if (!config.lifecycleDeliveryKey) {
+    throw new Error(
+      'ONE_TIME_LIFECYCLE_DELIVERY_KEY is required for auth email challenge delivery.',
+    );
+  }
+  return createHash('sha256').update(config.lifecycleDeliveryKey).digest();
+}
+
+async function deliverAuthEmailChallengePayload(
+  config: AppConfig,
+  claim: AuthEmailChallengeDeliveryClaim,
+  payload: Record<string, unknown>,
+): Promise<string | null> {
+  if (!config.deliveryProviderTransportEnabled && !config.resendTransportEnabled) return null;
+  if (!config.deliveryProviderTransportEnabled || !config.resendTransportEnabled) {
+    throw new Error('auth_email_resend_transport_not_fully_enabled');
+  }
+  if (!config.resendApiKey) throw new Error('auth_email_resend_api_key_missing');
+  if (!config.emailFrom) throw new Error('auth_email_from_missing');
+  const canary = config.deliveryTestCanaryEmail;
+  if (!canary) throw new Error('auth_email_canary_email_missing');
+  if (claim.destination_email.toLowerCase() !== canary) {
+    throw new Error('auth_email_canary_destination_not_authorized');
+  }
+  const code = requiredPayloadString(payload, 'code');
+  const loginUrl = requiredPayloadString(payload, 'login_url');
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${config.resendApiKey}`,
+      'Content-Type': 'application/json',
+      'Idempotency-Key': `${claim.delivery_key}:${claim.attempts}`,
+    },
+    body: JSON.stringify({
+      from: config.emailFrom,
+      to: [claim.destination_email],
+      ...(config.emailReplyTo ? { reply_to: [config.emailReplyTo] } : {}),
+      subject: 'Your One Time login code',
+      text: authEmailChallengeText(code, loginUrl),
+      html: authEmailChallengeHtml(code, loginUrl),
+      tags: [
+        { name: 'message_key', value: 'account_owner_admin_login_step_up' },
+        { name: 'purpose', value: 'owner_admin_login_step_up' },
+      ],
+    }),
+  });
+  if (!response.ok) throw new Error(`auth_email_resend_http_${response.status}`);
+  const body = (await response.json().catch(() => ({}))) as { id?: unknown };
+  const messageId = typeof body.id === 'string' && body.id ? body.id : `status_${response.status}`;
+  return destinationReference(`resend:${messageId}`);
+}
+
+function authEmailChallengeText(code: string, loginUrl: string) {
+  return [
+    'Hello,',
+    '',
+    `Your One Time login code is ${code}.`,
+    '',
+    'You can also finish login with this secure link:',
+    loginUrl,
+    '',
+    'This code expires in 10 minutes. If you did not request it, ignore this email.',
+    '',
+    '- One Time Mishnayos',
+  ].join('\n');
+}
+
+function authEmailChallengeHtml(code: string, loginUrl: string) {
+  const safeUrl = escapeHtml(loginUrl);
+  return [
+    '<p>Hello,</p>',
+    `<p>Your One Time login code is <strong>${escapeHtml(code)}</strong>.</p>`,
+    `<p>You can also <a href="${safeUrl}">finish login with this secure link</a>.</p>`,
+    '<p>This code expires in 10 minutes. If you did not request it, ignore this email.</p>',
+    '<p>- One Time Mishnayos</p>',
+  ].join('');
+}
+
+async function expireAuthEmailChallengeDeliveries(pool: DbPool, config: AppConfig, now: Date) {
+  const result = await pool.query(
+    `UPDATE onetime.auth_email_challenge_delivery_outbox
+        SET state = 'expired',
+            nonce = NULL,
+            ciphertext = NULL,
+            auth_tag = NULL,
+            cleared_at = $3,
+            updated_at = $3
+      WHERE account_key = $1
+        AND product_key = $2
+        AND state IN ('queued', 'leased', 'retry', 'provider_off')
+        AND encrypted_payload_expires_at <= $3
+      RETURNING delivery_key`,
+    [config.accountKey, config.productKey, now],
+  );
+  return result.rowCount ?? 0;
+}
+
+async function claimAuthEmailChallengeDeliveries(
+  pool: DbPool,
+  config: AppConfig,
+  input: { now: Date; limit: number; leaseMs: number; workerId: string },
+) {
+  return inTransaction(pool, async (client) => {
+    const leaseExpiresAt = new Date(input.now.getTime() + input.leaseMs);
+    const lockClause = isMemoryPool(pool) ? '' : 'FOR UPDATE SKIP LOCKED';
+    const selected = await client.query(
+      `SELECT outbox.id, users.email_normalized AS destination_email
+         FROM onetime.auth_email_challenge_delivery_outbox AS outbox
+         JOIN onetime.auth_email_challenges AS challenges
+           ON challenges.account_key = outbox.account_key
+          AND challenges.product_key = outbox.product_key
+          AND challenges.challenge_key = outbox.challenge_key
+         JOIN onetime.account_users AS users
+           ON users.user_key = challenges.user_key
+          AND users.account_key = challenges.account_key
+          AND users.product_key = challenges.product_key
+        WHERE outbox.account_key = $1
+          AND outbox.product_key = $2
+          AND outbox.transport_mode = 'sink'
+          AND outbox.encrypted_payload_expires_at > $3::timestamptz
+          AND (
+            (outbox.state IN ('queued', 'retry') AND outbox.next_attempt_at <= $3::timestamptz)
+            OR (outbox.state = 'leased' AND outbox.lease_expires_at <= $3::timestamptz)
+          )
+        ORDER BY outbox.next_attempt_at ASC, outbox.created_at ASC, outbox.id ASC
+        LIMIT $4
+        ${lockClause}`,
+      [config.accountKey, config.productKey, input.now, input.limit],
+    );
+    const claims: AuthEmailChallengeDeliveryClaim[] = [];
+    for (const row of selected.rows) {
+      const updated = await client.query(
+        `UPDATE onetime.auth_email_challenge_delivery_outbox
+            SET state = 'leased',
+                attempts = attempts + 1,
+                lease_owner = $5,
+                lease_expires_at = $6::timestamptz,
+                updated_at = $4::timestamptz
+          WHERE id = $1
+            AND account_key = $2
+            AND product_key = $3
+          RETURNING id, delivery_key, challenge_key, purpose, nonce, ciphertext, auth_tag,
+                    attempts, max_attempts, lease_expires_at, encrypted_payload_expires_at`,
+        [row.id, config.accountKey, config.productKey, input.now, input.workerId, leaseExpiresAt],
+      );
+      if (updated.rows[0]) {
+        claims.push(
+          mapAuthEmailChallengeClaim({
+            ...updated.rows[0],
+            destination_email: row.destination_email,
+          }),
+        );
+      }
+    }
+    return claims;
+  });
+}
+
+async function completeAuthEmailChallengeDelivery(
+  pool: DbPool,
+  config: AppConfig,
+  claim: AuthEmailChallengeDeliveryClaim,
+  input: {
+    state: 'sink_delivered' | 'provider_delivered';
+    now: Date;
+    providerMessageRefHash: string;
+  },
+) {
+  const result = await pool.query(
+    `UPDATE onetime.auth_email_challenge_delivery_outbox
+        SET state = $4,
+            nonce = NULL,
+            ciphertext = NULL,
+            auth_tag = NULL,
+            provider_message_ref_hash = $5,
+            delivered_at = $6,
+            cleared_at = $6,
+            updated_at = $6
+      WHERE id = $1
+        AND account_key = $2
+        AND product_key = $3
+        AND state = 'leased'
+        AND lease_expires_at = $7
+      RETURNING delivery_key`,
+    [
+      claim.id,
+      config.accountKey,
+      config.productKey,
+      input.state,
+      input.providerMessageRefHash,
+      input.now,
+      claim.lease_expires_at,
+    ],
+  );
+  return Boolean(result.rowCount);
+}
+
+async function failAuthEmailChallengeDelivery(
+  pool: DbPool,
+  config: AppConfig,
+  claim: AuthEmailChallengeDeliveryClaim,
+  input: { state: 'retry' | 'dead_letter'; now: Date; errorCode: string },
+) {
+  const nextAttemptAt =
+    input.state === 'retry'
+      ? new Date(input.now.getTime() + Math.min(60_000 * Math.max(1, claim.attempts), 300_000))
+      : input.now;
+  const result = await pool.query(
+    `UPDATE onetime.auth_email_challenge_delivery_outbox
+        SET state = $4,
+            next_attempt_at = $5,
+            last_error_code = $6,
+            dead_lettered_at = CASE WHEN $4 = 'dead_letter' THEN $7::timestamptz ELSE dead_lettered_at END,
+            nonce = CASE WHEN $4 = 'dead_letter' THEN NULL ELSE nonce END,
+            ciphertext = CASE WHEN $4 = 'dead_letter' THEN NULL ELSE ciphertext END,
+            auth_tag = CASE WHEN $4 = 'dead_letter' THEN NULL ELSE auth_tag END,
+            cleared_at = CASE WHEN $4 = 'dead_letter' THEN $7::timestamptz ELSE cleared_at END,
+            updated_at = $7
+      WHERE id = $1
+        AND account_key = $2
+        AND product_key = $3
+        AND state = 'leased'
+        AND lease_expires_at = $8
+      RETURNING delivery_key`,
+    [
+      claim.id,
+      config.accountKey,
+      config.productKey,
+      input.state,
+      nextAttemptAt,
+      input.errorCode,
+      input.now,
+      claim.lease_expires_at,
+    ],
+  );
+  return Boolean(result.rowCount);
+}
+
+function mapAuthEmailChallengeClaim(row: Record<string, unknown>): AuthEmailChallengeDeliveryClaim {
+  return {
+    id: stringValue(row.id),
+    delivery_key: stringValue(row.delivery_key),
+    challenge_key: stringValue(row.challenge_key),
+    purpose: stringValue(row.purpose),
+    destination_email: stringValue(row.destination_email),
+    nonce: stringValue(row.nonce),
+    ciphertext: stringValue(row.ciphertext),
+    auth_tag: stringValue(row.auth_tag),
+    attempts: Number(row.attempts ?? 0),
+    max_attempts: Number(row.max_attempts ?? 5),
+    lease_expires_at: dateValue(row.lease_expires_at),
+    encrypted_payload_expires_at: dateValue(row.encrypted_payload_expires_at),
+  };
+}
+
+function emailChallengeCode() {
+  return String(randomInt(0, 1_000_000)).padStart(6, '0');
+}
+
+function emailCodeHash(config: AppConfig, userKey: unknown, code: string) {
+  return createHash('sha256')
+    .update([config.accountKey, config.productKey, String(userKey), code.trim()].join(':'))
+    .digest('hex');
+}
+
+function emailChallengeUrl(config: AppConfig, linkToken: string) {
+  return `${config.publicBaseUrl.replace(/\/+$/, '')}/login#email_challenge_token=${encodeURIComponent(
+    linkToken,
+  )}`;
+}
+
+function requiredPayloadString(payload: Record<string, unknown>, key: string) {
+  const value = payload[key];
+  if (typeof value !== 'string' || !value) throw new Error(`auth_email_payload_${key}_missing`);
+  return value;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function destinationReference(value: string) {
+  return createHash('sha256').update(value.trim().toLowerCase()).digest('hex');
+}
+
+function isMemoryPool(pool: DbPool) {
+  return Boolean((pool as DbPool & { __memory?: boolean }).__memory);
+}
+
+function stringValue(value: unknown) {
+  if (typeof value === 'string') return value;
+  return String(value ?? '');
+}
+
+function dateValue(value: unknown) {
+  if (value instanceof Date) return value;
+  const parsed = new Date(String(value));
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error('Invalid auth email delivery timestamp.');
+  }
+  return parsed;
+}
+
+function safeDeliveryErrorCode(error: unknown) {
+  const value = error instanceof Error ? error.message : String(error);
+  return value.replace(/[^a-z0-9_.:-]/gi, '_').slice(0, 120) || 'unknown_auth_email_error';
 }
 
 async function createMfaChallengeForUser({
