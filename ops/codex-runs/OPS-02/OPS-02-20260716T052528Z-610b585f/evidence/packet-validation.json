@@ -1,0 +1,20 @@
+﻿{
+    "task_id":  "OPS-02",
+    "selected_archive":  "OPS-02-CODEX-PACKET.zip",
+    "archive_sha256":  "a1d58cf35db429a95c9345383ba4b441982d2f0fdba27ddcc65722940d27ea5b",
+    "archive_safety":  {
+                           "unsafe_entries":  0,
+                           "parent_traversal_entries":  0,
+                           "absolute_path_entries":  0,
+                           "duplicate_logical_entries":  0
+                       },
+    "sha256sums_result":  "ok",
+    "sha256sum_command":  "C:\\Program Files\\Git\\usr\\bin\\sha256sum.exe -c SHA256SUMS.txt",
+    "packet_json":  {
+                        "task_id":  "OPS-02",
+                        "literal_revision_key":  "missing",
+                        "selected_revision_identifier":  "OPS-02-20260716T040144Z-40d638ea",
+                        "packet_id":  "OPS-02-20260716T040144Z-40d638ea"
+                    },
+    "note":  "PACKET.json contains packet_id/generated_at but no literal revision key; only one checksum-valid OPS-02 archive was present, so packet_id was used as the selectable revision identifier."
+}

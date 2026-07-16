@@ -1,0 +1,84 @@
+﻿{
+    "task_id":  "OPS-02",
+    "packet_id":  "OPS-02-20260716T040144Z-40d638ea",
+    "target_repository":  "webcraft-media/onetimev2",
+    "selected_packet_archive_sha256":  "a1d58cf35db429a95c9345383ba4b441982d2f0fdba27ddcc65722940d27ea5b",
+    "selected_packet_revision_identifier":  "OPS-02-20260716T040144Z-40d638ea",
+    "packet_literal_revision_key":  "missing",
+    "preparation_base_ref":  "origin/main",
+    "preparation_base_sha":  "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "protected_name_presence":  [
+                                    {
+                                        "name":  "OPS02_RAILWAY_WORKSPACE",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_APPROVED_STAGING_PROJECT_ID",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_APPROVED_STAGING_ENVIRONMENT_ID",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_STAGING_WEB_SERVICE_ID",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_STAGING_WORKER_SERVICE_ID",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_STAGING_DATABASE_SERVICE_ID",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_STAGING_DATABASE_REFERENCE_ID",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_STAGING_HOSTNAME",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_PRODUCTION_DATABASE_REFERENCE_ID",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_EXPECTED_SOURCE_SHA",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "OPS02_PREVIOUS_APPROVED_SOURCE_SHA",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "DATABASE_URL",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "AUTH_CSRF_SECRET",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "MFA_SECRET_ENCRYPTION_KEY",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "RAILWAY_TOKEN",
+                                        "present":  false
+                                    },
+                                    {
+                                        "name":  "RAILWAY_API_TOKEN",
+                                        "present":  false
+                                    }
+                                ],
+    "public_resource_names":  {
+                                  "railway_project_name":  "one-time-staging-ops-02",
+                                  "railway_environment_name":  "staging",
+                                  "railway_web_service_name":  "one-time-staging-web",
+                                  "railway_worker_service_name":  "one-time-staging-worker",
+                                  "railway_database_service_name":  "one-time-staging-postgres",
+                                  "preserved_launch_hostname":  "join.onetimeonetime.com"
+                              }
+}

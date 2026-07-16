@@ -1,0 +1,38 @@
+﻿{
+    "task_id":  "OPS-02",
+    "packet_id":  "OPS-02-20260716T040144Z-40d638ea",
+    "created_at_utc":  "2026-07-16T05:26:42Z",
+    "normalized_origin":  "webcraft-media/onetimev2",
+    "origin_url":  "https://github.com/webcraft-media/onetimev2.git",
+    "preparation_base_ref":  "origin/main",
+    "preparation_base_sha":  "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "worktree_path_sha256":  "24b21f5e2be759b6d9306d488aaafd345b595c4a4ad8acc9758f1ee53cd72b25",
+    "packet_archive_sha256":  "a1d58cf35db429a95c9345383ba4b441982d2f0fdba27ddcc65722940d27ea5b",
+    "packet_checksum_result":  "ok",
+    "packet_task_id_validation":  "ok",
+    "packet_revision_validation":  "missing_literal_revision_key; selected packet_id as only valid revision identifier",
+    "initial_status":  "waiting_for_ot99_sha",
+    "mutation_counters":  {
+                              "repository_file_edits_before_intake":  0,
+                              "railway_mutations":  0,
+                              "database_mutations":  0,
+                              "domain_mutations":  0,
+                              "deployments":  0,
+                              "provider_actions":  0,
+                              "live_email_sends":  0,
+                              "live_whatsapp_sends":  0,
+                              "live_telegram_sends":  0,
+                              "live_charges":  0,
+                              "root_dns_changes":  0,
+                              "secret_values_output":  0
+                          },
+    "record_hashes_sha256":  {
+                                 "ORIGINAL-PROMPT.md":  "59a5041a6f30ce1ec61e98a679541cdde18b632fca7d781eb5aa8d922b5b51bb",
+                                 "INPUTS.json":  "483561996872425ddcdb02a7eedcb0d0bda2d050e55572c7638f142d861fc822",
+                                 "STATE.json":  "ae9c1fd4a20078ef326e5a418a99ee5d314d74deabf2230cfe888594fb40f07d",
+                                 "RESUME.md":  "10103da0970ed87912c0b79b00e76fc363e30d5317d64cc0992c3f99109febab",
+                                 "EXECUTION.log":  "7176ec6c10ed6920b6432557b61a2f70a54855d994d22517997c17909bbf028b",
+                                 "FINAL-REPORT.md":  "f66bfca65111c192cd88f3c124ffbb50d8c3103065d4cd58b056a4e5e314df32",
+                                 "evidence/packet-validation.json":  "d20879802318660eaa70714145a1dd8062101385d84bed8a3420617c669c2002"
+                             }
+}

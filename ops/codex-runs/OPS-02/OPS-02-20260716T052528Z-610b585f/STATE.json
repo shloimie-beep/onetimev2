@@ -1,0 +1,28 @@
+﻿{
+    "task_id":  "OPS-02",
+    "packet_id":  "OPS-02-20260716T040144Z-40d638ea",
+    "run_id":  "OPS-02-20260716T052528Z-610b585f",
+    "status":  "waiting_for_ot99_sha",
+    "phase":  "intake_persisted",
+    "prepared_at_utc":  "2026-07-16T05:26:41Z",
+    "normalized_origin":  "webcraft-media/onetimev2",
+    "preparation_base_sha":  "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "ot99_candidate":  null,
+    "mutation_counters":  {
+                              "repository_file_edits_before_intake":  0,
+                              "railway_mutations":  0,
+                              "database_mutations":  0,
+                              "domain_mutations":  0,
+                              "deployments":  0,
+                              "provider_actions":  0,
+                              "live_email_sends":  0,
+                              "live_whatsapp_sends":  0,
+                              "live_telegram_sends":  0,
+                              "live_charges":  0,
+                              "root_dns_changes":  0,
+                              "secret_values_output":  0
+                          },
+    "notes":  [
+                  "Initial run state persisted before OPS-02 implementation tooling or external mutation."
+              ]
+}
