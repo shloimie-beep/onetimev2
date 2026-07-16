@@ -14,10 +14,12 @@ import {
   createSession,
   createStudentReset,
   createStudentSetup,
+  decryptLifecycleDeliveryPayloadForTests,
   getSessionByToken,
   requestPasswordReset,
   restoreStudentIdentity,
   revokeStudentIdentitySessions,
+  runLifecycleDeliveryOutboxBatch,
   suspendStudentIdentity,
 } from '../../../packages/domain/src/index.ts';
 
@@ -57,6 +59,7 @@ afterEach(async () => {
 
 describe('OT-71 account lifecycle', () => {
   it('issues and accepts owner/admin invitations without persisting raw token material', async () => {
+    const issuedAt = new Date('2026-07-15T10:00:00.000Z');
     const issued = await createOwnerAdminInvitation({
       pool,
       config,
@@ -68,7 +71,7 @@ describe('OT-71 account lifecycle', () => {
         display_name: 'Invited Admin',
         role: 'admin',
       },
-      now: new Date('2026-07-15T10:00:00.000Z'),
+      now: issuedAt,
     });
     const token = issued.token_for_local_proof;
     if (!token) throw new Error('Expected local proof token.');
@@ -84,6 +87,44 @@ describe('OT-71 account lifecycle', () => {
       },
     });
     expect(await serializedLifecycleRows()).not.toContain(token);
+    expect(new Date(issued.expires_at).getTime() - issuedAt.getTime()).toBe(24 * 60 * 60 * 1000);
+
+    const queuedOutbox = await lifecycleDeliveryRows();
+    expect(queuedOutbox).toHaveLength(1);
+    expect(JSON.stringify(queuedOutbox)).not.toContain(token);
+    const encryptedPayload = decryptLifecycleDeliveryPayloadForTests(config, {
+      nonce: requiredRowString(queuedOutbox[0], 'nonce'),
+      ciphertext: requiredRowString(queuedOutbox[0], 'ciphertext'),
+      auth_tag: requiredRowString(queuedOutbox[0], 'auth_tag'),
+    });
+    expect(encryptedPayload).toMatchObject({
+      purpose: 'owner_admin_invitation',
+      token_key: issued.token_key,
+      token,
+      activation_url: `${config.publicBaseUrl}/activate#token=${encodeURIComponent(token)}`,
+      target_role: 'admin',
+    });
+
+    const workerSummary = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config,
+      now: new Date('2026-07-15T10:01:00.000Z'),
+      workerId: 'account-lifecycle-test-worker',
+    });
+    expect(workerSummary).toMatchObject({
+      claimed: 1,
+      sink_delivered: 1,
+      expired: 0,
+      external_send_performed: false,
+      raw_token_logged: false,
+    });
+    const deliveredOutbox = await lifecycleDeliveryRows();
+    expect(deliveredOutbox[0]).toMatchObject({
+      state: 'sink_delivered',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
 
     const replay = await createOwnerAdminInvitation({
       pool,
@@ -136,6 +177,115 @@ describe('OT-71 account lifecycle', () => {
         payload: { token, password: 'AnotherPass!234' },
       }),
     ).rejects.toMatchObject({ code: 'TOKEN_CONSUMED' });
+  });
+
+  it('resending an owner/admin invitation supersedes the old encrypted delivery and token', async () => {
+    const first = await createOwnerAdminInvitation({
+      pool,
+      config,
+      actor: ownerActor(),
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'invite-admin-resend-001',
+        email: 'resend.admin@example.test',
+        display_name: 'Resent Admin',
+        role: 'admin',
+      },
+      now: new Date('2026-07-15T10:00:00.000Z'),
+    });
+    const firstToken = requiredProof(first);
+
+    const second = await createOwnerAdminInvitation({
+      pool,
+      config,
+      actor: ownerActor(),
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'invite-admin-resend-002',
+        email: 'resend.admin@example.test',
+        display_name: 'Resent Admin',
+        role: 'admin',
+      },
+      now: new Date('2026-07-15T10:03:00.000Z'),
+    });
+    const secondToken = requiredProof(second);
+
+    expect(first.token_key).not.toBe(second.token_key);
+    await expect(
+      acceptOwnerAdminInvitation({
+        pool,
+        config,
+        payload: { token: firstToken, password: 'AdminPass!111' },
+      }),
+    ).rejects.toMatchObject({ code: 'TOKEN_INVALID' });
+
+    const deliveries = await lifecycleDeliveryRows();
+    expect(deliveries).toHaveLength(2);
+    const firstDelivery = deliveries.find((row) => row.token_key === first.token_key);
+    const secondDelivery = deliveries.find((row) => row.token_key === second.token_key);
+    expect(firstDelivery).toMatchObject({
+      state: 'superseded',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
+    expect(secondDelivery).toMatchObject({ state: 'queued' });
+
+    const accepted = await acceptOwnerAdminInvitation({
+      pool,
+      config,
+      payload: { token: secondToken, password: 'AdminPass!222' },
+      now: new Date('2026-07-15T10:08:00.000Z'),
+    });
+    expect(accepted).toMatchObject({ role: 'admin', status: 'active' });
+  });
+
+  it('expires queued lifecycle deliveries and clears encrypted token material', async () => {
+    const issuedAt = new Date('2026-07-15T10:00:00.000Z');
+    const issued = await createOwnerAdminInvitation({
+      pool,
+      config,
+      actor: ownerActor(),
+      includeLocalProofToken: true,
+      payload: {
+        idempotency_key: 'invite-admin-expiry-001',
+        email: 'expiry.admin@example.test',
+        display_name: 'Expired Admin',
+        role: 'admin',
+      },
+      now: issuedAt,
+    });
+    const token = requiredProof(issued);
+    const expiresAt = new Date(issued.expires_at);
+
+    const summary = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config,
+      now: new Date(expiresAt.getTime() + 1),
+      workerId: 'account-lifecycle-expiry-worker',
+    });
+    expect(summary).toMatchObject({
+      claimed: 0,
+      sink_delivered: 0,
+      expired: 1,
+      external_send_performed: false,
+      raw_token_logged: false,
+    });
+    const [delivery] = await lifecycleDeliveryRows();
+    expect(delivery).toMatchObject({
+      state: 'expired',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
+    await expect(
+      acceptOwnerAdminInvitation({
+        pool,
+        config,
+        payload: { token, password: 'AdminPass!333' },
+        now: new Date(expiresAt.getTime() + 1),
+      }),
+    ).rejects.toMatchObject({ code: 'TOKEN_EXPIRED' });
   });
 
   it('activates parent identity and manages student setup, reset, suspend, and restore', async () => {
@@ -285,6 +435,7 @@ describe('OT-71 account lifecycle', () => {
     if (!login.ok) throw new Error(`Expected parent login, got ${login.code}`);
     const session = await createSession({ pool, config, user: login.user });
 
+    const resetRequestedAt = new Date('2026-07-15T10:00:00.000Z');
     const resetIssue = await requestPasswordReset({
       pool,
       config,
@@ -293,16 +444,21 @@ describe('OT-71 account lifecycle', () => {
         idempotency_key: 'password-reset-001',
         email: 'parent-reset@example.test',
       },
+      now: resetRequestedAt,
     });
     if (!('token_for_local_proof' in resetIssue) || !resetIssue.token_for_local_proof) {
       throw new Error('Expected password reset local proof token.');
     }
     expect(resetIssue.raw_token_included).toBe(false);
+    expect(new Date(resetIssue.expires_at).getTime() - resetRequestedAt.getTime()).toBe(
+      30 * 60 * 1000,
+    );
 
     const completed = await completePasswordReset({
       pool,
       config,
       payload: { token: resetIssue.token_for_local_proof, password: 'ParentPass!999' },
+      now: new Date('2026-07-15T10:10:00.000Z'),
     });
     expect(completed).toMatchObject({
       user_key: parent.user_key,
@@ -375,7 +531,28 @@ async function serializedLifecycleRows() {
     `SELECT
        (SELECT json_agg(tokens) FROM onetime.account_lifecycle_tokens AS tokens) AS tokens,
        (SELECT json_agg(intents) FROM onetime.account_lifecycle_delivery_intents AS intents) AS intents,
+       (SELECT json_agg(outbox) FROM onetime.account_lifecycle_delivery_outbox AS outbox) AS outbox,
        (SELECT json_agg(idem) FROM onetime.account_lifecycle_idempotency_records AS idem) AS idempotency`,
   );
   return JSON.stringify(rows.rows);
+}
+
+async function lifecycleDeliveryRows() {
+  const rows = await pool.query(
+    `SELECT delivery_key, token_key, intent_key, purpose, transport_mode, destination_ref,
+            key_id, key_version, nonce, ciphertext, auth_tag, encrypted_payload_expires_at,
+            state, attempts, max_attempts, idempotency_key, provider_message_ref_hash,
+            delivered_at, dead_lettered_at, cleared_at, metadata
+       FROM onetime.account_lifecycle_delivery_outbox
+      ORDER BY created_at ASC, delivery_key ASC`,
+  );
+  return rows.rows as Array<Record<string, unknown>>;
+}
+
+function requiredRowString(row: Record<string, unknown> | undefined, key: string) {
+  const value = row?.[key];
+  if (typeof value !== 'string' || value.length === 0) {
+    throw new Error(`Expected lifecycle delivery ${key}.`);
+  }
+  return value;
 }
