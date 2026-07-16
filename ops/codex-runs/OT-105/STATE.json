@@ -1,0 +1,56 @@
+{
+  "task_id": "OT-105",
+  "title": "Stripe TEST billing canary and webhook correction",
+  "status": "implemented_local_verified_external_canary_blocked",
+  "branch": "codex/ot105-stripe-test-billing-canary",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "base_sha_requested": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/45",
+  "implementation_commit_sha": "48182c6",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot105-stripe-test-billing-canary",
+  "prompt_sha256": "3390487EABA664B02003F5E34DADB6848D2E3BD9A7E5CDFDBCEA0E020EA89979",
+  "staging_webhook_route": "https://ot99-web-staging.up.railway.app/api/v1/billing/webhooks/provider",
+  "protected_scope": "Stripe TEST/SANDBOX only; live keys, live mode objects, production mutations, and live charges remain blocked.",
+  "requirements": [
+    {
+      "id": "OT105-REQ-001",
+      "status": "done",
+      "summary": "Preserved raw webhook verification path and tested stale signature rejection before receipt/projection."
+    },
+    {
+      "id": "OT105-REQ-002",
+      "status": "done",
+      "summary": "Added bounded event coverage including subscription trial warning and invoice action/payment-failure events."
+    },
+    {
+      "id": "OT105-REQ-003",
+      "status": "done",
+      "summary": "Added product, price, currency, amount, principal, and scope guardrails before entitlement projection."
+    },
+    {
+      "id": "OT105-REQ-004",
+      "status": "done",
+      "summary": "Added canonical provider readback on ambiguous stale subscription events."
+    },
+    {
+      "id": "OT105-REQ-005",
+      "status": "done",
+      "summary": "Added operator canary script, TEST env contract, runbook, and integration delta."
+    },
+    {
+      "id": "OT105-REQ-006",
+      "status": "blocked_external",
+      "summary": "Live staging webhook delivery and sandbox checkout correlation are blocked until protected Stripe TEST config and explicit canary authorization are supplied."
+    }
+  ],
+  "verification": {
+    "typecheck": "passed",
+    "focused_integration_tests": "passed: 3 files, 16 tests",
+    "focused_unit_tests": "passed: 1 file, 17 tests",
+    "lint": "passed",
+    "secret_scan": "passed",
+    "build": "passed",
+    "canary_readiness": "blocked_expected_no_mutations"
+  },
+  "last_updated": "2026-07-16T20:00:00Z"
+}

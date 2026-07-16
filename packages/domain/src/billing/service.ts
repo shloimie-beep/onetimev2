@@ -363,6 +363,7 @@ export function createBillingServices(deps: BillingServicesDeps) {
         'customer.subscription.created',
         'customer.subscription.updated',
         'customer.subscription.deleted',
+        'customer.subscription.trial_will_end',
         'customer.subscription.paused',
         'customer.subscription.resumed',
         'invoice.paid',
@@ -395,10 +396,13 @@ export function createBillingServices(deps: BillingServicesDeps) {
     }
     if (
       (refs.account_key && refs.account_key !== principal.account_key) ||
-      (refs.product_key && refs.product_key !== principal.product_key)
+      (refs.product_key && refs.product_key !== principal.product_key) ||
+      (refs.principal_key && refs.principal_key !== principal.principal_key)
     ) {
       return { disposition: 'wrong_scope', reason: 'event_scope_mismatch', status: 202 };
     }
+    const commercialShape = validateCommercialShape(envelope.event_type, refs, principal);
+    if (commercialShape) return commercialShape;
 
     if (envelope.event_type === 'checkout.session.completed') {
       if (!refs.provider_checkout_session_ref || !refs.provider_subscription_ref) {
@@ -448,13 +452,15 @@ export function createBillingServices(deps: BillingServicesDeps) {
       const subscription = subscriptionProjection(principal, envelope, refs);
       const projection = await deps.repositories.upsertSubscriptionProjection(subscription);
       if (projection.status === 'stale') {
+        await readBackAmbiguousSubscription(subscription.provider_subscription_ref);
         return {
           disposition: 'stale_event',
-          reason: 'older_subscription_event_ignored',
+          reason: 'older_subscription_event_ignored_after_provider_readback',
           status: 202,
         };
       }
       if (projection.status === 'contradictory') {
+        await readBackAmbiguousSubscription(subscription.provider_subscription_ref);
         const entitlement = evaluateBillingEntitlement({
           principal,
           subscription,
@@ -570,6 +576,70 @@ export function createBillingServices(deps: BillingServicesDeps) {
     await deps.repositories.upsertEntitlementProjection(entitlement);
     return entitlement;
   }
+
+  async function readBackAmbiguousSubscription(providerSubscriptionRef: string) {
+    try {
+      await deps.providerAdapter.retrieveSubscription(providerSubscriptionRef);
+    } catch {
+      deps.logger?.warn({
+        event_type: 'billing_ambiguous_subscription_readback_failed',
+        provider_subscription_ref: digest(providerSubscriptionRef),
+      });
+    }
+  }
+
+  function validateCommercialShape(
+    eventType: string,
+    refs: ProviderEventObjectRefs,
+    principal: BillingPrincipalRef,
+  ): WebhookProcessResult | null {
+    const offer = deps.config.offerMappings.find(
+      (candidate) =>
+        candidate.account_key === principal.account_key &&
+        candidate.product_key === principal.product_key &&
+        (!refs.offer_key || candidate.offer_key === refs.offer_key) &&
+        (!refs.provider_price_ref || candidate.provider_price_ref === refs.provider_price_ref),
+    );
+    if ((refs.offer_key || refs.provider_price_ref) && !offer) {
+      return {
+        disposition: 'wrong_offer',
+        reason: 'event_offer_or_price_not_allowlisted',
+        status: 202,
+      };
+    }
+    if (
+      refs.provider_product_ref &&
+      deps.config.expectedProviderProductRef &&
+      refs.provider_product_ref !== deps.config.expectedProviderProductRef
+    ) {
+      return {
+        disposition: 'wrong_offer',
+        reason: 'event_product_not_allowlisted',
+        status: 202,
+      };
+    }
+    if (!offer) return null;
+    if (refs.currency && refs.currency.toLowerCase() !== offer.currency) {
+      return { disposition: 'wrong_offer', reason: 'event_currency_mismatch', status: 202 };
+    }
+    if (isInvoiceEvent(eventType)) {
+      if (refs.amount_due_cents !== undefined && refs.amount_due_cents !== offer.amount_cents) {
+        return { disposition: 'wrong_offer', reason: 'event_amount_due_mismatch', status: 202 };
+      }
+      if (eventType === 'invoice.paid' && refs.amount_paid_cents !== offer.amount_cents) {
+        return { disposition: 'wrong_offer', reason: 'event_amount_paid_mismatch', status: 202 };
+      }
+    }
+    return null;
+  }
+}
+
+function isInvoiceEvent(eventType: string) {
+  return (
+    eventType === 'invoice.paid' ||
+    eventType === 'invoice.payment_failed' ||
+    eventType === 'invoice.payment_action_required'
+  );
 }
 
 function subscriptionProjection(

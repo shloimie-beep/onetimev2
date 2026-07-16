@@ -16,6 +16,7 @@ import type {
 type FixtureAdapterOptions = {
   providerAccountRef: BillingProviderAccountRef;
   webhookSecret?: string;
+  signatureToleranceSeconds?: number;
   now?: () => Date;
   idGenerator?: (prefix: string) => string;
 };
@@ -103,6 +104,7 @@ export function createFixtureBillingProviderAdapter(
         input.rawBody,
         input.signatureHeader,
         options.webhookSecret ?? defaultSecret,
+        options.signatureToleranceSeconds ?? 300,
       );
       const payload = JSON.parse(input.rawBody.toString('utf8')) as FixtureWebhookPayload;
       const objectRefs = extractObjectRefs(payload);
@@ -159,7 +161,12 @@ export function fixtureWebhookSignature({
   return `t=${timestamp},v1=${digest}`;
 }
 
-function verifyFixtureSignature(rawBody: Buffer, header: string | undefined, secret: string) {
+function verifyFixtureSignature(
+  rawBody: Buffer,
+  header: string | undefined,
+  secret: string,
+  toleranceSeconds: number,
+) {
   if (!header) throw new Error('Missing fixture billing signature.');
   const parts = Object.fromEntries(
     header.split(',').map((part) => {
@@ -172,8 +179,11 @@ function verifyFixtureSignature(rawBody: Buffer, header: string | undefined, sec
   const actual = parts.v1 ?? '';
   const expectedBuffer = Buffer.from(expected, 'hex');
   const actualBuffer = Buffer.from(actual, 'hex');
+  const now = Math.floor(Date.now() / 1000);
+  if (!Number.isFinite(timestamp) || Math.abs(now - timestamp) > toleranceSeconds) {
+    throw new Error('Fixture billing signature timestamp is stale.');
+  }
   if (
-    !Number.isFinite(timestamp) ||
     expectedBuffer.length !== actualBuffer.length ||
     !timingSafeEqual(expectedBuffer, actualBuffer)
   ) {
@@ -219,6 +229,16 @@ function extractObjectRefs(payload: FixtureWebhookPayload): ProviderEventObjectR
     object.principal_key ?? (metadata as Record<string, unknown>).principal_key,
   );
   setString(refs, 'offer_key', object.offer_key ?? (metadata as Record<string, unknown>).offer_key);
+  setString(
+    refs,
+    'provider_price_ref',
+    object.provider_price_ref ?? object.price ?? firstNestedRef(object, 'price'),
+  );
+  setString(
+    refs,
+    'provider_product_ref',
+    object.provider_product_ref ?? object.product ?? firstNestedRef(object, 'product'),
+  );
   setString(
     refs,
     'policy_version',
@@ -278,6 +298,41 @@ function stringValue(value: unknown) {
 
 function numberValue(value: unknown) {
   return typeof value === 'number' && Number.isFinite(value) ? Math.trunc(value) : undefined;
+}
+
+function firstNestedRef(object: Record<string, unknown>, label: 'price' | 'product') {
+  const direct = object[label];
+  const directRef = refValue(direct);
+  if (directRef) return directRef;
+  const lines = object.lines;
+  const line = firstDataObject(lines);
+  const linePrice = refValue(line?.price);
+  if (label === 'price' && linePrice) return linePrice;
+  const lineProduct = refValue(line?.product ?? (line?.price as Record<string, unknown>)?.product);
+  if (label === 'product' && lineProduct) return lineProduct;
+  const items = object.items;
+  const item = firstDataObject(items);
+  const itemPrice = refValue(item?.price);
+  if (label === 'price' && itemPrice) return itemPrice;
+  const itemProduct = refValue(item?.product ?? (item?.price as Record<string, unknown>)?.product);
+  if (label === 'product' && itemProduct) return itemProduct;
+  return undefined;
+}
+
+function firstDataObject(value: unknown): Record<string, unknown> | undefined {
+  if (!value || typeof value !== 'object') return undefined;
+  const data = (value as Record<string, unknown>).data;
+  if (!Array.isArray(data)) return undefined;
+  const first = data.find((item) => item && typeof item === 'object');
+  return first as Record<string, unknown> | undefined;
+}
+
+function refValue(value: unknown): string | undefined {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (value && typeof value === 'object' && 'id' in value && typeof value.id === 'string') {
+    return value.id;
+  }
+  return undefined;
 }
 
 function setString<T extends keyof ProviderEventObjectRefs>(

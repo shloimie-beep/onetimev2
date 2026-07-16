@@ -1,0 +1,40 @@
+{
+  "task_id": "OT-105",
+  "ok": false,
+  "status": "waiting_for_authorization",
+  "checked_at": "2026-07-16T19:44:43.767Z",
+  "dry_run": true,
+  "apply": false,
+  "staging_webhook_route": "https://ot99-web-staging.up.railway.app/api/v1/billing/webhooks/provider",
+  "account_fingerprint": null,
+  "resources": {},
+  "checkout_session": {
+    "created": false,
+    "fingerprint": null,
+    "url_fingerprint": null
+  },
+  "portal_session": {
+    "created": false,
+    "fingerprint": null,
+    "url_fingerprint": null
+  },
+  "webhook_correlation": {
+    "attempted": false,
+    "status": "not_run",
+    "note": "Webhook-to-entitlement correlation requires the staging endpoint, protected TEST signing secret, and a completed sandbox checkout event delivery."
+  },
+  "missing": [],
+  "failures": [
+    "LIVE_STRIPE_CHARGES_AUTHORIZED must exactly equal NO.",
+    "OT105_STRIPE_TEST_CANARY_AUTHORIZED must exactly equal true."
+  ],
+  "mutations": {
+    "stripe_test_customers_created": 0,
+    "stripe_test_checkout_sessions_created": 0,
+    "stripe_test_portal_sessions_created": 0,
+    "live_calls": 0,
+    "live_charges": 0,
+    "credential_writes": 0,
+    "production_writes": 0
+  }
+}

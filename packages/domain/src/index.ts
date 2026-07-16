@@ -167,6 +167,44 @@ export {
 export { createSupportId, isOt89Id } from './support/ids.ts';
 export { redactSupportText, supportPrivacy } from './support/redaction.ts';
 export {
+  billingConfigSnapshot,
+  defaultBillingFeatureConfig,
+  parseBillingFeatureConfig,
+  parseOt87StripeTestBillingConfig,
+  readOt87StripeRuntimeSecrets,
+  type BillingConfigSource,
+} from './billing/config.ts';
+export {
+  BILLING_POLICY_VERSION,
+  OT87_BILLING_POLICY_VERSION,
+  OT87_BILLING_POLICY_VERSION as OT105_STRIPE_TEST_POLICY_VERSION,
+  OT87_OFFER_KEY,
+  OT87_PLAN_TRUTH_TEXT,
+  OT87_POLICY_ID,
+  evaluateBillingEntitlement,
+} from './billing/policy.ts';
+export {
+  OT87_PLAN_TRUTH,
+  loadOt87CommercialPolicy,
+  ot87CommercialPolicySchema,
+  type Ot87CommercialPolicy,
+} from './billing/commercial-policy.ts';
+export { createBillingServices } from './billing/service.ts';
+export { createOfficialStripeTestClient } from './billing/stripe-official-client.ts';
+export {
+  createStripeTestBillingProviderAdapter,
+  type StripeRedirectVault,
+  type StripeTestClient,
+  type StripeTestEvent,
+} from './billing/stripe-test-adapter.ts';
+export {
+  createFixtureBillingProviderAdapter,
+  fixtureWebhookSignature,
+  type FixtureBillingProviderAdapter,
+} from './billing/fixture-adapter.ts';
+export { buildBillingReturnPaths, isRejectedReturnPath } from './billing/return-paths.ts';
+export { householdHasLearningAccess } from './billing/portal-access.ts';
+export {
   SupportSubmissionError,
   attachmentRequestTarget,
   createSupportSubmission,
