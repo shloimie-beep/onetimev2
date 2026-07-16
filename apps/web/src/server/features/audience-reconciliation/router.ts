@@ -1,16 +1,30 @@
 import express, { type Request, type Response } from 'express';
 import { ZodError } from 'zod';
 import {
+  legacyActivationCampaignApprovalRequestSchema,
+  legacyActivationCampaignControlRequestSchema,
+  legacyActivationCampaignPreviewRequestSchema,
+  legacyActivationCampaignQueueRequestSchema,
   legacyAudienceDryRunRequestSchema,
   legacyAudienceRollbackRequestSchema,
+  type LegacyActivationCampaignPreview,
+  type LegacyActivationCampaignQueueResult,
   type LegacyAudienceDryRunReport,
 } from '../../../../../../packages/contracts/src/audience-reconciliation/index.ts';
+import {
+  approveLegacyActivationCampaign,
+  createLegacyActivationCampaignPreview,
+  LegacyActivationCampaignApprovalError,
+  queueLegacyActivationCampaignIntents,
+  type LegacyActivationLifecyclePort,
+} from '../../../../../../packages/domain/src/audience-reconciliation/activation-campaign.ts';
 import {
   createLegacyAudienceDryRun,
   legacyAudienceSegmentContracts,
 } from '../../../../../../packages/domain/src/audience-reconciliation/service.ts';
 import {
   collectIdentityFilters,
+  LegacyActivationCampaignNotFoundError,
   LegacyAudienceBatchNotFoundError,
   LegacyAudienceIdempotencyConflictError,
   type LegacyAudienceRepositoryActor,
@@ -34,6 +48,11 @@ export type Ot74AudienceRepository = ReturnType<typeof createPostgresLegacyAudie
 export type Ot74AudienceRouterDeps = {
   guards: Ot74AudienceGuards;
   repository: Ot74AudienceRepository;
+  activationCampaignPolicy?: {
+    protectedCanaryDestination?: string | undefined;
+    whatsappEnabled?: boolean | undefined;
+    lifecyclePort?: LegacyActivationLifecyclePort | undefined;
+  };
 };
 
 export function createOt74AudienceReconciliationRouter(deps: Ot74AudienceRouterDeps) {
@@ -123,6 +142,149 @@ export function createOt74AudienceReconciliationRouter(deps: Ot74AudienceRouterD
     }),
   );
 
+  router.post(
+    '/batches/:batchKey/campaign-previews',
+    express.json({ limit: '64kb' }),
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canManage(session.actor.role)) return forbidden(res);
+      if (!(await deps.guards.verifyCsrf(req, session))) {
+        res.status(403).json(errorBody('CSRF_REQUIRED', 'Refresh the page and try again.'));
+        return;
+      }
+      const request = legacyActivationCampaignPreviewRequestSchema.parse({
+        ...req.body,
+        batch_key: String(req.params.batchKey),
+      });
+      const report = await deps.repository.getBatchReport(
+        session.actor,
+        String(req.params.batchKey),
+      );
+      if (!report) {
+        res.status(404).json(errorBody('NOT_FOUND', 'Legacy audience batch was not found.'));
+        return;
+      }
+      const preview = createLegacyActivationCampaignPreview({
+        scope: session.actor,
+        report,
+        request,
+        whatsappEnabled: deps.activationCampaignPolicy?.whatsappEnabled === true,
+      });
+      const recorded = await deps.repository.recordCampaignPreview({
+        actor: session.actor,
+        idempotencyKey: request.idempotency_key,
+        preview,
+      });
+      res.json({
+        success: true,
+        replayed: recorded.replayed,
+        preview: safeCampaignPreview(recorded.preview),
+      });
+    }),
+  );
+
+  router.post(
+    '/campaigns/:campaignKey/approvals',
+    express.json({ limit: '32kb' }),
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canApproveCampaign(session.actor.role)) return forbidden(res);
+      if (!(await deps.guards.verifyCsrf(req, session))) {
+        res.status(403).json(errorBody('CSRF_REQUIRED', 'Refresh the page and try again.'));
+        return;
+      }
+      const campaign = await deps.repository.getCampaignRecord(
+        session.actor,
+        String(req.params.campaignKey),
+      );
+      if (!campaign) {
+        res.status(404).json(errorBody('NOT_FOUND', 'Legacy activation campaign was not found.'));
+        return;
+      }
+      const request = legacyActivationCampaignApprovalRequestSchema.parse({
+        ...req.body,
+        campaign_key: String(req.params.campaignKey),
+      });
+      const approval = approveLegacyActivationCampaign({
+        preview: campaign.preview,
+        request,
+      });
+      const recorded = await deps.repository.approveCampaign({
+        actor: session.actor,
+        idempotencyKey: request.idempotency_key,
+        approval,
+      });
+      res.json({ success: true, replayed: recorded.replayed, approval: recorded.approval });
+    }),
+  );
+
+  router.post(
+    '/campaigns/:campaignKey/send-intents',
+    express.json({ limit: '32kb' }),
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canApproveCampaign(session.actor.role)) return forbidden(res);
+      if (!(await deps.guards.verifyCsrf(req, session))) {
+        res.status(403).json(errorBody('CSRF_REQUIRED', 'Refresh the page and try again.'));
+        return;
+      }
+      const campaign = await deps.repository.getCampaignRecord(
+        session.actor,
+        String(req.params.campaignKey),
+      );
+      if (!campaign) {
+        res.status(404).json(errorBody('NOT_FOUND', 'Legacy activation campaign was not found.'));
+        return;
+      }
+      const request = legacyActivationCampaignQueueRequestSchema.parse({
+        ...req.body,
+        campaign_key: String(req.params.campaignKey),
+      });
+      const result = await queueLegacyActivationCampaignIntents({
+        preview: campaign.preview,
+        approval: campaign.approval,
+        request,
+        protectedCanaryDestination: deps.activationCampaignPolicy?.protectedCanaryDestination,
+        whatsappEnabled: deps.activationCampaignPolicy?.whatsappEnabled === true,
+        lifecyclePort: deps.activationCampaignPolicy?.lifecyclePort,
+      });
+      const recorded = await deps.repository.recordCampaignSendIntents({
+        actor: session.actor,
+        idempotencyKey: request.idempotency_key,
+        result,
+      });
+      res.json({
+        success: true,
+        replayed: recorded.replayed,
+        result: safeQueueResult(recorded.result),
+      });
+    }),
+  );
+
+  router.post(
+    '/campaigns/:campaignKey/control',
+    express.json({ limit: '16kb' }),
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canApproveCampaign(session.actor.role)) return forbidden(res);
+      if (!(await deps.guards.verifyCsrf(req, session))) {
+        res.status(403).json(errorBody('CSRF_REQUIRED', 'Refresh the page and try again.'));
+        return;
+      }
+      const request = legacyActivationCampaignControlRequestSchema.parse(req.body);
+      const control = await deps.repository.recordCampaignControl({
+        actor: session.actor,
+        campaignKey: String(req.params.campaignKey),
+        request,
+      });
+      res.json({ success: true, control });
+    }),
+  );
+
   router.use((error: unknown, _req: Request, res: Response, _next: express.NextFunction) => {
     setPrivateNoStore(res);
     if (error instanceof ZodError) {
@@ -135,6 +297,14 @@ export function createOt74AudienceReconciliationRouter(deps: Ot74AudienceRouterD
     }
     if (error instanceof LegacyAudienceBatchNotFoundError) {
       res.status(404).json(errorBody('NOT_FOUND', error.message));
+      return;
+    }
+    if (error instanceof LegacyActivationCampaignNotFoundError) {
+      res.status(404).json(errorBody('NOT_FOUND', error.message));
+      return;
+    }
+    if (error instanceof LegacyActivationCampaignApprovalError) {
+      res.status(409).json(errorBody('APPROVAL_MISMATCH', error.message));
       return;
     }
     res
@@ -183,8 +353,39 @@ function canRollback(role: string) {
   return ['owner', 'admin'].includes(role);
 }
 
+function canApproveCampaign(role: string) {
+  return ['owner', 'admin'].includes(role);
+}
+
 function forbidden(res: Response) {
   res.status(403).json(errorBody('FORBIDDEN', 'You do not have permission for this action.'));
+}
+
+function safeCampaignPreview(preview: LegacyActivationCampaignPreview) {
+  const { recipient_row_keys: recipientRowKeys, ...safe } = preview;
+  return {
+    ...safe,
+    recipient_row_key_count: recipientRowKeys.length,
+    raw_recipient_list_included: false,
+    message_body_included: false,
+    production_side_effects: false,
+  };
+}
+
+function safeQueueResult(result: LegacyActivationCampaignQueueResult) {
+  return {
+    campaign_key: result.campaign_key,
+    status: result.status,
+    mode: result.mode,
+    requested_count: result.requested_count,
+    queued_count: result.queued_count,
+    blocked_reasons: result.blocked_reasons,
+    intent_refs: result.intents.slice(0, 5).map((intent) => intent.intent_key),
+    provider_acceptance_is_delivery: false,
+    external_send_performed: false,
+    raw_recipient_list_included: false,
+    raw_token_included: false,
+  };
 }
 
 function setPrivateNoStore(res: Response) {

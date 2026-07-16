@@ -5,6 +5,8 @@ import {
   type Ot74AudienceRepository,
   type Ot74AudienceSession,
 } from '../../apps/web/src/server/features/audience-reconciliation/router.ts';
+import { createLegacyAudienceDryRun } from '../../packages/domain/src/audience-reconciliation/service.ts';
+import type { LegacyAudienceDryRunReport } from '../../packages/contracts/src/audience-reconciliation/index.ts';
 
 describe('OT-74 audience reconciliation router', () => {
   const servers: Array<{ close: () => void }> = [];
@@ -65,10 +67,45 @@ describe('OT-74 audience reconciliation router', () => {
     expect(harness.calls).toEqual(['findContactsByIdentities', 'recordDryRun']);
   });
 
+  it('records a campaign preview and returns counts without recipient row lists', async () => {
+    const report = dryRunReport();
+    const harness = await createHarness({ batchReport: report });
+    const response = await fetch(
+      `${harness.baseUrl}/api/v1/audience-reconciliation/batches/${report.batch_key}/campaign-previews`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          idempotency_key: 'router-preview-001',
+          segment: 'active_legacy_family_users',
+          channel: 'email',
+          template_revision: 'draft-day-one-activation-v1',
+          batch_size: 10,
+        }),
+      },
+    );
+    const body = (await response.json()) as {
+      success: boolean;
+      preview: Record<string, unknown>;
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.preview).not.toHaveProperty('recipient_row_keys');
+    expect(body.preview).toMatchObject({
+      raw_recipient_list_included: false,
+      message_body_included: false,
+      production_side_effects: false,
+    });
+    expect(JSON.stringify(body)).not.toContain('campaign-router@example.test');
+    expect(harness.calls).toEqual(['getBatchReport', 'recordCampaignPreview']);
+  });
+
   async function createHarness(options: {
     session?: Ot74AudienceSession | null;
     role?: string;
     csrfValid?: boolean;
+    batchReport?: LegacyAudienceDryRunReport | null;
   }) {
     const calls: string[] = [];
     let csrfChecks = 0;
@@ -95,7 +132,7 @@ describe('OT-74 audience reconciliation router', () => {
             return options.csrfValid !== false;
           },
         },
-        repository: repositoryWithCalls(calls),
+        repository: repositoryWithCalls(calls, options.batchReport),
       }),
     );
     const server = await new Promise<import('node:http').Server>((resolve) => {
@@ -114,7 +151,10 @@ describe('OT-74 audience reconciliation router', () => {
   }
 });
 
-function repositoryWithCalls(calls: string[]): Ot74AudienceRepository {
+function repositoryWithCalls(
+  calls: string[],
+  batchReport: LegacyAudienceDryRunReport | null | undefined = null,
+): Ot74AudienceRepository {
   return {
     findContactsByIdentities: async () => {
       calls.push('findContactsByIdentities');
@@ -126,7 +166,7 @@ function repositoryWithCalls(calls: string[]): Ot74AudienceRepository {
     },
     getBatchReport: async () => {
       calls.push('getBatchReport');
-      return null;
+      return batchReport ?? null;
     },
     recordRollbackRequest: async () => {
       calls.push('recordRollbackRequest');
@@ -137,7 +177,70 @@ function repositoryWithCalls(calls: string[]): Ot74AudienceRepository {
         replayed: false,
       };
     },
+    recordCampaignPreview: async ({ preview }) => {
+      calls.push('recordCampaignPreview');
+      return { preview, replayed: false };
+    },
+    getCampaignRecord: async () => {
+      calls.push('getCampaignRecord');
+      return null;
+    },
+    approveCampaign: async ({ approval }) => {
+      calls.push('approveCampaign');
+      return { approval, replayed: false };
+    },
+    recordCampaignSendIntents: async ({ result }) => {
+      calls.push('recordCampaignSendIntents');
+      return { result, replayed: false };
+    },
+    recordCampaignControl: async ({ campaignKey, request }) => {
+      calls.push('recordCampaignControl');
+      return {
+        campaign_key: campaignKey,
+        action: request.action,
+        status:
+          request.action === 'cancel'
+            ? 'cancelled'
+            : request.action === 'pause'
+              ? 'paused'
+              : 'running',
+        replayed: false,
+        production_side_effects: false,
+      };
+    },
   };
+}
+
+function dryRunReport() {
+  return createLegacyAudienceDryRun({
+    scope: { accountKey: 'acct_ot74', productKey: 'prod_ot74' },
+    request: {
+      idempotency_key: 'router-preview-source-001',
+      source: {
+        kind: 'csv_normalized' as const,
+        source_label: 'router-fixture',
+        worksheet_label: 'router',
+      },
+      rows: [
+        {
+          source_row_number: 2,
+          display_name: 'Router Person',
+          email: 'campaign-router@example.test',
+          phone: '',
+          audience_type: 'family' as const,
+          legacy_system_state: 'present' as const,
+          active_legacy_user: true,
+          new_system_activated: false,
+          lead_state: 'lead' as const,
+          consent_state: 'opted_in',
+          suppression_state: 'active' as const,
+          source_tags: [],
+        },
+      ],
+    },
+    existingContacts: [],
+    now: new Date('2026-07-16T09:00:00.000Z'),
+  });
 }
 
 function dryRunBody() {
@@ -157,6 +260,7 @@ function dryRunBody() {
         audience_type: 'family',
         legacy_system_state: 'present',
         active_legacy_user: true,
+        new_system_activated: false,
         lead_state: 'lead',
         consent_state: 'opted_in',
         suppression_state: 'active',

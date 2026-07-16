@@ -34,6 +34,7 @@ function summary(): LegacyAudienceSummary {
     manual_review_rows: 1,
     school_follow_up_rows: 1,
     do_not_contact_rows: 1,
+    already_activated_rows: 0,
     migration_invite_eligible_rows: 1,
     active_legacy_user_rows: 2,
     reason_counts: {
