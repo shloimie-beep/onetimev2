@@ -20,12 +20,12 @@ test('landing works on required mobile viewports with visible header and hero CT
     { width: 390, height: 844 },
   ]) {
     await page.setViewportSize(size);
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'load' });
+    await page.evaluate(() => window.scrollTo(0, 0));
     const ticker = page.locator('.campaign-ticker');
     const brandLogo = page.locator('.brand-lockup img');
     const brandTitle = page.locator('.brand-lockup strong');
     const brandSubtitle = page.locator('.brand-lockup small');
-    const memberLogin = page.getByLabel('Primary').getByRole('link', { name: 'Member Login' });
     const headerSignup = page.getByLabel('Primary').getByRole('link', { name: 'Sign Up Now' });
     const hamburger = page.getByRole('button', { name: 'Open navigation' });
     const heroSignup = page.locator('.hero .hero-cta');
@@ -37,7 +37,6 @@ test('landing works on required mobile viewports with visible header and hero CT
     await expect(brandLogo).toBeVisible();
     await expect(brandTitle).toBeVisible();
     await expect(brandSubtitle).toBeVisible();
-    await expect(memberLogin).toBeVisible();
     await expect(headerSignup).toBeVisible();
     await expect(hamburger).toBeVisible();
     await expect(
@@ -47,10 +46,14 @@ test('landing works on required mobile viewports with visible header and hero CT
     await expectLocatorInsideViewport(brandLogo, size);
     await expectLocatorInsideViewport(brandTitle, size);
     await expectLocatorInsideViewport(brandSubtitle, size);
-    await expectLocatorInsideViewport(memberLogin, size);
     await expectLocatorInsideViewport(headerSignup, size);
     await expectLocatorInsideViewport(hamburger, size);
     await expectLocatorInsideViewport(heroSignup, size);
+    await hamburger.click();
+    await expect(
+      page.locator('.drawer').getByRole('link', { name: 'Member Login' }),
+    ).toHaveAttribute('href', '/login');
+    await page.locator('.drawer').getByRole('button', { name: 'Close navigation' }).click();
     const logoStyles = await brandLogo.evaluate((element) => {
       const style = getComputedStyle(element);
       const box = element.getBoundingClientRect();
@@ -131,12 +134,18 @@ test('landing preserves exact receive structure and asset assignments', async ({
     page.locator('img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]'),
   ).toHaveCount(1);
   await expect(
+    page.locator('article[data-benefit="Clarity"] img[src="/assets/outcomes/clarity-class.webp"]'),
+  ).toBeVisible();
+  await expect(page.locator('article[data-benefit="Retention"] .retention-visual')).toBeVisible();
+  await expect(page.locator('img[src="/assets/students/smiley-kid.png"]')).toHaveCount(1);
+  await expect(
     page
       .locator(
         'article[data-benefit="Clarity"], article[data-benefit="Retention"], article[data-benefit="A Love of Learning"]',
       )
       .locator('img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]'),
   ).toHaveCount(0);
+  await expect(page.locator('article[data-benefit="Retention"] img')).toHaveCount(0);
   await expect(page.locator('.benefit-card h3')).toHaveText([
     'Clarity',
     'Retention',
@@ -166,21 +175,37 @@ test('landing preserves exact receive structure and asset assignments', async ({
   ]);
   await expect(page.getByText(/teacher replacement|absent-rebbe|substitute/i)).toHaveCount(0);
   await expect(page.locator('.gallery')).toBeVisible();
-  await expect(page.locator('.gallery-slide').first().locator('figcaption')).toHaveText(
+  await expect(page.locator('.gallery h3')).toHaveText('Seen Across the Jewish World');
+  await expect(page.locator('.gallery-slide[data-active="true"]').locator('figcaption')).toHaveText(
     'Atlanta, Georgia',
   );
+  await expect(page.locator('.gallery-slide figcaption')).toHaveText([
+    'Atlanta, Georgia',
+    'Baltimore, Maryland',
+    'Flatbush, New York',
+    'Hollywood, Florida',
+    'Lakewood, New Jersey',
+    'Miami, Florida',
+    'Philadelphia, Pennsylvania',
+    'Silver Spring, Maryland',
+  ]);
   await expect(page.getByText('Rabbi Scheller teaching a large student group.')).toHaveCount(0);
   await page.getByRole('button', { name: 'Next teaching photo' }).focus();
   await page.keyboard.press('Enter');
-  await expect(page.locator('.gallery-slide').nth(1)).toBeVisible();
-  await expect(page.locator('.gallery-slide').nth(1).locator('figcaption')).toHaveText(
+  await expect(page.locator('.gallery-slide').nth(1)).toHaveAttribute('data-active', 'true');
+  await expect(page.locator('.gallery-slide[data-active="true"]').locator('figcaption')).toHaveText(
     'Baltimore, Maryland',
+  );
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.gallery-slide[data-active="true"]').locator('figcaption')).toHaveText(
+    'Flatbush, New York',
   );
   expect(requests.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
   const html = await page.content();
   expect(html).not.toContain('Monitored platform');
   expect(html).not.toContain('View as Rabbi');
   expect(html).not.toContain('$67');
+  expect(html).not.toContain('coverage');
 });
 
 test('landing and signup use the approved footer contract', async ({ page }) => {
