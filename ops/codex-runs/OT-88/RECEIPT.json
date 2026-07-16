@@ -1,0 +1,33 @@
+{
+  "ticket": "OT-88",
+  "received_at_utc": "2026-07-16T04:28:19Z",
+  "selected_packet": {
+    "path": "C:\\Users\\User\\Downloads\\OT88-zoom-classroom-codex-packet.zip",
+    "sha256": "FE55C506C667F1C0A1D52EA646E4410C17B3698159DBB4C25D508FB20E9F3818",
+    "manifest_path": "ops/codex-runs/OT-88/packet/MANIFEST.json",
+    "manifest_sha256": "CB01B3FCCEDC2BD19A66C11E5F042836DD679F2C01E62473FB536DB40A0C9D47",
+    "internal_checksums_verified": true,
+    "archive_path_safety": "ok"
+  },
+  "source_prompts": [
+    {
+      "kind": "temp_prompt_supplied_to_codex",
+      "source_path": "C:\\Users\\User\\AppData\\Local\\Temp\\OT-88-ZOOM-CLASSROOM.md",
+      "persisted_path": "ops/codex-runs/OT-88/ORIGINAL-PROMPT.md",
+      "sha256": "B1E67EF238635CFC0E24170F7F0E41BACA27657C953D820B9C7FAD1CE530F296"
+    },
+    {
+      "kind": "packet_direct_codex_prompt",
+      "source_path": "ops/codex-runs/OT-88/packet/01-DIRECT-CODEX-PROMPT.md",
+      "persisted_path": "ops/codex-runs/OT-88/TASK_PROMPT.md",
+      "sha256": "5E648BF47E871189E3635DD628A816B9F0B8C2BF728DF98A9DD73948FED30DF2"
+    }
+  ],
+  "decision": "Use the verified packet direct prompt as the controlling artifact. Preserve the temp prompt as the operator-supplied intake source.",
+  "external_mutations_before_receipt": [
+    "git fetch origin in C:\\Users\\User\\onetimev2",
+    "created isolated git worktree C:\\Users\\User\\.ot88-worktrees\\OT-88",
+    "created local branch codex/ot88-zoom-learner-classroom from f98103ecc3660dbda871a91485656e17580940a8"
+  ],
+  "forbidden_material_recorded": false
+}

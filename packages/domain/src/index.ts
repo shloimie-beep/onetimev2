@@ -19,6 +19,14 @@ export {
   scheduleClassFulfillmentForLead,
 } from './classes/service.ts';
 export {
+  CLASSROOM_HOST_POLICY_VERSION,
+  CLASSROOM_POLICY_VERSION,
+  createClassroomPortalAccessAdapter,
+  createClassroomService,
+  type ClassroomRepository,
+  type ClassroomService,
+} from './classroom/service.ts';
+export {
   ContentIdempotencyConflictError,
   admitContentOutcome,
   createContentPortalAccessAdapter,

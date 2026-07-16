@@ -1,0 +1,41 @@
+{
+  "ticket": "OT-88",
+  "task": "Implement the Zoom Learner Classroom and Question Queue",
+  "repository": "webcraft-media/onetimev2",
+  "source_remote": "origin",
+  "source_remote_url": "https://github.com/webcraft-media/onetimev2.git",
+  "source_branch": "codex/ot84-telegram-action-gateway",
+  "source_ref": "refs/remotes/origin/codex/ot84-telegram-action-gateway",
+  "source_commit": "f98103ecc3660dbda871a91485656e17580940a8",
+  "target_branch": "codex/ot88-zoom-learner-classroom",
+  "worktree": "C:\\Users\\User\\.ot88-worktrees\\OT-88",
+  "packet": {
+    "zip_path": "C:\\Users\\User\\Downloads\\OT88-zoom-classroom-codex-packet.zip",
+    "zip_sha256": "FE55C506C667F1C0A1D52EA646E4410C17B3698159DBB4C25D508FB20E9F3818",
+    "generated_at": "2026-07-15T11:16:20Z",
+    "source_spec_sha256": "4391caee6a706a68fd8e168b748fcfe1a2dffb687d5749850515cd064593b5f2",
+    "direct_prompt_sha256": "5E648BF47E871189E3635DD628A816B9F0B8C2BF728DF98A9DD73948FED30DF2"
+  },
+  "credentials_presence": {
+    "ZOOM_MEETING_SDK_KEY": false,
+    "ZOOM_MEETING_SDK_SECRET": false,
+    "ZOOM_SDK_KEY": false,
+    "ZOOM_SDK_SECRET": false,
+    "ZOOM_ACCOUNT_ID": false,
+    "ZOOM_CLIENT_ID": false,
+    "ZOOM_CLIENT_SECRET": false,
+    "ONE_TIME_TELEGRAM_WEBHOOK_SECRET": false,
+    "ONE_TIME_TELEGRAM_BOT_KEY": false,
+    "DATABASE_URL": false
+  },
+  "explicitly_forbidden_external_actions": [
+    "production Zoom mutation",
+    "production Zoom meeting or registrant use",
+    "broad real reminder delivery",
+    "real Telegram send",
+    "payment mutation",
+    "DNS or deployment mutation",
+    "BNA runtime edit",
+    "production database mutation"
+  ]
+}

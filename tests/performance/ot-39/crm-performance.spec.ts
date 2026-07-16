@@ -41,16 +41,18 @@ test('CRM shell emits post-paint marks and meets 30-sample performance gates', a
   });
 
   await installPerfObservers(page);
-  const email = `ot39-perf-${Date.now()}@example.test`;
+  const fixtureId = Date.now();
+  const contactName = `OT39 Perf Parent ${fixtureId}`;
+  const email = `ot39-perf-${fixtureId}@example.test`;
   await login(page);
-  await createContact(page, 'OT39 Perf Parent', email);
+  const contactId = await createContact(page, contactName, email);
+  const contactPath = `/app/crm/contacts/${encodeURIComponent(contactId)}`;
   await applyMobileThrottle(context, page);
   await reloadList(page);
-  await page.getByRole('button', { name: /OT39 Perf Parent/ }).click();
+  await page.goto(contactPath, { waitUntil: 'domcontentloaded' });
   await waitForUsableDetail(page);
-  const contactPath = new URL(page.url()).pathname;
 
-  await warmJourneys(page, 'OT39 Perf Parent');
+  await warmJourneys(page, contactPath, contactName);
 
   const listSamples: number[] = [];
   const detailSamples: number[] = [];
@@ -78,7 +80,7 @@ test('CRM shell emits post-paint marks and meets 30-sample performance gates', a
     webVitals.detail_first_usable.push(detail.vitals);
     requestCounts.detail_first_usable.push(detail.request_count);
 
-    const warmReturn = await measureReturn(page, 'OT39 Perf Parent');
+    const warmReturn = await measureReturn(page, contactName);
     returnSamples.push(warmReturn.elapsed);
     requestCounts.warm_return_list_requests.push(warmReturn.list_request_count);
 
@@ -144,9 +146,9 @@ test('CRM shell emits post-paint marks and meets 30-sample performance gates', a
   expect(report.public_pages_exclude_authenticated_bundle).toBe(true);
 });
 
-async function warmJourneys(page: Page, contactName: string) {
+async function warmJourneys(page: Page, contactPath: string, contactName: string) {
   await measureList(page);
-  await page.getByRole('button', { name: new RegExp(contactName) }).click();
+  await page.goto(contactPath, { waitUntil: 'domcontentloaded' });
   await waitForUsableDetail(page);
   await measureReturn(page, contactName);
   await measureDrawerTransition(page);
@@ -158,7 +160,7 @@ async function measureList(page: Page) {
     await resetVitals(page);
     await page.evaluate(() => performance.clearMarks('ot-crm-list-usable'));
     const started = Date.now();
-    await page.goto('/app/crm', { waitUntil: 'domcontentloaded' });
+    await page.goto(crmPerfPath(), { waitUntil: 'domcontentloaded' });
     await waitForUsableList(page);
     return Date.now() - started;
   });
@@ -190,10 +192,9 @@ async function measureDetail(page: Page, contactPath: string) {
 }
 
 async function measureReturn(page: Page, contactName: string) {
-  await page.goto('/app/crm', { waitUntil: 'domcontentloaded' });
+  await page.goto(crmPerfPath(), { waitUntil: 'domcontentloaded' });
   await waitForUsableList(page);
-  await page.getByRole('button', { name: new RegExp(contactName) }).click();
-  await waitForUsableDetail(page);
+  await openContactFromFilteredList(page, contactName);
   const requests = await countRequests(page, async () => {
     await page.evaluate(() => performance.clearMarks('ot-crm-list-usable'));
     const started = Date.now();
@@ -209,8 +210,17 @@ async function measureReturn(page: Page, contactName: string) {
   };
 }
 
+async function openContactFromFilteredList(page: Page, contactName: string) {
+  await page.getByLabel('Search').fill(contactName);
+  await page.evaluate(() => performance.clearMarks('ot-crm-list-usable'));
+  await page.getByRole('button', { name: 'Apply' }).click();
+  await waitForUsableList(page);
+  await page.getByRole('button', { name: new RegExp(contactName) }).click();
+  await waitForUsableDetail(page);
+}
+
 async function measureDrawerTransition(page: Page) {
-  await page.goto('/app/crm', { waitUntil: 'domcontentloaded' });
+  await page.goto(crmPerfPath(), { waitUntil: 'domcontentloaded' });
   await waitForUsableList(page);
   const requests = await countRequests(page, async () => {
     const started = Date.now();
@@ -397,6 +407,7 @@ async function createContact(page: Page, name: string, email: string) {
     { name, email },
   );
   expect(result.success).toBe(true);
+  return String(result.contact.contact_id);
 }
 
 async function reloadList(page: Page) {
@@ -411,4 +422,8 @@ async function waitForUsableList(page: Page) {
 
 async function waitForUsableDetail(page: Page) {
   await page.waitForFunction(() => performance.getEntriesByName('ot-crm-detail-usable').length > 0);
+}
+
+function crmPerfPath() {
+  return `/app/crm?perf=${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }

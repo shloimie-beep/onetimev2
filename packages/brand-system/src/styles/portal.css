@@ -81,6 +81,26 @@
   display: grid;
   gap: 10px;
 }
+.ot-question-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.ot-question-form label {
+  color: var(--ot-portal-yellow);
+  font-weight: 700;
+}
+.ot-question-form textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+}
 .ot-learner-card,
 .ot-item {
   width: 100%;

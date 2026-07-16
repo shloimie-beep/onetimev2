@@ -56,7 +56,10 @@ await createAccountUser({
   mfaCapable: false,
 });
 await seedDayOneBrowserRecords();
-const app = createApp({ config, pool });
+const testClock = process.env.OT_TEST_CLOCK
+  ? () => new Date(String(process.env.OT_TEST_CLOCK))
+  : undefined;
+const app = createApp({ config, pool, ...(testClock ? { clock: testClock } : {}) });
 const server = app.listen(config.port);
 
 process.on('SIGTERM', async () => {
@@ -100,8 +103,14 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.account_learner_identity_links
        (link_key, account_key, product_key, household_key, learner_key, user_key)
-     VALUES ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3)`,
+      VALUES ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3)`,
     [config.accountKey, config.productKey, studentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.classroom_household_entitlements
+       (entitlement_key, account_key, product_key, household_key, entitlement_state)
+     VALUES ('e2e_entitlement_alpha', $1, $2, 'e2e_household_alpha', 'active')`,
+    [config.accountKey, config.productKey],
   );
   await pool.query(
     `INSERT INTO onetime.class_series

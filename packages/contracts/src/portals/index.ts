@@ -24,6 +24,7 @@ export const portalCapabilitySchema = z.enum([
   'student:class:launch',
   'student:content:open',
   'student:question:create',
+  'student:class:question',
   'student:support:preview',
   'rewards:read',
   'rewards:write',
@@ -319,7 +320,10 @@ export const portalErrorCodeSchema = z.enum([
   'IDEMPOTENCY_CONFLICT',
   'VERSION_CONFLICT',
   'LEARNER_LIMIT_REACHED',
+  'ENTITLEMENT_REQUIRED',
   'CONSENT_REQUIRED',
+  'OCCURRENCE_UNAVAILABLE',
+  'LAUNCH_EXPIRED',
   'ADAPTER_UNAVAILABLE',
   'SERVER_ERROR',
 ]);

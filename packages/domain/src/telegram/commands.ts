@@ -32,12 +32,6 @@ const HELP_TEXT = [
 const forbiddenRequestPattern =
   /delete|drop table|select\s+\*|sql|shell|print env|token|secret|export|mass send|charge|refund|impersonate|view as|act as|switch role|another account|other product|bna bot/i;
 
-const featureGatedActions = new Set<BotCapability>([
-  'class.question.list',
-  'class.question.read_redacted',
-  'class.question.select',
-]);
-
 export class TelegramCommandEngine {
   constructor(
     private readonly resolver: TelegramIdentityResolver,
@@ -125,25 +119,6 @@ export class TelegramCommandEngine {
           now,
           correlation: baseAudit.correlationKey,
         }),
-      ];
-    }
-
-    if (featureGatedActions.has(command.capability)) {
-      await this.audit.record({
-        ...baseAudit,
-        accountKey: auth.actor.accountKey,
-        productKey: auth.actor.productKey,
-        actorUserKey: auth.actor.userKey,
-        capability: command.capability,
-        outcome: 'denied',
-        reason: 'FEATURE_UNAVAILABLE',
-      });
-      return [
-        {
-          chatRef: update.chatRef,
-          correlationKey: baseAudit.correlationKey,
-          text: 'That One Time feature is not enabled yet.',
-        },
       ];
     }
 

@@ -27,6 +27,7 @@ import {
   previewStudentSupport,
   runStudentAccessOperation,
   setParentLearnerArchived,
+  submitClassroomQuestion,
   submitStudentQuestion,
   updateParentLearner,
 } from './portal-api.js';
@@ -338,6 +339,23 @@ function PortalApp() {
     }
   }
 
+  async function handleClassroomQuestion(occurrenceKey: string, body: string) {
+    if (!session || portalRole !== 'student') return;
+    try {
+      await submitClassroomQuestion({
+        csrfToken: session.csrf_token,
+        occurrenceKey,
+        body,
+      });
+      setNotice({ kind: 'success', message: 'Question sent.' });
+      setViewState('success');
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Question was not sent.') });
+      setViewState(stateForError(error));
+    }
+  }
+
   async function handleSupportPreview() {
     if (!session) return;
     try {
@@ -455,6 +473,9 @@ function PortalApp() {
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
           onSubmitQuestion={(question, classKey) => void handleStudentQuestion(question, classKey)}
+          onSubmitClassroomQuestion={(occurrenceKey, body) =>
+            void handleClassroomQuestion(occurrenceKey, body)
+          }
           onPreviewSupport={() => void handleSupportPreview()}
           onRetry={() => void load()}
         />
