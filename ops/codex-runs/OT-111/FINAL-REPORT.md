@@ -1,6 +1,12 @@
 # OT-111 Final Report
 
-Status: candidate ready for commit.
+Status: draft PR opened.
+
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/50
+
+Base SHA: `fb5f5eebc539afc9e93833e9417ee67524d62c36`
+
+Implementation commit SHA: `ce37beebd97a9d8f76612b3911a906318922ddcf`
 
 ## Scope Implemented
 
