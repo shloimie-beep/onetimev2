@@ -6,6 +6,7 @@
   "repository": "webcraft-media/onetimev2",
   "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OT-110A",
   "branch": "codex/ot110a-admin-content-workspace",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/52",
   "base_ref": "origin/codex/ops03-staging-readiness-repair",
   "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
   "scope": {

@@ -4,6 +4,8 @@ Status: implemented locally and ready for draft PR.
 
 Branch: `codex/ot110a-admin-content-workspace`
 
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/52
+
 Base: `origin/codex/ops03-staging-readiness-repair` at `fb5f5eebc539afc9e93833e9417ee67524d62c36`
 
 ## Delivered
