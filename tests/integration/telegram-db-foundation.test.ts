@@ -67,10 +67,13 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
     expect(first.some((migration) => migration.id === '2010_ops03b_email_step_up_login')).toBe(
       true,
     );
+    expect(first.some((migration) => migration.id === '2010_ot104r_vimeo_private_runtime')).toBe(
+      true,
+    );
     expect(
       first.some((migration) => migration.id === '2003_ot89a_subscriber_support_producer'),
     ).toBe(true);
-    expect(first.at(-1)?.id).toBe('2010_ops03b_email_step_up_login');
+    expect(first.at(-1)?.id).toBe('2010_ot104r_vimeo_private_runtime');
     const applied = await pool.query(
       `SELECT checksum
          FROM onetime.schema_migrations
@@ -89,10 +92,11 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
           '2007_ot87_stripe_test_entitlements',
           '2008_ops03a_lifecycle_delivery_outbox',
           '2009_ops03a_activation_mfa_handoffs',
-          '2010_ops03b_email_step_up_login'
+          '2010_ops03b_email_step_up_login',
+          '2010_ot104r_vimeo_private_runtime'
         )`,
     );
-    expect(applied.rowCount).toBe(15);
+    expect(applied.rowCount).toBe(16);
     await expect(runMigrations(pool)).rejects.toThrow(/not supported/i);
   });
 
