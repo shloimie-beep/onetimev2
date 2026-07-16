@@ -370,6 +370,86 @@ describe('OT-52P parent and student portal services', () => {
     ).rejects.toMatchObject({ code: 'SERVER_ERROR' });
   });
 
+  it('self-heals missing student access state while preserving parent household isolation', async () => {
+    const learner = await createLearner('Missing Access State Learner', 'missing-state-create');
+    await pool.query(
+      `DELETE FROM onetime.portal_student_access_state
+        WHERE account_key = $1
+          AND product_key = $2
+          AND learner_key = $3`,
+      [accountKey, productKey, learner.learner_key],
+    );
+
+    const setup = await parentService.studentAccessOperation(
+      parentActor,
+      householdKey,
+      learner.learner_key,
+      'setup',
+      { idempotency_key: 'missing-state-setup-001' },
+    );
+    const reset = await parentService.studentAccessOperation(
+      parentActor,
+      householdKey,
+      learner.learner_key,
+      'reset',
+      { idempotency_key: 'missing-state-reset-001' },
+    );
+    const suspended = await parentService.studentAccessOperation(
+      parentActor,
+      householdKey,
+      learner.learner_key,
+      'suspend',
+      { idempotency_key: 'missing-state-suspend-001' },
+    );
+
+    expect(setup).toMatchObject({
+      learner_key: learner.learner_key,
+      status: 'setup_requested',
+      last_operation_type: 'setup',
+      version: 2,
+    });
+    expect(reset).toMatchObject({
+      learner_key: learner.learner_key,
+      status: 'reset_requested',
+      last_operation_type: 'reset',
+    });
+    expect(suspended).toMatchObject({
+      learner_key: learner.learner_key,
+      status: 'suspended',
+      last_operation_type: 'suspend',
+    });
+
+    const accessRows = await pool.query(
+      `SELECT status, last_operation_type
+         FROM onetime.portal_student_access_state
+        WHERE account_key = $1
+          AND product_key = $2
+          AND learner_key = $3`,
+      [accountKey, productKey, learner.learner_key],
+    );
+    expect(accessRows.rows).toEqual([{ status: 'suspended', last_operation_type: 'suspend' }]);
+
+    await expect(
+      parentService.studentAccessOperation(
+        otherParentActor,
+        otherHouseholdKey,
+        learner.learner_key,
+        'reset',
+        { idempotency_key: 'missing-state-cross-household-reset' },
+      ),
+    ).rejects.toMatchObject({ code: 'NOT_FOUND' });
+
+    await expect(
+      parentService.studentAccessOperation(
+        { ...parentActor, actor_role: 'viewer', actor_user_ref: 'viewer_user' },
+        householdKey,
+        learner.learner_key,
+        'reset',
+        { idempotency_key: 'missing-state-viewer-reset' },
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
   it('keeps the scoped helper unavailable until an adapter is wired', async () => {
     const learner = await createLearner('Helper Learner', 'helper-learner-create');
     const dashboard = await parentService.dashboard(parentActor, householdKey);

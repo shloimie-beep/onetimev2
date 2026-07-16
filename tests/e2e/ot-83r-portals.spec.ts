@@ -202,7 +202,9 @@ async function sessionCsrf(page: Page) {
 
 async function captureResponsiveA11y(page: Page, name: string, route = '/app/parent') {
   const sizes = [
+    { label: '360x800', width: 360, height: 800 },
     { label: '390x844', width: 390, height: 844 },
+    { label: '768x1024', width: 768, height: 1024 },
     { label: '1440x1000', width: 1440, height: 1000 },
   ];
   for (const size of sizes) {

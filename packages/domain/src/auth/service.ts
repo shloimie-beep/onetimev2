@@ -22,6 +22,7 @@ const ARGON2_TAG_LENGTH = 32;
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const DUMMY_PASSWORD_HASH = hashPassword('dummy-password-used-only-to-balance-login-timing');
 const RECOVERY_CODE_COUNT = 10;
+const POST_ACTIVATION_MFA_HANDOFF_TTL_MS = 15 * 60 * 1000;
 
 type AssuranceMethod = 'password' | 'totp' | 'recovery_code';
 
@@ -399,6 +400,29 @@ export async function getSessionByToken({
   };
 }
 
+export async function getSessionUserByKey({
+  pool,
+  config,
+  userKey,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  userKey: string;
+}): Promise<SessionUser | null> {
+  const result = await pool.query(
+    `SELECT user_key, email_normalized, display_name, role, mfa_capable, security_version
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND user_key = $3
+        AND status = 'active'
+      LIMIT 1`,
+    [config.accountKey, config.productKey, userKey],
+  );
+  const row = result.rows[0];
+  return row ? rowToSessionUser(row) : null;
+}
+
 export async function verifySessionCsrf({
   pool,
   sessionKey,
@@ -556,6 +580,114 @@ export async function provisionTotpEnrollment({
     );
   });
   return { enrollmentToken, secret, factorKey, expiresAt: expiresAt.toISOString() };
+}
+
+export async function createPostActivationMfaHandoff({
+  pool,
+  config,
+  userKey,
+  enrollmentToken,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  userKey: string;
+  enrollmentToken: string;
+}) {
+  const handoffToken = token();
+  const expiresAt = new Date(Date.now() + POST_ACTIVATION_MFA_HANDOFF_TTL_MS);
+  await pool.query(
+    `INSERT INTO onetime.account_activation_mfa_handoffs
+       (handoff_key, account_key, product_key, user_key, handoff_hash,
+        mfa_enrollment_token_hash, expires_at, metadata)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb)`,
+    [
+      `handoff_${randomUUID()}`,
+      config.accountKey,
+      config.productKey,
+      userKey,
+      hashValue(handoffToken),
+      hashValue(enrollmentToken),
+      expiresAt.toISOString(),
+      JSON.stringify({
+        policy_version: 'ops03a-post-activation-mfa-v1',
+        raw_token_included: false,
+        recovery_codes_acknowledged: false,
+      }),
+    ],
+  );
+  await insertAuthAudit(pool, config, {
+    eventType: 'post_activation_mfa_handoff_created',
+    userKey,
+    success: true,
+    metadata: { expires_at: expiresAt.toISOString() },
+  });
+  return { handoffToken, expiresAt: expiresAt.toISOString() };
+}
+
+export async function consumePostActivationMfaHandoff({
+  pool,
+  config,
+  handoffToken,
+  ip,
+  userAgent,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  handoffToken: string;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+}): Promise<SessionUser | null> {
+  return inTransaction(pool, async (client) => {
+    const result = await client.query(
+      `SELECT handoffs.handoff_key,
+              users.user_key, users.email_normalized, users.display_name, users.role,
+              users.mfa_capable, users.security_version
+         FROM onetime.account_activation_mfa_handoffs AS handoffs
+         JOIN onetime.account_users AS users
+           ON users.user_key = handoffs.user_key
+          AND users.account_key = handoffs.account_key
+          AND users.product_key = handoffs.product_key
+         JOIN onetime.mfa_factors AS factors
+           ON factors.user_key = handoffs.user_key
+          AND factors.account_key = handoffs.account_key
+          AND factors.product_key = handoffs.product_key
+          AND factors.status = 'active'
+        WHERE handoffs.account_key = $1
+          AND handoffs.product_key = $2
+          AND handoffs.handoff_hash = $3
+          AND handoffs.consumed_at IS NULL
+          AND handoffs.expires_at > now()
+          AND users.status = 'active'
+          AND users.mfa_capable = true
+        LIMIT 1
+        FOR UPDATE`,
+      [config.accountKey, config.productKey, hashValue(handoffToken)],
+    );
+    const row = result.rows[0];
+    if (!row) return null;
+    await client.query(
+      `UPDATE onetime.account_activation_mfa_handoffs
+          SET consumed_at = now(),
+              metadata = $2::jsonb
+        WHERE handoff_key = $1`,
+      [
+        row.handoff_key,
+        JSON.stringify({
+          policy_version: 'ops03a-post-activation-mfa-v1',
+          recovery_codes_acknowledged: true,
+        }),
+      ],
+    );
+    await insertAuthAudit(client, config, {
+      eventType: 'post_activation_mfa_handoff_consumed',
+      userKey: row.user_key,
+      success: true,
+      ip,
+      userAgent,
+      metadata: { recovery_codes_acknowledged: true },
+    });
+    return rowToSessionUser(row);
+  });
 }
 
 export async function activateTotpEnrollment({

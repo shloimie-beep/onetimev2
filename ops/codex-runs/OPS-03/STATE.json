@@ -1,0 +1,37 @@
+{
+  "task_id": "OPS-03",
+  "status": "ready",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ops03-staging-readiness-repair",
+  "base_sha": "96b429053d13a139595ed3bd0ea3c854cc2500e8",
+  "staging_url": "https://ot99-web-staging.up.railway.app",
+  "railway": {
+    "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+    "project_name": "one-time-ot99-staging-96b42905",
+    "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+    "environment_name": "staging",
+    "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+    "web_service_name": "ot99-web",
+    "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+    "worker_service_name": "ot99-worker",
+    "pg16_service_id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+    "pg16_service_name": "ot99-pg16",
+    "pg16_volume_id": "29268b58-df5a-442a-836c-6d98d82d2de3",
+    "pg16_volume_name": "ot99-pg16-volume",
+    "pg16_tcp_proxy_id": "e7d6f00a-68b3-4210-98d5-d755c553c98e",
+    "pg16_tcp_proxy_endpoint": "tokaido.proxy.rlwy.net:55404",
+    "old_postgres_service_id": "e6671cb7-178a-4821-b977-7b6e24c0c052",
+    "old_postgres_volume_id": "8d070607-8692-4c1a-88cd-0231fb593e68"
+  },
+  "local_private_handoff": "C:\\Users\\User\\.ops03-runtime\\OPS-03\\ops03-handoff\\OPS-03-LOGIN-HANDOFF.private.json",
+  "certification": {
+    "live_acceptance": "passed",
+    "live_acceptance_report": "ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json",
+    "screenshots": "ops/codex-runs/OPS-03/evidence/screenshots/",
+    "production_untouched": true,
+    "dns_untouched": true,
+    "bna_runtime_untouched": true,
+    "real_sends_charges_and_provider_canaries_untouched": true
+  },
+  "last_updated": "2026-07-16T21:21:00+03:00"
+}

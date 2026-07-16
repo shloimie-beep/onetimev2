@@ -12,7 +12,7 @@ import {
   reservedSyntheticDomains,
   type PerformanceScenarioId,
   type QueryScenarioId,
-} from '../../tests/postgres-assurance/current-base-scenarios.ts';
+} from './current-base-scenarios.ts';
 
 type SqlValue = string | number | boolean | null;
 type Row = Record<string, SqlValue>;

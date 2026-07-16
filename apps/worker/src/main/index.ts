@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import { createPgPool } from '../../../../packages/db/src/index.ts';
-import { runSupportDeliveryBatch } from '../../../../packages/domain/src/index.ts';
+import {
+  runLifecycleDeliveryOutboxBatch,
+  runSupportDeliveryBatch,
+} from '../../../../packages/domain/src/index.ts';
 import { loadDeliveryWorkerConfig } from '../delivery/config.ts';
 import { createDeliveryLogger } from '../delivery/logger.ts';
 import { PollingLoopControl, runNonOverlappingPollingLoop } from '../delivery/loop.ts';
@@ -38,7 +41,13 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
         maxAgeMs: 172_800_000,
       },
     });
-    return { ...delivery, support };
+    const lifecycle = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config: config.appConfig,
+      limit: config.batchSize,
+      leaseMs: config.claimLeaseMs,
+    });
+    return { ...delivery, support, lifecycle };
   } finally {
     await pool.end();
   }
@@ -92,6 +101,12 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
               maxAgeMs: 172_800_000,
             },
           });
+          await runLifecycleDeliveryOutboxBatch({
+            pool,
+            config: config.appConfig,
+            limit: config.batchSize,
+            leaseMs: config.claimLeaseMs,
+          });
         } catch (error) {
           void error;
           logger.error('delivery_batch_failed', {
@@ -112,7 +127,12 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
 if (process.argv.includes('--once')) {
   const summary = await runOutboxWorkerOnce();
   process.stdout.write(
-    `sink_delivered=${summary.sinkDelivered}\nsupport_delivered=${summary.support.delivered}\n`,
+    [
+      `sink_delivered=${summary.sinkDelivered}`,
+      `support_delivered=${summary.support.delivered}`,
+      `lifecycle_sink_delivered=${summary.lifecycle.sink_delivered}`,
+      `lifecycle_expired=${summary.lifecycle.expired}`,
+    ].join('\n') + '\n',
   );
 } else {
   await runContinuously();

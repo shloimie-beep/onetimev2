@@ -1,9 +1,9 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
-import { ZodError } from 'zod';
+import { z, ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
@@ -12,6 +12,11 @@ import { createClassroomRepository } from '../../../../packages/db/src/classroom
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
+import {
+  accountLifecycleTokenTypeSchema,
+  passwordResetRequestPayloadSchema,
+  tokenCompletionPayloadSchema,
+} from '../../../../packages/contracts/src/accounts/index.ts';
 import {
   classroomAttendanceEventPayloadSchema,
   classroomLaunchBootstrapPayloadSchema,
@@ -52,11 +57,17 @@ import {
   CrmVersionConflictError,
   ContentIdempotencyConflictError,
   IdempotencyConflictError,
+  AccountLifecycleError,
+  acceptOwnerAdminInvitation,
+  acceptParentActivation,
+  acceptStudentSetup,
   activateTotpEnrollment,
   admitContentOutcome,
   authenticateUser,
   canEditContacts,
   captureLead,
+  completePasswordReset,
+  completeStudentReset,
   createAccountLifecycleCredentialAdapter,
   createContact,
   createClassPortalAccessAdapter,
@@ -65,13 +76,17 @@ import {
   createContentPortalAccessAdapter,
   createLoginCsrf,
   createParentPortalService,
+  createPostActivationMfaHandoff,
   createSession,
+  consumePostActivationMfaHandoff,
   consumeWhatsAppAccountLink,
   createStudentPortalService,
   getClassOccurrenceDetail,
   getContentItemDetail,
   getContactDetail,
+  getSessionUserByKey,
   getSessionByToken,
+  inspectAccountLifecycleToken,
   buildOwnerDashboard,
   listClassOccurrences,
   listContentLibrary,
@@ -80,8 +95,10 @@ import {
   ownerAdminVisibleActions,
   inspectOt86bBufferReadinessFromEnv,
   listOt86bSocialDrafts,
+  provisionTotpEnrollment,
   receiveOt86PublicationManifest,
   receiveOt86bSocialEvent,
+  requestPasswordReset,
   replaceMfaRecoveryCodes,
   revokeMfaFactors,
   revokeSession,
@@ -136,6 +153,43 @@ type AppDeps = {
 
 const SESSION_COOKIE = 'otcrm_session';
 const CSRF_COOKIE = 'otcrm_csrf';
+type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
+const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
+  (tokenType) => tokenType !== 'password_reset',
+) as AccountLifecycleTokenType[];
+
+const lifecycleTokenStatusPayloadSchema = z.object({
+  token: z.string().trim().min(32).max(240),
+  flow: z.enum(['activation', 'password_reset']),
+});
+const lifecycleActivationPayloadSchema = tokenCompletionPayloadSchema.extend({
+  csrf_token: z.string().trim().min(16).max(160),
+});
+const forgotPasswordApiPayloadSchema = z.object({
+  email: z.string().trim().email().max(254),
+  csrf_token: z.string().trim().min(16).max(160),
+  idempotency_key: z.string().trim().min(8).max(160).optional(),
+});
+const resetPasswordApiPayloadSchema = tokenCompletionPayloadSchema.extend({
+  csrf_token: z.string().trim().min(16).max(160),
+});
+const postActivationMfaPayloadSchema = mfaEnrollmentPayloadSchema.extend({
+  handoff_token: z.string().trim().min(32).max(200),
+});
+const postActivationMfaAckPayloadSchema = z.object({
+  handoff_token: z.string().trim().min(32).max(200),
+  recovery_codes_saved: z.literal(true),
+});
+
+class PublicRouteError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string,
+    readonly publicMessage: string,
+  ) {
+    super(publicMessage);
+  }
+}
 
 export function createApp({
   config,
@@ -358,6 +412,7 @@ export function createApp({
     const csrf = createLoginCsrf(config);
     setCsrfCookie(res, config, csrf.csrf_cookie);
     setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     res
       .status(200)
       .type('html')
@@ -367,6 +422,260 @@ export function createApp({
           safeReturnPath(String(req.query.return_to ?? ''), config) ?? '/app/crm',
         ),
       );
+  });
+
+  app.get('/activate', (_req, res) => {
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(200).type('html').send(activationPageHtml(csrf.csrf_token));
+  });
+
+  app.get('/forgot-password', (_req, res) => {
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(200).type('html').send(forgotPasswordPageHtml(csrf.csrf_token));
+  });
+
+  app.get('/reset-password', (_req, res) => {
+    const csrf = createLoginCsrf(config);
+    setCsrfCookie(res, config, csrf.csrf_cookie);
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.status(200).type('html').send(resetPasswordPageHtml(csrf.csrf_token));
+  });
+
+  app.post('/api/v1/account-lifecycle/token-status', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = lifecycleTokenStatusPayloadSchema.parse(req.body);
+      const expectedTypes: AccountLifecycleTokenType[] =
+        payload.flow === 'password_reset' ? ['password_reset'] : ACTIVATION_TOKEN_TYPES;
+      const inspected = await inspectAccountLifecycleToken({
+        pool,
+        config,
+        token: payload.token,
+        expectedTypes,
+      });
+      if (!inspected.ok) {
+        res.status(statusForLifecycleCode(inspected.code)).json({
+          success: false,
+          code: inspected.code,
+          message: lifecycleMessage(inspected.code),
+          request_id: req.traceId,
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        token_type: inspected.token_type,
+        target_role: inspected.target_role,
+        expires_at: inspected.expires_at,
+        mfa_required: inspected.mfa_required,
+      });
+    } catch (error) {
+      handleLifecycleRouteError(error, req, res, 'We could not check that link yet.');
+    }
+  });
+
+  app.post('/api/v1/account-lifecycle/activate', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = lifecycleActivationPayloadSchema.parse(req.body);
+      requireLoginCsrf(req, res, config, payload.csrf_token);
+      const inspected = await inspectAccountLifecycleToken({
+        pool,
+        config,
+        token: payload.token,
+        expectedTypes: ACTIVATION_TOKEN_TYPES,
+      });
+      if (!inspected.ok) {
+        res.status(statusForLifecycleCode(inspected.code)).json({
+          success: false,
+          code: inspected.code,
+          message: lifecycleMessage(inspected.code),
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const completion =
+        inspected.token_type === 'owner_admin_invitation'
+          ? await acceptOwnerAdminInvitation({ pool, config, payload })
+          : inspected.token_type === 'parent_activation'
+            ? await acceptParentActivation({ pool, config, payload })
+            : inspected.token_type === 'student_setup'
+              ? await acceptStudentSetup({ pool, config, payload })
+              : await completeStudentReset({ pool, config, payload });
+      const sessionUser = await getSessionUserByKey({ pool, config, userKey: completion.user_key });
+      if (!sessionUser) {
+        throw new Error('Activated user was not available for session creation.');
+      }
+      if (completion.mfa_required) {
+        const enrollment = await provisionTotpEnrollment({
+          pool,
+          config,
+          userKey: completion.user_key,
+        });
+        const handoff = await createPostActivationMfaHandoff({
+          pool,
+          config,
+          userKey: completion.user_key,
+          enrollmentToken: enrollment.enrollmentToken,
+        });
+        res.status(200).json({
+          success: true,
+          mfa_required: true,
+          handoff_token: handoff.handoffToken,
+          handoff_expires_at: handoff.expiresAt,
+          enrollment_token: enrollment.enrollmentToken,
+          totp_secret: enrollment.secret,
+          otpauth_url: otpauthUrl(config, sessionUser.email, enrollment.secret),
+          recovery_codes_ack_required: true,
+        });
+        return;
+      }
+      const session = await createSession({
+        pool,
+        config,
+        user: sessionUser,
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
+        assuranceMethod: 'password',
+      });
+      setAuthCookies(res, config, session.session_token, session.csrf_token);
+      res.status(200).json({
+        success: true,
+        mfa_required: false,
+        csrf_token: session.csrf_token,
+        return_to: defaultRouteForRole(session.user.role),
+      });
+    } catch (error) {
+      handleLifecycleRouteError(error, req, res, 'Activation is unavailable right now.');
+    }
+  });
+
+  app.post('/api/v1/account-lifecycle/forgot-password', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = forgotPasswordApiPayloadSchema.parse(req.body);
+      requireLoginCsrf(req, res, config, payload.csrf_token);
+      await requestPasswordReset({
+        pool,
+        config,
+        payload: passwordResetRequestPayloadSchema.parse({
+          idempotency_key: payload.idempotency_key ?? `forgot-${randomUUID()}`,
+          email: payload.email,
+        }),
+      });
+      res.status(200).json({
+        success: true,
+        request_accepted: true,
+        message: 'If that email has access, a reset link will be sent.',
+      });
+    } catch (error) {
+      if (error instanceof AccountLifecycleError && error.code === 'RATE_LIMITED') {
+        res.status(429).json({
+          success: false,
+          code: 'RATE_LIMITED',
+          message: 'Please wait before requesting another reset link.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      handleLifecycleRouteError(
+        error,
+        req,
+        res,
+        'If that email has access, a reset link will be sent.',
+      );
+    }
+  });
+
+  app.post('/api/v1/account-lifecycle/reset-password', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = resetPasswordApiPayloadSchema.parse(req.body);
+      requireLoginCsrf(req, res, config, payload.csrf_token);
+      const completed = await completePasswordReset({ pool, config, payload });
+      res.status(200).json({
+        success: true,
+        sessions_invalidated: completed.sessions_invalidated,
+        return_to: '/login',
+      });
+    } catch (error) {
+      handleLifecycleRouteError(error, req, res, 'Password reset is unavailable right now.');
+    }
+  });
+
+  app.post('/api/v1/account-lifecycle/mfa/activate', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = postActivationMfaPayloadSchema.parse(req.body);
+      const activated = await activateTotpEnrollment({
+        pool,
+        config,
+        enrollmentToken: payload.enrollment_token,
+        code: payload.totp_code,
+      });
+      if (!activated) {
+        res
+          .status(403)
+          .json(
+            publicError('MFA_INVALID', 'The authenticator code was not accepted.', req.traceId),
+          );
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        recovery_codes: activated.recovery_codes,
+        handoff_token: payload.handoff_token,
+        recovery_codes_ack_required: true,
+      });
+    } catch (error) {
+      handleLifecycleRouteError(error, req, res, 'MFA setup is unavailable right now.');
+    }
+  });
+
+  app.post('/api/v1/account-lifecycle/mfa/ack', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = postActivationMfaAckPayloadSchema.parse(req.body);
+      const user = await consumePostActivationMfaHandoff({
+        pool,
+        config,
+        handoffToken: payload.handoff_token,
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
+      });
+      if (!user) {
+        res.status(403).json({
+          success: false,
+          code: 'HANDOFF_INVALID',
+          message: 'MFA setup expired. Please request a fresh activation link.',
+          request_id: req.traceId,
+        });
+        return;
+      }
+      const session = await createSession({
+        pool,
+        config,
+        user,
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
+        assuranceMethod: 'totp',
+      });
+      setAuthCookies(res, config, session.session_token, session.csrf_token);
+      res.status(200).json({
+        success: true,
+        csrf_token: session.csrf_token,
+        return_to: defaultRouteForRole(session.user.role),
+      });
+    } catch (error) {
+      handleLifecycleRouteError(error, req, res, 'MFA setup is unavailable right now.');
+    }
   });
 
   app.get(/^\/app\/crm(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
@@ -1303,15 +1612,77 @@ export function createApp({
     distDir,
   });
 
+  app.use(async (req, res, next) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      next();
+      return;
+    }
+    const htmlFile = publicHtmlFileForPath(req.path);
+    if (!htmlFile) {
+      next();
+      return;
+    }
+    await sendPublicHtml(res, path.join(distDir, htmlFile), config, req.path);
+  });
+
   app.use(
     express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }),
   );
 
-  app.use((_req, res) => {
-    res.status(404).sendFile(path.join(distDir, '404.html'));
+  app.use(async (_req, res) => {
+    res.status(404);
+    await sendPublicHtml(res, path.join(distDir, '404.html'), config, '/404');
   });
 
   return app;
+}
+
+function publicHtmlFileForPath(pathname: string) {
+  if (pathname === '/') return 'index.html';
+  const staticPages = new Set(['/signup', '/login', '/privacy', '/terms', '/404']);
+  if (staticPages.has(pathname)) return `${pathname.slice(1)}.html`;
+  const appPages = new Set([
+    '/app/crm',
+    '/app/dashboard',
+    '/app/classes',
+    '/app/content',
+    '/app/billing',
+    '/app/parent',
+    '/app/student',
+  ]);
+  if (appPages.has(pathname)) return `${pathname.slice(1)}.html`;
+  return null;
+}
+
+async function sendPublicHtml(
+  res: Response,
+  filePath: string,
+  config: AppConfig,
+  canonicalPath: string,
+) {
+  const html = await readFile(filePath, 'utf8');
+  res
+    .type('html')
+    .set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache')
+    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+}
+
+function rewritePublicMetadata(html: string, publicBaseUrl: string, canonicalPath: string) {
+  const metadataUrl = publicMetadataUrl(publicBaseUrl, canonicalPath);
+  return html
+    .replace(/<link rel="canonical" href="[^"]*">/, `<link rel="canonical" href="${metadataUrl}">`)
+    .replace(
+      /<meta property="og:url" content="[^"]*">/,
+      `<meta property="og:url" content="${metadataUrl}">`,
+    );
+}
+
+function publicMetadataUrl(publicBaseUrl: string, canonicalPath: string) {
+  const origin = new URL(publicBaseUrl).origin;
+  if (!canonicalPath.startsWith('/') || canonicalPath.startsWith('//')) {
+    throw new Error('Canonical public metadata paths must be root-relative.');
+  }
+  return new URL(canonicalPath, `${origin}/`).toString();
 }
 
 async function requireApiSession(
@@ -2024,6 +2395,89 @@ function safeReturnPath(value: string | undefined, config: AppConfig) {
   }
 }
 
+function requireLoginCsrf(req: Request, _res: Response, config: AppConfig, submitted: string) {
+  if (
+    !verifyLoginCsrf(config, getCookie(req, CSRF_COOKIE), submitted ?? req.header('x-csrf-token'))
+  ) {
+    throw new PublicRouteError(403, 'CSRF_REQUIRED', 'Refresh the page and try again.');
+  }
+}
+
+function statusForLifecycleCode(code: string) {
+  if (code === 'TOKEN_EXPIRED' || code === 'TOKEN_CONSUMED') return 410;
+  if (code === 'RATE_LIMITED') return 429;
+  if (code === 'FORBIDDEN') return 403;
+  if (code === 'IDEMPOTENCY_CONFLICT') return 409;
+  if (code === 'NOT_FOUND') return 404;
+  return 400;
+}
+
+function lifecycleMessage(code: string) {
+  if (code === 'TOKEN_EXPIRED') return 'That link has expired. Please request a fresh one.';
+  if (code === 'TOKEN_CONSUMED') return 'That link was already used.';
+  if (code === 'TOKEN_INVALID') return 'That link is invalid or has been superseded.';
+  if (code === 'RATE_LIMITED') return 'Please wait before trying again.';
+  return 'We could not complete that request.';
+}
+
+function handleLifecycleRouteError(
+  error: unknown,
+  req: RequestWithTrace,
+  res: Response,
+  fallbackMessage: string,
+) {
+  if (res.headersSent) return;
+  if (error instanceof PublicRouteError) {
+    res.status(error.status).json({
+      success: false,
+      code: error.code,
+      message: error.publicMessage,
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof ZodError) {
+    res.status(400).json({
+      success: false,
+      code: 'VALIDATION_ERROR',
+      message: 'Please check the submitted fields.',
+      field_errors: publicFieldErrors(error),
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof AccountLifecycleError) {
+    res.status(statusForLifecycleCode(error.code)).json({
+      success: false,
+      code: error.code,
+      message: lifecycleMessage(error.code),
+      request_id: req.traceId,
+    });
+    return;
+  }
+  res.status(500).json(publicError('SERVER_ERROR', fallbackMessage, req.traceId));
+}
+
+function defaultRouteForRole(role: string) {
+  if (role === 'owner' || role === 'admin') return '/app/dashboard';
+  if (role === 'parent') return '/app/parent';
+  if (role === 'student') return '/app/student';
+  return '/app/crm';
+}
+
+function otpauthUrl(config: AppConfig, email: string, secret: string) {
+  const issuer = 'One Time Mishnayos';
+  const label = `${issuer}:${email}`;
+  const params = new URLSearchParams({
+    secret,
+    issuer,
+    algorithm: 'SHA1',
+    digits: '6',
+    period: '30',
+  });
+  return `otpauth://totp/${encodeURIComponent(label)}?${params.toString()}`;
+}
+
 function forbiddenAppHtml(appPage: 'parent' | 'student') {
   const label = appPage === 'parent' ? 'Parent Portal' : 'Student Portal';
   return `<!doctype html>
@@ -2089,9 +2543,9 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
     <section class="login-panel">
       <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
         <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
-        <span><strong>One Time Mishnayos</strong><small>CRM</small></span>
+        <span><strong>One Time Mishnayos</strong><small>Member access</small></span>
       </a>
-      <h1>Login</h1>
+      <h1>Welcome back</h1>
       <form class="login-form" data-login-form novalidate>
         <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
         <input type="hidden" name="return_to" value="${escapeHtml(returnTo)}">
@@ -2105,9 +2559,171 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
           <input id="password" name="password" type="password" autocomplete="current-password" required>
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
+        <div class="field" data-login-mfa hidden>
+          <label for="mfa_code">Authenticator or recovery code</label>
+          <input id="mfa_code" name="mfa_code" type="text" inputmode="numeric" autocomplete="one-time-code">
+          <p tabindex="-1" class="error" data-error-for="mfa_code"></p>
+        </div>
         <button class="button button-primary" type="submit">Login</button>
+        <a class="form-link" href="/forgot-password">Forgot password?</a>
         <p class="form-status" role="status" data-form-status></p>
       </form>
+    </section>
+  </main>
+  <script type="module" src="/assets/public.js"></script>
+</body>
+</html>`;
+}
+
+function activationPageHtml(csrfToken: string) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Activate account | One Time Mishnayos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <link rel="stylesheet" href="/assets/public.css">
+</head>
+<body>
+  <main class="login-page account-flow-page">
+    <section class="login-panel account-flow-panel" data-activation-root>
+      <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
+        <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
+        <span><strong>One Time Mishnayos</strong><small>Account activation</small></span>
+      </a>
+      <h1>Set your password</h1>
+      <p class="flow-copy" data-activation-status role="status">Checking your secure link.</p>
+      <form class="login-form" data-activation-form novalidate hidden>
+        <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
+        <div class="field">
+          <label for="activation_password">Password</label>
+          <input id="activation_password" name="password" type="password" autocomplete="new-password" required minlength="8">
+          <p tabindex="-1" class="error" data-error-for="password"></p>
+        </div>
+        <div class="field">
+          <label for="activation_password_confirm">Confirm password</label>
+          <input id="activation_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
+          <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
+        </div>
+        <button class="button button-primary" type="submit">Continue</button>
+        <p class="form-status" role="status" data-form-status></p>
+      </form>
+      <section class="mfa-setup" data-activation-mfa hidden>
+        <h2>Secure this account</h2>
+        <p class="flow-copy">Add this account to an authenticator app, then enter the six-digit code.</p>
+        <a class="button" data-otpauth-link href="#">Open authenticator setup</a>
+        <div class="manual-secret">
+          <span>Manual setup key</span>
+          <code data-mfa-secret></code>
+        </div>
+        <form class="login-form" data-activation-mfa-form novalidate>
+          <div class="field">
+            <label for="activation_totp">Authenticator code</label>
+            <input id="activation_totp" name="totp_code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" required>
+            <p tabindex="-1" class="error" data-error-for="totp_code"></p>
+          </div>
+          <button class="button button-primary" type="submit">Verify code</button>
+          <p class="form-status" role="status" data-form-status></p>
+        </form>
+      </section>
+      <section class="recovery-codes" data-recovery-panel hidden>
+        <h2>Save recovery codes</h2>
+        <p class="flow-copy">These codes are shown once. Keep them somewhere private before continuing.</p>
+        <ol data-recovery-codes></ol>
+        <label class="consent recovery-ack">
+          <input type="checkbox" data-recovery-ack>
+          <span>I saved these recovery codes.</span>
+        </label>
+        <button class="button button-primary" type="button" data-recovery-continue disabled>Finish setup</button>
+        <p class="form-status" role="status" data-recovery-status></p>
+      </section>
+      <p class="form-status error" data-activation-error></p>
+    </section>
+  </main>
+  <script type="module" src="/assets/public.js"></script>
+</body>
+</html>`;
+}
+
+function forgotPasswordPageHtml(csrfToken: string) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Forgot password | One Time Mishnayos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <link rel="stylesheet" href="/assets/public.css">
+</head>
+<body>
+  <main class="login-page account-flow-page">
+    <section class="login-panel account-flow-panel">
+      <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
+        <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
+        <span><strong>One Time Mishnayos</strong><small>Password help</small></span>
+      </a>
+      <h1>Reset your password</h1>
+      <p class="flow-copy">Enter the email for your account. If it has access, a reset link will be sent.</p>
+      <form class="login-form" data-forgot-password-form novalidate>
+        <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
+        <div class="field">
+          <label for="forgot_email">Email</label>
+          <input id="forgot_email" name="email" type="email" autocomplete="username" required>
+          <p tabindex="-1" class="error" data-error-for="email"></p>
+        </div>
+        <button class="button button-primary" type="submit">Send reset link</button>
+        <p class="form-status" role="status" data-form-status></p>
+      </form>
+      <a class="form-link" href="/login">Back to login</a>
+    </section>
+  </main>
+  <script type="module" src="/assets/public.js"></script>
+</body>
+</html>`;
+}
+
+function resetPasswordPageHtml(csrfToken: string) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choose a new password | One Time Mishnayos</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <link rel="stylesheet" href="/assets/public.css">
+</head>
+<body>
+  <main class="login-page account-flow-page">
+    <section class="login-panel account-flow-panel" data-reset-root>
+      <a class="brand-lockup login-brand" href="/" aria-label="One Time Mishnayos home">
+        <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
+        <span><strong>One Time Mishnayos</strong><small>Password reset</small></span>
+      </a>
+      <h1>Choose a new password</h1>
+      <p class="flow-copy" data-reset-status role="status">Checking your secure link.</p>
+      <form class="login-form" data-reset-password-form novalidate hidden>
+        <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
+        <div class="field">
+          <label for="reset_password">Password</label>
+          <input id="reset_password" name="password" type="password" autocomplete="new-password" required minlength="8">
+          <p tabindex="-1" class="error" data-error-for="password"></p>
+        </div>
+        <div class="field">
+          <label for="reset_password_confirm">Confirm password</label>
+          <input id="reset_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
+          <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
+        </div>
+        <button class="button button-primary" type="submit">Reset password</button>
+        <p class="form-status" role="status" data-form-status></p>
+      </form>
+      <a class="form-link" href="/forgot-password">Request a new link</a>
     </section>
   </main>
   <script type="module" src="/assets/public.js"></script>

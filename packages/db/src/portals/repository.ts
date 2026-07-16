@@ -454,6 +454,7 @@ async function recordStudentAccessOperation(
     if (!learner) {
       throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
     }
+    assertActorCanAccessLearner(args.actor, learner);
     await client.query(
       `INSERT INTO onetime.portal_student_access_operations
        (operation_key, account_key, product_key, household_key, learner_key, operation_type,
@@ -500,7 +501,28 @@ async function recordStudentAccessOperation(
         args.operationType,
       ],
     );
-    const state = mapStudentAccess(updated.rows[0] as Record<string, unknown>);
+    let stateRow = updated.rows[0] as Record<string, unknown> | undefined;
+    if (!stateRow) {
+      const inserted = await client.query(
+        `INSERT INTO onetime.portal_student_access_state
+         (access_state_key, account_key, product_key, household_key, learner_key, status,
+          last_operation_type, last_operation_at, version)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,now(),2)
+         RETURNING access_state_key, learner_key, status, student_user_ref,
+                   last_operation_type, last_operation_at, version`,
+        [
+          `student_access_${randomUUID()}`,
+          args.actor.account_key,
+          args.actor.product_key,
+          String(learner.household_key),
+          args.learnerKey,
+          args.adapterResult.status,
+          args.operationType,
+        ],
+      );
+      stateRow = inserted.rows[0] as Record<string, unknown>;
+    }
+    const state = mapStudentAccess(stateRow);
     await writeIdempotency(
       client,
       args.actor,

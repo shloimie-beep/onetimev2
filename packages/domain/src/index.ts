@@ -89,11 +89,18 @@ export {
   createParentActivation,
   createStudentReset,
   createStudentSetup,
+  inspectAccountLifecycleToken,
   requestPasswordReset,
   restoreStudentIdentity,
   revokeStudentIdentitySessions,
   suspendStudentIdentity,
+  type AccountLifecycleTokenInspection,
 } from './accounts/lifecycle.ts';
+export {
+  decryptLifecycleDeliveryPayloadForTests,
+  runLifecycleDeliveryOutboxBatch,
+  type LifecycleDeliveryBatchSummary,
+} from './accounts/lifecycle-delivery.ts';
 export {
   authenticateUser,
   activateTotpEnrollment,
@@ -101,7 +108,10 @@ export {
   canEditContacts,
   createAccountUser,
   createLoginCsrf,
+  createPostActivationMfaHandoff,
   createSession,
+  consumePostActivationMfaHandoff,
+  getSessionUserByKey,
   getSessionByToken,
   provisionTotpEnrollment,
   resetAuthRateLimitForTests,

@@ -14,20 +14,26 @@ import {
   sharedNav,
   successCopy,
 } from '../packages/domain/src/index.ts';
+import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
 function pageShell(
   title: string,
   body: string,
-  options: { description?: string; app?: boolean; appEntry?: 'crm' | 'portal' } = {},
+  options: {
+    description?: string;
+    canonicalPath?: string;
+    app?: boolean;
+    appEntry?: 'crm' | 'portal';
+  } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
   return renderPageShell({
     title,
     body,
     description,
-    canonical: landingContent.seo.canonical,
+    canonical: publicCanonicalUrl(options.canonicalPath ?? '/'),
     ogTitle: landingContent.seo.ogTitle,
     ogDescription: landingContent.seo.ogDescription,
     ...(options.app === undefined ? {} : { app: options.app }),
@@ -198,13 +204,21 @@ function signupPage() {
     </div>
   </section>
 </main>${footer()}`,
+    { canonicalPath: '/signup' },
   );
 }
 
-function simplePage(title: string, heading: string, body: string, robots = 'noindex, nofollow') {
+function simplePage(
+  title: string,
+  heading: string,
+  body: string,
+  robots = 'noindex, nofollow',
+  canonicalPath = '/',
+) {
   const html = pageShell(
     title,
     `${header()}<main class="simple-page"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p></main>${footer()}`,
+    { canonicalPath },
   );
   return html.replace('index, follow', robots);
 }
@@ -219,6 +233,8 @@ await writeFile(
     'Member Login | One Time Mishnayos',
     'Member Login',
     'Account login is reserved for the authenticated app slice.',
+    'noindex, nofollow',
+    '/login',
   ),
 );
 await writeFile(
@@ -227,6 +243,8 @@ await writeFile(
     'Privacy | One Time Mishnayos',
     'Privacy',
     'We collect only the signup information needed to respond to your One Time Mishnayos interest request.',
+    'noindex, nofollow',
+    '/privacy',
   ),
 );
 await writeFile(
@@ -235,6 +253,8 @@ await writeFile(
     'Terms | One Time Mishnayos',
     'Terms',
     'This foundation slice does not sell access, process payments, or grant member accounts.',
+    'noindex, nofollow',
+    '/terms',
   ),
 );
 await writeFile(
@@ -244,12 +264,14 @@ await writeFile(
     'Not found',
     'That page is not available.',
     'noindex, nofollow',
+    '/404',
   ),
 );
 await writeFile(
   path.join(outDir, 'app', 'crm.html'),
   pageShell('CRM | One Time Mishnayos', `<div id="crm-root"></div>`, {
     app: true,
+    canonicalPath: '/app/crm',
     description: 'One Time authenticated CRM.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
@@ -263,6 +285,7 @@ for (const [fileName, title, description] of [
     path.join(outDir, 'app', fileName),
     pageShell(title, `<div id="crm-root"></div>`, {
       app: true,
+      canonicalPath: `/app/${fileName.replace('.html', '')}`,
       description,
     }).replace('index, follow', 'noindex, nofollow'),
   );
@@ -272,6 +295,7 @@ await writeFile(
   pageShell('Parent Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
     app: true,
     appEntry: 'portal',
+    canonicalPath: '/app/parent',
     description: 'One Time protected parent portal.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
@@ -280,6 +304,7 @@ await writeFile(
   pageShell('Student Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
     app: true,
     appEntry: 'portal',
+    canonicalPath: '/app/student',
     description: 'One Time protected student portal.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
