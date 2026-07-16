@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-07-16T22:56:17.274Z",
+  "status": "blocked",
+  "blocker": "connect ECONNREFUSED 127.0.0.1:5432",
+  "postgres_version": null,
+  "database_name": null,
+  "synthetic_seed": {
+    "contacts": 0,
+    "events": 0,
+    "real_pii": false
+  },
+  "timings": {},
+  "scenarios": [],
+  "memory": {
+    "heap_start_bytes": 0,
+    "heap_end_bytes": 0,
+    "bounded_growth": false
+  },
+  "external_mutations": {
+    "production_database": false,
+    "providers": false,
+    "sends": false,
+    "deployment": false
+  }
+}

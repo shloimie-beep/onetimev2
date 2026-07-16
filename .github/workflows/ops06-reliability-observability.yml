@@ -1,0 +1,90 @@
+name: OPS-06 Reliability Observability
+
+on:
+  pull_request:
+  push:
+    branches:
+      - codex/ops06-reliability-observability
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ops06-reliability-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ops06:
+    name: OPS-06 deterministic checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client-16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Focused OPS-06 tests
+        run: >-
+          npx vitest run
+          tests/unit/ops06/ops-observability.test.ts
+          tests/integration/ops06/ops-diagnostics-routes.test.ts
+
+      - name: OPS-06 alerts and migration safety
+        run: npm run ops06:alerts && npm run ops06:migrations
+
+      - name: OPS-06 load and restore drills
+        env:
+          OPS06_ALLOW_PG_ASSURANCE: 'true'
+          OPS06_SYNTHETIC_CONTACTS: '10000'
+          OPS06_SYNTHETIC_EVENTS: '1000'
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: npm run ops06:load && npm run ops06:backup-restore
+
+      - name: Secret scan
+        run: npm run secret:scan
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Upload OPS-06 artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ops06-reliability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ops/codex-runs/OPS-06/evidence/
+          if-no-files-found: ignore
+          retention-days: 7
