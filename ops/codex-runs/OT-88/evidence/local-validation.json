@@ -1,0 +1,108 @@
+{
+  "ticket": "OT-88",
+  "status": "LOCAL_VALIDATION_PASSED_FOR_READY_FOR_CI",
+  "validated_at_utc": "2026-07-16T09:57:48.6873595Z",
+  "worktree": "C:\\Users\\User\\.ot88-worktrees\\OT-88",
+  "branch": "codex/ot88-zoom-learner-classroom",
+  "audited_start_head": "80a67b93c61e9d5fb127789dadc0739917f21555",
+  "commands": [
+    {
+      "name": "scoped_prettier",
+      "command": "npx prettier --check --end-of-line lf <OT-88 touched files>",
+      "result": "PASS"
+    },
+    {
+      "name": "typecheck",
+      "command": "npm run typecheck",
+      "result": "PASS"
+    },
+    {
+      "name": "lint",
+      "command": "npm run lint",
+      "result": "PASS"
+    },
+    {
+      "name": "brand_check",
+      "command": "npm run brand:check",
+      "result": "PASS"
+    },
+    {
+      "name": "secret_scan",
+      "command": "npm run secret:scan",
+      "result": "PASS",
+      "details": "Scanned 641 repository text files."
+    },
+    {
+      "name": "unit",
+      "command": "npm run unit",
+      "result": "PASS",
+      "details": "22 test files, 130 tests."
+    },
+    {
+      "name": "integration",
+      "command": "npm run integration",
+      "result": "PASS",
+      "details": "19 test files, 89 tests."
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "result": "PASS",
+      "details": "Build emitted the existing unresolved DM Serif font asset warning; no build failure."
+    },
+    {
+      "name": "e2e",
+      "command": "npm run e2e",
+      "result": "PASS",
+      "details": "22 Playwright tests."
+    },
+    {
+      "name": "accessibility",
+      "command": "npm run accessibility",
+      "result": "PASS",
+      "details": "6 Playwright tests."
+    },
+    {
+      "name": "performance",
+      "command": "npm run performance",
+      "result": "PASS",
+      "details": "6 Playwright tests plus bundle check."
+    },
+    {
+      "name": "memory_migration_smoke",
+      "command": "node --import tsx -e \"import { createMemoryPool, runMigrations } from './packages/db/src/index.ts'; ...\"",
+      "result": "PASS",
+      "details": "Applied 16 memory migrations; latest 2100_ot88_zoom_learner_classroom; checksum b89afb9779bca732f84825372d01281b72c824744606e1fd747a320f3c92c756."
+    },
+    {
+      "name": "diff_whitespace",
+      "command": "git diff --check",
+      "result": "PASS",
+      "details": "Only Windows autocrlf conversion warnings were printed."
+    },
+    {
+      "name": "global_format",
+      "command": "npm run format",
+      "result": "LOCAL_WINDOWS_NOT_AUTHORITATIVE",
+      "details": "This worktree has core.autocrlf=true and no .gitattributes; global Prettier reports unrelated baseline CRLF noise. OT-88 touched files passed the scoped LF formatter check."
+    }
+  ],
+  "explicitly_not_run": [
+    {
+      "name": "live_zoom_canary",
+      "reason": "No protected Zoom credentials or explicit canary approval; provider-off/sink-mode scope only."
+    },
+    {
+      "name": "production_database_verification",
+      "reason": "No DATABASE_URL in this shell and production database mutation is out of scope."
+    },
+    {
+      "name": "deployment",
+      "reason": "Railway, DNS, and production deploys are explicitly out of scope for OT-88."
+    },
+    {
+      "name": "external_sends_or_payments",
+      "reason": "Telegram sends, email/SMS sends, provider mutations, and payment mutations are explicitly out of scope."
+    }
+  ]
+}

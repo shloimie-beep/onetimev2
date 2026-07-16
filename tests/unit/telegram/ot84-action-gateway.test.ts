@@ -106,16 +106,23 @@ describe('OT-84 action gateway negative controls', () => {
     expect(context.adapter.writes.size).toBe(0);
   });
 
-  it('keeps question actions feature-gated until a real question queue service exists', async () => {
+  it('routes question actions through the adapter with confirmation', async () => {
     const context = await buildContext(actorFixture([...botCapabilities]));
     await context.mappings.upsertProtectedMapping(mappingFixture());
 
     const listed = await context.engine.handle(updateFixture({ text: '/questions' }));
-    const selected = await context.engine.handle(updateFixture({ text: '/question-select q_1' }));
+    const preview = await context.engine.handle(
+      updateFixture({ updateId: '30', text: '/question-select q_1' }),
+    );
+    const confirmData = requireString(preview[0]?.buttons?.[0]?.callbackData);
+    const selected = await context.engine.handle(
+      updateFixture({ updateId: '31', kind: 'callback_query', callbackData: confirmData }),
+    );
 
-    expect(listed[0]?.text).toContain('not enabled');
-    expect(selected[0]?.text).toContain('not enabled');
-    expect(context.adapter.writes.size).toBe(0);
+    expect(listed[0]?.text).toContain('Questions:');
+    expect(preview[0]?.text).toContain('Action: class.question.select');
+    expect(selected[0]?.text).toContain('Completed class.question.select');
+    expect(context.adapter.writes.size).toBe(1);
   });
 });
 

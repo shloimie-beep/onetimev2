@@ -451,10 +451,12 @@ function statusForError(code: PortalErrorCode) {
     code === 'IDEMPOTENCY_CONFLICT' ||
     code === 'VERSION_CONFLICT' ||
     code === 'LEARNER_LIMIT_REACHED' ||
+    code === 'ENTITLEMENT_REQUIRED' ||
     code === 'CONSENT_REQUIRED'
   ) {
     return 409;
   }
+  if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
   if (code === 'ADAPTER_UNAVAILABLE') return 503;
   return 500;
 }

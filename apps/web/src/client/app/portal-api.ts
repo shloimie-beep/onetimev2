@@ -1,4 +1,5 @@
 import type {
+  ClassroomQuestionSubmitResponse,
   ParentLearnerMaterials,
   ParentPortalDashboard,
   ProtectedActionDescriptor,
@@ -77,13 +78,34 @@ export async function getStudentDashboard() {
   return json.data;
 }
 
+export async function submitClassroomQuestion(input: {
+  csrfToken: string;
+  occurrenceKey: string;
+  body: string;
+}) {
+  const json = await api<{ success: true; data: ClassroomQuestionSubmitResponse }>(
+    '/api/v1/classroom/questions',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        occurrence_key: input.occurrenceKey,
+        body: input.body,
+        idempotency_key: createIdempotencyKey(),
+      }),
+    },
+  );
+  return json.data;
+}
+
 export async function invokeProtectedAction(action: ProtectedActionDescriptor, csrfToken: string) {
   if (!action.href) return null;
   const init: RequestInit = {
     method: action.method,
   };
   if (action.method === 'POST') {
-    init.headers = { 'x-csrf-token': csrfToken };
+    init.headers = { 'content-type': 'application/json', 'x-csrf-token': csrfToken };
+    init.body = JSON.stringify({ idempotency_key: createIdempotencyKey() });
   }
   return api<unknown>(action.href, init);
 }

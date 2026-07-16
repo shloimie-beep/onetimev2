@@ -1,16 +1,16 @@
 # OT-88 Final Report
 
-Status: `IMPLEMENTATION_PENDING`.
+Status: `READY_FOR_CI`.
 
-Preflight is complete. Product-code implementation, verification, push, and draft PR are pending.
+Provider-off/sink-mode implementation is locally complete. Push and PR #34 CI verification are pending before `READY_FOR_OT99`.
 
 Source remote: `origin`.
 
-Source branch: `codex/ot84-telegram-action-gateway`.
+Current branch: `codex/ot88-zoom-learner-classroom`.
 
-Resolved source commit: `f98103ecc3660dbda871a91485656e17580940a8`.
+Resumed audited head: `80a67b93c61e9d5fb127789dadc0739917f21555`.
 
-Target branch: `codex/ot88-zoom-learner-classroom`.
+Existing PR: `#34`.
 
 Worktree: `C:\Users\User\.ot88-worktrees\OT-88`.
 
@@ -18,3 +18,21 @@ Selected packet SHA-256: `FE55C506C667F1C0A1D52EA646E4410C17B3698159DBB4C25D508F
 
 Zoom canary: `NOT_RUN_MISSING_PROTECTED_CREDENTIALS_AND_EXPLICIT_CANARY_APPROVAL`.
 
+Implemented:
+
+- Daily 19:00 Asia/Jerusalem occurrence projection.
+- Up to three active learners per subscribed household.
+- Separate protected learner join actions with opaque launch grants.
+- Parent read-only and student launch/question portal state.
+- Sink-mode synthetic provider adapter with deterministic launch/bootstrap payloads.
+- Eligibility, consent, entitlement, occurrence, learner, session, CSRF, idempotency, concurrency, audit, retry, and provider-unavailable checks.
+- Real provider fail-closed behavior when configuration is absent.
+- Migration, contract, unit, integration, e2e, accessibility, and performance coverage.
+
+Validation evidence:
+
+- `ops/codex-runs/OT-88/evidence/local-validation.json`
+- `ops/codex-runs/OT-88/evidence/implementation-map.md`
+- `ops/codex-runs/OT-88/evidence/zoom-docs.md`
+
+Local validation passed for typecheck, lint, brand check, secret scan, unit, integration, build, e2e, accessibility, performance, migration smoke, scoped formatter, and diff whitespace.

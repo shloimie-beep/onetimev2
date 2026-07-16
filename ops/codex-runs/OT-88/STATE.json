@@ -1,6 +1,6 @@
 {
   "ticket": "OT-88",
-  "status": "PREFLIGHT_COMPLETE",
+  "status": "READY_FOR_CI",
   "started_at_utc": "2026-07-16T04:28:19Z",
   "repository": {
     "root": "C:\\Users\\User\\onetimev2",
@@ -24,6 +24,8 @@
     "branch": "codex/ot88-zoom-learner-classroom",
     "base_commit": "f98103ecc3660dbda871a91485656e17580940a8",
     "draft_pr_base": "codex/ot84-telegram-action-gateway",
+    "existing_pr": 34,
+    "resumed_from_audited_head": "80a67b93c61e9d5fb127789dadc0739917f21555",
     "created_clean_worktree": true,
     "pre_metadata_git_status_porcelain": ""
   },
@@ -122,11 +124,53 @@
     "zoom_canary": "NOT_RUN_MISSING_PROTECTED_CREDENTIALS_AND_EXPLICIT_CANARY_APPROVAL",
     "postgres_real_target": "NOT_CONFIGURED"
   },
+  "implementation_completion": {
+    "status": "LOCAL_IMPLEMENTATION_COMPLETE_PENDING_PR_CI",
+    "completed_at_utc": "2026-07-16T09:57:48.6873595Z",
+    "provider_mode": "sink_mode_only",
+    "real_provider_mode": "disabled_fail_closed_without_runtime_configuration",
+    "summary": [
+      "Implemented daily 19:00 Asia/Jerusalem occurrence projection and household learner entitlement checks.",
+      "Added protected per-learner launch grants and bootstrap without raw provider join links in HTML, JSON, logs, analytics, messages, or evidence.",
+      "Added parent read-only classroom state and student launch/question surfaces.",
+      "Added sink-mode synthetic provider state, deterministic SDK payloads, retry/provider-unavailable states, audit events, idempotent attendance/question paths, and concurrency-safe persistence.",
+      "Added contract, unit, integration, e2e, accessibility, performance, and migration coverage for the provider-off Zoom classroom slice."
+    ],
+    "evidence_paths": [
+      "ops/codex-runs/OT-88/evidence/local-validation.json",
+      "ops/codex-runs/OT-88/evidence/implementation-map.md",
+      "ops/codex-runs/OT-88/evidence/zoom-docs.md"
+    ]
+  },
+  "local_validation": {
+    "status": "PASSED_FOR_READY_FOR_CI",
+    "scoped_formatter": "PASS",
+    "typecheck": "PASS",
+    "lint": "PASS",
+    "brand_check": "PASS",
+    "secret_scan": "PASS",
+    "unit": "PASS",
+    "integration": "PASS",
+    "build": "PASS",
+    "e2e": "PASS",
+    "accessibility": "PASS",
+    "performance": "PASS",
+    "memory_migration": "PASS",
+    "global_format": "NOT_AUTHORITATIVE_IN_WINDOWS_WORKTREE_CORE_AUTOCRLF_TRUE_BASELINE_CRLF_NOISE",
+    "live_zoom_canary": "NOT_RUN_NO_PROTECTED_CREDENTIALS_OR_EXPLICIT_CANARY_APPROVAL",
+    "production_database": "NOT_TOUCHED",
+    "deployments": "NOT_RUN"
+  },
   "checkpoints": [
     {
       "at_utc": "2026-07-16T04:28:19Z",
       "status": "PREFLIGHT_COMPLETE",
       "summary": "Selected verified OT-88 packet, resolved remote OT-84 source commit, created clean isolated OT-88 worktree/branch, proved OT-83 ancestry and functional portal seams, and persisted first run artifacts before product code edits."
+    },
+    {
+      "at_utc": "2026-07-16T09:57:48.6873595Z",
+      "status": "READY_FOR_CI",
+      "summary": "Completed the provider-off/sink-mode Zoom learner classroom implementation locally, passed scoped validation gates, and prepared evidence/final reports. READY_FOR_OT99 remains withheld until PR #34 CI is green."
     }
   ]
 }

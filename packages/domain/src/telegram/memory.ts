@@ -282,6 +282,10 @@ export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicatio
         return 'Upcoming classes: 2 scheduled. Protected class links are not shown in Telegram.';
       case 'class.status.read':
         return `Class ${String(request.args.ref ?? 'ref')}: scheduled and provider access remains protected.`;
+      case 'class.question.list':
+        return 'Questions: question_fixture_1 new redacted excerpt only.';
+      case 'class.question.read_redacted':
+        return `Question ${String(request.args.ref ?? 'ref')}: new; redacted excerpt only.`;
       case 'content.pipeline.read':
         return 'Content pipeline: 3 drafts, 1 needs Rabbi review. No prompts or transcripts exposed.';
       case 'content.item.read':

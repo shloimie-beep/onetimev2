@@ -21,6 +21,7 @@ import {
   getStudentDashboard,
   invokeProtectedAction,
   runStudentAccessOperation,
+  submitClassroomQuestion,
 } from './portal-api.js';
 import './crm.css';
 
@@ -139,6 +140,11 @@ function PortalApp() {
     if (!session) return;
     try {
       const result = await invokeProtectedAction(action, session.csrf_token);
+      const returnedAction = protectedActionFromResult(result);
+      if (returnedAction?.kind === 'class_launch' && returnedAction.href) {
+        window.location.assign(returnedAction.href);
+        return;
+      }
       setNotice({
         kind: 'info',
         message: result ? `${action.label} opened.` : `${action.label} is not available yet.`,
@@ -146,6 +152,22 @@ function PortalApp() {
     } catch (error) {
       if (handleAuthError(error)) return;
       setNotice({ kind: 'error', message: errorMessage(error, 'The protected action failed.') });
+      setViewState(stateForError(error));
+    }
+  }
+
+  async function handleSubmitQuestion(occurrenceKey: string, body: string) {
+    if (!session) return;
+    try {
+      await submitClassroomQuestion({
+        csrfToken: session.csrf_token,
+        occurrenceKey,
+        body,
+      });
+      setNotice({ kind: 'success', message: 'Question sent.' });
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Question was not sent.') });
       setViewState(stateForError(error));
     }
   }
@@ -236,6 +258,7 @@ function PortalApp() {
           actorFingerprint={actorFingerprint}
           onLaunchClass={(action) => void handleProtectedAction(action)}
           onOpenContent={(action) => void handleProtectedAction(action)}
+          onSubmitQuestion={(occurrenceKey, body) => void handleSubmitQuestion(occurrenceKey, body)}
           onPreviewSupport={() =>
             setNotice({ kind: 'info', message: 'Support preview is local-only right now.' })
           }
@@ -277,6 +300,18 @@ function stateForError(error: unknown): PortalViewState {
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
+}
+
+function protectedActionFromResult(result: unknown): ProtectedActionDescriptor | null {
+  if (!result || typeof result !== 'object') return null;
+  const envelope = result as { data?: unknown };
+  const data = envelope.data;
+  if (!data || typeof data !== 'object') return null;
+  const action = data as Partial<ProtectedActionDescriptor>;
+  if (action.kind === 'class_launch' && typeof action.href === 'string') {
+    return action as ProtectedActionDescriptor;
+  }
+  return null;
 }
 
 const root = document.getElementById('portal-root');
