@@ -31,6 +31,7 @@ export const billingDispositionSchema = z.enum([
   'wrong_provider_account',
   'wrong_mode',
   'wrong_scope',
+  'wrong_offer',
   'wrong_customer_correlation',
   'unknown_event',
   'stale_event',
@@ -228,6 +229,8 @@ export type VerifiedProviderEventEnvelope = {
     provider_subscription_ref?: string;
     provider_invoice_ref?: string;
     provider_checkout_session_ref?: string;
+    provider_price_ref?: string;
+    provider_product_ref?: string;
   };
   minimized_payload: Record<string, unknown>;
 };

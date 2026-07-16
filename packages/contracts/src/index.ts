@@ -7,6 +7,7 @@ export * from './social/index.ts';
 export * from './accounts/index.ts';
 export * from './portals/index.ts';
 export * from './dashboard/index.ts';
+export * from './billing/index.ts';
 export * from './action-gateway/events.ts';
 export * from './support/index.ts';
 export * from './whatsapp/index.ts';

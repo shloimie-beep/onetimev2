@@ -44,6 +44,7 @@ export type BillingFeatureConfig = {
   mode: BillingMode;
   canonicalPublicOrigin: string | null;
   expectedProviderAccountRef: string | null;
+  expectedProviderProductRef: string | null;
   offerMappings: BillingOfferPriceMapping[];
   policyId: string;
   policyVersion: string;
