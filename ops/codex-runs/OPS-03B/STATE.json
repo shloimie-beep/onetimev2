@@ -1,14 +1,17 @@
 {
   "lane": "OPS-03B",
-  "status": "committed_pending_push",
-  "updated_at": "2026-07-17T00:28:47.0880476+03:00",
+  "status": "pushed_draft_pr_open",
+  "updated_at": "2026-07-17T00:31:35.4857957+03:00",
   "repository": "webcraft-media/onetimev2",
   "remote": "https://github.com/webcraft-media/onetimev2.git",
   "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OPS-03B",
   "branch": "codex/ops03b-email-step-up-login",
   "base_branch": "codex/ops03-staging-readiness-repair",
   "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
-  "head_sha": "branch_HEAD_reported_in_final_response",
+  "head_sha": "22a5faba49a073e42828c9bdea7a076c3af58038",
+  "pushed": true,
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/53",
+  "draft_pr_number": 53,
   "input_hashes_sha256": {
     "00-READ-ME-FIRST.md": "3083A9ED5893823752C35A0E0BC3956528BB769B5BE1968FC94665576F6C9952",
     "BATCH-MANIFEST.json": "8B1FCABC04E108AEBDDDFCE31365C49B0268403D489279F73EEC3FF77C759C67",
@@ -85,5 +88,5 @@
   "blockers": [
     "Staging/canary provider-send validation was not run because protected canary/provider variables are absent in this shell."
   ],
-  "next_command": "Push branch and open a draft PR for OPS-03B."
+  "next_command": "Await review or provide protected canary variables for staging/canary provider-send validation."
 }

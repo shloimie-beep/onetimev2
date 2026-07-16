@@ -1,14 +1,15 @@
 # OPS-03B Final Report
 
-Status: implementation validated locally; commit created, push/PR pending.
+Status: implementation validated locally, pushed, and draft PR opened.
 
 ## Branch
 
 - Branch: `codex/ops03b-email-step-up-login`
 - Base: `codex/ops03-staging-readiness-repair`
 - Base SHA: `fb5f5eebc539afc9e93833e9417ee67524d62c36`
-- Head SHA: branch HEAD after final amend; reported in the Codex final response.
-- PR: pending
+- Implemented head SHA: `22a5faba49a073e42828c9bdea7a076c3af58038`
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/53`
+- Pushed: yes
 
 ## Summary
 
