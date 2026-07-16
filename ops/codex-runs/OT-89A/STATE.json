@@ -1,12 +1,12 @@
 {
   "run_id": "OT-89A",
-  "status": "in_progress",
-  "phase": "readiness_defect_repair",
+  "status": "READY_FOR_OT99",
+  "phase": "readiness_defects_repaired_remote_green",
   "branch": "codex/ot89a-subscriber-support-producer",
   "base_commit": "f98103ecc3660dbda871a91485656e17580940a8",
   "audited_resume_head": "50b3a9c6790ee4befd457e16c4ac01674dc264ae",
-  "head": "50b3a9c6790ee4befd457e16c4ac01674dc264ae",
-  "working_tree": "dirty_readiness_defect_repair",
+  "head": "fed9c715da231bfb8cb31e534828ed3a4dbfc386",
+  "working_tree": "clean_after_final_ready_push_pending",
   "completed": [
     "packet located",
     "packet zip hash recorded",
@@ -41,13 +41,10 @@
     "focused unit, integration, e2e, and accessibility coverage added for readiness defect scenarios",
     "CI-mode browser gates passing locally on isolated override ports",
     "Node verification gates passing locally except repo-wide Windows CRLF format caveat",
-    "local PostgreSQL workflow commands attempted and blocked by missing PostgreSQL service/client/Docker"
+    "local PostgreSQL workflow commands attempted and blocked by missing PostgreSQL service/client/Docker",
+    "repair commit fed9c715da231bfb8cb31e534828ed3a4dbfc386 pushed to existing branch",
+    "remote checks observed green on repair commit: Node 24 verify, PostgreSQL 16 assurance harness, PostgreSQL 16 learner-seat proof"
   ],
-  "open": [
-    "push repaired implementation to existing branch",
-    "observe new remote head green for Node 24 verify and PostgreSQL service-backed checks before restoring READY_FOR_OT99"
-  ],
-  "blockers": [
-    "local PostgreSQL verification unavailable on this Windows machine: no listener on 127.0.0.1:5432, pg_isready/psql/initdb absent, Docker absent; remote GitHub PostgreSQL checks remain authoritative"
-  ]
+  "open": [],
+  "blockers": []
 }

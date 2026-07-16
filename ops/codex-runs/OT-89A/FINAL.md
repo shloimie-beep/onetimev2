@@ -2,12 +2,12 @@
 
 See `FINAL-REPORT.md`.
 
-Current status: `in_progress`.
+Current status: `READY_FOR_OT99`.
 
-READY_FOR_OT99 is intentionally withheld until the repaired branch head is pushed and the new remote head is observed green, including PostgreSQL service-backed GitHub checks.
+READY_FOR_OT99 was restored only after repair commit `fed9c715da231bfb8cb31e534828ed3a4dbfc386` was pushed and observed green, including PostgreSQL service-backed GitHub checks.
 
-Closeout pending:
+Closeout:
 
-- push to `codex/ot89a-subscriber-support-producer`;
-- observe existing PR #36 checks green on the new remote head;
-- update this closeout to `READY_FOR_OT99` only after that green remote head exists.
+- pushed to `codex/ot89a-subscriber-support-producer`;
+- updated existing PR #36;
+- observed `Node 24 verify`, `PostgreSQL 16 assurance harness`, and `PostgreSQL 16 learner-seat proof` green on the repaired remote head.

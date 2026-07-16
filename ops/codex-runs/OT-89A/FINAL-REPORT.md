@@ -1,8 +1,8 @@
 # OT-89A Final Report
 
-Status: `in_progress`
+Status: `READY_FOR_OT99`
 
-READY_FOR_OT99 is withheld until the repaired branch head is pushed and the new remote head is green.
+READY_FOR_OT99 was restored only after the repaired branch head went green.
 
 ## Implemented
 
@@ -50,5 +50,8 @@ READY_FOR_OT99 is withheld until the repaired branch head is pushed and the new 
 - Branch: `codex/ot89a-subscriber-support-producer`
 - Existing draft PR: #36, `https://github.com/webcraft-media/onetimev2/pull/36`
 - Audited remote head: `50b3a9c6790ee4befd457e16c4ac01674dc264ae`
-- New repair commit: pending.
-- New remote checks: pending.
+- Repair commit: `fed9c715da231bfb8cb31e534828ed3a4dbfc386`
+- Remote checks observed green on repair commit:
+  - `Node 24 verify`: pass, 6m52s.
+  - `PostgreSQL 16 assurance harness`: pass, 56s.
+  - `PostgreSQL 16 learner-seat proof`: pass, 37s.

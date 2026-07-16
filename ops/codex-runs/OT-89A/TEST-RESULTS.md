@@ -54,6 +54,10 @@ GitHub's PostgreSQL service-backed checks remain required before READY_FOR_OT99 
 
 ## Branch/PR Verification
 
-- Push to `codex/ot89a-subscriber-support-producer`: pending.
-- Existing draft PR #36: pending new remote check observation.
-- READY_FOR_OT99: withheld until the new remote head is green.
+- Push to `codex/ot89a-subscriber-support-producer`: pass; repair commit `fed9c715da231bfb8cb31e534828ed3a4dbfc386`.
+- Existing draft PR #36: updated by pushing the existing branch.
+- Remote checks observed green on repair commit `fed9c715da231bfb8cb31e534828ed3a4dbfc386`:
+  - `Node 24 verify`: pass, 6m52s.
+  - `PostgreSQL 16 assurance harness`: pass, 56s.
+  - `PostgreSQL 16 learner-seat proof`: pass, 37s.
+- READY_FOR_OT99: restored after the repaired remote head went green.
