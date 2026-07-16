@@ -916,10 +916,10 @@ async function setStudentIdentityState(
         : 0;
     await client.query(
       `UPDATE onetime.account_users
-          SET status = $5,
-              security_version = CASE WHEN $5 = 'disabled' THEN security_version + 1 ELSE security_version END,
-              security_policy_updated_at = $6,
-              updated_at = $6
+          SET status = $4,
+              security_version = CASE WHEN $4 = 'disabled' THEN security_version + 1 ELSE security_version END,
+              security_policy_updated_at = $5,
+              updated_at = $5
         WHERE account_key = $1
           AND product_key = $2
           AND user_key = $3`,
@@ -927,7 +927,6 @@ async function setStudentIdentityState(
         config.accountKey,
         config.productKey,
         studentUserKey,
-        input.learnerKey,
         input.status === 'suspended' ? 'disabled' : 'active',
         input.now,
       ],

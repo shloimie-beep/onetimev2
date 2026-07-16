@@ -33,6 +33,10 @@
   - Restored to disposable clone `ops03_restore_probe`.
   - Verified schema, migration ledger, and sanitized row-count parity.
   - Dropped the disposable clone after verification.
+- Live parent suspend/restore:
+  - Live staging acceptance exposed a PostgreSQL-only failure in `setStudentIdentityState`: the account update query referenced `$5/$6` while passing an unused `$4` parameter.
+  - `pg-mem` tolerated the unused placeholder, but real PostgreSQL returned `could not determine data type of parameter $4`, causing parent suspend/restore to return 500 after lifecycle mutation.
+  - Repaired the query to use contiguous `$4/$5` placeholders and added a unit regression for the PostgreSQL parameter contract.
 
 ## Gates Completed Before Commit
 
@@ -41,13 +45,14 @@
 - `npm run brand:check`: passed.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run unit`: passed, 28 files / 155 tests.
-- `npm run integration`: passed, 25 files / 128 tests.
+- `npm run unit`: passed, 29 files / 156 tests after final PostgreSQL placeholder repair.
+- `npm run integration`: passed, 26 files / 129 tests after final PostgreSQL placeholder repair.
 - `npm run build`: passed.
 - `npm run e2e`: passed, 32 browser tests.
 - `npm run accessibility`: passed, 9 browser tests.
 - `npm run performance`: passed, 7 browser tests plus bundle checker.
 - `npm run db:verify` against `ot99-pg16`: passed, 22 migrations.
+- `npm run format`: repository-wide check remains blocked by pre-existing baseline Prettier drift; scoped OPS-03 file formatting and `git diff --check` passed.
 
 ## Pending At This Point
 

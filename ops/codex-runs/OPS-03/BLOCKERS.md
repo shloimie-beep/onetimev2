@@ -1,6 +1,6 @@
 # OPS-03 Blockers
 
-Current status: no terminal blocker recorded before staging redeploy.
+Current status: no terminal blocker recorded.
 
 ## Resolved Incident
 
@@ -13,3 +13,8 @@ Current status: no terminal blocker recorded before staging redeploy.
 
 - Local Docker is not installed on this Windows host, so Docker build proof must come from Railway's remote Dockerfile deployment.
 - Repository-wide `npm run format` is noisy on the starting SHA; branch-owned files pass Prettier. The OPS-03 run did not reformat unrelated baseline files.
+
+## Resolved During Live Acceptance
+
+- Parent suspend/restore returned 500 on live PostgreSQL because `setStudentIdentityState` had an unused `$4` SQL parameter that `pg-mem` did not catch.
+- Repaired with contiguous placeholders and added `tests/unit/account-lifecycle-sql.test.ts`.
