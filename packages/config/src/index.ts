@@ -63,8 +63,10 @@ const envSchema = z.object({
   ONE_TIME_EMAIL_REPLY_TO: z.string().optional(),
   ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: booleanFromString,
   ONE_TIME_RESEND_TRANSPORT_ENABLED: booleanFromString,
+  ONE_TIME_RESEND_WEBHOOK_ENABLED: booleanFromString,
   ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: z.string().email().optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
+  RESEND_WEBHOOK_SECRET: z.string().min(16).optional(),
   ONE_TIME_OWNER_TEST_WHATSAPP: z.string().optional(),
   ONE_TIME_OWNER_TEST_EMAIL: z.string().optional(),
   ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY: z.string().min(1).default('one_time_meta_cloud_staging'),
@@ -140,6 +142,14 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
     throw new Error('Production web startup cannot run migrations automatically.');
+  }
+
+  if (
+    parsed.NODE_ENV === 'production' &&
+    parsed.ONE_TIME_RESEND_WEBHOOK_ENABLED &&
+    !parsed.RESEND_WEBHOOK_SECRET
+  ) {
+    throw new Error('RESEND_WEBHOOK_SECRET is required when Resend webhooks are enabled.');
   }
 
   if (parsed.NODE_ENV === 'production' && parsed.OT89_SUPPORT_DELIVERY_MODE !== 'disabled') {
@@ -249,6 +259,8 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     emailReplyTo: parsed.ONE_TIME_EMAIL_REPLY_TO,
     deliveryProviderTransportEnabled: parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED,
     resendTransportEnabled: parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED,
+    resendWebhookEnabled: parsed.ONE_TIME_RESEND_WEBHOOK_ENABLED,
+    resendWebhookSecretConfigured: Boolean(parsed.RESEND_WEBHOOK_SECRET),
     deliveryTestCanaryEmail: parsed.ONE_TIME_DELIVERY_TEST_CANARY_EMAIL?.trim().toLowerCase(),
     resendApiKey: parsed.RESEND_API_KEY,
     ownerTestWhatsapp: parsed.ONE_TIME_OWNER_TEST_WHATSAPP,

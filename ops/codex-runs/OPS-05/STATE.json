@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "lane": "OPS-05",
+  "status": "implemented_pending_commit_push_pr",
+  "recorded_at": "2026-07-17T01:54:02.4897286+03:00",
+  "worktree": "C:\\Users\\User\\.overnight-20260717-worktrees\\OPS-05",
+  "repository": "webcraft-media/onetimev2",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "branch": "codex/ops05-provider-control-center",
+  "base": {
+    "branch": "codex/ops03-staging-readiness-repair",
+    "sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36"
+  },
+  "draft_pr": {
+    "base": "codex/ops03-staging-readiness-repair",
+    "url": null,
+    "status": "pending_push_and_pr_creation"
+  },
+  "implemented": [
+    "Provider-neutral control center contracts for provider matrix, webhook endpoints, email readiness, and dry-run canary plans.",
+    "Owner-only internal operations API at /api/internal/operations/provider-control-center/v1.",
+    "Owner-only dry-run canary plan API at /api/internal/operations/provider-control-center/v1/canary-plan with CSRF, same-origin, recent assurance, and allowlist checks.",
+    "Resend Svix/raw-body webhook verification helpers with timestamp, replay, duplicate, digest mismatch, out-of-order, content-type, and size conformance checks.",
+    "Provider-specific endpoint registry for Resend, WhatsApp, Telegram, Zoom, Vimeo, Buffer, Stripe TEST, OpenAI/helper runtime, and BNA support bridge.",
+    "Non-secret email deliverability readiness checks for verified sender/domain, SPF, DKIM, DMARC, return path/bounce, reply-to, suppression/readback, lifecycle encryption, canary allowlist, and provider flags.",
+    "Feature-local unit and integration coverage for webhook conformance, provider projection, authorization, CSRF, assurance, and safe dry-run canary planning."
+  ],
+  "inspected_without_merging": [
+    {
+      "pr": 42,
+      "summary": "Zoom provider runtime/webhook inventory"
+    },
+    {
+      "pr": 43,
+      "summary": "WhatsApp provider runtime inventory"
+    },
+    {
+      "pr": 44,
+      "summary": "Student class helper inventory"
+    },
+    {
+      "pr": 45,
+      "summary": "Stripe test billing canary inventory"
+    },
+    {
+      "pr": 46,
+      "summary": "Buffer runtime inventory"
+    },
+    {
+      "pr": 47,
+      "summary": "Landing visuals inventory"
+    },
+    {
+      "pr": 48,
+      "summary": "Content publisher inventory"
+    }
+  ],
+  "verification": [
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run unit -- --run tests/unit/delivery/ops05-resend-webhook-conformance.test.ts tests/unit/providers/ops05-provider-control-center.test.ts tests/unit/ot72-provider-adapters.test.ts",
+      "status": "passed"
+    },
+    {
+      "command": "npm run integration -- --run tests/integration/ops05-provider-control-center.test.ts",
+      "status": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "note": "Vite emitted the existing unresolved font warning for /assets/fonts/dm-serif-display-latin.woff2 but exited successfully."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed"
+    }
+  ],
+  "guardrails": {
+    "no_real_canary_run": true,
+    "no_provider_configuration_mutation": true,
+    "no_deployment": true,
+    "no_dns_action": true,
+    "no_production_data_access": true,
+    "no_broad_send": true,
+    "no_live_charge": true,
+    "no_buffer_publication": true,
+    "no_bna_repo_edit": true,
+    "secret_values_emitted": false,
+    "provider_matrix_secret_names_only": true,
+    "canary_executor_dry_run_only": true
+  },
+  "remaining_shared_wiring_for_final_conductor": [
+    "Mount an actual Resend raw-body POST route before generic JSON body parsing if Resend webhook processing is enabled.",
+    "Attach durable enqueue/workers and provider-specific business handlers for live provider webhooks.",
+    "Run bounded staging canaries only after owner step-up, exact allowlisted targets, and protected staging configuration are present."
+  ],
+  "blockers": []
+}
