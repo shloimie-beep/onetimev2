@@ -12,7 +12,7 @@ Feature branch: `codex/ot89a-subscriber-support-producer`
 
 Audited resume HEAD: `0fe1b4668170f608d8763fb52d11b30f0150feb2`
 
-Current HEAD: `0fe1b4668170f608d8763fb52d11b30f0150feb2` plus uncommitted OT-89A implementation changes.
+Current HEAD: latest pushed branch head after OT-89A closeout documentation commit.
 
 Clean-state check:
 
@@ -31,14 +31,16 @@ Completed:
 - Recorded migration checksum, full local verification evidence, and final implementation report.
 - Local gates passing: `npm run secret:scan`, `npm run lint`, `npm run typecheck`, `npm run build`, `npm run brand:check`, `npm run test`, `CI=1 npm run e2e`, `CI=1 npm run accessibility`, and `CI=1 npm run performance`.
 - Repo-wide `npm run format` still fails locally on this Windows checkout for 377 pre-existing files; all OT-89A-touched files were formatted and checked separately.
+- Pushed implementation commit `d2fa568ff0b486ebcb0dda91d50ed04fc6d76c52`.
+- Pushed CI-format follow-up commit `ef52728f8b4cca24bb4ce63f4f235cffe7b641ff`.
+- Updated existing draft PR #36: `https://github.com/webcraft-media/onetimev2/pull/36`.
+- PR checks observed green before final closeout documentation commit: `Node 24 verify`, `PostgreSQL 16 assurance harness`, and `PostgreSQL 16 learner-seat proof`.
 
 Next exact command:
 
 ```bash
 git status --short --branch
-git add <intentional OT-89A files>
-git commit -m "feat: add OT-89A subscriber support producer"
-git push origin codex/ot89a-subscriber-support-producer
+gh pr checks 36
 ```
 
 Blockers: none.

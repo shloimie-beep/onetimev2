@@ -58,4 +58,5 @@ Deployment state: `NOT_DEPLOYED`.
 ## Acceptance
 
 - Covered in `ops/codex-runs/OT-89A/ACCEPTANCE-MATRIX.md` and `TEST-RESULTS.md`.
-- Status before push: `IMPLEMENTED_LOCAL_GREEN_PENDING_PUSH_CI`.
+- Status: `READY_FOR_OT99` after final closeout documentation commit remains green.
+- Existing draft PR #36 is intentionally kept as draft.

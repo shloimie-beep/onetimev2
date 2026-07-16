@@ -1,6 +1,6 @@
 # OT-89A Final Report
 
-Status: `IMPLEMENTED_LOCAL_GREEN_PENDING_PUSH_CI`
+Status: `READY_FOR_OT99`
 
 ## Implemented
 
@@ -40,8 +40,15 @@ Status: `IMPLEMENTED_LOCAL_GREEN_PENDING_PUSH_CI`
 - OT-89A-touched files passed targeted Prettier checks.
 - Repo-wide `npm run format` remains a local Windows checkout caveat on 377 pre-existing files; no OT-89A-touched file remains unformatted.
 
-## Pending Before READY_FOR_OT99
+## PR And CI
 
-- Commit and push to `codex/ot89a-subscriber-support-producer`.
-- Update existing draft PR #36.
-- Observe and record CI status.
+- Branch: `codex/ot89a-subscriber-support-producer`
+- Draft PR: #36, `https://github.com/webcraft-media/onetimev2/pull/36`
+- Pushed implementation commit: `d2fa568ff0b486ebcb0dda91d50ed04fc6d76c52`
+- Pushed CI-format follow-up commit: `ef52728f8b4cca24bb4ce63f4f235cffe7b641ff`
+- Checks observed green before final closeout documentation commit:
+  - `Node 24 verify`
+  - `PostgreSQL 16 assurance harness`
+  - `PostgreSQL 16 learner-seat proof`
+
+Final closeout documentation is committed separately and must remain green before handoff.

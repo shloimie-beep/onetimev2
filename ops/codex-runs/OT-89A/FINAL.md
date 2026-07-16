@@ -2,11 +2,10 @@
 
 See `FINAL-REPORT.md`.
 
-Current status: `IMPLEMENTED_LOCAL_GREEN_PENDING_PUSH_CI`.
+Current status: `READY_FOR_OT99`.
 
-Remaining before `READY_FOR_OT99`:
+Closeout:
 
-- commit;
-- push to `codex/ot89a-subscriber-support-producer`;
-- update draft PR #36;
-- observe and record CI status.
+- pushed to `codex/ot89a-subscriber-support-producer`;
+- updated existing draft PR #36;
+- PR checks observed green before final closeout documentation commit.

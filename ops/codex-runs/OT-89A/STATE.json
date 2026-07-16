@@ -1,12 +1,12 @@
 {
   "run_id": "OT-89A",
-  "status": "implemented_pending_push_ci",
-  "phase": "local_validation_complete",
+  "status": "READY_FOR_OT99",
+  "phase": "complete",
   "branch": "codex/ot89a-subscriber-support-producer",
   "base_commit": "f98103ecc3660dbda871a91485656e17580940a8",
   "audited_resume_head": "0fe1b4668170f608d8763fb52d11b30f0150feb2",
-  "head": "0fe1b4668170f608d8763fb52d11b30f0150feb2",
-  "working_tree": "dirty_with_ot89a_changes_pending_commit",
+  "head": "latest pushed branch head after OT-89A closeout documentation commit",
+  "working_tree": "clean_after_push",
   "completed": [
     "packet located",
     "packet zip hash recorded",
@@ -29,8 +29,12 @@
     "full unit and integration suite passing",
     "lint, typecheck, build, secret scan, brand check passing",
     "CI-mode e2e, accessibility, and performance gates passing locally",
-    "OT-89A touched files formatted and Prettier-checked"
+    "OT-89A touched files formatted and Prettier-checked",
+    "implementation commit pushed to existing branch",
+    "CI-format follow-up commit pushed to existing branch",
+    "existing draft PR #36 updated",
+    "PR checks observed green before final closeout: Node 24 verify, PostgreSQL 16 assurance harness, PostgreSQL 16 learner-seat proof"
   ],
-  "open": ["commit", "push", "draft PR update", "CI check observation"],
+  "open": [],
   "blockers": []
 }

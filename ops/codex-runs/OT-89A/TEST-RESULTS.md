@@ -37,6 +37,10 @@
 
 ## Branch/PR Verification
 
-- Push to `codex/ot89a-subscriber-support-producer`: pending.
-- Existing draft PR #36 update: pending.
-- Remote CI/check observation: pending.
+- Push to `codex/ot89a-subscriber-support-producer`: pass.
+- Existing draft PR #36 update: pass via GitHub API fallback after `gh pr edit` required an unrelated `read:project` scope.
+- Remote checks observed green on head `ef52728f8b4cca24bb4ce63f4f235cffe7b641ff`:
+  - `Node 24 verify`: pass.
+  - `PostgreSQL 16 assurance harness`: pass.
+  - `PostgreSQL 16 learner-seat proof`: pass.
+- Final closeout documentation commit will be pushed and rechecked before handoff.
