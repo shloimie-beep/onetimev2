@@ -1,14 +1,17 @@
 {
   "ticket": "OT-88",
-  "status": "LOCAL_VALIDATION_PASSED_FOR_READY_FOR_CI",
-  "validated_at_utc": "2026-07-16T09:57:48.6873595Z",
+  "status": "READY_FOR_ZOOM_CANARY",
+  "task_status": "READY_FOR_ZOOM_CANARY",
+  "ot99_integration_status": "READY_FOR_OT99",
+  "live_zoom_status": "NOT_READY_PENDING_CANARY",
+  "validated_at_utc": "2026-07-16T11:22:58Z",
   "worktree": "C:\\Users\\User\\.ot88-worktrees\\OT-88",
   "branch": "codex/ot88-zoom-learner-classroom",
-  "audited_start_head": "80a67b93c61e9d5fb127789dadc0739917f21555",
+  "audited_start_head": "d988c28a662cf2281debbcaede0638b699cab4f6",
   "commands": [
     {
-      "name": "scoped_prettier",
-      "command": "npx prettier --check --end-of-line lf <OT-88 touched files>",
+      "name": "scoped_prettier_touched_files",
+      "command": "npx prettier --check <OT-88 touched TS/JS files>",
       "result": "PASS"
     },
     {
@@ -30,19 +33,13 @@
       "name": "secret_scan",
       "command": "npm run secret:scan",
       "result": "PASS",
-      "details": "Scanned 641 repository text files."
+      "details": "Scanned 648 repository text files."
     },
     {
-      "name": "unit",
-      "command": "npm run unit",
+      "name": "unit_and_integration",
+      "command": "npm run test",
       "result": "PASS",
-      "details": "22 test files, 130 tests."
-    },
-    {
-      "name": "integration",
-      "command": "npm run integration",
-      "result": "PASS",
-      "details": "19 test files, 89 tests."
+      "details": "22 unit files / 132 tests and 19 integration files / 93 tests."
     },
     {
       "name": "build",
@@ -51,58 +48,60 @@
       "details": "Build emitted the existing unresolved DM Serif font asset warning; no build failure."
     },
     {
-      "name": "e2e",
+      "name": "task_e2e",
+      "command": "npx playwright test tests/e2e/ot88-zoom-classroom.spec.ts",
+      "result": "PASS",
+      "details": "3 Chromium tests for mocked SDK lifecycle, mobile/client view, desktop/component view, retry, leave, zero external provider network, and raw Zoom URL leakage."
+    },
+    {
+      "name": "task_accessibility",
+      "command": "npx playwright test tests/accessibility/ot88-zoom-classroom-a11y.spec.ts",
+      "result": "PASS",
+      "details": "2 Chromium axe tests, mobile and desktop."
+    },
+    {
+      "name": "task_performance",
+      "command": "npx playwright test tests/performance/ot88-zoom-classroom-performance.spec.ts",
+      "result": "PASS",
+      "details": "1 Chromium performance/network-budget test."
+    },
+    {
+      "name": "full_e2e",
       "command": "npm run e2e",
       "result": "PASS",
-      "details": "22 Playwright tests."
+      "details": "25 Chromium tests."
     },
     {
-      "name": "accessibility",
+      "name": "full_accessibility",
       "command": "npm run accessibility",
       "result": "PASS",
-      "details": "6 Playwright tests."
+      "details": "8 Chromium tests."
     },
     {
-      "name": "performance",
-      "command": "npm run performance",
-      "result": "PASS",
-      "details": "6 Playwright tests plus bundle check."
+      "name": "performance_components",
+      "command": "npx playwright test tests/performance; npx playwright test tests/performance/ot-39/crm-performance.spec.ts; npx tsx scripts/check-bundles.ts",
+      "result": "PASS_WITH_LOCAL_AGGREGATE_RUNNER_NOTE",
+      "details": "The aggregate performance runner printed six passing tests then the shell returned code -1 without a final summary twice. The remaining long OT-39 performance spec passed directly in 2.7m, the OT-35 file is an intentional skip placeholder, and the bundle checker passed."
     },
     {
-      "name": "memory_migration_smoke",
-      "command": "node --import tsx -e \"import { createMemoryPool, runMigrations } from './packages/db/src/index.ts'; ...\"",
-      "result": "PASS",
-      "details": "Applied 16 memory migrations; latest 2100_ot88_zoom_learner_classroom; checksum b89afb9779bca732f84825372d01281b72c824744606e1fd747a320f3c92c756."
-    },
-    {
-      "name": "diff_whitespace",
-      "command": "git diff --check",
-      "result": "PASS",
-      "details": "Only Windows autocrlf conversion warnings were printed."
-    },
-    {
-      "name": "global_format",
-      "command": "npm run format",
-      "result": "LOCAL_WINDOWS_NOT_AUTHORITATIVE",
-      "details": "This worktree has core.autocrlf=true and no .gitattributes; global Prettier reports unrelated baseline CRLF noise. OT-88 touched files passed the scoped LF formatter check."
+      "name": "verify",
+      "command": "npm run verify",
+      "result": "STOPPED_AT_GLOBAL_FORMAT_BASELINE",
+      "details": "The umbrella command passed secret:scan, then stopped at repo-wide Prettier warnings on 359 unrelated existing files in this Windows checkout. OT-88 touched files passed scoped Prettier; all subsequent verify components were run separately as listed above."
     }
   ],
   "explicitly_not_run": [
     {
       "name": "live_zoom_canary",
-      "reason": "No protected Zoom credentials or explicit canary approval; provider-off/sink-mode scope only."
+      "reason": "No live Zoom provider call was permitted or required; live_zoom_status remains NOT_READY_PENDING_CANARY."
     },
     {
-      "name": "production_database_verification",
-      "reason": "No DATABASE_URL in this shell and production database mutation is out of scope."
+      "name": "zoom_meeting_or_registrant_creation",
+      "reason": "User explicitly prohibited creating meetings/registrants and calling Zoom."
     },
     {
       "name": "deployment",
-      "reason": "Railway, DNS, and production deploys are explicitly out of scope for OT-88."
-    },
-    {
-      "name": "external_sends_or_payments",
-      "reason": "Telegram sends, email/SMS sends, provider mutations, and payment mutations are explicitly out of scope."
+      "reason": "User explicitly prohibited deploys."
     }
   ]
 }

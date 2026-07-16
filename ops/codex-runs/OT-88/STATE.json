@@ -1,6 +1,9 @@
 {
   "ticket": "OT-88",
-  "status": "READY_FOR_OT99",
+  "status": "in_progress",
+  "task_status": "READY_FOR_ZOOM_CANARY",
+  "ot99_integration_status": "READY_FOR_OT99",
+  "live_zoom_status": "NOT_READY_PENDING_CANARY",
   "started_at_utc": "2026-07-16T04:28:19Z",
   "repository": {
     "root": "C:\\Users\\User\\onetimev2",
@@ -25,7 +28,7 @@
     "base_commit": "f98103ecc3660dbda871a91485656e17580940a8",
     "draft_pr_base": "codex/ot84-telegram-action-gateway",
     "existing_pr": 34,
-    "resumed_from_audited_head": "80a67b93c61e9d5fb127789dadc0739917f21555",
+    "resumed_from_audited_head": "d988c28a662cf2281debbcaede0638b699cab4f6",
     "created_clean_worktree": true,
     "pre_metadata_git_status_porcelain": ""
   },
@@ -125,16 +128,21 @@
     "postgres_real_target": "NOT_CONFIGURED"
   },
   "implementation_completion": {
-    "status": "READY_FOR_OT99",
-    "completed_at_utc": "2026-07-16T09:57:48.6873595Z",
-    "ready_for_ot99_at_utc": "2026-07-16T10:08:40.3561861Z",
+    "status": "READY_FOR_ZOOM_CANARY",
+    "task_status": "READY_FOR_ZOOM_CANARY",
+    "ot99_integration_status": "READY_FOR_OT99",
+    "live_zoom_status": "NOT_READY_PENDING_CANARY",
+    "completed_at_utc": "2026-07-16T11:22:58Z",
+    "ready_for_zoom_canary_at_utc": "2026-07-16T11:22:58Z",
+    "ready_for_ot99_at_utc": "2026-07-16T11:22:58Z",
     "provider_mode": "sink_mode_only",
     "real_provider_mode": "disabled_fail_closed_without_runtime_configuration",
     "summary": [
       "Implemented daily 19:00 Asia/Jerusalem occurrence projection and household learner entitlement checks.",
       "Added protected per-learner launch grants and bootstrap without raw provider join links in HTML, JSON, logs, analytics, messages, or evidence.",
       "Added parent read-only classroom state and student launch/question surfaces.",
-      "Added sink-mode synthetic provider state, deterministic SDK payloads, retry/provider-unavailable states, audit events, idempotent attendance/question paths, and concurrency-safe persistence.",
+      "Added explicit Zoom Meeting SDK boundary ports, deterministic sink registrant/launch/readiness/reminder ports, and a local mocked SDK launch client.",
+      "Hardened launch grants so consumed grants cannot replay or regenerate provider material; same idempotency keys cannot reactivate them and rejoin requires a new grant.",
       "Added contract, unit, integration, e2e, accessibility, performance, and migration coverage for the provider-off Zoom classroom slice."
     ],
     "evidence_paths": [
@@ -144,41 +152,28 @@
     ]
   },
   "github_ci": {
-    "status": "PASSED_ON_IMPLEMENTATION_HEAD_BEFORE_READY_FOR_OT99_STATUS_COMMIT",
-    "checked_at_utc": "2026-07-16T10:08:40.3561861Z",
+    "status": "PENDING_AFTER_RESUME_PUSH",
+    "checked_at_utc": "2026-07-16T11:22:58Z",
     "pull_request": 34,
-    "head": "d6cba56f539eb87c2f5edb1908a5f0fa3956df85",
-    "checks": [
-      {
-        "name": "Node 24 verify",
-        "result": "PASS"
-      },
-      {
-        "name": "PostgreSQL 16 assurance harness",
-        "result": "PASS"
-      },
-      {
-        "name": "PostgreSQL 16 learner-seat proof",
-        "result": "PASS"
-      }
-    ],
-    "note": "The READY_FOR_OT99 status commit is expected to trigger the same PR checks again; final closeout requires those checks to remain green."
+    "head": "d988c28a662cf2281debbcaede0638b699cab4f6",
+    "checks": [],
+    "note": "Resume work is pending commit/push and PR #34 check verification on the new head."
   },
   "local_validation": {
-    "status": "PASSED_FOR_READY_FOR_CI",
+    "status": "PASSED_WITH_VERIFY_FORMAT_BASELINE_NOTE",
     "scoped_formatter": "PASS",
     "typecheck": "PASS",
     "lint": "PASS",
     "brand_check": "PASS",
     "secret_scan": "PASS",
-    "unit": "PASS",
-    "integration": "PASS",
+    "unit": "PASS_132_TESTS",
+    "integration": "PASS_93_TESTS",
     "build": "PASS",
-    "e2e": "PASS",
-    "accessibility": "PASS",
-    "performance": "PASS",
+    "e2e": "PASS_25_TESTS",
+    "accessibility": "PASS_8_TESTS",
+    "performance": "PASS_COMPONENTS_PLUS_BUNDLE_CHECK",
     "memory_migration": "PASS",
-    "global_format": "NOT_AUTHORITATIVE_IN_WINDOWS_WORKTREE_CORE_AUTOCRLF_TRUE_BASELINE_CRLF_NOISE",
+    "global_format": "VERIFY_STOPPED_AT_EXISTING_REPO_WIDE_PRETTIER_BASELINE_359_FILES",
     "live_zoom_canary": "NOT_RUN_NO_PROTECTED_CREDENTIALS_OR_EXPLICIT_CANARY_APPROVAL",
     "production_database": "NOT_TOUCHED",
     "deployments": "NOT_RUN"
@@ -198,6 +193,11 @@
       "at_utc": "2026-07-16T10:08:40.3561861Z",
       "status": "READY_FOR_OT99",
       "summary": "PR #34 CI passed on the implementation head. Recording READY_FOR_OT99 in a status-only commit and requiring the final status-commit checks to remain green."
+    },
+    {
+      "at_utc": "2026-07-16T11:22:58Z",
+      "status": "READY_FOR_ZOOM_CANARY",
+      "summary": "Resumed PR #34 from audited head d988c28a662cf2281debbcaede0638b699cab4f6, set OT-88 back to in_progress, added explicit Zoom SDK boundary ports and isolated mocked launch client, hardened consumed launch grants, expanded browser/mobile/a11y/performance/security/reminder coverage, and kept live Zoom pending canary."
     }
   ]
 }

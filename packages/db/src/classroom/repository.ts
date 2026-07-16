@@ -215,19 +215,30 @@ async function issueLaunchGrant(
           'This classroom request key was already used for different information.',
         );
       }
-      if (String(existingRow.status) === 'revoked') {
+      const status = String(existingRow.status);
+      if (status === 'revoked') {
         throw new PortalServiceError('FORBIDDEN', 'The classroom launch reference is revoked.');
       }
-      const refreshed = await client.query(
-        `UPDATE onetime.classroom_launch_grants
-            SET status = 'issued',
-                expires_at = GREATEST(expires_at, $7::timestamptz),
-                consumed_at = NULL
-          WHERE grant_key = $1
-          RETURNING *`,
-        [String(existingRow.grant_key), args.expires_at],
-      );
-      return mapGrant(refreshed.rows[0] as Record<string, unknown>);
+      if (status === 'consumed') {
+        throw new PortalServiceError(
+          'LAUNCH_EXPIRED',
+          'That classroom launch was already used. Return to the student portal to rejoin.',
+        );
+      }
+      if (status === 'expired' || new Date(String(existingRow.expires_at)) <= args.now) {
+        await client.query(
+          `UPDATE onetime.classroom_launch_grants
+              SET status = 'expired'
+            WHERE grant_key = $1
+              AND status = 'issued'`,
+          [String(existingRow.grant_key)],
+        );
+        throw new PortalServiceError(
+          'LAUNCH_EXPIRED',
+          'That classroom launch expired. Return to the student portal to rejoin.',
+        );
+      }
+      return mapGrant(existingRow);
     }
 
     const inserted = await client.query(
@@ -262,6 +273,16 @@ async function consumeLaunchGrant(
   args: Parameters<ClassroomRepository['consumeLaunchGrant']>[0],
 ) {
   return inTransaction(pool, async (client) => {
+    await client.query(
+      `UPDATE onetime.classroom_launch_grants
+          SET status = 'expired'
+        WHERE account_key = $1
+          AND product_key = $2
+          AND grant_key = $3
+          AND status = 'issued'
+          AND expires_at <= $4`,
+      [args.actor.account_key, args.actor.product_key, args.grant_key, args.now],
+    );
     const consumed = await client.query(
       `UPDATE onetime.classroom_launch_grants
           SET status = 'consumed',
@@ -286,29 +307,35 @@ async function consumeLaunchGrant(
       ],
     );
     if (consumed.rows[0]) return mapGrant(consumed.rows[0] as Record<string, unknown>);
-    const replay = await client.query(
+    const current = await client.query(
       `SELECT *
          FROM onetime.classroom_launch_grants
         WHERE account_key = $1
           AND product_key = $2
           AND grant_key = $3
-          AND secret_digest = $4
-          AND actor_user_ref = $5
-          AND session_key_digest = $6
-          AND status = 'consumed'
-          AND expires_at > $7
         LIMIT 1`,
-      [
-        args.actor.account_key,
-        args.actor.product_key,
-        args.grant_key,
-        args.secret_digest,
-        args.actor.actor_user_ref,
-        args.session_key_digest,
-        args.now,
-      ],
+      [args.actor.account_key, args.actor.product_key, args.grant_key],
     );
-    return replay.rows[0] ? mapGrant(replay.rows[0] as Record<string, unknown>) : null;
+    const currentRow = current.rows[0] as Record<string, unknown> | undefined;
+    if (!currentRow) return null;
+    if (
+      String(currentRow.secret_digest) !== args.secret_digest ||
+      String(currentRow.actor_user_ref) !== args.actor.actor_user_ref ||
+      String(currentRow.session_key_digest) !== args.session_key_digest
+    ) {
+      return null;
+    }
+    const status = String(currentRow.status);
+    if (status === 'consumed' || status === 'expired') {
+      throw new PortalServiceError(
+        'LAUNCH_EXPIRED',
+        'That classroom launch expired. Return to the student portal to rejoin.',
+      );
+    }
+    if (status === 'revoked') {
+      throw new PortalServiceError('FORBIDDEN', 'The classroom launch reference is revoked.');
+    }
+    return null;
   });
 }
 
@@ -593,51 +620,87 @@ async function scheduleDueReminders(
   args: Parameters<ClassroomRepository['scheduleDueReminders']>[0],
 ) {
   if (args.now < new Date(args.occurrence.reminder_due_at)) return { queued: 0, suppressed: 0 };
-  const result = await pool.query(
-    `WITH eligible AS (
-       SELECT learners.household_key, learners.learner_key
-         FROM onetime.portal_learners AS learners
-         JOIN onetime.portal_student_access_state AS access_state
-           ON access_state.account_key = learners.account_key
-          AND access_state.product_key = learners.product_key
-          AND access_state.learner_key = learners.learner_key
-          AND access_state.status = 'active'
-         JOIN onetime.classroom_household_entitlements AS entitlement
-           ON entitlement.account_key = learners.account_key
-          AND entitlement.product_key = learners.product_key
-          AND entitlement.household_key = learners.household_key
-          AND entitlement.entitlement_state = 'active'
-        WHERE learners.account_key = $1
-          AND learners.product_key = $2
-          AND learners.learner_status = 'active'
-     )
-     INSERT INTO onetime.classroom_reminder_intents
-       (reminder_key, account_key, product_key, household_key, learner_key, occurrence_key,
-        channel, idempotency_key, due_at, next_attempt_at, metadata)
-     SELECT
-       'classroom_reminder_' || learner_key || '_' || $3,
-       $1,
-       $2,
-       household_key,
-       learner_key,
-       $3,
-       'portal',
-       'classroom-reminder-' || learner_key || '-' || $3,
-       $4,
-       $5,
-       '{"external_send_performed": false}'::jsonb
-      FROM eligible
-     ON CONFLICT (account_key, product_key, learner_key, occurrence_key, channel)
-     DO NOTHING`,
-    [
-      args.actor.account_key,
-      args.actor.product_key,
-      args.occurrence.occurrence_key,
-      args.occurrence.reminder_due_at,
-      args.now,
-    ],
+  const candidates = await pool.query(
+    `SELECT learners.household_key,
+            learners.learner_key,
+            COALESCE(preferences.preference_state, 'opted_in') AS preference_state,
+            COALESCE(preferences.suppression_state, 'active') AS suppression_state,
+            consent.consent_status
+       FROM onetime.portal_learners AS learners
+       JOIN onetime.portal_student_access_state AS access_state
+         ON access_state.account_key = learners.account_key
+        AND access_state.product_key = learners.product_key
+        AND access_state.learner_key = learners.learner_key
+        AND access_state.status = 'active'
+       JOIN onetime.classroom_household_entitlements AS entitlement
+         ON entitlement.account_key = learners.account_key
+        AND entitlement.product_key = learners.product_key
+        AND entitlement.household_key = learners.household_key
+        AND entitlement.entitlement_state = 'active'
+       LEFT JOIN onetime.classroom_reminder_preferences AS preferences
+         ON preferences.account_key = learners.account_key
+        AND preferences.product_key = learners.product_key
+        AND preferences.learner_key = learners.learner_key
+        AND preferences.channel = 'portal'
+       LEFT JOIN onetime.portal_guardian_consents AS consent
+         ON consent.account_key = learners.account_key
+        AND consent.product_key = learners.product_key
+        AND consent.household_key = learners.household_key
+        AND consent.consent_type = 'classroom_join'
+        AND consent.superseded_at IS NULL
+      WHERE learners.account_key = $1
+        AND learners.product_key = $2
+        AND learners.learner_status = 'active'`,
+    [args.actor.account_key, args.actor.product_key],
   );
-  return { queued: result.rowCount ?? 0, suppressed: 0 };
+  let queued = 0;
+  let suppressed = 0;
+  for (const row of candidates.rows as Array<Record<string, unknown>>) {
+    const consentStatus = String(row.consent_status ?? 'not_required');
+    const preferenceState = String(row.preference_state);
+    const suppressionState = String(row.suppression_state);
+    const consentAllowsReminder = consentStatus === 'not_required' || consentStatus === 'granted';
+    if (!consentAllowsReminder || preferenceState !== 'opted_in' || suppressionState !== 'active') {
+      suppressed += 1;
+      continue;
+    }
+    const result = await pool.query(
+      `INSERT INTO onetime.classroom_reminder_intents
+         (reminder_key, account_key, product_key, household_key, learner_key, occurrence_key,
+          channel, idempotency_key, due_at, next_attempt_at, metadata)
+       VALUES ($1,$2,$3,$4,$5,$6,'portal',$7,$8,$9,$10::jsonb)
+       ON CONFLICT (account_key, product_key, learner_key, occurrence_key, channel)
+       DO NOTHING`,
+      [
+        stableKey('classroom_reminder', [
+          String(row.learner_key),
+          args.occurrence.occurrence_key,
+          'portal',
+        ]),
+        args.actor.account_key,
+        args.actor.product_key,
+        String(row.household_key),
+        String(row.learner_key),
+        args.occurrence.occurrence_key,
+        stableKey('classroom_reminder_idem', [
+          String(row.learner_key),
+          args.occurrence.occurrence_key,
+          'portal',
+        ]),
+        args.occurrence.reminder_due_at,
+        args.now,
+        JSON.stringify({
+          external_send_performed: false,
+          reminder_delivery_port: 'sink',
+          consent_status: consentStatus,
+          preference_state: preferenceState,
+          suppression_state: suppressionState,
+        }),
+      ],
+    );
+    queued += result.rowCount ?? 0;
+  }
+  return { queued, suppressed };
 }
 
 async function recordAudit(

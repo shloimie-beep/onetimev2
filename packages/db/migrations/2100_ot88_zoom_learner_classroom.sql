@@ -159,6 +159,26 @@ CREATE TABLE onetime.classroom_question_moderation_actions (
   UNIQUE (account_key, product_key, question_key, action_type, idempotency_key)
 );
 
+CREATE TABLE onetime.classroom_reminder_preferences (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  preference_key text NOT NULL UNIQUE,
+  account_key text NOT NULL,
+  product_key text NOT NULL,
+  household_key text NOT NULL,
+  learner_key text NOT NULL,
+  channel text NOT NULL CHECK (channel IN ('portal', 'email', 'whatsapp')),
+  preference_state text NOT NULL DEFAULT 'opted_in'
+    CHECK (preference_state IN ('opted_in', 'opted_out', 'suppressed')),
+  suppression_state text NOT NULL DEFAULT 'active'
+    CHECK (suppression_state IN ('active', 'suppressed')),
+  updated_by_user_ref text,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+  FOREIGN KEY (account_key, product_key, learner_key)
+    REFERENCES onetime.portal_learners(account_key, product_key, learner_key),
+  UNIQUE (account_key, product_key, learner_key, channel)
+);
+
 CREATE TABLE onetime.classroom_reminder_intents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   reminder_key text NOT NULL UNIQUE,

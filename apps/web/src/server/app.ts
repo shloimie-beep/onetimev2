@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
@@ -661,6 +661,7 @@ export function createApp({
   };
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
   const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
+    isSameOriginPost(req, config) &&
     verifySessionCsrf({
       pool,
       sessionKey: actor.session_key,
@@ -683,13 +684,12 @@ export function createApp({
     res.setHeader('Referrer-Policy', 'no-referrer');
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
-    const nonce = randomUUID().replaceAll('-', '');
     res.setHeader(
       'Content-Security-Policy',
       [
         "default-src 'self'",
         "img-src 'self' data:",
-        `script-src 'self' 'nonce-${nonce}'`,
+        "script-src 'self'",
         "style-src 'self'",
         "connect-src 'self'",
         "object-src 'none'",
@@ -697,13 +697,14 @@ export function createApp({
         "frame-ancestors 'none'",
       ].join('; '),
     );
-    res.status(200).type('html').send(classroomLaunchHtml(nonce));
+    res.status(200).type('html').send(classroomLaunchHtml());
   });
 
   app.post('/api/v1/classroom/launch/bootstrap', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
     const actor = await resolvePortalActor(req);
     if (!actor) {
@@ -726,6 +727,7 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
     const actor = await resolvePortalActor(req);
     if (!actor) {
@@ -745,6 +747,7 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
     const actor = await resolvePortalActor(req);
     if (!actor) {
@@ -1100,6 +1103,25 @@ async function requireSessionCsrf(
     return false;
   }
   return true;
+}
+
+function requireSameOriginPost(req: RequestWithTrace, res: Response, config: AppConfig) {
+  if (isSameOriginPost(req, config)) return true;
+  res.status(403).json(publicError('FORBIDDEN', 'Refresh the page and try again.', req.traceId));
+  return false;
+}
+
+function isSameOriginPost(req: Request, config: AppConfig) {
+  const originHeader = req.header('origin');
+  if (!originHeader) return true;
+  try {
+    const expected = new URL(config.publicBaseUrl).origin;
+    return (
+      new URL(originHeader).origin === expected || new URL(originHeader).host === req.header('host')
+    );
+  } catch {
+    return false;
+  }
 }
 
 async function sessionFromRequest(req: Request, pool: DbPool, config: AppConfig) {
@@ -1617,7 +1639,7 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
 </html>`;
 }
 
-function classroomLaunchHtml(nonce: string) {
+function classroomLaunchHtml() {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -1634,46 +1656,12 @@ function classroomLaunchHtml(nonce: string) {
     <section class="state-panel" aria-labelledby="classroom-launch-title">
       <h1 id="classroom-launch-title">Classroom</h1>
       <p data-classroom-status role="status">Opening protected classroom.</p>
+      <div data-classroom-sdk-root aria-live="polite"></div>
       <button class="button button-primary" type="button" data-classroom-retry hidden>Retry</button>
+      <button class="button" type="button" data-classroom-leave hidden>Leave</button>
     </section>
   </main>
-  <script nonce="${nonce}">
-    const statusEl = document.querySelector('[data-classroom-status]');
-    const retry = document.querySelector('[data-classroom-retry]');
-    const csrf = () => document.cookie.split('; ').find((entry) => entry.startsWith('otcrm_csrf='))?.split('=').slice(1).join('=') || '';
-    const setStatus = (message, failed = false) => {
-      statusEl.textContent = message;
-      if (failed) retry.hidden = false;
-    };
-    async function boot() {
-      retry.hidden = true;
-      try {
-        const response = await fetch('/api/v1/classroom/launch/bootstrap', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: {
-            'content-type': 'application/json',
-            'x-csrf-token': decodeURIComponent(csrf()),
-          },
-          body: JSON.stringify({
-            launch_path: location.pathname,
-            viewport_width: Math.round(window.innerWidth || 0),
-            user_agent_hint: navigator.userAgent.slice(0, 120),
-          }),
-        });
-        const json = await response.json();
-        if (!response.ok || json.success === false) {
-          throw new Error(json.message || 'Classroom is unavailable.');
-        }
-        const view = json.data?.selected_view === 'component' ? 'desktop' : 'client';
-        setStatus('Classroom is ready. View mode: ' + view + '.');
-      } catch (error) {
-        setStatus(error instanceof Error ? error.message : 'Classroom is unavailable.', true);
-      }
-    }
-    retry.addEventListener('click', boot);
-    void boot();
-  </script>
+  <script type="module" src="/assets/app-classroom-launch.js"></script>
 </body>
 </html>`;
 }

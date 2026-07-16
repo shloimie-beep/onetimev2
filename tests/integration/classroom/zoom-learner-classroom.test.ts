@@ -6,6 +6,8 @@ import { createApp } from '../../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { asCanonicalUserKey } from '../../../packages/contracts/src/telegram/types.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
+import { createClassroomRepository } from '../../../packages/db/src/classroom/repository.ts';
+import { resolveDailyClassWindow } from '../../../packages/domain/src/classes/service.ts';
 import { createAccountUser } from '../../../packages/domain/src/index.ts';
 import { createOneTimeTelegramApplicationAdapter } from '../../../packages/domain/src/telegram/application-adapter.ts';
 
@@ -14,6 +16,7 @@ let config: AppConfig;
 let distDir: string;
 let parentUserKey: string;
 let studentUserKey: string;
+let siblingStudentUserKey: string;
 let betaStudentUserKey: string;
 
 const openClassClock = () => new Date('2026-07-16T16:05:00.000Z');
@@ -46,6 +49,14 @@ beforeEach(async () => {
     email: 'student@example.test',
     password: 'StudentPass!234',
     displayName: 'Student User',
+    role: 'student',
+  });
+  siblingStudentUserKey = await createAccountUser({
+    pool,
+    config,
+    email: 'sibling@example.test',
+    password: 'StudentPass!234',
+    displayName: 'Sibling Student',
     role: 'student',
   });
   betaStudentUserKey = await createAccountUser({
@@ -137,6 +148,239 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
     } finally {
       await server.close();
     }
+  });
+
+  it('blocks consumed launch replay and requires a new grant for rejoin', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const issued = await issueLaunch(server.baseUrl, student, 'ot88-replay-001');
+
+      const first = await bootstrapLaunch(server.baseUrl, student, issued.launchPath, 960);
+      expect(first.status, first.text).toBe(200);
+      expect(first.text).not.toMatch(/https?:\/\/|zoom\.us|\/j\//i);
+
+      const replay = await bootstrapLaunch(server.baseUrl, student, issued.launchPath, 960);
+      expect(replay.status, replay.text).toBe(410);
+      expect(replay.json.code).toBe('LAUNCH_EXPIRED');
+      expect(replay.text).not.toMatch(
+        /meeting_number|signature|registrant|https?:\/\/|zoom\.us|\/j\//i,
+      );
+
+      const sameIdempotency = await postLaunch(
+        server.baseUrl,
+        student,
+        issued.classLaunchHref,
+        'ot88-replay-001',
+      );
+      expect(sameIdempotency.status, sameIdempotency.text).toBe(410);
+      expect(sameIdempotency.json.code).toBe('LAUNCH_EXPIRED');
+      expect(sameIdempotency.text).not.toMatch(
+        /meeting_number|signature|registrant|https?:\/\/|zoom\.us|\/j\//i,
+      );
+
+      const rejoin = await postLaunch(
+        server.baseUrl,
+        student,
+        issued.classLaunchHref,
+        'ot88-replay-new-grant-001',
+      );
+      expect(rejoin.status, rejoin.text).toBe(200);
+      expect(rejoin.json.data.href).not.toBe(issued.launchPath);
+      const rejoinBootstrap = await bootstrapLaunch(
+        server.baseUrl,
+        student,
+        rejoin.json.data.href,
+        390,
+      );
+      expect(rejoinBootstrap.status, rejoinBootstrap.text).toBe(200);
+      expect(rejoinBootstrap.json.data.selected_view).toBe('client');
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('enforces expiry, revocation, session mismatch, sibling mismatch, and concurrent consume', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+
+      const expired = await issueLaunch(server.baseUrl, student, 'ot88-expired-001');
+      await pool.query(
+        `UPDATE onetime.classroom_launch_grants
+            SET expires_at = $1
+          WHERE grant_key = $2`,
+        [new Date('2026-07-16T16:04:00.000Z'), grantKeyFromLaunchPath(expired.launchPath)],
+      );
+      const expiredBootstrap = await bootstrapLaunch(
+        server.baseUrl,
+        student,
+        expired.launchPath,
+        390,
+      );
+      expect(expiredBootstrap.status, expiredBootstrap.text).toBe(410);
+      expect(expiredBootstrap.json.code).toBe('LAUNCH_EXPIRED');
+
+      const revoked = await issueLaunch(server.baseUrl, student, 'ot88-revoked-001');
+      await pool.query(
+        `UPDATE onetime.classroom_launch_grants
+            SET status = 'revoked'
+          WHERE grant_key = $1`,
+        [grantKeyFromLaunchPath(revoked.launchPath)],
+      );
+      const revokedBootstrap = await bootstrapLaunch(
+        server.baseUrl,
+        student,
+        revoked.launchPath,
+        390,
+      );
+      expect(revokedBootstrap.status, revokedBootstrap.text).toBe(403);
+      expect(revokedBootstrap.json.code).toBe('FORBIDDEN');
+
+      const sessionBound = await issueLaunch(server.baseUrl, student, 'ot88-session-mismatch-001');
+      const secondStudentSession = await loginAs(
+        server.baseUrl,
+        'student@example.test',
+        'StudentPass!234',
+      );
+      const wrongSession = await bootstrapLaunch(
+        server.baseUrl,
+        secondStudentSession,
+        sessionBound.launchPath,
+        390,
+      );
+      expect(wrongSession.status, wrongSession.text).toBe(403);
+      expect(wrongSession.json.code).toBe('FORBIDDEN');
+
+      const sibling = await loginAs(server.baseUrl, 'sibling@example.test', 'StudentPass!234');
+      const siblingMismatch = await bootstrapLaunch(
+        server.baseUrl,
+        sibling,
+        sessionBound.launchPath,
+        390,
+      );
+      expect(siblingMismatch.status, siblingMismatch.text).toBe(403);
+      expect(siblingMismatch.json.code).toBe('FORBIDDEN');
+
+      const concurrent = await issueLaunch(server.baseUrl, student, 'ot88-concurrent-001');
+      const results = await Promise.all([
+        bootstrapLaunch(server.baseUrl, student, concurrent.launchPath, 1200),
+        bootstrapLaunch(server.baseUrl, student, concurrent.launchPath, 1200),
+      ]);
+      expect(results.map((result) => result.status).sort()).toEqual([200, 410]);
+      expect(results.map((result) => result.text).join('\n')).not.toMatch(
+        /https?:\/\/|zoom\.us|\/j\//i,
+      );
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('requires CSRF and same-origin boundaries before launch bootstrap', async () => {
+    const server = await listenForTest(createApp({ config, pool, distDir, clock: openClassClock }));
+    try {
+      const student = await loginAs(server.baseUrl, 'student@example.test', 'StudentPass!234');
+      const issued = await issueLaunch(server.baseUrl, student, 'ot88-origin-csrf-001');
+
+      const noCsrf = await fetch(`${server.baseUrl}/api/v1/classroom/launch/bootstrap`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ launch_path: issued.launchPath, viewport_width: 390 }),
+      });
+      const noCsrfJson = await noCsrf.json();
+      expect(noCsrf.status).toBe(403);
+      expect(noCsrfJson.code).toBe('CSRF_REQUIRED');
+
+      const wrongOrigin = await fetch(`${server.baseUrl}/api/v1/classroom/launch/bootstrap`, {
+        method: 'POST',
+        headers: {
+          cookie: student.cookies,
+          'content-type': 'application/json',
+          'x-csrf-token': student.json.csrf_token,
+          origin: 'https://evil.example.test',
+        },
+        body: JSON.stringify({ launch_path: issued.launchPath, viewport_width: 390 }),
+      });
+      const wrongOriginJson = await wrongOrigin.json();
+      expect(wrongOrigin.status).toBe(403);
+      expect(wrongOriginJson.code).toBe('FORBIDDEN');
+
+      const allowed = await bootstrapLaunch(server.baseUrl, student, issued.launchPath, 390);
+      expect(allowed.status, allowed.text).toBe(200);
+      expect(allowed.json.data.provider.raw_join_url_present).toBe(false);
+    } finally {
+      await server.close();
+    }
+  });
+
+  it('schedules sink reminders through preference, consent, and suppression boundaries', async () => {
+    const repository = createClassroomRepository(pool);
+    const actor = {
+      account_key: config.accountKey,
+      product_key: config.productKey,
+      actor_user_ref: 'owner_fixture',
+      actor_role: 'owner' as const,
+    };
+    const occurrence = await repository.ensureDailyOccurrence({
+      actor,
+      window: resolveDailyClassWindow(openClassClock(), { currentOccurrenceStillJoinable: true }),
+      durationMinutes: config.zoomClassroomClassDurationMinutes,
+      joinOpenOffsetMinutes: config.zoomClassroomJoinOpenOffsetMinutes,
+      joinCloseOffsetMinutes: config.zoomClassroomJoinCloseOffsetMinutes,
+    });
+    await pool.query(
+      `INSERT INTO onetime.classroom_household_entitlements
+         (entitlement_key, account_key, product_key, household_key, entitlement_state)
+       VALUES ('entitlement_beta_reminder', $1, $2, 'household_beta', 'active')`,
+      [config.accountKey, config.productKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_guardian_relationships
+         (relationship_key, account_key, product_key, household_key, guardian_user_ref,
+          relationship_label, authority)
+       VALUES ('relationship_beta', $1, $2, 'household_beta', $3, 'Parent', 'primary_guardian')`,
+      [config.accountKey, config.productKey, parentUserKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.portal_guardian_consents
+         (consent_key, account_key, product_key, household_key, relationship_key, consent_type,
+          policy_version, consent_text_digest, consent_status, recorded_by_user_ref)
+       VALUES ('consent_beta_revoked', $1, $2, 'household_beta', 'relationship_beta',
+          'classroom_join', 'ot88-test', 'digest', 'revoked', $3)`,
+      [config.accountKey, config.productKey, parentUserKey],
+    );
+    await pool.query(
+      `INSERT INTO onetime.classroom_reminder_preferences
+         (preference_key, account_key, product_key, household_key, learner_key, channel,
+          preference_state, suppression_state, updated_by_user_ref)
+       VALUES
+         ('preference_sibling_suppressed', $1, $2, 'household_alpha', 'learner_sibling',
+          'portal', 'opted_in', 'suppressed', $3)`,
+      [config.accountKey, config.productKey, parentUserKey],
+    );
+
+    const scheduled = await repository.scheduleDueReminders({
+      actor,
+      occurrence,
+      now: openClassClock(),
+    });
+    expect(scheduled).toEqual({ queued: 1, suppressed: 2 });
+
+    const intents = await pool.query(
+      `SELECT learner_key, status, metadata
+         FROM onetime.classroom_reminder_intents
+        ORDER BY learner_key`,
+    );
+    expect(intents.rows).toHaveLength(1);
+    expect(intents.rows[0]).toMatchObject({
+      learner_key: 'learner_alpha',
+      status: 'queued',
+    });
+    expect(JSON.stringify(intents.rows[0].metadata)).toContain('external_send_performed');
+    expect(JSON.stringify(intents.rows[0].metadata)).not.toMatch(/https?:\/\/|zoom\.us|\/j\//i);
   });
 
   it('keeps parent launch read-only and denies unsubscribed student launch attempts', async () => {
@@ -336,6 +580,74 @@ describe('OT-88 Zoom learner classroom sink mode', () => {
   });
 });
 
+type TestSession = Awaited<ReturnType<typeof loginAs>>;
+
+async function issueLaunch(baseUrl: string, session: TestSession, idempotencyKey: string) {
+  const dashboard = await fetch(`${baseUrl}/api/v1/portals/student/dashboard`, {
+    headers: { cookie: session.cookies },
+  });
+  const dashboardText = await dashboard.text();
+  expect(dashboard.status, dashboardText).toBe(200);
+  const classSummary = JSON.parse(dashboardText).data.upcoming_classes[0];
+  expect(classSummary.launch_action.href).toMatch(/^\/api\/v1\/portals\/student\/classes\//);
+  const launch = await postLaunch(
+    baseUrl,
+    session,
+    classSummary.launch_action.href,
+    idempotencyKey,
+  );
+  expect(launch.status, launch.text).toBe(200);
+  expect(launch.text).not.toMatch(/https?:\/\/|zoom\.us|\/j\//i);
+  return {
+    classLaunchHref: classSummary.launch_action.href as string,
+    launchPath: launch.json.data.href as string,
+  };
+}
+
+async function postLaunch(
+  baseUrl: string,
+  session: TestSession,
+  classLaunchHref: string,
+  idempotencyKey: string,
+) {
+  const response = await fetch(`${baseUrl}${classLaunchHref}`, {
+    method: 'POST',
+    headers: {
+      cookie: session.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': session.json.csrf_token,
+    },
+    body: JSON.stringify({ idempotency_key: idempotencyKey }),
+  });
+  const text = await response.text();
+  return { status: response.status, text, json: JSON.parse(text) };
+}
+
+async function bootstrapLaunch(
+  baseUrl: string,
+  session: TestSession,
+  launchPath: string,
+  viewportWidth: number,
+) {
+  const response = await fetch(`${baseUrl}/api/v1/classroom/launch/bootstrap`, {
+    method: 'POST',
+    headers: {
+      cookie: session.cookies,
+      'content-type': 'application/json',
+      'x-csrf-token': session.json.csrf_token,
+    },
+    body: JSON.stringify({ launch_path: launchPath, viewport_width: viewportWidth }),
+  });
+  const text = await response.text();
+  return { status: response.status, text, json: JSON.parse(text) };
+}
+
+function grantKeyFromLaunchPath(launchPath: string) {
+  const grantKey = launchPath.split('/')[3];
+  if (!grantKey) throw new Error(`missing grant key in ${launchPath}`);
+  return grantKey;
+}
+
 async function seedClassroomRecords() {
   await pool.query(
     `INSERT INTO onetime.portal_households
@@ -365,19 +677,32 @@ async function seedClassroomRecords() {
     `INSERT INTO onetime.portal_student_access_state
        (access_state_key, account_key, product_key, household_key, learner_key, student_user_ref,
         status)
-     VALUES
-       ('access_alpha', $1, $2, 'household_alpha', 'learner_alpha', $3, 'active'),
-       ('access_sibling', $1, $2, 'household_alpha', 'learner_sibling', NULL, 'not_configured'),
-       ('access_beta', $1, $2, 'household_beta', 'learner_beta', $4, 'active')`,
-    [config.accountKey, config.productKey, studentUserKey, betaStudentUserKey],
+      VALUES
+        ('access_alpha', $1, $2, 'household_alpha', 'learner_alpha', $3, 'active'),
+        ('access_sibling', $1, $2, 'household_alpha', 'learner_sibling', $4, 'active'),
+        ('access_beta', $1, $2, 'household_beta', 'learner_beta', $5, 'active')`,
+    [
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      siblingStudentUserKey,
+      betaStudentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.account_learner_identity_links
        (link_key, account_key, product_key, household_key, learner_key, user_key)
-     VALUES
-       ('link_alpha_student', $1, $2, 'household_alpha', 'learner_alpha', $3),
-       ('link_beta_student', $1, $2, 'household_beta', 'learner_beta', $4)`,
-    [config.accountKey, config.productKey, studentUserKey, betaStudentUserKey],
+      VALUES
+        ('link_alpha_student', $1, $2, 'household_alpha', 'learner_alpha', $3),
+        ('link_sibling_student', $1, $2, 'household_alpha', 'learner_sibling', $4),
+        ('link_beta_student', $1, $2, 'household_beta', 'learner_beta', $5)`,
+    [
+      config.accountKey,
+      config.productKey,
+      studentUserKey,
+      siblingStudentUserKey,
+      betaStudentUserKey,
+    ],
   );
   await pool.query(
     `INSERT INTO onetime.classroom_household_entitlements
