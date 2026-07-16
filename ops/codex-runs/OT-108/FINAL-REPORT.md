@@ -1,8 +1,12 @@
 # OT-108 Final Report
 
-Status: `ready_for_draft_pr`
+Status: `draft_pr_opened`
 
 Branch: `codex/ot108-premium-landing-refresh`
+
+Draft PR: `https://github.com/webcraft-media/onetimev2/pull/47`
+
+Product commit: `239a29c30836435fe62406a0cf94bacd919a0d09`
 
 Base: exact requested SHA `fb3c397ce8ece100cf7873fdddcd940a1552ea9b`.
 `origin/codex/ops03-staging-readiness-repair` had advanced to

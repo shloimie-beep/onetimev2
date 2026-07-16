@@ -1,8 +1,12 @@
 # OT-108 Resume
 
-Status: `ready_for_draft_pr`
+Status: `draft_pr_opened`
 
 Branch: `codex/ot108-premium-landing-refresh`
+
+Draft PR: `https://github.com/webcraft-media/onetimev2/pull/47`
+
+Product commit: `239a29c30836435fe62406a0cf94bacd919a0d09`
 
 Worktree: `C:\Users\User\OneTimeOneTime-ot108-premium-landing-refresh`
 
@@ -26,5 +30,5 @@ Completed:
 
 Remaining handoff:
 
-1. Commit, push, and open a draft PR against
-   `codex/ops03-staging-readiness-repair`.
+1. Review and merge draft PR `https://github.com/webcraft-media/onetimev2/pull/47`
+   when ready.
