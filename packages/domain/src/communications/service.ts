@@ -336,12 +336,23 @@ function isIntentType(value: string): value is CommunicationsIntentType {
   return (
     value === 'family_signup_email_ack' ||
     value === 'family_signup_whatsapp_confirmation' ||
-    value === 'internal_lead_alert'
+    value === 'internal_lead_alert' ||
+    value === 'single_recipient_reply'
   );
 }
 
 function isLocalState(value: string): value is CommunicationsLocalState {
-  return value === 'intent_queued' || value === 'sink_processed' || value === 'status_unavailable';
+  return (
+    value === 'queued' ||
+    value === 'provider_accepted' ||
+    value === 'delivered' ||
+    value === 'failed' ||
+    value === 'bounced' ||
+    value === 'complained' ||
+    value === 'suppressed' ||
+    value === 'draft_saved' ||
+    value === 'unknown'
+  );
 }
 
 function toIso(value: string | Date) {

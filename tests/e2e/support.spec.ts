@@ -129,7 +129,7 @@ async function login(page: Page, email: string, password: string) {
 }
 
 async function fillSupportForm(page: Page, suffix: string) {
-  await page.getByLabel('Category').selectOption('bug');
+  await page.getByLabel('Category').selectOption('technical_bug');
   await page.getByLabel('Title').fill(`Class page support ${suffix}`);
   await page
     .getByLabel('Message')

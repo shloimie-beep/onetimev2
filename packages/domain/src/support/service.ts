@@ -40,6 +40,7 @@ type EntitlementProof = {
   entitlementId: string;
   checkedAt: string;
   validUntil: string | null;
+  policyVersion: 'ot114-subscriber-support-v1' | 'ot114-owner-admin-support-v1';
 };
 
 export class SupportSubmissionError extends Error {
@@ -80,9 +81,10 @@ export async function hasActiveSupportEntitlement(input: {
   target: DbPool | Queryable;
   config: AppConfig;
   userKey: string;
+  role?: string | undefined;
   now?: Date | undefined;
 }): Promise<boolean> {
-  return Boolean(await resolveActiveSupportEntitlement(input));
+  return Boolean(await resolveSupportAuthorization(input));
 }
 
 export async function createSupportSubmission(input: {
@@ -152,10 +154,11 @@ export async function createSupportSubmission(input: {
       });
     }
 
-    const entitlement = await resolveActiveSupportEntitlement({
+    const entitlement = await resolveSupportAuthorization({
       target: client,
       config: input.config,
       userKey: input.session.user.user_key,
+      role: input.session.user.role,
       now,
     });
     if (!entitlement) {
@@ -185,6 +188,7 @@ export async function createSupportSubmission(input: {
       requestId: safeTraceId(input.requestId, 'req'),
       correlationId: safeTraceId(input.correlationId ?? createSupportId('corr'), 'corr'),
       privacy: sanitized.privacy,
+      idempotencyKey: parsed.data.idempotency_key,
     });
     const rawBody = JSON.stringify(event);
     const bodyFingerprint = sha256Hex(rawBody);
@@ -656,7 +660,30 @@ async function resolveActiveSupportEntitlement(input: {
     entitlementId: String(entitlement.entitlement_key),
     checkedAt: now.toISOString(),
     validUntil,
+    policyVersion: 'ot114-subscriber-support-v1',
   };
+}
+
+async function resolveSupportAuthorization(input: {
+  target: DbPool | Queryable;
+  config: AppConfig;
+  userKey: string;
+  role?: string | undefined;
+  now?: Date | undefined;
+}): Promise<EntitlementProof | null> {
+  const now = input.now ?? new Date();
+  if (input.role === 'owner' || input.role === 'admin') {
+    return {
+      entitlementId: `operator_${sha256Hex(`${input.config.accountKey}:${input.userKey}`).slice(
+        0,
+        24,
+      )}`,
+      checkedAt: now.toISOString(),
+      validUntil: null,
+      policyVersion: 'ot114-owner-admin-support-v1',
+    };
+  }
+  return resolveActiveSupportEntitlement(input);
 }
 
 function sanitizePayload(
@@ -736,7 +763,9 @@ function buildSupportEvent(input: {
   requestId: string;
   correlationId: string;
   privacy: ReturnType<typeof supportPrivacy>;
+  idempotencyKey: string;
 }): SupportEventV1 {
+  const triage = supportTriageFor(input.payload);
   const event = {
     contract_version: '1.0.0',
     event_type: 'onetime.support.ticket.submitted.v1',
@@ -748,6 +777,10 @@ function buildSupportEvent(input: {
       deployment_id: input.config.ot89SupportDeploymentId,
       source_commit: sourceCommit(input.config.commitSha),
     },
+    scope: {
+      account_key: input.config.accountKey,
+      product_key: input.config.productKey,
+    },
     submission: {
       source_ticket_id: input.sourceTicketId,
       receipt_id: input.receiptId,
@@ -758,7 +791,7 @@ function buildSupportEvent(input: {
       onetime_account_id: safeActorId(input.config.accountKey, 'acct'),
     },
     authorization: {
-      policy_version: 'ot89-subscriber-support-v1',
+      policy_version: input.entitlement.policyVersion,
       authenticated: true,
       account_id: safeActorId(input.config.accountKey, 'acct'),
       entitlement_product: 'one_time',
@@ -769,11 +802,15 @@ function buildSupportEvent(input: {
     },
     ticket: {
       category: input.payload.category,
+      severity: supportSeverityFor(input.payload),
       title: input.payload.title,
+      redacted_summary: input.payload.title,
       message: input.payload.message,
       issue_details: input.payload.issue_details,
       client_context: input.payload.client_context,
       reply_preference: input.payload.reply_preference,
+      idempotency_key_hash: sha256Hex(input.idempotencyKey),
+      operator_triage: triage,
     },
     attachments: input.attachments.map((attachment) => ({
       attachment_id: attachment.attachment_id,
@@ -854,6 +891,13 @@ async function reserveNonce(input: {
 
 function supportEventSemanticError(event: SupportEventV1): string | null {
   if (event.actor.onetime_account_id !== event.authorization.account_id) return 'ACCOUNT_MISMATCH';
+  if (
+    event.scope &&
+    event.scope.account_key !== event.authorization.account_id &&
+    safeActorId(event.scope.account_key, 'acct') !== event.authorization.account_id
+  ) {
+    return 'ACCOUNT_SCOPE_MISMATCH';
+  }
   const occurredAt = new Date(event.occurred_at).getTime();
   const checkedAt = new Date(event.authorization.checked_at).getTime();
   if (checkedAt < occurredAt - 300_000 || checkedAt > occurredAt + 60_000) {
@@ -864,6 +908,45 @@ function supportEventSemanticError(event: SupportEventV1): string | null {
     if (validUntil <= checkedAt || validUntil < occurredAt) return 'AUTHORIZATION_EXPIRED';
   }
   return null;
+}
+
+function supportSeverityFor(
+  payload: SupportSubmissionPayload,
+): 'low' | 'normal' | 'high' | 'urgent' {
+  if (payload.category === 'billing' || payload.category === 'access_login') return 'high';
+  if (payload.category === 'technical_bug' && payload.issue_details.occurrence === 'always') {
+    return 'high';
+  }
+  return 'normal';
+}
+
+function supportTriageFor(payload: SupportSubmissionPayload): {
+  bna_triage_candidate: boolean;
+  decision_state: 'triage_candidate' | 'decision_needed';
+  structured_options: string[];
+} {
+  const reproducibleBug =
+    payload.category === 'technical_bug' &&
+    payload.issue_details.steps_to_reproduce.length > 0 &&
+    Boolean(payload.issue_details.actual_behavior);
+  if (reproducibleBug) {
+    return {
+      bna_triage_candidate: true,
+      decision_state: 'triage_candidate',
+      structured_options: [
+        'Create a BNA triage candidate for operator review',
+        'Keep in One Time support only',
+      ],
+    };
+  }
+  return {
+    bna_triage_candidate: false,
+    decision_state: 'decision_needed',
+    structured_options: [
+      'Ask the operator whether this belongs in BNA triage',
+      'Handle inside One Time support',
+    ],
+  };
 }
 
 function acceptedMockBody(input: {

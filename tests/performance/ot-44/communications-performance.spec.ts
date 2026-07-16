@@ -17,10 +17,10 @@ test('Communications local-intent shell stays within static mobile budgets', asy
           <label>Local status <select><option>All</option></select></label>
           <button>Apply</button>
         </form>
-        <article aria-label="Family signup email acknowledgement, Queued locally">
+        <article aria-label="Family signup email acknowledgement, Queued">
           <h2>Family signup email acknowledgement</h2>
           <p>Email recipient</p>
-          <p>Queued locally</p>
+          <p>Queued</p>
         </article>
       </main>
     `);

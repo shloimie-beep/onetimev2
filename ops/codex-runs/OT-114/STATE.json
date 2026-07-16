@@ -1,0 +1,42 @@
+{
+  "run_id": "OT-114",
+  "status": "ready_for_review",
+  "repository": "webcraft-media/onetimev2",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "worktree": "C:\\Users\\User\\.overnight-20260717-worktrees\\OT-114",
+  "branch": "codex/ot114-crm-communications-support",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "head_sha_at_artifact_write": "pending-final-commit",
+  "bna_repo_edited": false,
+  "external_mutations": {
+    "deploy": false,
+    "production_database": false,
+    "provider_send": false,
+    "broad_send": false,
+    "dns": false,
+    "payment_or_charge": false,
+    "provider_mutation": false
+  },
+  "implemented": [
+    "CRM contact detail enrichment with tags, system facts, notes, support tickets, tasks, and timeline",
+    "Durable CRM custom tags and tag assignment/removal APIs",
+    "CRM note append and archive APIs",
+    "Provider-off single-recipient reply preview and confirm-as-draft flow with idempotency and audit",
+    "Communications state vocabulary for queued, provider accepted, delivered, failed, bounced, complained, suppressed, draft saved, and unknown",
+    "Authenticated-shell subscriber support create/list/receipt UX",
+    "Support event producer payload additions for scope, severity, redacted summary, idempotency hash, and operator triage",
+    "OT-114 BNA consumer contract output"
+  ],
+  "blocked": [
+    {
+      "item": "Real BNA bridge canary",
+      "reason": "BNA endpoint is out of scope and BNA repo edits are forbidden in this lane."
+    },
+    {
+      "item": "PostgreSQL db:verify",
+      "reason": "No safe local DATABASE_URL is configured; pg-mem integration coverage passed."
+    }
+  ],
+  "last_updated": "2026-07-17T02:10:00+03:00"
+}

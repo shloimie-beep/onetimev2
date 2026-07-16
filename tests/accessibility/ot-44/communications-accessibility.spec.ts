@@ -39,11 +39,11 @@ test('Communications owned markup has no serious or critical accessibility viola
                 <td>Email recipient</td>
                 <td>Family signup email acknowledgement</td>
                 <td>Email</td>
-                <td>Queued locally</td>
+                <td>Queued</td>
               </tr>
             </tbody>
           </table>
-          <article aria-label="Family signup email acknowledgement, Queued locally">
+          <article aria-label="Family signup email acknowledgement, Queued">
             <h2>Family signup email acknowledgement</h2>
             <p>Email recipient</p>
           </article>
