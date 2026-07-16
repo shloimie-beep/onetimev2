@@ -1,0 +1,125 @@
+{
+  "schema_version": "ops07.route_matrix.v1",
+  "generated_at": "2026-07-16T22:49:46.059Z",
+  "branch": "codex/ops07-dayone-journey-gates",
+  "rows": [
+    {
+      "id": "anonymous-public",
+      "title": "Anonymous public, signup, login, legal, and 404 routes",
+      "route": "/, /signup, /login, /privacy, /terms, /404",
+      "roles": ["anonymous"],
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "states": ["populated", "long-content", "404"],
+      "status": "PASS",
+      "evidence": [
+        "apps/web/src/server/app.ts",
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/accessibility/public-a11y.spec.ts",
+        "tests/performance/public-performance.spec.ts"
+      ],
+      "notes": []
+    },
+    {
+      "id": "owner-admin-dashboard-crm",
+      "title": "Owner/admin dashboard and CRM routes",
+      "route": "/app/dashboard, /app/crm, /app/crm/contacts/:contactId",
+      "roles": ["owner", "admin", "crm_agent", "viewer"],
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "states": ["populated", "empty", "loading", "error", "permission-denied", "session-expired"],
+      "status": "FAIL",
+      "evidence": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/client/app/crm-entry.tsx",
+        "tests/e2e/crm-core.spec.ts",
+        "tests/e2e/ot-39/crm-privacy-usability.spec.ts",
+        "tests/accessibility/ot-39/crm-a11y.spec.ts",
+        "apps/web/src/client/app/crm-entry.tsx:1085",
+        "apps/web/src/client/app/shell/AppShell.tsx:97"
+      ],
+      "notes": [
+        "CRM normal UI exposes idempotency implementation detail.",
+        "App shell can show Signed out/Session expired/Checking session in normal loading identity copy."
+      ]
+    },
+    {
+      "id": "owner-admin-classes-content-billing",
+      "title": "Owner/admin classes, content, billing, communications, and support routes",
+      "route": "/app/classes, /app/content, /app/billing, /app/communications, /app/support",
+      "roles": ["owner", "admin"],
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "states": ["populated", "provider-off", "loading", "error", "permission-denied"],
+      "status": "PASS",
+      "evidence": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/server/communications/register.ts",
+        "apps/web/src/server/features/support/router.ts",
+        "tests/integration/content/content-library.test.ts",
+        "tests/integration/support/ot89a-subscriber-support.test.ts"
+      ],
+      "notes": []
+    },
+    {
+      "id": "parent-portal",
+      "title": "Parent portal and household learner controls",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "states": ["populated", "empty", "billing-recovery", "provider-off", "permission-denied"],
+      "status": "FAIL",
+      "evidence": [
+        "apps/web/src/server/features/portals/routers.ts",
+        "apps/web/src/client/features/portals/PortalFeatures.tsx",
+        "tests/ot-52/portal-services.test.ts",
+        "tests/integration/portals/portal-mount.test.ts"
+      ],
+      "notes": [
+        "Missing source signal: student-access/reset",
+        "Missing source signal: student-access/suspend"
+      ]
+    },
+    {
+      "id": "student-portal-classroom",
+      "title": "Student portal, classroom launch, and private question routes",
+      "route": "/app/student, /classroom/launch/:grantKey/:secret",
+      "roles": ["student"],
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "states": ["populated", "provider-off", "loading", "offline", "permission-denied"],
+      "status": "FAIL",
+      "evidence": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/client/classroom/zoom-launch-client.ts",
+        "tests/integration/classroom/zoom-learner-classroom.test.ts",
+        "tests/e2e/ot88-zoom-classroom.spec.ts",
+        "tests/accessibility/ot88-zoom-classroom-a11y.spec.ts",
+        "tests/ot-83/portal-browser-harness.ts:279"
+      ],
+      "notes": [
+        "Harness still carries raw helper-unavailable placeholder copy that OPS-08 must not allow into product UI."
+      ]
+    },
+    {
+      "id": "subscriber-support",
+      "title": "Authenticated subscriber support and receipt routes",
+      "route": "/app/support, /app/support/receipts/:receiptId",
+      "roles": ["owner", "admin", "parent", "student"],
+      "viewports": ["360x800", "390x844", "768x1024", "1440x1000"],
+      "states": ["entitled", "anonymous-denied", "receipt", "provider-off", "error"],
+      "status": "PASS",
+      "evidence": [
+        "apps/web/src/server/features/support/router.ts",
+        "apps/web/src/client/app/support-entry.ts",
+        "tests/e2e/support.spec.ts",
+        "tests/accessibility/support-a11y.spec.ts",
+        "tests/integration/support/ot89a-subscriber-support.test.ts"
+      ],
+      "notes": []
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "pass": 3,
+    "fail": 3,
+    "blocked_external": 0,
+    "deferred_approved": 0
+  }
+}

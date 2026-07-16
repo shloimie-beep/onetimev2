@@ -1,0 +1,6 @@
+{
+  "generated_at": "2026-07-16T22:49:46.059Z",
+  "route_matrix": "ops\\codex-runs\\OPS-07\\ROUTE-MATRIX.json",
+  "dayone_matrix": "ops\\codex-runs\\OPS-07\\DAYONE-MATRIX.json",
+  "findings": "ops\\codex-runs\\OPS-07\\FINDINGS.json"
+}

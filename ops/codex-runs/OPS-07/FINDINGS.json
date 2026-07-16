@@ -1,0 +1,39 @@
+{
+  "schema_version": "ops07.findings.v1",
+  "generated_at": "2026-07-16T22:49:46.059Z",
+  "findings": [
+    {
+      "id": "owner-admin-dashboard-crm:raw-idempotency-copy",
+      "severity": "blocker",
+      "status": "FAIL",
+      "title": "CRM normal UI exposes idempotency implementation detail.",
+      "evidence": ["apps/web/src/client/app/crm-entry.tsx:1085"],
+      "owner": "OPS-08",
+      "recommendation": "Move action registry/idempotency metadata to owner-only diagnostics or hide it from normal CRM users."
+    },
+    {
+      "id": "owner-admin-dashboard-crm:session-loading-copy",
+      "severity": "blocker",
+      "status": "FAIL",
+      "title": "App shell can show Signed out/Session expired/Checking session in normal loading identity copy.",
+      "evidence": ["apps/web/src/client/app/shell/AppShell.tsx:97"],
+      "owner": "OPS-08",
+      "recommendation": "Use a neutral boot shell while a valid session is loading and reserve session-expired copy for the explicit expired state."
+    },
+    {
+      "id": "student-portal-classroom:helper-placeholder-copy",
+      "severity": "major",
+      "status": "FAIL",
+      "title": "Harness still carries raw helper-unavailable placeholder copy that OPS-08 must not allow into product UI.",
+      "evidence": ["tests/ot-83/portal-browser-harness.ts:279"],
+      "owner": "OPS-08",
+      "recommendation": "Use human, actionable provider-off/helper-unavailable copy in product and assert the raw phrase is absent."
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "blockers": 2,
+    "major": 1,
+    "minor": 0
+  }
+}
