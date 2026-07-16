@@ -1,0 +1,6 @@
+{"ts":"2026-07-16T22:24:00+03:00","event":"worktree_created","details":{"branch":"codex/ot109-rabbi-content-publisher","base_sha":"fb3c397ce8ece100cf7873fdddcd940a1552ea9b","path":"C:/Users/User/.onetime-worktrees/OT-109"}}
+{"ts":"2026-07-16T22:30:00+03:00","event":"prompt_preserved","details":{"path":"ops/codex-runs/OT-109/ORIGINAL-PROMPT.md","sha256":"18c52c81863662f73117e7b6b2911bd87d84dfc1c4dea5537a9353cc16239265"}}
+{"ts":"2026-07-16T22:45:00+03:00","event":"implementation_added","details":{"contracts":true,"migration":"2190_ot109_rabbi_content_publisher.sql","domain_service":true,"tests":true}}
+{"ts":"2026-07-16T22:50:57+03:00","event":"verification_passed","details":{"typecheck":"passed","integration_spec":"passed","integration_tests":3}}
+{"ts":"2026-07-16T22:52:00+03:00","event":"evidence_recorded","details":{"integration_delta":"OPS04-INTEGRATION-DELTA.md","state":"implemented_local","gated_canaries":["private_vimeo_canary","transcription_provider_canary","protected_drive_canary","production_database_migration"]}}
+{"ts":"2026-07-16T22:54:00+03:00","event":"additional_verification","details":{"lint":"passed","secret_scan":"passed","diff_check":"passed","touched_file_prettier":"passed","repo_format":"failed_baseline_unrelated_596_files"}}
