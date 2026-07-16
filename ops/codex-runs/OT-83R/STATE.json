@@ -1,15 +1,15 @@
 {
   "task_id": "OT-83R",
-  "status": "pending_pr_ci",
-  "current_phase": "local_implementation_complete_commit_push_next",
-  "updated_at": "2026-07-16T12:09:14.5170247+03:00",
+  "status": "ready_for_ot99",
+  "current_phase": "complete_ci_green",
+  "updated_at": "2026-07-16T12:22:09.4140985+03:00",
   "base_branch": "codex/ot83-household-portals-foundation",
   "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
   "working_branch": "codex/ot83r-complete-portals",
   "authoritative_remote_head_at_resume": "04ca004e22b2c1e1ffaf710a3211eabcd3180f32",
   "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/33",
-  "ready_for_ot99": false,
-  "ready_for_ot99_reason": "Local implementation and non-PostgreSQL verification are complete, but required PR CI, including PostgreSQL proof, has not yet been observed green after push.",
+  "ready_for_ot99": true,
+  "ready_for_ot99_reason": "Implementation is complete, FINAL-REPORT.md exists, the implementation commit was pushed to PR #33, and required CI including PostgreSQL proof was observed green.",
   "requirements": [
     {
       "id": "OT83R-REQ-001",
@@ -34,12 +34,12 @@
     {
       "id": "OT83R-REQ-005",
       "title": "Run verification and capture evidence",
-      "status": "local_done_pr_ci_pending"
+      "status": "done"
     },
     {
       "id": "OT83R-REQ-006",
       "title": "Commit, push, update draft PR, and final report",
-      "status": "final_report_done_commit_push_pending"
+      "status": "done"
     }
   ],
   "implementation_receipt": {
@@ -171,12 +171,28 @@
     "tcp_127_0_0_1_5432": false,
     "database_url": "unset"
   },
-  "blockers": [
-    {
-      "id": "OT83R-BLOCKER-PR-CI-POSTGRES",
-      "status": "pending_external_ci",
-      "reason": "Required PostgreSQL proof must be observed green on PR #33 after push."
-    }
-  ],
+  "ci_evidence": {
+    "observed_at": "2026-07-16T12:22:09.4140985+03:00",
+    "implementation_commit": "76eb6f698134471b10fb5de5979c1660b64494e5",
+    "pr": "https://github.com/webcraft-media/onetimev2/pull/33",
+    "checks": [
+      {
+        "name": "Node 24 verify",
+        "status": "passed",
+        "duration": "6m38s"
+      },
+      {
+        "name": "PostgreSQL 16 assurance harness",
+        "status": "passed",
+        "duration": "47s"
+      },
+      {
+        "name": "PostgreSQL 16 learner-seat proof",
+        "status": "passed",
+        "duration": "31s"
+      }
+    ]
+  },
+  "blockers": [],
   "external_mutations_performed": []
 }

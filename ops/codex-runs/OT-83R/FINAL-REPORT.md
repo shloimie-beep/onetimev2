@@ -1,18 +1,17 @@
 # OT-83R Final Report
 
-Updated: 2026-07-16T12:09:14.5170247+03:00
+Updated: 2026-07-16T12:22:09.4140985+03:00
 
 Branch: `codex/ot83r-complete-portals`
 
 Draft PR: https://github.com/webcraft-media/onetimev2/pull/33
 
-Status: `PENDING_PR_CI`
+Status: `READY_FOR_OT99`
 
-`READY_FOR_OT99`: no. The implementation is complete locally and the final
-report exists, but the required PostgreSQL proof cannot be run on this machine
-because there is no local PostgreSQL target, `psql` is unavailable, Docker is
-unavailable, and `DATABASE_URL` is unset. The PR CI PostgreSQL lane must be green
-before this can be promoted to `READY_FOR_OT99`.
+`READY_FOR_OT99`: yes. The implementation is complete, the final report exists,
+the worktree was clean after the implementation commit, and PR #33 required CI
+was observed green for implementation commit
+`76eb6f698134471b10fb5de5979c1660b64494e5`.
 
 ## Completed Implementation
 
@@ -86,8 +85,14 @@ Blocked locally:
 - `docker --version` failed because Docker is not installed.
 - `Test-NetConnection 127.0.0.1:5432` reported no listener.
 
+CI passed on PR #33:
+
+- `Node 24 verify` - passed in 6m38s.
+- `PostgreSQL 16 assurance harness` - passed in 47s.
+- `PostgreSQL 16 learner-seat proof` - passed in 31s.
+
 ## Remaining Gate
 
-After this report is committed and pushed, PR #33 must report required CI green,
-including the PostgreSQL 16 learner-seat proof. Only then may
-`STATE.json`/`RESUME.md` be updated to `READY_FOR_OT99`.
+None for OT-83R. The PR remains a draft because it was already draft; this report
+does not perform production deploys, provider sends, DNS changes, payments, or
+real-user creation.
