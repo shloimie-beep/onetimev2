@@ -8,6 +8,8 @@ Branch: `codex/ops06-reliability-observability`
 
 Base: `codex/ops03-staging-readiness-repair` at `fb5f5eebc539afc9e93833e9417ee67524d62c36`
 
+Draft PR: <https://github.com/webcraft-media/onetimev2/pull/58>
+
 ## Implemented
 
 - Added OPS-06 operational contracts for metrics, queue health, worker heartbeat, health snapshots, and alerts.

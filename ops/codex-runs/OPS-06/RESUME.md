@@ -4,6 +4,8 @@ Current lane: `codex/ops06-reliability-observability` from base `fb5f5eebc539afc
 
 Current status: ready for review after local implementation and verification.
 
+Draft PR: <https://github.com/webcraft-media/onetimev2/pull/58>
+
 Passed:
 
 - `npm run typecheck`

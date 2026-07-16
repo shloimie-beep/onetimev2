@@ -3,6 +3,7 @@
   "branch": "codex/ops06-reliability-observability",
   "base_branch": "codex/ops03-staging-readiness-repair",
   "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/58",
   "worktree": "C:/Users/User/.overnight-20260717-worktrees/OPS-06",
   "status": "ready_for_review",
   "external_mutations": {
@@ -67,5 +68,5 @@
     "ops/codex-runs/OPS-06/evidence/load-backpressure.json",
     "ops/codex-runs/OPS-06/evidence/backup-restore.json"
   ],
-  "updated_at": "2026-07-17T01:58:51.5744277+03:00"
+  "updated_at": "2026-07-17T02:02:09.0000000+03:00"
 }
