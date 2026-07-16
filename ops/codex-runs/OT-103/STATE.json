@@ -6,7 +6,7 @@
   "branch": "codex/ot103-zoom-classroom-fulfillment",
   "worktree": "C:/Users/User/.ot103-worktrees/OT-103",
   "draft_pr_base": "codex/ops03-staging-readiness-repair",
-  "status": "local_verified_pending_push_and_pr",
+  "status": "draft_pr_open_local_verified_provider_canary_blocked",
   "started_at": "2026-07-16T19:17:00+03:00",
   "mode": "off_sink_default",
   "external_mutations_performed": false,
@@ -49,7 +49,8 @@
     "e2e": "passed: npx playwright test tests/e2e/ot88-zoom-classroom.spec.ts",
     "accessibility_performance": "passed: npx playwright test tests/accessibility/ot88-zoom-classroom-a11y.spec.ts tests/performance/ot88-zoom-classroom-performance.spec.ts"
   },
-  "draft_pr_url": null,
-  "pushed_sha": null,
-  "updated_at": "2026-07-16T22:36:51+03:00"
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/42",
+  "pushed_sha": "3175611cb53db16220133ed6631e999d21b348da",
+  "sha_note": "pushed_sha is the verified implementation commit recorded before this closeout metadata update",
+  "updated_at": "2026-07-16T22:45:00+03:00"
 }

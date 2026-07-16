@@ -1,6 +1,6 @@
 # OT-103 Final Report
 
-Status: locally verified, pending push and draft PR creation.
+Status: locally verified and draft PR opened. Real provider canary remains blocked for credentials/authorization only.
 
 ## Scope Completed
 
@@ -85,5 +85,6 @@ See `OPS04-INTEGRATION-DELTA.md` for the later overlay: protected config registr
 
 ## Push And PR
 
-- Pushed SHA: pending.
-- Draft PR: pending.
+- Pushed implementation SHA: `3175611cb53db16220133ed6631e999d21b348da`.
+- Draft PR: https://github.com/webcraft-media/onetimev2/pull/42.
+- Note: the branch also includes a small closeout metadata commit after the implementation SHA so this report can record the PR URL.
