@@ -82,6 +82,24 @@ export {
   type Ot104rVimeoWebhookReceiptResult,
 } from './content/vimeo-private-runtime.ts';
 export {
+  OT109_SCOPE,
+  Ot109PublisherError,
+  approveOt109TranscriptAndGenerateDrafts,
+  createDisabledOt109TranscriptionPort,
+  createDisabledOt109VimeoPort,
+  publishOt109ApprovedArtifacts,
+  registerOt109Source,
+  retrieveOt109HelperKnowledge,
+  revokeOt109Publication,
+  reviewOt109Artifact,
+  runOt109PublisherWorkerOnce,
+  type Ot109TranscriptionPort,
+  type Ot109VimeoPort,
+  type Ot109VimeoProcessingState,
+  type Ot109VimeoReference,
+  type Ot109VimeoStatus,
+} from './content/publisher.ts';
+export {
   OT86B_ALLOWED_TRANSITIONS,
   Ot86bSocialPublishingError,
   approveAndScheduleOt86bDraft,
