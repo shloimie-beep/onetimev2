@@ -6,7 +6,7 @@ Run date: 2026-07-16.
 
 - `npx prettier --check` on OPS-03-owned files: passed.
 - `git diff --check`: passed.
-- `npm run secret:scan`: passed across 890 repo text files after the final PostgreSQL placeholder repair.
+- `npm run secret:scan`: passed across 890 repo text files after the final PostgreSQL timestamp repair.
 - `npm run brand:check`: passed.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
@@ -14,19 +14,19 @@ Run date: 2026-07-16.
 
 ## Test Gates
 
-- `npm run unit`: passed, 29 test files / 156 tests.
+- `npm run unit`: passed, 29 test files / 157 tests.
 - `npm run integration`: passed, 26 test files / 129 tests after adding runtime metadata coverage.
 - Focused parent learner-access coverage:
   - `tests/ot-52/portal-services.test.ts`
   - `tests/integration/portals/portal-mount.test.ts`
   - `tests/ot-52/portal-router.test.ts`
-- PostgreSQL placeholder regression:
+- PostgreSQL placeholder and timestamp regression:
   - `tests/unit/account-lifecycle-sql.test.ts`
 - `npm run build`: passed.
 - `npm run e2e`: passed, 32 Playwright tests.
 - `npm run accessibility`: passed, 9 Playwright tests.
 - `npm run performance`: passed, 7 Playwright tests plus `scripts/check-bundles.ts`.
-- Post-runtime metadata and PostgreSQL placeholder reruns: `npm run e2e`, `npm run accessibility`, and `npm run performance` all passed again.
+- Post-runtime metadata and PostgreSQL timestamp reruns: `npm run e2e`, `npm run accessibility`, and `npm run performance` all passed again.
 
 ## Bundle Checker Output
 

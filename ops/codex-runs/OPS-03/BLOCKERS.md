@@ -18,3 +18,5 @@ Current status: no terminal blocker recorded.
 
 - Parent suspend/restore returned 500 on live PostgreSQL because `setStudentIdentityState` had an unused `$4` SQL parameter that `pg-mem` did not catch.
 - Repaired with contiguous placeholders and added `tests/unit/account-lifecycle-sql.test.ts`.
+- Parent restore then exposed a PostgreSQL-only timestamp typing error for `account_learner_identity_links.suspended_at`.
+- Repaired with an explicit `$5::timestamptz` cast and expanded the same unit SQL contract test.

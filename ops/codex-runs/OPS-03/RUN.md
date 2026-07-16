@@ -37,6 +37,8 @@
   - Live staging acceptance exposed a PostgreSQL-only failure in `setStudentIdentityState`: the account update query referenced `$5/$6` while passing an unused `$4` parameter.
   - `pg-mem` tolerated the unused placeholder, but real PostgreSQL returned `could not determine data type of parameter $4`, causing parent suspend/restore to return 500 after lifecycle mutation.
   - Repaired the query to use contiguous `$4/$5` placeholders and added a unit regression for the PostgreSQL parameter contract.
+  - Follow-up live restore exposed a PostgreSQL timestamp typing failure for `account_learner_identity_links.suspended_at`.
+  - Repaired the query to cast the nullable `$5` timestamp parameter as `timestamptz` and expanded the SQL contract regression.
 
 ## Gates Completed Before Commit
 
@@ -45,8 +47,8 @@
 - `npm run brand:check`: passed.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
-- `npm run unit`: passed, 29 files / 156 tests after final PostgreSQL placeholder repair.
-- `npm run integration`: passed, 26 files / 129 tests after final PostgreSQL placeholder repair.
+- `npm run unit`: passed, 29 files / 157 tests after final PostgreSQL timestamp repair.
+- `npm run integration`: passed, 26 files / 129 tests after final PostgreSQL timestamp repair.
 - `npm run build`: passed.
 - `npm run e2e`: passed, 32 browser tests.
 - `npm run accessibility`: passed, 9 browser tests.

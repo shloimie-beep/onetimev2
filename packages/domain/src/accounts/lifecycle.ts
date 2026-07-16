@@ -953,7 +953,7 @@ async function setStudentIdentityState(
     await client.query(
       `UPDATE onetime.account_learner_identity_links
           SET link_state = $4,
-              suspended_at = CASE WHEN $4 = 'suspended' THEN $5 ELSE NULL END
+              suspended_at = CASE WHEN $4 = 'suspended' THEN $5::timestamptz ELSE NULL END
         WHERE account_key = $1
           AND product_key = $2
           AND learner_key = $3`,

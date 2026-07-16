@@ -19,4 +19,19 @@ describe('account lifecycle PostgreSQL parameter contracts', () => {
     expect(updateBlock).toContain('updated_at = $5');
     expect(updateBlock).not.toContain('input.learnerKey');
   });
+
+  it('casts student identity-link suspended timestamp parameters for PostgreSQL', async () => {
+    const source = await readFile(
+      path.resolve('packages/domain/src/accounts/lifecycle.ts'),
+      'utf8',
+    );
+    const updateBlock = source.match(
+      /await client\.query\(\s*`UPDATE onetime\.account_learner_identity_links[\s\S]*?\],\s*\);/,
+    )?.[0];
+
+    expect(updateBlock).toBeTruthy();
+    expect(updateBlock).toContain(
+      "suspended_at = CASE WHEN $4 = 'suspended' THEN $5::timestamptz ELSE NULL END",
+    );
+  });
 });
