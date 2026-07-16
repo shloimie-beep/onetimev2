@@ -8,7 +8,7 @@ Branch: `codex/ops05-provider-control-center`
 
 Base: `codex/ops03-staging-readiness-repair` at `fb5f5eebc539afc9e93833e9417ee67524d62c36`
 
-The implementation is complete locally and ready for final secret scan, staging, commit, push, and draft PR creation.
+The implementation is complete, committed, pushed, and represented by draft PR `https://github.com/webcraft-media/onetimev2/pull/56`.
 
 ## Files To Inspect First
 
@@ -39,4 +39,4 @@ The implementation is complete locally and ready for final secret scan, staging,
 
 ## Remaining Work
 
-After commit and push, open a draft PR from `codex/ops05-provider-control-center` to `codex/ops03-staging-readiness-repair`. If the PR URL is obtained after this artifact is committed, record it in the final Codex response or a follow-up closeout commit.
+The remaining work is owned by the final conductor: mount live raw-body routes, connect durable workers, and run bounded staging canaries only after protected approval and configuration are present.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "lane": "OPS-05",
-  "status": "implemented_pending_commit_push_pr",
+  "status": "complete",
   "recorded_at": "2026-07-17T01:54:02.4897286+03:00",
   "worktree": "C:\\Users\\User\\.overnight-20260717-worktrees\\OPS-05",
   "repository": "webcraft-media/onetimev2",
@@ -13,8 +13,9 @@
   },
   "draft_pr": {
     "base": "codex/ops03-staging-readiness-repair",
-    "url": null,
-    "status": "pending_push_and_pr_creation"
+    "url": "https://github.com/webcraft-media/onetimev2/pull/56",
+    "status": "open_draft",
+    "number": 56
   },
   "implemented": [
     "Provider-neutral control center contracts for provider matrix, webhook endpoints, email readiness, and dry-run canary plans.",

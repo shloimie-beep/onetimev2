@@ -6,6 +6,8 @@ OPS-05 adds a provider-neutral, owner-only staging control plane and webhook con
 
 The branch corrects Resend webhook verification to use Svix/raw-body semantics, records canonical provider-specific endpoint requirements, adds non-secret email readiness checks, and exposes an internal owner-only dry-run canary planning surface. It does not enable real provider sends, provider configuration mutations, live charges, Buffer publication, DNS changes, deployment, or production data access.
 
+Draft PR: `https://github.com/webcraft-media/onetimev2/pull/56`
+
 ## Code Changed
 
 - `packages/contracts/src/providers/control-center.ts`
@@ -57,7 +59,7 @@ The branch corrects Resend webhook verification to use Svix/raw-body semantics, 
 
 ## Blockers
 
-None for the OPS-05 local implementation. Draft PR creation remains pending until the branch is pushed.
+None for the OPS-05 implementation, push, or draft PR.
 
 ## Guardrail Proof
 
