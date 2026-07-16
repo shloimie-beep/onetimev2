@@ -1,0 +1,225 @@
+{
+  "schema_version": 1,
+  "task_id": "OPS-04P",
+  "title": "One Time staging provider readiness inventory",
+  "status": "inventory_complete_provider_canaries_blocked",
+  "created_at": "2026-07-16T22:23:02+03:00",
+  "updated_at": "2026-07-16T22:23:02+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "worktree_path": "C:/Users/User/.ops04p-worktrees/OPS-04P",
+  "branch": "codex/ops04p-provider-readiness-inventory",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "prompt_source_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "inventory_branch_head_at_write": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
+  "staging": {
+    "origin": "https://ot99-web-staging.up.railway.app",
+    "railway_project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+    "environment": "staging",
+    "services_observed": [
+      {
+        "service": "ot99-web",
+        "process_type": "web",
+        "latest_deployment_status": "SUCCESS",
+        "public_url": "https://ot99-web-staging.up.railway.app"
+      },
+      {
+        "service": "ot99-worker",
+        "process_type": "worker",
+        "latest_deployment_status": "SUCCESS"
+      },
+      {
+        "service": "ot99-pg16",
+        "role": "database",
+        "latest_deployment_status": "SUCCESS",
+        "note": "Web and worker DATABASE_URL fingerprints matched this service during sanitized readback."
+      },
+      {
+        "service": "Postgres",
+        "role": "database",
+        "latest_deployment_status": "SUCCESS",
+        "note": "Additional database service observed; web and worker were not bound to this DATABASE_URL fingerprint."
+      }
+    ],
+    "public_read_only_checks": [
+      {
+        "url": "https://ot99-web-staging.up.railway.app/health",
+        "status": 200,
+        "body": {
+          "ok": true,
+          "service": "onetime-web"
+        }
+      },
+      {
+        "url": "https://ot99-web-staging.up.railway.app/version",
+        "status": 200,
+        "body": {
+          "version": "ops03-fb3c397",
+          "commit_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+          "target_app": "one-time"
+        }
+      },
+      {
+        "url": "https://ot99-web-staging.up.railway.app/ready",
+        "status": 200,
+        "body": {
+          "ok": true
+        }
+      }
+    ],
+    "non_secret_flag_readback": {
+      "ot99-web": {
+        "NODE_ENV": "production",
+        "PROCESS_TYPE": "web",
+        "OUTBOX_TRANSPORT_MODE": "sink",
+        "DELIVERY_TRANSPORT_MODE": "sink",
+        "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED": "false",
+        "ONE_TIME_RESEND_TRANSPORT_ENABLED": "false",
+        "ONE_TIME_WAPI_TRANSPORT_ENABLED": "false",
+        "ONE_TIME_RESEND_WEBHOOK_ENABLED": "false",
+        "ONE_TIME_WAPI_WEBHOOK_ENABLED": "false",
+        "ONE_TIME_PUBLIC_WHATSAPP_AUTOREPLY_ENABLED": "false",
+        "ONE_TIME_WHATSAPP_PROVIDER_ENV": "STAGING",
+        "ONE_TIME_WHATSAPP_STAGING_ISOLATED": "true",
+        "ONETIME_WHATSAPP_CANARY_AUTHORIZED": "false",
+        "ONE_TIME_TELEGRAM_ENVIRONMENT": "staging",
+        "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED": "false",
+        "ENABLE_REAL_EMAIL_TRANSPORT": "false",
+        "ENABLE_REAL_WHATSAPP_TRANSPORT": "false",
+        "ENABLE_REAL_TELEGRAM_TRANSPORT": "false",
+        "ENABLE_PAYMENT_TRANSPORT": "false",
+        "LIVE_STRIPE_CHARGES_AUTHORIZED": "NO",
+        "ENABLE_STRIPE_TEST_CHECKOUT": "false",
+        "ENABLE_STRIPE_TEST_PORTAL": "false",
+        "ENABLE_STRIPE_TEST_WEBHOOKS": "false",
+        "ENABLE_STRIPE_TEST_RECONCILIATION": "false",
+        "ZOOM_CLASSROOM_ENABLED": "true",
+        "ZOOM_CLASSROOM_PROVIDER_MODE": "sink",
+        "ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED": "false",
+        "ZOOM_CLASSROOM_CANARY_ENABLED": "false",
+        "ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED": "true",
+        "OT89_SUPPORT_ENABLED": "false",
+        "OT89_SUPPORT_DELIVERY_MODE": "disabled",
+        "OT89_MOCK_BNA_ENABLED": "false",
+        "RUN_MIGRATIONS_ON_STARTUP": "false"
+      },
+      "ot99-worker": {
+        "NODE_ENV": "production",
+        "PROCESS_TYPE": "worker",
+        "OUTBOX_TRANSPORT_MODE": "sink",
+        "DELIVERY_TRANSPORT_MODE": "sink",
+        "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED": "false",
+        "ONE_TIME_RESEND_TRANSPORT_ENABLED": "false",
+        "ONE_TIME_WAPI_TRANSPORT_ENABLED": "false",
+        "ONE_TIME_RESEND_WEBHOOK_ENABLED": "false",
+        "ONE_TIME_WAPI_WEBHOOK_ENABLED": "false",
+        "ONE_TIME_PUBLIC_WHATSAPP_AUTOREPLY_ENABLED": "false",
+        "ONE_TIME_WHATSAPP_PROVIDER_ENV": "STAGING",
+        "ONE_TIME_WHATSAPP_STAGING_ISOLATED": "true",
+        "ONETIME_WHATSAPP_CANARY_AUTHORIZED": "false",
+        "ONE_TIME_TELEGRAM_ENVIRONMENT": "staging",
+        "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED": "false",
+        "ENABLE_REAL_EMAIL_TRANSPORT": "false",
+        "ENABLE_REAL_WHATSAPP_TRANSPORT": "false",
+        "ENABLE_REAL_TELEGRAM_TRANSPORT": "false",
+        "ENABLE_PAYMENT_TRANSPORT": "false",
+        "LIVE_STRIPE_CHARGES_AUTHORIZED": "NO",
+        "ENABLE_STRIPE_TEST_CHECKOUT": "false",
+        "ENABLE_STRIPE_TEST_PORTAL": "false",
+        "ENABLE_STRIPE_TEST_WEBHOOKS": "false",
+        "ENABLE_STRIPE_TEST_RECONCILIATION": "false",
+        "ZOOM_CLASSROOM_ENABLED": "true",
+        "ZOOM_CLASSROOM_PROVIDER_MODE": "sink",
+        "ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED": "false",
+        "ZOOM_CLASSROOM_CANARY_ENABLED": "false",
+        "ZOOM_CLASSROOM_COMPONENT_VIEW_ENABLED": "true",
+        "OT89_SUPPORT_ENABLED": "false",
+        "OT89_SUPPORT_DELIVERY_MODE": "disabled",
+        "OT89_MOCK_BNA_ENABLED": "false",
+        "RUN_MIGRATIONS_ON_STARTUP": "false"
+      }
+    }
+  },
+  "read_only_scope": {
+    "provider_api_calls_made": [],
+    "public_staging_http_gets": [
+      "/health",
+      "/version",
+      "/ready"
+    ],
+    "railway_read_only_operations": [
+      "service list",
+      "status",
+      "variable list with sanitized/non-secret output"
+    ],
+    "provider_mutation_counts": {
+      "email_sends": 0,
+      "whatsapp_sends": 0,
+      "telegram_sends": 0,
+      "telegram_webhook_mutations": 0,
+      "zoom_meetings_or_registrants": 0,
+      "vimeo_uploads_or_changes": 0,
+      "stripe_sessions_customers_subscriptions_charges": 0,
+      "buffer_posts_or_schedules": 0,
+      "railway_variable_or_deploy_mutations": 0,
+      "dns_or_production_mutations": 0,
+      "bna_runtime_mutations": 0
+    }
+  },
+  "provider_status_summary": [
+    {
+      "provider": "Resend/current One Time email provider",
+      "status": "SINK_ONLY"
+    },
+    {
+      "provider": "Meta WhatsApp Cloud or selected WAPI/Whapi",
+      "status": "SINK_ONLY"
+    },
+    {
+      "provider": "Telegram Bot API",
+      "status": "UNCONFIGURED"
+    },
+    {
+      "provider": "Zoom",
+      "status": "SINK_ONLY"
+    },
+    {
+      "provider": "Vimeo",
+      "status": "UNCONFIGURED"
+    },
+    {
+      "provider": "Stripe TEST",
+      "status": "UNCONFIGURED"
+    },
+    {
+      "provider": "Buffer",
+      "status": "UNCONFIGURED"
+    },
+    {
+      "provider": "OpenAI/provider-neutral retrieval runtime",
+      "status": "UNCONFIGURED"
+    },
+    {
+      "provider": "BNA signed support-event ingress",
+      "status": "UNCONFIGURED"
+    },
+    {
+      "provider": "BNA content-publication ingress",
+      "status": "UNCONFIGURED"
+    }
+  ],
+  "deliverables": [
+    "ops/codex-runs/OPS-04P/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/OPS-04P/STATE.json",
+    "ops/codex-runs/OPS-04P/PROVIDER-MATRIX.json",
+    "ops/codex-runs/OPS-04P/PROVIDER-MATRIX.md",
+    "ops/codex-runs/OPS-04P/CANARY-ORDER.md",
+    "ops/codex-runs/OPS-04P/FINAL-REPORT.md",
+    "ops/codex-runs/OPS-04P/RESUME.md"
+  ],
+  "validation": {
+    "json_parse": "passed: STATE.json and PROVIDER-MATRIX.json parsed with node",
+    "secret_scan": "passed: npm run secret:scan across 910 repo text files including OPS-04P deliverables",
+    "git_diff_check": "passed",
+    "provider_mutation_confirmation": "No external provider, Railway runtime, DNS, production, BNA runtime, or messaging mutation was performed."
+  }
+}
