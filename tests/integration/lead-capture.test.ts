@@ -168,11 +168,11 @@ describe('lead capture transaction', () => {
   it('sink worker delivers deterministic intents without external transport', async () => {
     await captureLead({ pool, config, payload, now: beforeReminder });
     const sink = await processOutboxSink(pool);
-    expect(sink.delivered).toBe(2);
+    expect(sink.delivered).toBe(3);
     const rows = await pool.query(
       "SELECT count(*)::int AS delivered FROM onetime.outbox_events WHERE status = 'sink_delivered'",
     );
-    expect(rows.rows[0].delivered).toBe(2);
+    expect(rows.rows[0].delivered).toBe(3);
   });
 });
 
