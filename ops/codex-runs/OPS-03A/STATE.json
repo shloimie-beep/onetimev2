@@ -7,13 +7,13 @@
   "base_ref": "integration/ot-99-final-semantic-convergence-20260716T122407Z",
   "base_sha": "96b429053d13a139595ed3bd0ea3c854cc2500e8",
   "starting_head_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
-  "current_head_sha": "96a40e0008858ac4c9574f9a2c322637f4f2098c",
+  "current_head_sha": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
   "staging_url": "https://ot99-web-staging.up.railway.app",
   "railway_project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
   "railway_project_name": "one-time-ot99-staging-96b42905",
-  "status": "implementation_complete_staging_deploy_pending",
+  "status": "staging_deployed_pr_green_canary_blocked",
   "prompt_sha256": "25405B3376EB7A6379159DF212DD9E9764025A257F2B014F261C4E837AD980D4",
-  "updated_at": "2026-07-16T22:14:30+03:00",
+  "updated_at": "2026-07-16T22:40:00+03:00",
   "authorization": {
     "production_deployments": false,
     "dns_changes": false,
@@ -133,17 +133,33 @@
     {
       "phase": 6,
       "name": "Staging deployment and one-email canary",
-      "status": "implementation_ready_deploy_pending_canary_blocked",
+      "status": "staging_deployed_canary_blocked",
       "completed_items": [
         "Confirmed Railway CLI is linked to isolated staging project one-time-ot99-staging-96b42905, environment staging, project ID 7c8eee26-7a6a-4684-826d-9f4377d67d46.",
-        "Checked required Railway variable names through a local parser without printing raw values."
+        "Checked required Railway variable names through a local parser without printing raw values.",
+        "Committed and pushed OPS-03A implementation and PR #40 CI repair through f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b.",
+        "PR #40 checks passed at f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b: Node 24 verify, PostgreSQL 16 assurance harness, PostgreSQL 16 learner-seat proof, and Static release readiness gates.",
+        "Deployed exact local PR source to isolated Railway staging web deployment 7855ced9-5ece-4ca9-bc4c-2bc2659c4ed1 and worker deployment 213c84f9-6b6c-496f-bb1a-6b6c92444d45.",
+        "Applied migrations 2008_ops03a_lifecycle_delivery_outbox and 2009_ops03a_activation_mfa_handoffs to isolated ot99-pg16.",
+        "Live smokes passed for /health, /ready, /version, /activate, /forgot-password, /reset-password, and /login forgot-password copy."
       ],
       "pending_items": [
-        "Commit and push the implementation checkpoint.",
-        "Deploy the exact pushed SHA to ot99-web and ot99-worker.",
-        "Run migrations against isolated ot99-pg16.",
-        "Run /health, /ready, /version live smokes."
+        "Real one-email activation canary remains blocked until protected runtime variables are configured."
       ],
+      "deployment": {
+        "implementation_sha": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
+        "web_deployment_id": "7855ced9-5ece-4ca9-bc4c-2bc2659c4ed1",
+        "worker_deployment_id": "213c84f9-6b6c-496f-bb1a-6b6c92444d45",
+        "version_endpoint": {
+          "version": "ops03a-f7647b9",
+          "commit_sha": "f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b",
+          "target_app": "one-time"
+        }
+      },
+      "migration_evidence": {
+        "2008_ops03a_lifecycle_delivery_outbox": "applied fa5bdd70675acfa26a6bb891f2606428263d266886de89f199ee298457883429",
+        "2009_ops03a_activation_mfa_handoffs": "applied bdc3d4da2b1cca0b027119cc93609b87eba20a6eab8fce4320c140db9ef83f1b"
+      },
       "email_canary_status": "blocked_missing_protected_runtime",
       "missing_protected_runtime_variables": [
         "ONE_TIME_OWNER_TEST_EMAIL",

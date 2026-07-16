@@ -30,3 +30,13 @@
 
 - Decision: Owner/admin activation returns a short-lived MFA handoff after password creation, and creates the normal session only after TOTP verification and recovery-code saved acknowledgement.
 - Reason: The prompt requires owner/admin MFA enrollment and recovery-code acknowledgement before dashboard access.
+
+## 2026-07-16 - Run staging migration through existing TCP proxy
+
+- Decision: Use the existing active `ot99-pg16` Railway TCP proxy to run the isolated staging migration, with credentials kept in process environment and no database URL printed.
+- Reason: `railway run` executes locally and the private `ot99-pg16.railway.internal` hostname does not resolve off Railway; `railway ssh` was blocked by missing registered SSH keys and no account-level SSH mutation was authorized.
+
+## 2026-07-16 - Redeploy local PR source after staging metadata update
+
+- Decision: After setting non-secret staging `APP_VERSION` and `COMMIT_SHA`, redeploy `ot99-web` and `ot99-worker` from the local PR worktree instead of accepting Railway's GitHub-source redeploy.
+- Reason: Railway's variable-triggered redeploy used the older configured GitHub source branch/SHA. The final staging deployments must reflect the PR #40 implementation source and report the correct `/version` SHA.

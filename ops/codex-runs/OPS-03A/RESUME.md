@@ -1,6 +1,6 @@
 # OPS-03A Resume
 
-Updated: 2026-07-16T22:14:30+03:00
+Updated: 2026-07-16T22:40:00+03:00
 
 ## Current State
 
@@ -9,8 +9,8 @@ Updated: 2026-07-16T22:14:30+03:00
 - Branch: `codex/ops03-staging-readiness-repair`
 - PR: https://github.com/webcraft-media/onetimev2/pull/40
 - Starting SHA: `fb3c397ce8ece100cf7873fdddcd940a1552ea9b`
-- Current pushed SHA: `96a40e0008858ac4c9574f9a2c322637f4f2098c`
-- Current local state: Phases 2-5 are implemented and verified locally. Commit/push/deploy is next.
+- Current pushed SHA: `f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b`
+- Current local state: Implementation is deployed to isolated staging and PR #40 checks are green. Real canary remains blocked by protected runtime.
 
 ## Completed
 
@@ -27,6 +27,12 @@ Updated: 2026-07-16T22:14:30+03:00
 - Wired owner/admin activation through password creation, TOTP enrollment, recovery-code acknowledgement, and then session creation.
 - Wired generic forgot-password and password reset with session revocation.
 - Wired lifecycle delivery processing into the existing sink worker loop.
+- Pushed implementation commit `b34eb0bf54c7583fff0ded11551cfbea7c33fc78`.
+- Repaired the CI migration-ledger expectation and pushed commit `f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b`.
+- PR #40 checks passed at `f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b`.
+- Deployed local PR source to isolated Railway staging web deployment `7855ced9-5ece-4ca9-bc4c-2bc2659c4ed1` and worker deployment `213c84f9-6b6c-496f-bb1a-6b6c92444d45`.
+- Applied migrations `2008_ops03a_lifecycle_delivery_outbox` and `2009_ops03a_activation_mfa_handoffs` to isolated `ot99-pg16`.
+- Live smokes passed for `/health`, `/ready`, `/version`, `/activate`, `/forgot-password`, `/reset-password`, and `/login` copy.
 
 ## Verified Locally
 
@@ -54,17 +60,23 @@ The real one-email canary is blocked by missing protected Railway variables on b
 
 No destination was inferred or substituted, and no real email was sent.
 
+## Staging Evidence
+
+- URL: `https://ot99-web-staging.up.railway.app`
+- `/version`: `ops03a-f7647b9`, commit `f7647b9dad7b54e1e31fe38aa7a53c1b3a3b5e0b`
+- Web deployment ID: `7855ced9-5ece-4ca9-bc4c-2bc2659c4ed1`
+- Worker deployment ID: `213c84f9-6b6c-496f-bb1a-6b6c92444d45`
+- Migration `2008_ops03a_lifecycle_delivery_outbox`: `fa5bdd70675acfa26a6bb891f2606428263d266886de89f199ee298457883429`
+- Migration `2009_ops03a_activation_mfa_handoffs`: `bdc3d4da2b1cca0b027119cc93609b87eba20a6eab8fce4320c140db9ef83f1b`
+
 ## Known Caveat
 
 `npm run format` on Windows still reports broad pre-existing repository formatting/line-ending drift. Do not run `npm run format:write` repo-wide as an OPS-03A repair. GitHub Actions on Linux is the authoritative full-format check for PR #40.
 
 ## Next Commands
 
-1. Commit and push the OPS-03A implementation checkpoint.
-2. Deploy the exact pushed SHA to isolated Railway staging services `ot99-web` and `ot99-worker`.
-3. Run migrations against isolated `ot99-pg16`.
-4. Smoke `https://ot99-web-staging.up.railway.app/health`, `/ready`, and `/version`.
-5. Leave the real email canary blocked until the protected runtime variables above are configured.
+1. Leave the real email canary blocked until the protected runtime variables above are configured.
+2. Do not merge PR #40 from automation.
 
 ## Do Not Do
 
