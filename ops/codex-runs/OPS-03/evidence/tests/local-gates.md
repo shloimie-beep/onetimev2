@@ -6,7 +6,7 @@ Run date: 2026-07-16.
 
 - `npx prettier --check` on OPS-03-owned files: passed.
 - `git diff --check`: passed.
-- `npm run secret:scan`: passed across 890 repo text files after the final PostgreSQL timestamp repair.
+- `npm run secret:scan`: passed across 892 repo text files after adding sanitized live acceptance evidence.
 - `npm run brand:check`: passed.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.

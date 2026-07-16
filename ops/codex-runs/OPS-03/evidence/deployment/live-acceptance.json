@@ -1,0 +1,131 @@
+{
+  "base_url": "https://ot99-web-staging.up.railway.app",
+  "generated_at": "2026-07-16T18:20:32.293Z",
+  "checks": [
+    {
+      "name": "admin_login",
+      "route": "/app/crm",
+      "mfa_prompt_answered": true,
+      "status": "passed"
+    },
+    {
+      "name": "crm_ui",
+      "status": "passed"
+    },
+    {
+      "name": "owner_login",
+      "route": "/app/dashboard",
+      "mfa_prompt_answered": true,
+      "status": "passed"
+    },
+    {
+      "name": "owner_classes_ui",
+      "provider_url_leakage": false,
+      "status": "passed"
+    },
+    {
+      "name": "owner_content_ui",
+      "provider_url_leakage": false,
+      "status": "passed"
+    },
+    {
+      "name": "owner_billing_ui",
+      "provider_url_leakage": false,
+      "status": "passed"
+    },
+    {
+      "name": "billing_disabled_state",
+      "billing_state": "ready",
+      "provider_mutations": "none",
+      "status": "passed"
+    },
+    {
+      "name": "student_login",
+      "route": "/app/student",
+      "mfa_prompt_answered": false,
+      "status": "passed"
+    },
+    {
+      "name": "student_portal_api",
+      "class_count": 1,
+      "content_count": 2,
+      "status": "passed"
+    },
+    {
+      "name": "student_provider_leakage_guard",
+      "status": "passed"
+    },
+    {
+      "name": "parent_login",
+      "route": "/app/parent",
+      "mfa_prompt_answered": false,
+      "status": "passed"
+    },
+    {
+      "name": "parent_student_access_setup_reset_suspend_restore",
+      "status": "passed"
+    },
+    {
+      "name": "parent_cross_household_isolation",
+      "http_status": 404,
+      "status": "passed"
+    },
+    {
+      "name": "parent_provider_leakage_guard",
+      "status": "passed"
+    },
+    {
+      "name": "parent_billing_disabled_state",
+      "status": "passed"
+    },
+    {
+      "name": "viewer_login",
+      "route": "/app/parent",
+      "mfa_prompt_answered": false,
+      "status": "passed"
+    },
+    {
+      "name": "viewer_parent_write_isolation",
+      "status": "passed"
+    }
+  ],
+  "screenshots": [
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-admin-crm-1440x1000.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-owner-dashboard-1440x1000.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-student-portal-360x800.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-student-portal-390x844.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-student-portal-768x1024.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-student-portal-1440x1000.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-parent-portal-360x800.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-parent-portal-390x844.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-parent-portal-768x1024.png",
+    "ops/codex-runs/OPS-03/evidence/screenshots/live-parent-portal-1440x1000.png"
+  ],
+  "mutations": [
+    {
+      "operation": "setup",
+      "resulting_status": "setup_requested"
+    },
+    {
+      "operation": "suspend",
+      "resulting_status": "suspended"
+    },
+    {
+      "operation": "restore",
+      "resulting_status": "active"
+    },
+    {
+      "operation": "reset",
+      "resulting_status": "reset_requested"
+    },
+    {
+      "operation": "restore",
+      "resulting_status": "active"
+    }
+  ],
+  "summary": {
+    "status": "passed",
+    "check_count": 17,
+    "failed_count": 0
+  }
+}

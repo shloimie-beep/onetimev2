@@ -56,13 +56,12 @@
 - `npm run db:verify` against `ot99-pg16`: passed, 22 migrations.
 - `npm run format`: repository-wide check remains blocked by pre-existing baseline Prettier drift; scoped OPS-03 file formatting and `git diff --check` passed.
 
-## Pending At This Point
+## Final Evidence Commit
 
-- Commit repaired branch.
-- Set staging web/worker variables to the PG16 database and staging public origin.
-- Redeploy exact repaired SHA to staging and prove Docker builder.
-- Run live staging acceptance and capture OPS-03 screenshots.
-- Push branch and open draft PR.
+- Live staging acceptance passed with 17 checks and 0 failures.
+- Captured sanitized acceptance report and screenshots under `ops/codex-runs/OPS-03/evidence/`.
+- Re-ran `npm run secret:scan` after adding acceptance evidence; passed across 892 repo text files.
+- Final branch-head deployment and draft PR are the remaining closeout steps.
 
 ## Deployment Iteration
 

@@ -1,6 +1,6 @@
 {
   "task_id": "OPS-03",
-  "status": "in_progress",
+  "status": "ready",
   "repository": "webcraft-media/onetimev2",
   "branch": "codex/ops03-staging-readiness-repair",
   "base_sha": "96b429053d13a139595ed3bd0ea3c854cc2500e8",
@@ -24,5 +24,14 @@
     "old_postgres_volume_id": "8d070607-8692-4c1a-88cd-0231fb593e68"
   },
   "local_private_handoff": "C:\\Users\\User\\.ops03-runtime\\OPS-03\\ops03-handoff\\OPS-03-LOGIN-HANDOFF.private.json",
-  "last_updated": "2026-07-16T20:10:16+03:00"
+  "certification": {
+    "live_acceptance": "passed",
+    "live_acceptance_report": "ops/codex-runs/OPS-03/evidence/deployment/live-acceptance.json",
+    "screenshots": "ops/codex-runs/OPS-03/evidence/screenshots/",
+    "production_untouched": true,
+    "dns_untouched": true,
+    "bna_runtime_untouched": true,
+    "real_sends_charges_and_provider_canaries_untouched": true
+  },
+  "last_updated": "2026-07-16T21:21:00+03:00"
 }
