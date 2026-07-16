@@ -1,0 +1,488 @@
+{
+  "blockers": [
+    {
+      "area": "OT-83R",
+      "minimum_next_evidence": "Publish a completion report tied to 04ca004e22b2c1e1ffaf710a3211eabcd3180f32 or a newer remote head, with passing exact-SHA CI and scope verification.",
+      "owner": "OT-83R lane",
+      "reason": "No inspectable completion/checkpoint/final report at remote head and PR #33 says implementation/tests/final report are pending."
+    },
+    {
+      "area": "OT-88",
+      "minimum_next_evidence": "Publish complete OT-88 implementation/report with passing exact-SHA CI or a documented acceptable blocker.",
+      "owner": "OT-88 lane",
+      "reason": "Report and PR are implementation-pending recovery checkpoint; exact-SHA Node 24 verify failed."
+    },
+    {
+      "area": "OT-89A",
+      "minimum_next_evidence": "Publish completed support producer implementation/report with passing exact-SHA CI and contract evidence.",
+      "owner": "OT-89A lane",
+      "reason": "Report says not final and implementation/tests/migration/final acceptance are pending; exact-SHA Node 24 verify failed."
+    },
+    {
+      "area": "OPS-09",
+      "minimum_next_evidence": "Publish completed fleet report and exact-SHA verification for branch-fleet CI repair.",
+      "owner": "OPS-09 lane",
+      "reason": "Fleet report status is In progress and branch has no check runs."
+    }
+  ],
+  "bna_dependency": {
+    "code_imported_into_one_time": false,
+    "evidence": [
+      "OT-89B remains external; no BNA code imported; OT-99 stopped before OT-89A producer validation."
+    ],
+    "protocol_compatibility": "not_run",
+    "readiness": "not_run",
+    "system": "BNA",
+    "task": "OT-89B"
+  },
+  "components": [
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "landing",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "signup",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "crm",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "portals",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "rabbi_auth",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "telegram_ot_84",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "zoom_ot_88",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "support_producer_ot_89a",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "whatsapp_ot_85",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "vimeo_content_kb_ot_86a",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "buffer_ot_86b",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "stripe_test_entitlements_ot_87",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    },
+    {
+      "canary_passed": "not_run",
+      "code_present": "not_run",
+      "component": "support_consumer_bna_ot_89b",
+      "configured": "not_run",
+      "evidence": [
+        "OT-99 stopped at blocked_preintegration gate before component integration or staging."
+      ],
+      "integrated": "no",
+      "production_live": "no",
+      "staging_accepted": "not_run"
+    }
+  ],
+  "foundation": null,
+  "generated_at_utc": "2026-07-16T06:47:24Z",
+  "integration": null,
+  "migrations": {
+    "evidence": [
+      "No migration renumbering started because OT-99 convergence gate is closed."
+    ],
+    "status": "blocked"
+  },
+  "outcome": "blocked_preintegration",
+  "packet_id": "OT-99-bcd34498",
+  "prohibitions": {
+    "automatic_buffer_post": false,
+    "broad_send": false,
+    "hard_delete": false,
+    "live_stripe_charge": false,
+    "production_contact_import": false,
+    "production_declared": false,
+    "root_dns_changed": false
+  },
+  "pull_request": {
+    "base": null,
+    "created": false,
+    "draft": null,
+    "head": null,
+    "number": null,
+    "sha": null,
+    "url": null
+  },
+  "rabbi_access": {
+    "actions_disabled": [
+      {
+        "action": "OT-99 semantic convergence",
+        "reason": "Required prerequisite evidence missing/incomplete."
+      }
+    ],
+    "actions_work": [],
+    "can_log_in": "not_run",
+    "evidence": [
+      "No OT-99 integration or staging environment exists because the preintegration gate is closed."
+    ]
+  },
+  "repository": "webcraft-media/onetimev2",
+  "rollback": [
+    {
+      "area": "preintegration checkpoint",
+      "evidence": [
+        "git diff is limited to artifacts/OT-99 evidence files."
+      ],
+      "procedure": "No integration edits, migration changes, staging deploys, provider actions, or production mutations occurred; rollback is closing/deleting this checkpoint branch if desired.",
+      "tested": false
+    }
+  ],
+  "shortest_route_to_live": [
+    "Complete and publish OT-83R with a real completion report and passing exact-SHA CI.",
+    "Complete OT-88 and OT-89A or mark them explicitly blocked with acceptable contracts.",
+    "Complete OPS-09 fleet report with exact-SHA evidence.",
+    "Rerun OT-99 discovery; only if the gate opens, create integration line from verified OT-83R SHA and perform semantic convergence."
+  ],
+  "staging": {
+    "artifact_digest": null,
+    "authorized": false,
+    "deployed": false,
+    "isolated": false,
+    "protected_canaries": [],
+    "provider_off_synthetics": "not_run",
+    "sha": null,
+    "url": null
+  },
+  "task_id": "OT-99",
+  "tests": [
+    {
+      "category": "unit",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "integration",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "browser",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "accessibility",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "security",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "privacy",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "secret",
+      "commands": [
+        "Independent packet secret scan: passed; packet-native verifier: passed"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "passed"
+    },
+    {
+      "category": "pii",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "provider_url",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "bundle",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "request",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "performance",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "concurrency",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "role",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "account",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "household",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "sibling",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "every_visible_action",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "provider_outage",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    },
+    {
+      "category": "migration",
+      "commands": [
+        "not_run: OT-99 integration gate closed before validation phase"
+      ],
+      "evidence": [
+        "artifacts/OT-99/preflight/prerequisite-audit.json"
+      ],
+      "exact_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+      "result": "blocked"
+    }
+  ]
+}

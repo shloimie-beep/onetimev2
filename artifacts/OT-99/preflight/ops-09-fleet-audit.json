@@ -1,0 +1,33 @@
+﻿{
+    "task_id":  "OT-99",
+    "audited_prerequisite":  "OPS-09 fleet report",
+    "generated_at_utc":  "2026-07-16T06:47:24Z",
+    "branch":  "codex/ops09-branch-fleet-ci-repair",
+    "head_sha":  "738b0794d9f2420f1c82d2f08ee5b95bbd341244",
+    "pull_request":  {
+                         "number":  35,
+                         "url":  "https://github.com/webcraft-media/onetimev2/pull/35",
+                         "state":  "OPEN",
+                         "draft":  true,
+                         "base":  "main"
+                     },
+    "report_paths":  [
+                         "ops/codex-runs/OPS-09/FLEET-REPORT.md"
+                     ],
+    "report_status":  "in_progress",
+    "ci_state":  "unavailable",
+    "migrations":  [
+
+                   ],
+    "ancestry":  {
+                     "base":  "main",
+                     "base_is_ancestor":  true,
+                     "merge_base":  "610b585f3d221addd4e7b824c92a5cc256cffcf9"
+                 },
+    "gate_disposition":  "blocked_not_complete",
+    "evidence":  [
+                     "FLEET-REPORT.md contains Status: In progress.",
+                     "PR #35 body says branch-local repairs have not been applied.",
+                     "No check runs or workflow runs exist for the exact OPS-09 SHA."
+                 ]
+}

@@ -1,0 +1,13 @@
+TASK_ID,LANE,SYSTEM,DEPENDS_ON,ORDER,REMOTE_EVIDENCE,INTEGRATION_ACTION,DOUBLE_MERGE_RULE,DECISION_RECORD
+OT-99,OT-81/OT-82,One Time,none,ancestry-only,"PRs, heads, lineage",Do not independently merge when already contained in OT-83R; preserve ancestry,Skip any head already reachable from OT-83R,Record lineage SHAs
+OT-99,PR #24/#25,One Time,OT-81,before lane merges,"Both PR heads, merge base, unique commits and patches",Use #24 descendant lineage; selectively incorporate only useful unique #25 delta,Never merge both histories blindly,Record each unique #25 commit decision
+OT-99,OT-83,One Time,OT-81/OT-82,ancestry-only,Audited partial head and report,Do not use partial OT-83 as final foundation,Skip when contained in completed OT-83R,Record partial status evidence
+OT-99,OT-83R,One Time,OT-83,foundation,"Remote head, completion report, exact-SHA CI, scope",Create clean integration branch exactly from latest verified completed head,Only one selected foundation,Candidate adjudication JSON
+OT-99,OT-84,One Time,OT-83R,1,"Remote head, checkpoint/final report, exact-SHA CI",Ordinary history merge with semantic conflict resolution,Skip when ancestor of current head or contained in selected descendant,Merge evidence JSON
+OT-99,OT-88,One Time,OT-84,2,"Remote head, checkpoint/final report, exact-SHA CI",Merge after OT-84,Do not remerge OT-84 if OT-88 already contains it,Merge evidence JSON
+OT-99,OT-89A,One Time,OT-84,3,"Remote head, checkpoint/final report, exact-SHA CI",Merge after OT-84; validate producer contract independently of BNA,Do not remerge OT-84 if OT-89A already contains it,Merge evidence JSON
+OT-99,OT-85,One Time,OT-83R,4,"Remote head, checkpoint/final report, exact-SHA CI",Ordinary history merge with semantic conflict resolution,Skip when already reachable,Merge evidence JSON
+OT-99,OT-86A,One Time,OT-83R,5,"Remote head, checkpoint/final report, exact-SHA CI",Ordinary history merge with semantic conflict resolution,Skip when already reachable,Merge evidence JSON
+OT-99,OT-86B,One Time,OT-86A,6,"Remote head, checkpoint/final report, exact-SHA CI",Merge after OT-86A; retain approval-only publishing,Do not remerge OT-86A if descendant contains it,Merge evidence JSON
+OT-99,OT-87,One Time,OT-83R,7,"Remote head, checkpoint/final report, exact-SHA CI",Ordinary history merge; Stripe TEST only,Skip when already reachable,Merge evidence JSON
+OT-99,OT-89B,BNA,OT-89A protocol,external,BNA report or linked evidence when accessible,Represent asynchronous readiness without importing BNA code,Never merge BNA history into One Time,External dependency manifest entry

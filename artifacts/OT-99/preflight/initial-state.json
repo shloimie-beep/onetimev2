@@ -1,0 +1,13 @@
+{
+  "branch": "",
+  "captured_at_utc": "2026-07-16T12:21:46Z",
+  "copy_to_repository_requires_redaction": true,
+  "head_sha": "4e76d4a1a197215dc5ce1e3855d29686e7f40e2a",
+  "integration_edits_started": false,
+  "origin_url_redacted": "https://github.com/webcraft-media/onetimev2.git",
+  "packet_id": "OT-99-bcd34498",
+  "repository_root": "C:\\Users\\User\\.ot99-worktrees\\OT-99",
+  "secret_scan_status": "not_run",
+  "state_directory": "C:\\Users\\User\\AppData\\Local\\Temp\\ot99-state\\20260716T122144Z-4e76d4a1a197-334324a8",
+  "task_id": "OT-99"
+}
