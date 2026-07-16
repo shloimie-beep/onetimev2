@@ -142,7 +142,7 @@ export async function acceptOwnerAdminInvitation(input: {
         tokenKey: token.token_key,
         metadata: { target_role: token.target_role },
       });
-      return completion(userKey, token.target_role, 'active', true, 0);
+      return completion(userKey, token.target_role, 'active', false, 0);
     },
   });
 }
@@ -485,7 +485,7 @@ export async function completePasswordReset(input: {
         userKey,
         lifecycleRoleFromUserRole(String(user.role)),
         'active',
-        ['owner', 'admin'].includes(String(user.role)),
+        false,
         sessionsInvalidated,
       );
     },
@@ -531,7 +531,7 @@ export async function inspectAccountLifecycleToken(input: {
     token_type: token.token_type,
     target_role: token.target_role,
     expires_at: token.expires_at.toISOString(),
-    mfa_required: token.target_role === 'owner' || token.target_role === 'admin',
+    mfa_required: false,
   };
 }
 

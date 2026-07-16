@@ -36,9 +36,6 @@ import {
   ownerDashboardResponseSchema,
   leadPayloadSchema,
   loginPayloadSchema,
-  mfaChallengePayloadSchema,
-  mfaEnrollmentPayloadSchema,
-  mfaRecoveryPayloadSchema,
   publicFieldErrors,
   updateContactSchema,
   assigneeListResponseSchema,
@@ -61,7 +58,6 @@ import {
   acceptOwnerAdminInvitation,
   acceptParentActivation,
   acceptStudentSetup,
-  activateTotpEnrollment,
   admitContentOutcome,
   authenticateUser,
   canEditContacts,
@@ -76,11 +72,10 @@ import {
   createContentPortalAccessAdapter,
   createLoginCsrf,
   createParentPortalService,
-  createPostActivationMfaHandoff,
   createSession,
-  consumePostActivationMfaHandoff,
   consumeWhatsAppAccountLink,
   createStudentPortalService,
+  resendEmailChallenge,
   getClassOccurrenceDetail,
   getContentItemDetail,
   getContactDetail,
@@ -95,19 +90,18 @@ import {
   ownerAdminVisibleActions,
   inspectOt86bBufferReadinessFromEnv,
   listOt86bSocialDrafts,
-  provisionTotpEnrollment,
   receiveOt86PublicationManifest,
   receiveOt86bSocialEvent,
   requestPasswordReset,
-  replaceMfaRecoveryCodes,
-  revokeMfaFactors,
+  revokeTrustedDevice,
   revokeSession,
   rotateSessionCsrf,
   receiveWhatsAppWebhook,
   updateContact,
+  verifyEmailChallengeCode,
+  verifyEmailChallengeLink,
   verifyLoginCsrf,
-  verifyMfaChallenge,
-  verifyMfaRecoveryChallenge,
+  verifyRecentEmailAssurance,
   verifySessionCsrf,
   verifyWhatsAppWebhookChallenge,
   type AuthenticatedSession,
@@ -153,6 +147,7 @@ type AppDeps = {
 
 const SESSION_COOKIE = 'otcrm_session';
 const CSRF_COOKIE = 'otcrm_csrf';
+const TRUSTED_DEVICE_COOKIE = 'otcrm_trusted_device';
 type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
 const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
   (tokenType) => tokenType !== 'password_reset',
@@ -173,12 +168,22 @@ const forgotPasswordApiPayloadSchema = z.object({
 const resetPasswordApiPayloadSchema = tokenCompletionPayloadSchema.extend({
   csrf_token: z.string().trim().min(16).max(160),
 });
-const postActivationMfaPayloadSchema = mfaEnrollmentPayloadSchema.extend({
-  handoff_token: z.string().trim().min(32).max(200),
+const emailChallengeVerifyPayloadSchema = z.object({
+  challenge_token: z.string().trim().min(32).max(240),
+  code: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/),
+  trust_device: z.boolean().optional().default(false),
+  return_to: z.string().trim().max(400).optional(),
 });
-const postActivationMfaAckPayloadSchema = z.object({
-  handoff_token: z.string().trim().min(32).max(200),
-  recovery_codes_saved: z.literal(true),
+const emailChallengeLinkPayloadSchema = z.object({
+  link_token: z.string().trim().min(32).max(240),
+  trust_device: z.boolean().optional().default(false),
+  return_to: z.string().trim().max(400).optional(),
+});
+const emailChallengeResendPayloadSchema = z.object({
+  challenge_token: z.string().trim().min(32).max(240),
 });
 
 class PublicRouteError extends Error {
@@ -190,6 +195,8 @@ class PublicRouteError extends Error {
     super(publicMessage);
   }
 }
+
+type EmailChallengeVerificationResult = Awaited<ReturnType<typeof verifyEmailChallengeCode>>;
 
 export function createApp({
   config,
@@ -513,37 +520,13 @@ export function createApp({
       if (!sessionUser) {
         throw new Error('Activated user was not available for session creation.');
       }
-      if (completion.mfa_required) {
-        const enrollment = await provisionTotpEnrollment({
-          pool,
-          config,
-          userKey: completion.user_key,
-        });
-        const handoff = await createPostActivationMfaHandoff({
-          pool,
-          config,
-          userKey: completion.user_key,
-          enrollmentToken: enrollment.enrollmentToken,
-        });
-        res.status(200).json({
-          success: true,
-          mfa_required: true,
-          handoff_token: handoff.handoffToken,
-          handoff_expires_at: handoff.expiresAt,
-          enrollment_token: enrollment.enrollmentToken,
-          totp_secret: enrollment.secret,
-          otpauth_url: otpauthUrl(config, sessionUser.email, enrollment.secret),
-          recovery_codes_ack_required: true,
-        });
-        return;
-      }
       const session = await createSession({
         pool,
         config,
         user: sessionUser,
         ip: req.ip,
         userAgent: req.header('user-agent') ?? undefined,
-        assuranceMethod: 'password',
+        assuranceMethod: 'email_link',
       });
       setAuthCookies(res, config, session.session_token, session.csrf_token);
       res.status(200).json({
@@ -612,70 +595,12 @@ export function createApp({
 
   app.post('/api/v1/account-lifecycle/mfa/activate', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    try {
-      const payload = postActivationMfaPayloadSchema.parse(req.body);
-      const activated = await activateTotpEnrollment({
-        pool,
-        config,
-        enrollmentToken: payload.enrollment_token,
-        code: payload.totp_code,
-      });
-      if (!activated) {
-        res
-          .status(403)
-          .json(
-            publicError('MFA_INVALID', 'The authenticator code was not accepted.', req.traceId),
-          );
-        return;
-      }
-      res.status(200).json({
-        success: true,
-        recovery_codes: activated.recovery_codes,
-        handoff_token: payload.handoff_token,
-        recovery_codes_ack_required: true,
-      });
-    } catch (error) {
-      handleLifecycleRouteError(error, req, res, 'MFA setup is unavailable right now.');
-    }
+    retiredAuthMethod(res, req);
   });
 
   app.post('/api/v1/account-lifecycle/mfa/ack', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    try {
-      const payload = postActivationMfaAckPayloadSchema.parse(req.body);
-      const user = await consumePostActivationMfaHandoff({
-        pool,
-        config,
-        handoffToken: payload.handoff_token,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      if (!user) {
-        res.status(403).json({
-          success: false,
-          code: 'HANDOFF_INVALID',
-          message: 'MFA setup expired. Please request a fresh activation link.',
-          request_id: req.traceId,
-        });
-        return;
-      }
-      const session = await createSession({
-        pool,
-        config,
-        user,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-        assuranceMethod: 'totp',
-      });
-      setAuthCookies(res, config, session.session_token, session.csrf_token);
-      res.status(200).json({
-        success: true,
-        csrf_token: session.csrf_token,
-        return_to: defaultRouteForRole(session.user.role),
-      });
-    } catch (error) {
-      handleLifecycleRouteError(error, req, res, 'MFA setup is unavailable right now.');
-    }
+    retiredAuthMethod(res, req);
   });
 
   app.get(/^\/app\/crm(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
@@ -817,21 +742,28 @@ export function createApp({
           password: payload.password,
           ip: req.ip,
           userAgent: req.header('user-agent') ?? undefined,
+          trustedDeviceToken: getCookie(req, TRUSTED_DEVICE_COOKIE),
         }),
       );
       if (!login.ok) {
         const status =
-          login.code === 'RATE_LIMITED' ? 429 : login.code === 'MFA_REQUIRED' ? 403 : 401;
+          login.code === 'RATE_LIMITED'
+            ? 429
+            : login.code === 'EMAIL_CHALLENGE_REQUIRED'
+              ? 403
+              : 401;
         if (login.retry_after_seconds)
           res.setHeader('retry-after', String(login.retry_after_seconds));
         res.status(status).json({
           success: false,
           code: login.code,
           message:
-            login.code === 'MFA_REQUIRED'
-              ? 'Enter your authenticator code to finish signing in.'
+            login.code === 'EMAIL_CHALLENGE_REQUIRED'
+              ? 'Check your email for a six-digit login code.'
               : 'Email or password is not correct.',
           challenge_token: login.challenge_token,
+          challenge_expires_at: login.challenge_expires_at,
+          delivery_state: login.delivery_state,
           request_id: req.traceId,
         });
         return;
@@ -853,6 +785,7 @@ export function createApp({
           ip: req.ip,
           userAgent: req.header('user-agent') ?? undefined,
           rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
+          assuranceMethod: login.assuranceMethod,
         }),
       );
       setAuthCookies(res, config, session.session_token, session.csrf_token);
@@ -879,207 +812,125 @@ export function createApp({
     }
   });
 
-  app.post('/api/v1/auth/mfa/enroll/activate', async (req: RequestWithTrace, res) => {
+  app.post('/api/v1/auth/email-challenge/verify', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     try {
-      const payload = mfaEnrollmentPayloadSchema.parse(req.body);
-      const activated = await activateTotpEnrollment({
+      const payload = emailChallengeVerifyPayloadSchema.parse(req.body);
+      const verified = await verifyEmailChallengeCode({
         pool,
         config,
-        enrollmentToken: payload.enrollment_token,
-        code: payload.totp_code,
+        challengeToken: payload.challenge_token,
+        code: payload.code,
+        trustDevice: payload.trust_device,
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
       });
-      if (!activated) {
-        res
-          .status(403)
-          .json(
-            publicError('MFA_INVALID', 'The authenticator code was not accepted.', req.traceId),
-          );
-        return;
-      }
-      res.status(200).json({ success: true, recovery_codes: activated.recovery_codes });
+      await completeEmailChallengeLogin(req, res, pool, config, verified, payload.return_to);
     } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({
+      handleEmailChallengeRouteError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/auth/email-challenge/link', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = emailChallengeLinkPayloadSchema.parse(req.body);
+      const verified = await verifyEmailChallengeLink({
+        pool,
+        config,
+        linkToken: payload.link_token,
+        trustDevice: payload.trust_device,
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
+      });
+      await completeEmailChallengeLogin(req, res, pool, config, verified, payload.return_to);
+    } catch (error) {
+      handleEmailChallengeRouteError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/auth/email-challenge/resend', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const payload = emailChallengeResendPayloadSchema.parse(req.body);
+      const resent = await resendEmailChallenge({
+        pool,
+        config,
+        challengeToken: payload.challenge_token,
+        ip: req.ip,
+        userAgent: req.header('user-agent') ?? undefined,
+      });
+      if (!resent.ok) {
+        const status = resent.code === 'RATE_LIMITED' ? 429 : 401;
+        if (resent.retryAfterSeconds)
+          res.setHeader('retry-after', String(resent.retryAfterSeconds));
+        res.status(status).json({
           success: false,
-          code: 'VALIDATION_ERROR',
-          message: 'Please check the submitted fields.',
-          field_errors: publicFieldErrors(error),
+          code: resent.code,
+          message:
+            resent.code === 'RATE_LIMITED'
+              ? 'Please wait before requesting another code.'
+              : 'Email or password is not correct.',
           request_id: req.traceId,
         });
         return;
       }
-      res
-        .status(500)
-        .json(publicError('SERVER_ERROR', 'MFA activation is unavailable right now.', req.traceId));
+      res.status(200).json({
+        success: true,
+        challenge_token: resent.challengeToken,
+        challenge_expires_at: resent.expiresAt,
+        delivery_state: resent.deliveryState,
+      });
+    } catch (error) {
+      handleEmailChallengeRouteError(error, req, res);
     }
+  });
+
+  app.post('/api/v1/auth/mfa/enroll/activate', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    retiredAuthMethod(res, req);
   });
 
   app.post('/api/v1/auth/mfa/challenge', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    try {
-      const payload = mfaChallengePayloadSchema.parse(req.body);
-      const verified = await verifyMfaChallenge({
-        pool,
-        config,
-        challengeToken: payload.challenge_token,
-        code: payload.totp_code,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      if (!verified.ok) {
-        const status = verified.code === 'RATE_LIMITED' ? 429 : 401;
-        if (verified.retry_after_seconds) {
-          res.setHeader('retry-after', String(verified.retry_after_seconds));
-        }
-        res.status(status).json({
-          success: false,
-          code: verified.code,
-          message: 'Email, password, or authenticator code is not correct.',
-          request_id: req.traceId,
-        });
-        return;
-      }
-      const rotatedFromSessionKey = await revokeSession({
-        pool,
-        config,
-        sessionToken: getCookie(req, SESSION_COOKIE),
-        reason: 'mfa_login_rotation',
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      const session = await withTiming(req, 'db', () =>
-        createSession({
-          pool,
-          config,
-          user: verified.user,
-          ip: req.ip,
-          userAgent: req.header('user-agent') ?? undefined,
-          rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
-          assuranceMethod: 'totp',
-        }),
-      );
-      setAuthCookies(res, config, session.session_token, session.csrf_token);
-      res.status(200).json({
-        success: true,
-        user: session.user,
-        csrf_token: session.csrf_token,
-        return_to: '/app/crm',
-      });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({
-          success: false,
-          code: 'VALIDATION_ERROR',
-          message: 'Please check the submitted fields.',
-          field_errors: publicFieldErrors(error),
-          request_id: req.traceId,
-        });
-        return;
-      }
-      res
-        .status(500)
-        .json(publicError('SERVER_ERROR', 'MFA challenge is unavailable right now.', req.traceId));
-    }
+    retiredAuthMethod(res, req);
   });
 
   app.post('/api/v1/auth/mfa/recovery', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
-    try {
-      const payload = mfaRecoveryPayloadSchema.parse(req.body);
-      const verified = await verifyMfaRecoveryChallenge({
-        pool,
-        config,
-        challengeToken: payload.challenge_token,
-        recoveryCode: payload.recovery_code,
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      if (!verified.ok) {
-        const status = verified.code === 'RATE_LIMITED' ? 429 : 401;
-        res.status(status).json({
-          success: false,
-          code: verified.code,
-          message: 'Email, password, or recovery code is not correct.',
-          request_id: req.traceId,
-        });
-        return;
-      }
-      const rotatedFromSessionKey = await revokeSession({
-        pool,
-        config,
-        sessionToken: getCookie(req, SESSION_COOKIE),
-        reason: 'mfa_recovery_login_rotation',
-        ip: req.ip,
-        userAgent: req.header('user-agent') ?? undefined,
-      });
-      const session = await withTiming(req, 'db', () =>
-        createSession({
-          pool,
-          config,
-          user: verified.user,
-          ip: req.ip,
-          userAgent: req.header('user-agent') ?? undefined,
-          rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
-          assuranceMethod: 'recovery_code',
-        }),
-      );
-      setAuthCookies(res, config, session.session_token, session.csrf_token);
-      res.status(200).json({
-        success: true,
-        user: session.user,
-        csrf_token: session.csrf_token,
-        return_to: '/app/crm',
-      });
-    } catch (error) {
-      if (error instanceof ZodError) {
-        res.status(400).json({
-          success: false,
-          code: 'VALIDATION_ERROR',
-          message: 'Please check the submitted fields.',
-          field_errors: publicFieldErrors(error),
-          request_id: req.traceId,
-        });
-        return;
-      }
-      res
-        .status(500)
-        .json(publicError('SERVER_ERROR', 'MFA recovery is unavailable right now.', req.traceId));
-    }
+    retiredAuthMethod(res, req);
   });
 
   app.post('/api/v1/auth/mfa/recovery/replace', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    retiredAuthMethod(res, req);
+  });
+
+  app.post('/api/v1/auth/mfa/revoke', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    retiredAuthMethod(res, req);
+  });
+
+  app.post('/api/v1/auth/trusted-devices/revoke', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
     if (!['owner', 'admin'].includes(session.user.role)) {
       res
         .status(403)
-        .json(publicError('FORBIDDEN', 'Your role cannot replace MFA codes.', req.traceId));
+        .json(publicError('FORBIDDEN', 'Your role cannot manage trusted devices.', req.traceId));
       return;
     }
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    const recoveryCodes = await replaceMfaRecoveryCodes({
+    if (!(await requireRecentEmailAssurance(req, res, pool, session))) return;
+    await revokeTrustedDevice({
       pool,
       config,
+      trustedDeviceToken: getCookie(req, TRUSTED_DEVICE_COOKIE),
       userKey: session.user.user_key,
     });
-    clearAuthCookies(res, config);
-    res.status(200).json({ success: true, recovery_codes: recoveryCodes, session_revoked: true });
-  });
-
-  app.post('/api/v1/auth/mfa/revoke', async (req: RequestWithTrace, res) => {
-    setPrivateNoStore(res);
-    const session = await requireApiSession(req, res, pool, config);
-    if (!session) return;
-    if (!['owner', 'admin'].includes(session.user.role)) {
-      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot revoke MFA.', req.traceId));
-      return;
-    }
-    if (!(await requireSessionCsrf(req, res, pool, session))) return;
-    await revokeMfaFactors({ pool, config, userKey: session.user.user_key });
-    clearAuthCookies(res, config);
-    res.status(200).json({ success: true, session_revoked: true });
+    clearTrustedDeviceCookie(res, config);
+    res.status(200).json({ success: true, trusted_device_revoked: true });
   });
 
   app.post('/api/v1/auth/logout', async (req: RequestWithTrace, res) => {
@@ -1475,6 +1326,7 @@ export function createApp({
       return;
     }
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (!(await requireRecentEmailAssurance(req, res, pool, session))) return;
     try {
       const payload = contentOutcomePayloadSchema.parse(req.body);
       const outcome = await withTiming(req, 'db', () =>
@@ -1534,6 +1386,11 @@ export function createApp({
       return;
     }
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (
+      canUseOwnerDashboard(session.user.role) &&
+      !(await requireRecentEmailAssurance(req, res, pool, session))
+    )
+      return;
     try {
       const payload = createContactSchema.parse(req.body);
       const contact = await withTiming(req, 'db', () =>
@@ -1577,6 +1434,11 @@ export function createApp({
       return;
     }
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (
+      canUseOwnerDashboard(session.user.role) &&
+      !(await requireRecentEmailAssurance(req, res, pool, session))
+    )
+      return;
     try {
       const contactId = String(req.params.contactId);
       const payload = updateContactSchema.parse(req.body);
@@ -1716,6 +1578,108 @@ async function requireSessionCsrf(
     return false;
   }
   return true;
+}
+
+async function requireRecentEmailAssurance(
+  req: RequestWithTrace,
+  res: Response,
+  pool: DbPool,
+  session: AuthenticatedSession,
+) {
+  const verified = await verifyRecentEmailAssurance({ pool, sessionKey: session.session_key });
+  if (verified) return true;
+  res.status(403).json({
+    success: false,
+    code: 'EMAIL_ASSURANCE_REQUIRED',
+    message: 'Please confirm this sign-in by email before continuing.',
+    request_id: req.traceId,
+  });
+  return false;
+}
+
+async function completeEmailChallengeLogin(
+  req: RequestWithTrace,
+  res: Response,
+  pool: DbPool,
+  config: AppConfig,
+  verified: EmailChallengeVerificationResult,
+  returnTo: string | undefined,
+) {
+  if (!verified.ok) {
+    const status = verified.code === 'RATE_LIMITED' ? 429 : 401;
+    if (verified.retry_after_seconds) {
+      res.setHeader('retry-after', String(verified.retry_after_seconds));
+    }
+    res.status(status).json({
+      success: false,
+      code: verified.code,
+      message:
+        verified.code === 'RATE_LIMITED'
+          ? 'Please wait before trying another code.'
+          : 'Email or password is not correct.',
+      request_id: req.traceId,
+    });
+    return;
+  }
+
+  const rotatedFromSessionKey = await revokeSession({
+    pool,
+    config,
+    sessionToken: getCookie(req, SESSION_COOKIE),
+    reason: 'email_challenge_login_rotation',
+    ip: req.ip,
+    userAgent: req.header('user-agent') ?? undefined,
+  });
+  const session = await createSession({
+    pool,
+    config,
+    user: verified.user,
+    ip: req.ip,
+    userAgent: req.header('user-agent') ?? undefined,
+    rotatedFromSessionKey: rotatedFromSessionKey ?? undefined,
+    assuranceMethod: verified.assuranceMethod,
+  });
+  setAuthCookies(res, config, session.session_token, session.csrf_token);
+  if (verified.trustedDeviceToken && verified.trustedDeviceExpiresAt) {
+    setTrustedDeviceCookie(
+      res,
+      config,
+      verified.trustedDeviceToken,
+      verified.trustedDeviceExpiresAt,
+    );
+  }
+  res.status(200).json({
+    success: true,
+    user: session.user,
+    csrf_token: session.csrf_token,
+    return_to: safeReturnPath(returnTo, config) ?? defaultRouteForRole(session.user.role),
+  });
+}
+
+function handleEmailChallengeRouteError(error: unknown, req: RequestWithTrace, res: Response) {
+  if (res.headersSent) return;
+  if (error instanceof ZodError) {
+    res.status(400).json({
+      success: false,
+      code: 'VALIDATION_ERROR',
+      message: 'Please check the submitted fields.',
+      field_errors: publicFieldErrors(error),
+      request_id: req.traceId,
+    });
+    return;
+  }
+  res
+    .status(500)
+    .json(publicError('SERVER_ERROR', 'Email confirmation is unavailable right now.', req.traceId));
+}
+
+function retiredAuthMethod(res: Response, req: RequestWithTrace) {
+  res.status(410).json({
+    success: false,
+    code: 'AUTH_METHOD_RETIRED',
+    message: 'This sign-in method has been retired. Please use email login.',
+    request_id: req.traceId,
+  });
 }
 
 function requireSameOriginPost(req: RequestWithTrace, res: Response, config: AppConfig) {
@@ -2346,6 +2310,32 @@ function setCsrfCookie(res: Response, config: AppConfig, csrfToken: string) {
   });
 }
 
+function setTrustedDeviceCookie(
+  res: Response,
+  config: AppConfig,
+  trustedDeviceToken: string,
+  trustedUntil: string,
+) {
+  const maxAge = Math.max(0, new Date(trustedUntil).getTime() - Date.now());
+  if (maxAge <= 0) return;
+  res.cookie(TRUSTED_DEVICE_COOKIE, trustedDeviceToken, {
+    httpOnly: true,
+    secure: config.isProduction,
+    sameSite: 'strict',
+    path: '/',
+    maxAge,
+  });
+}
+
+function clearTrustedDeviceCookie(res: Response, config: AppConfig) {
+  res.clearCookie(TRUSTED_DEVICE_COOKIE, {
+    httpOnly: true,
+    secure: config.isProduction,
+    sameSite: 'strict',
+    path: '/',
+  });
+}
+
 function clearAuthCookies(res: Response, config: AppConfig) {
   res.clearCookie(SESSION_COOKIE, {
     httpOnly: true,
@@ -2465,19 +2455,6 @@ function defaultRouteForRole(role: string) {
   return '/app/crm';
 }
 
-function otpauthUrl(config: AppConfig, email: string, secret: string) {
-  const issuer = 'One Time Mishnayos';
-  const label = `${issuer}:${email}`;
-  const params = new URLSearchParams({
-    secret,
-    issuer,
-    algorithm: 'SHA1',
-    digits: '6',
-    period: '30',
-  });
-  return `otpauth://totp/${encodeURIComponent(label)}?${params.toString()}`;
-}
-
 function forbiddenAppHtml(appPage: 'parent' | 'student') {
   const label = appPage === 'parent' ? 'Parent Portal' : 'Student Portal';
   return `<!doctype html>
@@ -2559,10 +2536,20 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
           <input id="password" name="password" type="password" autocomplete="current-password" required>
           <p tabindex="-1" class="error" data-error-for="password"></p>
         </div>
-        <div class="field" data-login-mfa hidden>
-          <label for="mfa_code">Authenticator or recovery code</label>
-          <input id="mfa_code" name="mfa_code" type="text" inputmode="numeric" autocomplete="one-time-code">
-          <p tabindex="-1" class="error" data-error-for="mfa_code"></p>
+        <div class="email-challenge" data-email-challenge hidden>
+          <div class="field">
+            <label for="email_code">Email code</label>
+            <input id="email_code" name="email_code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}">
+            <p tabindex="-1" class="error" data-error-for="email_code"></p>
+          </div>
+          <label class="consent trusted-device">
+            <input type="checkbox" name="trust_device" value="true">
+            <span>Trust this device for 30 days</span>
+          </label>
+          <div class="email-challenge-actions">
+            <button class="button" type="button" data-resend-challenge disabled>Resend code</button>
+            <span class="form-status" role="status" data-resend-status></span>
+          </div>
         </div>
         <button class="button button-primary" type="submit">Login</button>
         <a class="form-link" href="/forgot-password">Forgot password?</a>
@@ -2608,38 +2595,9 @@ function activationPageHtml(csrfToken: string) {
           <input id="activation_password_confirm" name="password_confirm" type="password" autocomplete="new-password" required minlength="8">
           <p tabindex="-1" class="error" data-error-for="password_confirm"></p>
         </div>
-        <button class="button button-primary" type="submit">Continue</button>
+        <button class="button button-primary" type="submit">Activate account</button>
         <p class="form-status" role="status" data-form-status></p>
       </form>
-      <section class="mfa-setup" data-activation-mfa hidden>
-        <h2>Secure this account</h2>
-        <p class="flow-copy">Add this account to an authenticator app, then enter the six-digit code.</p>
-        <a class="button" data-otpauth-link href="#">Open authenticator setup</a>
-        <div class="manual-secret">
-          <span>Manual setup key</span>
-          <code data-mfa-secret></code>
-        </div>
-        <form class="login-form" data-activation-mfa-form novalidate>
-          <div class="field">
-            <label for="activation_totp">Authenticator code</label>
-            <input id="activation_totp" name="totp_code" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" required>
-            <p tabindex="-1" class="error" data-error-for="totp_code"></p>
-          </div>
-          <button class="button button-primary" type="submit">Verify code</button>
-          <p class="form-status" role="status" data-form-status></p>
-        </form>
-      </section>
-      <section class="recovery-codes" data-recovery-panel hidden>
-        <h2>Save recovery codes</h2>
-        <p class="flow-copy">These codes are shown once. Keep them somewhere private before continuing.</p>
-        <ol data-recovery-codes></ol>
-        <label class="consent recovery-ack">
-          <input type="checkbox" data-recovery-ack>
-          <span>I saved these recovery codes.</span>
-        </label>
-        <button class="button button-primary" type="button" data-recovery-continue disabled>Finish setup</button>
-        <p class="form-status" role="status" data-recovery-status></p>
-      </section>
       <p class="form-status error" data-activation-error></p>
     </section>
   </main>

@@ -6,18 +6,15 @@ import { createApp } from '../../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
-  activateTotpEnrollment,
   captureLead,
   createAccountUser,
-  provisionTotpEnrollment,
-  totpCode,
+  decryptAuthEmailChallengeDeliveryPayloadForTests,
 } from '../../../packages/domain/src/index.ts';
 import type { OwnerDashboardResponse } from '../../../packages/contracts/src/dashboard/index.ts';
 
 let pool: DbPool;
 let config: AppConfig;
 let distDir: string;
-let ownerTotpSecret: string;
 
 beforeEach(async () => {
   config = loadConfig({
@@ -32,7 +29,7 @@ beforeEach(async () => {
   distDir = await mkdtemp(path.join(tmpdir(), 'ot71-dashboard-'));
   await writeShells(distDir);
 
-  const ownerUserKey = await createAccountUser({
+  await createAccountUser({
     pool,
     config,
     email: 'owner@example.test',
@@ -41,15 +38,6 @@ beforeEach(async () => {
     role: 'owner',
     mfaCapable: true,
   });
-  const enrollment = await provisionTotpEnrollment({ pool, config, userKey: ownerUserKey });
-  ownerTotpSecret = enrollment.secret;
-  const activated = await activateTotpEnrollment({
-    pool,
-    config,
-    enrollmentToken: enrollment.enrollmentToken,
-    code: totpCode(enrollment.secret),
-  });
-  expect(activated).not.toBe(false);
 
   await createAccountUser({
     pool,
@@ -76,9 +64,7 @@ describe('OT-71 owner/admin dashboard shell', () => {
       expect(anonymous.status).toBe(302);
       expect(anonymous.headers.get('location')).toContain('return_to=%2Fapp%2Fdashboard');
 
-      const owner = await loginAs(server.baseUrl, 'owner@example.test', 'OwnerPass!234', {
-        totpSecret: ownerTotpSecret,
-      });
+      const owner = await loginAs(server.baseUrl, 'owner@example.test', 'OwnerPass!234');
       for (const appPath of ['/app/dashboard', '/app/classes', '/app/content', '/app/billing']) {
         const shell = await fetch(`${server.baseUrl}${appPath}`, {
           headers: { cookie: owner.cookies },
@@ -283,12 +269,7 @@ async function listenForTest(app: ReturnType<typeof createApp>) {
   };
 }
 
-async function loginAs(
-  baseUrl: string,
-  email: string,
-  password: string,
-  options: { totpSecret?: string } = {},
-) {
+async function loginAs(baseUrl: string, email: string, password: string) {
   const csrf = await getLoginCsrf(baseUrl);
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -299,24 +280,25 @@ async function loginAs(
     },
     body: JSON.stringify({ email, password, csrf_token: csrf.token }),
   });
-  if (response.status === 403 && options.totpSecret) {
+  if (response.status === 403) {
     const challenge = (await response.json()) as {
       code?: string;
       challenge_token?: string;
     };
-    expect(challenge.code).toBe('MFA_REQUIRED');
-    const mfa = await fetch(`${baseUrl}/api/v1/auth/mfa/challenge`, {
+    expect(challenge.code).toBe('EMAIL_CHALLENGE_REQUIRED');
+    const payload = await latestEmailChallengePayload();
+    const verified = await fetch(`${baseUrl}/api/v1/auth/email-challenge/verify`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         challenge_token: challenge.challenge_token,
-        totp_code: totpCode(options.totpSecret),
+        code: String(payload.code),
       }),
     });
-    expect(mfa.status).toBe(200);
+    expect(verified.status).toBe(200);
     return {
-      cookies: mergeCookies(csrf.cookies, cookieHeader(mfa.headers)),
-      json: (await mfa.json()) as { csrf_token: string },
+      cookies: mergeCookies(csrf.cookies, cookieHeader(verified.headers)),
+      json: (await verified.json()) as { csrf_token: string },
     };
   }
   expect(response.status).toBe(200);
@@ -324,6 +306,25 @@ async function loginAs(
     cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
     json: (await response.json()) as { csrf_token: string },
   };
+}
+
+async function latestEmailChallengePayload() {
+  const result = await pool.query(
+    `SELECT nonce, ciphertext, auth_tag
+       FROM onetime.auth_email_challenge_delivery_outbox
+      WHERE nonce IS NOT NULL
+        AND ciphertext IS NOT NULL
+        AND auth_tag IS NOT NULL
+      ORDER BY created_at DESC
+      LIMIT 1`,
+  );
+  const row = result.rows[0];
+  if (!row) throw new Error('missing auth email challenge payload');
+  return decryptAuthEmailChallengeDeliveryPayloadForTests(config, {
+    nonce: String(row.nonce),
+    ciphertext: String(row.ciphertext),
+    auth_tag: String(row.auth_tag),
+  });
 }
 
 async function getLoginCsrf(baseUrl: string) {

@@ -3,18 +3,14 @@ import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
 import {
-  activateTotpEnrollment,
   createAccountUser,
-  provisionTotpEnrollment,
+  decryptAuthEmailChallengeDeliveryPayloadForTests,
   resetAuthRateLimitForTests,
-  totpCode,
 } from '../../packages/domain/src/index.ts';
 
 let pool: DbPool;
 let server: ReturnType<ReturnType<typeof createApp>['listen']>;
 let baseUrl: string;
-let adminTotpSecret: string;
-let adminRecoveryCode: string;
 
 const config = () =>
   loadConfig({
@@ -30,7 +26,7 @@ beforeEach(async () => {
   const appConfig = config();
   await runMigrations(pool);
   resetAuthRateLimitForTests();
-  const adminUserKey = await createAccountUser({
+  await createAccountUser({
     pool,
     config: appConfig,
     email: 'admin@example.test',
@@ -39,21 +35,6 @@ beforeEach(async () => {
     role: 'admin',
     mfaCapable: false,
   });
-  const enrollment = await provisionTotpEnrollment({
-    pool,
-    config: appConfig,
-    userKey: adminUserKey,
-  });
-  adminTotpSecret = enrollment.secret;
-  const activation = await activateTotpEnrollment({
-    pool,
-    config: appConfig,
-    enrollmentToken: enrollment.enrollmentToken,
-    code: totpCode(enrollment.secret),
-  });
-  expect(activation).not.toBe(false);
-  adminRecoveryCode = activation ? (activation.recovery_codes[0] ?? '') : '';
-  expect(adminRecoveryCode).toMatch(/^[A-Z0-9]{12}$/);
   await createAccountUser({
     pool,
     config: appConfig,
@@ -229,38 +210,27 @@ describe('standalone CRM authentication', () => {
     expect(after.status).toBe(401);
   });
 
-  it('rejects replayed TOTP time steps', async () => {
-    const first = await loginAs('admin@example.test', 'AdminPass!234');
-    expect(first.cookies).toContain('otcrm_session=');
-
-    const csrf = await getLoginCsrf();
-    const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
-      method: 'POST',
-      headers: {
-        cookie: csrf.cookies,
-        'content-type': 'application/json',
-        'x-csrf-token': csrf.token,
-      },
-      body: JSON.stringify({
-        email: 'admin@example.test',
-        password: 'AdminPass!234',
-        csrf_token: csrf.token,
-      }),
-    });
-    expect(response.status).toBe(403);
-    const challenge = (await response.json()) as { challenge_token?: string };
-    const replay = await fetch(`${baseUrl}/api/v1/auth/mfa/challenge`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        challenge_token: challenge.challenge_token,
-        totp_code: totpCode(adminTotpSecret),
-      }),
-    });
-    expect(replay.status).toBe(401);
+  it('retires legacy MFA endpoints with a generic response', async () => {
+    for (const path of [
+      '/api/v1/account-lifecycle/mfa/activate',
+      '/api/v1/account-lifecycle/mfa/ack',
+      '/api/v1/auth/mfa/enroll/activate',
+      '/api/v1/auth/mfa/challenge',
+      '/api/v1/auth/mfa/recovery',
+      '/api/v1/auth/mfa/recovery/replace',
+      '/api/v1/auth/mfa/revoke',
+    ]) {
+      const response = await fetch(`${baseUrl}${path}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({}),
+      });
+      expect(response.status).toBe(410);
+      expect(await response.json()).toMatchObject({ code: 'AUTH_METHOD_RETIRED' });
+    }
   });
 
-  it('accepts each recovery code once and can replace the recovery set', async () => {
+  it('uses single-use email codes and supersedes older owner/admin login challenges', async () => {
     const csrf = await getLoginCsrf();
     const password = await fetch(`${baseUrl}/api/v1/auth/login`, {
       method: 'POST',
@@ -276,40 +246,10 @@ describe('standalone CRM authentication', () => {
       }),
     });
     expect(password.status).toBe(403);
-    const challenge = (await password.json()) as { challenge_token?: string };
-    const recovered = await fetch(`${baseUrl}/api/v1/auth/mfa/recovery`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        challenge_token: challenge.challenge_token,
-        recovery_code: adminRecoveryCode,
-      }),
-    });
-    expect(recovered.status).toBe(200);
-    const recoveredJson = (await recovered.json()) as LoginResult['json'];
-    const recoveredCookies = mergeCookies(csrf.cookies, cookieHeader(recovered.headers));
-
-    const replace = await fetch(`${baseUrl}/api/v1/auth/mfa/recovery/replace`, {
-      method: 'POST',
-      headers: {
-        cookie: recoveredCookies,
-        'content-type': 'application/json',
-        'x-csrf-token': recoveredJson.csrf_token,
-      },
-      body: JSON.stringify({}),
-    });
-    expect(replace.status).toBe(200);
-    const replacedJson = (await replace.json()) as {
-      success: true;
-      recovery_codes: string[];
-      session_revoked: true;
-    };
-    expect(replacedJson.recovery_codes).toHaveLength(10);
-
-    const afterReplace = await fetch(`${baseUrl}/api/v1/auth/session`, {
-      headers: { cookie: recoveredCookies },
-    });
-    expect(afterReplace.status).toBe(401);
+    const challenge = (await password.json()) as { code?: string; challenge_token?: string };
+    expect(challenge).toMatchObject({ code: 'EMAIL_CHALLENGE_REQUIRED' });
+    const firstPayload = await latestEmailChallengePayload();
+    const firstCode = String(firstPayload.code);
 
     const nextCsrf = await getLoginCsrf();
     const nextPassword = await fetch(`${baseUrl}/api/v1/auth/login`, {
@@ -326,16 +266,75 @@ describe('standalone CRM authentication', () => {
       }),
     });
     expect(nextPassword.status).toBe(403);
+    const superseded = await fetch(`${baseUrl}/api/v1/auth/email-challenge/verify`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ challenge_token: challenge.challenge_token, code: firstCode }),
+    });
+    expect(superseded.status).toBe(401);
+
     const nextChallenge = (await nextPassword.json()) as { challenge_token?: string };
-    const reused = await fetch(`${baseUrl}/api/v1/auth/mfa/recovery`, {
+    const nextPayload = await latestEmailChallengePayload();
+    const verified = await fetch(`${baseUrl}/api/v1/auth/email-challenge/verify`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         challenge_token: nextChallenge.challenge_token,
-        recovery_code: adminRecoveryCode,
+        code: String(nextPayload.code),
       }),
     });
-    expect(reused.status).toBe(401);
+    expect(verified.status).toBe(200);
+
+    const replay = await fetch(`${baseUrl}/api/v1/auth/email-challenge/verify`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        challenge_token: nextChallenge.challenge_token,
+        code: String(nextPayload.code),
+      }),
+    });
+    expect(replay.status).toBe(401);
+  });
+
+  it('trusts an owner/admin browser for password login and revokes that device', async () => {
+    const first = await loginAs('admin@example.test', 'AdminPass!234', { trustDevice: true });
+    expect(first.cookies).toContain('otcrm_session=');
+    expect(first.cookies).toContain('otcrm_trusted_device=');
+    const trustedDeviceCookie = `otcrm_trusted_device=${cookieValue(first.cookies, 'otcrm_trusted_device')}`;
+
+    const trusted = await loginAs('admin@example.test', 'AdminPass!234', {
+      cookies: trustedDeviceCookie,
+    });
+    expect(trusted.cookies).toContain('otcrm_session=');
+
+    const revoked = await fetch(`${baseUrl}/api/v1/auth/trusted-devices/revoke`, {
+      method: 'POST',
+      headers: {
+        cookie: first.cookies,
+        'content-type': 'application/json',
+        'x-csrf-token': first.json.csrf_token,
+      },
+      body: JSON.stringify({ csrf_token: first.json.csrf_token }),
+    });
+    expect(revoked.status).toBe(200);
+    expect(cookieHeader(revoked.headers)).toContain('otcrm_trusted_device=');
+
+    const csrf = await getLoginCsrf();
+    const afterRevoke = await fetch(`${baseUrl}/api/v1/auth/login`, {
+      method: 'POST',
+      headers: {
+        cookie: mergeCookies(csrf.cookies, trustedDeviceCookie),
+        'content-type': 'application/json',
+        'x-csrf-token': csrf.token,
+      },
+      body: JSON.stringify({
+        email: 'admin@example.test',
+        password: 'AdminPass!234',
+        csrf_token: csrf.token,
+      }),
+    });
+    expect(afterRevoke.status).toBe(403);
+    expect(await afterRevoke.json()).toMatchObject({ code: 'EMAIL_CHALLENGE_REQUIRED' });
   });
 });
 
@@ -520,12 +519,17 @@ async function getLoginCsrf() {
   return { token, cookies: cookieHeader(page.headers) };
 }
 
-async function loginAs(email: string, password: string): Promise<LoginResult> {
+async function loginAs(
+  email: string,
+  password: string,
+  options: { trustDevice?: boolean; cookies?: string } = {},
+): Promise<LoginResult> {
   const csrf = await getLoginCsrf();
+  const requestCookies = mergeCookies(csrf.cookies, options.cookies ?? '');
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
     headers: {
-      cookie: csrf.cookies,
+      cookie: requestCookies,
       'content-type': 'application/json',
       'x-csrf-token': csrf.token,
     },
@@ -536,27 +540,48 @@ async function loginAs(email: string, password: string): Promise<LoginResult> {
       code?: string;
       challenge_token?: string;
     };
-    expect(challenge.code).toBe('MFA_REQUIRED');
+    expect(challenge.code).toBe('EMAIL_CHALLENGE_REQUIRED');
     expect(challenge.challenge_token).toBeTruthy();
-    const mfa = await fetch(`${baseUrl}/api/v1/auth/mfa/challenge`, {
+    const payload = await latestEmailChallengePayload();
+    const verified = await fetch(`${baseUrl}/api/v1/auth/email-challenge/verify`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         challenge_token: challenge.challenge_token,
-        totp_code: totpCode(adminTotpSecret),
+        code: String(payload.code),
+        trust_device: options.trustDevice === true,
       }),
     });
-    expect(mfa.status).toBe(200);
+    expect(verified.status).toBe(200);
     return {
-      cookies: mergeCookies(csrf.cookies, cookieHeader(mfa.headers)),
-      json: (await mfa.json()) as LoginResult['json'],
+      cookies: mergeCookies(requestCookies, cookieHeader(verified.headers)),
+      json: (await verified.json()) as LoginResult['json'],
     };
   }
   expect(response.status).toBe(200);
   return {
-    cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
+    cookies: mergeCookies(requestCookies, cookieHeader(response.headers)),
     json: (await response.json()) as LoginResult['json'],
   };
+}
+
+async function latestEmailChallengePayload() {
+  const result = await pool.query(
+    `SELECT nonce, ciphertext, auth_tag
+       FROM onetime.auth_email_challenge_delivery_outbox
+      WHERE nonce IS NOT NULL
+        AND ciphertext IS NOT NULL
+        AND auth_tag IS NOT NULL
+      ORDER BY created_at DESC
+      LIMIT 1`,
+  );
+  const row = result.rows[0];
+  if (!row) throw new Error('missing auth email challenge payload');
+  return decryptAuthEmailChallengeDeliveryPayloadForTests(config(), {
+    nonce: String(row.nonce),
+    ciphertext: String(row.ciphertext),
+    auth_tag: String(row.auth_tag),
+  });
 }
 
 async function postLead(payload: Record<string, unknown>) {

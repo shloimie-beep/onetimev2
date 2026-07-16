@@ -162,7 +162,7 @@ describe('OT-71 account lifecycle', () => {
       payload: { token, password: 'AdminPass!234' },
       now: new Date('2026-07-15T10:05:00.000Z'),
     });
-    expect(accepted).toMatchObject({ role: 'admin', status: 'active', mfa_required: true });
+    expect(accepted).toMatchObject({ role: 'admin', status: 'active', mfa_required: false });
 
     const passwordOnly = await authenticateUser({
       pool,
@@ -170,7 +170,7 @@ describe('OT-71 account lifecycle', () => {
       email: 'admin.invited@example.test',
       password: 'AdminPass!234',
     });
-    expect(passwordOnly).toMatchObject({ ok: false, code: 'MFA_REQUIRED' });
+    expect(passwordOnly).toMatchObject({ ok: false, code: 'EMAIL_CHALLENGE_REQUIRED' });
     await expect(
       acceptOwnerAdminInvitation({
         pool,
