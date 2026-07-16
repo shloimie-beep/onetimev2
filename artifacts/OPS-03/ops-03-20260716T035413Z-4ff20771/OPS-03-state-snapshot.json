@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "OPS-03",
+  "packet_id": "ops-03-20260716T035413Z-4ff20771",
+  "generated_at": "2026-07-16T05:40:11Z",
+  "private_state_path_present": true,
+  "private_state_phase": "complete",
+  "target_repository": {
+    "discovery_status": "unique",
+    "safe_slug": "webcraft-media/onetimev2",
+    "fingerprint": "6172bfc43d7f"
+  },
+  "integrated_staging_sha": {
+    "status": "blocked",
+    "source_candidate_sha": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+    "deployment_binding": "not_observed",
+    "blocker_codes": [
+      "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED"
+    ]
+  },
+  "providers": [
+    {
+      "provider": "telegram",
+      "status": "unconfigured",
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "network_side_effect_count": 0
+    },
+    {
+      "provider": "whatsapp",
+      "status": "unconfigured",
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "network_side_effect_count": 0
+    },
+    {
+      "provider": "vimeo",
+      "status": "unconfigured",
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "network_side_effect_count": 0
+    },
+    {
+      "provider": "buffer",
+      "status": "unconfigured",
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "network_side_effect_count": 0
+    },
+    {
+      "provider": "stripe_test",
+      "status": "unconfigured",
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "network_side_effect_count": 0
+    },
+    {
+      "provider": "email",
+      "status": "unconfigured",
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "network_side_effect_count": 0
+    },
+    {
+      "provider": "zoom",
+      "status": "unconfigured",
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "network_side_effect_count": 0
+    }
+  ]
+}

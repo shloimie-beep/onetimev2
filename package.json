@@ -31,6 +31,7 @@
     "accessibility": "npm run build && playwright test tests/accessibility",
     "performance": "npm run build && playwright test tests/performance && tsx scripts/check-bundles.ts",
     "verify": "npm run secret:scan && npm run format && npm run lint && npm run typecheck && npm run test && npm run e2e && npm run accessibility && npm run performance",
+    "ops03:conductor": "tsx scripts/ops03-canary-conductor.ts",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:verify": "tsx scripts/migrate.ts --verify",
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",

@@ -192,6 +192,48 @@ describe('OT-72 Resend/WAPI provider truth', () => {
     ).rejects.toThrow(/canary/);
   });
 
+  it('uses one stable provider idempotency key across retry attempts', async () => {
+    const observedKeys: string[] = [];
+    const config = parseDeliveryProviderFeatureConfig({
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'owner@example.test',
+    });
+    const router = new OneTimeProviderDeliveryRouter(config, {
+      resend: {
+        sendEmail: async (_request, options) => {
+          observedKeys.push(options.idempotencyKey);
+          return { messageId: 'email_provider_ack_1' };
+        },
+      },
+    });
+    const request = {
+      channel: 'email' as const,
+      provider: 'resend' as const,
+      recipientClass: 'public' as const,
+      idempotencyKey: 'delivery_1',
+      from: 'One Time <delivery@example.test>',
+      to: 'owner@example.test',
+      subject: 'Test',
+      text: 'Hello',
+      html: '<p>Hello</p>',
+      tags: [],
+    };
+
+    await router.send(request, {
+      deliveryKey: 'delivery_1',
+      attempt: 1,
+      signal: new AbortController().signal,
+    });
+    await router.send(request, {
+      deliveryKey: 'delivery_1',
+      attempt: 2,
+      signal: new AbortController().signal,
+    });
+
+    expect(observedKeys).toEqual(['delivery_1', 'delivery_1']);
+  });
+
   it('normalizes signed webhook evidence without raw provider IDs', () => {
     const rawBody = Buffer.from(
       JSON.stringify({
@@ -222,13 +264,16 @@ describe('OT-72 Resend/WAPI provider truth', () => {
 
 describe('OT-72 Zoom, Vimeo, Telegram, and oversight seams', () => {
   it('builds protected Zoom and Vimeo descriptors without raw provider URLs', async () => {
-    const zoom = buildZoomLaunchDescriptor({
-      occurrenceKey: 'occurrence_1',
-      scheduledStart: new Date('2026-07-15T16:00:00Z'),
-      durationMinutes: 45,
-      providerMeetingRef: 'zoom_meeting_test_1',
-      launchSecretRef: 'launch_ref_1',
-    });
+    const zoom = buildZoomLaunchDescriptor(
+      {
+        occurrenceKey: 'occurrence_1',
+        scheduledStart: new Date('2026-07-15T16:00:00Z'),
+        durationMinutes: 45,
+        providerMeetingRef: 'zoom_meeting_test_1',
+        launchSecretRef: 'launch_ref_1',
+      },
+      new Date('2026-07-15T06:00:00Z'),
+    );
     const vimeo = buildVimeoPlaybackDescriptor({
       contentKey: 'content_1',
       providerVideoRef: 'vimeo_video_test_1',
@@ -239,6 +284,9 @@ describe('OT-72 Zoom, Vimeo, Telegram, and oversight seams', () => {
 
     expect(zoom.schedule).toMatchObject({ local_time: '19:00', timezone: 'Asia/Jerusalem' });
     expect(zoom.join_url_included).toBe(false);
+    expect(
+      new Date(zoom.expires_at).getTime() - new Date('2026-07-15T06:00:00Z').getTime(),
+    ).toBeLessThanOrEqual(10 * 60 * 1000);
     expect(vimeo.raw_url_included).toBe(false);
     expect(JSON.stringify({ zoom, vimeo })).not.toMatch(/https?:\/\//);
 

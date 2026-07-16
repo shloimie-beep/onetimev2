@@ -1,0 +1,590 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "OPS-03",
+  "packet_id": "ops-03-20260716T035413Z-4ff20771",
+  "generated_at": "2026-07-16T05:40:11Z",
+  "redaction_scan": {
+    "passed": true,
+    "scanner_version": "OPS-03-artifact-scanner-v1",
+    "files_scanned": 9,
+    "findings": 0
+  },
+  "items": [
+    {
+      "evidence_id": "OPS-03-EV-0001",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "state",
+      "check_id": "OPS-03-G01-STATE-FIRST",
+      "outcome": "passed",
+      "source_kind": "runtime_observation",
+      "summary": "Private OPS-03 state journal existed before this conductor run and contains only safe task metadata.",
+      "redaction_verified": true,
+      "blocker_codes": []
+    },
+    {
+      "evidence_id": "OPS-03-EV-0002",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "repository",
+      "check_id": "OPS-03-G02-REPOSITORY-DISCOVERY",
+      "outcome": "passed",
+      "source_kind": "git",
+      "summary": "Target repository resolved uniquely by git origin slug.",
+      "redaction_verified": true,
+      "fingerprints": [
+        "6172bfc43d7f"
+      ],
+      "blocker_codes": []
+    },
+    {
+      "evidence_id": "OPS-03-EV-0003",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "staging_sha",
+      "check_id": "OPS-03-G02-EXACT-COMMIT",
+      "outcome": "passed",
+      "source_kind": "git",
+      "summary": "Full current branch commit exists locally and prior control candidate is an ancestor.",
+      "redaction_verified": true,
+      "commit_sha": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+      "blocker_codes": []
+    },
+    {
+      "evidence_id": "OPS-03-EV-0004",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "deployment_binding",
+      "check_id": "OPS-03-G03-DEPLOYMENT-BINDING",
+      "outcome": "blocked",
+      "source_kind": "deployment_metadata",
+      "summary": "No trusted staging deployment artifact binding was found in repo evidence; source and CI evidence are not deployment binding.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0005",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "branch_audit",
+      "check_id": "OPS-03-G05-BRANCH-AUDIT",
+      "outcome": "passed",
+      "source_kind": "git",
+      "summary": "Relevant local and remote provider branches were inspected with read-only git commands; no existing implementation branch was mutated.",
+      "redaction_verified": true
+    },
+    {
+      "evidence_id": "OPS-03-EV-0006",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "test",
+      "check_id": "OPS-03-G06-VERIFIED-COMMANDS",
+      "outcome": "passed",
+      "source_kind": "test_runner",
+      "summary": "Focused provider-independent commands were reported as passed before artifact generation.",
+      "redaction_verified": true
+    },
+    {
+      "evidence_id": "OPS-03-EV-0007",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "authorization",
+      "check_id": "OPS-03-G10-AUTHORIZATION-VALIDATOR",
+      "outcome": "passed",
+      "source_kind": "static_analysis",
+      "summary": "Authorization validator rejects provider/action mismatch and requires current provider-specific records.",
+      "redaction_verified": true
+    },
+    {
+      "evidence_id": "OPS-03-EV-0008",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "global",
+      "category": "idempotency",
+      "check_id": "OPS-03-G07-ONE-TARGET-GUARD",
+      "outcome": "passed",
+      "source_kind": "static_analysis",
+      "summary": "One-target guard accepts exactly one OPS-03 alias and exactly one allowed action.",
+      "redaction_verified": true,
+      "blocker_codes": []
+    },
+    {
+      "evidence_id": "OPS-03-EV-0009",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "telegram",
+      "category": "configuration",
+      "check_id": "OPS-03-TELEGRAM-CONFIGURATION",
+      "outcome": "blocked",
+      "source_kind": "protected_config",
+      "summary": "Implementation references exist, but protected configuration presence was not observed from a protected store.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0010",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "telegram",
+      "category": "authorization",
+      "check_id": "OPS-03-TELEGRAM-AUTHORIZATION",
+      "outcome": "blocked",
+      "source_kind": "authorization_record",
+      "summary": "No separate current provider-specific OPS-03 authorization record was found.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0011",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "telegram",
+      "category": "idempotency",
+      "check_id": "OPS-03-TELEGRAM-ONE-TARGET",
+      "outcome": "not_observed",
+      "source_kind": "static_analysis",
+      "summary": "No provider target alias was resolved because configuration and authorization gates are closed.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ONE-TARGET-FAILED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0012",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "telegram",
+      "category": "rollback",
+      "check_id": "OPS-03-TELEGRAM-ROLLBACK",
+      "outcome": "blocked",
+      "source_kind": "runbook",
+      "summary": "Rollback steps are documented, but provider-specific kill switch verification requires protected staging configuration.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0013",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "whatsapp",
+      "category": "configuration",
+      "check_id": "OPS-03-WHATSAPP-CONFIGURATION",
+      "outcome": "blocked",
+      "source_kind": "protected_config",
+      "summary": "Implementation references exist, but protected configuration presence was not observed from a protected store.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0014",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "whatsapp",
+      "category": "authorization",
+      "check_id": "OPS-03-WHATSAPP-AUTHORIZATION",
+      "outcome": "blocked",
+      "source_kind": "authorization_record",
+      "summary": "No separate current provider-specific OPS-03 authorization record was found.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0015",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "whatsapp",
+      "category": "idempotency",
+      "check_id": "OPS-03-WHATSAPP-ONE-TARGET",
+      "outcome": "not_observed",
+      "source_kind": "static_analysis",
+      "summary": "No provider target alias was resolved because configuration and authorization gates are closed.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ONE-TARGET-FAILED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0016",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "whatsapp",
+      "category": "rollback",
+      "check_id": "OPS-03-WHATSAPP-ROLLBACK",
+      "outcome": "blocked",
+      "source_kind": "runbook",
+      "summary": "Rollback steps are documented, but provider-specific kill switch verification requires protected staging configuration.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0017",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "vimeo",
+      "category": "configuration",
+      "check_id": "OPS-03-VIMEO-CONFIGURATION",
+      "outcome": "blocked",
+      "source_kind": "protected_config",
+      "summary": "Implementation references exist, but protected configuration presence was not observed from a protected store.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0018",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "vimeo",
+      "category": "authorization",
+      "check_id": "OPS-03-VIMEO-AUTHORIZATION",
+      "outcome": "blocked",
+      "source_kind": "authorization_record",
+      "summary": "No separate current provider-specific OPS-03 authorization record was found.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0019",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "vimeo",
+      "category": "idempotency",
+      "check_id": "OPS-03-VIMEO-ONE-TARGET",
+      "outcome": "not_observed",
+      "source_kind": "static_analysis",
+      "summary": "No provider target alias was resolved because configuration and authorization gates are closed.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ONE-TARGET-FAILED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0020",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "vimeo",
+      "category": "rollback",
+      "check_id": "OPS-03-VIMEO-ROLLBACK",
+      "outcome": "blocked",
+      "source_kind": "runbook",
+      "summary": "Rollback steps are documented, but provider-specific kill switch verification requires protected staging configuration.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0021",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "buffer",
+      "category": "configuration",
+      "check_id": "OPS-03-BUFFER-CONFIGURATION",
+      "outcome": "blocked",
+      "source_kind": "protected_config",
+      "summary": "No implementation adapter reference was found for this provider in the current branch.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0022",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "buffer",
+      "category": "authorization",
+      "check_id": "OPS-03-BUFFER-AUTHORIZATION",
+      "outcome": "blocked",
+      "source_kind": "authorization_record",
+      "summary": "No separate current provider-specific OPS-03 authorization record was found.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0023",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "buffer",
+      "category": "idempotency",
+      "check_id": "OPS-03-BUFFER-ONE-TARGET",
+      "outcome": "not_observed",
+      "source_kind": "static_analysis",
+      "summary": "No provider target alias was resolved because configuration and authorization gates are closed.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ONE-TARGET-FAILED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0024",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "buffer",
+      "category": "rollback",
+      "check_id": "OPS-03-BUFFER-ROLLBACK",
+      "outcome": "blocked",
+      "source_kind": "runbook",
+      "summary": "Rollback steps are documented, but provider-specific kill switch verification requires protected staging configuration.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0025",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "stripe_test",
+      "category": "configuration",
+      "check_id": "OPS-03-STRIPE_TEST-CONFIGURATION",
+      "outcome": "blocked",
+      "source_kind": "protected_config",
+      "summary": "Implementation references exist, but protected configuration presence was not observed from a protected store.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0026",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "stripe_test",
+      "category": "authorization",
+      "check_id": "OPS-03-STRIPE_TEST-AUTHORIZATION",
+      "outcome": "blocked",
+      "source_kind": "authorization_record",
+      "summary": "No separate current provider-specific OPS-03 authorization record was found.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0027",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "stripe_test",
+      "category": "idempotency",
+      "check_id": "OPS-03-STRIPE_TEST-ONE-TARGET",
+      "outcome": "not_observed",
+      "source_kind": "static_analysis",
+      "summary": "No provider target alias was resolved because configuration and authorization gates are closed.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ONE-TARGET-FAILED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0028",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "stripe_test",
+      "category": "rollback",
+      "check_id": "OPS-03-STRIPE_TEST-ROLLBACK",
+      "outcome": "blocked",
+      "source_kind": "runbook",
+      "summary": "Rollback steps are documented, but provider-specific kill switch verification requires protected staging configuration.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0029",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "email",
+      "category": "configuration",
+      "check_id": "OPS-03-EMAIL-CONFIGURATION",
+      "outcome": "blocked",
+      "source_kind": "protected_config",
+      "summary": "Implementation references exist, but protected configuration presence was not observed from a protected store.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0030",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "email",
+      "category": "authorization",
+      "check_id": "OPS-03-EMAIL-AUTHORIZATION",
+      "outcome": "blocked",
+      "source_kind": "authorization_record",
+      "summary": "No separate current provider-specific OPS-03 authorization record was found.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0031",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "email",
+      "category": "idempotency",
+      "check_id": "OPS-03-EMAIL-ONE-TARGET",
+      "outcome": "not_observed",
+      "source_kind": "static_analysis",
+      "summary": "No provider target alias was resolved because configuration and authorization gates are closed.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ONE-TARGET-FAILED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0032",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "email",
+      "category": "rollback",
+      "check_id": "OPS-03-EMAIL-ROLLBACK",
+      "outcome": "blocked",
+      "source_kind": "runbook",
+      "summary": "Rollback steps are documented, but provider-specific kill switch verification requires protected staging configuration.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0033",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "zoom",
+      "category": "configuration",
+      "check_id": "OPS-03-ZOOM-CONFIGURATION",
+      "outcome": "blocked",
+      "source_kind": "protected_config",
+      "summary": "Implementation references exist, but protected configuration presence was not observed from a protected store.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0034",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "zoom",
+      "category": "authorization",
+      "check_id": "OPS-03-ZOOM-AUTHORIZATION",
+      "outcome": "blocked",
+      "source_kind": "authorization_record",
+      "summary": "No separate current provider-specific OPS-03 authorization record was found.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0035",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "zoom",
+      "category": "idempotency",
+      "check_id": "OPS-03-ZOOM-ONE-TARGET",
+      "outcome": "not_observed",
+      "source_kind": "static_analysis",
+      "summary": "No provider target alias was resolved because configuration and authorization gates are closed.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ONE-TARGET-FAILED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0036",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:11Z",
+      "provider": "zoom",
+      "category": "rollback",
+      "check_id": "OPS-03-ZOOM-ROLLBACK",
+      "outcome": "blocked",
+      "source_kind": "runbook",
+      "summary": "Rollback steps are documented, but provider-specific kill switch verification requires protected staging configuration.",
+      "redaction_verified": true,
+      "blocker_codes": [
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ]
+    },
+    {
+      "evidence_id": "OPS-03-EV-0037",
+      "task_id": "OPS-03",
+      "packet_id": "ops-03-20260716T035413Z-4ff20771",
+      "observed_at": "2026-07-16T05:40:12Z",
+      "provider": "global",
+      "category": "redaction",
+      "check_id": "OPS-03-G08-ARTIFACT-REDACTION",
+      "outcome": "passed",
+      "source_kind": "static_analysis",
+      "summary": "Generated OPS-03 artifacts passed the no-secret and no-target-material scan.",
+      "redaction_verified": true
+    }
+  ]
+}

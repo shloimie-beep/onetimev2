@@ -1,0 +1,633 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "OPS-03",
+  "packet_id": "ops-03-20260716T035413Z-4ff20771",
+  "run_id": "OPS-03-RUN-20260716T054011Z-26022606",
+  "started_at": "2026-07-16T05:40:11Z",
+  "completed_at": "2026-07-16T05:40:12Z",
+  "target_repository": {
+    "discovery_status": "unique",
+    "safe_slug": "webcraft-media/onetimev2",
+    "fingerprint": "6172bfc43d7f"
+  },
+  "integrated_staging_sha": {
+    "outcome": "blocked",
+    "sha": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+    "evidence_ids": [
+      "OPS-03-EV-0003"
+    ]
+  },
+  "staging_deployment_binding": {
+    "outcome": "blocked",
+    "evidence_ids": [
+      "OPS-03-EV-0004"
+    ],
+    "summary": "No trusted staging deployment binding was available for this source commit."
+  },
+  "provider_independent_checks": [
+    {
+      "check_id": "OPS-03-G01-STATE-FIRST",
+      "outcome": "passed",
+      "evidence_ids": [
+        "OPS-03-EV-0001"
+      ],
+      "summary": "Private state was persisted before conductor artifact generation."
+    },
+    {
+      "check_id": "OPS-03-G02-EXACT-COMMIT",
+      "outcome": "passed",
+      "evidence_ids": [
+        "OPS-03-EV-0003"
+      ],
+      "summary": "Local full commit exists; deployment binding remains a separate blocked gate."
+    },
+    {
+      "check_id": "OPS-03-G03-DEPLOYMENT-BINDING",
+      "outcome": "blocked",
+      "evidence_ids": [
+        "OPS-03-EV-0004"
+      ],
+      "summary": "No trusted staging deployment binding was available."
+    },
+    {
+      "check_id": "OPS-03-G05-BRANCH-AUDIT",
+      "outcome": "passed",
+      "evidence_ids": [
+        "OPS-03-EV-0005"
+      ],
+      "summary": "Branch audit used read-only git metadata."
+    },
+    {
+      "check_id": "OPS-03-G06-VERIFIED-COMMANDS",
+      "outcome": "passed",
+      "evidence_ids": [
+        "OPS-03-EV-0006"
+      ],
+      "summary": "Focused provider-independent verification command summaries are recorded."
+    },
+    {
+      "check_id": "OPS-03-G07-ONE-TARGET-GUARD",
+      "outcome": "passed",
+      "evidence_ids": [
+        "OPS-03-EV-0008"
+      ],
+      "summary": "Exactly-one alias and action validation is installed."
+    },
+    {
+      "check_id": "OPS-03-G10-AUTHORIZATION-VALIDATOR",
+      "outcome": "passed",
+      "evidence_ids": [
+        "OPS-03-EV-0007"
+      ],
+      "summary": "Provider-specific authorization validation is installed."
+    },
+    {
+      "check_id": "OPS-03-G08-ARTIFACT-REDACTION",
+      "outcome": "passed",
+      "evidence_ids": [
+        "OPS-03-EV-0037"
+      ],
+      "summary": "Generated OPS-03 artifacts passed the final redaction scan."
+    }
+  ],
+  "providers": [
+    {
+      "provider": "telegram",
+      "status": "unconfigured",
+      "action": "telegram.owner_admin_ping",
+      "configuration": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0009"
+        ],
+        "summary": "Protected configuration was not available through a safe staging store during OPS-03."
+      },
+      "identity_and_least_privilege": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0009"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "sink_or_test_mode": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0009"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "webhook_security": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0009"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "one_target_cardinality": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0011"
+        ],
+        "summary": "No single protected target alias was resolved."
+      },
+      "authorization": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0010"
+        ],
+        "summary": "Current provider-specific written authorization is absent."
+      },
+      "execution": {
+        "attempted": false,
+        "side_effect_count": 0,
+        "result": "not_run",
+        "evidence_ids": []
+      },
+      "cleanup_or_disable": {
+        "result": "manual_action_required",
+        "runbook_step_ids": [
+          "OPS-03-RB-TELEGRAM-DISABLE-HANDLER"
+        ],
+        "evidence_ids": [
+          "OPS-03-EV-0012"
+        ]
+      },
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "evidence_ids": [
+        "OPS-03-EV-0009",
+        "OPS-03-EV-0010",
+        "OPS-03-EV-0011",
+        "OPS-03-EV-0012"
+      ]
+    },
+    {
+      "provider": "whatsapp",
+      "status": "unconfigured",
+      "action": "whatsapp.public_lead_single_turn",
+      "configuration": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0013"
+        ],
+        "summary": "Protected configuration was not available through a safe staging store during OPS-03."
+      },
+      "identity_and_least_privilege": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0013"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "sink_or_test_mode": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0013"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "webhook_security": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0013"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "one_target_cardinality": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0015"
+        ],
+        "summary": "No single protected target alias was resolved."
+      },
+      "authorization": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0014"
+        ],
+        "summary": "Current provider-specific written authorization is absent."
+      },
+      "execution": {
+        "attempted": false,
+        "side_effect_count": 0,
+        "result": "not_run",
+        "evidence_ids": []
+      },
+      "cleanup_or_disable": {
+        "result": "manual_action_required",
+        "runbook_step_ids": [
+          "OPS-03-RB-WHATSAPP-DISABLE-ASSISTANT"
+        ],
+        "evidence_ids": [
+          "OPS-03-EV-0016"
+        ]
+      },
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "evidence_ids": [
+        "OPS-03-EV-0013",
+        "OPS-03-EV-0014",
+        "OPS-03-EV-0015",
+        "OPS-03-EV-0016"
+      ]
+    },
+    {
+      "provider": "vimeo",
+      "status": "unconfigured",
+      "action": "vimeo.synthetic_asset_ingest",
+      "configuration": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0017"
+        ],
+        "summary": "Protected configuration was not available through a safe staging store during OPS-03."
+      },
+      "identity_and_least_privilege": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0017"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "sink_or_test_mode": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0017"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "webhook_security": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0017"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "one_target_cardinality": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0019"
+        ],
+        "summary": "No single protected target alias was resolved."
+      },
+      "authorization": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0018"
+        ],
+        "summary": "Current provider-specific written authorization is absent."
+      },
+      "execution": {
+        "attempted": false,
+        "side_effect_count": 0,
+        "result": "not_run",
+        "evidence_ids": []
+      },
+      "cleanup_or_disable": {
+        "result": "manual_action_required",
+        "runbook_step_ids": [
+          "OPS-03-RB-VIMEO-DISABLE-UPLOADER"
+        ],
+        "evidence_ids": [
+          "OPS-03-EV-0020"
+        ]
+      },
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "evidence_ids": [
+        "OPS-03-EV-0017",
+        "OPS-03-EV-0018",
+        "OPS-03-EV-0019",
+        "OPS-03-EV-0020"
+      ]
+    },
+    {
+      "provider": "buffer",
+      "status": "unconfigured",
+      "action": "buffer.create_approval_draft",
+      "configuration": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0021"
+        ],
+        "summary": "Protected configuration was not available through a safe staging store during OPS-03."
+      },
+      "identity_and_least_privilege": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0021"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "sink_or_test_mode": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0021"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "webhook_security": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0021"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "one_target_cardinality": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0023"
+        ],
+        "summary": "No single protected target alias was resolved."
+      },
+      "authorization": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0022"
+        ],
+        "summary": "Current provider-specific written authorization is absent."
+      },
+      "execution": {
+        "attempted": false,
+        "side_effect_count": 0,
+        "result": "not_run",
+        "evidence_ids": []
+      },
+      "cleanup_or_disable": {
+        "result": "manual_action_required",
+        "runbook_step_ids": [
+          "OPS-03-RB-BUFFER-DISABLE-DRAFT-CREATOR"
+        ],
+        "evidence_ids": [
+          "OPS-03-EV-0024"
+        ]
+      },
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "evidence_ids": [
+        "OPS-03-EV-0021",
+        "OPS-03-EV-0022",
+        "OPS-03-EV-0023",
+        "OPS-03-EV-0024"
+      ]
+    },
+    {
+      "provider": "stripe_test",
+      "status": "unconfigured",
+      "action": "stripe_test.entitlement_webhook",
+      "configuration": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0025"
+        ],
+        "summary": "Protected configuration was not available through a safe staging store during OPS-03."
+      },
+      "identity_and_least_privilege": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0025"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "sink_or_test_mode": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0025"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "webhook_security": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0025"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "one_target_cardinality": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0027"
+        ],
+        "summary": "No single protected target alias was resolved."
+      },
+      "authorization": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0026"
+        ],
+        "summary": "Current provider-specific written authorization is absent."
+      },
+      "execution": {
+        "attempted": false,
+        "side_effect_count": 0,
+        "result": "not_run",
+        "evidence_ids": []
+      },
+      "cleanup_or_disable": {
+        "result": "manual_action_required",
+        "runbook_step_ids": [
+          "OPS-03-RB-STRIPE-TEST-DISABLE-WEBHOOK"
+        ],
+        "evidence_ids": [
+          "OPS-03-EV-0028"
+        ]
+      },
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "evidence_ids": [
+        "OPS-03-EV-0025",
+        "OPS-03-EV-0026",
+        "OPS-03-EV-0027",
+        "OPS-03-EV-0028"
+      ]
+    },
+    {
+      "provider": "email",
+      "status": "unconfigured",
+      "action": "email.sink_transactional_delivery",
+      "configuration": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0029"
+        ],
+        "summary": "Protected configuration was not available through a safe staging store during OPS-03."
+      },
+      "identity_and_least_privilege": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0029"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "sink_or_test_mode": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0029"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "webhook_security": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0029"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "one_target_cardinality": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0031"
+        ],
+        "summary": "No single protected target alias was resolved."
+      },
+      "authorization": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0030"
+        ],
+        "summary": "Current provider-specific written authorization is absent."
+      },
+      "execution": {
+        "attempted": false,
+        "side_effect_count": 0,
+        "result": "not_run",
+        "evidence_ids": []
+      },
+      "cleanup_or_disable": {
+        "result": "manual_action_required",
+        "runbook_step_ids": [
+          "OPS-03-RB-EMAIL-DISABLE-STAGING-SENDER"
+        ],
+        "evidence_ids": [
+          "OPS-03-EV-0032"
+        ]
+      },
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "evidence_ids": [
+        "OPS-03-EV-0029",
+        "OPS-03-EV-0030",
+        "OPS-03-EV-0031",
+        "OPS-03-EV-0032"
+      ]
+    },
+    {
+      "provider": "zoom",
+      "status": "unconfigured",
+      "action": "zoom.issue_learner_launch",
+      "configuration": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0033"
+        ],
+        "summary": "Protected configuration was not available through a safe staging store during OPS-03."
+      },
+      "identity_and_least_privilege": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0033"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "sink_or_test_mode": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0033"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "webhook_security": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0033"
+        ],
+        "summary": "Technical proof was not attempted because protected configuration and deployment binding are unavailable."
+      },
+      "one_target_cardinality": {
+        "outcome": "not_observed",
+        "evidence_ids": [
+          "OPS-03-EV-0035"
+        ],
+        "summary": "No single protected target alias was resolved."
+      },
+      "authorization": {
+        "outcome": "blocked",
+        "evidence_ids": [
+          "OPS-03-EV-0034"
+        ],
+        "summary": "Current provider-specific written authorization is absent."
+      },
+      "execution": {
+        "attempted": false,
+        "side_effect_count": 0,
+        "result": "not_run",
+        "evidence_ids": []
+      },
+      "cleanup_or_disable": {
+        "result": "manual_action_required",
+        "runbook_step_ids": [
+          "OPS-03-RB-ZOOM-DISABLE-LAUNCH-ISSUER"
+        ],
+        "evidence_ids": [
+          "OPS-03-EV-0036"
+        ]
+      },
+      "blocker_codes": [
+        "OPS-03-PROVIDER-UNCONFIGURED",
+        "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED",
+        "OPS-03-PROVIDER-AUTHORIZATION-MISSING-OR-INVALID",
+        "OPS-03-PROVIDER-ROLLBACK-UNVERIFIED"
+      ],
+      "evidence_ids": [
+        "OPS-03-EV-0033",
+        "OPS-03-EV-0034",
+        "OPS-03-EV-0035",
+        "OPS-03-EV-0036"
+      ]
+    }
+  ],
+  "forbidden_operations": {
+    "broad_campaign": false,
+    "production_data_import": false,
+    "root_dns_change": false,
+    "live_payment": false,
+    "public_post_without_human_approval": false
+  },
+  "rollback_matrix": {
+    "path": "artifacts/OPS-03/ops-03-20260716T035413Z-4ff20771/OPS-03-rollback-disable-matrix.md",
+    "sha256": "32bd20a5dba63742cd3600bb2e067dda1053822dec92ac4ce51d11d63eb99779"
+  },
+  "sanitized_evidence": {
+    "path": "artifacts/OPS-03/ops-03-20260716T035413Z-4ff20771/OPS-03-sanitized-evidence.json",
+    "sha256": "ec8b6b952b11997bd287763bfb6db9e7aae707b27d482d054eb50240e31ead38",
+    "item_count": 37
+  },
+  "redaction_scan_passed": true,
+  "global_blocker_codes": [
+    "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED"
+  ]
+}

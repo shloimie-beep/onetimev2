@@ -61,7 +61,7 @@ export function buildZoomLaunchDescriptor(
   now = new Date(),
 ): ZoomLaunchDescriptor {
   assertNoLiveReference('zoom meeting ref', input.providerMeetingRef);
-  const ttlMs = 15 * 60 * 1000;
+  const ttlMs = 10 * 60 * 1000;
   return {
     occurrence_key: input.occurrenceKey,
     provider: 'zoom',

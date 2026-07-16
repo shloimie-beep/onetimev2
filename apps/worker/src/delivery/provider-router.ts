@@ -57,7 +57,7 @@ export class OneTimeProviderDeliveryRouter implements DeliveryProviderRouter {
       });
     }
     const receipt = await this.clients.resend.sendEmail(withoutProvider(request), {
-      idempotencyKey: `${request.idempotencyKey}:${context.attempt}`,
+      idempotencyKey: request.idempotencyKey,
       signal: context.signal,
     });
     return {
@@ -85,7 +85,7 @@ export class OneTimeProviderDeliveryRouter implements DeliveryProviderRouter {
       });
     }
     const receipt = await this.clients.wapi.sendWhatsApp(withoutProvider(request), {
-      idempotencyKey: `${request.idempotencyKey}:${context.attempt}`,
+      idempotencyKey: request.idempotencyKey,
       signal: context.signal,
     });
     return {

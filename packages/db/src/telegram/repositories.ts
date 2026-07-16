@@ -97,8 +97,8 @@ export class TelegramSqlInboxRepository implements BotInboxRepository {
     const result = await this.pool.query(
       `INSERT INTO onetime.telegram_update_inbox
        (inbox_key, bot_key, environment, update_id, payload_ciphertext, payload_digest,
-        payload_classification)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)
+        payload_classification, next_attempt_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
        ON CONFLICT (bot_key, update_id) DO NOTHING
        RETURNING inbox_key`,
       [
@@ -109,6 +109,7 @@ export class TelegramSqlInboxRepository implements BotInboxRepository {
         payloadRef.ciphertext,
         payloadRef.digest,
         payloadRef.classification,
+        update.receivedAt,
       ],
     );
     if (result.rowCount) return { duplicate: false, inboxKey };
@@ -415,6 +416,7 @@ async function updateInboxDisposition(
 }
 
 function rowToInboxItem(row: Record<string, unknown>): BotInboxItem {
+  const leaseGeneration = row.lease_generation ?? row.leaseGeneration;
   return {
     inboxKey: String(row.inbox_key),
     botKey: String(row.bot_key) as never,
@@ -426,7 +428,7 @@ function rowToInboxItem(row: Record<string, unknown>): BotInboxItem {
       classification: row.payload_classification as never,
     },
     attempts: Number(row.attempts),
-    leaseGeneration: Number(row.lease_generation),
+    leaseGeneration: Number(leaseGeneration),
   };
 }
 

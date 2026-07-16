@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "OPS-03",
+  "packet_id": "ops-03-20260716T035413Z-4ff20771",
+  "generated_at": "2026-07-16T05:40:11Z",
+  "repository": {
+    "safe_slug": "webcraft-media/onetimev2",
+    "fingerprint": "6172bfc43d7f"
+  },
+  "source_candidate": {
+    "sha": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+    "current_branch": "ops/OPS-03-canary-conductor-62ad1d39242f",
+    "head_exists": true,
+    "control_candidate_ancestor": true
+  },
+  "deployment_binding": {
+    "outcome": "blocked",
+    "blocker_codes": [
+      "OPS-03-GLOBAL-STAGING-SHA-UNVERIFIED"
+    ],
+    "safe_summary": "No authenticated staging build metadata, signed provenance, deployment manifest, or traceable immutable digest was found."
+  }
+}
