@@ -1,0 +1,59 @@
+{
+  "lane": "OT-104R",
+  "status": "implemented_with_real_canary_blocked",
+  "date": "2026-07-16",
+  "repo": "C:\\Users\\User\\onetimev2",
+  "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OT-104R",
+  "branch": "codex/ot104r-vimeo-private-runtime",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "scope": {
+    "account_key": "rabbi_sheller_provider",
+    "product_key": "one_time_mishnah_class",
+    "academy_touched": false,
+    "bna_touched": false,
+    "production_deployment": false,
+    "dns_change": false,
+    "broad_send": false,
+    "live_charge": false,
+    "provider_mutation": false
+  },
+  "implementation": {
+    "contracts": [
+      "packages/contracts/src/content/vimeo-runtime.ts",
+      "packages/contracts/src/content/index.ts"
+    ],
+    "runtime": [
+      "packages/domain/src/content/vimeo-private-runtime.ts",
+      "packages/domain/src/index.ts"
+    ],
+    "migration": "packages/db/migrations/2010_ot104r_vimeo_private_runtime.sql",
+    "tests": [
+      "tests/integration/content/ot104r-vimeo-private-runtime.test.ts",
+      "tests/integration/telegram-db-foundation.test.ts"
+    ],
+    "canary": "bin/ot104r-vimeo-canary"
+  },
+  "tests": {
+    "focused_integration": "passed: 5 tests",
+    "full_integration": "passed: 28 files, 140 tests",
+    "typecheck": "passed",
+    "lint": "passed",
+    "secret_scan": "passed",
+    "changed_file_prettier_check": "passed",
+    "repo_wide_format": "blocked by pre-existing formatting drift in 609 files",
+    "real_postgres": "blocked: DATABASE_URL is not set in this worktree environment"
+  },
+  "canary": {
+    "status": "blocked_unconfigured",
+    "writes_performed": false,
+    "missing_variable_names": [
+      "VIMEO_ACCESS_TOKEN",
+      "VIMEO_CLIENT_ID",
+      "VIMEO_CLIENT_SECRET",
+      "VIMEO_ACCOUNT_ID",
+      "VIMEO_WEBHOOK_SECRET",
+      "VIMEO_STAGING_CANARY_VIDEO_ID"
+    ]
+  }
+}
