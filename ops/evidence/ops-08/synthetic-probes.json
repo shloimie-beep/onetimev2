@@ -1,0 +1,822 @@
+{
+  "captured_at": "2026-07-16T05:44:36.362Z",
+  "inventory_sha256": "d75c98baf2a506e54db2a8a4873520c6f314322c3b97c7bd1ff97d0cc2e50924",
+  "mode": "read_only",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "results": [
+    {
+      "captured_at": "2026-07-16T05:44:33.177Z",
+      "hostname": "onetimeonetime.com",
+      "routes": [
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308
+          ],
+          "method": "GET",
+          "path": "/",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "a0af97b6ff69154a3259584455e63cc877d5851a2ce44b8c44c635a731909aab",
+            "bytes": 3559,
+            "canonical": "https://onetimeonetime.com/",
+            "duration_ms": 337,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": "https://onetimeonetime.com/",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-PUBLIC-LANDING",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/signup",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "a0af97b6ff69154a3259584455e63cc877d5851a2ce44b8c44c635a731909aab",
+            "bytes": 3559,
+            "canonical": "https://onetimeonetime.com/",
+            "duration_ms": 219,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": "https://onetimeonetime.com/",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-PUBLIC-SIGNUP",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/login",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "a0af97b6ff69154a3259584455e63cc877d5851a2ce44b8c44c635a731909aab",
+            "bytes": 3559,
+            "canonical": "https://onetimeonetime.com/",
+            "duration_ms": 200,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": "https://onetimeonetime.com/",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-LOGIN",
+          "status_matches": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/leads",
+          "result": "not_run_destructive_or_signed_fixture_required",
+          "route_id": "OPS-08-LEAD-API"
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/health",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "body_sha256": "a0af97b6ff69154a3259584455e63cc877d5851a2ce44b8c44c635a731909aab",
+            "bytes": 3559,
+            "canonical": "https://onetimeonetime.com/",
+            "duration_ms": 320,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": "https://onetimeonetime.com/",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-HEALTH",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            503,
+            404
+          ],
+          "method": "GET",
+          "path": "/ready",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "body_sha256": "a0af97b6ff69154a3259584455e63cc877d5851a2ce44b8c44c635a731909aab",
+            "bytes": 3559,
+            "canonical": "https://onetimeonetime.com/",
+            "duration_ms": 201,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": "https://onetimeonetime.com/",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-READY",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/version",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "body_sha256": "a0af97b6ff69154a3259584455e63cc877d5851a2ce44b8c44c635a731909aab",
+            "bytes": 3559,
+            "canonical": "https://onetimeonetime.com/",
+            "duration_ms": 231,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": "https://onetimeonetime.com/",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-VERSION",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/robots.txt",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "07f1f305e4bd0a5ad37162a74d5351cf99de6ace4cf9f5379a1bb5bade7010cb",
+            "bytes": 72,
+            "canonical": null,
+            "duration_ms": 519,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/plain; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-ROBOTS",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/sitemap.xml",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "38f9e98070d8e4404476a93f2694c9dbfd9b514c4c0b74ec5a35c4292e0f36c0",
+            "bytes": 500,
+            "canonical": null,
+            "duration_ms": 202,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "application/xml",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-SITEMAP",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/one-time",
+          "redirect_observed": false,
+          "redirect_policy": "fixed_legacy_target",
+          "result": {
+            "body_sha256": "a0af97b6ff69154a3259584455e63cc877d5851a2ce44b8c44c635a731909aab",
+            "bytes": 3559,
+            "canonical": "https://onetimeonetime.com/",
+            "duration_ms": 209,
+            "headers": {
+              "cache_control": "private, max-age=0",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=63072000; includeSubDomains",
+              "vary": "Origin"
+            },
+            "og_url": "https://onetimeonetime.com/",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-LEGACY-ONETIME",
+          "status_matches": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/billing/webhooks/provider",
+          "result": "not_run_destructive_or_signed_fixture_required",
+          "route_id": "OPS-08-STRIPE-TEST-WEBHOOK"
+        }
+      ],
+      "tls": {
+        "authorization_error": null,
+        "chain_valid": true,
+        "fingerprint256": "c34ebda4f7728f667ede09faa3315e85378cd81ef9167b70ea952cb44535c75e",
+        "issuer_cn": "YE1",
+        "not_after": "2026-09-11T02:12:27.000Z",
+        "protocol": "TLSv1.3",
+        "san_match": true,
+        "state": "valid",
+        "subject_cn": "onetimeonetime.com",
+        "valid_from": "2026-06-13T02:12:28.000Z"
+      },
+      "unknown_host_probe": {
+        "expected_status": 421,
+        "observed_status": null,
+        "pass": false
+      }
+    },
+    {
+      "captured_at": "2026-07-16T05:44:33.288Z",
+      "hostname": "www.onetimeonetime.com",
+      "routes": [
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308
+          ],
+          "method": "GET",
+          "path": "/",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "duration_ms": 0,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-PUBLIC-LANDING",
+          "status_matches": false
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/signup",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "duration_ms": 1,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-PUBLIC-SIGNUP",
+          "status_matches": false
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/login",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "duration_ms": 1,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-LOGIN",
+          "status_matches": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/leads",
+          "result": "not_run_destructive_or_signed_fixture_required",
+          "route_id": "OPS-08-LEAD-API"
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/health",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "duration_ms": 0,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-HEALTH",
+          "status_matches": false
+        },
+        {
+          "expected_status": [
+            200,
+            503,
+            404
+          ],
+          "method": "GET",
+          "path": "/ready",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "duration_ms": 1,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-READY",
+          "status_matches": false
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/version",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "duration_ms": 0,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-VERSION",
+          "status_matches": false
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/robots.txt",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "duration_ms": 1,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-ROBOTS",
+          "status_matches": false
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/sitemap.xml",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "duration_ms": 0,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-SITEMAP",
+          "status_matches": false
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/one-time",
+          "redirect_observed": false,
+          "redirect_policy": "fixed_legacy_target",
+          "result": {
+            "duration_ms": 1,
+            "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+            "ok": false,
+            "status": null
+          },
+          "route_id": "OPS-08-LEGACY-ONETIME",
+          "status_matches": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/billing/webhooks/provider",
+          "result": "not_run_destructive_or_signed_fixture_required",
+          "route_id": "OPS-08-STRIPE-TEST-WEBHOOK"
+        }
+      ],
+      "tls": {
+        "chain_valid": false,
+        "error": "getaddrinfo ENOTFOUND www.onetimeonetime.com",
+        "san_match": false,
+        "state": "invalid"
+      },
+      "unknown_host_probe": {
+        "expected_status": 421,
+        "observed_status": null,
+        "pass": false
+      }
+    },
+    {
+      "captured_at": "2026-07-16T05:44:36.184Z",
+      "hostname": "join.onetimeonetime.com",
+      "routes": [
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308
+          ],
+          "method": "GET",
+          "path": "/",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "504c0043f17cf7bb8c13c2ea5489cdaa852d61ca388b88a7ebd1edd4442381b4",
+            "bytes": 69427,
+            "canonical": "https://join.onetimeonetime.com/one-time",
+            "duration_ms": 629,
+            "headers": {
+              "cache_control": "no-store",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": "https://join.onetimeonetime.com/one-time",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-PUBLIC-LANDING",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/signup",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "210d82e3542f1bbe780cae6c441064183c8575175749c8a05aeee17464e9598b",
+            "bytes": 57711,
+            "canonical": null,
+            "duration_ms": 334,
+            "headers": {
+              "cache_control": "no-store",
+              "content_type": "text/html; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": "https://bneineviimacademy.org/signup.html",
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-PUBLIC-SIGNUP",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/login",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "a3faf2622186912897e96fcf3cb1dcbe2f937b6246006ca85a34155efbf97e3f",
+            "bytes": 144,
+            "canonical": null,
+            "duration_ms": 235,
+            "headers": {
+              "cache_control": null,
+              "content_type": "text/html; charset=utf-8",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 404
+          },
+          "route_id": "OPS-08-LOGIN",
+          "status_matches": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/leads",
+          "result": "not_run_destructive_or_signed_fixture_required",
+          "route_id": "OPS-08-LEAD-API"
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/health",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "body_sha256": "1d19012f89fe0550cda475cc8d0e3e80128453cc9ff2c37915136a75631b1993",
+            "bytes": 145,
+            "canonical": null,
+            "duration_ms": 230,
+            "headers": {
+              "cache_control": null,
+              "content_type": "text/html; charset=utf-8",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 404
+          },
+          "route_id": "OPS-08-HEALTH",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            503,
+            404
+          ],
+          "method": "GET",
+          "path": "/ready",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "body_sha256": "b7e5a12e09cb92c6e639b935d38f63629966eb1a9fce2c472f58a4cef602c0b7",
+            "bytes": 144,
+            "canonical": null,
+            "duration_ms": 236,
+            "headers": {
+              "cache_control": null,
+              "content_type": "text/html; charset=utf-8",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 404
+          },
+          "route_id": "OPS-08-READY",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/version",
+          "redirect_observed": false,
+          "redirect_policy": "none",
+          "result": {
+            "body_sha256": "c62073d70c366bfeba61bc11feddd89a8fb3964e1a1750a8aa78d2ba1c6d395e",
+            "bytes": 146,
+            "canonical": null,
+            "duration_ms": 234,
+            "headers": {
+              "cache_control": null,
+              "content_type": "text/html; charset=utf-8",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 404
+          },
+          "route_id": "OPS-08-VERSION",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/robots.txt",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "d5a784e1044edc690650445d974610dd5f644e1a2fd9930ccec078dcc5b66ea9",
+            "bytes": 79,
+            "canonical": null,
+            "duration_ms": 232,
+            "headers": {
+              "cache_control": "public, max-age=0",
+              "content_type": "text/plain; charset=UTF-8",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-ROBOTS",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            404
+          ],
+          "method": "GET",
+          "path": "/sitemap.xml",
+          "redirect_observed": false,
+          "redirect_policy": "same_path_to_canonical",
+          "result": {
+            "body_sha256": "69399efe7ca2538b30c61fdec4ec60039497d9c7c4d50456f7535f70c7179a1e",
+            "bytes": 7801,
+            "canonical": null,
+            "duration_ms": 262,
+            "headers": {
+              "cache_control": "public, max-age=0",
+              "content_type": "application/xml",
+              "location": null,
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 200
+          },
+          "route_id": "OPS-08-SITEMAP",
+          "status_matches": true
+        },
+        {
+          "expected_status": [
+            200,
+            301,
+            302,
+            307,
+            308,
+            404
+          ],
+          "method": "GET",
+          "path": "/one-time",
+          "redirect_observed": true,
+          "redirect_policy": "fixed_legacy_target",
+          "result": {
+            "body_sha256": "b8d5e81220bd56e985ae1e99aef9a48c82dcfe161b77004e71bbc39cbbb1e464",
+            "bytes": 158,
+            "canonical": null,
+            "duration_ms": 229,
+            "headers": {
+              "cache_control": null,
+              "content_type": "text/html; charset=UTF-8",
+              "location": "/one-time/",
+              "strict_transport_security": "max-age=31536000; includeSubDomains",
+              "vary": "Accept-Encoding"
+            },
+            "og_url": null,
+            "ok": true,
+            "status": 301
+          },
+          "route_id": "OPS-08-LEGACY-ONETIME",
+          "status_matches": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/billing/webhooks/provider",
+          "result": "not_run_destructive_or_signed_fixture_required",
+          "route_id": "OPS-08-STRIPE-TEST-WEBHOOK"
+        }
+      ],
+      "tls": {
+        "authorization_error": null,
+        "chain_valid": true,
+        "fingerprint256": "4b7e11f9cd82e67d1c5522e40279eb4f7d8affa8cb86f69f042281e5f44cc207",
+        "issuer_cn": "YE1",
+        "not_after": "2026-09-30T14:27:25.000Z",
+        "protocol": "TLSv1.3",
+        "san_match": true,
+        "state": "valid",
+        "subject_cn": "join.onetimeonetime.com",
+        "valid_from": "2026-07-02T14:27:26.000Z"
+      },
+      "unknown_host_probe": {
+        "expected_status": 421,
+        "observed_status": null,
+        "pass": false
+      }
+    }
+  ],
+  "task_id": "OPS-08"
+}

@@ -1,0 +1,445 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://onetimeonetime.com/schemas/OPS-08-20260716-9014f99c/OPS-08-AUTHORIZATION.schema.json",
+  "title": "OPS-08 Exact Production Cutover Authorization",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "packet_id",
+    "authorization_id",
+    "issued_at",
+    "expires_at",
+    "decision",
+    "architecture_id",
+    "target",
+    "private_dns_change_set",
+    "private_callback_change_set",
+    "application_config_change_set_sha256",
+    "maintenance_window",
+    "monitor",
+    "rollback_owner",
+    "migration_evidence",
+    "acceptance_gate_report_sha256",
+    "authorizers",
+    "root_mutation_authorized",
+    "launch_domain_preservation"
+  ],
+  "properties": {
+    "task_id": {
+      "const": "OPS-08"
+    },
+    "packet_id": {
+      "const": "OPS-08-20260716-9014f99c"
+    },
+    "authorization_id": {
+      "type": "string",
+      "pattern": "^OPS-08-AUTH-[0-9]{8}-[0-9a-f]{8}$"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "decision": {
+      "const": "authorize_production_cutover"
+    },
+    "architecture_id": {
+      "enum": [
+        "OPS-08-JOIN_PRIMARY_ROOT_REDIRECT",
+        "OPS-08-WWW_PRIMARY_ROOT_REDIRECT",
+        "OPS-08-APEX_EDGE_TO_RAILWAY",
+        "OPS-08-AUTHORITATIVE_DNS_MIGRATION_FOR_APEX"
+      ]
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "git_sha",
+        "railway_project_id_sha256",
+        "railway_environment_id_sha256",
+        "railway_service_id_sha256",
+        "railway_deployment_id_sha256",
+        "expected_version_sha",
+        "primary_hostname",
+        "retained_launch_hostname",
+        "target_port",
+        "healthcheck_path",
+        "healthcheck_request_host"
+      ],
+      "properties": {
+        "repository": {
+          "const": "webcraft-media/onetimev2"
+        },
+        "git_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "railway_project_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "railway_environment_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "railway_service_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "railway_deployment_id_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "expected_version_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "primary_hostname": {
+          "type": "string",
+          "format": "hostname"
+        },
+        "retained_launch_hostname": {
+          "const": "join.onetimeonetime.com"
+        },
+        "target_port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "healthcheck_path": {
+          "const": "/health"
+        },
+        "healthcheck_request_host": {
+          "const": "healthcheck.railway.app"
+        }
+      }
+    },
+    "private_dns_change_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "values_held_privately",
+        "operator_reference",
+        "change_set_sha256",
+        "rollback_set_sha256",
+        "record_count",
+        "includes_root",
+        "includes_email_dns",
+        "verified_by_dns_operator"
+      ],
+      "properties": {
+        "values_held_privately": {
+          "const": true
+        },
+        "operator_reference": {
+          "type": "string",
+          "minLength": 8
+        },
+        "change_set_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "rollback_set_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "includes_root": {
+          "type": "boolean"
+        },
+        "includes_email_dns": {
+          "const": false
+        },
+        "verified_by_dns_operator": {
+          "const": true
+        }
+      }
+    },
+    "maintenance_window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "end",
+        "timezone",
+        "freeze_start",
+        "rollback_decision_deadline"
+      ],
+      "properties": {
+        "start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "const": "Asia/Jerusalem"
+        },
+        "freeze_start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rollback_decision_deadline": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "monitor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role",
+        "acknowledged_at",
+        "dashboard_reference",
+        "contact_reference"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2
+        },
+        "role": {
+          "const": "OPS-08 cutover monitor"
+        },
+        "acknowledged_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "dashboard_reference": {
+          "type": "string",
+          "minLength": 4
+        },
+        "contact_reference": {
+          "type": "string",
+          "minLength": 4
+        }
+      }
+    },
+    "rollback_owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "role",
+        "acknowledged_at",
+        "private_rollback_access_confirmed"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2
+        },
+        "role": {
+          "const": "OPS-08 rollback owner"
+        },
+        "acknowledged_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "private_rollback_access_confirmed": {
+          "const": true
+        }
+      }
+    },
+    "migration_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "inventory_sha256",
+        "window_start",
+        "window_end",
+        "continuous_days",
+        "eligible_accounts",
+        "migrated_accounts",
+        "counts_equal",
+        "successful_old_app_accounts_14d",
+        "new_app_login_success_rate_14d",
+        "synthetic_new_app_login_success_rate_14d",
+        "unresolved_identity_conflicts",
+        "auth_incidents_p0_p1_14d",
+        "auth_support_rate_7d",
+        "unresolved_high_severity_auth_tickets",
+        "identity_recovery_paths_passed",
+        "passed"
+      ],
+      "properties": {
+        "inventory_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "eligible_accounts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "migrated_accounts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "successful_old_app_accounts_14d": {
+          "const": 0
+        },
+        "new_app_login_success_rate_14d": {
+          "type": "number",
+          "minimum": 0.99,
+          "maximum": 1
+        },
+        "unresolved_identity_conflicts": {
+          "const": 0
+        },
+        "passed": {
+          "const": true
+        },
+        "window_start": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "window_end": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "continuous_days": {
+          "type": "integer",
+          "minimum": 14
+        },
+        "counts_equal": {
+          "const": true
+        },
+        "synthetic_new_app_login_success_rate_14d": {
+          "type": "number",
+          "minimum": 0.999,
+          "maximum": 1
+        },
+        "auth_incidents_p0_p1_14d": {
+          "const": 0
+        },
+        "auth_support_rate_7d": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.01
+        },
+        "unresolved_high_severity_auth_tickets": {
+          "const": 0
+        },
+        "identity_recovery_paths_passed": {
+          "const": true
+        }
+      }
+    },
+    "acceptance_gate_report_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "authorizers": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "role",
+          "decision",
+          "signed_at"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2
+          },
+          "role": {
+            "enum": [
+              "product_owner",
+              "technical_owner",
+              "dns_operator",
+              "security_owner"
+            ]
+          },
+          "decision": {
+            "const": "approve"
+          },
+          "signed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "root_mutation_authorized": {
+      "type": "boolean"
+    },
+    "launch_domain_preservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "hostname",
+        "minimum_days",
+        "removal_requires_separate_authorization"
+      ],
+      "properties": {
+        "hostname": {
+          "const": "join.onetimeonetime.com"
+        },
+        "minimum_days": {
+          "type": "integer",
+          "minimum": 180
+        },
+        "removal_requires_separate_authorization": {
+          "const": true
+        }
+      }
+    },
+    "private_callback_change_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "values_held_privately",
+        "operator_reference",
+        "change_set_sha256",
+        "rollback_set_sha256",
+        "registration_count",
+        "verified_by_provider_owners"
+      ],
+      "properties": {
+        "values_held_privately": {
+          "const": true
+        },
+        "operator_reference": {
+          "type": "string",
+          "minLength": 8
+        },
+        "change_set_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "rollback_set_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "registration_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verified_by_provider_owners": {
+          "const": true
+        }
+      }
+    },
+    "application_config_change_set_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

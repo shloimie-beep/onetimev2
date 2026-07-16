@@ -1,0 +1,38 @@
+{
+  "alerts": [
+    {
+      "metric": "http_5xx_rate_15m",
+      "rollback_threshold": "> 1%"
+    },
+    {
+      "metric": "login_success_rate_5m",
+      "rollback_threshold": "< 99%"
+    },
+    {
+      "metric": "signup_persistence_failure_rate_5m",
+      "rollback_threshold": "> 0.5%"
+    },
+    {
+      "metric": "callback_success_rate_5m",
+      "rollback_threshold": "< 99%"
+    },
+    {
+      "metric": "tls_errors",
+      "rollback_threshold": "> 0"
+    },
+    {
+      "metric": "dns_resolver_agreement",
+      "rollback_threshold": "false"
+    }
+  ],
+  "captured_at": "2026-07-16T05:44:27.867Z",
+  "intervals": {
+    "external_probe_seconds": 60,
+    "observation_minutes_minimum": 120
+  },
+  "monitor_assigned": false,
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "regions_minimum": 3,
+  "status": "blocked_monitor_not_assigned",
+  "task_id": "OPS-08"
+}

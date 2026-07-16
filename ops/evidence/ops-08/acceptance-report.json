@@ -1,0 +1,97 @@
+{
+  "captured_at": "2026-07-16T05:44:27.867Z",
+  "gate_counts": {
+    "blocked": 11,
+    "not_applicable": 2,
+    "pass": 2
+  },
+  "gates": [
+    {
+      "evidence": "Packet checksum and archive safety verified.",
+      "gate": "OPS-08-G00",
+      "status": "pass"
+    },
+    {
+      "evidence": "No single reachable SHA contains all observed OPS-08 domain/callback-relevant implementation branches. The best audit anchor contains OT-81/OT-83/OT-86A/OT-86B, but later Stripe, Zoom, Telegram/WhatsApp, and support branches are separate. Runtime hardening would be misleading until source convergence selects one immutable release target.",
+      "gate": "OPS-08-G01",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Runtime repository controls not implemented because source convergence is blocked.",
+      "gate": "OPS-08-G02",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Railway read-only status was observed, but no isolated staging deployment/source SHA proof is authorized or selected.",
+      "gate": "OPS-08-G03",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Staging flow proof not available.",
+      "gate": "OPS-08-G04",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Host/canonical controls require selected source implementation.",
+      "gate": "OPS-08-G05",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Old-application login telemetry and migration metrics were not available in this no-write audit run.",
+      "gate": "OPS-08-G06",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Provider/mailbox dashboard evidence and staged canary evidence were not available; email DNS mutation and real sends are not authorized.",
+      "gate": "OPS-08-G07",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Provider dashboards were not available for callback registration readback.",
+      "gate": "OPS-08-G08",
+      "status": "blocked"
+    },
+    {
+      "evidence": "DNS/TLS digest inventory captured; private DNS snapshot and rollback values still required.",
+      "gate": "OPS-08-G09",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Named monitor and rollback drill are absent.",
+      "gate": "OPS-08-G10",
+      "status": "blocked"
+    },
+    {
+      "evidence": "Cutover authorization absent.",
+      "gate": "OPS-08-G11",
+      "status": "blocked"
+    },
+    {
+      "evidence": "No DNS, deployment, provider, send, payment, or access mutations performed.",
+      "gate": "OPS-08-G12",
+      "status": "pass"
+    },
+    {
+      "evidence": "No cutover attempted.",
+      "gate": "OPS-08-G13",
+      "status": "not_applicable"
+    },
+    {
+      "evidence": "No cutover attempted.",
+      "gate": "OPS-08-G14",
+      "status": "not_applicable"
+    }
+  ],
+  "mutation_audit": {
+    "email_dns_changed": false,
+    "launch_dns_changed": false,
+    "mutation_count": 0,
+    "production_deployed": false,
+    "production_send_enabled": false,
+    "provider_registration_changed": false,
+    "root_dns_changed": false
+  },
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "state": "blocked_source_convergence_required",
+  "task_id": "OPS-08"
+}

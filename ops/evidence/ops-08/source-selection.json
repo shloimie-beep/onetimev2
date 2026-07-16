@@ -1,0 +1,57 @@
+{
+  "ancestry_proof": [
+    {
+      "command_digest": "4361dcb094f49704547997a0ad3086f65a167182ef8cdf856aef37986f36fe25",
+      "is_ancestor": false,
+      "required_sha": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf"
+    },
+    {
+      "command_digest": "e591f3d3dfe2dc34f7bee3bfaf5b835ec7fb969fc59f57be98b9a2ab40e8ddde",
+      "is_ancestor": true,
+      "required_sha": "a02d1d254ae0d17804fb657079a7871567260ea2"
+    },
+    {
+      "command_digest": "469b5d275ea431b2cb4d43285bf06421312a9084445699e43f30e722e4780e21",
+      "is_ancestor": true,
+      "required_sha": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065"
+    },
+    {
+      "command_digest": "aadab0e6bd3253fab8859bbd314707433f924ca7693e577121725c8bc02a5fa2",
+      "is_ancestor": true,
+      "required_sha": "97fa0c91758888f4e9de0af17d70002a0124669f"
+    },
+    {
+      "command_digest": "032b0c76b410663a68baa1f33475d5a0f37fe8539611224fb33f1103a8997c11",
+      "is_ancestor": false,
+      "required_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df"
+    },
+    {
+      "command_digest": "1c752ff4f46741d2adaeddac3caa308bea470df4bac9cf8d7e7cd473c33cbc7c",
+      "is_ancestor": false,
+      "required_sha": "80a67b93c61e9d5fb127789dadc0739917f21555"
+    },
+    {
+      "command_digest": "b530c89c4cdcddbbfd6adf790ed84b6df3195805faacea4d8f93b55b2a600923",
+      "is_ancestor": false,
+      "required_sha": "0fe1b4668170f608d8763fb52d11b30f0150feb2"
+    }
+  ],
+  "best_audit_anchor_sha": "97fa0c91758888f4e9de0af17d70002a0124669f",
+  "branch_heads": {
+    "main": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "ot81": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf",
+    "ot83": "a02d1d254ae0d17804fb657079a7871567260ea2",
+    "ot86a": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065",
+    "ot86b": "97fa0c91758888f4e9de0af17d70002a0124669f",
+    "ot87": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+    "ot88": "80a67b93c61e9d5fb127789dadc0739917f21555",
+    "ot89a": "0fe1b4668170f608d8763fb52d11b30f0150feb2"
+  },
+  "captured_at": "2026-07-16T05:44:27.867Z",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "reason": "No single reachable SHA contains all observed OPS-08 domain/callback-relevant implementation branches. The best audit anchor contains OT-81/OT-83/OT-86A/OT-86B, but later Stripe, Zoom, Telegram/WhatsApp, and support branches are separate. Runtime hardening would be misleading until source convergence selects one immutable release target.",
+  "release_authorized": false,
+  "selected_sha": null,
+  "status": "blocked_source_convergence_required",
+  "task_id": "OPS-08"
+}

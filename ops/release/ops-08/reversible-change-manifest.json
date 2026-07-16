@@ -1,0 +1,39 @@
+{
+  "application_config_changes": [],
+  "authorization_sha256": null,
+  "callback_changes": [],
+  "created_at": "2026-07-16T05:44:27.867Z",
+  "dns_changes": [],
+  "email_dns_change_count": 0,
+  "execution_order": [
+    "No executable cutover order is authorized. Complete operator actions first."
+  ],
+  "expected_root_dns_fingerprint_after_sha256": null,
+  "launch_domain_preservation": {
+    "hostname": "join.onetimeonetime.com",
+    "minimum_days": 180,
+    "preserved_until": null
+  },
+  "manifest_id": "OPS-08-CHANGE-20260716-9014f99c",
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "private_callback_change_set_sha256": null,
+  "private_callback_rollback_set_sha256": null,
+  "private_dns_change_set_sha256": null,
+  "private_dns_rollback_set_sha256": null,
+  "raw_secret_values_embedded": false,
+  "rollback_order": [
+    "No cutover performed; preserve join.onetimeonetime.com and current DNS/callback registrations."
+  ],
+  "root_dns_fingerprint_before_sha256": "63a38ed60f147ecc1daef9f3b0242b9817616bc62f8b2978e8b7af8ab862a154",
+  "root_mutation_authorized": false,
+  "source_transition": {
+    "after_deployment_id_sha256": null,
+    "after_service_id_sha256": null,
+    "after_sha": null,
+    "before_deployment_id_sha256": null,
+    "before_service_id_sha256": null,
+    "before_sha": null
+  },
+  "status": "readiness_draft",
+  "task_id": "OPS-08"
+}

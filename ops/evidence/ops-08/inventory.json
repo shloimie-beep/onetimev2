@@ -1,0 +1,707 @@
+{
+  "callbacks": [
+    {
+      "callback_id": "OPS-08-STRIPE-TEST-WEBHOOK",
+      "canary_result": "not_run",
+      "candidate_origin": null,
+      "candidate_registration_state": "not_observed",
+      "current_origin": null,
+      "current_registration_state": "not_observed",
+      "dual_registration_supported": "unknown",
+      "idempotency": "not_run",
+      "method": "POST",
+      "mode": "test",
+      "path": "/api/v1/billing/webhooks/provider",
+      "provider": "stripe",
+      "purpose": "Stripe TEST billing webhook seam",
+      "raw_body_required": true,
+      "redirect_allowed": false,
+      "secret_material_stored": false,
+      "signature_verification": "not_run"
+    },
+    {
+      "callback_id": "OPS-08-ZOOM-OAUTH",
+      "canary_result": "not_run",
+      "candidate_origin": null,
+      "candidate_registration_state": "not_observed",
+      "current_origin": null,
+      "current_registration_state": "not_observed",
+      "dual_registration_supported": "unknown",
+      "idempotency": "not_run",
+      "method": "GET",
+      "mode": "sandbox",
+      "path": "/api/v1/providers/zoom/oauth/callback",
+      "provider": "zoom",
+      "purpose": "Zoom OAuth redirect and launch seam",
+      "raw_body_required": false,
+      "redirect_allowed": false,
+      "secret_material_stored": false,
+      "signature_verification": "not_applicable"
+    },
+    {
+      "callback_id": "OPS-08-VIMEO-WEBHOOK",
+      "canary_result": "not_run",
+      "candidate_origin": null,
+      "candidate_registration_state": "not_observed",
+      "current_origin": null,
+      "current_registration_state": "not_observed",
+      "dual_registration_supported": "unknown",
+      "idempotency": "not_run",
+      "method": "POST",
+      "mode": "sandbox",
+      "path": "/api/v1/providers/vimeo/webhook",
+      "provider": "vimeo",
+      "purpose": "Vimeo callback/event seam",
+      "raw_body_required": true,
+      "redirect_allowed": false,
+      "secret_material_stored": false,
+      "signature_verification": "not_run"
+    },
+    {
+      "callback_id": "OPS-08-EMAIL-PROVIDER-WEBHOOK",
+      "canary_result": "not_run",
+      "candidate_origin": null,
+      "candidate_registration_state": "not_observed",
+      "current_origin": null,
+      "current_registration_state": "not_observed",
+      "dual_registration_supported": "unknown",
+      "idempotency": "not_run",
+      "method": "POST",
+      "mode": "production",
+      "path": "/api/v1/delivery/provider-events",
+      "provider": "email_provider",
+      "purpose": "Bounce complaint and delivery callback seam",
+      "raw_body_required": true,
+      "redirect_allowed": false,
+      "secret_material_stored": false,
+      "signature_verification": "not_run"
+    },
+    {
+      "callback_id": "OPS-08-SUPPORT-EVENT",
+      "canary_result": "not_run",
+      "candidate_origin": null,
+      "candidate_registration_state": "not_observed",
+      "current_origin": null,
+      "current_registration_state": "not_observed",
+      "dual_registration_supported": "unknown",
+      "idempotency": "not_run",
+      "method": "POST",
+      "mode": "internal",
+      "path": "/api/v1/support/events",
+      "provider": "support",
+      "purpose": "Support event intake seam",
+      "raw_body_required": false,
+      "redirect_allowed": false,
+      "secret_material_stored": false,
+      "signature_verification": "not_run"
+    }
+  ],
+  "captured_at": "2026-07-16T05:44:27.867Z",
+  "domains": [
+    {
+      "canonical_behavior": "unknown",
+      "dns_records": [
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 600,
+          "type": "A",
+          "value_sha256": "8617b972451ec276ea186ddebcd7a689c407bcc0278715c4b04dfa3914555bbf"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "MX",
+          "value_sha256": "bdf143d06ef1c2c037b384f13ceea2dccb4c9d7b489041fbd5f2abc181af165c"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "MX",
+          "value_sha256": "f7d0edfce66ff9bce2c70975909a056d275dbe5f53fb40d30d0eeba968187da1"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "MX",
+          "value_sha256": "c0937693e0f493915704a9418d4a99ab2881f95dc979302eb8b292df038fd31d"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 1800,
+          "type": "TXT",
+          "value_sha256": "127ad32c57f22ea0a9c25c0a041708edf1d3c5d6fd7d64f06f2ebd9b95dc4c19"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 1800,
+          "type": "TXT",
+          "value_sha256": "7d07eab82a3a01b54c8505a45e85ae073856e3a19ee076a0ffc7b8bcc11c0c3c"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 1800,
+          "type": "TXT",
+          "value_sha256": "9132ca20e3a22eca566ce1c0b29b4704eca56ac7cc88e00b2fb8276bc6a1fbe2"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "NS",
+          "value_sha256": "8fdaaf7aa4d67cd3be24a9e12325fde9d5cb880a29c1cb4d7f367adf36705918"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:13.775Z",
+          "owner": "onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "NS",
+          "value_sha256": "e12fce9c6017d87edd60b3e5bf50f90e72af55a9bdae66a700f21dd0e7de5c29"
+        }
+      ],
+      "evidence_state": "observed",
+      "hostname": "onetimeonetime.com",
+      "http_status": 200,
+      "role": "root",
+      "root_mutation_permitted": false,
+      "tls": {
+        "chain_valid": true,
+        "issuer": "YE1",
+        "not_after": "2026-09-11T02:12:27.000Z",
+        "san_match": true,
+        "state": "valid"
+      }
+    },
+    {
+      "canonical_behavior": "unknown",
+      "dns_records": [],
+      "evidence_state": "partially_observed",
+      "hostname": "www.onetimeonetime.com",
+      "http_status": null,
+      "role": "www",
+      "root_mutation_permitted": false,
+      "tls": {
+        "chain_valid": false,
+        "issuer": null,
+        "not_after": null,
+        "san_match": false,
+        "state": "invalid"
+      }
+    },
+    {
+      "canonical_behavior": "serves_primary",
+      "dns_records": [
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "A",
+          "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "awaz36ln.up.railway.app",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 60,
+          "type": "A",
+          "value_sha256": "f939c8a229a08becbfcf2e64098ea8d246278a0d5f195feac339c5272010812d"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 60,
+          "type": "A",
+          "value_sha256": "f939c8a229a08becbfcf2e64098ea8d246278a0d5f195feac339c5272010812d"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "AAAA",
+          "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "CNAME",
+          "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "MX",
+          "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "TXT",
+          "value_sha256": "3ae126418026942d137192c1ba4394e77a53f14acb6b3d5b7980a0e4f3d1ea0d"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "NS",
+          "value_sha256": "5341b4def440ffbdde7f6bd82e2857a1c72bc28b053b0d3f999ec5d059a5c843"
+        },
+        {
+          "captured_at": "2026-07-16T05:34:09.848Z",
+          "owner": "join.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": false,
+          "resolver_count": 3,
+          "ttl": 3600,
+          "type": "CAA",
+          "value_sha256": "3ae126418026942d137192c1ba4394e77a53f14acb6b3d5b7980a0e4f3d1ea0d"
+        }
+      ],
+      "evidence_state": "observed",
+      "hostname": "join.onetimeonetime.com",
+      "http_status": 200,
+      "role": "launch",
+      "root_mutation_permitted": false,
+      "tls": {
+        "chain_valid": true,
+        "issuer": "YE1",
+        "not_after": "2026-09-30T14:27:25.000Z",
+        "san_match": true,
+        "state": "valid"
+      }
+    },
+    {
+      "canonical_behavior": "unknown",
+      "dns_records": [
+        {
+          "captured_at": "2026-07-16T05:34:11.061Z",
+          "owner": "_dmarc.onetimeonetime.com",
+          "private_change_set_member": false,
+          "resolver_agreement": true,
+          "resolver_count": 3,
+          "ttl": 600,
+          "type": "TXT",
+          "value_sha256": "dac63a3d1cbd46e7819b4471b80149babf458c3da8a043e2e90eb5acb6cd53df"
+        }
+      ],
+      "evidence_state": "not_applicable",
+      "hostname": "_dmarc.onetimeonetime.com",
+      "http_status": null,
+      "role": "callback_only",
+      "root_mutation_permitted": false,
+      "tls": {
+        "chain_valid": null,
+        "issuer": null,
+        "not_after": null,
+        "san_match": null,
+        "state": "not_observed"
+      }
+    }
+  ],
+  "email": {
+    "canary": {
+      "all_links_pass": false,
+      "authentication_pass_rate": null,
+      "complaint_rate": null,
+      "hard_bounce_rate": null,
+      "messages_sent": 0
+    },
+    "dkim": {
+      "evidence_sha256": null,
+      "pass": false,
+      "state": "not_observed"
+    },
+    "dmarc": {
+      "evidence_sha256": "7a743e04c6630d9f5e2ab250ab08a4352209fc52f2e18670782f37cea203b965",
+      "pass": true,
+      "state": "observed"
+    },
+    "mailbox": "info@onetimeonetime.com",
+    "mailbox_verified": false,
+    "mx_provider": "observed_by_dns_digest_only",
+    "production_send_enabled": false,
+    "reply_to": {
+      "address": "info@onetimeonetime.com",
+      "config_source": "protected_environment",
+      "verified": false
+    },
+    "return_path": {
+      "evidence_sha256": null,
+      "pass": false,
+      "state": "not_observed"
+    },
+    "sender": {
+      "address": "info@onetimeonetime.com",
+      "config_source": "protected_environment",
+      "verified": false
+    },
+    "spf": {
+      "evidence_sha256": "84fd92806c822f0ab92abe89269390811d69da77bf48e162a1d3a01052fac2d8",
+      "pass": false,
+      "state": "not_observed"
+    },
+    "tls": {
+      "evidence_sha256": null,
+      "pass": false,
+      "state": "not_observed"
+    }
+  },
+  "monitoring": {
+    "callback_success_rate_5m": null,
+    "dns_resolver_agreement": false,
+    "external_probe_interval_seconds": null,
+    "http_5xx_rate_15m": null,
+    "login_success_rate_5m": null,
+    "monitor_assigned": false,
+    "regions": null,
+    "signup_persistence_failure_rate_5m": null,
+    "tls_errors": null
+  },
+  "mutation_audit": {
+    "email_dns_changed": false,
+    "launch_dns_changed": false,
+    "mutation_count": 0,
+    "production_deployed": false,
+    "production_send_enabled": false,
+    "provider_registration_changed": false,
+    "root_dns_changed": false
+  },
+  "packet_id": "OPS-08-20260716-9014f99c",
+  "railway_services": [
+    {
+      "custom_domains": [],
+      "deployment_id_sha256": null,
+      "environment_class": "unknown",
+      "environment_id_sha256": null,
+      "health_path": "/health",
+      "health_state": "not_observed",
+      "healthcheck_host_path_only": false,
+      "healthcheck_host_validation": "not_run",
+      "healthcheck_request_host": "healthcheck.railway.app",
+      "project_id_sha256": null,
+      "public_domain": null,
+      "ready_path": "/ready",
+      "service_id_sha256": null,
+      "service_key": "one-time-web",
+      "source_match": false,
+      "source_sha": null,
+      "target_port": null,
+      "version_path": "/version"
+    }
+  ],
+  "rollback": {
+    "drill_passed": false,
+    "old_service_warm_until": null,
+    "previous_callback_snapshot_sha256": null,
+    "previous_service_id_sha256": null,
+    "previous_source_sha": null,
+    "private_dns_snapshot_sha256": null,
+    "restore_probe_passed": false,
+    "rollback_owner_assigned": false
+  },
+  "routes": [
+    {
+      "cache_policy": "public",
+      "class": "public",
+      "expected_status": [
+        200,
+        301,
+        302,
+        307,
+        308
+      ],
+      "method": "GET",
+      "path": "/",
+      "probe_result": "not_run",
+      "redirect_policy": "same_path_to_canonical",
+      "route_id": "OPS-08-PUBLIC-LANDING"
+    },
+    {
+      "cache_policy": "public",
+      "class": "public",
+      "expected_status": [
+        200,
+        301,
+        302,
+        307,
+        308,
+        404
+      ],
+      "method": "GET",
+      "path": "/signup",
+      "probe_result": "not_run",
+      "redirect_policy": "same_path_to_canonical",
+      "route_id": "OPS-08-PUBLIC-SIGNUP"
+    },
+    {
+      "cache_policy": "private_no_store",
+      "class": "public",
+      "expected_status": [
+        200,
+        301,
+        302,
+        307,
+        308,
+        404
+      ],
+      "method": "GET",
+      "path": "/login",
+      "probe_result": "not_run",
+      "redirect_policy": "same_path_to_canonical",
+      "route_id": "OPS-08-LOGIN"
+    },
+    {
+      "cache_policy": "no_store",
+      "class": "public",
+      "expected_status": [
+        200,
+        201,
+        400,
+        401,
+        403,
+        404,
+        409,
+        422
+      ],
+      "method": "POST",
+      "path": "/api/v1/leads",
+      "probe_result": "not_run",
+      "redirect_policy": "forbidden",
+      "route_id": "OPS-08-LEAD-API"
+    },
+    {
+      "cache_policy": "no_store",
+      "class": "health",
+      "expected_status": [
+        200,
+        404
+      ],
+      "method": "GET",
+      "path": "/health",
+      "probe_result": "not_run",
+      "redirect_policy": "none",
+      "route_id": "OPS-08-HEALTH"
+    },
+    {
+      "cache_policy": "no_store",
+      "class": "health",
+      "expected_status": [
+        200,
+        503,
+        404
+      ],
+      "method": "GET",
+      "path": "/ready",
+      "probe_result": "not_run",
+      "redirect_policy": "none",
+      "route_id": "OPS-08-READY"
+    },
+    {
+      "cache_policy": "no_store",
+      "class": "health",
+      "expected_status": [
+        200,
+        404
+      ],
+      "method": "GET",
+      "path": "/version",
+      "probe_result": "not_run",
+      "redirect_policy": "none",
+      "route_id": "OPS-08-VERSION"
+    },
+    {
+      "cache_policy": "public",
+      "class": "public",
+      "expected_status": [
+        200,
+        404
+      ],
+      "method": "GET",
+      "path": "/robots.txt",
+      "probe_result": "not_run",
+      "redirect_policy": "same_path_to_canonical",
+      "route_id": "OPS-08-ROBOTS"
+    },
+    {
+      "cache_policy": "public",
+      "class": "public",
+      "expected_status": [
+        200,
+        404
+      ],
+      "method": "GET",
+      "path": "/sitemap.xml",
+      "probe_result": "not_run",
+      "redirect_policy": "same_path_to_canonical",
+      "route_id": "OPS-08-SITEMAP"
+    },
+    {
+      "cache_policy": "public",
+      "class": "legacy_redirect",
+      "expected_status": [
+        200,
+        301,
+        302,
+        307,
+        308,
+        404
+      ],
+      "method": "GET",
+      "path": "/one-time",
+      "probe_result": "not_run",
+      "redirect_policy": "fixed_legacy_target",
+      "route_id": "OPS-08-LEGACY-ONETIME"
+    },
+    {
+      "cache_policy": "provider_defined",
+      "class": "webhook",
+      "expected_status": [
+        200,
+        204,
+        400,
+        401,
+        403,
+        404
+      ],
+      "method": "POST",
+      "path": "/api/v1/billing/webhooks/provider",
+      "probe_result": "not_run",
+      "redirect_policy": "forbidden",
+      "route_id": "OPS-08-STRIPE-TEST-WEBHOOK"
+    }
+  ],
+  "source": {
+    "ancestry_proof": [
+      {
+        "command_digest": "4361dcb094f49704547997a0ad3086f65a167182ef8cdf856aef37986f36fe25",
+        "is_ancestor": false,
+        "required_sha": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf"
+      },
+      {
+        "command_digest": "e591f3d3dfe2dc34f7bee3bfaf5b835ec7fb969fc59f57be98b9a2ab40e8ddde",
+        "is_ancestor": true,
+        "required_sha": "a02d1d254ae0d17804fb657079a7871567260ea2"
+      },
+      {
+        "command_digest": "469b5d275ea431b2cb4d43285bf06421312a9084445699e43f30e722e4780e21",
+        "is_ancestor": true,
+        "required_sha": "87a1bb7ffd6a2fa0d016a1831894d430aa2ee065"
+      },
+      {
+        "command_digest": "aadab0e6bd3253fab8859bbd314707433f924ca7693e577121725c8bc02a5fa2",
+        "is_ancestor": true,
+        "required_sha": "97fa0c91758888f4e9de0af17d70002a0124669f"
+      },
+      {
+        "command_digest": "032b0c76b410663a68baa1f33475d5a0f37fe8539611224fb33f1103a8997c11",
+        "is_ancestor": false,
+        "required_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df"
+      },
+      {
+        "command_digest": "1c752ff4f46741d2adaeddac3caa308bea470df4bac9cf8d7e7cd473c33cbc7c",
+        "is_ancestor": false,
+        "required_sha": "80a67b93c61e9d5fb127789dadc0739917f21555"
+      },
+      {
+        "command_digest": "b530c89c4cdcddbbfd6adf790ed84b6df3195805faacea4d8f93b55b2a600923",
+        "is_ancestor": false,
+        "required_sha": "0fe1b4668170f608d8763fb52d11b30f0150feb2"
+      }
+    ],
+    "release_authorized": false,
+    "repository": "webcraft-media/onetimev2",
+    "selected_ref": null,
+    "selected_sha": null,
+    "selection_reason": "No single reachable SHA contains all observed OPS-08 domain/callback-relevant implementation branches. The best audit anchor contains OT-81/OT-83/OT-86A/OT-86B, but later Stripe, Zoom, Telegram/WhatsApp, and support branches are separate. Runtime hardening would be misleading until source convergence selects one immutable release target.",
+    "version_contract": {
+      "app_version": null,
+      "expected_sha": null,
+      "match": false,
+      "observed_sha": null,
+      "target_app": null
+    },
+    "working_tree_clean": false
+  },
+  "state": "blocked_source_convergence_required",
+  "task_id": "OPS-08",
+  "traffic_migration": {
+    "all_thresholds_pass": false,
+    "auth_incidents_p0_p1_14d": null,
+    "auth_support_rate_7d": null,
+    "eligibility_definition_version": "OPS-08-paid-current-or-365d-activity-v1",
+    "eligibility_window_days": 365,
+    "eligible_accounts": null,
+    "evidence_sha256": null,
+    "measured_continuous_days": null,
+    "measurement_window_end": null,
+    "measurement_window_start": null,
+    "migrated_accounts": null,
+    "new_app_login_attempts_14d": null,
+    "new_app_login_success_rate": null,
+    "new_app_login_successes_14d": null,
+    "successful_old_app_accounts_14d": null,
+    "synthetic_login_attempts_14d": null,
+    "synthetic_login_success_rate": null,
+    "synthetic_login_successes_14d": null,
+    "unresolved_high_severity_auth_tickets": null,
+    "unresolved_identity_conflicts": null
+  }
+}
