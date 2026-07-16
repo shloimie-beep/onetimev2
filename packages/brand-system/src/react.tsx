@@ -227,3 +227,162 @@ export function Toolbar({
     </section>
   );
 }
+
+export function SectionTabs({
+  tabs,
+  currentId,
+  label = 'Section',
+  className = 'ot-section-tabs',
+}: {
+  tabs: Array<{ id: string; label: string; href?: string; disabled?: boolean }>;
+  currentId: string;
+  label?: string;
+  className?: string;
+}) {
+  return (
+    <nav className={className} aria-label={label} data-ot-primitive="SectionTabs">
+      {tabs.map((tab) =>
+        tab.href && !tab.disabled ? (
+          <a key={tab.id} href={tab.href} aria-current={tab.id === currentId ? 'page' : undefined}>
+            {tab.label}
+          </a>
+        ) : (
+          <button
+            key={tab.id}
+            type="button"
+            disabled={tab.disabled}
+            aria-pressed={tab.id === currentId}
+          >
+            {tab.label}
+          </button>
+        ),
+      )}
+    </nav>
+  );
+}
+
+export function MetricTile({
+  label,
+  value,
+  trend,
+  className = 'ot-metric-tile',
+}: {
+  label: string;
+  value: string | number;
+  trend?: string;
+  className?: string;
+}) {
+  return (
+    <article className={className} data-ot-primitive="MetricTile">
+      <span>{label}</span>
+      <strong>{value}</strong>
+      {trend && <small>{trend}</small>}
+    </article>
+  );
+}
+
+export function StatusChip({
+  tone = 'neutral',
+  children,
+}: PrimitiveProps & { tone?: 'neutral' | 'success' | 'warning' | 'danger' | 'info' }) {
+  return (
+    <span className={`ot-status-chip tone-${tone}`} data-ot-primitive="StatusChip">
+      {children}
+    </span>
+  );
+}
+
+export function MobileCard({
+  title,
+  meta,
+  action,
+  children,
+}: {
+  title: string;
+  meta?: string;
+  action?: React.ReactNode;
+  children?: React.ReactNode;
+}) {
+  return (
+    <article className="ot-mobile-card" data-ot-primitive="MobileCard">
+      <header>
+        <div>
+          <strong>{title}</strong>
+          {meta && <span>{meta}</span>}
+        </div>
+        {action}
+      </header>
+      {children}
+    </article>
+  );
+}
+
+export function StatePanel({
+  kind = 'empty',
+  title,
+  body,
+  action,
+}: {
+  kind?: 'empty' | 'loading' | 'error' | 'denied' | 'offline' | 'session-expired';
+  title: string;
+  body: string;
+  action?: React.ReactNode;
+}) {
+  const liveRole = kind === 'error' || kind === 'denied' ? 'alert' : 'status';
+  return (
+    <section
+      className={`state-panel ot-state-${kind}`}
+      role={liveRole}
+      data-ot-primitive="StatePanel"
+    >
+      <h2>{title}</h2>
+      <p>{body}</p>
+      {action}
+    </section>
+  );
+}
+
+export function ToastBanner({
+  tone = 'info',
+  children,
+}: PrimitiveProps & { tone?: 'info' | 'success' | 'error' | 'warning' }) {
+  return (
+    <div
+      className={`ot-toast-banner tone-${tone}`}
+      role={tone === 'error' ? 'alert' : 'status'}
+      data-ot-primitive="ToastBanner"
+    >
+      {children}
+    </div>
+  );
+}
+
+export function MediaFrame({ caption, children }: { caption: string; children: React.ReactNode }) {
+  return (
+    <figure className="ot-media-frame" data-ot-primitive="MediaFrame">
+      <div>{children}</div>
+      <figcaption>{caption}</figcaption>
+    </figure>
+  );
+}
+
+export function ActivityTimeline({
+  items,
+}: {
+  items: Array<{ id: string; title: string; meta: string; body?: string }>;
+}) {
+  return (
+    <ol className="ot-activity-timeline" data-ot-primitive="ActivityTimeline">
+      {items.map((item) => (
+        <li key={item.id}>
+          <span aria-hidden="true" />
+          <div>
+            <strong>{item.title}</strong>
+            <small>{item.meta}</small>
+            {item.body && <p>{item.body}</p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
