@@ -1,0 +1,56 @@
+{
+  "task_id": "OT-83R",
+  "status": "checkpointed_partial",
+  "current_phase": "partial_student_question_seam_recovery_checkpoint",
+  "base_branch": "codex/ot83-household-portals-foundation",
+  "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "working_branch": "codex/ot83r-complete-portals",
+  "requirements": [
+    {
+      "id": "OT83R-REQ-001",
+      "title": "Persist prompt and runtime state",
+      "status": "done"
+    },
+    {
+      "id": "OT83R-REQ-002",
+      "title": "Audit partial OT-83 portal/auth/DB/brand implementation",
+      "status": "partially_done"
+    },
+    {
+      "id": "OT83R-REQ-003",
+      "title": "Complete V1 parent/student portal foundation",
+      "status": "partially_done"
+    },
+    {
+      "id": "OT83R-REQ-004",
+      "title": "Add route/action registry coverage and focused tests",
+      "status": "not_started"
+    },
+    {
+      "id": "OT83R-REQ-005",
+      "title": "Run verification and capture evidence",
+      "status": "not_run"
+    },
+    {
+      "id": "OT83R-REQ-006",
+      "title": "Commit, push, update draft PR, and final report",
+      "status": "in_progress"
+    }
+  ],
+  "recovery_audit": {
+    "audited_at": "2026-07-16T07:45:00+03:00",
+    "classification": "valid_task_owned_partial_work",
+    "partial_files": [
+      "packages/contracts/src/portals/index.ts",
+      "packages/domain/src/portals/services.ts",
+      "packages/db/migrations/2000_ot83r_student_question_seam.sql"
+    ],
+    "phase_reached": "student question contract/domain seam plus migration drafted; repository/router/UI/tests/final report still pending",
+    "tests_recorded": [],
+    "tests_passed": null,
+    "final_report_exists": false,
+    "external_mutations_performed": []
+  },
+  "blockers": [],
+  "external_mutations_performed": []
+}

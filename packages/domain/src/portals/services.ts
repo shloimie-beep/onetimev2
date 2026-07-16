@@ -19,6 +19,8 @@ import type {
   StudentAccessOperationPayload,
   StudentAccessOperationType,
   StudentAccessState,
+  StudentQuestion,
+  StudentQuestionPayload,
   StudentPortalDashboard,
   SupportPreview,
   SupportRequestPayload,
@@ -129,6 +131,17 @@ export type PortalRepository = {
     learner_key: string;
     limit?: number;
   }): Promise<RewardEvent[]>;
+  listStudentQuestions(args: {
+    actor: PortalActorContext;
+    learner_key: string;
+    limit?: number;
+  }): Promise<StudentQuestion[]>;
+  submitStudentQuestion(args: {
+    actor: PortalActorContext;
+    learner_key: string;
+    payload: StudentQuestionPayload;
+    request_fingerprint: string;
+  }): Promise<StudentQuestion>;
   addRewardEvent(args: {
     actor: PortalActorContext;
     input: RewardWriteInput;
@@ -487,7 +500,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         subject.household_key,
         subject.learner_key,
       );
-      const [upcoming, library, reviewSheets, progress, rewards, updates, helperState] =
+      const [upcoming, library, reviewSheets, progress, rewards, updates, questions, helperState] =
         await Promise.all([
           deps.classAccess.upcomingForLearner({ actor, learner }),
           deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
@@ -495,6 +508,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
           deps.progress.progressForLearner({ actor, learner }),
           deps.repository.getRewardBalance({ actor, learner_key: learner.learner_key }),
           mergedUpdates(deps.repository, deps, actor, learner, 'student'),
+          deps.repository.listStudentQuestions({ actor, learner_key: learner.learner_key }),
           helper.availability({ actor, learner }),
         ]);
       return {
@@ -504,6 +518,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         progress,
         rewards,
         updates,
+        questions,
         helper: helperState,
       };
     },
@@ -558,6 +573,26 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         subject.learner_key,
       );
       return support.preview({ actor, learner, payload });
+    },
+
+    async submitQuestion(actor: PortalActorContext, payload: StudentQuestionPayload) {
+      const subject = requireStudentSubject(actor, 'student:question:create');
+      await requireLearner(deps.repository, actor, subject.household_key, subject.learner_key);
+      return deps.repository.submitStudentQuestion({
+        actor,
+        learner_key: subject.learner_key,
+        payload,
+        request_fingerprint: fingerprint(payload),
+      });
+    },
+
+    async questions(actor: PortalActorContext) {
+      const subject = requireStudentSubject(actor, 'student:dashboard:read');
+      await requireLearner(deps.repository, actor, subject.household_key, subject.learner_key);
+      return deps.repository.listStudentQuestions({
+        actor,
+        learner_key: subject.learner_key,
+      });
     },
   };
 }
