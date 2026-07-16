@@ -86,8 +86,8 @@ test.describe('OT-88 mocked Zoom classroom launch', () => {
 
 async function loginStudent(page: Page) {
   await page.goto('/login?return_to=%2Fapp%2Fstudent');
-  await page.getByLabel('Email').fill('ot-student@example.test');
-  await page.getByLabel('Password').fill('StudentPassword!234');
+  await page.getByLabel('Email').fill('ot-zoom-student@example.test');
+  await page.getByLabel('Password').fill('ZoomStudentPassword!234');
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForURL('**/app/student');
   await expect(page.getByRole('button', { name: 'Join class' })).toBeVisible();

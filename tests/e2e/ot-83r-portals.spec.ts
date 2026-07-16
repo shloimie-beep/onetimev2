@@ -120,7 +120,7 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
   );
 
   await studentPage
-    .getByRole('textbox', { name: 'Question' })
+    .getByRole('textbox', { name: 'Question', exact: true })
     .fill('What should I review before the next class?');
   await studentPage.getByRole('button', { name: 'Submit question' }).click();
   await expect(studentPage.getByText('Question submitted.')).toBeVisible();
@@ -135,7 +135,7 @@ test('OT83R student portal routes content open, questions, session expiry, sibli
     },
   );
   const siblingClassJson = await siblingClassAttempt.json();
-  expect(siblingClassAttempt.status()).toBe(200);
+  expect(siblingClassAttempt.status()).toBe(400);
   expect(JSON.stringify(siblingClassJson)).not.toContain('e2e_learner_beta');
   expect(JSON.stringify(siblingClassJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive|meet/i);
 

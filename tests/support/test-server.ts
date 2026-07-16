@@ -58,6 +58,15 @@ const studentUserKey = await createAccountUser({
   role: 'student',
   mfaCapable: false,
 });
+const zoomStudentUserKey = await createAccountUser({
+  pool,
+  config,
+  email: process.env.OT_TEST_ZOOM_STUDENT_EMAIL ?? 'ot-zoom-student@example.test',
+  password: process.env.OT_TEST_ZOOM_STUDENT_PASSWORD ?? 'ZoomStudentPassword!234',
+  displayName: 'Zoom Test Student',
+  role: 'student',
+  mfaCapable: false,
+});
 await createAccountUser({
   pool,
   config,
@@ -83,7 +92,9 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.portal_households
        (household_key, account_key, product_key, display_name)
-     VALUES ('e2e_household_alpha', $1, $2, 'E2E Alpha Family')`,
+      VALUES
+        ('e2e_household_alpha', $1, $2, 'E2E Alpha Family'),
+        ('e2e_household_zoom', $1, $2, 'E2E Zoom Family')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
@@ -97,31 +108,57 @@ async function seedDayOneBrowserRecords() {
   await pool.query(
     `INSERT INTO onetime.portal_learners
        (learner_key, account_key, product_key, household_key, display_name, grade_label)
-     VALUES
-       ('e2e_learner_alpha', $1, $2, 'e2e_household_alpha', 'E2E Alpha Learner', '6'),
-       ('e2e_learner_beta', $1, $2, 'e2e_household_alpha', 'E2E Beta Learner', '5')`,
+      VALUES
+        ('e2e_learner_alpha', $1, $2, 'e2e_household_alpha', 'E2E Alpha Learner', '6'),
+        ('e2e_learner_beta', $1, $2, 'e2e_household_alpha', 'E2E Beta Learner', '5'),
+        ('e2e_learner_zoom', $1, $2, 'e2e_household_zoom', 'E2E Zoom Learner', '6')`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
     `INSERT INTO onetime.portal_student_access_state
        (access_state_key, account_key, product_key, household_key, learner_key, student_user_ref,
         status)
-     VALUES
-       ('e2e_access_alpha', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3, 'active'),
-       ('e2e_access_beta', $1, $2, 'e2e_household_alpha', 'e2e_learner_beta', NULL,
-        'not_configured')`,
-    [config.accountKey, config.productKey, studentUserKey],
+      VALUES
+        ('e2e_access_alpha', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3, 'active'),
+        ('e2e_access_beta', $1, $2, 'e2e_household_alpha', 'e2e_learner_beta', NULL,
+         'not_configured'),
+        ('e2e_access_zoom', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4, 'active')`,
+    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
   );
   await pool.query(
     `INSERT INTO onetime.account_learner_identity_links
-       (link_key, account_key, product_key, household_key, learner_key, user_key)
-      VALUES ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3)`,
-    [config.accountKey, config.productKey, studentUserKey],
+        (link_key, account_key, product_key, household_key, learner_key, user_key)
+       VALUES
+        ('e2e_link_alpha_student', $1, $2, 'e2e_household_alpha', 'e2e_learner_alpha', $3),
+        ('e2e_link_zoom_student', $1, $2, 'e2e_household_zoom', 'e2e_learner_zoom', $4)`,
+    [config.accountKey, config.productKey, studentUserKey, zoomStudentUserKey],
   );
   await pool.query(
     `INSERT INTO onetime.classroom_household_entitlements
        (entitlement_key, account_key, product_key, household_key, entitlement_state)
-     VALUES ('e2e_entitlement_alpha', $1, $2, 'e2e_household_alpha', 'active')`,
+      VALUES
+        ('e2e_entitlement_alpha', $1, $2, 'e2e_household_alpha', 'active'),
+        ('e2e_entitlement_zoom', $1, $2, 'e2e_household_zoom', 'active')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.billing_entitlement_projections
+       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
+        policy_version, source, reason, effective_at, evaluated_at, grants_access)
+     VALUES (
+       'billing_entitlement:' || $1 || ':' || $2 || ':e2e_household_alpha',
+       $1,
+       $2,
+       'e2e_household_alpha',
+       'opaque',
+       'active',
+       '2026-07-15.1',
+       'test_fixture_paid_invoice',
+       'active_paid_current_invoice',
+       '2026-07-15T12:00:00.000Z',
+       '2026-07-15T12:00:01.000Z',
+       true
+     )`,
     [config.accountKey, config.productKey],
   );
   await pool.query(

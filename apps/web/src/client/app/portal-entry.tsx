@@ -25,8 +25,6 @@ import {
   invokeProtectedAction,
   createBillingCheckoutSession,
   createBillingPortalSession,
-  previewParentSupport,
-  previewStudentSupport,
   runStudentAccessOperation,
   setParentLearnerArchived,
   submitClassroomQuestion,
@@ -375,34 +373,6 @@ function PortalApp() {
     } catch (error) {
       if (handleAuthError(error)) return;
       setNotice({ kind: 'error', message: errorMessage(error, 'Question was not sent.') });
-      setViewState(stateForError(error));
-    }
-  }
-
-  async function handleSupportPreview() {
-    if (!session) return;
-    try {
-      const preview =
-        portalRole === 'parent'
-          ? parentDashboard
-            ? await previewParentSupport({
-                csrfToken: session.csrf_token,
-                householdKey: parentDashboard.household.household_key,
-                subject: 'Portal support request',
-                body: `Support requested from ${parentDashboard.household.display_name}.`,
-              })
-            : null
-          : await previewStudentSupport({
-              csrfToken: session.csrf_token,
-              subject: 'Student portal support request',
-              body: 'Support requested from the student portal.',
-            });
-      if (!preview) return;
-      setNotice({ kind: 'info', message: `Support preview ready: ${preview.subject}` });
-      setViewState('success');
-    } catch (error) {
-      if (handleAuthError(error)) return;
-      setNotice({ kind: 'error', message: errorMessage(error, 'Support preview failed.') });
       setViewState(stateForError(error));
     }
   }
