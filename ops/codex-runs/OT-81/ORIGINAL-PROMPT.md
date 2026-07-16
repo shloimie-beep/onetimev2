@@ -116,4 +116,3 @@ Final report must state:
 - provider modes;
 - rollback status;
 - exact next prompt and repository-backed resume path.
-

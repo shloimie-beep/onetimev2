@@ -160,30 +160,30 @@ A failing UI test is not permission to edit a prohibited area.
 
 Treat these files as likely dependency-conflict hotspots. Re-fetch OT81 before final validation and reconcile ordinary merge conflicts instead of overwriting dependency work:
 
-| Hotspot | Why overlap is expected | OT-82 resolution requirement |
-|---|---|---|
-| `AGENTS.md` | OT81 may add certification/staging rules | Preserve all OT81 safety/certification rules; add canonical brand pointers without raw token values |
-| `package.json` | OT81 may add certification scripts; OT82 adds workspace/check scripts | Keep both script sets and existing verification order; add `brand:check` narrowly |
-| `package-lock.json` | Workspace or dependency graph may change in both branches | Regenerate from reconciled `package.json` with Node 24/npm; never choose a whole side |
-| `apps/web/vite.public.config.ts` | Public build/bundle inputs may change | Preserve OT81 inputs and public non-React separation; add only canonical static/CSS wiring |
-| `apps/web/vite.app.config.ts` | OT81 may add app entries/chunks | Preserve every OT81 entry; ensure canonical shared chunks without deleting entries |
-| `scripts/build-public-pages.ts` | OT81 may change route/auth/staging output | Preserve route and behavior changes; replace only duplicated shell/primitive rendering |
-| `apps/web/src/client/public/public-entry.ts` | OT81 may change login/signup/campaign behavior | Preserve behavior and API calls; centralize only shared UI enhancement |
-| `apps/web/src/client/public/styles.css` | OT73/OT80 branding and OT81 fixes converge here | Audit current values, then reduce to canonical imports and route-specific layout |
-| `apps/web/src/client/app/shell/AppShell.tsx` | Certification/staging and shell state may change | Preserve OT81 session/navigation behavior; compose canonical owner/parent/student shell pieces |
-| `apps/web/src/client/app/crm.css` | OT81 may add visible states and responsive fixes | Preserve route layout; remove raw palette/primitive duplication through canonical CSS |
-| `apps/web/src/client/app/crm-entry.tsx` | OT81 may wire Day-One states/actions | Preserve all handlers, routes, and API behavior; swap presentation components only |
-| `apps/web/src/client/app/portal-entry.tsx` | OT81 may certify parent/student flows | Preserve role/session/action behavior; apply explicit parent/student shell variants |
-| `apps/web/src/client/features/portals/PortalFeatures.tsx` | Existing local primitives and states are concentrated here | Preserve data/state behavior; replace local core primitives and runtime-injected CSS |
-| `apps/web/src/client/app/communications/CommunicationsFeature.tsx` | OT81 may certify communications status/actions | Preserve product behavior; migrate visible primitives only |
-| `apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx` | OT81 may stage/certify reconciliation UI | Preserve feature behavior; migrate visible primitives only |
-| `apps/web/src/client/features/audience-reconciliation/audience-reconciliation-panel.css` | Feature-local visual rules may overlap token work | Keep content layout; replace raw tokens/core component styling |
-| `scripts/check-bundles.ts` | OT81 may strengthen certification budgets | Retain stricter OT81 checks; add raw/gzip OT82 measurement without relaxation |
-| `tests/e2e/landing-signup.spec.ts` | OT81 and OT82 both prove public/auth behavior | Keep OT81 behavior assertions and add canonical/mobile/ticker checks |
-| `tests/e2e/crm-core.spec.ts` | OT81 and OT82 both prove authenticated behavior | Keep certification assertions and add shell/primitive/no-dead-action checks |
-| `tests/accessibility/public-a11y.spec.ts` | Both branches may expand accessibility proof | Preserve all checks; add OT82 modes without reducing coverage |
-| `tests/performance/public-performance.spec.ts` | Both branches may touch budgets/marks | Preserve OT81 performance semantics and existing thresholds |
-| `playwright.config.ts` | OT81 may add projects/fixtures | Merge project definitions; do not delete or replace an OT81 project |
+| Hotspot                                                                                  | Why overlap is expected                                               | OT-82 resolution requirement                                                                        |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `AGENTS.md`                                                                              | OT81 may add certification/staging rules                              | Preserve all OT81 safety/certification rules; add canonical brand pointers without raw token values |
+| `package.json`                                                                           | OT81 may add certification scripts; OT82 adds workspace/check scripts | Keep both script sets and existing verification order; add `brand:check` narrowly                   |
+| `package-lock.json`                                                                      | Workspace or dependency graph may change in both branches             | Regenerate from reconciled `package.json` with Node 24/npm; never choose a whole side               |
+| `apps/web/vite.public.config.ts`                                                         | Public build/bundle inputs may change                                 | Preserve OT81 inputs and public non-React separation; add only canonical static/CSS wiring          |
+| `apps/web/vite.app.config.ts`                                                            | OT81 may add app entries/chunks                                       | Preserve every OT81 entry; ensure canonical shared chunks without deleting entries                  |
+| `scripts/build-public-pages.ts`                                                          | OT81 may change route/auth/staging output                             | Preserve route and behavior changes; replace only duplicated shell/primitive rendering              |
+| `apps/web/src/client/public/public-entry.ts`                                             | OT81 may change login/signup/campaign behavior                        | Preserve behavior and API calls; centralize only shared UI enhancement                              |
+| `apps/web/src/client/public/styles.css`                                                  | OT73/OT80 branding and OT81 fixes converge here                       | Audit current values, then reduce to canonical imports and route-specific layout                    |
+| `apps/web/src/client/app/shell/AppShell.tsx`                                             | Certification/staging and shell state may change                      | Preserve OT81 session/navigation behavior; compose canonical owner/parent/student shell pieces      |
+| `apps/web/src/client/app/crm.css`                                                        | OT81 may add visible states and responsive fixes                      | Preserve route layout; remove raw palette/primitive duplication through canonical CSS               |
+| `apps/web/src/client/app/crm-entry.tsx`                                                  | OT81 may wire Day-One states/actions                                  | Preserve all handlers, routes, and API behavior; swap presentation components only                  |
+| `apps/web/src/client/app/portal-entry.tsx`                                               | OT81 may certify parent/student flows                                 | Preserve role/session/action behavior; apply explicit parent/student shell variants                 |
+| `apps/web/src/client/features/portals/PortalFeatures.tsx`                                | Existing local primitives and states are concentrated here            | Preserve data/state behavior; replace local core primitives and runtime-injected CSS                |
+| `apps/web/src/client/app/communications/CommunicationsFeature.tsx`                       | OT81 may certify communications status/actions                        | Preserve product behavior; migrate visible primitives only                                          |
+| `apps/web/src/client/features/audience-reconciliation/AudienceReconciliationPanel.tsx`   | OT81 may stage/certify reconciliation UI                              | Preserve feature behavior; migrate visible primitives only                                          |
+| `apps/web/src/client/features/audience-reconciliation/audience-reconciliation-panel.css` | Feature-local visual rules may overlap token work                     | Keep content layout; replace raw tokens/core component styling                                      |
+| `scripts/check-bundles.ts`                                                               | OT81 may strengthen certification budgets                             | Retain stricter OT81 checks; add raw/gzip OT82 measurement without relaxation                       |
+| `tests/e2e/landing-signup.spec.ts`                                                       | OT81 and OT82 both prove public/auth behavior                         | Keep OT81 behavior assertions and add canonical/mobile/ticker checks                                |
+| `tests/e2e/crm-core.spec.ts`                                                             | OT81 and OT82 both prove authenticated behavior                       | Keep certification assertions and add shell/primitive/no-dead-action checks                         |
+| `tests/accessibility/public-a11y.spec.ts`                                                | Both branches may expand accessibility proof                          | Preserve all checks; add OT82 modes without reducing coverage                                       |
+| `tests/performance/public-performance.spec.ts`                                           | Both branches may touch budgets/marks                                 | Preserve OT81 performance semantics and existing thresholds                                         |
+| `playwright.config.ts`                                                                   | OT81 may add projects/fixtures                                        | Merge project definitions; do not delete or replace an OT81 project                                 |
 
 The dependency branch itself is not an overlap to overwrite. It is the required base.
 

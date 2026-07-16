@@ -79,21 +79,21 @@ The PR records OT73 integration, successful local/CI build and test suites, and 
 
 The following files were read from `codex/ot80-one-shot-final-convergence` to make ownership, audit, and conflict guidance concrete.
 
-| Repository path | Blob SHA observed | Relevant evidence |
-|---|---|---|
-| `package.json` | `c7afa162d727c876882fa3b2a6ac868326f64af8` | Node `>=24 <25`; public and app Vite builds; existing build/lint/test/accessibility/performance/secret scripts |
-| `AGENTS.md` | `f4aa59d3e51563b673a907d0daf7305ae49c9283` | Standalone One Time, static non-React public pages, black/yellow plus restrained cyan, no BNA/provider mutation |
-| `apps/web/src/client/public/styles.css` | `2b5712a9531813ac5930ec10014a17865b38098f` | Public raw token system, local DM Serif, public header/button/drawer/ticker/footer/forms, reduced-motion ticker |
-| `apps/web/src/client/app/crm.css` | `44e32d0416784b1ba87e24d5ecd48042842e837f` | Separate authenticated raw palette, typography, shell/button/card/form rules |
-| `apps/web/src/client/app/shell/AppShell.tsx` | `0bc099396a9fb470a3255d373ce51f1cbe10d0f0` | Embedded authenticated header, logo, buttons, footer, drawer, toolbar, and session-expired state |
-| `scripts/build-public-pages.ts` | `9951825c2a6c4ad8f22d434c61d88ccafb707fd5` | Route-local public header/footer/ticker/form markup and known route outputs |
-| `apps/web/src/client/public/public-entry.ts` | `0f8f89ab3939bdd0502f0ae79124d327ba2ffa46` | Public drawer behavior, campaign deadline hiding, gallery, signup/login behavior |
-| `apps/web/src/client/app/portal-entry.tsx` | `38da8b2c7763dda53059e384cf6f117dffec9541` | Parent/student role selection, shared AppShell use, runtime portal style injection |
-| `apps/web/src/client/features/portals/PortalFeatures.tsx` | `e000c280db163c75e22a2bec801c191ed91ab792` | Local `ot-*` buttons, panels, rows, state UI, and portal view-state inventory |
-| `apps/web/vite.public.config.ts` | `585c3afe2b8e5499dfbfb305ddeba042f235386a` | Public entry `apps/web/src/client/public/public-entry.ts`; deterministic public asset names |
-| `apps/web/vite.app.config.ts` | `92f82aff2ee93063f7dd53b38bb05abcdcc8d4d2` | Separate React entries for CRM and portal |
-| `scripts/check-bundles.ts` | `0deeb9d0273909b3ba9949b28b8f5837212931e0` | Existing public budgets: `public.js <= 45,000` raw bytes and `public.css <= 35,000` raw bytes; no React/public-auth bundle leakage |
-| `ops/evidence/ot-39/performance-report.json` | `7deac45cd1dc956aaa85f9080f1de6897009a7ae` | Existing synthetic performance evidence, zero BNA/Operations requests, public/auth bundle separation |
+| Repository path                                           | Blob SHA observed                          | Relevant evidence                                                                                                                  |
+| --------------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json`                                            | `c7afa162d727c876882fa3b2a6ac868326f64af8` | Node `>=24 <25`; public and app Vite builds; existing build/lint/test/accessibility/performance/secret scripts                     |
+| `AGENTS.md`                                               | `f4aa59d3e51563b673a907d0daf7305ae49c9283` | Standalone One Time, static non-React public pages, black/yellow plus restrained cyan, no BNA/provider mutation                    |
+| `apps/web/src/client/public/styles.css`                   | `2b5712a9531813ac5930ec10014a17865b38098f` | Public raw token system, local DM Serif, public header/button/drawer/ticker/footer/forms, reduced-motion ticker                    |
+| `apps/web/src/client/app/crm.css`                         | `44e32d0416784b1ba87e24d5ecd48042842e837f` | Separate authenticated raw palette, typography, shell/button/card/form rules                                                       |
+| `apps/web/src/client/app/shell/AppShell.tsx`              | `0bc099396a9fb470a3255d373ce51f1cbe10d0f0` | Embedded authenticated header, logo, buttons, footer, drawer, toolbar, and session-expired state                                   |
+| `scripts/build-public-pages.ts`                           | `9951825c2a6c4ad8f22d434c61d88ccafb707fd5` | Route-local public header/footer/ticker/form markup and known route outputs                                                        |
+| `apps/web/src/client/public/public-entry.ts`              | `0f8f89ab3939bdd0502f0ae79124d327ba2ffa46` | Public drawer behavior, campaign deadline hiding, gallery, signup/login behavior                                                   |
+| `apps/web/src/client/app/portal-entry.tsx`                | `38da8b2c7763dda53059e384cf6f117dffec9541` | Parent/student role selection, shared AppShell use, runtime portal style injection                                                 |
+| `apps/web/src/client/features/portals/PortalFeatures.tsx` | `e000c280db163c75e22a2bec801c191ed91ab792` | Local `ot-*` buttons, panels, rows, state UI, and portal view-state inventory                                                      |
+| `apps/web/vite.public.config.ts`                          | `585c3afe2b8e5499dfbfb305ddeba042f235386a` | Public entry `apps/web/src/client/public/public-entry.ts`; deterministic public asset names                                        |
+| `apps/web/vite.app.config.ts`                             | `92f82aff2ee93063f7dd53b38bb05abcdcc8d4d2` | Separate React entries for CRM and portal                                                                                          |
+| `scripts/check-bundles.ts`                                | `0deeb9d0273909b3ba9949b28b8f5837212931e0` | Existing public budgets: `public.js <= 45,000` raw bytes and `public.css <= 35,000` raw bytes; no React/public-auth bundle leakage |
+| `ops/evidence/ot-39/performance-report.json`              | `7deac45cd1dc956aaa85f9080f1de6897009a7ae` | Existing synthetic performance evidence, zero BNA/Operations requests, public/auth bundle separation                               |
 
 ## 6. Known token discrepancy to audit
 

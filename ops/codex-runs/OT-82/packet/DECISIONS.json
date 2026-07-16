@@ -120,50 +120,28 @@
   ],
   "shells": {
     "public-marketing": {
-      "routes": [
-        "/",
-        "/privacy",
-        "/terms",
-        "/404.html"
-      ],
-      "ticker_routes": [
-        "/"
-      ]
+      "routes": ["/", "/privacy", "/terms", "/404.html"],
+      "ticker_routes": ["/"]
     },
     "auth": {
-      "routes": [
-        "/signup",
-        "/login"
-      ],
+      "routes": ["/signup", "/login"],
       "ticker_routes": []
     },
     "owner-admin": {
-      "routes": [
-        "/app/crm",
-        "/app/dashboard",
-        "/app/classes",
-        "/app/content",
-        "/app/billing"
-      ],
+      "routes": ["/app/crm", "/app/dashboard", "/app/classes", "/app/content", "/app/billing"],
       "ticker_routes": []
     },
     "parent": {
-      "routes": [
-        "/app/parent"
-      ],
+      "routes": ["/app/parent"],
       "ticker_routes": []
     },
     "student": {
-      "routes": [
-        "/app/student"
-      ],
+      "routes": ["/app/student"],
       "ticker_routes": []
     }
   },
   "ticker": {
-    "approved_route_allowlist": [
-      "/"
-    ],
+    "approved_route_allowlist": ["/"],
     "accessible_copy_meaning": "Join now — free until Rosh Hashanah",
     "destination": "/signup",
     "timezone": "Asia/Jerusalem",
@@ -211,14 +189,7 @@
         "height": 1000
       }
     ],
-    "surfaces": [
-      "landing",
-      "signup",
-      "login",
-      "crm",
-      "parent",
-      "student"
-    ],
+    "surfaces": ["landing", "signup", "login", "crm", "parent", "student"],
     "modes": [
       "default",
       "loading",
