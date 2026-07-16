@@ -1,0 +1,80 @@
+{
+  "run_id": "OT-84",
+  "repository": "webcraft-media/onetimev2",
+  "base_ref": "origin/codex/ot83-household-portals-foundation",
+  "base_branch": "codex/ot83-household-portals-foundation",
+  "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+  "head_branch": "codex/ot84-telegram-action-gateway",
+  "head_sha": "a9864a103c36140f261f7f38e2078bc1542d8092",
+  "head_sha_context": "PR creation head before publication evidence commit",
+  "phase": "LOCAL_IMPLEMENTATION_VERIFIED",
+  "checkpoint": "WAITING_FOR_TELEGRAM_SECRET",
+  "status": "draft_pr_created_waiting_for_telegram_secret",
+  "worktree": {
+    "target_repo_verified": true,
+    "path": "C:\\Users\\User\\OneTimeOneTime-ot84-telegram-action-gateway",
+    "origin": "https://github.com/webcraft-media/onetimev2.git",
+    "base_is_ancestor": true,
+    "bna_product_code_edited": false,
+    "mixed_worktree_guard": "Only explicit OT-84 paths may be staged because Windows line-ending status noise is present."
+  },
+  "packet": {
+    "source_zip": "C:\\Users\\User\\Downloads\\OT84-telegram-gateway-codex-packet.zip",
+    "source_zip_sha256": "D933CC9F3F4D662E02151808A4DD37B2D1CE216276C345760BC0C63B21136515",
+    "internal_checksums_verified": true,
+    "prompt_sha256": "69C24AF50256230C783EB48AFE2417EC62B41708437C5EC439446572523C754B",
+    "pro_factory_file_used": false
+  },
+  "implementation": {
+    "ot84_action_count": 28,
+    "stable_event_fixture_count": 7,
+    "webhook_mode_default": "off",
+    "long_polling_in_production": "disallowed",
+    "confirmation_callback_mode": "opaque_scoped_expiring_idempotent",
+    "runtime_provider_mutations": 0
+  },
+  "secrets": {
+    "telegram_bot_token_available": false,
+    "webhook_secret_available": false,
+    "identity_mapping_available": false,
+    "allowlisted_private_canary_chat_available": false,
+    "natural_language_provider_available": false
+  },
+  "tests": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "format": "passed",
+    "secret_scan": "passed",
+    "focused_unit": "passed",
+    "focused_integration": "passed",
+    "build": "passed",
+    "db_verify": "blocked_missing_DATABASE_URL"
+  },
+  "canary": {
+    "synthetic": "passed",
+    "real": "NOT_RUN_WAITING_FOR_TELEGRAM_SECRET"
+  },
+  "provider_mutation_count": 0,
+  "pr": {
+    "status": "draft_created",
+    "url": "https://github.com/webcraft-media/onetimev2/pull/29",
+    "number": 29,
+    "base": "codex/ot83-household-portals-foundation",
+    "base_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+    "head": "codex/ot84-telegram-action-gateway",
+    "head_sha_at_creation": "a9864a103c36140f261f7f38e2078bc1542d8092",
+    "draft": true
+  },
+  "next_safe_action": "Provide protected Telegram bot token, webhook secret, exact runtime identity mapping, one allowlisted private canary chat, isolated canary deployment boundary, and explicit operator canary approval before running the real canary.",
+  "created_at": "2026-07-15T19:25:00+03:00",
+  "updated_at": "2026-07-15T20:03:09+03:00",
+  "notes": [
+    "PROMPT.md was restored from the verified packet and matches SHA-256 69C24AF50256230C783EB48AFE2417EC62B41708437C5EC439446572523C754B.",
+    "No Telegram setWebhook/deleteWebhook/sendMessage/getUpdates call was made.",
+    "No BNA bot, BNA provider, payment provider, DNS, account, or production data mutation was made.",
+    "bash ops/codex-runs/OT-84/canary.sh passed and exited with NOT_RUN_WAITING_FOR_TELEGRAM_SECRET for the protected live canary.",
+    "npm run format passed after preserving the repository's existing ignore rules and adding an OT-84 markdown artifact exception for the verbatim prompt.",
+    "Draft PR #29 was created against codex/ot83-household-portals-foundation with PR creation head a9864a103c36140f261f7f38e2078bc1542d8092.",
+    "Real canary is intentionally blocked until protected runtime secrets, exact identity mapping, an allowlisted private canary chat, and explicit operator canary approval are available."
+  ]
+}

@@ -5,6 +5,7 @@ export * from './content/index.ts';
 export * from './accounts/index.ts';
 export * from './portals/index.ts';
 export * from './dashboard/index.ts';
+export * from './action-gateway/events.ts';
 
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;

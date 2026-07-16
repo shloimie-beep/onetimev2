@@ -6,6 +6,7 @@ export type CanonicalUserKey = string & { readonly __brand: 'CanonicalUserKey' }
 
 export type ChatContext = 'private' | 'group' | 'supergroup' | 'channel';
 export type OneTimeBotRole = 'owner' | 'admin' | 'crm_agent' | 'viewer';
+export type OneTimeTelegramGatewayRole = 'one_time_owner' | 'one_time_admin';
 
 export type BotUpdateKind = 'message' | 'callback_query' | 'unsupported';
 
@@ -31,10 +32,12 @@ export type TelegramIdentityMapping = {
   botKey: BotKey;
   environment: BotEnvironment;
   providerUserRef: ProviderUserRef;
+  chatRef: ChatRef;
   canonicalUserKey: CanonicalUserKey;
   accountKey: string;
   productKey: string;
   membershipKey: string;
+  mappingVersion: number;
   securityVersion: number;
   status: 'active' | 'revoked';
 };
@@ -53,19 +56,68 @@ export type CanonicalOneTimeActor = {
 };
 
 export const botCapabilities = [
-  'product_status',
-  'upcoming_classes',
-  'content_pipeline_status',
-  'contact_lookup',
-  'task_lookup',
-  'task_create',
-  'task_update',
+  'gateway.help',
+  'gateway.identity.read_self',
+  'gateway.scope.read',
+  'crm.lead.list',
+  'crm.lead.read',
+  'crm.lead.create',
+  'crm.contact.read_redacted',
+  'crm.lead_tag.list',
+  'crm.lead_tag.add',
+  'crm.lead_tag.remove',
+  'class.schedule.read',
+  'class.status.read',
+  'class.status.update',
+  'content.pipeline.read',
+  'content.item.read',
+  'content.item.retry',
+  'task.list',
+  'task.read',
+  'task.create',
+  'task.update',
+  'support.ticket.list',
+  'support.ticket.read_redacted',
+  'support.ticket.assign_self',
+  'support.ticket.status.update',
+  'class.question.list',
+  'class.question.read_redacted',
+  'class.question.select',
+  'telegram.audit.read_recent',
 ] as const;
 
 export type BotCapability = (typeof botCapabilities)[number];
+export type BotCommandSource = 'deterministic' | 'natural_language' | 'callback';
+export type BotRiskClass = 'R0' | 'R1' | 'R2' | 'R3';
+export type BotConfirmationMode = 'none' | 'nl_preview' | 'always';
+
+export const botWriteCapabilities = [
+  'crm.lead.create',
+  'crm.lead_tag.add',
+  'crm.lead_tag.remove',
+  'class.status.update',
+  'content.item.retry',
+  'task.create',
+  'task.update',
+  'support.ticket.assign_self',
+  'support.ticket.status.update',
+  'class.question.select',
+] as const satisfies readonly BotCapability[];
+
+export type BotWriteCapability = (typeof botWriteCapabilities)[number];
+export type BotReadCapability = Exclude<BotCapability, BotWriteCapability>;
+
+export type BotActionArgs = Record<string, string | number | boolean | null | undefined>;
+export type BotActionRequest = {
+  capability: BotCapability;
+  source: BotCommandSource;
+  args: BotActionArgs;
+  confirmationMode: BotConfirmationMode;
+  riskClass: BotRiskClass;
+};
 
 export type AuthorizationDecision =
-  | { allowed: true; actor: CanonicalOneTimeActor }
+  | { allowed: true; actor: CanonicalOneTimeActor; mapping: TelegramIdentityMapping }
   | {
       allowed: false;
       reason:
@@ -75,6 +127,7 @@ export type AuthorizationDecision =
         | 'missing_provider_identity'
         | 'unmapped_identity'
         | 'mapping_revoked'
+        | 'unapproved_private_chat'
         | 'inactive_user'
         | 'inactive_membership'
         | 'wrong_account_or_product'
@@ -88,16 +141,17 @@ export type BotCommand =
   | { type: 'help' }
   | {
       type: 'read';
-      capability: Exclude<BotCapability, 'task_create' | 'task_update'>;
-      query?: string;
+      capability: BotReadCapability;
+      source: BotCommandSource;
+      args: BotActionArgs;
     }
   | {
-      type: 'write_preview';
-      capability: 'task_create' | 'task_update';
-      title?: string;
-      taskKey?: string;
-      nextStatus?: 'open' | 'done' | 'blocked';
-      entityVersion?: number;
+      type: 'write';
+      capability: BotWriteCapability;
+      source: BotCommandSource;
+      args: BotActionArgs;
+      confirmationMode: BotConfirmationMode;
+      riskClass: BotRiskClass;
     }
   | { type: 'confirm'; confirmationKey: string }
   | { type: 'cancel'; confirmationKey: string }
@@ -105,17 +159,28 @@ export type BotCommand =
 
 export type BotCommandPreview = {
   confirmationKey: string;
-  capability: 'task_create' | 'task_update';
+  capability: BotWriteCapability;
   summary: string;
   actionDigest: string;
-  entityVersion?: number;
+  targetVersion?: number;
   expiresAt: string;
 };
 
 export type BotCommandResult = {
-  status: 'completed' | 'already_completed' | 'cancelled' | 'expired' | 'denied' | 'unsupported';
+  status:
+    | 'completed'
+    | 'already_completed'
+    | 'cancelled'
+    | 'expired'
+    | 'denied'
+    | 'unsupported'
+    | 'feature_unavailable'
+    | 'stale'
+    | 'failed';
   publicMessage: string;
   idempotencyKey?: string;
+  eventIds?: string[];
+  resultRef?: string;
 };
 
 export type BotReply = {
@@ -141,7 +206,13 @@ export type SensitivePayloadContext = {
   accountKey?: string;
   productKey?: string;
   actorKey?: string;
-  classification: 'normalized_update' | 'contact_query' | 'task_command' | 'confirmation_payload';
+  classification:
+    | 'normalized_update'
+    | 'contact_query'
+    | 'task_command'
+    | 'confirmation_payload'
+    | 'action_arguments'
+    | 'intent_payload';
 };
 
 export type SensitivePayloadRef = {
@@ -201,15 +272,22 @@ export type ConfirmationRecord = {
   actorUserKey: CanonicalUserKey;
   accountKey: string;
   productKey: string;
-  capability: 'task_create' | 'task_update';
+  capability: BotWriteCapability;
+  source: BotCommandSource;
+  riskClass: BotRiskClass;
   actionDigest: string;
-  entityVersion?: number;
+  targetVersion?: number;
+  mappingKey: string;
+  mappingVersion: number;
+  roleAtPreview: OneTimeBotRole;
   securityVersion: number;
   idempotencyKey: string;
+  previewDigest: string;
   payloadRef: SensitivePayloadRef;
   expiresAt: string;
   consumedAt?: string;
   cancelledAt?: string;
+  result?: BotCommandResult;
 };
 
 export type ConfirmationRepository = {
@@ -223,6 +301,7 @@ export type ConfirmationRepository = {
     confirmationKey: string,
     now: Date,
   ): Promise<'cancelled' | 'already_consumed' | 'expired' | 'missing'>;
+  recordResult(confirmationKey: string, result: BotCommandResult, now: Date): Promise<void>;
 };
 
 export type BotAuditEvent = {
@@ -272,26 +351,18 @@ export type OneTimeBotApplicationAdapter = {
     botKey: BotKey;
     environment: BotEnvironment;
   }): Promise<CanonicalOneTimeActor | null>;
-  getProductStatus?(actor: CanonicalOneTimeActor): Promise<string>;
-  listUpcomingClasses?(actor: CanonicalOneTimeActor): Promise<string>;
-  getContentPipelineStatus?(actor: CanonicalOneTimeActor): Promise<string>;
-  searchContacts?(actor: CanonicalOneTimeActor, query: string): Promise<string>;
-  lookupTasks?(actor: CanonicalOneTimeActor, query?: string): Promise<string>;
-  previewTaskCreate?(actor: CanonicalOneTimeActor, title: string): Promise<string>;
-  createTask?(
+  readAction?(
     actor: CanonicalOneTimeActor,
-    input: { title: string; idempotencyKey: string },
-  ): Promise<BotCommandResult>;
-  previewTaskUpdate?(
-    actor: CanonicalOneTimeActor,
-    input: { taskKey: string; nextStatus: 'open' | 'done' | 'blocked'; entityVersion: number },
+    request: Extract<BotActionRequest, { capability: BotReadCapability }> | BotActionRequest,
   ): Promise<string>;
-  updateTask?(
+  previewAction?(
+    actor: CanonicalOneTimeActor,
+    request: Extract<BotActionRequest, { capability: BotWriteCapability }> | BotActionRequest,
+  ): Promise<string>;
+  executeAction?(
     actor: CanonicalOneTimeActor,
     input: {
-      taskKey: string;
-      nextStatus: 'open' | 'done' | 'blocked';
-      entityVersion: number;
+      request: Extract<BotActionRequest, { capability: BotWriteCapability }> | BotActionRequest;
       idempotencyKey: string;
     },
   ): Promise<BotCommandResult>;

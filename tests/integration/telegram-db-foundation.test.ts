@@ -13,6 +13,7 @@ import {
   TelegramSqlConsumerLeaseRepository,
   TelegramSqlInboxRepository,
   TelegramSqlIdentityMappingRepository,
+  TelegramSqlResponseOutboxTransportAdapter,
 } from '../../packages/db/src/telegram/repositories.ts';
 import { createAccountUser } from '../../packages/domain/src/index.ts';
 import { DeterministicTestPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
@@ -42,7 +43,10 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
     expect(
       first.some((migration) => migration.id === '1900_ot83_household_portal_foundation'),
     ).toBe(true);
-    expect(first.at(-1)?.id).toBe('1900_ot83_household_portal_foundation');
+    expect(first.some((migration) => migration.id === '2000_ot84_telegram_action_gateway')).toBe(
+      true,
+    );
+    expect(first.at(-1)?.id).toBe('2000_ot84_telegram_action_gateway');
     const applied = await pool.query(
       `SELECT checksum
          FROM onetime.schema_migrations
@@ -50,10 +54,11 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
           '1600_ot51_telegram_bot_foundation',
           '1700_ot71_account_lifecycle',
           '1800_ot72_provider_truth',
-          '1900_ot83_household_portal_foundation'
+          '1900_ot83_household_portal_foundation',
+          '2000_ot84_telegram_action_gateway'
         )`,
     );
-    expect(applied.rowCount).toBe(4);
+    expect(applied.rowCount).toBe(5);
     await expect(runMigrations(pool)).rejects.toThrow(/not supported/i);
   });
 
@@ -85,10 +90,12 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
       botKey,
       environment: 'local',
       providerUserRef,
+      chatRef,
       canonicalUserKey: asCanonicalUserKey(userKey),
       accountKey: config.accountKey,
       productKey: config.productKey,
       membershipKey: 'membership_owner',
+      mappingVersion: 1,
       securityVersion: 1,
       status: 'active',
     });
@@ -98,10 +105,12 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
         botKey,
         environment: 'local',
         providerUserRef,
+        chatRef,
         canonicalUserKey: asCanonicalUserKey(userKey),
         accountKey: config.accountKey,
         productKey: config.productKey,
         membershipKey: 'membership_owner',
+        mappingVersion: 1,
         securityVersion: 1,
         status: 'active',
       }),
@@ -158,10 +167,16 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
       actorUserKey: asCanonicalUserKey(userKey),
       accountKey: config.accountKey,
       productKey: config.productKey,
-      capability: 'task_create',
+      capability: 'task.create',
+      source: 'natural_language',
+      riskClass: 'R1',
       actionDigest: 'action_digest',
+      mappingKey: 'mapping_1',
+      mappingVersion: 1,
+      roleAtPreview: 'owner',
       securityVersion: 1,
       idempotencyKey: 'idem_1',
+      previewDigest: 'preview_digest',
       payloadRef: {
         ciphertext: 'ciphertext',
         digest: 'digest',
@@ -175,6 +190,25 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
     expect(await confirmations.consume('confirm_1', new Date('2026-07-14T10:00:01Z'))).toBe(
       'already_consumed',
     );
+
+    const responseOutbox = new TelegramSqlResponseOutboxTransportAdapter(pool, {
+      botKey,
+      environment: 'local',
+    });
+    await responseOutbox.sendReply({
+      chatRef,
+      correlationKey: 'corr_response_1',
+      text: 'Safe Telegram response',
+    });
+    await responseOutbox.sendReply({
+      chatRef,
+      correlationKey: 'corr_response_1',
+      text: 'Safe Telegram response',
+    });
+    const responseRows = await pool.query(
+      'SELECT count(*)::int AS count FROM onetime.telegram_response_outbox',
+    );
+    expect(Number(responseRows.rows[0].count)).toBe(1);
 
     const leases = new TelegramSqlConsumerLeaseRepository(pool);
     const acquired = await leases.acquire({

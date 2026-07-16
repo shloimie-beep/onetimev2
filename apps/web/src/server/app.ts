@@ -5,8 +5,10 @@ import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import { ZodError } from 'zod';
 import type { AppConfig } from '../../../../packages/config/src/index.ts';
+import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
+import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import {
   contactListQuerySchema,
   contactListResponseSchema,
@@ -74,6 +76,8 @@ import {
   type AuthenticatedSession,
   type PortalServiceDeps,
 } from '../../../../packages/domain/src/index.ts';
+import { AesGcmPayloadCodec } from '../../../../packages/domain/src/telegram/crypto.ts';
+import { createTelegramWebhookHandler } from '../../../../apps/telegram-bot/src/ingress.ts';
 import {
   exposeServerTiming,
   publicError,
@@ -123,6 +127,25 @@ export function createApp({
     }),
   );
   app.use(traceMiddleware);
+  if (config.oneTimeTelegramWebhookEnabled) {
+    const telegramWebhook = createTelegramWebhookHandler({
+      botKey: asBotKey(config.oneTimeTelegramBotKey),
+      environment: config.oneTimeTelegramEnvironment,
+      secretToken: config.oneTimeTelegramWebhookSecret ?? '',
+      contentType: 'application/json',
+      maxBytes: 32 * 1024,
+      maxDepth: 12,
+      maxStringLength: 1000,
+      maxArrayLength: 32,
+      inbox: new TelegramSqlInboxRepository(pool),
+      codec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:telegram-payload-v1`),
+    });
+    app.post('/api/v1/telegram/one-time/webhook', (req, res) => {
+      void telegramWebhook(req, res).catch(() => {
+        if (!res.headersSent) res.status(500).json({ ok: false });
+      });
+    });
+  }
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 

@@ -1,0 +1,36 @@
+{
+  "run_id": "OT-84",
+  "synthetic_canary": {
+    "status": "passed",
+    "commands": [
+      "bash ops/codex-runs/OT-84/canary.sh",
+      "npm run typecheck",
+      "npm run lint",
+      "npm run format",
+      "npx prettier --check <OT-84 changed code and JSON paths>",
+      "npm run secret:scan",
+      "npx vitest run --config vitest.unit.config.ts tests/unit/telegram/telegram-foundation.test.ts tests/unit/telegram/ot84-action-gateway.test.ts",
+      "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts",
+      "npm run build"
+    ],
+    "format_note": "npm run format passed. The OT-84 verbatim prompt is preserved by a narrow markdown artifact ignore rule.",
+    "assertions": [
+      "webhook ingress rejects unsafe method/content type/secret/body inputs",
+      "normalized Telegram numeric IDs are hashed and raw usernames are not stored",
+      "private-chat mapping mismatch is denied before mutation",
+      "deterministic commands resolve before constrained natural-language intents",
+      "generic yes does not confirm pending previews",
+      "forbidden SQL/shell/secret/cross-scope prompts do not map to actions",
+      "confirmation callbacks are opaque, scoped, expiring, idempotent, and replay stored results",
+      "mapping version drift and another mapped principal deny confirmation",
+      "question queue actions fail closed behind the OT-88 feature gate",
+      "stable action-gateway event fixtures validate and privacy-key violations fail"
+    ]
+  },
+  "real_canary": {
+    "status": "NOT_RUN_WAITING_FOR_TELEGRAM_SECRET",
+    "provider_mutation_count": 0,
+    "blocked_reason": "No protected Telegram bot token, webhook secret, identity mapping, or allowlisted private canary chat was available in this Codex environment."
+  },
+  "updated_at": "2026-07-15T20:01:00+03:00"
+}

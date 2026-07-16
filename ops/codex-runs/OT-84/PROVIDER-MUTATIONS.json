@@ -1,0 +1,10 @@
+{
+  "run_id": "OT-84",
+  "provider_mutation_count": 0,
+  "mutations": [],
+  "notes": [
+    "No Telegram setWebhook/deleteWebhook/sendMessage/getUpdates call was made.",
+    "No BNA bot, BNA provider, payment provider, DNS, account, or production data mutation was made.",
+    "Real canary remains blocked pending protected runtime secrets and explicit canary approval."
+  ]
+}

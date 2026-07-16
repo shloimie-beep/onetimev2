@@ -7,3 +7,6 @@ ops/evidence/**
 ops/execution/**/ORIGINAL-PROMPT.md
 ops/codex-runs/**/ORIGINAL-PROMPT.md
 ops/codex-runs/**/packet/**
+
+# OT-84 run markdown contains the verbatim packet prompt and audit text.
+ops/codex-runs/OT-84/*.md
