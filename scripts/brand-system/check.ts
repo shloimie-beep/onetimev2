@@ -1,12 +1,22 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { oneTimeTokens } from '../../packages/brand-system/src/tokens.ts';
-import { routeBranding, tickerAllowlist } from '../../packages/brand-system/src/route-branding.ts';
+import {
+  requiredRouteTemplates,
+  routeBranding,
+  tickerAllowlist,
+} from '../../packages/brand-system/src/route-branding.ts';
+import {
+  componentContracts,
+  preUsableScreenshotBan,
+  visualBudgets,
+} from '../../packages/brand-system/src/visual-contract.ts';
 
 type BrandManifest = {
   schemaVersion: string;
   version: string;
   tokens: typeof oneTimeTokens & Record<string, unknown>;
+  components: { required?: string[] };
   routes: Record<string, string>;
   ticker: { allowlist: string[] };
 };
@@ -30,6 +40,7 @@ const externalFontPattern =
   /fonts\.(googleapis|gstatic)\.com|https?:\/\/[^'")\s]+(?:woff2?|ttf|otf)/i;
 const runtimeStylePattern =
   /document\.createElement\(['"]style['"]\)|portalFeatureStyles|append\(style\)/;
+const opacityPattern = /opacity\s*:\s*(0(?:\.\d+)?|0?\.\d+)/gi;
 
 const failures: string[] = [];
 
@@ -85,6 +96,36 @@ function compareTokenGroup(
   }
 }
 
+function cssBlocks(text: string) {
+  const blocks: Array<{ selector: string; body: string }> = [];
+  const blockPattern = /([^{}]+)\{([^{}]+)\}/g;
+  for (const match of text.matchAll(blockPattern)) {
+    blocks.push({ selector: (match[1] ?? '').trim(), body: match[2] ?? '' });
+  }
+  return blocks;
+}
+
+function assertNoFadedNormalText(relativePath: string, text: string) {
+  if (!relativePath.endsWith('.css')) return;
+  for (const block of cssBlocks(text)) {
+    opacityPattern.lastIndex = 0;
+    for (const match of block.body.matchAll(opacityPattern)) {
+      const value = Number(match[1]);
+      if (Number.isNaN(value) || value >= 0.72) continue;
+      const allowed =
+        block.selector.includes(':disabled') ||
+        block.selector.includes('[disabled]') ||
+        block.selector.includes('[hidden]') ||
+        block.selector.includes('.skeleton') ||
+        block.selector.includes('.mobile-current-link') ||
+        block.selector.includes('.drawer-overlay');
+      if (!allowed) {
+        fail(`Low opacity on normal UI text/control: ${relativePath} selector=${block.selector}`);
+      }
+    }
+  }
+}
+
 async function main() {
   const manifest = await readJson<BrandManifest>(manifestPath);
   const schema = await readJson<Record<string, unknown>>(schemaPath);
@@ -98,7 +139,21 @@ async function main() {
     fail('Manifest version must remain 1.0.0 for OT82.');
   }
 
-  for (const group of ['color', 'typography', 'spacing', 'radius', 'componentSizes']) {
+  for (const group of [
+    'color',
+    'typography',
+    'spacing',
+    'radius',
+    'border',
+    'shadow',
+    'motion',
+    'focus',
+    'layers',
+    'breakpoints',
+    'safeAreas',
+    'density',
+    'componentSizes',
+  ]) {
     compareTokenGroup(manifest.tokens, oneTimeTokens, group);
   }
   for (const color of Object.values(oneTimeTokens.color)) {
@@ -110,10 +165,39 @@ async function main() {
   if (JSON.stringify(manifestRoutes) !== JSON.stringify(sourceRoutes)) {
     fail('Route registry drift between manifest and TypeScript route branding.');
   }
+  for (const route of requiredRouteTemplates) {
+    if (!manifestRoutes.includes(route)) fail(`Required route is missing branding: ${route}`);
+  }
   const manifestTicker = new Set(manifest.ticker.allowlist);
   for (const route of sourceRoutes) {
     const sourceTicker = tickerAllowlist.has(route);
     if (manifestTicker.has(route) !== sourceTicker) fail(`Ticker allowlist drift for ${route}`);
+  }
+  const navigationLabels = new Map<string, string>();
+  for (const entry of routeBranding) {
+    if (!entry.navigationLabel || !entry.navigationGroup) continue;
+    const key = `${entry.navigationGroup}:${entry.navigationLabel}`;
+    const existing = navigationLabels.get(key);
+    if (existing)
+      fail(
+        `Duplicate navigation label "${entry.navigationLabel}" on ${existing} and ${entry.route}`,
+      );
+    navigationLabels.set(key, entry.route);
+  }
+  const manifestComponents = new Set((manifest.components.required ?? []) as string[]);
+  for (const contract of componentContracts) {
+    if (!manifestComponents.has(contract.primitive)) {
+      fail(`Component contract missing from manifest: ${contract.primitive}`);
+    }
+  }
+  if (oneTimeTokens.componentSizes.touchTarget !== `${visualBudgets.minTouchTargetCssPx}px`) {
+    fail('Touch target token no longer matches visual budget.');
+  }
+  if (visualBudgets.horizontalOverflow !== false) {
+    fail('Visual overflow budget must remain false.');
+  }
+  if (preUsableScreenshotBan.length < 4) {
+    fail('Pre-usable screenshot ban list is incomplete.');
   }
 
   const files = await walk(root);
@@ -135,6 +219,9 @@ async function main() {
     }
     if (!isCanonical(relativePath) && shippingSource && runtimeStylePattern.test(text)) {
       fail(`Runtime route-wide style injection is not allowed: ${relativePath}`);
+    }
+    if (shippingSource || relativePath.startsWith('packages/brand-system/src/styles/')) {
+      assertNoFadedNormalText(relativePath, text);
     }
     if (
       relativePath.startsWith('apps/web/src/client/public/') &&
