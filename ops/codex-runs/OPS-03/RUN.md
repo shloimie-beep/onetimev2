@@ -56,3 +56,9 @@
 - Redeploy exact repaired SHA to staging and prove Docker builder.
 - Run live staging acceptance and capture OPS-03 screenshots.
 - Push branch and open draft PR.
+
+## Deployment Iteration
+
+- First OPS-03 web deployment attempt `40fc8171-0a4e-42d3-ae31-80252a5281a8` failed before build because Railway retained a service config pointer to `railway.web.staging.json`, which was absent from the repo.
+- Existing green Nixpacks web deployment `e2821230-66ed-4dca-87f5-a01a4137b4df` remained active/running after that failed attempt.
+- Added explicit staging service config files for web and worker selecting the Dockerfile builder.
