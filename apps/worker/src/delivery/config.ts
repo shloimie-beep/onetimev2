@@ -1,11 +1,17 @@
 import { loadConfig, type AppConfig } from '../../../../packages/config/src/index.ts';
+import type { DeliveryTransportMode } from '../../../../packages/contracts/src/delivery/types.ts';
 import type { DeliveryMessageConfig } from '../../../../packages/domain/src/delivery/messages.ts';
+import {
+  parseDeliveryProviderFeatureConfig,
+  type DeliveryProviderFeatureConfig,
+} from './provider-config.ts';
 
 export type DeliveryWorkerConfig = {
   appConfig: AppConfig;
   accountKey: string;
   productKey: string;
-  transportMode: 'sink';
+  transportMode: DeliveryTransportMode;
+  provider: DeliveryProviderFeatureConfig;
   batchSize: number;
   concurrency: number;
   claimLeaseMs: number;
@@ -47,20 +53,33 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
     source.OUTBOX_TRANSPORT_MODE ??
     appConfig.outboxTransportMode
   ).toLowerCase();
-  const providerActivationRequested =
-    requestedMode === 'provider' ||
-    requestedMode === 'mock' ||
-    booleanValue(source.DELIVERY_PROVIDER_ACTIVATION_ENABLED) ||
-    booleanValue(source.ENABLE_REAL_EMAIL_TRANSPORT) ||
-    booleanValue(source.ENABLE_REAL_WHATSAPP_TRANSPORT) ||
-    booleanValue(source.ENABLE_REAL_TELEGRAM_TRANSPORT) ||
-    booleanValue(source.ENABLE_PAYMENT_TRANSPORT);
-
-  if (providerActivationRequested) {
-    throw new Error('Delivery worker is sink-only; provider activation flags fail closed.');
+  if (requestedMode !== 'sink' && requestedMode !== 'provider') {
+    throw new Error('Delivery worker transport mode must be sink or provider.');
   }
-  if (requestedMode !== 'sink' || appConfig.outboxTransportMode !== 'sink') {
-    throw new Error('Delivery worker transport mode must remain sink.');
+  const transportMode = requestedMode as DeliveryTransportMode;
+  const provider = parseDeliveryProviderFeatureConfig(source, {
+    transportMode,
+    environment: appConfig.deliveryEnvironment,
+    allowUnknownKeys: true,
+  });
+  const providerFlagsWithoutProviderMode =
+    transportMode === 'sink' &&
+    (provider.transportEnabled ||
+      provider.resendEnabled ||
+      provider.wapiEnabled ||
+      provider.resendAuthorized ||
+      provider.wapiAuthorized ||
+      booleanValue(source.DELIVERY_PROVIDER_ACTIVATION_ENABLED) ||
+      booleanValue(source.ENABLE_REAL_EMAIL_TRANSPORT) ||
+      booleanValue(source.ENABLE_REAL_WHATSAPP_TRANSPORT) ||
+      booleanValue(source.ENABLE_REAL_TELEGRAM_TRANSPORT) ||
+      booleanValue(source.ENABLE_PAYMENT_TRANSPORT));
+
+  if (providerFlagsWithoutProviderMode) {
+    throw new Error('Delivery provider flags require explicit provider transport mode.');
+  }
+  if (transportMode === 'provider' && appConfig.deliveryEnvironment === 'production') {
+    throw new Error('Production delivery provider mode is disabled pending a reviewed release.');
   }
   if (!appConfig.databaseUrl) {
     throw new Error('DATABASE_URL is required by the delivery worker.');
@@ -101,7 +120,8 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
     appConfig,
     accountKey: appConfig.accountKey,
     productKey: appConfig.productKey,
-    transportMode: 'sink',
+    transportMode,
+    provider,
     batchSize: boundedInteger(
       source.DELIVERY_WORKER_BATCH_SIZE,
       25,

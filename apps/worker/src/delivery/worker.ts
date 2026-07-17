@@ -6,6 +6,7 @@ import type {
   DeliveryProviderRouter,
   DeliveryRepository,
   DeliveryRunSummary,
+  DeliveryTransportMode,
   ProviderReceipt,
 } from '../../../../packages/contracts/src/delivery/types.ts';
 import { providerError } from '../../../../packages/contracts/src/delivery/errors.ts';
@@ -23,8 +24,10 @@ export type DeliveryWorkerOptions = {
   productKey: string;
   batchSize: number;
   concurrency: number;
+  transportMode?: DeliveryTransportMode;
   claimLeaseMs: number;
   providerTimeoutMs: number;
+  providerTimeoutLeaseSafetyMs?: number;
   maxAttempts: number;
 };
 
@@ -90,6 +93,7 @@ async function sendWithTimeout(input: {
       input.router.send(input.request, {
         deliveryKey: input.claim.deliveryKey,
         attempt: input.claim.attempts,
+        transportMode: input.claim.transportMode as DeliveryTransportMode,
         signal: controller.signal,
       }),
       timeout,
@@ -202,10 +206,15 @@ async function processClaim(
 export async function runDeliveryBatch(input: RunDeliveryBatchInput): Promise<DeliveryRunSummary> {
   const clock = input.clock ?? (() => new Date());
   const summary = emptySummary();
+  const transportMode = input.options.transportMode ?? 'sink';
+  const leaseSafetyMs = input.options.providerTimeoutLeaseSafetyMs ?? 1;
+  if (input.options.providerTimeoutMs + leaseSafetyMs >= input.options.claimLeaseMs) {
+    throw new Error('Delivery provider timeout plus safety margin must be less than claim lease.');
+  }
   const claims = await input.repository.claimBatch({
     accountKey: input.options.accountKey,
     productKey: input.options.productKey,
-    transportMode: 'sink',
+    transportMode,
     now: clock(),
     limit: input.options.batchSize,
     leaseMs: input.options.claimLeaseMs,

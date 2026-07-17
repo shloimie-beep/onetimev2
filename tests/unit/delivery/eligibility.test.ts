@@ -170,12 +170,12 @@ describe('delivery eligibility', () => {
     });
   });
 
-  it('rejects provider-mode and event/channel mismatches before message building', () => {
+  it('keeps provider-mode rows eligible while rejecting event/channel mismatches', () => {
     const providerMode = evaluateDeliveryEligibility(
       claimedDelivery({ transportMode: 'provider' }),
       undefined,
     );
-    expect(providerMode).toMatchObject({ kind: 'skipped', reason: 'unsupported_event_type' });
+    expect(providerMode).toMatchObject({ kind: 'eligible', channel: 'email' });
 
     const mismatch = evaluateDeliveryEligibility(
       claimedDelivery({

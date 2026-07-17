@@ -1,0 +1,152 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-02",
+  "title": "Delivery transport foundation",
+  "status": "local_validated_ready_for_draft_pr",
+  "generated_at": "2026-07-17T18:03:16+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "worktree": "C:\\Users\\User\\.w12-20260717-worktrees\\W12-100-02",
+  "branch": "codex/w12-100-02-delivery-transport-foundation",
+  "base_pr_target": "integration/w12-final-convergence-20260717T123715Z",
+  "objectives": [
+    {
+      "id": "preserve_sink_default",
+      "status": "done",
+      "evidence": [
+        "loadDeliveryWorkerConfig default remains sink",
+        "tests/unit/delivery/config.test.ts"
+      ]
+    },
+    {
+      "id": "explicit_delivery_environment",
+      "status": "done",
+      "evidence": ["DELIVERY_ENVIRONMENT supports local/test/isolated_staging/production"]
+    },
+    {
+      "id": "provider_gate_stack",
+      "status": "done",
+      "evidence": ["tests/unit/delivery/provider-transport.test.ts"]
+    },
+    {
+      "id": "production_provider_rejection",
+      "status": "done",
+      "evidence": [
+        "loadConfig rejects production OUTBOX provider mode",
+        "loadDeliveryWorkerConfig rejects production provider mode",
+        "provider router rejects production mode"
+      ]
+    },
+    {
+      "id": "no_provider_failure_to_sink_fallback",
+      "status": "done",
+      "evidence": ["provider failures become retry/dead_lettered outcomes, not sink_delivered"]
+    },
+    {
+      "id": "redacted_receipts_errors_destinations_logs",
+      "status": "done",
+      "evidence": [
+        "provider receipt message refs are hashed",
+        "safe log fields exclude raw destinations",
+        "tests/unit/delivery/provider-transport.test.ts"
+      ]
+    },
+    {
+      "id": "timeout_lease_safety",
+      "status": "done",
+      "evidence": [
+        "loadDeliveryWorkerConfig enforces timeout plus safety margin below lease",
+        "runDeliveryBatch also rejects unsafe direct options"
+      ]
+    },
+    {
+      "id": "suppression_and_consent_before_dispatch",
+      "status": "already_satisfied",
+      "evidence": [
+        "evaluateDeliveryEligibility already enforced suppression and WhatsApp consent",
+        "provider-mode tests prove no adapter call for suppressed rows"
+      ]
+    },
+    {
+      "id": "separate_adapters_routing_persistence",
+      "status": "done",
+      "evidence": [
+        "provider clients remain behind OneTimeProviderDeliveryRouter",
+        "PostgresDeliveryRepository only claims/completes rows"
+      ]
+    },
+    {
+      "id": "retry_idempotency_no_duplicate_provider_action",
+      "status": "done",
+      "evidence": ["router caches accepted receipts by provider and stable idempotency key"]
+    },
+    {
+      "id": "unsupported_channels_fail_closed",
+      "status": "done",
+      "evidence": ["unsupported_provider_channel typed failure"]
+    },
+    {
+      "id": "readiness_counts_status_no_secrets",
+      "status": "done",
+      "evidence": ["DeliveryProviderReadinessSnapshot exposes counts/status/fingerprint only"]
+    },
+    {
+      "id": "mock_in_memory_provider_adapter",
+      "status": "done",
+      "evidence": ["apps/worker/src/delivery/mock-provider-adapter.ts"]
+    },
+    {
+      "id": "integration_contract_documented",
+      "status": "done",
+      "evidence": ["packages/domain/src/delivery/TRANSPORT-INTEGRATION-CONTRACT.md"]
+    },
+    {
+      "id": "no_w12_09_integration",
+      "status": "already_satisfied",
+      "evidence": ["No W12-09 branch or files were merged."]
+    }
+  ],
+  "validation": [
+    { "command": "npm ci", "status": "passed" },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/delivery/config.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/delivery/worker.test.ts tests/unit/delivery/provider-transport.test.ts tests/unit/delivery/retry.test.ts tests/unit/ot72-provider-adapters.test.ts",
+      "status": "passed",
+      "details": "6 files, 64 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/delivery/postgres-repository.test.ts tests/integration/delivery/outbox-pipeline.test.ts tests/integration/delivery/web-app-independence.test.ts",
+      "status": "passed",
+      "details": "3 files, 17 tests"
+    },
+    { "command": "npm run secret:scan", "status": "passed", "details": "1304 repo text files" },
+    { "command": "npm run lint", "status": "passed" },
+    { "command": "npm run typecheck", "status": "passed" },
+    { "command": "npm run unit", "status": "passed", "details": "39 files, 212 tests" },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "details": "38 files, 184 tests"
+    },
+    {
+      "command": "npx prettier --check --ignore-unknown <touched files>",
+      "status": "passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Vite font URL warning only; build completed."
+    }
+  ],
+  "safety": {
+    "staging_deploy_performed": false,
+    "production_deploy_performed": false,
+    "production_database_read_performed": false,
+    "production_database_write_performed": false,
+    "external_actions_count": 0,
+    "provider_resource_mutations_count": 0,
+    "production_mutations_count": 0,
+    "real_provider_calls_performed": false,
+    "email_whatsapp_telegram_zoom_payment_posts_or_webhooks_sent": false,
+    "secrets_or_private_rows_printed": false
+  }
+}
