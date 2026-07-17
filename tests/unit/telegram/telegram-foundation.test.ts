@@ -82,6 +82,43 @@ describe('OT-51P ingress boundary', () => {
     ).toBe(400);
   });
 
+  it('rejects bounded JSON string and array overflows without storing provider IDs', async () => {
+    const inbox = new MemoryInboxRepository();
+    const handler = createTelegramWebhookHandler({
+      botKey,
+      environment: 'local',
+      secretToken: 'secret-token',
+      contentType: 'application/json',
+      maxBytes: 4096,
+      maxDepth: 8,
+      maxStringLength: 20,
+      maxArrayLength: 2,
+      inbox,
+      codec: new DeterministicTestPayloadCodec(),
+    });
+
+    expect(
+      (
+        await callHandler(handler, {
+          secret: 'secret-token',
+          body: JSON.stringify({
+            update_id: 2,
+            message: { text: 'x'.repeat(21), from: { id: 123456 }, chat: { id: 654321 } },
+          }),
+        })
+      ).status,
+    ).toBe(400);
+    expect(
+      (
+        await callHandler(handler, {
+          secret: 'secret-token',
+          body: JSON.stringify({ update_id: 3, message: { entities: [1, 2, 3] } }),
+        })
+      ).status,
+    ).toBe(400);
+    expect(await inbox.claimNext(new Date('2026-07-17T10:00:00Z'), 'test', 1000)).toBeNull();
+  });
+
   it('normalizes only the allowed Telegram subset, hashes IDs, encrypts payload, and dedupes', async () => {
     const inbox = new MemoryInboxRepository();
     const handler = createTelegramWebhookHandler({
