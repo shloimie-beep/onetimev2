@@ -3,6 +3,16 @@ import { z } from 'zod';
 export const legacyAudienceSourceKindSchema = z.enum(['csv_normalized', 'xlsx_normalized']);
 export type LegacyAudienceSourceKind = z.infer<typeof legacyAudienceSourceKindSchema>;
 
+export const legacyAudienceSourceClassificationSchema = z.enum([
+  'proven_one_time',
+  'mixed_needs_review',
+  'unrelated',
+  'duplicate',
+]);
+export type LegacyAudienceSourceClassification = z.infer<
+  typeof legacyAudienceSourceClassificationSchema
+>;
+
 export const legacyAudienceTypeSchema = z.enum(['family', 'school']);
 export type LegacyAudienceType = z.infer<typeof legacyAudienceTypeSchema>;
 
@@ -57,6 +67,32 @@ export const legacyAudienceSegmentCodeSchema = z.enum([
 ]);
 export type LegacyAudienceSegmentCode = z.infer<typeof legacyAudienceSegmentCodeSchema>;
 
+export const legacyAudienceTaxonomyFactCodeSchema = z.enum([
+  'contact_person',
+  'household',
+  'parent_guardian',
+  'learner',
+  'family_lead',
+  'school_lead',
+  'lead',
+  'member_subscriber',
+  'legacy_system_contact',
+  'active_legacy_user',
+  'current_activation',
+  'enrollment',
+  'consent_opted_in',
+  'consent_unknown',
+  'do_not_send',
+  'suppressed',
+  'bounced',
+  'invalid',
+  'source_provenance',
+  'import_source_batch',
+  'campaign_candidate',
+  'manual_review',
+]);
+export type LegacyAudienceTaxonomyFactCode = z.infer<typeof legacyAudienceTaxonomyFactCodeSchema>;
+
 export const legacyAudienceSourceSchema = z
   .object({
     kind: legacyAudienceSourceKindSchema,
@@ -66,6 +102,59 @@ export const legacyAudienceSourceSchema = z
   })
   .strict();
 export type LegacyAudienceSource = z.infer<typeof legacyAudienceSourceSchema>;
+
+export const legacyAudienceSourceInventoryFileSchema = z
+  .object({
+    file_ref: z.string().trim().min(1).max(180),
+    source_root_label: z.string().trim().min(1).max(80),
+    file_name: z.string().trim().min(1).max(260),
+    extension: z.string().trim().min(1).max(12),
+    byte_size: z.number().int().min(0),
+    last_modified: z.string().datetime(),
+    sha256: z.string().length(64),
+    duplicate_of_sha256: z.string().length(64).nullable(),
+    classification: legacyAudienceSourceClassificationSchema,
+    classification_reasons: z.array(z.string().trim().min(1).max(160)).max(20),
+    sheet_names: z.array(z.string().trim().min(1).max(120)).max(80),
+    column_names_by_sheet: z.record(
+      z.string(),
+      z.array(z.string().trim().min(1).max(120)).max(200),
+    ),
+    row_counts_by_sheet: z.record(z.string(), z.number().int().min(0)),
+    warnings: z.array(z.string().trim().min(1).max(180)).max(40),
+    raw_values_included: z.literal(false),
+  })
+  .strict();
+export type LegacyAudienceSourceInventoryFile = z.infer<
+  typeof legacyAudienceSourceInventoryFileSchema
+>;
+
+export const legacyAudienceSourceInventoryManifestSchema = z
+  .object({
+    inventory_key: z.string().trim().min(1).max(180),
+    generated_at: z.string().datetime(),
+    generated_by: z.string().trim().min(1).max(120),
+    source_roots: z.array(z.string().trim().min(1).max(80)).max(20),
+    files: z.array(legacyAudienceSourceInventoryFileSchema).max(1000),
+    summary: z
+      .object({
+        file_count: z.number().int().min(0),
+        proven_one_time: z.number().int().min(0),
+        mixed_needs_review: z.number().int().min(0),
+        unrelated: z.number().int().min(0),
+        duplicate: z.number().int().min(0),
+        unsupported_files: z.number().int().min(0),
+        possible_pii_files: z.number().int().min(0),
+      })
+      .strict(),
+    manifest_sha256: z.string().length(64),
+    raw_values_included: z.literal(false),
+    production_side_effects: z.literal(false),
+  })
+  .strict();
+export type LegacyAudienceSourceInventoryManifest = z.infer<
+  typeof legacyAudienceSourceInventoryManifestSchema
+>;
 
 const optionalCell = (max: number) => z.string().trim().max(max).optional().default('');
 
@@ -113,6 +202,7 @@ export const legacyAudienceSummarySchema = z
     reason_counts: z.record(z.string(), z.number().int().min(0)),
     disposition_counts: z.record(z.string(), z.number().int().min(0)),
     segment_counts: z.record(z.string(), z.number().int().min(0)),
+    taxonomy_fact_counts: z.record(z.string(), z.number().int().min(0)),
   })
   .strict();
 export type LegacyAudienceSummary = z.infer<typeof legacyAudienceSummarySchema>;
@@ -137,6 +227,7 @@ export const legacyAudienceRowOutcomeSchema = z
     disposition: legacyAudienceDispositionSchema,
     reasons: z.array(legacyAudienceReasonCodeSchema).min(1),
     segment_codes: z.array(legacyAudienceSegmentCodeSchema),
+    taxonomy_fact_codes: z.array(legacyAudienceTaxonomyFactCodeSchema),
     matched_contact_key: z.string().min(1).max(180).nullable(),
     matched_contact_id: z.string().min(1).max(180).nullable(),
     candidate_contact_keys: z.array(z.string().min(1).max(180)),
@@ -167,6 +258,80 @@ export const legacyAudienceRollbackRequestSchema = z
   })
   .strict();
 export type LegacyAudienceRollbackRequest = z.infer<typeof legacyAudienceRollbackRequestSchema>;
+
+export const legacyAudienceConflictDecisionRequestSchema = z
+  .object({
+    batch_key: z.string().trim().min(1).max(120),
+    row_key: z.string().trim().min(1).max(160),
+    idempotency_key: z.string().trim().min(8).max(160),
+    decision: z.enum([
+      'accept_existing_contact',
+      'stage_new_contact',
+      'reject_unrelated',
+      'mark_duplicate',
+      'suppress_do_not_send',
+      'needs_more_info',
+    ]),
+    selected_contact_key: z.string().trim().min(1).max(180).nullable().optional(),
+    reason: z.string().trim().min(1).max(500),
+  })
+  .strict();
+export type LegacyAudienceConflictDecisionRequest = z.infer<
+  typeof legacyAudienceConflictDecisionRequestSchema
+>;
+
+export const legacyAudienceConflictDecisionResultSchema = z
+  .object({
+    decision_key: z.string().trim().min(1).max(180),
+    batch_key: z.string().trim().min(1).max(120),
+    row_key: z.string().trim().min(1).max(160),
+    decision: legacyAudienceConflictDecisionRequestSchema.shape.decision,
+    replayed: z.boolean(),
+    production_side_effects: z.literal(false),
+  })
+  .strict();
+export type LegacyAudienceConflictDecisionResult = z.infer<
+  typeof legacyAudienceConflictDecisionResultSchema
+>;
+
+export const legacyAudienceApplyPlanRequestSchema = z
+  .object({
+    batch_key: z.string().trim().min(1).max(120),
+    idempotency_key: z.string().trim().min(8).max(160),
+    mode: z.enum(['dry_run', 'apply']).default('dry_run'),
+    manifest_sha256: z.string().length(64),
+    expected_total_rows: z.number().int().min(0),
+    expected_unique_rows: z.number().int().min(0),
+    expected_manual_review_rows: z.number().int().min(0),
+    target_environment: z.enum(['local', 'test', 'staging', 'production']),
+    operator_authorization_statement: z.string().trim().max(1000).optional(),
+  })
+  .strict();
+export type LegacyAudienceApplyPlanRequest = z.infer<typeof legacyAudienceApplyPlanRequestSchema>;
+
+export const legacyAudienceApplyPlanResultSchema = z
+  .object({
+    apply_plan_key: z.string().trim().min(1).max(180),
+    batch_key: z.string().trim().min(1).max(120),
+    status: z.enum(['dry_run', 'blocked', 'authorized_not_applied']),
+    mode: z.enum(['dry_run', 'apply']),
+    target_environment: z.enum(['local', 'test', 'staging', 'production']),
+    blocked_reasons: z.array(
+      z.enum([
+        'manifest_hash_mismatch',
+        'count_mismatch',
+        'manual_review_unresolved',
+        'missing_operator_authorization',
+        'production_target_declared',
+      ]),
+    ),
+    planned_counts: z.record(z.string(), z.number().int().min(0)),
+    exact_authorization_required: z.string().trim().min(1).max(500),
+    real_bulk_import_applied: z.literal(false),
+    production_side_effects: z.literal(false),
+  })
+  .strict();
+export type LegacyAudienceApplyPlanResult = z.infer<typeof legacyAudienceApplyPlanResultSchema>;
 
 export const legacyAudienceSegmentContractSchema = z
   .object({

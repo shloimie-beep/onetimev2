@@ -9,6 +9,12 @@ import './audience-reconciliation-panel.css';
 type AudienceReconciliationPanelProps = {
   summary: LegacyAudienceSummary | null;
   segments: LegacyAudienceSegmentContract[];
+  taxonomyFacts?: Array<{
+    fact_code: string;
+    display_name: string;
+    description: string;
+    may_drive_campaign: boolean;
+  }>;
   loading?: boolean;
   error?: string | null;
   campaignPreview?: LegacyActivationCampaignPreview | null;
@@ -22,6 +28,7 @@ type AudienceReconciliationPanelProps = {
 export function AudienceReconciliationPanel({
   summary,
   segments,
+  taxonomyFacts = [],
   loading = false,
   error = null,
   campaignPreview = null,
@@ -112,7 +119,7 @@ export function AudienceReconciliationPanel({
       </section>
 
       <section className="audience-reconciliation__segments">
-        <h3>Prepared Segments</h3>
+        <h3>CRM Tags</h3>
         <table>
           <thead>
             <tr>
@@ -131,6 +138,35 @@ export function AudienceReconciliationPanel({
             ))}
           </tbody>
         </table>
+      </section>
+
+      <section className="audience-reconciliation__segments">
+        <h3>Governed Facts</h3>
+        <div className="audience-reconciliation__split">
+          <section>
+            <h4>Fact counts</h4>
+            <CountList counts={summary?.taxonomy_fact_counts ?? {}} />
+          </section>
+          <section>
+            <h4>Fact catalog</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Fact</th>
+                  <th>Campaign</th>
+                </tr>
+              </thead>
+              <tbody>
+                {taxonomyFacts.map((fact) => (
+                  <tr key={fact.fact_code}>
+                    <td>{fact.display_name}</td>
+                    <td>{fact.may_drive_campaign ? 'Candidate signal' : 'Context only'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        </div>
       </section>
     </section>
   );
