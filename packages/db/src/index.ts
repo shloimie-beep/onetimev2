@@ -24,6 +24,7 @@ export function createMemoryPool(): DbPool {
   db.public.registerFunction({
     name: 'gen_random_uuid',
     returns: DataType.uuid,
+    impure: true,
     implementation: () => crypto.randomUUID(),
   });
   db.public.registerFunction({
@@ -33,10 +34,15 @@ export function createMemoryPool(): DbPool {
     implementation: () => 1,
   });
   const adapter = db.adapters.createPg();
-  return new adapter.Pool();
+  const pool = new adapter.Pool() as DbPool & { __memory?: boolean };
+  pool.__memory = true;
+  return pool;
 }
 
-export async function inTransaction<T>(pool: DbPool, run: (client: Queryable) => Promise<T>): Promise<T> {
+export async function inTransaction<T>(
+  pool: DbPool,
+  run: (client: Queryable) => Promise<T>,
+): Promise<T> {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -57,7 +63,10 @@ export type MigrationResult = {
   status: 'applied' | 'already_applied';
 };
 
-export async function runMigrations(pool: DbPool, migrationsDir = defaultMigrationsDir()): Promise<MigrationResult[]> {
+export async function runMigrations(
+  pool: DbPool,
+  migrationsDir = defaultMigrationsDir(),
+): Promise<MigrationResult[]> {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -76,18 +85,26 @@ export async function runMigrations(pool: DbPool, migrationsDir = defaultMigrati
 
     for (const file of files) {
       const id = file.replace(/\.sql$/, '');
-      const sql = await readFile(path.join(migrationsDir, file), 'utf8');
-      const checksum = createHash('sha256').update(sql).digest('hex');
-      const existing = await client.query('SELECT checksum FROM onetime.schema_migrations WHERE id = $1', [id]);
+      const rawSql = await readFile(path.join(migrationsDir, file), 'utf8');
+      const sql = isMemoryPool(pool) ? stripPostgresOnlyBlocks(rawSql) : rawSql;
+      const checksum = migrationChecksum(sql);
+      const compatibleChecksums = migrationCompatibleChecksums(sql);
+      const existing = await client.query(
+        'SELECT checksum FROM onetime.schema_migrations WHERE id = $1',
+        [id],
+      );
       if (existing.rowCount) {
-        if (existing.rows[0].checksum !== checksum) {
+        if (!compatibleChecksums.has(String(existing.rows[0].checksum))) {
           throw new Error(`Migration checksum mismatch for ${id}`);
         }
         results.push({ id, checksum, status: 'already_applied' });
         continue;
       }
       await client.query(sql);
-      await client.query('INSERT INTO onetime.schema_migrations (id, checksum) VALUES ($1, $2)', [id, checksum]);
+      await client.query('INSERT INTO onetime.schema_migrations (id, checksum) VALUES ($1, $2)', [
+        id,
+        checksum,
+      ]);
       results.push({ id, checksum, status: 'applied' });
     }
 
@@ -103,4 +120,33 @@ export async function runMigrations(pool: DbPool, migrationsDir = defaultMigrati
 
 function defaultMigrationsDir() {
   return path.resolve(process.cwd(), 'packages/db/migrations');
+}
+
+function migrationChecksum(sql: string) {
+  return createHash('sha256').update(normalizeMigrationLineEndings(sql)).digest('hex');
+}
+
+function migrationCompatibleChecksums(sql: string) {
+  const normalized = normalizeMigrationLineEndings(sql);
+  // Some pre-canonicalization environments recorded raw CRLF or LF hashes.
+  return new Set([
+    migrationChecksum(sql),
+    createHash('sha256').update(sql).digest('hex'),
+    createHash('sha256').update(normalized.replace(/\n/g, '\r\n')).digest('hex'),
+  ]);
+}
+
+function normalizeMigrationLineEndings(sql: string) {
+  return sql.replace(/\r\n/g, '\n');
+}
+
+function isMemoryPool(pool: DbPool) {
+  return Boolean((pool as DbPool & { __memory?: boolean }).__memory);
+}
+
+function stripPostgresOnlyBlocks(sql: string) {
+  return sql.replace(
+    /-- @postgres-only-begin[\s\S]*?-- @postgres-only-end/g,
+    '-- postgres-only migration block skipped by pg-mem tests',
+  );
 }

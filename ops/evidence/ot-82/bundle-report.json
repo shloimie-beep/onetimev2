@@ -1,0 +1,49 @@
+{
+  "run_id": "OT-82",
+  "baseline": {
+    "source": "initial OT82 branch before product edits",
+    "public_js_raw_bytes": 6316,
+    "public_css_raw_bytes": 12801,
+    "crm_js_raw_bytes": 233126
+  },
+  "final": {
+    "source": "npm run performance final bundle check",
+    "public_js": {
+      "raw_bytes": 6316,
+      "gzip_bytes": 2226
+    },
+    "public_css": {
+      "raw_bytes": 14855,
+      "gzip_bytes": 4038
+    },
+    "crm_js": {
+      "raw_bytes": 233983,
+      "files": [
+        "assets/app-crm.js",
+        "assets/app-crm2.js"
+      ]
+    },
+    "portal_js": {
+      "raw_bytes": 215804,
+      "files": [
+        "assets/app-portal.js",
+        "assets/app-crm2.js"
+      ]
+    },
+    "app_css": {
+      "raw_bytes": 19036,
+      "files": [
+        "assets/app-crm.css"
+      ]
+    },
+    "woff2": {
+      "raw_bytes": 24744
+    }
+  },
+  "deltas": {
+    "public_js_raw_bytes": 0,
+    "public_css_raw_bytes": 2054,
+    "crm_js_raw_bytes": 857
+  },
+  "status": "pass"
+}

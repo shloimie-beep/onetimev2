@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "updated_at": "2026-07-15T12:50:00+03:00",
+  "tasks": [
+    {
+      "task_id": "OT-73",
+      "title": "Landing intent reconciliation",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot73-landing-intent-reconciliation",
+      "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "state_path": "ops/execution/ot-73/STATE.json",
+      "resume_path": "ops/execution/ot-73/RESUME.md",
+      "status": "building",
+      "deployment_allowed": false,
+      "production_provider_mutations_allowed": false
+    },
+    {
+      "task_id": "OT-60R",
+      "title": "Recovery convergence for standalone One Time product",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot60r-recovery-convergence",
+      "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+      "state_path": "ops/execution/ot-60r/STATE.json",
+      "resume_path": "ops/execution/ot-60r/RESUME.md",
+      "status": "building",
+      "deployment_allowed": false,
+      "production_provider_mutations_allowed": false
+    },
+    {
+      "task_id": "OT-74",
+      "title": "Legacy audience reconciliation foundation",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot74-audience-reconciliation",
+      "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "state_path": "ops/execution/ot-74/STATE.json",
+      "resume_path": "ops/execution/ot-74/RESUME.md",
+      "status": "building",
+      "deployment_allowed": false,
+      "production_import_allowed": false,
+      "production_send_allowed": false,
+      "production_provider_mutations_allowed": false
+    },
+    {
+      "task_id": "OT-75",
+      "title": "Release and observability readiness",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot75-release-observability-readiness",
+      "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "state_path": "ops/release/ot75/execution/STATE.json",
+      "resume_path": "ops/release/ot75/execution/RESUME.md",
+      "status": "candidate",
+      "deployment_allowed": false,
+      "production_provider_mutations_allowed": false
+    },
+    {
+      "task_id": "OT-76",
+      "title": "Day-One certification harness",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot76-day-one-certification-harness",
+      "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "state_path": "ops/execution/ot-76/STATE.json",
+      "resume_path": "ops/execution/ot-76/RESUME.md",
+      "status": "building",
+      "deployment_allowed": false,
+      "production_provider_mutations_allowed": false
+    },
+    {
+      "task_id": "OT-80",
+      "title": "One-shot final convergence for standalone One Time product",
+      "repository": "webcraft-media/onetimev2",
+      "branch": "codex/ot80-one-shot-final-convergence",
+      "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+      "state_path": "ops/execution/ot-80/STATE.json",
+      "resume_path": "ops/execution/ot-80/RESUME.md",
+      "status": "ot76_integrated_checkpoint_ready",
+      "candidate_status": "NOT_READY",
+      "deployment_allowed": false,
+      "isolated_staging_allowed_after_gates": true,
+      "production_provider_mutations_allowed": false
+    }
+  ]
+}

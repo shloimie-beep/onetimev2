@@ -1,0 +1,98 @@
+export const oneTimeTokens = {
+  color: {
+    background: '#050505',
+    surface: '#0d1a20',
+    surfaceRaised: '#071117',
+    surfaceMuted: '#122229',
+    text: '#ffffff',
+    textWarm: '#f8faf7',
+    textMuted: '#c8d6d9',
+    textDisabled: '#a5aea9',
+    action: '#ffd21f',
+    actionAuthenticated: '#ede518',
+    actionSoft: '#ffe680',
+    accent: '#7ed7e8',
+    accentAuthenticated: '#86e8ff',
+    border: '#34464d',
+    borderStrong: '#66777d',
+    success: '#65d6a6',
+    danger: '#ff7474',
+    dangerText: '#8a331c',
+  },
+  typography: {
+    display: "'DM Serif Display', Georgia, 'Times New Roman', serif",
+    body: "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  },
+  spacing: {
+    1: '4px',
+    2: '8px',
+    3: '12px',
+    4: '16px',
+    5: '24px',
+    6: '32px',
+    7: '48px',
+    8: '76px',
+  },
+  radius: {
+    control: '8px',
+    panel: '12px',
+    pill: '999px',
+  },
+  border: {
+    default: '1px solid var(--ot-color-border)',
+    strong: '1px solid var(--ot-color-border-strong)',
+    action: '1px solid var(--ot-color-action-auth)',
+  },
+  shadow: {
+    panel: '0 18px 46px rgba(0, 0, 0, 0.38)',
+    drawer: '0 24px 72px rgba(0, 0, 0, 0.52)',
+    focus: '0 0 0 3px rgba(134, 232, 255, 0.24)',
+  },
+  motion: {
+    standard: '120ms cubic-bezier(0.2, 0, 0, 1)',
+    emphasized: '180ms cubic-bezier(0.2, 0, 0, 1)',
+    ticker: '26s linear infinite',
+  },
+  focus: {
+    width: '3px',
+    offset: '3px',
+    color: '#86e8ff',
+  },
+  layers: {
+    header: 100,
+    ticker: 19,
+    drawerOverlay: 800,
+    drawer: 810,
+    dialogOverlay: 900,
+    dialog: 910,
+    toast: 960,
+    skipLink: 1001,
+  },
+  breakpoints: {
+    mobile: '520px',
+    tablet: '820px',
+    desktop: '1200px',
+  },
+  safeAreas: {
+    top: 'env(safe-area-inset-top)',
+    bottom: 'env(safe-area-inset-bottom)',
+    left: 'env(safe-area-inset-left)',
+    right: 'env(safe-area-inset-right)',
+  },
+  density: {
+    compact: '8px',
+    default: '12px',
+    comfortable: '16px',
+  },
+  componentSizes: {
+    touchTarget: '44px',
+    publicLogoMobile: '48px',
+    publicLogoDesktop: '64px',
+    appLogo: '40px',
+  },
+} as const;
+
+export const brandAssetPaths = {
+  logo: '/assets/brand/onetimelogo.webp',
+  displayFont: '/assets/fonts/dm-serif-display-latin.woff2',
+} as const;

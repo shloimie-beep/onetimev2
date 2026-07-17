@@ -1,0 +1,35 @@
+{
+  "run_id": "OT-89A",
+  "inputs": [
+    {
+      "kind": "operator_prompt",
+      "path": "ops/codex-runs/OT-89A/ORIGINAL-PROMPT.md",
+      "source_path": "C:/Users/User/AppData/Local/Temp/OT-89A-ONETIME-SUPPORT-PRODUCER.md"
+    },
+    {
+      "kind": "packet_zip",
+      "path": "C:/Users/User/Downloads/OT89-support-bridge-codex-packets.zip",
+      "sha256": "249d3a3e9db51ace2ab58d22db049753777c962474d323f0c30d477fdd967f1a"
+    },
+    {
+      "kind": "frozen_contract",
+      "path": "ops/codex-runs/OT-89A/SUPPORT-EVENT-CONTRACT.json",
+      "sha256": "cfcd0ac55cbf9e59d7fefc7779af1aa5112fb410ee510882cb843492a556e512"
+    },
+    {
+      "kind": "authorization_matrix",
+      "path": "ops/codex-runs/OT-89A/AUTHORIZATION-MATRIX.md",
+      "sha256": "48d3a958d4da75176665a5465943cc041089bd32304116e40ce324e40038f1ab"
+    },
+    {
+      "kind": "triage_policy",
+      "path": "ops/codex-runs/OT-89A/TRIAGE-POLICY.md",
+      "sha256": "2c2acf618ef641604ccfa84fde100f0cb57a9fb941e9c5d3f15956f55f33b049"
+    },
+    {
+      "kind": "acceptance_matrix",
+      "path": "ops/codex-runs/OT-89A/ACCEPTANCE-MATRIX.md",
+      "sha256": "8fac8c4991317975b80d197fef85ae18ddd01364389bf779e6b3e099e1afad5b"
+    }
+  ]
+}

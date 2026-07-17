@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-07-17T08:50:00+03:00",
+  "status": "partial_local_pass_pending_staging",
+  "local_gates": [
+    {
+      "command": "npx playwright test tests/performance/ot-44/communications-performance.spec.ts",
+      "result": "passed as part of OT-114 post-merge a11y/perf group"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed after idempotency repair and again after OT-114 merge"
+    }
+  ],
+  "budgets_from_prompt": {
+    "public_lcp_p75_ms": 2500,
+    "cls_max": 0.1,
+    "crm_list_cold_usable_ms": 3500,
+    "crm_list_warm_usable_ms": 1500,
+    "crm_detail_cold_usable_ms": 3500,
+    "warm_return_ms": 1000
+  },
+  "not_yet_run": [
+    "staging throttled mobile p75 public LCP",
+    "staging CLS",
+    "staging CRM list/detail cold/warm timings",
+    "production post-promotion performance observation"
+  ],
+  "external_mutations": {
+    "deployment": 0,
+    "production_database_writes": 0,
+    "provider_calls": 0
+  }
+}

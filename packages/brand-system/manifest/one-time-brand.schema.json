@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://onetimeonetime.local/schemas/one-time-brand.schema.json",
+  "title": "One Time Brand Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "version",
+    "product",
+    "brand",
+    "provenance",
+    "assets",
+    "fonts",
+    "tokens",
+    "components",
+    "shells",
+    "routes",
+    "ticker",
+    "accessibility",
+    "deprecations",
+    "compatibility"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "version": { "const": "1.0.0" },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "workspacePolicy"],
+      "properties": {
+        "id": { "const": "one_time_mishnah_class" },
+        "name": { "const": "One Time Mishnayos" },
+        "workspacePolicy": { "type": "string", "minLength": 1 }
+      }
+    },
+    "brand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "positioning"],
+      "properties": {
+        "id": { "const": "one-time" },
+        "name": { "const": "One Time" },
+        "positioning": { "type": "string", "minLength": 1 }
+      }
+    },
+    "provenance": { "type": "object" },
+    "assets": { "type": "object" },
+    "fonts": { "type": "object" },
+    "tokens": {
+      "type": "object",
+      "required": [
+        "color",
+        "typography",
+        "spacing",
+        "radius",
+        "border",
+        "shadow",
+        "motion",
+        "focus",
+        "layers",
+        "breakpoints",
+        "safeAreas",
+        "density",
+        "componentSizes"
+      ]
+    },
+    "components": { "type": "object" },
+    "shells": { "type": "object" },
+    "routes": { "type": "object" },
+    "ticker": { "type": "object" },
+    "accessibility": { "type": "object" },
+    "deprecations": { "type": "object" },
+    "compatibility": { "type": "object" }
+  }
+}

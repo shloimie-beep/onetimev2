@@ -1,0 +1,616 @@
+{
+  "harness": "ot-76-day-one-certification-harness",
+  "generated_at": "2026-07-15T09:44:57.040Z",
+  "mode": "audit",
+  "policy": "audit_zero_unless_harness_or_scope_failure",
+  "repository": "webcraft-media/onetimev2",
+  "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "scope_base_sha": "bc2bcf2c7e16b5f1885aa65a2904f07578a18169",
+  "manifest_path": "ops/day-one/release-manifest.example.json",
+  "registry_path": "ops/day-one/day-one-capability-registry.json",
+  "current_branch": "codex/ot80-one-shot-final-convergence",
+  "current_head_sha": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
+  "external_mutation_counts": {
+    "deployments": 0,
+    "provider_calls": 0,
+    "live_sends": 0,
+    "production_database_writes": 0,
+    "payment_or_access_mutations": 0,
+    "dns_or_railway_mutations": 0
+  },
+  "changed_files": [
+    "ops/day-one/day-one-capability-registry.json",
+    "ops/day-one/release-manifest.example.json",
+    "ops/day-one/synthetic-fixtures.json",
+    "ops/evidence/ot-76/day-one-audit-report.json",
+    "ops/evidence/ot-76/day-one-audit-report.md",
+    "ops/evidence/ot-76/day-one-certify-report.json",
+    "ops/evidence/ot-76/day-one-certify-report.md",
+    "ops/execution/ot-76/CHECKPOINT.md",
+    "ops/execution/ot-76/DECISIONS.md",
+    "ops/execution/ot-76/IMPLEMENTED.md",
+    "ops/execution/ot-76/INPUTS.json",
+    "ops/execution/ot-76/INTEGRATION-MANIFEST.md",
+    "ops/execution/ot-76/ORIGINAL-PROMPT.md",
+    "ops/execution/ot-76/REMAINING.md",
+    "ops/execution/ot-76/RESUME.md",
+    "ops/execution/ot-76/STATE.json",
+    "ops/execution/ot-76/TEST-RESULTS.md",
+    "ops/execution/registry.json",
+    "scripts/day-one-certification-harness.mjs"
+  ],
+  "forbidden_changes": [],
+  "manifest_failures": [],
+  "gate_summary": {
+    "total": 13,
+    "pass": 3,
+    "missing_capability": 0,
+    "blocker": 10
+  },
+  "result": "audit_complete_not_certified",
+  "day_one_certified": false,
+  "gates": [
+    {
+      "id": "DAYONE-01",
+      "title": "Landing to Family signup to atomic CRM visibility",
+      "prompt_coverage": "Landing -> Family signup -> atomic CRM visibility.",
+      "required_for_certify": true,
+      "status": "pass",
+      "summary": "All configured signals are present.",
+      "missing": [],
+      "signals": [
+        {
+          "id": "route-landing",
+          "type": "route",
+          "ok": true,
+          "message": "route landing source patterns are visible"
+        },
+        {
+          "id": "route-signup",
+          "type": "route",
+          "ok": true,
+          "message": "route signup source patterns are visible"
+        },
+        {
+          "id": "route-lead-post",
+          "type": "route",
+          "ok": true,
+          "message": "route lead_post source patterns are visible"
+        },
+        {
+          "id": "route-crm-search",
+          "type": "route",
+          "ok": true,
+          "message": "route crm_contacts_search source patterns are visible"
+        },
+        {
+          "id": "test-landing-signup",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/e2e/landing-signup.spec.ts exists"
+        },
+        {
+          "id": "test-crm-core",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/e2e/crm-core.spec.ts exists"
+        },
+        {
+          "id": "capability-family-crm",
+          "type": "capability_status",
+          "ok": true,
+          "message": "capability family_signup_atomic_crm has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-02",
+      "title": "School signup remains lead-only with no entitlement",
+      "prompt_coverage": "School signup remains lead-only with no entitlement.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "2 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "school-thank-you-test",
+          "type": "file_contains",
+          "message": "tests/e2e/landing-signup.spec.ts contains required text"
+        },
+        {
+          "id": "capability-school-lead-only",
+          "type": "capability_status",
+          "message": "capability school_signup_lead_only has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "route-signup",
+          "type": "route",
+          "ok": true,
+          "message": "route signup source patterns are visible"
+        },
+        {
+          "id": "route-lead-post",
+          "type": "route",
+          "ok": true,
+          "message": "route lead_post source patterns are visible"
+        },
+        {
+          "id": "school-thank-you-test",
+          "type": "file_contains",
+          "ok": false,
+          "message": "tests/e2e/landing-signup.spec.ts contains required text"
+        },
+        {
+          "id": "capability-school-lead-only",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability school_signup_lead_only has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-03",
+      "title": "Owner/admin login, MFA, and role denials",
+      "prompt_coverage": "Owner/admin login, MFA and role denials.",
+      "required_for_certify": true,
+      "status": "pass",
+      "summary": "All configured signals are present.",
+      "missing": [],
+      "signals": [
+        {
+          "id": "route-login",
+          "type": "route",
+          "ok": true,
+          "message": "route login source patterns are visible"
+        },
+        {
+          "id": "route-auth-login",
+          "type": "route",
+          "ok": true,
+          "message": "route auth_login source patterns are visible"
+        },
+        {
+          "id": "route-mfa-challenge",
+          "type": "route",
+          "ok": true,
+          "message": "route mfa_challenge source patterns are visible"
+        },
+        {
+          "id": "route-mfa-recovery-replace",
+          "type": "route",
+          "ok": true,
+          "message": "route mfa_recovery_replace source patterns are visible"
+        },
+        {
+          "id": "route-mfa-revoke",
+          "type": "route",
+          "ok": true,
+          "message": "route mfa_revoke source patterns are visible"
+        },
+        {
+          "id": "test-auth-crm",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/integration/auth-crm.test.ts exists"
+        },
+        {
+          "id": "capability-mfa-denials",
+          "type": "capability_status",
+          "ok": true,
+          "message": "capability owner_admin_mfa_role_denials has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-04",
+      "title": "CRM search, cards, tags, detail, and Communications",
+      "prompt_coverage": "CRM search/cards/tags/detail/Communications.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-crm-communications",
+          "type": "capability_status",
+          "message": "capability crm_search_cards_tags_detail_communications has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "route-crm-app",
+          "type": "route",
+          "ok": true,
+          "message": "route crm_app source patterns are visible"
+        },
+        {
+          "id": "route-crm-contacts",
+          "type": "route",
+          "ok": true,
+          "message": "route crm_contacts source patterns are visible"
+        },
+        {
+          "id": "route-crm-search",
+          "type": "route",
+          "ok": true,
+          "message": "route crm_contacts_search source patterns are visible"
+        },
+        {
+          "id": "route-crm-detail",
+          "type": "route",
+          "ok": true,
+          "message": "route crm_contact_detail source patterns are visible"
+        },
+        {
+          "id": "route-communications",
+          "type": "route",
+          "ok": true,
+          "message": "route communications_threads source patterns are visible"
+        },
+        {
+          "id": "communications-test",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/integration/communications/api.test.ts exists"
+        },
+        {
+          "id": "capability-crm-communications",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability crm_search_cards_tags_detail_communications has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-05",
+      "title": "Class and reminder boundaries with protected provider-off launch",
+      "prompt_coverage": "Class/reminder boundaries and protected provider-off launch.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-class-reminder-provider-off",
+          "type": "capability_status",
+          "message": "capability class_reminder_provider_off_launch has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "capability-class-reminder-provider-off",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability class_reminder_provider_off_launch has allowed status"
+        },
+        {
+          "id": "worker-entry",
+          "type": "path_exists",
+          "ok": true,
+          "message": "apps/worker/src/main/index.ts exists"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-06",
+      "title": "Content review, publish, and entitled library",
+      "prompt_coverage": "Content review/publish and entitled library.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-content-library",
+          "type": "capability_status",
+          "message": "capability content_review_publish_entitled_library has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "capability-content-library",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability content_review_publish_entitled_library has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-07",
+      "title": "Parent household scope and student exactly-one-learner scope",
+      "prompt_coverage": "Parent household scope and student exactly-one-learner scope.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-parent-student",
+          "type": "capability_status",
+          "message": "capability parent_household_student_exactly_one_learner has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "portal-router-test",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/ot-52/portal-router.test.ts exists"
+        },
+        {
+          "id": "portal-services-test",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/ot-52/portal-services.test.ts exists"
+        },
+        {
+          "id": "learner-limit-evidence",
+          "type": "path_exists",
+          "ok": true,
+          "message": "ops/evidence/ot-52/LEARNER-LIMIT-CONCURRENCY.md exists"
+        },
+        {
+          "id": "capability-parent-student",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability parent_household_student_exactly_one_learner has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-08",
+      "title": "Provider unavailable/default-off truth and no dead action",
+      "prompt_coverage": "Provider unavailable/default-off truth; no dead action.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-provider-default-off",
+          "type": "capability_status",
+          "message": "capability provider_default_off_no_dead_action has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "capability-provider-default-off",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability provider_default_off_no_dead_action has allowed status"
+        },
+        {
+          "id": "billing-network-guard",
+          "type": "path_exists",
+          "ok": true,
+          "message": "packages/domain/src/billing/network-guard.ts exists"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-09",
+      "title": "Visible action registry, handler, and audit mapping",
+      "prompt_coverage": "Every visible action registry and handler/audit mapping.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-action-registry",
+          "type": "capability_status",
+          "message": "capability visible_action_registry_handler_audit has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "capability-action-registry",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability visible_action_registry_handler_audit has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-10",
+      "title": "Responsive, keyboard, accessibility, RTL, reflow, and reduced motion",
+      "prompt_coverage": "360/390/tablet/desktop, keyboard, accessibility, RTL, 200% reflow and reduced motion.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-responsive-a11y",
+          "type": "capability_status",
+          "message": "capability responsive_a11y_rtl_reflow_reduced_motion has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "responsive-budget",
+          "type": "budget",
+          "ok": true,
+          "message": "budget responsive_matrix is declared"
+        },
+        {
+          "id": "a11y-budget",
+          "type": "budget",
+          "ok": true,
+          "message": "budget accessibility is declared"
+        },
+        {
+          "id": "public-a11y-test",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/accessibility/public-a11y.spec.ts exists"
+        },
+        {
+          "id": "landing-responsive-test",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/e2e/landing-signup.spec.ts exists"
+        },
+        {
+          "id": "capability-responsive-a11y",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability responsive_a11y_rtl_reflow_reduced_motion has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-11",
+      "title": "30-sample performance and bundle/request budgets",
+      "prompt_coverage": "30-sample performance and bundle/request budgets.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-performance",
+          "type": "capability_status",
+          "message": "capability performance_30_sample_budgets has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "performance-budget",
+          "type": "budget",
+          "ok": true,
+          "message": "budget performance is declared"
+        },
+        {
+          "id": "public-performance-test",
+          "type": "path_exists",
+          "ok": true,
+          "message": "tests/performance/public-performance.spec.ts exists"
+        },
+        {
+          "id": "bundle-check",
+          "type": "path_exists",
+          "ok": true,
+          "message": "scripts/check-bundles.ts exists"
+        },
+        {
+          "id": "capability-performance",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability performance_30_sample_budgets has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-12",
+      "title": "Secret, PII, provider URL, and synchronous BNA leakage",
+      "prompt_coverage": "Secret, PII, provider URL and synchronous BNA-request leakage.",
+      "required_for_certify": true,
+      "status": "pass",
+      "summary": "All configured signals are present.",
+      "missing": [],
+      "signals": [
+        {
+          "id": "secret-scan-command",
+          "type": "command",
+          "ok": true,
+          "message": "command secret_scan is declared and package script exists"
+        },
+        {
+          "id": "static-bna-leakage-scan",
+          "type": "forbidden_text_absent",
+          "ok": true,
+          "message": "forbidden text absent"
+        },
+        {
+          "id": "capability-leakage",
+          "type": "capability_status",
+          "ok": true,
+          "message": "capability secret_pii_provider_url_bna_leakage has allowed status"
+        }
+      ]
+    },
+    {
+      "id": "DAYONE-13",
+      "title": "Source SHA, migrations, readiness, worker, and rollback evidence",
+      "prompt_coverage": "Source SHA, migrations, readiness, worker and rollback evidence.",
+      "required_for_certify": true,
+      "status": "blocker",
+      "summary": "1 configured signal(s) missing or incomplete.",
+      "missing": [
+        {
+          "id": "capability-source-readiness",
+          "type": "capability_status",
+          "message": "capability source_migrations_readiness_worker_rollback has allowed status"
+        }
+      ],
+      "signals": [
+        {
+          "id": "source-sha",
+          "type": "source_sha",
+          "ok": true,
+          "message": "manifest immutable base is dfef7de2035e08f1ee72e0133ccf656fe7a74444"
+        },
+        {
+          "id": "migration-0001",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 0001 exists"
+        },
+        {
+          "id": "migration-0002",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 0002 exists"
+        },
+        {
+          "id": "migration-0003",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 0003 exists"
+        },
+        {
+          "id": "migration-0004",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 0004 exists"
+        },
+        {
+          "id": "migration-1000",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 1000 exists"
+        },
+        {
+          "id": "migration-1300",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 1300 exists"
+        },
+        {
+          "id": "migration-1500",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 1500 exists"
+        },
+        {
+          "id": "migration-1600",
+          "type": "migration",
+          "ok": true,
+          "message": "migration 1600 exists"
+        },
+        {
+          "id": "worker-entry",
+          "type": "path_exists",
+          "ok": true,
+          "message": "apps/worker/src/main/index.ts exists"
+        },
+        {
+          "id": "capability-source-readiness",
+          "type": "capability_status",
+          "ok": false,
+          "message": "capability source_migrations_readiness_worker_rollback has allowed status"
+        },
+        {
+          "id": "changed-files-scoped",
+          "type": "changed_files_allowed",
+          "ok": true,
+          "message": "changed files are scoped"
+        }
+      ]
+    }
+  ]
+}

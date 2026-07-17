@@ -1,0 +1,88 @@
+{
+  "run_id": "OPS-10-full-staged-production-launch-2026-07-17",
+  "generated_at": "2026-07-17T05:20:00Z",
+  "capabilities": [
+    {
+      "id": "auth_public_pages",
+      "required": true,
+      "candidate_code_status": "present",
+      "production_status": "missing_old_deploy",
+      "evidence": [
+        "apps/web/src/server/app.ts registers GET /login, /activate, /forgot-password, and /reset-password with no-store headers.",
+        "Production https://join.onetimeonetime.com/login returned 404 Cannot GET /login from commit 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5."
+      ],
+      "next_gate": "local build smoke, immutable staging deploy, staging route smoke, production route smoke"
+    },
+    {
+      "id": "owner_admin_dashboard_crm",
+      "required": true,
+      "candidate_code_status": "present_locally_verified_pending_ci",
+      "production_status": "not_currently_deployed",
+      "evidence": [
+        "Owner dashboard and CRM route code is present in apps/web/src/server/app.ts and app shell/client bundles.",
+        "OT-114 CRM tags, notes, archive, enriched detail, timeline, and provider-off reply drafts were merged locally.",
+        "Local typecheck, lint, OT-114 integration tests, OT-114 browser e2e, build, brand check, and secret scan passed after the merge."
+      ],
+      "next_gate": "authenticated owner/admin synthetic acceptance on staging"
+    },
+    {
+      "id": "lead_capture_and_public_landing",
+      "required": true,
+      "candidate_code_status": "present_pending_visual_acceptance",
+      "production_status": "old_deploy",
+      "evidence": [
+        "Lead capture contracts and server routes are present in candidate code.",
+        "OPS-10 added transaction-scoped advisory locking for public lead idempotency keys after PR #61 OPS-06 artifact exposed concurrent duplicate rejection.",
+        "Premium landing corrections require Playwright visual/user-flow acceptance before promotion."
+      ],
+      "next_gate": "local build, e2e public route checks, staging signup smoke"
+    },
+    {
+      "id": "parent_student_portals_classes",
+      "required": true,
+      "candidate_code_status": "present_locally_verified_pending_ci",
+      "production_status": "not_currently_deployed",
+      "evidence": [
+        "Parent/student portal routes, class repositories, and portal tests exist in candidate code.",
+        "OPS-83 PostgreSQL learner-seat proof passed on PR #61 commit a158c555835815d1d16d953624dc1ddb9995aee3.",
+        "OT-107 student Class Helper implementation was already present in the candidate; focused unit and portal e2e tests passed locally after OT-114 merge."
+      ],
+      "next_gate": "portal e2e/a11y acceptance and staging protected-route smoke"
+    },
+    {
+      "id": "content_workspace",
+      "required": true,
+      "candidate_code_status": "present_pending_acceptance",
+      "production_status": "not_currently_deployed",
+      "evidence": [
+        "Content workspace client/server/domain modules and OT-110A tests are present in candidate code."
+      ],
+      "next_gate": "owner/admin content workspace smoke"
+    },
+    {
+      "id": "providers_optional_runtime",
+      "required": false,
+      "candidate_code_status": "present_with_optional_provider_mutations_blocked_and_support_bridge_contract_recorded",
+      "production_status": "not_promoted",
+      "evidence": [
+        "Provider control, delivery worker, Telegram, WhatsApp, Vimeo, Buffer, Stripe test-mode, and support modules exist in candidate code.",
+        "OT-114 BNA support event consumer contract was merged under ops/codex-runs/OT-114/.",
+        "OPS-10 packet explicitly blocks live Stripe charges, live Buffer publication, broad sends, production imports, public Zoom mutation, and DNS changes."
+      ],
+      "next_gate": "bounded staging canaries only, with optional providers disabled if credentials are unavailable"
+    },
+    {
+      "id": "postgres_backup_restore_rollback",
+      "required": true,
+      "candidate_code_status": "repair_in_progress",
+      "production_status": "not_attempted",
+      "evidence": [
+        "PR #60 PostgreSQL 16 assurance and learner-seat proof passed before OPS-10.",
+        "OPS-06 deterministic check failed before OPS-10 on load/backpressure cleanup; OPS-10 repaired expected Postgres forced-shutdown handling in scripts/ops06-load-backpressure.ts.",
+        "Local machine has no Docker, pg_isready, or psql, so Postgres 16 load/restore proof must come from GitHub Actions or a linked staging environment."
+      ],
+      "next_gate": "push OPS-10 repair branch and require CI OPS-06 deterministic success"
+    }
+  ],
+  "status": "candidate_not_live_ready_until_gates_pass"
+}

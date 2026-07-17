@@ -1,0 +1,91 @@
+{
+  "task_id": "OT-75",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot75-release-observability-readiness",
+  "branch": "codex/ot75-release-observability-readiness",
+  "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "base_ref": "codex/ot60r-recovery-convergence",
+  "status": "candidate",
+  "phase": "draft_pr_open",
+  "created_at": "2026-07-15T00:00:00+03:00",
+  "updated_at": "2026-07-15T09:47:16+03:00",
+  "external_mutation_counts": {
+    "deployments": 0,
+    "dns_changes": 0,
+    "database_mutations": 0,
+    "provider_mutations": 0,
+    "messages_sent": 0,
+    "payments_or_charges": 0,
+    "real_users_created": 0,
+    "bna_repository_modifications": 0
+  },
+  "blockers": [
+    {
+      "id": "BLOCKER-STAGING-ACTIVATION",
+      "status": "activation_only",
+      "summary": "Staging service names, staging domain, backup/PITR evidence, restore drill evidence, source readback, database reference evidence, duplicate-data audit, provider-state evidence, owner/admin bootstrap evidence, and worker isolation approval must be supplied outside OT-75 before deployment."
+    }
+  ],
+  "completed_steps": [
+    "Created clean OT-75 worktree from immutable base dfef7de2035e08f1ee72e0133ccf656fe7a74444.",
+    "Prepared release, staging, and observability contracts without runtime composition changes.",
+    "Validated OT-75 scope, contracts, gates, workflow, scripts, evidence, and secret policy.",
+    "Recorded activation-only blockers without reading or printing Railway, staging, database, provider, or secret values.",
+    "Opened draft PR #20 against codex/ot60r-recovery-convergence."
+  ],
+  "test_results": [
+    {
+      "command": "node scripts/ot75/validate-release-readiness.mjs --write-report",
+      "status": "passed",
+      "summary": "OT-75 validation passed with 327 checks and wrote ops/release/ot75/evidence/validation-report.json."
+    },
+    {
+      "command": "node scripts/ot75/check-predeploy-gates.mjs --json --out ops/release/ot75/evidence/predeploy-gates.local.json",
+      "status": "passed_with_activation_blockers",
+      "summary": "Reported 11 activation-only blockers, one passed scope-drift gate, and zero external mutations."
+    },
+    {
+      "command": "node --check scripts/ot75/validate-release-readiness.mjs scripts/ot75/check-predeploy-gates.mjs scripts/ot75/render-release-manifest.mjs",
+      "status": "passed",
+      "summary": "All OT-75 scripts passed syntax checks."
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/ot75/release-readiness.test.ts",
+      "status": "passed",
+      "summary": "Release-only OT-75 unit test passed 5/5."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "eslint . completed successfully."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit completed successfully."
+    },
+    {
+      "command": "npx prettier --check .github/workflows/ot75-release-readiness.yml ops/release/ot75 ops/observability/ot75 scripts/ot75 tests/unit/ot75",
+      "status": "passed",
+      "summary": "All matched OT-75 files use Prettier code style."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 338 repo text files."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "summary": "No whitespace errors detected."
+    }
+  ],
+  "pull_request": {
+    "number": 20,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/20",
+    "base": "codex/ot60r-recovery-convergence",
+    "head": "codex/ot75-release-observability-readiness",
+    "draft": true,
+    "initial_commit": "6e5ed34befc7b77dcd385598574910174e23cd7e"
+  }
+}

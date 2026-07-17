@@ -17,6 +17,10 @@
     "paths": {
       "@onetime/config": ["packages/config/src/index.ts"],
       "@onetime/contracts": ["packages/contracts/src/index.ts"],
+      "@onetime/brand-system": ["packages/brand-system/src/index.ts"],
+      "@onetime/brand-system/static": ["packages/brand-system/src/static.ts"],
+      "@onetime/brand-system/react": ["packages/brand-system/src/react.tsx"],
+      "@onetime/brand-system/route-branding": ["packages/brand-system/src/route-branding.ts"],
       "@onetime/domain": ["packages/domain/src/index.ts"],
       "@onetime/db": ["packages/db/src/index.ts"],
       "@onetime/observability": ["packages/observability/src/index.ts"]

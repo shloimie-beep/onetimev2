@@ -1,0 +1,279 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { loadConfig } from '../../packages/config/src/index.ts';
+import {
+  asBotKey,
+  asCanonicalUserKey,
+  asChatRef,
+  asProviderUserRef,
+  type NormalizedBotUpdate,
+} from '../../packages/contracts/src/telegram/types.ts';
+import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
+import {
+  TelegramSqlConfirmationRepository,
+  TelegramSqlConsumerLeaseRepository,
+  TelegramSqlInboxRepository,
+  TelegramSqlIdentityMappingRepository,
+  TelegramSqlResponseOutboxTransportAdapter,
+} from '../../packages/db/src/telegram/repositories.ts';
+import { createAccountUser } from '../../packages/domain/src/index.ts';
+import { DeterministicTestPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
+
+let pool: DbPool;
+
+const botKey = asBotKey('one_time_internal_ops');
+const providerUserRef = asProviderUserRef('telegram_user_fixture');
+const chatRef = asChatRef('telegram_chat_fixture');
+
+beforeEach(async () => {
+  pool = createMemoryPool();
+});
+
+afterEach(async () => {
+  await pool.end();
+});
+
+describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
+  it('applies all migrations and documents pg-mem no-op rerun limitation', async () => {
+    const first = await runMigrations(pool);
+    const migrationIds = first.map((migration) => migration.id);
+    const requiredMigrationIds = [
+      '1600_ot51_telegram_bot_foundation',
+      '1700_ot71_account_lifecycle',
+      '1800_ot72_provider_truth',
+      '1900_ot83_household_portal_foundation',
+      '2000_ot83r_student_question_seam',
+      '2001_ot84_telegram_action_gateway',
+      '2002_ot88_zoom_learner_classroom',
+      '2003_ot89a_subscriber_support_producer',
+      '2004_ot85_whatsapp_assistant',
+      '2005_ot86_content_pipeline',
+      '2006_ot86b_social_publishing',
+      '2007_ot87_stripe_test_entitlements',
+      '2008_ops03a_lifecycle_delivery_outbox',
+      '2009_ops03a_activation_mfa_handoffs',
+      '2010_ops03b_email_step_up_login',
+      '2011_ot101r_telegram_admin_runtime',
+      '2012_ot104r_vimeo_private_runtime',
+      '2013_ot110a_admin_content_workspace',
+      '2014_ot111_legacy_activation_campaign',
+      '2015_ops06_reliability_observability',
+      '2016_ot114_crm_communications_support',
+      '2100_ot100_whatsapp_provider_activation',
+      '2130_ot103_zoom_provider',
+      '2160_ot106_buffer_social_publishing',
+      '2190_ot109_rabbi_content_publisher',
+    ];
+    for (const migrationId of requiredMigrationIds) {
+      expect(migrationIds).toContain(migrationId);
+    }
+    expect(new Set(migrationIds).size).toBe(migrationIds.length);
+    expect(migrationIds).toEqual([...migrationIds].sort((a, b) => a.localeCompare(b)));
+
+    const applied = await pool.query(
+      `SELECT id, checksum
+         FROM onetime.schema_migrations
+        ORDER BY id`,
+    );
+    expect(applied.rowCount).toBe(first.length);
+    expect(applied.rows.map((row) => row.id)).toEqual(migrationIds);
+    expect(
+      applied.rows.every((row) => typeof row.checksum === 'string' && row.checksum.length > 0),
+    ).toBe(true);
+    await expect(runMigrations(pool)).rejects.toThrow(/not supported/i);
+  });
+
+  it('enforces mapping, inbox, confirmation, lease, generation, and dead-letter rules', async () => {
+    await runMigrations(pool);
+    const config = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+    });
+    const userKey = await createAccountUser({
+      pool,
+      config,
+      email: 'owner@example.test',
+      password: 'Password!234',
+      displayName: 'Owner',
+      role: 'owner',
+      mfaCapable: true,
+    });
+    await pool.query(
+      `INSERT INTO onetime.telegram_bot_registry
+       (bot_key, environment, account_key, product_key, token_fingerprint_hash, status)
+       VALUES ($1,'local',$2,$3,$4,'active')`,
+      [botKey, config.accountKey, config.productKey, 'token_fp_fixture'],
+    );
+
+    const mappings = new TelegramSqlIdentityMappingRepository(pool);
+    await mappings.upsertProtectedMapping({
+      mappingKey: 'mapping_1',
+      botKey,
+      environment: 'local',
+      providerUserRef,
+      chatRef,
+      canonicalUserKey: asCanonicalUserKey(userKey),
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      membershipKey: 'membership_owner',
+      mappingVersion: 1,
+      securityVersion: 1,
+      status: 'active',
+    });
+    await expect(
+      mappings.upsertProtectedMapping({
+        mappingKey: 'mapping_2',
+        botKey,
+        environment: 'local',
+        providerUserRef,
+        chatRef,
+        canonicalUserKey: asCanonicalUserKey(userKey),
+        accountKey: config.accountKey,
+        productKey: config.productKey,
+        membershipKey: 'membership_owner',
+        mappingVersion: 1,
+        securityVersion: 1,
+        status: 'active',
+      }),
+    ).rejects.toThrow();
+    expect(
+      await mappings.findActiveMapping({ botKey, environment: 'local', providerUserRef }),
+    ).toMatchObject({
+      mappingKey: 'mapping_1',
+      accountKey: config.accountKey,
+    });
+
+    const codec = new DeterministicTestPayloadCodec();
+    const inbox = new TelegramSqlInboxRepository(pool);
+    const update = updateFixture('700');
+    const payloadRef = await codec.encrypt(update, {
+      botKey,
+      environment: 'local',
+      classification: 'normalized_update',
+    });
+    const first = await inbox.enqueue(update, payloadRef);
+    const duplicate = await inbox.enqueue(update, payloadRef);
+    expect(first.duplicate).toBe(false);
+    expect(duplicate.duplicate).toBe(true);
+
+    const claimed = await inbox.claimNext(new Date('2026-07-15T10:00:00Z'), 'worker-a', 50);
+    expect(claimed?.leaseGeneration).toBe(1);
+    expect(await inbox.complete(first.inboxKey, 999)).toBe(false);
+    expect(await inbox.complete(first.inboxKey, 1)).toBe(true);
+
+    const retryUpdate = updateFixture('701');
+    const retryPayload = await codec.encrypt(retryUpdate, {
+      botKey,
+      environment: 'local',
+      classification: 'normalized_update',
+    });
+    const retry = await inbox.enqueue(retryUpdate, retryPayload);
+    const retryClaim = await inbox.claimNext(new Date('2026-07-15T10:00:00Z'), 'worker-a', 50);
+    expect(retryClaim?.inboxKey).toBe(retry.inboxKey);
+    expect(
+      await inbox.deadLetter(retry.inboxKey, retryClaim?.leaseGeneration ?? 0, 'fixture_error'),
+    ).toBe(true);
+    const deadLetters = await pool.query(
+      'SELECT count(*)::int AS count FROM onetime.telegram_dead_letters',
+    );
+    expect(Number(deadLetters.rows[0].count)).toBe(1);
+
+    const confirmations = new TelegramSqlConfirmationRepository(pool);
+    await confirmations.create({
+      confirmationKey: 'confirm_1',
+      botKey,
+      environment: 'local',
+      providerUserRef,
+      chatRef,
+      actorUserKey: asCanonicalUserKey(userKey),
+      accountKey: config.accountKey,
+      productKey: config.productKey,
+      capability: 'task.create',
+      source: 'natural_language',
+      riskClass: 'R1',
+      actionDigest: 'action_digest',
+      mappingKey: 'mapping_1',
+      mappingVersion: 1,
+      roleAtPreview: 'owner',
+      securityVersion: 1,
+      idempotencyKey: 'idem_1',
+      previewDigest: 'preview_digest',
+      payloadRef: {
+        ciphertext: 'ciphertext',
+        digest: 'digest',
+        classification: 'confirmation_payload',
+      },
+      expiresAt: '2026-07-14T10:05:00Z',
+    });
+    expect(await confirmations.consume('confirm_1', new Date('2026-07-14T10:00:00Z'))).toBe(
+      'consumed',
+    );
+    expect(await confirmations.consume('confirm_1', new Date('2026-07-14T10:00:01Z'))).toBe(
+      'already_consumed',
+    );
+
+    const responseOutbox = new TelegramSqlResponseOutboxTransportAdapter(pool, {
+      botKey,
+      environment: 'local',
+    });
+    await responseOutbox.sendReply({
+      chatRef,
+      correlationKey: 'corr_response_1',
+      text: 'Safe Telegram response',
+    });
+    await responseOutbox.sendReply({
+      chatRef,
+      correlationKey: 'corr_response_1',
+      text: 'Safe Telegram response',
+    });
+    const responseRows = await pool.query(
+      'SELECT count(*)::int AS count FROM onetime.telegram_response_outbox',
+    );
+    expect(Number(responseRows.rows[0].count)).toBe(1);
+
+    const leases = new TelegramSqlConsumerLeaseRepository(pool);
+    const acquired = await leases.acquire({
+      botKey,
+      environment: 'local',
+      tokenFingerprint: 'token_fp_fixture',
+      ownerId: 'owner-a',
+      leaseMs: 50,
+      now: new Date('2026-07-14T10:00:00Z'),
+    });
+    expect(acquired).toMatchObject({ acquired: true, generation: 1 });
+    const denied = await leases.acquire({
+      botKey,
+      environment: 'local',
+      tokenFingerprint: 'token_fp_fixture',
+      ownerId: 'owner-b',
+      leaseMs: 50,
+      now: new Date('2026-07-14T10:00:01Z'),
+    });
+    expect(denied).toMatchObject({ acquired: true, generation: 2 });
+    const blocked = await leases.acquire({
+      botKey,
+      environment: 'local',
+      tokenFingerprint: 'token_fp_fixture',
+      ownerId: 'owner-c',
+      leaseMs: 50,
+      now: new Date('2026-07-14T10:00:01.010Z'),
+    });
+    expect(blocked).toMatchObject({ acquired: false, reason: 'already_owned' });
+  });
+});
+
+function updateFixture(updateId: string): NormalizedBotUpdate {
+  return {
+    updateId,
+    kind: 'message',
+    botKey,
+    environment: 'local',
+    providerUserRef,
+    chatRef,
+    chatContext: 'private',
+    text: 'status',
+    isForwarded: false,
+    isEdited: false,
+    isAnonymousAdmin: false,
+    receivedAt: '2026-07-14T10:00:00Z',
+  };
+}

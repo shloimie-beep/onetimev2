@@ -40,13 +40,13 @@ export function requestHash(payload: LeadPayload) {
 export function successCopy(classification: 'family' | 'school') {
   if (classification === 'school') {
     return {
-      heading: 'Thank you.',
-      body: "We saved your information and we'll be in touch.",
+      heading: 'Thank you - we received your school inquiry.',
+      body: 'A member of the One Time One Time team will review it and follow up personally. This inquiry does not create class access, reminders, a portal account, or Family messages.',
     };
   }
   return {
-    heading: "You're signed up.",
-    body: 'We saved your information and will send the current class details using your selected option.',
+    heading: 'Thank you - we received your Family signup.',
+    body: 'Your information has been saved. You may receive an acknowledgement by email and, only if you consented, by WhatsApp. Class access and member login details are sent separately when they are ready.',
   };
 }
 

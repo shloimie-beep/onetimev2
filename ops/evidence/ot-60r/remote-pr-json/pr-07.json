@@ -1,0 +1,154 @@
+{
+  "number": 7,
+  "title": "fix OT-39 CRM privacy and performance evidence",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/7",
+  "baseRefName": "codex/ot35-app-shell-crm-clarity",
+  "baseRefOid": "6ca5e568c328ea116a9413b57ea5920400f8bc14",
+  "headRefName": "codex/ot39-crm-privacy-performance-correction",
+  "headRefOid": "c1584577780d7b5125bce4fb81d2a454c9e84096",
+  "mergeStateStatus": "CLEAN",
+  "commits": [
+    {
+      "oid": "c1584577780d7b5125bce4fb81d2a454c9e84096",
+      "messageHeadline": "fix ot39 crm privacy performance evidence",
+      "authoredDate": "2026-07-14T18:32:01Z",
+      "committedDate": "2026-07-14T18:32:01Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/client/app/crm-api.ts",
+      "additions": 248,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/web/src/client/app/crm-entry.tsx",
+      "additions": 193,
+      "deletions": 96,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/client/app/crm.css",
+      "additions": 14,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "ops/evidence/ot-39/FINAL-REPORT.md",
+      "additions": 117,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/accessibility-results.json",
+      "additions": 43,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/performance-report.json",
+      "additions": 679,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-detail-1440x1000.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-detail-360x800.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-detail-390x844.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-detail-768x1024.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-list-1440x1000.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-list-360x800.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-list-390x844.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-39/screenshots/crm-list-768x1024.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/accessibility/ot-35/app-shell-a11y.spec.ts",
+      "additions": 5,
+      "deletions": 69,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/accessibility/ot-39/crm-a11y.spec.ts",
+      "additions": 107,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/e2e/crm-core.spec.ts",
+      "additions": 10,
+      "deletions": 8,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/e2e/ot-35/app-shell-crm.spec.ts",
+      "additions": 5,
+      "deletions": 245,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/e2e/ot-39/crm-privacy-usability.spec.ts",
+      "additions": 361,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/performance/ot-35/crm-performance.spec.ts",
+      "additions": 5,
+      "deletions": 278,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/performance/ot-39/crm-performance.spec.ts",
+      "additions": 413,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/performance/public-performance.spec.ts",
+      "additions": 6,
+      "deletions": 3,
+      "changeType": "MODIFIED"
+    }
+  ]
+}

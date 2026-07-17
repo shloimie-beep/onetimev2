@@ -1,0 +1,636 @@
+{
+  "task_id": "OT-99",
+  "packet_id": "OT-99-bcd34498",
+  "generated_at_utc": "2026-07-16T13:09:15Z",
+  "outcome": "integrated",
+  "repository": "webcraft-media/onetimev2",
+  "foundation": {
+    "task": "OT-83R",
+    "branch": "codex/ot83r-complete-portals",
+    "sha": "479a9b2a47a6f0cd4ba74558eac8414417883e2c",
+    "completion_report": "ops/codex-runs/OT-83R/FINAL-REPORT.md",
+    "completion_verified": true
+  },
+  "integration": {
+    "branch": "integration/ot-99-final-semantic-convergence-20260716T122407Z",
+    "sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+    "worktree_clean_at_start": true,
+    "remote_head_verified": true,
+    "lanes": [
+      {
+        "task": "OT-84",
+        "source_branch": "codex/ot84-telegram-action-gateway",
+        "source_sha": "310bb5ca8cc8c01e2218051367c5cc2e3414a719",
+        "decision": "merged",
+        "evidence": [
+          "Merged in dependency order; telegram-db-foundation focused test passed after unioning OT-83R and OT-84 expectations."
+        ]
+      },
+      {
+        "task": "OT-88",
+        "source_branch": "codex/ot88-zoom-learner-classroom",
+        "source_sha": "f59f20afb0def3bacc5bf46fe5ca64f0c91c3a35",
+        "decision": "merged",
+        "evidence": [
+          "Merged after OT-84; portal contracts preserve learner management plus classroom launch/question flows."
+        ]
+      },
+      {
+        "task": "OT-89A",
+        "source_branch": "codex/ot89a-subscriber-support-producer",
+        "source_sha": "23d89704409ff08ea6e249b69b89875cd9905c30",
+        "decision": "merged",
+        "evidence": [
+          "Merged after OT-88; support route now targets /app/support and frozen support event bytes remain LF-normalized."
+        ]
+      },
+      {
+        "task": "OT-85",
+        "source_branch": "codex/ot85-whatsapp-lead-assistant",
+        "source_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+        "decision": "merged",
+        "evidence": [
+          "Merged with raw webhook route before global JSON and fixed future-date fixture for integrated tests."
+        ]
+      },
+      {
+        "task": "OT-86A",
+        "source_branch": "codex/ot86a-vimeo-content-kb",
+        "source_sha": "ffc38539dcaea351ac001b1a1f45d848f5d69cc9",
+        "decision": "merged",
+        "evidence": ["Merged content pipeline with raw route ordering preserved."]
+      },
+      {
+        "task": "OT-86B",
+        "source_branch": "codex/ot86b-buffer-social",
+        "source_sha": "7212a70fed4a197dc991260101ebb7017c2ecf97",
+        "decision": "merged",
+        "evidence": [
+          "Merged social publishing after OT-86A with scheduler/provider-off coverage preserved."
+        ]
+      },
+      {
+        "task": "OT-87",
+        "source_branch": "codex/ot87-stripe-test-entitlements",
+        "source_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+        "decision": "merged",
+        "evidence": [
+          "Merged billing entitlement contracts and seeded household fixture access for parent protected-content journey."
+        ]
+      }
+    ],
+    "pr_24_25_decision": {
+      "pr_24_head": "e04fc61b5d153f7979c7acbe7f2a30e86c735f06",
+      "pr_25_head": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf",
+      "merge_both_histories": false,
+      "unique_delta_commits": ["809480bb5581c4104f64c4c04a5c92fff8aaa7cf"],
+      "incorporated_commits": [],
+      "evidence": [
+        "artifacts/OT-99/preflight/candidate-adjudication.json selected the PR #24 descendant lineage and rejected blind double-merge of #24/#25 histories.",
+        "OT-99 integration was created from OT-83R, which descends from the selected PR #24 line; no unique PR #25 commit was blindly merged."
+      ]
+    }
+  },
+  "pull_request": {
+    "created": false,
+    "draft": null,
+    "url": null,
+    "number": null,
+    "base": null,
+    "head": null,
+    "sha": null
+  },
+  "migrations": {
+    "mechanism": "Colliding additive lane migrations were path-renumbered into 2000-2007 order; SQL body blob SHA-256 before and after each rename is identical. Schema field was_applied remains false per OT-99 release-manifest schema contract, while this manifest records the implemented new_path values.",
+    "ledger_sources": [
+      "artifacts/OT-99/packet/OT-99-bcd34498/matrices/OT-99-migration-renumber-matrix.csv",
+      "artifacts/OT-99/FINAL-REPORT.md",
+      "artifacts/OT-99/TEST-RESULTS.md"
+    ],
+    "renumber_map": [
+      {
+        "task": "OT-84",
+        "source_sha": "310bb5ca8cc8c01e2218051367c5cc2e3414a719",
+        "old_path": "packages/db/migrations/2000_ot84_telegram_action_gateway.sql",
+        "new_path": "packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "was_applied": false,
+        "checksum_before": "5106e4a2dae733d7f9e11a0e80c109a85bbcde0890c6fabbcb9efc7d1b3bdb53",
+        "checksum_after": "5106e4a2dae733d7f9e11a0e80c109a85bbcde0890c6fabbcb9efc7d1b3bdb53"
+      },
+      {
+        "task": "OT-88",
+        "source_sha": "f59f20afb0def3bacc5bf46fe5ca64f0c91c3a35",
+        "old_path": "packages/db/migrations/2100_ot88_zoom_learner_classroom.sql",
+        "new_path": "packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "was_applied": false,
+        "checksum_before": "a74bb923746d6d0a6e7deaeb23e80d60a3fb3fa5107864e5536befc4d97ba72f",
+        "checksum_after": "a74bb923746d6d0a6e7deaeb23e80d60a3fb3fa5107864e5536befc4d97ba72f"
+      },
+      {
+        "task": "OT-89A",
+        "source_sha": "23d89704409ff08ea6e249b69b89875cd9905c30",
+        "old_path": "packages/db/migrations/2100_ot89a_subscriber_support_producer.sql",
+        "new_path": "packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "was_applied": false,
+        "checksum_before": "b928f174ff622b380e7ba609d16db90f28a53e304bd6789e013f6024e05960f0",
+        "checksum_after": "b928f174ff622b380e7ba609d16db90f28a53e304bd6789e013f6024e05960f0"
+      },
+      {
+        "task": "OT-85",
+        "source_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+        "old_path": "packages/db/migrations/2000_ot85_whatsapp_assistant.sql",
+        "new_path": "packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "was_applied": false,
+        "checksum_before": "dc0498438b6cf3f06c733d9d2494bb88a1a55f188bc8a5f27b54faedbfdf0270",
+        "checksum_after": "dc0498438b6cf3f06c733d9d2494bb88a1a55f188bc8a5f27b54faedbfdf0270"
+      },
+      {
+        "task": "OT-86A",
+        "source_sha": "ffc38539dcaea351ac001b1a1f45d848f5d69cc9",
+        "old_path": "packages/db/migrations/2000_ot86_content_pipeline.sql",
+        "new_path": "packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "was_applied": false,
+        "checksum_before": "9bb4ff01e96a1f7075a665b3b3839edab0abc31d59a730bd6847cf4042757b17",
+        "checksum_after": "9bb4ff01e96a1f7075a665b3b3839edab0abc31d59a730bd6847cf4042757b17"
+      },
+      {
+        "task": "OT-86B",
+        "source_sha": "7212a70fed4a197dc991260101ebb7017c2ecf97",
+        "old_path": "packages/db/migrations/2100_ot86b_social_publishing.sql",
+        "new_path": "packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "was_applied": false,
+        "checksum_before": "f119e00e0db5385ad1e36b9642ccb883977201cbe4b949126bffdc26bc0d6849",
+        "checksum_after": "f119e00e0db5385ad1e36b9642ccb883977201cbe4b949126bffdc26bc0d6849"
+      },
+      {
+        "task": "OT-87",
+        "source_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+        "old_path": "packages/db/migrations/2000_ot87_stripe_test_entitlements.sql",
+        "new_path": "packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "was_applied": false,
+        "checksum_before": "414008a7617a0e40fc0e9a97e47ea4181444372130b62b8e8761d7b274bac1da",
+        "checksum_after": "414008a7617a0e40fc0e9a97e47ea4181444372130b62b8e8761d7b274bac1da"
+      }
+    ],
+    "postgres_16_paths": [
+      {
+        "name": "pg-mem integrated migration replay",
+        "start_state": "clean in-memory migration replay through 2007_ot87_stripe_test_entitlements",
+        "result": "passed",
+        "evidence": [
+          "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts passed after renumbering."
+        ]
+      },
+      {
+        "name": "local PostgreSQL db:verify",
+        "start_state": "Windows workstation without DATABASE_URL, psql, Docker, or a local PostgreSQL service",
+        "result": "blocked",
+        "evidence": [
+          "npm run db:verify exited with DATABASE_URL is required for PostgreSQL-backed runtime."
+        ]
+      },
+      {
+        "name": "local PostgreSQL assurance harness",
+        "start_state": "Windows workstation attempted 127.0.0.1:5432",
+        "result": "blocked",
+        "evidence": [
+          "npx tsx scripts/postgres-assurance/run.ts failed with ECONNREFUSED 127.0.0.1:5432."
+        ]
+      }
+    ],
+    "all_paths_passed": false
+  },
+  "tests": [
+    {
+      "category": "unit",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run unit"],
+      "evidence": ["27 files, 152 tests passed on the integrated candidate."]
+    },
+    {
+      "category": "integration",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run integration"],
+      "evidence": ["25 files, 128 tests passed after lead-capture and fixture repairs."]
+    },
+    {
+      "category": "browser",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run e2e"],
+      "evidence": [
+        "32 Playwright browser tests passed with isolated OT-83R/OT-88 student fixtures."
+      ]
+    },
+    {
+      "category": "accessibility",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run accessibility"],
+      "evidence": ["9 accessibility tests passed."]
+    },
+    {
+      "category": "security",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run secret:scan", "npm run lint", "npm run typecheck"],
+      "evidence": ["Secret scan, lint, and typecheck passed after removing unused preview imports."]
+    },
+    {
+      "category": "privacy",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
+      "evidence": [
+        "Subscriber/household/sibling tests passed; sibling launch injection returns strict-schema rejection without provider URL leak."
+      ]
+    },
+    {
+      "category": "secret",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run secret:scan"],
+      "evidence": ["No committed secrets detected."]
+    },
+    {
+      "category": "pii",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
+      "evidence": [
+        "Portal/support/browser journeys exercise scoped fixtures only and no production data access occurred."
+      ]
+    },
+    {
+      "category": "provider_url",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run e2e"],
+      "evidence": [
+        "Sibling protected-launch negative journey asserts no sibling key/provider URL leak."
+      ]
+    },
+    {
+      "category": "bundle",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run performance"],
+      "evidence": [
+        "Bundle check passed: public_js 6316 raw/2226 gzip, public_css 14855 raw/4038 gzip, crm_js 233983 raw, portal_js 229096 raw."
+      ]
+    },
+    {
+      "category": "request",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run e2e", "CI=1 npm run performance"],
+      "evidence": [
+        "Provider-off synthetic routes and local test server handled the exercised requests without external provider contact."
+      ]
+    },
+    {
+      "category": "performance",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run performance"],
+      "evidence": [
+        "Full performance suite passed on rerun after one noisy isolated LCP sample also passed in focused retry."
+      ]
+    },
+    {
+      "category": "concurrency",
+      "result": "blocked",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run db:verify", "npx tsx scripts/postgres-assurance/run.ts"],
+      "evidence": [
+        "Local PostgreSQL unavailable; canonical PR PostgreSQL 16 checks must supply the exact-SHA concurrency verdict."
+      ]
+    },
+    {
+      "category": "role",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
+      "evidence": [
+        "Parent, student, active subscriber, and unauthorized role flows passed through integrated suites."
+      ]
+    },
+    {
+      "category": "account",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
+      "evidence": ["Account/session-scoped portal and support journeys passed."]
+    },
+    {
+      "category": "household",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run e2e"],
+      "evidence": [
+        "Household billing entitlement fixture enables parent protected-content access without leaking sibling/provider data."
+      ]
+    },
+    {
+      "category": "sibling",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["CI=1 npm run e2e"],
+      "evidence": [
+        "Sibling class launch injection rejected by strict schema and no sibling provider details surfaced."
+      ]
+    },
+    {
+      "category": "every_visible_action",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run integration", "CI=1 npm run e2e", "CI=1 npm run accessibility"],
+      "evidence": [
+        "Integrated routed browser journeys cover visible portal/support/classroom actions touched by OT-99."
+      ]
+    },
+    {
+      "category": "provider_outage",
+      "result": "passed",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": ["npm run integration", "CI=1 npm run e2e"],
+      "evidence": [
+        "Provider-off sink/fail-closed support, classroom, and delivery behaviors remained covered locally."
+      ]
+    },
+    {
+      "category": "migration",
+      "result": "blocked",
+      "exact_sha": "2ba69b080b96243de27cc701925717ae7144ac2f",
+      "commands": [
+        "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts",
+        "npm run db:verify"
+      ],
+      "evidence": [
+        "pg-mem replay passed through migration 2007; real PostgreSQL local run blocked by missing DATABASE_URL and must pass in GitHub checks."
+      ]
+    }
+  ],
+  "components": [
+    {
+      "component": "landing",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_applicable",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "Existing landing/signup/browser suites remained green in integrated e2e/performance runs."
+      ]
+    },
+    {
+      "component": "signup",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_applicable",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": ["Lead-capture integration test passed after due reminder fixture repair."]
+    },
+    {
+      "component": "crm",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_applicable",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": ["CRM bundle/performance checks passed in CI=1 npm run performance."]
+    },
+    {
+      "component": "portals",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_applicable",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-83R parent/student portal journeys passed after contract and fixture reconciliation."
+      ]
+    },
+    {
+      "component": "rabbi_auth",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_applicable",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "Authenticated local test-server flows passed; no real Rabbi/operator account was used."
+      ]
+    },
+    {
+      "component": "telegram_ot_84",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_run",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-84 migration and integration expectations were preserved in telegram-db-foundation coverage."
+      ]
+    },
+    {
+      "component": "zoom_ot_88",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_configured",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-88 sink-mode classroom browser tests passed with dedicated student fixture; live Zoom canary not authorized."
+      ]
+    },
+    {
+      "component": "support_producer_ot_89a",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_configured",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-89A support producer integrated and support route points to /app/support; real BNA delivery remains disabled."
+      ]
+    },
+    {
+      "component": "whatsapp_ot_85",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_configured",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-85 raw webhook and assistant tests passed locally; live WhatsApp contact/send not authorized."
+      ]
+    },
+    {
+      "component": "vimeo_content_kb_ot_86a",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_configured",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": ["OT-86A content pipeline merged; live Vimeo account canary not authorized."]
+    },
+    {
+      "component": "buffer_ot_86b",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_configured",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-86B scheduler/social code merged; automatic Buffer posting prohibited and live Buffer canary not run."
+      ]
+    },
+    {
+      "component": "stripe_test_entitlements_ot_87",
+      "code_present": "yes",
+      "integrated": "yes",
+      "configured": "yes",
+      "canary_passed": "not_configured",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-87 billing entitlement contracts integrated; no live charge or production Stripe action occurred."
+      ]
+    },
+    {
+      "component": "support_consumer_bna_ot_89b",
+      "code_present": "no",
+      "integrated": "no",
+      "configured": "not_applicable",
+      "canary_passed": "not_applicable",
+      "staging_accepted": "not_run",
+      "production_live": "no",
+      "evidence": [
+        "OT-89B remains a later BNA consumer launch gate; no BNA code was imported into One Time."
+      ]
+    }
+  ],
+  "bna_dependency": {
+    "task": "OT-89B",
+    "system": "BNA",
+    "code_imported_into_one_time": false,
+    "readiness": "blocked",
+    "protocol_compatibility": "blocked",
+    "evidence": [
+      "OT-89A producer contract remains integrated, but live BNA delivery and BNA consumer import remain outside OT-99 and were not run."
+    ]
+  },
+  "staging": {
+    "authorized": false,
+    "isolated": false,
+    "deployed": false,
+    "url": null,
+    "sha": null,
+    "artifact_digest": null,
+    "provider_off_synthetics": "not_run",
+    "protected_canaries": []
+  },
+  "rabbi_access": {
+    "can_log_in": "not_run",
+    "evidence": [
+      "Local synthetic authenticated routes passed; no staging or real Rabbi/operator account was used."
+    ],
+    "actions_work": [
+      "Local parent portal learner/content flows",
+      "Local student classroom launch/question flows",
+      "Local active subscriber support receipt flow"
+    ],
+    "actions_disabled": [
+      {
+        "action": "production Rabbi login",
+        "reason": "No staging or production account access was authorized for OT-99."
+      },
+      {
+        "action": "provider canaries",
+        "reason": "Provider credentials/contact were not authorized."
+      }
+    ]
+  },
+  "prohibitions": {
+    "root_dns_changed": false,
+    "live_stripe_charge": false,
+    "broad_send": false,
+    "production_contact_import": false,
+    "automatic_buffer_post": false,
+    "hard_delete": false,
+    "production_declared": false
+  },
+  "blockers": [
+    {
+      "area": "canonical PR checks",
+      "reason": "The integration branch still needs GitHub checks on the exact pushed candidate SHA.",
+      "owner": "OT-99",
+      "minimum_next_evidence": "Draft PR with Node 24 verify, PostgreSQL 16 assurance harness, and PostgreSQL 16 learner-seat proof green on the exact remote head."
+    },
+    {
+      "area": "PostgreSQL local verification",
+      "reason": "This workstation has no safe DATABASE_URL/local PostgreSQL service; local PostgreSQL commands are blocked.",
+      "owner": "OT-99/GitHub CI",
+      "minimum_next_evidence": "GitHub PostgreSQL 16 checks pass on the pushed integration SHA."
+    },
+    {
+      "area": "staging",
+      "reason": "No staging deployment was authorized or attempted.",
+      "owner": "operator",
+      "minimum_next_evidence": "Explicitly approved isolated staging deployment and acceptance evidence."
+    },
+    {
+      "area": "protected provider canaries",
+      "reason": "Live Zoom, Vimeo, Buffer, WhatsApp, Telegram, Stripe, and BNA canaries were intentionally not run.",
+      "owner": "operator/provider launch owner",
+      "minimum_next_evidence": "Credentialed, protected canary plan with explicit authorization and no broad sends/live charges unless approved."
+    },
+    {
+      "area": "BNA support consumer",
+      "reason": "OT-89B remains a later launch gate; One Time producer integration did not import BNA consumer code.",
+      "owner": "BNA/OT-89B",
+      "minimum_next_evidence": "BNA consumer implementation and live delivery acceptance evidence."
+    }
+  ],
+  "rollback": [
+    {
+      "area": "pre-merge integration branch",
+      "tested": false,
+      "procedure": "Close or abandon the draft PR/branch before merge; no production mutation exists to unwind.",
+      "evidence": [
+        "No staging deployment, provider mutation, BNA mutation, production DB write, DNS change, payment, broad send, or hard delete occurred."
+      ]
+    },
+    {
+      "area": "lane-level revert before merge",
+      "tested": false,
+      "procedure": "Revert the corresponding merge/reconcile commits and preserve additive monotonic migration numbering for any retained lanes.",
+      "evidence": [
+        "Merge commits and the migration renumber commit are isolated in the integration branch history."
+      ]
+    }
+  ],
+  "shortest_route_to_live": [
+    "Push integration branch and open canonical draft PR against codex/ot83r-complete-portals.",
+    "Pass GitHub Node 24 and PostgreSQL 16 checks on the exact candidate SHA.",
+    "Approve and run isolated staging with provider-off synthetics.",
+    "Run protected provider canaries only with explicit credentials and authorization.",
+    "Complete BNA OT-89B support consumer and live support-delivery launch gate.",
+    "Only then consider production promotion."
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "number": 6,
+  "title": "OT-37 PostgreSQL assurance harness",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/6",
+  "baseRefName": "codex/crm-core-v1",
+  "baseRefOid": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "headRefName": "codex/ot37-postgres-assurance",
+  "headRefOid": "0ea782d8551c26edd48b08d644b573e19b9835b1",
+  "mergeStateStatus": "UNSTABLE",
+  "commits": [
+    {
+      "oid": "0ea782d8551c26edd48b08d644b573e19b9835b1",
+      "messageHeadline": "ci: add OT-37 postgres assurance harness",
+      "authoredDate": "2026-07-14T17:55:16Z",
+      "committedDate": "2026-07-14T17:55:16Z"
+    }
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/ot37-postgres-assurance.yml",
+      "additions": 84,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-37/README.md",
+      "additions": 12,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "scripts/postgres-assurance/README.md",
+      "additions": 35,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "scripts/postgres-assurance/run.ts",
+      "additions": 1476,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/postgres-assurance/current-base-scenarios.ts",
+      "additions": 69,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}

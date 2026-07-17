@@ -1,0 +1,217 @@
+{
+  "packet_id": "OT-86B",
+  "generated_at": "2026-07-15T17:57:29.490Z",
+  "fixture": {
+    "accepted_social_source_count": 10000,
+    "draft_count": 10000,
+    "draft_revision_count": 50000,
+    "approval_count": 10000,
+    "scheduled_command_count": 10000,
+    "samples": 30,
+    "event_payload_bytes": 402028,
+    "event_payload_limit_bytes": 524288,
+    "bna_network_dependency": false,
+    "provider_network_time_excluded": true,
+    "load_mode": "pg-mem performance schema using production social publishing table names and serving indexes"
+  },
+  "serving_indexes": {
+    "ot86b_social_event_inbox": [
+      {
+        "name": "ot86b_social_event_inbox_pkey",
+        "expressions": ["id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_event_inbox_event_id_key",
+        "expressions": ["event_id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_event_inbox_idempotency_key_key",
+        "expressions": ["idempotency_key"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_event_inbox_queue_idx",
+        "expressions": ["processing_state", "received_at"],
+        "unique": false
+      },
+      {
+        "name": "ot86b_social_event_inbox_duplicate_idx",
+        "expressions": ["event_id", "raw_body_sha256"],
+        "unique": false
+      }
+    ],
+    "ot86b_social_sources": [
+      {
+        "name": "ot86b_social_sources_pkey",
+        "expressions": ["id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_sources_source_id_key",
+        "expressions": ["source_id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_sources_event_id_key",
+        "expressions": ["event_id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_sources_tenant_idx",
+        "expressions": ["tenant_id", "created_at"],
+        "unique": false
+      }
+    ],
+    "ot86b_social_drafts": [
+      {
+        "name": "ot86b_social_drafts_pkey",
+        "expressions": ["id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_drafts_draft_id_key",
+        "expressions": ["draft_id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_drafts_list_idx",
+        "expressions": ["tenant_id", "workflow_state", "updated_at", "draft_id"],
+        "unique": false
+      }
+    ],
+    "ot86b_social_draft_revisions": [
+      {
+        "name": "ot86b_social_draft_revisions_pkey",
+        "expressions": ["id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_draft_revisions_revision_id_key",
+        "expressions": ["revision_id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_draft_revisions_revision_idx",
+        "expressions": ["revision_id"],
+        "unique": false
+      },
+      {
+        "name": "ot86b_social_draft_revisions_draft_idx",
+        "expressions": ["draft_id", "created_at"],
+        "unique": false
+      }
+    ],
+    "ot86b_social_approvals": [
+      {
+        "name": "ot86b_social_approvals_pkey",
+        "expressions": ["id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_approvals_approval_id_key",
+        "expressions": ["approval_id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_approvals_draft_idx",
+        "expressions": ["tenant_id", "draft_id", "approval_state"],
+        "unique": false
+      }
+    ],
+    "ot86b_social_publish_commands": [
+      {
+        "name": "ot86b_social_publish_commands_pkey",
+        "expressions": ["id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_publish_commands_command_id_key",
+        "expressions": ["command_id"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_publish_commands_idempotency_key_key",
+        "expressions": ["idempotency_key"],
+        "unique": true
+      },
+      {
+        "name": "ot86b_social_publish_commands_due_idx",
+        "expressions": ["command_state", "scheduled_for", "id"],
+        "unique": false
+      },
+      {
+        "name": "ot86b_social_publish_commands_duplicate_idx",
+        "expressions": ["idempotency_key", "approval_id", "destination_id"],
+        "unique": false
+      }
+    ]
+  },
+  "budgets_ms": {
+    "event_validation_receipt": 300,
+    "draft_list_filter": 300,
+    "draft_detail_preview": 250,
+    "scheduler_due_command_selection": 500,
+    "duplicate_event_command_reconciliation": 250
+  },
+  "measurements": {
+    "event_validation_receipt": {
+      "samples": 30,
+      "median_ms": 15.658,
+      "p95_ms": 26.219,
+      "max_ms": 47.59379999999874
+    },
+    "draft_list_filter": {
+      "samples": 30,
+      "median_ms": 141.266,
+      "p95_ms": 173.347,
+      "max_ms": 182.41410000000178
+    },
+    "draft_detail_preview": {
+      "samples": 30,
+      "median_ms": 1.199,
+      "p95_ms": 1.718,
+      "max_ms": 8.923000000002503
+    },
+    "scheduler_due_command_selection": {
+      "samples": 30,
+      "median_ms": 63.486,
+      "p95_ms": 79.041,
+      "max_ms": 86.85599999999977
+    },
+    "duplicate_event_command_reconciliation": {
+      "samples": 30,
+      "median_ms": 0.821,
+      "p95_ms": 1.658,
+      "max_ms": 5.801800000001094
+    }
+  },
+  "results": {
+    "event_validation_receipt": {
+      "budget_ms": 300,
+      "p95_ms": 26.219,
+      "passed": true
+    },
+    "draft_list_filter": {
+      "budget_ms": 300,
+      "p95_ms": 173.347,
+      "passed": true
+    },
+    "draft_detail_preview": {
+      "budget_ms": 250,
+      "p95_ms": 1.718,
+      "passed": true
+    },
+    "scheduler_due_command_selection": {
+      "budget_ms": 500,
+      "p95_ms": 79.041,
+      "passed": true
+    },
+    "duplicate_event_command_reconciliation": {
+      "budget_ms": 250,
+      "p95_ms": 1.658,
+      "passed": true
+    }
+  }
+}

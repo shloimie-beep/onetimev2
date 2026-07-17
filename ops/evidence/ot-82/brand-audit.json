@@ -1,0 +1,48 @@
+{
+  "run_id": "OT-82",
+  "audit_status": "complete",
+  "source_base": "origin/codex/ot81-dayone-certification-staging",
+  "resolved_base_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
+  "audited_areas": [
+    "public static shell and styles",
+    "authenticated CRM app shell and route CSS",
+    "parent/student portal entry and portal feature CSS",
+    "communications feature CSS",
+    "audience reconciliation CSS",
+    "billing CSS",
+    "bundle and page generation scripts",
+    "route-branding and ticker placement"
+  ],
+  "brand_source_of_truth": {
+    "package": "packages/brand-system",
+    "manifest": "packages/brand-system/manifest/one-time-brand.v1.json",
+    "schema": "packages/brand-system/manifest/one-time-brand.schema.json",
+    "css_tokens": "packages/brand-system/src/tokens.css",
+    "typescript_tokens": "packages/brand-system/src/tokens.ts",
+    "route_assignments": "packages/brand-system/src/route-branding.ts"
+  },
+  "raw_drift_found_before_migration": [
+    "public route variables, header, footer, ticker, and public page component classes lived only in apps/web/src/client/public/styles.css",
+    "authenticated CRM shell variables and primitive styles lived only in apps/web/src/client/app/crm.css",
+    "portal feature styles were injected at runtime from PortalFeatures.tsx",
+    "communications, billing, and audience reconciliation routes kept independent route CSS",
+    "AppShell owned route-local logo/header/drawer/button/footer markup instead of canonical primitives"
+  ],
+  "migration_summary": [
+    "centralized One Time tokens and route assignments in packages/brand-system",
+    "moved public, React shell, portal, communications, billing, and audience styles into package-owned canonical CSS modules",
+    "converted route CSS entrypoints to import canonical package CSS",
+    "removed runtime portal style injection",
+    "migrated AppShell logo, header, toolbar, drawer, footer, and sign-in/logout buttons to canonical React primitives",
+    "added brand drift checks for manifest/token/CSS/route/ticker/raw-source invariants"
+  ],
+  "guardrails": {
+    "no_google_fonts": true,
+    "no_bna_or_operations_requests_in_ot82_browser_spec": true,
+    "public_pages_exclude_react_crm_bundle": true,
+    "campaign_ticker_allowlist": [
+      "/"
+    ],
+    "route_assignment_count": 13
+  }
+}

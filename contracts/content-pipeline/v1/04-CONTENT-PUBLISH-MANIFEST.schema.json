@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ot86:content-publish-manifest:v1",
+  "title": "OT86 Content Publication Manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_type",
+    "message_id",
+    "idempotency_key",
+    "action",
+    "tenant_id",
+    "content_id",
+    "version_id",
+    "sequence",
+    "occurred_at",
+    "approval",
+    "source",
+    "artifacts",
+    "sections",
+    "search_documents",
+    "privacy",
+    "checksum_algorithm",
+    "manifest_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "event_type": {
+      "const": "content.publication_manifest"
+    },
+    "message_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "action": {
+      "enum": ["publish", "correct", "revoke", "retire"]
+    },
+    "tenant_id": {
+      "$ref": "#/$defs/id"
+    },
+    "content_id": {
+      "$ref": "#/$defs/id"
+    },
+    "version_id": {
+      "$ref": "#/$defs/id"
+    },
+    "supersedes_version_id": {
+      "$ref": "#/$defs/id"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "canonical_path": {
+      "type": "string",
+      "pattern": "^/",
+      "maxLength": 512
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval_id", "approved_by_actor_id", "approved_at", "policy_version"],
+      "properties": {
+        "approval_id": {
+          "$ref": "#/$defs/id"
+        },
+        "approved_by_actor_id": {
+          "$ref": "#/$defs/id"
+        },
+        "approved_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "policy_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_kind", "bna_record_id", "source_sha256", "vimeo_reference"],
+      "properties": {
+        "source_kind": {
+          "const": "rabbi_class"
+        },
+        "bna_record_id": {
+          "$ref": "#/$defs/id"
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "vimeo_reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["provider", "video_id", "reference_mode"],
+          "properties": {
+            "provider": {
+              "const": "vimeo"
+            },
+            "video_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "reference_mode": {
+              "enum": ["automated_upload", "manual_approved_reference"]
+            }
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "sections": {
+      "type": "array",
+      "maxItems": 2000,
+      "items": {
+        "$ref": "#/$defs/section"
+      }
+    },
+    "search_documents": {
+      "type": "array",
+      "maxItems": 5000,
+      "items": {
+        "$ref": "#/$defs/search_document"
+      }
+    },
+    "privacy": {
+      "$ref": "#/$defs/privacy"
+    },
+    "checksum_algorithm": {
+      "const": "sha256"
+    },
+    "manifest_sha256": {
+      "$ref": "#/$defs/sha256"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]+$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_scope",
+        "contains_learner_name",
+        "contains_learner_voice",
+        "contains_learner_face",
+        "contains_learner_question",
+        "contains_private_data",
+        "approved_for_student_kb"
+      ],
+      "properties": {
+        "source_scope": {
+          "const": "approved_rabbi_content"
+        },
+        "contains_learner_name": {
+          "const": false
+        },
+        "contains_learner_voice": {
+          "const": false
+        },
+        "contains_learner_face": {
+          "const": false
+        },
+        "contains_learner_question": {
+          "const": false
+        },
+        "contains_private_data": {
+          "const": false
+        },
+        "approved_for_student_kb": {
+          "const": true
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "kind", "uri", "mime_type", "sha256", "byte_length", "privacy"],
+      "properties": {
+        "artifact_id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "video",
+            "transcript",
+            "captions",
+            "slides",
+            "review_material",
+            "clip",
+            "thumbnail"
+          ]
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "mime_type": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 128
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "privacy": {
+          "$ref": "#/$defs/privacy"
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section_id",
+        "title",
+        "ordinal",
+        "start_ms",
+        "end_ms",
+        "canonical_path",
+        "deep_link",
+        "text_sha256"
+      ],
+      "properties": {
+        "section_id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "ordinal": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "start_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "canonical_path": {
+          "type": "string",
+          "pattern": "^/",
+          "maxLength": 512
+        },
+        "deep_link": {
+          "type": "string",
+          "pattern": "^/[^#]*#section-",
+          "maxLength": 768
+        },
+        "text_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "search_document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["document_id", "section_id", "title", "body", "token_count", "sha256"],
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/id"
+        },
+        "section_id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 50000
+        },
+        "token_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20000
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "correct"
+          }
+        },
+        "required": ["action"]
+      },
+      "then": {
+        "required": ["supersedes_version_id", "canonical_path"],
+        "properties": {
+          "sections": {
+            "minItems": 1
+          },
+          "search_documents": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "publish"
+          }
+        },
+        "required": ["action"]
+      },
+      "then": {
+        "required": ["canonical_path"],
+        "properties": {
+          "sections": {
+            "minItems": 1
+          },
+          "search_documents": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

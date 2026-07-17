@@ -1,0 +1,108 @@
+{
+  "worker": "OPS-04C",
+  "repo": "C:\\Users\\User\\onetimev2",
+  "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OPS-04C",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "branch": "integration/ops04c-one-time-access-content-convergence-20260716T213505Z",
+  "created_at_utc": "2026-07-16T21:35:05Z",
+  "base": {
+    "preferred": "origin/codex/ops03b-email-step-up-login",
+    "head_sha": "25b2a95aa4e3ae82aad20537dc300e9978c15b56",
+    "recorded_implementation_sha": "22a5faba49a073e42828c9bdea7a076c3af58038",
+    "batch_base": {
+      "ref": "origin/codex/ops03-staging-readiness-repair",
+      "sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36"
+    }
+  },
+  "batch_source": {
+    "path": "C:\\Users\\User\\AppData\\Local\\Temp\\codex-one-time-batch-20260716-safe\\One-Time-Immediate-Access-and-Content-Batch-2026-07-16",
+    "read": [
+      "00-READ-ME-FIRST.md",
+      "BATCH-MANIFEST.json",
+      "OPS-04C-CONTENT-CONVERGENCE\\CODEX-PROMPT.md"
+    ]
+  },
+  "repo_instructions_read": ["AGENTS.md"],
+  "integrated_inputs": [
+    {
+      "name": "OPS-03B email step-up login",
+      "ref": "origin/codex/ops03b-email-step-up-login",
+      "sha": "25b2a95aa4e3ae82aad20537dc300e9978c15b56",
+      "merge_commit": "base"
+    },
+    {
+      "name": "OT-104R Vimeo private runtime",
+      "ref": "origin/codex/ot104r-vimeo-private-runtime",
+      "sha": "ae01fe70e0cd8954b4d9f5175789cc4af442741a",
+      "merge_commit": "55fac88"
+    },
+    {
+      "name": "OT-101R Telegram admin runtime",
+      "ref": "origin/codex/ot101r-telegram-admin-runtime",
+      "sha": "dbff29bbc2d5434f7eecab61e4f081481e1cccaa",
+      "merge_commit": "291c745"
+    },
+    {
+      "name": "PR #46 / OT-106 Buffer runtime",
+      "ref": "origin/pr/46",
+      "sha": "4155ee706fce2eabc6db5225b5c8ce41a8c1dfd1",
+      "merge_commit": "b05003e"
+    },
+    {
+      "name": "PR #48 / OT-109 Rabbi content publisher",
+      "ref": "origin/pr/48",
+      "sha": "a62d6a73553e175871f6d3124badb96573cdabe7",
+      "merge_commit": "f8b7328"
+    },
+    {
+      "name": "OT-110A admin content workspace",
+      "ref": "origin/codex/ot110a-admin-content-workspace",
+      "sha": "8fdbc7b51008773e1051b717a686b98137a813cb",
+      "merge_commit": "7e40df0"
+    },
+    {
+      "name": "OT-111 legacy activation campaign",
+      "ref": "origin/codex/ot111-legacy-activation-campaign",
+      "sha": "15da6650673c1e58852f0937a02adf9efef78365",
+      "merge_commit": "46b2cf8"
+    },
+    {
+      "name": "PR #44 / OT-107 student helper",
+      "ref": "origin/pr/44",
+      "sha": "560a07c66baddc99df38441299f3e57107d02137",
+      "merge_commit": "a31e6f5"
+    }
+  ],
+  "migration_renumbering": {
+    "2010_ops03b_email_step_up_login.sql": "kept",
+    "2010_ot101r_telegram_admin_runtime.sql": "2011_ot101r_telegram_admin_runtime.sql",
+    "2010_ot104r_vimeo_private_runtime.sql": "2012_ot104r_vimeo_private_runtime.sql",
+    "2010_ot110a_admin_content_workspace.sql": "2013_ot110a_admin_content_workspace.sql",
+    "2010_ot111_legacy_activation_campaign.sql": "2014_ot111_legacy_activation_campaign.sql",
+    "2160_ot106_buffer_social_publishing.sql": "kept",
+    "2190_ot109_rabbi_content_publisher.sql": "kept"
+  },
+  "protected_variables_absent_or_unproven": [
+    "DATABASE_URL",
+    "VIMEO_ACCESS_TOKEN",
+    "VIMEO_CLIENT_ID",
+    "VIMEO_CLIENT_SECRET",
+    "VIMEO_ACCOUNT_ID",
+    "VIMEO_WEBHOOK_SECRET",
+    "BUFFER_ACCESS_TOKEN",
+    "BUFFER_ORGANIZATION_ID",
+    "OT106_BUFFER_CHANNEL_ALIASES",
+    "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+    "ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+    "ONE_TIME_TELEGRAM_TOKEN_CONFIGURED or ONE_TIME_TELEGRAM_BOT_TOKEN",
+    "ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED",
+    "ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED",
+    "ONE_TIME_OWNER_TEST_EMAIL",
+    "ONE_TIME_LIFECYCLE_DELIVERY_KEY",
+    "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL",
+    "RESEND_API_KEY",
+    "ONE_TIME_EMAIL_FROM",
+    "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED=true",
+    "ONE_TIME_RESEND_TRANSPORT_ENABLED=true"
+  ]
+}

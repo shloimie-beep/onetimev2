@@ -1,0 +1,10 @@
+{
+  "status": "blocked",
+  "reason": "No explicit safe Postgres target was provided. Set OT83_ALLOW_POSTGRES_WRITE=true with OT83_POSTGRES_URL or PG* connection variables to run.",
+  "external_mutations": {
+    "production_database": false,
+    "railway": false,
+    "providers": false,
+    "sends": false
+  }
+}

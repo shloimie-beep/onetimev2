@@ -1,0 +1,143 @@
+{
+  "task_id": "OT-74",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\Documents\\Codex\\2026-07-15\\files-mentioned-by-the-user-codex-3\\work\\onetimev2-ot74",
+  "branch": "codex/ot74-audience-reconciliation",
+  "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "target_base_branch": "codex/ot60r-recovery-convergence",
+  "current_head_sha": "964dc409d2c3bc76d9de849f34fffabdaa766713",
+  "phase": "draft_pr_opened",
+  "status": "candidate",
+  "created_at": "2026-07-15T09:29:35+03:00",
+  "updated_at": "2026-07-15T10:09:16+03:00",
+  "completed_steps": [
+    "Cloned clean One Time repository from https://github.com/webcraft-media/onetimev2.git under the Codex work directory.",
+    "Verified immutable base dfef7de2035e08f1ee72e0133ccf656fe7a74444 exists locally.",
+    "Created branch codex/ot74-audience-reconciliation from the exact immutable base.",
+    "Committed and pushed initial execution packet checkpoint c776bdf84678f7e381752839e8581d02d75f54f6.",
+    "Merged remote OT-74 implementation commits through 8dcc3db without force-pushing.",
+    "Resolved the migration namespace collision by preserving remote 1200_ot74_audience_reconciliation.sql and moving local legacy-audience tables to 1201_ot74_legacy_audience_reconciliation.sql.",
+    "Completed post-merge validation: typecheck, merged OT-74 unit/integration tests, lint, secret scan, both dry-run tools, and build passed.",
+    "Merged remote PR metadata commit 5d87bb6 containing draft PR #22.",
+    "Pushed combined branch head 964dc409d2c3bc76d9de849f34fffabdaa766713 to origin.",
+    "Verified draft PR #22 is open against codex/ot60r-recovery-convergence with head codex/ot74-audience-reconciliation."
+  ],
+  "remaining_steps": [],
+  "blockers": [],
+  "last_safe_command": "gh pr view 22 --json number,title,state,isDraft,baseRefName,headRefName,headRefOid,url",
+  "test_results": [
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "Post-merge TypeScript completed with no errors."
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/audience/audience-reconciliation.test.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts",
+      "status": "passed",
+      "summary": "Post-merge merged OT-74 unit suites passed 17 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/audience/audience-migration.test.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts",
+      "status": "passed",
+      "summary": "Post-merge merged OT-74 integration suites passed 10 tests."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "Post-merge ESLint completed with no findings."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Post-merge secret scan passed across 360 repo text files."
+    },
+    {
+      "command": "npx tsx scripts/audience-reconciliation-dry-run.ts",
+      "status": "passed",
+      "summary": "Remote synthetic dry-run tool emitted summary JSON with zero production database writes, sends, provider mutations, and real spreadsheet ingestion."
+    },
+    {
+      "command": "npx tsx scripts/ot74/audience-dry-run.ts --rows=10000",
+      "status": "passed",
+      "summary": "Local synthetic-only dry-run tool emitted aggregate counts/reasons for 10k rows with raw_row_contents_included=false and production_side_effects=false."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Post-merge build passed, including public/app Vite builds, public page build, and typecheck."
+    },
+    {
+      "command": "psql --version; docker --version",
+      "status": "blocked",
+      "summary": "Local PostgreSQL 16 proof is unavailable because psql and Docker are not installed in this desktop environment."
+    }
+  ],
+  "external_mutation_counts": {
+    "production_imports": 0,
+    "production_sends": 0,
+    "production_deployments": 0,
+    "provider_network_calls": 0,
+    "production_database_writes": 0
+  },
+  "safety_constraints": [
+    "Production import, send, deployment, provider mutation, and production database writes are forbidden.",
+    "Use only synthetic fixtures; do not ingest real spreadsheets or print row contents.",
+    "Feature-local APIs and components remain unmounted for OT-80.",
+    "Do not edit app.ts, AppShell, central CRM entry, shared barrels, root packages, provider workers, or OT-71/OT-72 paths."
+  ],
+  "commits": [
+    {
+      "sha": "c776bdf84678f7e381752839e8581d02d75f54f6",
+      "message": "ot74 initial execution packet",
+      "pushed": true
+    },
+    {
+      "sha": "8dcc3db",
+      "message": "chore(ot74): record merge resolution state",
+      "pushed": true,
+      "source": "remote"
+    },
+    {
+      "sha": "5d87bb6",
+      "message": "chore(ot74): record push and draft pr",
+      "pushed": true,
+      "source": "remote"
+    },
+    {
+      "sha": "988719d23eef3cf151be901b77d8a484f532d393",
+      "message": "ot74 merge audience reconciliation lines",
+      "pushed": false
+    },
+    {
+      "sha": "c766b2b",
+      "message": "ot74 record merge checkpoint",
+      "pushed": false
+    },
+    {
+      "sha": "964dc409d2c3bc76d9de849f34fffabdaa766713",
+      "message": "ot74 merge draft pr metadata",
+      "pushed": true
+    }
+  ],
+  "pushes": [
+    {
+      "remote": "origin",
+      "branch": "codex/ot74-audience-reconciliation",
+      "head_sha": "8dcc3db",
+      "source": "remote"
+    },
+    {
+      "remote": "origin",
+      "branch": "codex/ot74-audience-reconciliation",
+      "head_sha": "964dc409d2c3bc76d9de849f34fffabdaa766713",
+      "pushed_at": "2026-07-15T10:09:16+03:00"
+    }
+  ],
+  "pull_request": {
+    "url": "https://github.com/webcraft-media/onetimev2/pull/22",
+    "number": 22,
+    "draft": true,
+    "base": "codex/ot60r-recovery-convergence",
+    "head": "codex/ot74-audience-reconciliation"
+  }
+}

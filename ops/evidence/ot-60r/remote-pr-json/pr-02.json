@@ -1,0 +1,298 @@
+{
+  "number": 2,
+  "title": "OT-12 CRM Core V1",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/2",
+  "baseRefName": "codex/foundation-landing-lead-v1",
+  "baseRefOid": "3465bd7d4c6b6829a6be6e4b4f8a003d608f3680",
+  "headRefName": "codex/crm-core-v1",
+  "headRefOid": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "mergeStateStatus": "UNSTABLE",
+  "commits": [
+    {
+      "oid": "ede6458027be12b039c3a4f345cb01543d6f361e",
+      "messageHeadline": "feat: add standalone One Time auth and CRM API core",
+      "authoredDate": "2026-07-14T12:24:01Z",
+      "committedDate": "2026-07-14T12:24:01Z"
+    },
+    {
+      "oid": "bcf0680bc77c3f76b8198edc2dcb598017aff5e5",
+      "messageHeadline": "feat: add responsive authenticated CRM shell",
+      "authoredDate": "2026-07-14T12:24:13Z",
+      "committedDate": "2026-07-14T12:24:13Z"
+    },
+    {
+      "oid": "4fd3a6b3006284593a03dbb0db065d46499cde4a",
+      "messageHeadline": "test: certify One Time CRM vertical slice",
+      "authoredDate": "2026-07-14T12:24:24Z",
+      "committedDate": "2026-07-14T12:24:24Z"
+    },
+    {
+      "oid": "0dff0d10fe0faddfeb70ac302dedd816a78ff654",
+      "messageHeadline": "docs: add OT-12 CRM final report",
+      "authoredDate": "2026-07-14T12:25:58Z",
+      "committedDate": "2026-07-14T12:25:58Z"
+    },
+    {
+      "oid": "d63557e854f7f1a84f7f2f011ce0e5fd64bc8bc5",
+      "messageHeadline": "docs: clarify OT-12 final report head",
+      "authoredDate": "2026-07-14T12:26:52Z",
+      "committedDate": "2026-07-14T12:26:52Z"
+    },
+    {
+      "oid": "63754383a82151b5df2e0a7c3070f671ad100afd",
+      "messageHeadline": "merge: bring foundation release gates into CRM core",
+      "authoredDate": "2026-07-14T13:20:01Z",
+      "committedDate": "2026-07-14T13:20:01Z"
+    },
+    {
+      "oid": "a73458d1884b8fcb4843c4852425009577f59ef7",
+      "messageHeadline": "docs: add OT-24 PR2 hardening gate",
+      "authoredDate": "2026-07-14T13:26:07Z",
+      "committedDate": "2026-07-14T13:26:07Z"
+    },
+    {
+      "oid": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+      "messageHeadline": "fix: harden OT-27 auth CRM gaps",
+      "authoredDate": "2026-07-14T18:07:10Z",
+      "committedDate": "2026-07-14T18:07:10Z"
+    }
+  ],
+  "files": [
+    {
+      "path": ".env.example",
+      "additions": 13,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/client/app/crm-entry.tsx",
+      "additions": 677,
+      "deletions": 6,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/client/app/crm.css",
+      "additions": 374,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/web/src/client/public/public-entry.ts",
+      "additions": 90,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/client/public/styles.css",
+      "additions": 29,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/server/app.ts",
+      "additions": 771,
+      "deletions": 9,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/server/rate-limit.ts",
+      "additions": 56,
+      "deletions": 27,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "ops/audit-inputs/ot-12/RAW.md",
+      "additions": 252,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/audit-inputs/ot-34/OT-27-ADDENDUM.md",
+      "additions": 118,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/FINAL-REPORT.md",
+      "additions": 101,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/capture-screenshots.mjs",
+      "additions": 93,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-detail-360.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-detail-390.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-detail-desktop.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-detail-tablet.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-list-360.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-list-390.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-list-desktop.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-12/screenshots/crm-list-tablet.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-24/PR2-HARDENING-GATE.md",
+      "additions": 63,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-34/FINAL-REPORT.md",
+      "additions": 89,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "additions": 31,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "additions": 235,
+      "deletions": 4,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/db/migrations/0002_crm_auth_core.sql",
+      "additions": 82,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/migrations/0003_ot27_security_crm_repair.sql",
+      "additions": 142,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/src/index.ts",
+      "additions": 16,
+      "deletions": 2,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/auth/service.ts",
+      "additions": 1114,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/crm/service.ts",
+      "additions": 585,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "additions": 32,
+      "deletions": 1,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/lead/service.ts",
+      "additions": 41,
+      "deletions": 21,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "packages/domain/src/security/rate-limit.ts",
+      "additions": 87,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/observability/src/index.ts",
+      "additions": 14,
+      "deletions": 6,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "scripts/build-public-pages.ts",
+      "additions": 4,
+      "deletions": 3,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/accessibility/public-a11y.spec.ts",
+      "additions": 11,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/e2e/crm-core.spec.ts",
+      "additions": 87,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/integration/api-rate-limit.test.ts",
+      "additions": 7,
+      "deletions": 5,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/auth-crm.test.ts",
+      "additions": 604,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/performance/public-performance.spec.ts",
+      "additions": 46,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/support/test-server.ts",
+      "additions": 10,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    }
+  ]
+}

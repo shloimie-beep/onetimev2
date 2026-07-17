@@ -1,0 +1,16 @@
+dist
+node_modules
+playwright-report
+test-results
+bin/ot86-vimeo-canary
+ops/audit-inputs/**
+ops/evidence/**
+ops/execution/**/ORIGINAL-PROMPT.md
+ops/codex-runs/**/ORIGINAL-PROMPT.md
+ops/codex-runs/**/packet/**
+ops/codex-runs/OT-89A/SUPPORT-EVENT-CONTRACT.json
+artifacts/OT-99/packet/**
+artifacts/OT-99/preflight/**
+
+# OT-84 run markdown contains the verbatim packet prompt and audit text.
+ops/codex-runs/OT-84/*.md

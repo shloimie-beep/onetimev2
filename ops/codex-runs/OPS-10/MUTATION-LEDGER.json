@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-07-17T09:48:15+03:00",
+  "source_mutations": [
+    {
+      "kind": "git_commit",
+      "sha": "04f0a6d2e974c8ac6e8feabd700becad7e4c2099",
+      "description": "OPS-10 scaffold"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "b3c184642c4985c64e01af4c70dd9c58ecdfdd6b",
+      "description": "OPS-10 discovery and PR #60/OPS-06 repairs"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "a158c555835815d1d16d953624dc1ddb9995aee3",
+      "description": "Public lead idempotency serialization"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "a058455705a91308ff2311aa1809540c83163abd",
+      "description": "OT-114 CRM communications semantic merge"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "see git HEAD for the commit containing this ledger",
+      "description": "OPS-10 predeploy handoff artifacts and OT-114 migration namespace repair"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "see git HEAD for the commit containing the Node 24 drawer e2e repair",
+      "description": "Align OT-39 mobile drawer focus-loop coverage with the merged owner/support navigation shell"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+      "description": "Migration checksum line-ending compatibility repair"
+    }
+  ],
+  "external_mutations": {
+    "railway_deployments": 4,
+    "production_database_writes": 0,
+    "staging_database_writes": 1,
+    "staging_release_variable_updates": 8,
+    "dns_changes": 0,
+    "live_stripe_charges": 0,
+    "stripe_live_webhook_changes": 0,
+    "stripe_test_webhook_changes": 0,
+    "email_sends": 0,
+    "whatsapp_sends": 0,
+    "telegram_sends": 0,
+    "buffer_publications": 0,
+    "zoom_customer_mutations": 0,
+    "production_contact_imports": 0
+  },
+  "staging_mutations": [
+    "web deployment d883f9f8-65af-4be0-966f-9dd348599350 succeeded during initial staging deploy but still read old release variables",
+    "web deployment 5473a433-4bc3-4c09-a81c-6ccf45b10581 succeeded after staging release variable update to 812356b",
+    "staging ot99-pg16 migrations 2010 through 2190 were applied through the existing TCP proxy; idempotent rerun reported applied=0 already_applied=35",
+    "final staging web deployment d06dc5a5-41cf-4b41-b337-ebe4425bc371 succeeded for d13e9cd",
+    "final staging worker deployment 21e2cdd2-a441-4225-a98e-6243c08c4da0 succeeded for d13e9cd"
+  ],
+  "read_only_external_observations": [
+    "GitHub PR/check metadata",
+    "Railway project/service/deployment/domain-variable hash metadata",
+    "production and staging HTTP route/version probes"
+  ],
+  "secrets_policy": "No credentials, passwords, tokens, raw DB URLs, private destinations, activation/reset links, or provider signing secrets were stored."
+}

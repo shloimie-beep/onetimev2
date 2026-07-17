@@ -1,0 +1,24 @@
+{
+  "command": "billing:reconcile:test",
+  "ok": false,
+  "status": "waiting_for_stripe_test_resources",
+  "checked_at": "2026-07-15T17:03:34.582Z",
+  "scope": "family",
+  "dry_run": true,
+  "apply": false,
+  "account_fingerprint": null,
+  "local_candidates": 0,
+  "proposed_changes": [],
+  "missing": ["secret_key", "account", "database_url"],
+  "failures": [],
+  "mutations": {
+    "local_projection_writes": 0,
+    "stripe_writes": 0,
+    "live_calls": 0,
+    "live_charges": 0
+  },
+  "resume": {
+    "cursor": null,
+    "output_path": "ops/codex-runs/OT-87/reconciliation/dry-run.json"
+  }
+}

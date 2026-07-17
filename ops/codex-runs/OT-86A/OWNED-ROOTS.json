@@ -1,0 +1,77 @@
+{
+  "packet_id": "OT-86A",
+  "repository_root": "C:/Users/User/.ot86-worktrees/OT-86A",
+  "application_roots": {
+    "bna": [],
+    "one_time": ["apps/web", "apps/worker"]
+  },
+  "shared_server_roots": [
+    "packages/contracts",
+    "packages/domain",
+    "packages/db",
+    "packages/config",
+    "scripts/ot86",
+    "tests/integration/content",
+    "tests/integration/telegram-db-foundation.test.ts"
+  ],
+  "migration_roots": ["packages/db/migrations"],
+  "always_owned_roots": [
+    "contracts/content-pipeline/v1",
+    "ops/codex-runs/OT-86A",
+    "bin/ot86-vimeo-canary"
+  ],
+  "conditional_root_files": [
+    "package.json",
+    "package-lock.json",
+    "tsconfig.typecheck.json",
+    "vitest.integration.config.ts",
+    ".env.example",
+    ".prettierignore"
+  ],
+  "evidence": [
+    {
+      "path": "AGENTS.md",
+      "reason": "Declares standalone One Time repository and forbids copying BNA runtime or Operations shell."
+    },
+    {
+      "path": "apps/web/src/server/app.ts",
+      "reason": "Express web application root, auth/session routing, content APIs, and protected One Time app serving."
+    },
+    {
+      "path": "apps/worker/src/delivery/repository.ts",
+      "reason": "Repository-native transactional outbox/claim/audit pattern for asynchronous work."
+    },
+    {
+      "path": "packages/domain/src/content/service.ts",
+      "reason": "Existing content library service, idempotent outcome admission, redaction, and portal content access."
+    },
+    {
+      "path": "packages/contracts/src/content/index.ts",
+      "reason": "Existing content contract schemas and lifecycle enum."
+    },
+    {
+      "path": "packages/domain/src/providers/vimeo.ts",
+      "reason": "Existing Vimeo readiness/playback descriptor conventions and provider redaction helpers."
+    },
+    {
+      "path": "packages/db/migrations/1400_ot71_content_library.sql",
+      "reason": "Existing content tables and migration style."
+    },
+    {
+      "path": "packages/db/src/index.ts",
+      "reason": "Forward-only checksummed migration runner and pg-mem test pool support."
+    },
+    {
+      "path": "package.json",
+      "reason": "Repo-native scripts for build, lint, typecheck, tests, migration, performance, and secret scan."
+    },
+    {
+      "path": "tests/integration/telegram-db-foundation.test.ts",
+      "reason": "Existing migration-chain proof required updating because OT-86A adds 2000_ot86_content_pipeline as the newest migration."
+    },
+    {
+      "path": ".prettierignore",
+      "reason": "No-extension canary executable is syntax-checked with Node and excluded from repo-wide Prettier parsing."
+    }
+  ]
+}

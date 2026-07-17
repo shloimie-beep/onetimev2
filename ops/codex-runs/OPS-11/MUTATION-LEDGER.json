@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-07-17T11:40:00+03:00",
+  "source_mutations": [
+    {
+      "kind": "ci_assurance",
+      "description": "Added durable OPS-11 PostgreSQL 18 assurance workflow and restore-clone script."
+    },
+    {
+      "kind": "ci_assurance_fix",
+      "description": "Classified expected PostgreSQL 18 teardown shutdown during restore-clone cleanup."
+    },
+    {
+      "kind": "release_evidence",
+      "description": "Updated OPS-11 durable state, evidence, helper scripts, and final report."
+    }
+  ],
+  "external_mutations": {
+    "railway_readbacks": "multiple redacted service, deployment, variable-name, and readiness readbacks",
+    "production_database_backups": 1,
+    "production_database_restores": 1,
+    "production_database_write_groups": [
+      "35 additive migrations applied once to production",
+      "OPS-11 sink-proof admin activation token/outbox created and sink-delivered",
+      "OPS-11 provider admin activation token/outbox created and provider-delivered",
+      "delivery worker state updates for lifecycle outbox rows"
+    ],
+    "staging_database_backups": 0,
+    "staging_rollbacks": 1,
+    "staging_rollforwards": 2,
+    "production_deployments": [
+      {
+        "service": "ops11-pg18-proof-20260717",
+        "deployment": "7b338893-641c-4c14-af99-2f9b2cc61125",
+        "result": "SUCCESS"
+      },
+      {
+        "service": "one-time-web",
+        "deployment": "fbb949ad-7cda-447d-8fe7-96d9125f60c3",
+        "result": "FAILED",
+        "reason": "AUTH_CSRF_SECRET was missing before production auth secret repair."
+      },
+      {
+        "service": "one-time-web",
+        "deployment": "b02b418a-8255-4b5d-b73d-aa0552f390bb",
+        "result": "SUCCESS"
+      },
+      {
+        "service": "one-time-web",
+        "deployment": "6f4fa4e4-0f49-4508-96fe-850a5430360e",
+        "result": "SUCCESS",
+        "reason": "Redeploy after protected email configuration was copied into production."
+      },
+      {
+        "service": "one-time-delivery-cron",
+        "deployment": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+        "result": "SUCCESS",
+        "reason": "Corrected worker topology using scripts/railway-start.mjs and PROCESS_TYPE=worker."
+      }
+    ],
+    "operator_activation_or_reset_emails": 1,
+    "dns_changes": 0,
+    "live_stripe_actions": 0,
+    "live_buffer_publications": 0,
+    "broad_customer_sends": 0,
+    "credential_disclosures": 0
+  },
+  "read_only_external_observations": [
+    "GitHub PR #61 metadata and check status",
+    "GitHub Actions PG16 and PG18 assurance results",
+    "Public staging and production HTTP route probes",
+    "Railway deployment, service, and worker heartbeat readbacks",
+    "Sanitized production database metadata and queue state"
+  ],
+  "secrets_policy": "No raw database URLs, tokens, passwords, private destinations, row contents, activation/reset links, provider secrets, or message bodies were recorded."
+}

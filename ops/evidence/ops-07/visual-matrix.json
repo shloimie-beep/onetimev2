@@ -1,0 +1,100 @@
+{
+  "generated_at": "2026-07-16T22:54:13.730Z",
+  "results": [
+    {
+      "label": "landing-360x800",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/landing-360x800.png",
+      "width": 360,
+      "height": 7001,
+      "max_channel_stdev": 51.75,
+      "findings": []
+    },
+    {
+      "label": "signup-360x800",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/signup-360x800.png",
+      "width": 360,
+      "height": 2137,
+      "max_channel_stdev": 43.48,
+      "findings": []
+    },
+    {
+      "label": "landing-390x844",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/landing-390x844.png",
+      "width": 390,
+      "height": 7061,
+      "max_channel_stdev": 55.05,
+      "findings": []
+    },
+    {
+      "label": "signup-390x844",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/signup-390x844.png",
+      "width": 390,
+      "height": 2120,
+      "max_channel_stdev": 42.04,
+      "findings": []
+    },
+    {
+      "label": "landing-768x1024",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/landing-768x1024.png",
+      "width": 768,
+      "height": 8381,
+      "max_channel_stdev": 55.49,
+      "findings": []
+    },
+    {
+      "label": "signup-768x1024",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/signup-768x1024.png",
+      "width": 768,
+      "height": 1864,
+      "max_channel_stdev": 35.48,
+      "findings": []
+    },
+    {
+      "label": "landing-1440x1000",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/landing-1440x1000.png",
+      "width": 1440,
+      "height": 5994,
+      "max_channel_stdev": 40.47,
+      "findings": []
+    },
+    {
+      "label": "signup-1440x1000",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/signup-1440x1000.png",
+      "width": 1440,
+      "height": 1810,
+      "max_channel_stdev": 26.92,
+      "findings": []
+    },
+    {
+      "label": "parent-mobile",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/parent-mobile.png",
+      "width": 390,
+      "height": 844,
+      "max_channel_stdev": 41.5,
+      "findings": []
+    },
+    {
+      "label": "student-mobile",
+      "status": "PASS",
+      "screenshot": "ops/evidence/ops-07/screenshots/student-mobile.png",
+      "width": 390,
+      "height": 844,
+      "max_channel_stdev": 42.27,
+      "findings": []
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "pass": 10,
+    "fail": 0
+  }
+}

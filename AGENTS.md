@@ -24,6 +24,21 @@
   Rabbi as account owner.
 - Do not expose `View as Rabbi`, BNA workspace keys, Operations diagnostics, or
   Super Admin controls in customer UI.
+- Canonical brand rules live in `packages/brand-system/manifest/one-time-brand.v1.json`
+  and `packages/brand-system/manifest/one-time-brand.schema.json`.
+- Static public pages use `@onetime/brand-system/static`; authenticated React
+  surfaces use `@onetime/brand-system/react`.
+- Canonical primitives and shell pieces live under
+  `packages/brand-system/src/primitives/`, `packages/brand-system/src/shells/`,
+  and `packages/brand-system/src/styles/`.
+- Route-to-shell assignments live in `packages/brand-system/src/route-branding.ts`.
+- Run `npm run brand:check` before changing visible UI. Raw colors, font-family
+  declarations, route-wide runtime style injection, and route-local core
+  component definitions require exact checked exceptions in
+  `packages/brand-system/src/styles/exceptions.json`.
+- Do not create route-local Header, Footer, Button, Toolbar, Drawer, Dialog,
+  Card, form-control, table, badge, alert, or state primitives when the
+  canonical package can be composed instead.
 
 ## Safety
 

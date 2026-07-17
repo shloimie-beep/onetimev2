@@ -1,0 +1,111 @@
+{
+  "task_id": "OT-83",
+  "current_status": "VERIFIED_PARTIAL_CHECKPOINT",
+  "phase": "Focused OT83 checkpoint: parent-managed student session revocation foundation",
+  "target_repository": "webcraft-media/onetimev2",
+  "required_upstream_branch": "codex/ot82-brand-system-foundation",
+  "resolved_upstream_sha": "a8e4109b0530855bc7a5f56c90104706b9c8cd7c",
+  "resolved_ot81_sha": "ff23c9af0c3e3de18cd991097eb6e66032b11546",
+  "ot81_ancestor_of_ot82": true,
+  "implementation_branch": "codex/ot83-household-portals-foundation",
+  "implementation_head": "3c5c39327bcc6e4e96cba9016c7d5ea65110aed4",
+  "completed_phases": [
+    "Phase 0 prompt preserved in portable and repo-backed run packets",
+    "Phase 1 resolved OT82 base and verified OT81 ancestry",
+    "Phase 2 created isolated OT83 worktree",
+    "Phase 3 inventoried accepted OT52/OT71/OT82 portal, auth, DB, and brand seams",
+    "Implemented parent-managed student session revocation through canonical account lifecycle/session invalidation",
+    "Added additive migration 1900_ot83_household_portal_foundation.sql",
+    "Added OT83 PostgreSQL concurrency proof script and CI workflow",
+    "Ran focused local verification"
+  ],
+  "remaining_phases": [
+    "Run OT83 PostgreSQL concurrency proof in GitHub Actions or another explicitly safe PostgreSQL target",
+    "Complete broader OT83 parent/student portal route and question-seam expansion if required by product owner",
+    "Capture browser screenshots for full visual acceptance if UI scope expands beyond the session-revoke control"
+  ],
+  "files_changed": [
+    ".github/workflows/ot83-postgres-concurrency.yml",
+    "apps/web/src/client/app/portal-api.ts",
+    "apps/web/src/client/app/portal-entry.tsx",
+    "apps/web/src/client/features/portals/PortalFeatures.tsx",
+    "apps/web/src/server/features/portals/routers.ts",
+    "ops/codex-runs/OT-83/*",
+    "ops/evidence/ot-83/*",
+    "packages/contracts/src/portals/index.ts",
+    "packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+    "packages/domain/src/accounts/lifecycle.ts",
+    "packages/domain/src/index.ts",
+    "packages/domain/src/portals/account-lifecycle-adapter.ts",
+    "packages/domain/src/portals/services.ts",
+    "tests/integration/accounts/account-lifecycle.test.ts",
+    "tests/integration/portals/portal-mount.test.ts",
+    "tests/ot-52/portal-services.test.ts",
+    "tests/ot-52/real-postgres-concurrency.ts",
+    "tests/ot-83/real-postgres-concurrency.ts"
+  ],
+  "migrations_checksums": [
+    {
+      "file": "packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+      "sha256": "8482E6840B48A579CF7FCF362564488EBCE0B7B7528CB42B175B595FB73BFFF6"
+    }
+  ],
+  "commands_run": [
+    {
+      "command": "npm install",
+      "result": "passed; 349 packages installed; 0 vulnerabilities"
+    },
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "result": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "result": "passed after removing credential-bearing PostgreSQL URL from workflow"
+    },
+    {
+      "command": "npm run brand:check",
+      "result": "passed; dist bundle budgets skipped by script note when dist absent"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed"
+    },
+    {
+      "command": "npx vitest run tests/ot-52/portal-services.test.ts",
+      "result": "passed; 7 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/accounts/account-lifecycle.test.ts tests/integration/portals/portal-mount.test.ts",
+      "result": "passed; 5 tests"
+    },
+    {
+      "command": "npx tsx tests/ot-83/real-postgres-concurrency.ts",
+      "result": "blocked locally because no explicit safe PostgreSQL target was configured; wrote ops/evidence/ot-83/REAL-POSTGRES-CONCURRENCY.json"
+    },
+    {
+      "command": "npx prettier --check <touched TS/TSX/YML files>",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "BLOCKED_POSTGRES_PROOF_LOCAL",
+      "description": "No explicit safe PostgreSQL target was configured locally. CI workflow .github/workflows/ot83-postgres-concurrency.yml runs the real proof with PostgreSQL 16."
+    }
+  ],
+  "external_mutations": [
+    "Created local worktree C:\\Users\\User\\OneTimeOneTime-ot83-household-portals-foundation",
+    "Created portable run packet C:\\Users\\User\\OneTimeOneTime-run-packets\\OT-83",
+    "No production database, Railway, provider, send, payment, DNS, or deployment mutation"
+  ],
+  "exact_next_action": "Push codex/ot83-household-portals-foundation, open a stacked draft PR against codex/ot82-brand-system-foundation, then let CI run the OT83 PostgreSQL concurrency proof."
+}

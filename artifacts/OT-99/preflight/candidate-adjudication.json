@@ -1,0 +1,310 @@
+{
+  "task_id": "OT-99",
+  "packet_id": "OT-99-bcd34498",
+  "generated_at_utc": "2026-07-16T12:25:53.615Z",
+  "integration_gate": {
+    "open": true,
+    "ot_83r_completion_verified": true,
+    "ot_88_report_inspected": true,
+    "ot_89a_report_inspected": true,
+    "blockers": [],
+    "evidence": [
+      "Remote discovery machine gate is OPEN_FOR_SEMANTIC_REVIEW for OT-83R, OT-88, and OT-89A.",
+      "OT-83R final report is inspectable and claims READY_FOR_OT99; PR #33 CI is green at 479a9b2a47a6f0cd4ba74558eac8414417883e2c.",
+      "OT-88 final report is inspectable and claims ot99_integration_status=READY_FOR_OT99; PR #34 CI is green at f59f20afb0def3bacc5bf46fe5ca64f0c91c3a35.",
+      "OT-89A final report is inspectable and claims READY_FOR_OT99; PR #36 CI is green at 23d89704409ff08ea6e249b69b89875cd9905c30.",
+      "OPS-09 fleet report is inspectable at d63db6b55db366ab7c0b1c824b7af7befff25057 and says READY_FOR_OT99."
+    ]
+  },
+  "repository": "webcraft-media/onetimev2",
+  "candidates": [
+    {
+      "task": "OT-81",
+      "remote_branch": "codex/ot81-dayone-certification-staging",
+      "head_sha": "e04fc61b5d153f7979c7acbe7f2a30e86c735f06",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/24",
+      "report_paths": [
+        "ops/codex-runs/OT-81/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "selected_lineage": "use PR #24 lineage; do not merge PR #25 blindly",
+        "pr25_head": "809480bb5581c4104f64c4c04a5c92fff8aaa7cf"
+      },
+      "scope_verified": true,
+      "decision": "skip_superseded",
+      "evidence": [
+        "PR #24 is clean and green at e04fc61b5d153f7979c7acbe7f2a30e86c735f06.",
+        "OT-83R foundation and descendants already contain the canonical lead-capture expectation of 3; #24/#25 delta will be recorded without blind history merge."
+      ]
+    },
+    {
+      "task": "OT-82",
+      "remote_branch": "codex/ot82-brand-system-foundation",
+      "head_sha": "ada9543c5eb376a30fea3b4070437abbaf3f8fd9",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/26",
+      "report_paths": [
+        "ops/codex-runs/OT-82/FINAL-REPORT.md",
+        "ops/codex-runs/OT-82/packet/"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "base": "codex/ot81-dayone-certification-staging",
+        "final_ops09_head": "ada9543c5eb376a30fea3b4070437abbaf3f8fd9"
+      },
+      "scope_verified": true,
+      "decision": "skip_superseded",
+      "evidence": [
+        "PR #26 is clean and green at ada9543c5eb376a30fea3b4070437abbaf3f8fd9.",
+        "Brand-system behavior is already part of the selected OT-83R foundation; OT-82 packet formatting evidence is preserved through OPS-09 rather than blindly remerged."
+      ]
+    },
+    {
+      "task": "OT-83",
+      "remote_branch": "codex/ot83-household-portals-foundation",
+      "head_sha": "a02d1d254ae0d17804fb657079a7871567260ea2",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/27",
+      "report_paths": [
+        "ops/evidence/ot-83/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "superseded_by": "OT-83R completion branch"
+      },
+      "scope_verified": true,
+      "decision": "skip_superseded",
+      "evidence": [
+        "OT-83 was the partial portal foundation and is superseded by OT-83R.",
+        "OT-99 selected OT-83R rather than the partial OT-83 head."
+      ]
+    },
+    {
+      "task": "OT-83R",
+      "remote_branch": "codex/ot83r-complete-portals",
+      "head_sha": "479a9b2a47a6f0cd4ba74558eac8414417883e2c",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/33",
+      "report_paths": [
+        "ops/codex-runs/OT-83R/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "selected_foundation": true,
+        "branch_started_from": "codex/ot83-household-portals-foundation"
+      },
+      "scope_verified": true,
+      "decision": "foundation",
+      "evidence": [
+        "FINAL-REPORT.md says Status: READY_FOR_OT99.",
+        "GitHub PR #33 Node 24 verify, PostgreSQL assurance, and learner-seat proof are green at 479a9b2a47a6f0cd4ba74558eac8414417883e2c.",
+        "Completion report documents real portal API/browser/a11y implementation commits."
+      ]
+    },
+    {
+      "task": "OT-84",
+      "remote_branch": "codex/ot84-telegram-action-gateway",
+      "head_sha": "310bb5ca8cc8c01e2218051367c5cc2e3414a719",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/29",
+      "report_paths": [
+        "ops/codex-runs/OT-84/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "depends_on": "OT-83R",
+        "merge_order": 1
+      },
+      "scope_verified": true,
+      "decision": "merge",
+      "evidence": [
+        "OPS-09 repaired PR #29 and all required checks are green at 310bb5ca8cc8c01e2218051367c5cc2e3414a719.",
+        "Telegram lane owns action gateway/provider-off semantics and migration 2000_ot84_telegram_action_gateway.sql."
+      ]
+    },
+    {
+      "task": "OT-88",
+      "remote_branch": "codex/ot88-zoom-learner-classroom",
+      "head_sha": "f59f20afb0def3bacc5bf46fe5ca64f0c91c3a35",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/34",
+      "report_paths": [
+        "ops/codex-runs/OT-88/FINAL-REPORT.md",
+        "ops/codex-runs/OT-88/FINAL.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "depends_on": "OT-84",
+        "merge_order": 2
+      },
+      "scope_verified": true,
+      "decision": "merge",
+      "evidence": [
+        "FINAL-REPORT.md split status includes ot99_integration_status=READY_FOR_OT99.",
+        "GitHub PR #34 Node 24 verify, PostgreSQL assurance, and learner-seat proof are green at f59f20afb0def3bacc5bf46fe5ca64f0c91c3a35.",
+        "Live Zoom canary remains a later launch gate, not an OT-99 integration blocker."
+      ]
+    },
+    {
+      "task": "OT-89A",
+      "remote_branch": "codex/ot89a-subscriber-support-producer",
+      "head_sha": "23d89704409ff08ea6e249b69b89875cd9905c30",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/36",
+      "report_paths": [
+        "ops/codex-runs/OT-89A/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "depends_on": "OT-84",
+        "merge_order": 3,
+        "bna_boundary": "external async consumer"
+      },
+      "scope_verified": true,
+      "decision": "merge",
+      "evidence": [
+        "FINAL-REPORT.md says Status: READY_FOR_OT99.",
+        "GitHub PR #36 Node 24 verify, PostgreSQL assurance, and learner-seat proof are green at 23d89704409ff08ea6e249b69b89875cd9905c30.",
+        "Live BNA delivery remains a later launch gate; no BNA code is imported."
+      ]
+    },
+    {
+      "task": "OT-85",
+      "remote_branch": "codex/ot85-whatsapp-lead-assistant",
+      "head_sha": "fb6b3266e2bb2689fdfc1f751764fd98ecca8f0a",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/28",
+      "report_paths": [
+        "ops/codex-runs/OT-85/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "depends_on": "OT-83R",
+        "merge_order": 4
+      },
+      "scope_verified": true,
+      "decision": "merge",
+      "evidence": [
+        "PR #28 remains clean and green.",
+        "WhatsApp lead assistant lane owns sandbox/provider-off WhatsApp lead handling and migration 2000_ot85_whatsapp_assistant.sql."
+      ]
+    },
+    {
+      "task": "OT-86A",
+      "remote_branch": "codex/ot86a-vimeo-content-kb",
+      "head_sha": "ffc38539dcaea351ac001b1a1f45d848f5d69cc9",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/31",
+      "report_paths": [
+        "ops/codex-runs/OT-86A/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "depends_on": "OT-83R",
+        "merge_order": 5
+      },
+      "scope_verified": true,
+      "decision": "merge",
+      "evidence": [
+        "OPS-09 repaired PR #31 and all required checks are green at ffc38539dcaea351ac001b1a1f45d848f5d69cc9.",
+        "Vimeo/content/KB lane owns content pipeline migration 2000_ot86_content_pipeline.sql."
+      ]
+    },
+    {
+      "task": "OT-86B",
+      "remote_branch": "codex/ot86b-buffer-social",
+      "head_sha": "7212a70fed4a197dc991260101ebb7017c2ecf97",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/32",
+      "report_paths": [
+        "ops/codex-runs/OT-86B/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "depends_on": "OT-86A",
+        "merge_order": 6
+      },
+      "scope_verified": true,
+      "decision": "merge",
+      "evidence": [
+        "OPS-09 repaired PR #32 and all required checks are green at 7212a70fed4a197dc991260101ebb7017c2ecf97.",
+        "Buffer lane remains approval-only and must not publish automatically."
+      ]
+    },
+    {
+      "task": "OT-87",
+      "remote_branch": "codex/ot87-stripe-test-entitlements",
+      "head_sha": "6ecb680713a2fd5cd7bc03766fe9b8974c9b75df",
+      "pull_request_url": "https://github.com/webcraft-media/onetimev2/pull/30",
+      "report_paths": [
+        "ops/codex-runs/OT-87/FINAL-REPORT.md"
+      ],
+      "ci_state": "success",
+      "ancestry": {
+        "depends_on": "OT-83R",
+        "merge_order": 7
+      },
+      "scope_verified": true,
+      "decision": "merge",
+      "evidence": [
+        "PR #30 remains clean and green.",
+        "Stripe TEST entitlements lane must remain test-mode only with no live charge."
+      ]
+    },
+    {
+      "task": "OT-89B",
+      "remote_branch": null,
+      "head_sha": null,
+      "pull_request_url": null,
+      "report_paths": [],
+      "ci_state": "unavailable",
+      "ancestry": {
+        "external_system": "BNA",
+        "depends_on_protocol": "OT-89A producer contract"
+      },
+      "scope_verified": true,
+      "decision": "external_only",
+      "evidence": [
+        "OT-89B is the BNA asynchronous support consumer and remains outside One Time.",
+        "OT-99 will represent the dependency boundary without importing BNA code."
+      ]
+    }
+  ],
+  "audit_hypotheses": [
+    {
+      "name": "main is still the initial foundation and unsuitable as direct integration base",
+      "result": "confirmed",
+      "evidence": [
+        "Remote discovery default branch main is 610b585f3d221addd4e7b824c92a5cc256cffcf9; integration branch starts from OT-83R head 479a9b2a47a6f0cd4ba74558eac8414417883e2c."
+      ]
+    },
+    {
+      "name": "PR #25 duplicates #24 and is one commit ahead while descendants use #24",
+      "result": "corrected",
+      "evidence": [
+        "Current #24 head is e04fc61b5d153f7979c7acbe7f2a30e86c735f06 after OPS-09 repairs; #25 head is 809480bb5581c4104f64c4c04a5c92fff8aaa7cf.",
+        "Patch-equivalent comparison shows #24 now has two unique repair commits and #25 has one unique preservation/certification commit; no blind merge of both histories."
+      ]
+    },
+    {
+      "name": "OT-83 was partial and requires OT-83R completion",
+      "result": "confirmed",
+      "evidence": [
+        "OT-83R final report documents portal completion and green exact-SHA CI; OT-83 is treated as superseded."
+      ]
+    },
+    {
+      "name": "OT-84, OT-85, OT-86A, and OT-87 introduced colliding 2000 migrations; OT-86B introduced 2100 migrations",
+      "result": "confirmed",
+      "evidence": [
+        "Remote discovery collision snapshot lists 2000 migrations for OT-83R, OT-84, OT-85, OT-86A, OT-87 and 2100 migrations for OT-86B, OT-88, and OT-89A."
+      ]
+    },
+    {
+      "name": "Shared overlaps include server, configuration, contracts, domain indexes, env, package manifests, lockfiles, and tests",
+      "result": "confirmed",
+      "evidence": [
+        "Dependency diffs and merge matrix identify shared app/server, package, contracts, domain, migration, and test surfaces across lanes."
+      ]
+    },
+    {
+      "name": "OT-84, OT-86A, and OT-86B disagree between two and three outbox assertions",
+      "result": "corrected",
+      "evidence": [
+        "OPS-09 repaired OT-84/OT-86A/OT-86B to expect three delivered sink events; OT-83R foundation already has the canonical expectation of 3."
+      ]
+    }
+  ]
+}

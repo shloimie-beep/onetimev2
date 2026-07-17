@@ -1,0 +1,179 @@
+{
+  "run_id": "OPS-11-production-gate-closure-2026-07-17",
+  "phase": "closeout",
+  "status": "LIVE_LOGIN_READY",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.ops10-20260717-worktrees\\20260717T050800Z",
+  "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
+  "source_packet": {
+    "raw_id": "RAW-20260717-003",
+    "packet_id": "OPS-11-production-gate-closure-2026-07-17",
+    "zip_sha256": "A44D6AA7F2C58EDB691BD4F0E2966154CD2B8F9EB8575AA4D6B0061392ABF5A4",
+    "prompt_sha256": "93C36322DD1E85411E29BCF4AB24EC6A9F7A83FD926C32756592F428824BD1D5",
+    "manifest_sha256": "A511F58F065177689DEE776EF370CBA10FEB210C26175056F6BC3AB9FC540BF9"
+  },
+  "runtime_candidate": {
+    "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "version": "ops11-1197673",
+    "staged_application_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+    "post_staged_runtime_changes": [
+      ".github/workflows/ops11-postgres-18-assurance.yml",
+      "scripts/postgres-assurance/ops11-pg18-restore-clone.ts",
+      "scripts/postgres-assurance/README.md"
+    ],
+    "evidence_commit_note": "Final OPS-11 evidence commits are report-only and are not part of the deployed runtime image."
+  },
+  "checks": {
+    "pr_checks_green_on_runtime_source": true,
+    "github_actions": {
+      "node_24_verify": "passed",
+      "ops06_deterministic_checks": "passed",
+      "postgres16_assurance": "passed",
+      "postgres16_learner_seat": "passed",
+      "static_release_readiness": "passed",
+      "postgres18_assurance_restore_clone": {
+        "status": "passed",
+        "run_id": "29563814222",
+        "job_id": "87831829048"
+      }
+    }
+  },
+  "database": {
+    "decision": "retain_existing_pg18",
+    "service": "Postgres-j9Pi",
+    "service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+    "volume": "postgres-volume-YYfM",
+    "volume_id": "911ff445-84e8-4f03-ac3f-c92e51225398",
+    "server_version": "PostgreSQL 18.4",
+    "server_version_num": "180004",
+    "latest_migration": "2190_ot109_rabbi_content_publisher",
+    "migration_run": {
+      "applied": 35,
+      "already_applied_on_verify": 35
+    },
+    "native_backup_restore": {
+      "status": "passed",
+      "runner_service": "ops11-pg18-proof-20260717",
+      "runner_service_id": "52db1072-b4eb-450c-bec7-5151cb9a8461",
+      "runner_deployment": "7b338893-641c-4c14-af99-2f9b2cc61125",
+      "dump_size_bytes": 2515557,
+      "dump_sha256": "6f35f3a116e3b095ad8244f1d6d6cbc2668292f2adb4741753ce24e4ba750698",
+      "archive_entries": 3764,
+      "stored_outside_git": true
+    }
+  },
+  "staging": {
+    "project": "one-time-ot99-staging-96b42905",
+    "environment": "staging",
+    "final_source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "final_web_deployment": "6e3b45dc-761c-4f4b-a844-f8e4c7aabe6a",
+    "final_web_digest": "sha256:30285f6adce25a03c2305d6bede808e95e97e96f057fdedd592f338958250d4f",
+    "final_worker_deployment": "914c18f8-4f59-4234-930a-932dd89790c4",
+    "final_worker_digest": "sha256:cbd8a55e41bab2229ec5603efcba2262a91c8be773ffb176520db3a43b220a72",
+    "rollback_source_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+    "rollback_web_deployment": "536e4a57-b1ea-42b8-9a97-44f08a735606",
+    "rollback_worker_deployment": "08dc4a1f-5c3a-4f26-9886-4ca2764b569f",
+    "railway_down_caveat": "railway down removed latest deployments and produced 404 instead of reactivating prior deployments; source rebuild rollback was used for proof."
+  },
+  "production": {
+    "project": "one-time-production",
+    "environment": "production",
+    "url": "https://join.onetimeonetime.com",
+    "web_service": "one-time-web",
+    "web_deployment": "6f4fa4e4-0f49-4508-96fe-850a5430360e",
+    "web_digest": "sha256:eb6f723aa76ccf7eee8bf00b2b19f3c865873c2c2c7102f66fe775b303e26c71",
+    "worker_service": "one-time-delivery-cron",
+    "worker_deployment": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+    "worker_digest": "sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43",
+    "worker_mode": {
+      "process_type": "worker",
+      "transport_mode": "sink",
+      "batch_size": 1,
+      "poll_interval_ms": 300000,
+      "provider_default": "off"
+    },
+    "live_routes": {
+      "/health": 200,
+      "/ready": 200,
+      "/version": {
+        "status": 200,
+        "version": "ops11-1197673",
+        "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e"
+      },
+      "/": 200,
+      "/login": 200,
+      "/forgot-password": 200,
+      "/activate": 200,
+      "/reset-password": 200,
+      "/rabbi-member": 301,
+      "/one-time/signup": 301
+    },
+    "observation": {
+      "status": "passed",
+      "start_utc": "2026-07-17T08:39:10Z",
+      "end_utc": "2026-07-17T08:53:40Z",
+      "iterations": 15,
+      "health_ready_version_all_200": true,
+      "final_worker_status": {
+        "service": "one-time-delivery-cron",
+        "deployment": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+        "status": "SUCCESS",
+        "running": 1,
+        "crashed": 0
+      }
+    },
+    "rollback": {
+      "native_railway_prelaunch_rollback_available": false,
+      "caveat": "Old production deployments are REMOVED and source 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5 is not present locally.",
+      "preserved_source_rebuild_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479"
+    }
+  },
+  "login_delivery": {
+    "status": "sent",
+    "destination_ref": "fab156df2719852de2dafb24f3e29548d4a2c5e8ef2374f7d3db47a0cef645e8",
+    "target_role": "admin",
+    "sink_proof": {
+      "idempotency_key": "ops11-sink-proof-20260717T083900Z",
+      "delivery_key": "account_lifecycle_delivery_outbox_a3d760191c589af1b9a88c27",
+      "state": "sink_delivered",
+      "attempts": 1,
+      "external_send_performed": false
+    },
+    "provider_activation": {
+      "idempotency_key": "ops11-provider-canary-20260717T083700Z",
+      "delivery_key": "account_lifecycle_delivery_outbox_a29e4638254e07b9bd30a95a",
+      "token_ref": "account_lifecycle_token_ref_1f1ae4ff8ddb15725544b239",
+      "state": "provider_delivered",
+      "attempts": 1,
+      "expires_at": "2026-07-18T08:36:35.170Z"
+    },
+    "raw_token_logged": false,
+    "raw_url_logged": false,
+    "private_destination_logged": false
+  },
+  "external_mutations": {
+    "production_deployments": 4,
+    "production_database_backups": 1,
+    "production_database_restores": 1,
+    "production_database_write_groups": 4,
+    "staging_rollbacks": 1,
+    "staging_rollforwards": 2,
+    "operator_activation_or_reset_emails": 1,
+    "dns_changes": 0,
+    "live_stripe_actions": 0,
+    "live_buffer_publications": 0,
+    "broad_customer_sends": 0,
+    "credential_disclosures": 0
+  },
+  "guardrails": {
+    "dns_changes_authorized": false,
+    "destructive_migrations_authorized": false,
+    "existing_production_db_deletion_authorized": false,
+    "live_stripe_charges_authorized": false,
+    "broad_customer_sends_authorized": false,
+    "credential_disclosure_authorized": false
+  },
+  "next_operator_action": "Open the activation email, set the password, and log in at https://join.onetimeonetime.com/login.",
+  "updated_at": "2026-07-17T11:40:00+03:00"
+}

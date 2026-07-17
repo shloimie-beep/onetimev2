@@ -1,0 +1,215 @@
+import { createHmac } from 'node:crypto';
+import { describe, expect, it } from 'vitest';
+import { loadConfig } from '../../../packages/config/src/index.ts';
+import {
+  providerCanaryPlanResponseSchema,
+  providerControlCenterResponseSchema,
+} from '../../../packages/contracts/src/providers/control-center.ts';
+import {
+  buildProviderControlCenter,
+  buildWebhookEndpoints,
+  planProviderCanary,
+} from '../../../packages/domain/src/providers/control-center.ts';
+import { fixtureWebhookSignature } from '../../../packages/domain/src/billing/fixture-adapter.ts';
+import {
+  OT89_EVENT_TARGET,
+  createOt89SignedHeaders,
+  verifyOt89Signature,
+} from '../../../packages/domain/src/support/hmac.ts';
+import { MetaWhatsAppCloudAdapter } from '../../../packages/domain/src/whatsapp/provider.ts';
+
+const now = new Date('2026-07-17T05:00:00.000Z');
+
+describe('OPS-05 provider control center projection', () => {
+  it('builds a provider-neutral owner matrix without secret values or site-root webhooks', () => {
+    const env: NodeJS.ProcessEnv = {
+      NODE_ENV: 'test',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
+      ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'owner@example.test',
+      RESEND_API_KEY: 'resend-secret-value-never-return',
+      RESEND_WEBHOOK_SECRET: 'whsec_secret_value_never_return',
+      RESEND_DOMAIN_VERIFIED: 'true',
+      RESEND_DOMAIN_SPF_READY: 'true',
+      RESEND_DOMAIN_DKIM_READY: 'true',
+      RESEND_DOMAIN_DMARC_POLICY: 'p=quarantine',
+      ONE_TIME_EMAIL_FROM: 'One Time <classes@example.test>',
+      ONE_TIME_EMAIL_REPLY_TO: 'support@example.test',
+      ENABLE_PAYMENT_TRANSPORT: 'true',
+      LIVE_STRIPE_CHARGES_AUTHORIZED: 'NO',
+      ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET: 'whsec_test_only',
+      ONE_TIME_STRIPE_TEST_ACCOUNT_REF: 'acct_test_ops05',
+      ONE_TIME_STRIPE_TEST_CANARY_FIXTURE: 'ops05_fixture_webhook',
+    };
+    const config = loadConfig(env);
+    const matrix = buildProviderControlCenter({ config, env, now });
+    const parsed = providerControlCenterResponseSchema.parse(matrix);
+
+    expect(parsed.providers.map((provider) => provider.provider)).toEqual([
+      'resend_email',
+      'whatsapp_meta',
+      'telegram_one_time',
+      'zoom_classroom',
+      'vimeo_private_content',
+      'buffer_social',
+      'stripe_test',
+      'openai_helper',
+      'bna_support_bridge',
+    ]);
+    expect(parsed.guardrail_proof).toMatchObject({
+      no_provider_mutation: true,
+      no_real_send: true,
+      no_live_charge: true,
+      no_bna_edit: true,
+      no_secret_values_included: true,
+    });
+    expect(parsed.webhook_endpoints.every((endpoint) => endpoint.path !== '/')).toBe(true);
+    expect(
+      parsed.webhook_endpoints.find((endpoint) => endpoint.provider === 'stripe_test'),
+    ).toMatchObject({
+      path: '/api/v1/billing/webhooks/provider',
+      signature_scheme: 'stripe_construct_event_raw_body_test_mode',
+    });
+    expect(JSON.stringify(parsed)).not.toContain('resend-secret-value-never-return');
+    expect(JSON.stringify(parsed)).not.toContain('whsec_secret_value_never_return');
+  });
+
+  it('records provider-specific webhook schemes instead of a single invented HMAC', () => {
+    const endpoints = buildWebhookEndpoints();
+    const schemes = new Set(endpoints.map((endpoint) => endpoint.signature_scheme));
+
+    expect(schemes.size).toBeGreaterThan(6);
+    expect(endpoint('resend_email').signature_scheme).toBe('svix_headers_raw_body');
+    expect(endpoint('whatsapp_meta').signature_scheme).toBe('meta_x_hub_signature_256_raw_body');
+    expect(endpoint('telegram_one_time').signature_scheme).toBe('telegram_secret_token_header');
+    expect(endpoint('stripe_test').signature_scheme).toBe(
+      'stripe_construct_event_raw_body_test_mode',
+    );
+    expect(endpoint('bna_support_bridge').signature_scheme).toBe('ot89_hmac_canonical_request');
+    expect(endpoint('zoom_classroom').handler_mounted).toBe(false);
+    expect(endpoint('vimeo_private_content').handler_mounted).toBe(false);
+    expect(endpoint('buffer_social').handler_mounted).toBe(false);
+
+    function endpoint(provider: ReturnType<typeof buildWebhookEndpoints>[number]['provider']) {
+      const found = endpoints.find((candidate) => candidate.provider === provider);
+      if (!found) throw new Error(`Missing endpoint ${provider}`);
+      return found;
+    }
+  });
+
+  it('keeps provider-specific fixtures distinct for Stripe, Meta, Telegram, and BNA support', () => {
+    const rawBody = Buffer.from(JSON.stringify({ id: 'evt_fixture', type: 'fixture' }));
+    const stripeHeader = fixtureWebhookSignature({
+      rawBody,
+      timestamp: Math.floor(now.getTime() / 1000),
+    });
+    expect(stripeHeader).toMatch(/^t=\d+,v1=[a-f0-9]{64}$/);
+
+    const metaSecret = 'meta-webhook-secret-fixture';
+    const metaHeader = `sha256=${createHmac('sha256', metaSecret).update(rawBody).digest('hex')}`;
+    expect(
+      new MetaWhatsAppCloudAdapter().verifyWebhook({
+        rawBody,
+        signatureHeader: metaHeader,
+        secret: metaSecret,
+      }),
+    ).toBe(true);
+    expect(
+      new MetaWhatsAppCloudAdapter().verifyWebhook({
+        rawBody,
+        signatureHeader: metaHeader,
+        secret: 'wrong-meta-secret',
+      }),
+    ).toBe(false);
+
+    const bnaHeaders = createOt89SignedHeaders({
+      keyId: 'ot89-key',
+      secret: 'ot89-hmac-secret-fixture',
+      method: 'POST',
+      requestTarget: OT89_EVENT_TARGET,
+      rawBody,
+      eventId: 'evt_ot89_fixture',
+      now,
+      nonce: 'abcdefghijklmnopqrstuvwxyzABCDEF',
+    });
+    expect(
+      verifyOt89Signature({
+        expectedKeyId: 'ot89-key',
+        secret: 'ot89-hmac-secret-fixture',
+        method: 'POST',
+        requestTarget: OT89_EVENT_TARGET,
+        rawBody,
+        headers: {
+          keyId: bnaHeaders['X-OT89-Key-Id'],
+          timestamp: bnaHeaders['X-OT89-Timestamp'],
+          nonce: bnaHeaders['X-OT89-Nonce'],
+          signature: bnaHeaders['X-OT89-Signature'],
+          eventId: bnaHeaders['X-OT89-Event-Id'],
+        },
+        now,
+      }).ok,
+    ).toBe(true);
+    expect(
+      buildWebhookEndpoints().find((endpoint) => endpoint.provider === 'telegram_one_time'),
+    ).toMatchObject({
+      signature_scheme: 'telegram_secret_token_header',
+      replay_or_dedupe: expect.arrayContaining(['telegram_update_id_inbox_dedupe']),
+    });
+  });
+
+  it('requires owner capability, recent email assurance, fixture mode, and allowlisted targets', () => {
+    const payload = {
+      provider: 'resend_email',
+      idempotency_key: 'ops05-canary-plan',
+      fixture_mode: true,
+      target_kind: 'email',
+      target_ref: 'owner@example.test',
+      explicit_confirmation: 'PLAN OPS-05 FIXTURE CANARY ONLY',
+    };
+
+    expect(
+      providerCanaryPlanResponseSchema.parse(
+        planProviderCanary({
+          payload,
+          actorRole: 'admin',
+          recentEmailAssuredAt: now.toISOString(),
+          allowlistedTargets: ['owner@example.test'],
+          now,
+        }),
+      ),
+    ).toMatchObject({ success: false, code: 'OWNER_CAPABILITY_REQUIRED' });
+    expect(
+      planProviderCanary({
+        payload,
+        actorRole: 'owner',
+        recentEmailAssuredAt: new Date(now.getTime() - 20 * 60 * 1000).toISOString(),
+        allowlistedTargets: ['owner@example.test'],
+        now,
+      }),
+    ).toMatchObject({ success: false, code: 'RECENT_EMAIL_ASSURANCE_REQUIRED' });
+    expect(
+      planProviderCanary({
+        payload,
+        actorRole: 'owner',
+        recentEmailAssuredAt: now.toISOString(),
+        allowlistedTargets: ['other@example.test'],
+        now,
+      }),
+    ).toMatchObject({ success: false, code: 'ALLOWLISTED_FIXTURE_TARGET_REQUIRED' });
+    expect(
+      planProviderCanary({
+        payload,
+        actorRole: 'owner',
+        recentEmailAssuredAt: now.toISOString(),
+        allowlistedTargets: ['owner@example.test'],
+        now,
+      }),
+    ).toMatchObject({
+      success: true,
+      plan_status: 'fixture_contract_ready',
+      external_mutation_allowed: false,
+      real_provider_send_allowed: false,
+    });
+  });
+});

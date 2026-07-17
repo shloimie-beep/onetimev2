@@ -1,6 +1,10 @@
 import 'dotenv/config';
 import { loadConfig } from '../../../../packages/config/src/index.ts';
-import { createMemoryPool, createPgPool, runMigrations } from '../../../../packages/db/src/index.ts';
+import {
+  createMemoryPool,
+  createPgPool,
+  runMigrations,
+} from '../../../../packages/db/src/index.ts';
 import { logger } from '../../../../packages/observability/src/index.ts';
 import { createApp } from './app.ts';
 

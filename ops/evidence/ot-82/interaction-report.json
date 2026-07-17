@@ -1,0 +1,17 @@
+{
+  "run_id": "OT-82",
+  "status": "pass",
+  "checks": [
+    "campaign ticker renders only on landing",
+    "campaign ticker reduced-motion state disables animation and remains readable",
+    "public pages have no horizontal overflow at 360x800, 390x844, 768x1024, and 1440x1000",
+    "signup and login pages have no ticker and no horizontal overflow",
+    "CRM, parent, and student app shells expose canonical Header, Logo, Footer, or shell title primitives with no ticker",
+    "CRM mobile drawer focus trap and close actions pass inherited OT39 e2e coverage",
+    "protected /app/crm route now serves the built CRM shell through a checked app HTML helper"
+  ],
+  "commands": [
+    "CI=1 npx playwright test tests/e2e/brand-system.spec.ts --project=chromium",
+    "npm run e2e"
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "schema_version": "onetime.ot80.migration_ledger.v1",
+  "updated_at": "2026-07-15T13:05:00+03:00",
+  "status": "final_convergence_no_new_migrations",
+  "accepted_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
+  "known_collisions": [
+    {
+      "id": "MIGRATION-COLLISION-OT71-OT72-1700",
+      "status": "resolved_in_ot80",
+      "description": "OT80 preserved OT-71 as 1700_ot71_account_lifecycle and renumbered OT-72 provider truth to 1800_ot72_provider_truth."
+    },
+    {
+      "id": "MIGRATION-COLLISION-OT74-AUDIENCE-DUPLICATES",
+      "status": "resolved_in_ot80",
+      "description": "OT80 retained the legacy audience-reconciliation migration and rejected the duplicate generic audience import migration/write path."
+    }
+  ],
+  "applied_in_ot80": [
+    {
+      "task": "OT-71",
+      "status": "merged",
+      "migrations": [
+        "packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "packages/db/migrations/1400_ot71_content_library.sql",
+        "packages/db/migrations/1700_ot71_account_lifecycle.sql"
+      ],
+      "notes": "Merged without conflicts. The 1700 prefix is now occupied by OT-71; OT-72 provider-truth migration must be renumbered during its integration."
+    },
+    {
+      "task": "OT-74",
+      "status": "merged_canonicalized",
+      "source_branch": "codex/ot74-audience-reconciliation",
+      "source_head": "51cd99dc4434f0354ba229620ebe89558efeb120",
+      "merge_commit": "29ab2b1888ab2f6c00892f7f353921fe5aabb638",
+      "canonical_model": "legacy_audience_reconciliation",
+      "retained_migrations": [
+        "packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql"
+      ],
+      "rejected_migrations": ["packages/db/migrations/1200_ot74_audience_reconciliation.sql"],
+      "notes": "The generic audience import-preview migration and write path were removed from the merge result. The retained migration is dry-run/idempotency/audit focused and does not authorize production import, sends, provider mutations, or contact deletion."
+    },
+    {
+      "task": "OT-72",
+      "status": "merged_renumbered",
+      "source_branch": "codex/ot72-provider-sandbox-train",
+      "source_head": "62ad1d39242f1a8745ad5da5c2a016301eb276c3",
+      "merge_commit": "bdddf576fc39615d9b6cb6414695651de33d331d",
+      "retained_migrations": ["packages/db/migrations/1800_ot72_provider_truth.sql"],
+      "renamed_from_source": [
+        {
+          "from": "packages/db/migrations/1700_ot72_provider_truth.sql",
+          "to": "packages/db/migrations/1800_ot72_provider_truth.sql",
+          "reason": "OT-71 already occupies the 1700 prefix in OT80."
+        }
+      ],
+      "notes": "Provider truth remains default-off and redacted. No live charge, send, webhook registration, provider mutation, deployment, DNS change, or production database mutation was authorized."
+    },
+    {
+      "task": "OT-73",
+      "status": "merged_no_migrations",
+      "source_branch": "codex/ot73-landing-intent-reconciliation",
+      "source_head": "ed2074254863468b4a70a0a3304490486ab2b71e",
+      "merge_commit": "ef16bd84ee4aaacd2a76ff7d0bbb97646dfbd4e2",
+      "retained_migrations": [],
+      "notes": "OT73 changed public landing/page-generation assets and tests only; no database migration was introduced."
+    },
+    {
+      "task": "OT-75",
+      "status": "merged_no_migrations",
+      "source_branch": "codex/ot75-release-observability-readiness",
+      "source_head": "028a05f3e44a7b37c2395576aa3800f507dd5268",
+      "merge_commit": "9ce81a9c5df4c3eb82af3954705d7b381d294c6e",
+      "retained_migrations": [],
+      "notes": "OT75 added release/observability readiness artifacts only; no database migration or runtime migration command was introduced."
+    },
+    {
+      "task": "OT-76",
+      "status": "merged_no_migrations",
+      "source_branch": "codex/ot76-day-one-certification-harness",
+      "source_head": "b9ece3146d2de6edc9f386712fad146f17b18031",
+      "merge_commit": "a95b4e3c2b7210f66f142322d2adcb900eb6890a",
+      "retained_migrations": [],
+      "notes": "OT76 added certification harness artifacts only; no database migration or runtime migration command was introduced."
+    }
+  ]
+}

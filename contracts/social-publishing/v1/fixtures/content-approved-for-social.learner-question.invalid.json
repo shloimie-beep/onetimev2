@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "event_type": "content.approved_for_social",
+  "origin": "ot86a-content-pipeline",
+  "event_id": "33333333-3333-4333-8333-333333333333",
+  "idempotency_key": "tenant_demo_001:cnt_01J00000000000000000000000:ver_01J00000000000000000000000:social",
+  "tenant_id": "tenant_demo_001",
+  "content_id": "cnt_01J00000000000000000000000",
+  "version_id": "ver_01J00000000000000000000000",
+  "sequence": 1,
+  "occurred_at": "2026-01-02T03:05:00Z",
+  "approval": {
+    "approval_id": "approval_01J0000000000000000000",
+    "approved_for_social": true,
+    "approved_by_actor_id": "actor_rabbi_001",
+    "approved_at": "2026-01-02T03:00:00Z",
+    "policy_version": "ot86-social-v1"
+  },
+  "content": {
+    "canonical_title": "Approved class fixture",
+    "canonical_url": "https://one-time.example.invalid/library/classes/cnt_01J00000000000000000000000",
+    "summary": "An approved, non-private class summary used to validate the social-event contract.",
+    "approved_excerpts": [
+      {
+        "excerpt_id": "excerpt_001",
+        "section_id": "section_001",
+        "text": "An approved excerpt containing no learner identity or private information.",
+        "deep_link": "https://one-time.example.invalid/library/classes/cnt_01J00000000000000000000000#section-section_001",
+        "text_sha256": "55156e384bc13a91321f0c169a9a99133f213045a04fdf41108dbc84c5076d68"
+      }
+    ],
+    "media": [
+      {
+        "asset_id": "asset_graphic_001",
+        "kind": "graphic",
+        "uri": "https://objects.example.invalid/ot86/graphic-001.png",
+        "mime_type": "image/png",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+        "subject_classification": "graphics_only",
+        "privacy": {
+          "contains_learner_name": false,
+          "contains_learner_voice": false,
+          "contains_learner_face": false,
+          "contains_learner_question": false,
+          "contains_private_data": false
+        }
+      }
+    ]
+  },
+  "privacy": {
+    "contains_learner_name": false,
+    "contains_learner_voice": false,
+    "contains_learner_face": false,
+    "contains_learner_question": true,
+    "contains_private_data": false
+  },
+  "payload_sha256": "9d5f88a801ba06d2d1ecf108b1a9cb01f2bead6e71081f5ca9270730d37d7250"
+}

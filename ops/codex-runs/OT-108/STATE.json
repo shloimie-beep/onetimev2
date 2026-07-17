@@ -1,0 +1,29 @@
+{
+  "task_id": "OT-108",
+  "status": "draft_pr_opened",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-ot108-premium-landing-refresh",
+  "branch": "codex/ot108-premium-landing-refresh",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/47",
+  "product_commit": "239a29c30836435fe62406a0cf94bacd919a0d09",
+  "requested_base_branch": "codex/ops03-staging-readiness-repair",
+  "requested_base_sha": "fb3c397ce8ece100cf7873fdddcd940a1552ea9b",
+  "observed_base_branch_head_after_fetch": "b34eb0bf54c7583fff0ded11551cfbea7c33fc78",
+  "base_note": "Requested SHA exists and is an ancestor of the fetched base branch. The worktree was created from the exact requested SHA; the draft PR will target the requested base branch and this branch-advanced fact is recorded for review.",
+  "original_prompt_sha256": "CBA16746E6F66910867826C3FD650812EA14CC8456735128BBB1EC6A246D359C",
+  "live_staging_url_inspected": "https://ot99-web-staging.up.railway.app/",
+  "guardrails": {
+    "no_deploy": true,
+    "no_production_or_dns_mutation": true,
+    "no_provider_mutation": true,
+    "no_bna_product_code": true,
+    "no_shared_auth_route_edits": true,
+    "no_crm_portal_stripe_zoom_telegram_whatsapp_vimeo_buffer_edits": true
+  },
+  "evidence": {
+    "visual_metrics": "ops/evidence/ot-108/visual-metrics.json",
+    "visual_summary": "ops/evidence/ot-108/VISUAL-EVIDENCE.md",
+    "screenshot_count": 24
+  },
+  "updated_at": "2026-07-16T22:52:00+03:00"
+}

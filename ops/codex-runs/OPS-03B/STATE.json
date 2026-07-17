@@ -1,0 +1,92 @@
+{
+  "lane": "OPS-03B",
+  "status": "pushed_draft_pr_open",
+  "updated_at": "2026-07-17T00:31:35.4857957+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "worktree": "C:\\Users\\User\\.batch-20260716-worktrees\\OPS-03B",
+  "branch": "codex/ops03b-email-step-up-login",
+  "base_branch": "codex/ops03-staging-readiness-repair",
+  "base_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "head_sha": "22a5faba49a073e42828c9bdea7a076c3af58038",
+  "pushed": true,
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/53",
+  "draft_pr_number": 53,
+  "input_hashes_sha256": {
+    "00-READ-ME-FIRST.md": "3083A9ED5893823752C35A0E0BC3956528BB769B5BE1968FC94665576F6C9952",
+    "BATCH-MANIFEST.json": "8B1FCABC04E108AEBDDDFCE31365C49B0268403D489279F73EEC3FF77C759C67",
+    "OPS-03B-EMAIL-LOGIN-NO-TOTP/CODEX-PROMPT.md": "35A09AD762D09B74D6AED087F1E9A9578C30002C3DC792B66044FA06B5388820"
+  },
+  "files_changed": [
+    "apps/web/src/client/public/public-entry.ts",
+    "apps/web/src/server/app.ts",
+    "apps/worker/src/main/index.ts",
+    "packages/brand-system/src/styles/public.css",
+    "packages/config/src/index.ts",
+    "packages/db/migrations/2010_ops03b_email_step_up_login.sql",
+    "packages/domain/src/accounts/lifecycle.ts",
+    "packages/domain/src/auth/service.ts",
+    "packages/domain/src/index.ts",
+    "tests/integration/accounts/account-lifecycle-web.test.ts",
+    "tests/integration/accounts/account-lifecycle.test.ts",
+    "tests/integration/auth-crm.test.ts",
+    "tests/integration/classes/class-fulfillment.test.ts",
+    "tests/integration/content/content-library.test.ts",
+    "tests/integration/dashboard/owner-dashboard.test.ts",
+    "tests/integration/telegram-db-foundation.test.ts",
+    "tests/integration/whatsapp/ot85-assistant.test.ts",
+    "ops/codex-runs/OPS-03B/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/OPS-03B/STATE.json",
+    "ops/codex-runs/OPS-03B/DECISIONS.md",
+    "ops/codex-runs/OPS-03B/RESUME.md",
+    "ops/codex-runs/OPS-03B/FINAL-REPORT.md"
+  ],
+  "migrations": ["2010_ops03b_email_step_up_login"],
+  "tests": [
+    {
+      "command": "npm run typecheck",
+      "result": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/auth-crm.test.ts tests/integration/accounts/account-lifecycle.test.ts tests/integration/accounts/account-lifecycle-web.test.ts tests/integration/dashboard/owner-dashboard.test.ts tests/integration/content/content-library.test.ts tests/integration/classes/class-fulfillment.test.ts tests/integration/telegram-db-foundation.test.ts tests/integration/whatsapp/ot85-assistant.test.ts",
+      "result": "passed",
+      "summary": "8 files, 44 tests"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "result": "passed",
+      "summary": "909 repo text files"
+    },
+    {
+      "command": "rg -n \"Authenticator|authenticator|TOTP|totp|otpauth|recovery code|auth/mfa|account-lifecycle/mfa|MFA_REQUIRED|data-login-mfa|data-activation-mfa|data-recovery\" apps/web/src/client/public/public-entry.ts apps/web/src/server/app.ts packages/brand-system/src/styles/public.css dist/apps/web/public/assets/public.js dist/apps/web/public/assets/public.css",
+      "result": "passed_with_expected_retired_endpoint_hits_only"
+    }
+  ],
+  "external_mutations": {
+    "production_deploy": false,
+    "dns": false,
+    "broad_sends": false,
+    "live_charges": false,
+    "bna_mutation": false,
+    "staging_deploy": false,
+    "email_provider_send": false
+  },
+  "missing_protected_variables": [
+    "ONE_TIME_OWNER_TEST_EMAIL",
+    "ONE_TIME_LIFECYCLE_DELIVERY_KEY",
+    "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL",
+    "RESEND_API_KEY",
+    "ONE_TIME_EMAIL_FROM",
+    "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED=true",
+    "ONE_TIME_RESEND_TRANSPORT_ENABLED=true"
+  ],
+  "optional_variables_absent": ["ONE_TIME_PARENT_TEST_EMAIL"],
+  "blockers": [
+    "Staging/canary provider-send validation was not run because protected canary/provider variables are absent in this shell."
+  ],
+  "next_command": "Await review or provide protected canary variables for staging/canary provider-send validation."
+}

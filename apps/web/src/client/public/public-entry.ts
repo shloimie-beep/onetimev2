@@ -4,7 +4,8 @@ const drawer = document.querySelector<HTMLElement>('[data-drawer]');
 const drawerOverlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
 const drawerToggle = document.querySelector<HTMLButtonElement>('[data-drawer-toggle]');
 const drawerClose = document.querySelector<HTMLButtonElement>('[data-drawer-close]');
-const focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+const focusableSelector =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
 
 function openDrawer() {
   if (!drawer || !drawerToggle || !drawerOverlay) return;
@@ -65,19 +66,69 @@ const carousel = document.querySelector<HTMLElement>('[data-gallery]');
 if (carousel) {
   const slides = [...carousel.querySelectorAll<HTMLElement>('[data-gallery-slide]')];
   const buttons = [...carousel.querySelectorAll<HTMLButtonElement>('[data-gallery-dot]')];
+  const viewport = carousel.querySelector<HTMLElement>('[data-gallery-viewport]');
+  const status = carousel.querySelector<HTMLElement>('[data-gallery-status]');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let index = 0;
+  let pointerStartX: number | null = null;
   const show = (next: number) => {
     index = (next + slides.length) % slides.length;
     slides.forEach((slide, slideIndex) => {
-      slide.hidden = slideIndex !== index;
+      const active = slideIndex === index;
+      if (active) {
+        slide.setAttribute('data-active', 'true');
+      } else {
+        slide.removeAttribute('data-active');
+      }
+      slide.setAttribute('aria-hidden', String(!active));
+      slide.tabIndex = active ? 0 : -1;
     });
     buttons.forEach((button, buttonIndex) => {
       button.setAttribute('aria-pressed', String(buttonIndex === index));
     });
+    const current = slides[index];
+    current?.scrollIntoView({
+      block: 'nearest',
+      inline: 'center',
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    });
+    const caption = current?.querySelector('figcaption')?.textContent?.trim();
+    if (status && caption) status.textContent = `Showing ${caption}`;
   };
-  buttons.forEach((button, buttonIndex) => button.addEventListener('click', () => show(buttonIndex)));
-  carousel.querySelector<HTMLButtonElement>('[data-gallery-prev]')?.addEventListener('click', () => show(index - 1));
-  carousel.querySelector<HTMLButtonElement>('[data-gallery-next]')?.addEventListener('click', () => show(index + 1));
+  buttons.forEach((button, buttonIndex) =>
+    button.addEventListener('click', () => show(buttonIndex)),
+  );
+  carousel
+    .querySelector<HTMLButtonElement>('[data-gallery-prev]')
+    ?.addEventListener('click', () => show(index - 1));
+  carousel
+    .querySelector<HTMLButtonElement>('[data-gallery-next]')
+    ?.addEventListener('click', () => show(index + 1));
+  carousel.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      show(index - 1);
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      show(index + 1);
+    } else if (event.key === 'Home') {
+      event.preventDefault();
+      show(0);
+    } else if (event.key === 'End') {
+      event.preventDefault();
+      show(slides.length - 1);
+    }
+  });
+  viewport?.addEventListener('pointerdown', (event) => {
+    pointerStartX = event.clientX;
+  });
+  viewport?.addEventListener('pointerup', (event) => {
+    if (pointerStartX === null) return;
+    const delta = event.clientX - pointerStartX;
+    pointerStartX = null;
+    if (Math.abs(delta) < 36) return;
+    show(index + (delta < 0 ? 1 : -1));
+  });
   show(0);
 }
 
@@ -97,8 +148,13 @@ if (form) {
     const field = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
     if (field) field.textContent = message;
   };
-  const clearErrors = () => form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((node) => (node.textContent = ''));
-  const currentReminder = () => form.querySelector<HTMLInputElement>('input[name="reminder_preference"]:checked')?.value ?? 'email';
+  const clearErrors = () =>
+    form
+      .querySelectorAll<HTMLElement>('[data-error-for]')
+      .forEach((node) => (node.textContent = ''));
+  const currentReminder = () =>
+    form.querySelector<HTMLInputElement>('input[name="reminder_preference"]:checked')?.value ??
+    'email';
 
   const syncConditionalFields = () => {
     const reminder = currentReminder();
@@ -168,7 +224,9 @@ if (form) {
       const json = await response.json();
       if (!response.ok || !json.success) {
         if (json.field_errors) {
-          Object.entries(json.field_errors as Record<string, string>).forEach(([name, message]) => setError(name, message));
+          Object.entries(json.field_errors as Record<string, string>).forEach(([name, message]) =>
+            setError(name, message),
+          );
           form.querySelector<HTMLElement>('[data-error-for]:not(:empty)')?.focus();
         } else if (status) {
           status.textContent = json.message ?? 'We could not save that signup yet.';
@@ -191,4 +249,369 @@ if (form) {
       }
     }
   });
+}
+
+const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
+if (loginForm) {
+  const status = loginForm.querySelector<HTMLElement>('[data-form-status]');
+  const submit = loginForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const emailPanel = loginForm.querySelector<HTMLElement>('[data-email-challenge]');
+  const emailInput = loginForm.querySelector<HTMLInputElement>('#email_code');
+  const trustDevice = loginForm.querySelector<HTMLInputElement>('input[name="trust_device"]');
+  const resendButton = loginForm.querySelector<HTMLButtonElement>('[data-resend-challenge]');
+  const resendStatus = loginForm.querySelector<HTMLElement>('[data-resend-status]');
+  let challengeToken = '';
+  let resendTimer: number | undefined;
+  const setError = (name: string, message: string) => {
+    const field = loginForm.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+    if (field) field.textContent = message;
+  };
+  const clearErrors = () =>
+    loginForm
+      .querySelectorAll<HTMLElement>('[data-error-for]')
+      .forEach((node) => (node.textContent = ''));
+  const returnTo = () =>
+    String(new FormData(loginForm).get('return_to') ?? '/app/crm') || '/app/crm';
+  const revealEmailChallenge = (token: string) => {
+    challengeToken = token;
+    if (emailPanel) emailPanel.hidden = false;
+    if (emailInput) {
+      emailInput.required = true;
+      emailInput.focus();
+    }
+    if (submit) submit.textContent = 'Verify code';
+    startResendCooldown(45);
+    if (status) status.textContent = 'We sent a login code to that account if it can sign in.';
+  };
+  const startResendCooldown = (seconds: number) => {
+    window.clearInterval(resendTimer);
+    let remaining = seconds;
+    if (resendButton) resendButton.disabled = true;
+    const render = () => {
+      if (resendStatus) {
+        resendStatus.textContent =
+          remaining > 0 ? `Resend available in ${remaining}s.` : 'You can request a new code.';
+      }
+      if (remaining <= 0) {
+        if (resendButton) resendButton.disabled = false;
+        window.clearInterval(resendTimer);
+      }
+      remaining -= 1;
+    };
+    render();
+    resendTimer = window.setInterval(render, 1000);
+  };
+
+  const emailLinkToken = consumeFragmentValue(['email_challenge_token', 'link_token']);
+  if (emailLinkToken) {
+    if (status) status.textContent = 'Confirming email sign-in...';
+    void postJson('/api/v1/auth/email-challenge/link', {
+      link_token: emailLinkToken,
+      return_to: returnTo(),
+      trust_device: false,
+    }).then((response) => {
+      if (response.ok && response.json.success) {
+        window.location.assign(String(response.json.return_to ?? '/app/crm'));
+        return;
+      }
+      if (status)
+        status.textContent = String(
+          response.json.message ?? 'Email confirmation was not accepted.',
+        );
+    });
+  }
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearErrors();
+    if (!loginForm.reportValidity()) return;
+    const data = new FormData(loginForm);
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = challengeToken ? 'Verifying...' : 'Logging in...';
+    }
+    if (status) status.textContent = '';
+    try {
+      if (challengeToken) {
+        const trimmedCode = String(data.get('email_code') ?? '').trim();
+        if (!trimmedCode) {
+          setError('email_code', 'Enter the code from your email.');
+          emailInput?.focus();
+          return;
+        }
+        const challengeResponse = await postJson('/api/v1/auth/email-challenge/verify', {
+          challenge_token: challengeToken,
+          code: trimmedCode,
+          trust_device: trustDevice?.checked === true,
+          return_to: returnTo(),
+        });
+        if (!challengeResponse.ok || !challengeResponse.json.success) {
+          if (status)
+            status.textContent = String(challengeResponse.json.message ?? 'Code was not accepted.');
+          return;
+        }
+        window.location.assign(String(challengeResponse.json.return_to ?? '/app/crm'));
+        return;
+      }
+      const response = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-csrf-token': String(data.get('csrf_token') ?? ''),
+        },
+        body: JSON.stringify({
+          email: String(data.get('email') ?? ''),
+          password: String(data.get('password') ?? ''),
+          csrf_token: String(data.get('csrf_token') ?? ''),
+          return_to: String(data.get('return_to') ?? '/app/crm'),
+        }),
+      });
+      const json = await response.json();
+      if (!response.ok || !json.success) {
+        if (json.code === 'EMAIL_CHALLENGE_REQUIRED' && json.challenge_token) {
+          revealEmailChallenge(String(json.challenge_token));
+          return;
+        }
+        if (json.field_errors) {
+          Object.entries(json.field_errors as Record<string, string>).forEach(([name, message]) =>
+            setError(name, message),
+          );
+        } else if (status) {
+          status.textContent = json.message ?? 'Email or password is not correct.';
+        }
+        return;
+      }
+      window.location.assign(json.return_to ?? '/app/crm');
+    } catch {
+      if (status) status.textContent = 'Login is unavailable right now.';
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = challengeToken ? 'Verify code' : 'Login';
+      }
+    }
+  });
+
+  resendButton?.addEventListener('click', async () => {
+    if (!challengeToken) return;
+    resendButton.disabled = true;
+    if (resendStatus) resendStatus.textContent = 'Requesting a new code...';
+    const response = await postJson('/api/v1/auth/email-challenge/resend', {
+      challenge_token: challengeToken,
+    });
+    if (!response.ok || !response.json.success) {
+      if (resendStatus)
+        resendStatus.textContent = String(
+          response.json.message ?? 'Please wait before requesting another code.',
+        );
+      startResendCooldown(45);
+      return;
+    }
+    challengeToken = String(response.json.challenge_token);
+    if (emailInput) emailInput.value = '';
+    startResendCooldown(45);
+  });
+}
+
+const activationRoot = document.querySelector<HTMLElement>('[data-activation-root]');
+if (activationRoot) {
+  const token = consumeFragmentValue('token');
+  const status = activationRoot.querySelector<HTMLElement>('[data-activation-status]');
+  const error = activationRoot.querySelector<HTMLElement>('[data-activation-error]');
+  const form = activationRoot.querySelector<HTMLFormElement>('[data-activation-form]');
+
+  if (!token) {
+    showFlowError(error, status, 'This activation link is missing its secure token.');
+  } else {
+    void checkLifecycleToken(token, 'activation', status, form, error);
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(form);
+    if (!form.reportValidity() || !token) return;
+    const data = new FormData(form);
+    if (!passwordsMatch(form, data)) return;
+    setFormStatus(form, '');
+    setSubmitBusy(form, true, 'Activating...');
+    try {
+      const response = await postJson('/api/v1/account-lifecycle/activate', {
+        token,
+        password: String(data.get('password') ?? ''),
+        csrf_token: String(data.get('csrf_token') ?? ''),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(form, response.json, error);
+        return;
+      }
+      window.location.assign(String(response.json.return_to ?? '/app/parent'));
+    } finally {
+      setSubmitBusy(form, false, 'Activate account');
+    }
+  });
+}
+
+const forgotPasswordForm = document.querySelector<HTMLFormElement>('[data-forgot-password-form]');
+if (forgotPasswordForm) {
+  forgotPasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(forgotPasswordForm);
+    if (!forgotPasswordForm.reportValidity()) return;
+    const data = new FormData(forgotPasswordForm);
+    setSubmitBusy(forgotPasswordForm, true, 'Sending...');
+    try {
+      const response = await postJson('/api/v1/account-lifecycle/forgot-password', {
+        email: String(data.get('email') ?? ''),
+        csrf_token: String(data.get('csrf_token') ?? ''),
+        idempotency_key: `forgot-${crypto.randomUUID()}`,
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(forgotPasswordForm, response.json);
+        return;
+      }
+      setFormStatus(
+        forgotPasswordForm,
+        String(response.json.message ?? 'If that email has access, a reset link will be sent.'),
+      );
+    } catch {
+      setFormStatus(forgotPasswordForm, 'If that email has access, a reset link will be sent.');
+    } finally {
+      setSubmitBusy(forgotPasswordForm, false, 'Send reset link');
+    }
+  });
+}
+
+const resetRoot = document.querySelector<HTMLElement>('[data-reset-root]');
+if (resetRoot) {
+  const token = consumeFragmentValue('token');
+  const status = resetRoot.querySelector<HTMLElement>('[data-reset-status]');
+  const form = resetRoot.querySelector<HTMLFormElement>('[data-reset-password-form]');
+  if (!token) {
+    if (status) status.textContent = 'This reset link is missing its secure token.';
+  } else {
+    void checkLifecycleToken(token, 'password_reset', status, form);
+  }
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(form);
+    if (!form.reportValidity() || !token) return;
+    const data = new FormData(form);
+    if (!passwordsMatch(form, data)) return;
+    setSubmitBusy(form, true, 'Resetting...');
+    try {
+      const response = await postJson('/api/v1/account-lifecycle/reset-password', {
+        token,
+        password: String(data.get('password') ?? ''),
+        csrf_token: String(data.get('csrf_token') ?? ''),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(form, response.json);
+        return;
+      }
+      setFormStatus(form, 'Password reset. You can sign in now.');
+      window.setTimeout(() => window.location.assign('/login'), 650);
+    } finally {
+      setSubmitBusy(form, false, 'Reset password');
+    }
+  });
+}
+
+type JsonResponse = { ok: boolean; json: Record<string, unknown> };
+
+async function postJson(path: string, body: Record<string, unknown>): Promise<JsonResponse> {
+  const response = await fetch(path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const json = (await response.json().catch(() => ({}))) as Record<string, unknown>;
+  return { ok: response.ok, json };
+}
+
+async function checkLifecycleToken(
+  token: string,
+  flow: 'activation' | 'password_reset',
+  status: HTMLElement | null,
+  form: HTMLFormElement | null,
+  error?: HTMLElement | null,
+) {
+  const response = await postJson('/api/v1/account-lifecycle/token-status', { token, flow });
+  if (!response.ok || !response.json.success) {
+    showFlowError(
+      error ?? null,
+      status,
+      String(response.json.message ?? 'That link is not valid.'),
+    );
+    return;
+  }
+  if (status) status.textContent = 'Secure link verified.';
+  if (form) {
+    form.hidden = false;
+    form.querySelector<HTMLInputElement>('input[type="password"]')?.focus();
+  }
+}
+
+function consumeFragmentValue(names: string | string[] = 'token') {
+  const params = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const candidates = Array.isArray(names) ? names : [names];
+  const token = candidates.map((name) => params.get(name) ?? '').find(Boolean) ?? '';
+  if (token && window.location.hash) {
+    window.history.replaceState(
+      null,
+      document.title,
+      window.location.pathname + window.location.search,
+    );
+  }
+  return token;
+}
+
+function clearFormErrors(form: HTMLFormElement) {
+  form.querySelectorAll<HTMLElement>('[data-error-for]').forEach((node) => (node.textContent = ''));
+}
+
+function applyApiErrors(
+  form: HTMLFormElement,
+  json: Record<string, unknown>,
+  fallback?: HTMLElement | null,
+) {
+  const fieldErrors = json.field_errors as Record<string, string> | undefined;
+  if (fieldErrors) {
+    Object.entries(fieldErrors).forEach(([name, message]) => {
+      const field = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+      if (field) field.textContent = message;
+    });
+    form.querySelector<HTMLElement>('[data-error-for]:not(:empty)')?.focus();
+    return;
+  }
+  const message = String(json.message ?? 'We could not complete that request.');
+  if (fallback) fallback.textContent = message;
+  setFormStatus(form, message);
+}
+
+function setFormStatus(form: HTMLFormElement, message: string) {
+  const status = form.querySelector<HTMLElement>('[data-form-status]');
+  if (status) status.textContent = message;
+}
+
+function setSubmitBusy(form: HTMLFormElement, busy: boolean, label: string) {
+  const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  if (!button) return;
+  button.disabled = busy;
+  button.textContent = label;
+}
+
+function passwordsMatch(form: HTMLFormElement, data: FormData) {
+  const password = String(data.get('password') ?? '');
+  const confirm = String(data.get('password_confirm') ?? '');
+  if (password !== confirm) {
+    const field = form.querySelector<HTMLElement>('[data-error-for="password_confirm"]');
+    if (field) field.textContent = 'Passwords do not match.';
+    return false;
+  }
+  return true;
+}
+
+function showFlowError(error: HTMLElement | null, status: HTMLElement | null, message: string) {
+  if (status) status.textContent = '';
+  if (error) error.textContent = message;
 }

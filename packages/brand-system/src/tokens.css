@@ -1,0 +1,85 @@
+@font-face {
+  font-family: 'DM Serif Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/dm-serif-display-latin.woff2') format('woff2');
+}
+
+:root {
+  --ot-color-background: #050505;
+  --ot-color-surface: #0d1a20;
+  --ot-color-surface-raised: #071117;
+  --ot-color-surface-muted: #122229;
+  --ot-color-text: #ffffff;
+  --ot-color-text-warm: #f8faf7;
+  --ot-color-text-muted: #c8d6d9;
+  --ot-color-text-disabled: #a5aea9;
+  --ot-color-action: #ffd21f;
+  --ot-color-action-auth: #ede518;
+  --ot-color-action-soft: #ffe680;
+  --ot-color-accent: #7ed7e8;
+  --ot-color-accent-auth: #86e8ff;
+  --ot-color-border: #34464d;
+  --ot-color-border-strong: #66777d;
+  --ot-color-success: #65d6a6;
+  --ot-color-danger: #ff7474;
+  --ot-color-danger-text: #8a331c;
+  --ot-font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --ot-font-body:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ot-space-1: 4px;
+  --ot-space-2: 8px;
+  --ot-space-3: 12px;
+  --ot-space-4: 16px;
+  --ot-space-5: 24px;
+  --ot-space-6: 32px;
+  --ot-space-7: 48px;
+  --ot-space-8: 76px;
+  --ot-radius-control: 8px;
+  --ot-radius-panel: 12px;
+  --ot-radius-pill: 999px;
+  --ot-shadow-panel: 0 18px 46px rgba(0, 0, 0, 0.38);
+  --ot-shadow-drawer: 0 24px 72px rgba(0, 0, 0, 0.52);
+  --ot-shadow-focus: 0 0 0 3px rgba(134, 232, 255, 0.24);
+  --ot-motion-standard: 120ms cubic-bezier(0.2, 0, 0, 1);
+  --ot-motion-emphasized: 180ms cubic-bezier(0.2, 0, 0, 1);
+  --ot-motion-ticker: 26s linear infinite;
+  --ot-focus-width: 3px;
+  --ot-focus-offset: 3px;
+  --ot-focus-color: var(--ot-color-accent-auth);
+  --ot-layer-header: 100;
+  --ot-layer-ticker: 19;
+  --ot-layer-drawer-overlay: 800;
+  --ot-layer-drawer: 810;
+  --ot-layer-dialog-overlay: 900;
+  --ot-layer-dialog: 910;
+  --ot-layer-toast: 960;
+  --ot-layer-skip-link: 1001;
+  --ot-breakpoint-mobile: 520px;
+  --ot-breakpoint-tablet: 820px;
+  --ot-breakpoint-desktop: 1200px;
+  --ot-safe-area-top: env(safe-area-inset-top);
+  --ot-safe-area-bottom: env(safe-area-inset-bottom);
+  --ot-safe-area-left: env(safe-area-inset-left);
+  --ot-safe-area-right: env(safe-area-inset-right);
+  --ot-density-compact: 8px;
+  --ot-density-default: 12px;
+  --ot-density-comfortable: 16px;
+  --ot-size-touch-target: 44px;
+  --ot-size-logo-public-mobile: 48px;
+  --ot-size-logo-public-desktop: 64px;
+  --ot-size-logo-app: 40px;
+
+  --color-black: var(--ot-color-background);
+  --color-panel: #111311;
+  --color-ink: var(--ot-color-text-warm);
+  --color-muted: #c7d2cc;
+  --color-yellow: var(--ot-color-action);
+  --color-yellow-soft: var(--ot-color-action-soft);
+  --color-cyan: var(--ot-color-accent);
+  --color-line: rgba(255, 210, 31, 0.28);
+  --shadow-panel: var(--ot-shadow-panel);
+  --font-display: var(--ot-font-display);
+  --font-body: var(--ot-font-body);
+}

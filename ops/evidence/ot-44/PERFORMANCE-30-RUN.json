@@ -1,0 +1,70 @@
+{
+  "status": "owned_static_pass_integrated_shell_pending",
+  "owned_static_shell": {
+    "command": "npx playwright test tests/performance/ot-44",
+    "sample_capture": "Playwright chromium one-off using the same static OT-44 shell markup as tests/performance/ot-44/communications-performance.spec.ts",
+    "warmups": 3,
+    "measured_runs": 30,
+    "result": "passed",
+    "viewport": "390x844",
+    "p75_gate_ms": 500,
+    "samples_ms": [
+      4.22,
+      5.55,
+      18.12,
+      3.87,
+      3.21,
+      3.55,
+      3.93,
+      4.55,
+      2.83,
+      2.81,
+      3.27,
+      3.67,
+      2.98,
+      3.09,
+      2.91,
+      3.6,
+      3.84,
+      4.74,
+      3.25,
+      3.02,
+      5.28,
+      3.16,
+      2.98,
+      7.37,
+      4.23,
+      4.27,
+      2.97,
+      3.69,
+      3.34,
+      3.1
+    ],
+    "p75_ms": 4.22,
+    "horizontal_overflow": false
+  },
+  "full_repository_performance": {
+    "command": "npm run performance",
+    "result": "passed",
+    "tests": 4,
+    "bundle_bytes": {
+      "public_js_bytes": 5646,
+      "public_css_bytes": 10626,
+      "crm_js_bytes": 204369
+    }
+  },
+  "integrated_communications_shell": {
+    "status": "integration_pending",
+    "reason": "Communications route/tab descriptors are not wired into the shared shell in this branch by ownership rule.",
+    "required_later_metrics": {
+      "direct_route_p75_ms": 2500,
+      "contact_tab_activation_p75_ms": 2000,
+      "next_page_p75_ms": 1500,
+      "cached_overview_to_tab_p75_ms": 500,
+      "lcp_p75_ms": 2500,
+      "cls_max": 0.1,
+      "communications_lazy_js_gzip_max_bytes": 60000,
+      "communications_css_gzip_max_bytes": 20000
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": "local_build_passed",
+  "build_command": "npm run build",
+  "portal_bundle": {
+    "file": "dist/apps/web/public/assets/app-portal.js",
+    "size_kb": 17.3,
+    "gzip_kb": 5.11
+  },
+  "notes": [
+    "No broad browser performance suite was run for this focused session-revocation checkpoint.",
+    "OT83 does not add provider bundles to the portal initial load."
+  ]
+}

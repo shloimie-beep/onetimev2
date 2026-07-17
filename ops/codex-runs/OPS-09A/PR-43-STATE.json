@@ -1,0 +1,98 @@
+{
+  "ops_agent": "OPS-09A",
+  "pr": 43,
+  "branch": "codex/ot100-whatsapp-public-provider-activation",
+  "worktree": "C:/Users/User/.overnight-20260717-worktrees/OPS-09A/PR-43-ot100-whatsapp",
+  "remote": "https://github.com/webcraft-media/onetimev2.git",
+  "canonical_reference_branch": "codex/ops03-staging-readiness-repair",
+  "canonical_reference_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+  "before_head_sha": "d2930fe21a9008194655b7d9fa28d338330e6ce1",
+  "expected_packet_head_sha": "d2930fe21a9008194655b7d9fa28d338330e6ce1",
+  "remote_head_advanced_before_repair": false,
+  "status": "local_repair_verified_pending_push",
+  "semantic_scope_preserved": [
+    "OT-100 WhatsApp provider activation remains scoped to the branch-local Meta Cloud API sender and activation runtime",
+    "real WhatsApp sends remain disabled without protected staging configuration and explicit canary authorization",
+    "raw provider secrets and recipient data stay out of committed evidence",
+    "no shared app, worker, or global configuration convergence was performed"
+  ],
+  "repair_summary": [
+    "Repaired stale migration final-ID assertions in tests/integration/telegram-db-foundation.test.ts",
+    "Added OPS-09A PR #43 integration delta documenting the no-send provider canary posture",
+    "Created a PR #43-specific merge commit from the canonical reference to resolve the GitHub content conflict without enabling WhatsApp provider sends",
+    "Kept OT-100 provider runtime behavior unchanged and blocked on protected config"
+  ],
+  "tests": [
+    {
+      "command": "npm install",
+      "outcome": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts tests/integration/whatsapp/ot100-provider-runtime.test.ts",
+      "outcome": "passed pre-merge and post-merge: 2 files / 5 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/whatsapp/ot100-meta-provider.test.ts tests/unit/whatsapp/ot85-intent-contract.test.ts",
+      "outcome": "passed pre-merge and post-merge: 2 files / 10 tests"
+    },
+    {
+      "command": "npx prettier --write tests/integration/telegram-db-foundation.test.ts",
+      "outcome": "applied formatting to touched test only"
+    },
+    {
+      "command": "npm run typecheck",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "outcome": "passed post-merge: 921 repo text files"
+    },
+    {
+      "command": "npm run brand:check",
+      "outcome": "passed post-merge"
+    },
+    {
+      "command": "npm run build",
+      "outcome": "passed"
+    },
+    {
+      "command": "node --import tsx scripts/ot100/whatsapp-runtime-once.ts",
+      "outcome": "passed pre-merge and post-merge: returned WAITING_FOR_OT100_WHATSAPP_STAGING_CANARY_CONFIG with external_send_performed=false"
+    },
+    {
+      "command": "npx prettier --check tests/integration/telegram-db-foundation.test.ts",
+      "outcome": "passed"
+    },
+    {
+      "command": "npm run test",
+      "outcome": "passed post-merge: 30 unit files / 163 tests and 28 integration files / 138 tests"
+    },
+    {
+      "command": "npm run format",
+      "outcome": "blocked by existing repo-wide Windows formatting baseline: Prettier reported 616 unrelated files after the PR-local canonical merge; touched files were formatted"
+    }
+  ],
+  "blocked": [
+    {
+      "id": "BLOCK-OT100-001",
+      "scope": "provider canary only",
+      "reason": "protected staging WhatsApp provider configuration and explicit canary authorization are not present"
+    }
+  ],
+  "guardrails": {
+    "bna_checkout_used_for_implementation": false,
+    "bna_files_edited": false,
+    "production_deployment_performed": false,
+    "provider_mutation_performed": false,
+    "production_or_staging_database_mutation_performed": false,
+    "external_send_performed": false,
+    "live_charge_performed": false,
+    "force_push_used": false,
+    "duplicate_pr_opened": false
+  },
+  "updated_at": "2026-07-17T02:38:00+03:00"
+}

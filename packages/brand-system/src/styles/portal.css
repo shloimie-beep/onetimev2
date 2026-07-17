@@ -1,0 +1,336 @@
+:root {
+  --ot-portal-bg: #050505;
+  --ot-portal-panel: #111111;
+  --ot-portal-ink: #fff9d8;
+  --ot-portal-muted: #d9d2a9;
+  --ot-portal-yellow: #ffd21f;
+  --ot-portal-yellow-strong: #ffc400;
+  --ot-portal-ice: #9ce7f0;
+  --ot-portal-danger: #ff6978;
+}
+.ot-portal {
+  color: var(--ot-portal-ink);
+  background: var(--ot-portal-bg);
+  min-height: 100%;
+  padding: 24px;
+}
+.ot-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 210, 31, 0.32);
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+.ot-kicker,
+.ot-topline p,
+.ot-muted,
+.ot-item span,
+.ot-panel p {
+  color: var(--ot-portal-muted);
+}
+.ot-kicker {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+.ot-topline h1,
+.ot-panel h2,
+.ot-panel h3 {
+  color: var(--ot-portal-yellow);
+  margin: 0 0 6px;
+}
+.ot-aside,
+.ot-helper {
+  color: var(--ot-portal-ice);
+}
+.ot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.ot-grid-parent {
+  grid-template-columns: minmax(260px, 0.82fr) minmax(320px, 1.25fr) minmax(280px, 0.9fr);
+}
+.ot-panel,
+.ot-empty {
+  background: var(--ot-portal-panel);
+  border: 1px solid rgba(255, 210, 31, 0.24);
+  border-radius: 8px;
+  padding: 18px;
+}
+.ot-panel-head,
+.ot-item,
+.ot-subsection,
+.ot-action-row,
+.ot-status,
+.ot-helper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.ot-panel-head,
+.ot-item,
+.ot-status {
+  justify-content: space-between;
+}
+.ot-learner-list,
+.ot-stack,
+.ot-question-form {
+  display: grid;
+  gap: 10px;
+}
+.ot-helper-panel {
+  align-content: start;
+}
+.ot-question-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.ot-question-form label {
+  color: var(--ot-portal-yellow);
+  font-weight: 700;
+}
+.ot-question-form textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+}
+.ot-learner-card,
+.ot-item {
+  width: 100%;
+  text-align: left;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-learner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.ot-learner-card strong,
+.ot-learner-card span {
+  overflow-wrap: anywhere;
+}
+.ot-learner-card[aria-pressed='true'] {
+  border-color: var(--ot-portal-yellow);
+  box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.18);
+}
+.ot-learner-card strong,
+.ot-item strong,
+.ot-metrics dd {
+  color: #ffffff;
+}
+.ot-item > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.ot-item strong,
+.ot-item span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.ot-button,
+.ot-icon-button,
+.ot-text-button {
+  min-height: 44px;
+  border: 1px solid rgba(255, 210, 31, 0.45);
+  color: var(--ot-portal-ink);
+  background: transparent;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 700;
+}
+.ot-button-primary,
+.ot-icon-button {
+  background: var(--ot-portal-yellow);
+  color: #111111;
+}
+.ot-button-danger {
+  border-color: var(--ot-portal-danger);
+  color: #ffffff;
+}
+.ot-button:disabled,
+.ot-icon-button:disabled {
+  opacity: 0.52;
+}
+.ot-text-button {
+  min-height: 0;
+  border: 0;
+  color: var(--ot-portal-ice);
+  padding: 0;
+}
+.ot-subsection {
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.ot-warning,
+.ot-status {
+  background: rgba(255, 210, 31, 0.12);
+  border: 1px solid rgba(255, 210, 31, 0.4);
+  color: #fff6bf;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.ot-helper-answer,
+.ot-private-preview {
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-helper-answer p,
+.ot-private-preview p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.ot-citation-list {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+.ot-citation-list a {
+  color: var(--ot-portal-ice);
+  overflow-wrap: anywhere;
+}
+.ot-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.ot-metrics div {
+  background: #191919;
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-metrics dt {
+  color: var(--ot-portal-muted);
+}
+.ot-metrics dd {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+.ot-field {
+  display: grid;
+  gap: 6px;
+}
+.ot-field span {
+  color: var(--ot-portal-muted);
+  font-weight: 700;
+}
+.ot-field select,
+.ot-field input,
+.ot-field textarea {
+  width: 100%;
+  min-height: 44px;
+  color: var(--ot-portal-ink);
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+}
+.ot-field textarea {
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+.ot-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.74);
+  padding: 18px;
+}
+.ot-dialog {
+  width: min(560px, 100%);
+  border: 1px solid rgba(255, 210, 31, 0.42);
+  border-radius: 8px;
+  background: #111111;
+  color: var(--ot-portal-ink);
+  padding: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.56);
+}
+.ot-dialog-head,
+.ot-dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+.ot-dialog-head h2,
+.ot-dialog-head p {
+  margin: 0 0 6px;
+}
+.ot-dialog-form {
+  display: grid;
+  gap: 12px;
+}
+.ot-dialog-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.ot-mini-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  width: 100%;
+}
+.ot-mini-metrics div {
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+}
+.ot-mini-metrics dt {
+  color: var(--ot-portal-muted);
+  font-size: 0.82rem;
+}
+.ot-mini-metrics dd {
+  margin: 4px 0 0;
+  color: #ffffff;
+  font-weight: 800;
+}
+@media (max-width: 760px) {
+  .ot-portal {
+    padding: 14px;
+  }
+  .ot-topline,
+  .ot-panel-head,
+  .ot-dialog-head,
+  .ot-subsection,
+  .ot-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .ot-grid-parent,
+  .ot-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 761px) and (max-width: 980px) {
+  .ot-grid-parent {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

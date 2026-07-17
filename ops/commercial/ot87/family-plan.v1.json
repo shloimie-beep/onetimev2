@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "policy_id": "ot87-family-monthly-usd-67-v1",
+  "policy_version": "2026-07-15.1",
+  "effective_from": "2026-07-15T00:00:00Z",
+  "ownership": {
+    "merchant": "One Time",
+    "stripe_technical_administrator": "Shloimie",
+    "application_product_owner": "Rabbi"
+  },
+  "scope": {
+    "account_key": "one_time",
+    "product_key": "one_time_mishnah_class",
+    "audience": "family",
+    "school_checkout_enabled": false,
+    "school_entitlement_enabled": false,
+    "stripe_mode": "test",
+    "live_stripe_charges_authorized": false,
+    "required_live_guard": {
+      "environment_variable": "LIVE_STRIPE_CHARGES_AUTHORIZED",
+      "required_exact_value": "NO"
+    }
+  },
+  "offer": {
+    "offer_key": "family_monthly_usd_67_v1",
+    "display_name": "Family plan",
+    "currency": "usd",
+    "unit_amount_cents": 6700,
+    "billing_scheme": "per_unit",
+    "recurring_interval": "month",
+    "recurring_interval_count": 1,
+    "quantity": 1,
+    "max_active_learner_seats": 3,
+    "trial": {
+      "enabled": false,
+      "days": 0,
+      "trialing_grants_access": false
+    },
+    "promotion_codes_enabled": false,
+    "adjustable_quantity_enabled": false
+  },
+  "public_copy": {
+    "landing_hero_price_visibility": "forbidden",
+    "landing_ticker_price_visibility": "forbidden",
+    "checkout_and_billing_surface_truth": "Family plan \u2014 $67/month \u2014 up to 3 active learners in one household."
+  },
+  "grace_policy": {
+    "policy_key": "ot87-zero-grace-v1",
+    "implicit_grace_allowed": false,
+    "past_due_grace_seconds": 0,
+    "unpaid_grace_seconds": 0,
+    "paused_grace_seconds": 0,
+    "access_during_past_due": false,
+    "access_during_unpaid": false,
+    "access_during_paused": false
+  },
+  "activation_policy": {
+    "checkout_creation_grants_access": false,
+    "success_redirect_grants_access": false,
+    "checkout_completion_alone_grants_access": false,
+    "required_truth": [
+      "signed checkout.session.completed correlated to the local household checkout request",
+      "current Stripe subscription projection has status active",
+      "current subscription invoice projection is paid for USD 6700",
+      "household is a family household in the One Time account and product scope",
+      "no current refund hold, dispute hold, or manual-review contradiction"
+    ]
+  },
+  "cancellation_policy": {
+    "portal_cancellation_mode": "at_period_end",
+    "active_with_cancel_at_period_end": {
+      "entitlement_status": "scheduled_end",
+      "grants_access_until_current_period_end": true
+    },
+    "restored_before_period_end": {
+      "entitlement_status": "active",
+      "grants_access": true
+    },
+    "canceled_or_deleted_after_period_end": {
+      "entitlement_status": "revoked",
+      "grants_access": false
+    }
+  },
+  "refund_dispute_policy": {
+    "full_refund_of_current_paid_invoice": {
+      "entitlement_status": "suspended",
+      "grants_access": false,
+      "requires_reconciliation": true
+    },
+    "partial_refund_of_current_paid_invoice": {
+      "entitlement_status": "manual_review",
+      "grants_access": false,
+      "requires_reconciliation": true
+    },
+    "dispute_created": {
+      "entitlement_status": "suspended",
+      "grants_access": false,
+      "requires_reconciliation": true
+    },
+    "dispute_won": {
+      "action": "recompute_from_current_subscription_and_invoice_truth"
+    },
+    "dispute_lost": {
+      "entitlement_status": "revoked",
+      "grants_access": false
+    }
+  },
+  "subscription_status_policy": {
+    "active": {
+      "entitlement_status": "active_if_paid",
+      "grants_access": "conditional"
+    },
+    "trialing": {
+      "entitlement_status": "manual_review",
+      "grants_access": false,
+      "reason": "trial_disabled_in_ot87_v1"
+    },
+    "past_due": {
+      "entitlement_status": "suspended",
+      "grants_access": false
+    },
+    "unpaid": {
+      "entitlement_status": "suspended",
+      "grants_access": false
+    },
+    "paused": {
+      "entitlement_status": "suspended",
+      "grants_access": false
+    },
+    "incomplete": {
+      "entitlement_status": "pending",
+      "grants_access": false
+    },
+    "incomplete_expired": {
+      "entitlement_status": "revoked",
+      "grants_access": false
+    },
+    "canceled": {
+      "entitlement_status": "revoked_unless_valid_period_end",
+      "grants_access": "conditional"
+    },
+    "unknown": {
+      "entitlement_status": "manual_review",
+      "grants_access": false
+    }
+  },
+  "seat_policy": {
+    "scope": "household",
+    "max_active_learners": 3,
+    "atomicity": "single PostgreSQL transaction with canonical household row lock or canonical three-slot reservation primitive",
+    "fourth_active_learner_result": "LEARNER_LIMIT_REACHED",
+    "school_seats_allowed": false,
+    "administrative_roles_consume_seats": false
+  },
+  "required_stripe_events": [
+    "checkout.session.completed",
+    "checkout.session.expired",
+    "customer.subscription.created",
+    "customer.subscription.updated",
+    "customer.subscription.deleted",
+    "customer.subscription.trial_will_end",
+    "customer.subscription.paused",
+    "customer.subscription.resumed",
+    "invoice.paid",
+    "invoice.payment_failed",
+    "invoice.payment_action_required",
+    "charge.refunded",
+    "charge.dispute.created",
+    "charge.dispute.closed"
+  ],
+  "protected_configuration": {
+    "server_only": [
+      "ONE_TIME_STRIPE_TEST_SECRET_KEY",
+      "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+      "ONE_TIME_STRIPE_TEST_ACCOUNT_ID",
+      "ONE_TIME_STRIPE_TEST_PRODUCT_ID",
+      "ONE_TIME_STRIPE_TEST_PRICE_ID",
+      "ONE_TIME_STRIPE_TEST_PORTAL_CONFIGURATION_ID",
+      "ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID"
+    ],
+    "browser_safe_when_required": ["ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY"],
+    "operational_gates": [
+      "LIVE_STRIPE_CHARGES_AUTHORIZED",
+      "ONE_TIME_STRIPE_TEST_RESOURCE_SETUP_AUTHORIZED",
+      "ONE_TIME_STRIPE_TEST_CANARY_AUTHORIZED",
+      "ONE_TIME_STRIPE_TEST_RECONCILIATION_APPLY_AUTHORIZED"
+    ],
+    "resource_ids_must_not_be_embedded_in_source_or_prompt": true
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "number": 4,
+  "title": "Add OT-36 sink delivery worker foundation",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/4",
+  "baseRefName": "codex/crm-core-v1",
+  "baseRefOid": "a73458d1884b8fcb4843c4852425009577f59ef7",
+  "headRefName": "codex/ot36-delivery-sink-foundation",
+  "headRefOid": "61d4755fe279ca47c37e7adbe8d1e6ce8b258dae",
+  "mergeStateStatus": "CLEAN",
+  "commits": [
+    {
+      "oid": "3a9588555f9159e4c1a7a554780be66499f2d2d8",
+      "messageHeadline": "Add OT-36 sink delivery worker foundation",
+      "authoredDate": "2026-07-14T14:33:50Z",
+      "committedDate": "2026-07-14T14:33:50Z"
+    },
+    {
+      "oid": "61d4755fe279ca47c37e7adbe8d1e6ce8b258dae",
+      "messageHeadline": "Apply OT-36 school acknowledgement addendum",
+      "authoredDate": "2026-07-14T17:46:22Z",
+      "committedDate": "2026-07-14T17:46:22Z"
+    }
+  ],
+  "files": [
+    {
+      "path": ".env.example",
+      "additions": 2,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "INTEGRATION.md",
+      "additions": 21,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/worker/src/delivery/config.ts",
+      "additions": 140,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/worker/src/delivery/logger.ts",
+      "additions": 23,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/worker/src/delivery/loop.ts",
+      "additions": 44,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/worker/src/delivery/repository.ts",
+      "additions": 349,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/worker/src/delivery/sink-router.ts",
+      "additions": 19,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/worker/src/delivery/worker.ts",
+      "additions": 228,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "apps/worker/src/main/index.ts",
+      "additions": 83,
+      "deletions": 22,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "ops/evidence/ot-36/FINAL-HANDOFF.md",
+      "additions": 108,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-36/OT-25-OT-26-ADDENDUM.md",
+      "additions": 76,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/delivery/errors.ts",
+      "additions": 29,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/contracts/src/delivery/types.ts",
+      "additions": 195,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/db/migrations/0004_delivery_worker_claim_index.sql",
+      "additions": 21,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/delivery/eligibility.ts",
+      "additions": 163,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/delivery/messages.ts",
+      "additions": 173,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/delivery/processor.ts",
+      "additions": 75,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/delivery/redaction.ts",
+      "additions": 50,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/delivery/retry.ts",
+      "additions": 104,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "packages/domain/src/lead/service.ts",
+      "additions": 9,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/integration/delivery/outbox-pipeline.test.ts",
+      "additions": 279,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/integration/delivery/postgres-repository.test.ts",
+      "additions": 181,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/integration/delivery/web-app-independence.test.ts",
+      "additions": 115,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/integration/lead-capture.test.ts",
+      "additions": 31,
+      "deletions": 0,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "tests/support/delivery/fixtures.ts",
+      "additions": 64,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/support/delivery/logger.ts",
+      "additions": 23,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/support/delivery/memory-repository.ts",
+      "additions": 117,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/delivery/config.test.ts",
+      "additions": 63,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/delivery/eligibility.test.ts",
+      "additions": 183,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/delivery/loop.test.ts",
+      "additions": 46,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/delivery/retry.test.ts",
+      "additions": 63,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/unit/delivery/worker.test.ts",
+      "additions": 233,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}

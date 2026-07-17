@@ -1,0 +1,130 @@
+{
+  "number": 5,
+  "title": "OT-35 authenticated CRM shell clarity",
+  "state": "OPEN",
+  "isDraft": true,
+  "url": "https://github.com/webcraft-media/onetimev2/pull/5",
+  "baseRefName": "codex/crm-core-v1",
+  "baseRefOid": "a73458d1884b8fcb4843c4852425009577f59ef7",
+  "headRefName": "codex/ot35-app-shell-crm-clarity",
+  "headRefOid": "6ca5e568c328ea116a9413b57ea5920400f8bc14",
+  "mergeStateStatus": "DIRTY",
+  "commits": [
+    {
+      "oid": "6ca5e568c328ea116a9413b57ea5920400f8bc14",
+      "messageHeadline": "feat: add OT-35 authenticated CRM shell",
+      "authoredDate": "2026-07-14T14:40:15Z",
+      "committedDate": "2026-07-14T14:40:15Z"
+    }
+  ],
+  "files": [
+    {
+      "path": "apps/web/src/client/app/crm-entry.tsx",
+      "additions": 674,
+      "deletions": 242,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/client/app/crm.css",
+      "additions": 736,
+      "deletions": 173,
+      "changeType": "MODIFIED"
+    },
+    {
+      "path": "apps/web/src/client/app/shell/AppShell.tsx",
+      "additions": 277,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/BACKEND-GAPS.md",
+      "additions": 15,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/FINAL-HANDOFF.md",
+      "additions": 118,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/accessibility-results.json",
+      "additions": 35,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/performance-report.json",
+      "additions": 97,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-detail-1440x1000.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-detail-360x800.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-detail-390x844.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-detail-768x1024.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-list-1440x1000.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-list-360x800.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-list-390x844.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "ops/evidence/ot-35/screenshots/crm-list-768x1024.png",
+      "additions": 0,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/accessibility/ot-35/app-shell-a11y.spec.ts",
+      "additions": 70,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/e2e/ot-35/app-shell-crm.spec.ts",
+      "additions": 246,
+      "deletions": 0,
+      "changeType": "ADDED"
+    },
+    {
+      "path": "tests/performance/ot-35/crm-performance.spec.ts",
+      "additions": 279,
+      "deletions": 0,
+      "changeType": "ADDED"
+    }
+  ]
+}

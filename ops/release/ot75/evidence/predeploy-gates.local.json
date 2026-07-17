@@ -1,0 +1,101 @@
+{
+  "task_id": "OT-75",
+  "generated_at": "2026-07-15T09:34:29.563Z",
+  "print_values": false,
+  "blocked_count": 11,
+  "gates": [
+    {
+      "id": "GATE-STAGING-SERVICE",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": [
+        "OT75_STAGING_WEB_SERVICE",
+        "OT75_STAGING_DELIVERY_WORKER_SERVICE",
+        "OT75_STAGING_PROVIDER_WORKER_SERVICE",
+        "OT75_STAGING_TELEGRAM_WORKER_SERVICE"
+      ]
+    },
+    {
+      "id": "GATE-STAGING-DOMAIN",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": ["OT75_STAGING_DOMAIN"]
+    },
+    {
+      "id": "GATE-BACKUP-PITR-EVIDENCE",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": ["OT75_BACKUP_PITR_EVIDENCE_URI"]
+    },
+    {
+      "id": "GATE-RESTORE-DRILL",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": ["OT75_RESTORE_DRILL_EVIDENCE_URI"]
+    },
+    {
+      "id": "GATE-ACTIVE-SOURCE-SHA",
+      "status": "blocked_activation_missing_env",
+      "summary": "source SHA env names are missing",
+      "missing_env_names": ["OT75_EXPECTED_SOURCE_SHA", "OT75_ACTIVE_SOURCE_SHA"]
+    },
+    {
+      "id": "GATE-MIGRATION-LEDGER-CHECKSUM",
+      "status": "blocked_activation_or_static_missing",
+      "summary": "static path or required name is missing",
+      "missing_env_names": ["OT75_MIGRATION_LEDGER_SHA256"],
+      "missing_paths": []
+    },
+    {
+      "id": "GATE-DATABASE-REFERENCE-DRIFT",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": [
+        "OT75_STAGING_DATABASE_REFERENCE_ID",
+        "OT75_PRODUCTION_DATABASE_REFERENCE_ID"
+      ]
+    },
+    {
+      "id": "GATE-DUPLICATE-DATA-AUDIT",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": ["OT75_DUPLICATE_DATA_AUDIT_REPORT"]
+    },
+    {
+      "id": "GATE-WORKER-ISOLATION",
+      "status": "blocked_activation_or_static_missing",
+      "summary": "static path or required name is missing",
+      "missing_env_names": ["OT75_WORKER_ISOLATION_APPROVED"],
+      "missing_paths": []
+    },
+    {
+      "id": "GATE-PROVIDER-STATE-CONTRACT",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": ["OT75_PROVIDER_STATE_REPORT"]
+    },
+    {
+      "id": "GATE-OWNER-ADMIN-BOOTSTRAP",
+      "status": "blocked_activation_missing_env",
+      "summary": "required names are missing",
+      "missing_env_names": ["OT75_OWNER_ADMIN_BOOTSTRAP_REPORT"]
+    },
+    {
+      "id": "GATE-NO-RUNTIME-COMPOSITION-DRIFT",
+      "status": "passed",
+      "summary": "changed files stay inside OT-75-owned paths",
+      "scope_base_sha": "d7bf846dda1c27aadd61f51c71aa163c70b2b871",
+      "changed_file_count": 37,
+      "forbidden_changed_files": []
+    }
+  ],
+  "external_mutation_counts": {
+    "deployments": 0,
+    "dns_changes": 0,
+    "database_mutations": 0,
+    "provider_mutations": 0,
+    "messages_sent": 0,
+    "payments_or_charges": 0,
+    "real_users_created": 0
+  }
+}

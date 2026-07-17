@@ -1,95 +1,107 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { campaignTicker, landingContent, sharedNav } from '../packages/domain/src/index.ts';
+import {
+  escapeHtml,
+  renderCampaignTicker,
+  renderPageShell,
+  renderPublicFooter,
+  renderPublicHeader,
+} from '@onetime/brand-system/static';
+import {
+  campaign,
+  campaignTicker,
+  landingContent,
+  sharedNav,
+  successCopy,
+} from '../packages/domain/src/index.ts';
+import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;');
+const imageDimensions = new Map<string, readonly [number, number]>([
+  ['/assets/brand/onetimelogo.webp', [400, 400]],
+  ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
+  ['/assets/students/smiley-kid.png', [337, 600]],
+  ['/assets/outcomes/clarity-class.webp', [945, 2048]],
+  ['/assets/outcomes/excitement-learning-torah.webp', [945, 2048]],
+  ['/assets/outcomes/accomplishment-toronto-class.jpg', [1200, 745]],
+  ['/assets/rabbi/rabbi-eli-holding-book.jpg', [1600, 1067]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-atlanta-georgia.webp', [1600, 714]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-baltimore-maryland.webp', [1600, 1066]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-flatbush-ny.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-hollywood-florida.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-lakewood-nj.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp', [1600, 1200]],
+  ['/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp', [1600, 1200]],
+]);
+
+function mediaSizeAttributes(src: string) {
+  const dimensions = imageDimensions.get(src);
+  if (!dimensions) return '';
+  return ` width="${dimensions[0]}" height="${dimensions[1]}"`;
 }
 
-function pageShell(title: string, body: string, options: { description?: string; app?: boolean } = {}) {
+function pageShell(
+  title: string,
+  body: string,
+  options: {
+    description?: string;
+    canonicalPath?: string;
+    app?: boolean;
+    appEntry?: 'crm' | 'portal';
+  } = {},
+) {
   const description = options.description ?? landingContent.seo.description;
-  const script = options.app ? '/assets/app-crm.js' : '/assets/public.js';
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${escapeHtml(title)}</title>
-  <meta name="description" content="${escapeHtml(description)}">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="${escapeHtml(landingContent.seo.canonical)}">
-  <meta property="og:title" content="${escapeHtml(landingContent.seo.ogTitle)}">
-  <meta property="og:description" content="${escapeHtml(landingContent.seo.ogDescription)}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="${escapeHtml(landingContent.seo.canonical)}">
-  <meta name="theme-color" content="#050505">
-  <link rel="stylesheet" href="/assets/public.css">
-</head>
-<body>
-${body}
-<script type="module" src="${script}"></script>
-</body>
-</html>`;
+  return renderPageShell({
+    title,
+    body,
+    description,
+    canonical: publicCanonicalUrl(options.canonicalPath ?? '/'),
+    ogTitle: landingContent.seo.ogTitle,
+    ogDescription: landingContent.seo.ogDescription,
+    ...(options.app === undefined ? {} : { app: options.app }),
+    ...(options.appEntry === undefined ? {} : { appEntry: options.appEntry }),
+  });
 }
 
 function header() {
-  const drawerLinks = sharedNav.map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`).join('');
-  return `<header class="site-header">
-  <a class="brand-lockup" href="/" aria-label="One Time Mishnayos home">
-    <img src="/assets/brand/onetimelogo.webp" width="56" height="56" alt="" aria-hidden="true">
-    <span><strong>One Time Mishnayos</strong><small>Worldwide Mishnah Learning</small></span>
-  </a>
-  <nav class="header-actions" aria-label="Primary">
-    <a class="text-link" href="/login">Member Login</a>
-    <a class="button button-primary" href="/signup">Sign Up Now</a>
-    <button class="icon-button" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="site-drawer" data-drawer-toggle><span></span><span></span><span></span></button>
-  </nav>
-</header>
-<div class="drawer-overlay" hidden data-drawer-overlay></div>
-<aside class="drawer" id="site-drawer" hidden data-drawer aria-label="One Time Menu">
-  <button class="icon-button drawer-close" type="button" aria-label="Close navigation" data-drawer-close><span></span><span></span></button>
-  <h2>One Time Menu</h2>
-  <nav>${drawerLinks}</nav>
-  <p>Live Mishnayos with Rabbi Eli Scheller from Eretz Yisrael.</p>
-</aside>`;
+  return renderPublicHeader(sharedNav);
 }
 
 function footer() {
-  return `<footer class="site-footer">
-  <p>${escapeHtml(landingContent.footer.line)}</p>
-  <nav aria-label="Footer">${landingContent.footer.links
-    .map(([label, href]) => `<a href="${href}">${escapeHtml(label)}</a>`)
-    .join('')}</nav>
-</footer>`;
+  return renderPublicFooter(landingContent.footer.links, landingContent.footer.line);
 }
 
 function ticker() {
-  const copy = campaignTicker();
-  if (!copy) return '';
-  return `<a class="campaign-ticker" href="/signup" data-campaign-deadline="2026-09-11"><span>${escapeHtml(copy)}</span></a>`;
+  return renderCampaignTicker(campaignTicker(), campaign.deadlineDate);
 }
 
 function landingPage() {
   const receiveBullets = landingContent.receive.bullets
-    .map((bullet) => {
-      const prefix = landingContent.receive.highlightedPrefix;
-      const copy = bullet.startsWith(prefix)
-        ? `<span class="yellow-text">${escapeHtml(prefix)}</span>${escapeHtml(bullet.slice(prefix.length))}`
-        : escapeHtml(bullet);
-      return `<li>${copy}</li>`;
-    })
+    .map(
+      (bullet) =>
+        `<li><span class="feature-marker" aria-hidden="true"></span><p><strong>${escapeHtml(bullet.lead)}</strong><span>${escapeHtml(bullet.body)}</span></p></li>`,
+    )
     .join('');
   const gainCards = landingContent.gain.cards
     .map((card) => {
-      const visual = card.image
-        ? `<img src="${card.image}" alt="${escapeHtml(card.alt)}" loading="lazy" decoding="async">`
-        : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(card.assetBlocker ?? 'Missing assigned asset')}">Toronto.jpg pending</div>`;
+      const visualCard: {
+        image: string | null;
+        alt: string;
+        assetBlocker: string | null;
+        visualTreatment?: string;
+      } = card;
+      const visual =
+        visualCard.visualTreatment === 'memory-review'
+          ? `<div class="retention-visual" role="img" aria-label="Review rhythm, memory, and retention">
+              <span class="review-card review-card-one"><b>1</b><em>Learn</em></span>
+              <span class="review-card review-card-two"><b>2</b><em>Review</em></span>
+              <span class="review-card review-card-three"><b>3</b><em>Remember</em></span>
+            </div>`
+          : visualCard.image
+            ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}"${mediaSizeAttributes(visualCard.image)} loading="lazy" decoding="async">`
+            : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Missing approved asset</div>`;
       return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}">
         <div class="benefit-visual">${visual}</div>
         <h3>${escapeHtml(card.title)}</h3>
@@ -98,49 +110,74 @@ function landingPage() {
       </article>`;
     })
     .join('');
-  const whoCards = landingContent.who.audiences.map((label) => `<li>${escapeHtml(label)}</li>`).join('');
+  const whoCards = landingContent.who.audiences
+    .map(
+      (audience) =>
+        `<li><strong>${escapeHtml(audience.lead)}</strong><span>${escapeHtml(audience.body)}</span></li>`,
+    )
+    .join('');
+  const steps = landingContent.how.steps
+    .map((label, index) => `<li><span>${index + 1}</span>${escapeHtml(label)}</li>`)
+    .join('');
   const slides = landingContent.gallery.slides
     .map(
-      ([title, caption, src], index) => `<figure class="gallery-slide" data-gallery-slide ${index === 0 ? '' : 'hidden'}>
-        <img src="${src}" alt="${escapeHtml(caption)}" loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
-        <figcaption><strong>${escapeHtml(title)}</strong><span>${escapeHtml(caption)}</span></figcaption>
+      (
+        [title, src],
+        index,
+      ) => `<figure class="gallery-slide" data-gallery-slide data-gallery-index="${index}" ${index === 0 ? 'data-active="true"' : 'aria-hidden="true"'} tabindex="${index === 0 ? '0' : '-1'}">
+        <img src="${src}" alt="${escapeHtml(title)}"${mediaSizeAttributes(src)} loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
+        <figcaption>${escapeHtml(title)}</figcaption>
       </figure>`,
     )
     .join('');
   const dots = landingContent.gallery.slides
-    .map((slide, index) => `<button type="button" data-gallery-dot aria-label="Show ${escapeHtml(slide[0])}" aria-pressed="${index === 0}"></button>`)
+    .map(
+      (slide, index) =>
+        `<button type="button" data-gallery-dot aria-label="Show ${escapeHtml(slide[0])}" aria-pressed="${index === 0}"></button>`,
+    )
     .join('');
-  const press = landingContent.press.map((label) => `<span>${escapeHtml(label)}</span>`).join('');
+  const press = landingContent.press
+    .map(
+      ([label, src]) =>
+        `<span><img src="${src}" alt="${escapeHtml(label)}" loading="lazy" decoding="async"></span>`,
+    )
+    .join('');
 
   return pageShell(
     landingContent.seo.title,
-    `${header()}${ticker()}
+    `${ticker()}${header()}
 <main>
   <section class="hero">
     <div class="hero-inner">
-      <p class="kicker">${escapeHtml(landingContent.hero.kicker)}</p>
+      <p class="kicker">${landingContent.hero.kickerLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</p>
       <h1>${escapeHtml(landingContent.hero.heading)}</h1>
       <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
       <a class="button button-primary hero-cta" href="/signup">Sign Up Now</a>
     </div>
   </section>
   <section class="section receive" id="receive">
+    <h2 class="receive-heading">${escapeHtml(landingContent.receive.heading)}</h2>
     <div class="receive-image"><img src="/assets/students/smiley-kid.png" alt="Smiling One Time Mishnayos student" width="337" height="600"></div>
     <div class="feature-panel">
       <div class="feature-icon" aria-hidden="true">7</div>
-      <h2>${escapeHtml(landingContent.receive.heading)}</h2>
+      <p class="feature-eyebrow">${escapeHtml(landingContent.receive.eyebrow)}</p>
       <h3>${escapeHtml(landingContent.receive.title)}</h3>
       <ul>${receiveBullets}</ul>
     </div>
   </section>
   <section class="section" id="gain">
     <h2>${escapeHtml(landingContent.gain.heading)}</h2>
+    <p class="section-intro">${escapeHtml(landingContent.gain.intro)}</p>
     <div class="benefit-grid">${gainCards}</div>
+  </section>
+  <section class="section how" id="how-it-works">
+    <h2>${escapeHtml(landingContent.how.heading)}</h2>
+    <p>${escapeHtml(landingContent.how.body)}</p>
+    <ol>${steps}</ol>
   </section>
   <section class="section who" id="who">
     <div>
       <h2>${escapeHtml(landingContent.who.heading)}</h2>
-      <p>${escapeHtml(landingContent.who.body)}</p>
       <ul>${whoCards}</ul>
     </div>
   </section>
@@ -151,18 +188,21 @@ function landingPage() {
         <h2>${escapeHtml(landingContent.rabbi.heading)}</h2>
         <p>${escapeHtml(landingContent.rabbi.body)}</p>
       </div>
-      <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book" loading="lazy" decoding="async">
+      <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
-    <div class="gallery" data-gallery>
-      <h3>${escapeHtml(landingContent.gallery.heading)}</h3>
-      ${slides}
+    <div class="gallery" data-gallery role="region" aria-roledescription="carousel" aria-label="${escapeHtml(landingContent.gallery.heading)}">
+      <h3 id="gallery-heading">${escapeHtml(landingContent.gallery.heading)}</h3>
+      <div class="gallery-viewport" data-gallery-viewport aria-labelledby="gallery-heading">
+        <div class="gallery-track" data-gallery-track>${slides}</div>
+      </div>
+      <p class="sr-only" aria-live="polite" data-gallery-status>Showing ${escapeHtml(landingContent.gallery.slides[0][0])}</p>
       <div class="gallery-controls">
-        <button type="button" data-gallery-prev aria-label="Previous teaching photo">‹</button>
+        <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
         <div>${dots}</div>
-        <button type="button" data-gallery-next aria-label="Next teaching photo">›</button>
+        <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
       </div>
     </div>
-    <div class="press-strip" aria-label="As Seen Across the Jewish World"><p>As Seen Across the Jewish World</p><div>${press}</div></div>
+    <div class="press-strip" aria-label="Torah media and publication logos"><p>Torah media and publication mentions</p><div>${press}</div></div>
   </section>
   <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Sign Up Now</a></section>
 </main>${footer()}`,
@@ -170,6 +210,7 @@ function landingPage() {
 }
 
 function signupPage() {
+  const fallbackSuccess = successCopy('family');
   return pageShell(
     'Sign Up Now | One Time Mishnayos',
     `${header()}<main class="signup-page">
@@ -193,16 +234,27 @@ function signupPage() {
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
-      <h2 data-success-heading>You're signed up.</h2>
-      <p data-success-body>We saved your information and will send the current class details using your selected option.</p>
+      <h2 data-success-heading>${escapeHtml(fallbackSuccess.heading)}</h2>
+      <p data-success-body>${escapeHtml(fallbackSuccess.body)}</p>
     </div>
   </section>
 </main>${footer()}`,
+    { canonicalPath: '/signup' },
   );
 }
 
-function simplePage(title: string, heading: string, body: string, robots = 'noindex, nofollow') {
-  const html = pageShell(title, `${header()}<main class="simple-page"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p></main>${footer()}`);
+function simplePage(
+  title: string,
+  heading: string,
+  body: string,
+  robots = 'noindex, nofollow',
+  canonicalPath = '/',
+) {
+  const html = pageShell(
+    title,
+    `${header()}<main class="simple-page"><h1>${escapeHtml(heading)}</h1><p>${escapeHtml(body)}</p></main>${footer()}`,
+    { canonicalPath },
+  );
   return html.replace('index, follow', robots);
 }
 
@@ -210,15 +262,84 @@ await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
-await writeFile(path.join(outDir, 'login.html'), simplePage('Member Login | One Time Mishnayos', 'Member Login', 'Account login is reserved for the authenticated app slice.'));
-await writeFile(path.join(outDir, 'privacy.html'), simplePage('Privacy | One Time Mishnayos', 'Privacy', 'We collect only the signup information needed to respond to your One Time Mishnayos interest request.'));
-await writeFile(path.join(outDir, 'terms.html'), simplePage('Terms | One Time Mishnayos', 'Terms', 'This foundation slice does not sell access, process payments, or grant member accounts.'));
-await writeFile(path.join(outDir, '404.html'), simplePage('Not Found | One Time Mishnayos', 'Not found', 'That page is not available.', 'noindex, nofollow'));
+await writeFile(
+  path.join(outDir, 'login.html'),
+  simplePage(
+    'Member Login | One Time Mishnayos',
+    'Member Login',
+    'Account login is reserved for the authenticated app slice.',
+    'noindex, nofollow',
+    '/login',
+  ),
+);
+await writeFile(
+  path.join(outDir, 'privacy.html'),
+  simplePage(
+    'Privacy | One Time Mishnayos',
+    'Privacy',
+    'We collect only the signup information needed to respond to your One Time Mishnayos interest request.',
+    'noindex, nofollow',
+    '/privacy',
+  ),
+);
+await writeFile(
+  path.join(outDir, 'terms.html'),
+  simplePage(
+    'Terms | One Time Mishnayos',
+    'Terms',
+    'This foundation slice does not sell access, process payments, or grant member accounts.',
+    'noindex, nofollow',
+    '/terms',
+  ),
+);
+await writeFile(
+  path.join(outDir, '404.html'),
+  simplePage(
+    'Not Found | One Time Mishnayos',
+    'Not found',
+    'That page is not available.',
+    'noindex, nofollow',
+    '/404',
+  ),
+);
 await writeFile(
   path.join(outDir, 'app', 'crm.html'),
-  pageShell(
-    'CRM | One Time Mishnayos',
-    `${header()}<div id="crm-root"></div>${footer()}`,
-    { app: true, description: 'Reserved One Time CRM route.' },
-  ).replace('index, follow', 'noindex, nofollow'),
+  pageShell('CRM | One Time Mishnayos', `<div id="crm-root"></div>`, {
+    app: true,
+    canonicalPath: '/app/crm',
+    description: 'One Time authenticated CRM.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+for (const [fileName, title, description] of [
+  ['dashboard.html', 'Dashboard | One Time Mishnayos', 'One Time owner/admin dashboard.'],
+  ['classes.html', 'Classes | One Time Mishnayos', 'One Time class occurrence status.'],
+  ['content.html', 'Content Library | One Time Mishnayos', 'One Time content library status.'],
+  ['billing.html', 'Products/Billing | One Time Mishnayos', 'One Time billing status.'],
+] as const) {
+  await writeFile(
+    path.join(outDir, 'app', fileName),
+    pageShell(title, `<div id="crm-root"></div>`, {
+      app: true,
+      canonicalPath: `/app/${fileName.replace('.html', '')}`,
+      description,
+    }).replace('index, follow', 'noindex, nofollow'),
+  );
+}
+await writeFile(
+  path.join(outDir, 'app', 'parent.html'),
+  pageShell('Parent Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
+    app: true,
+    appEntry: 'portal',
+    canonicalPath: '/app/parent',
+    description: 'One Time protected parent portal.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+await writeFile(
+  path.join(outDir, 'app', 'student.html'),
+  pageShell('Student Portal | One Time Mishnayos', `<div id="portal-root"></div>`, {
+    app: true,
+    appEntry: 'portal',
+    canonicalPath: '/app/student',
+    description: 'One Time protected student portal.',
+  }).replace('index, follow', 'noindex, nofollow'),
 );

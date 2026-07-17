@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "producer": {
+    "repository": "webcraft-media/onetimev2",
+    "branch": "codex/ot72-provider-sandbox-train",
+    "account_key": "one_time",
+    "product_key": "one_time_mishnah_class"
+  },
+  "consumer": {
+    "repository_hint": "BNA",
+    "runtime_wiring": "future_followup_only",
+    "synchronous_call_allowed": false,
+    "bna_runtime_edit_in_ot72": false
+  },
+  "transport": {
+    "pattern": "asynchronous_outbox",
+    "required_controls": [
+      "signature_ref",
+      "idempotency_key",
+      "replay_protection",
+      "dead_letter",
+      "staleness_window"
+    ]
+  },
+  "allowed_categories": [
+    "deployment_source_health",
+    "migration_readiness",
+    "worker_readiness",
+    "provider_readiness",
+    "operational_counts",
+    "repair_reason_codes"
+  ],
+  "allowed_summary_keys": [
+    "ready",
+    "worker_count",
+    "provider",
+    "readiness_state",
+    "capability_count",
+    "repair_code",
+    "count",
+    "observed_at",
+    "source_sha"
+  ],
+  "forbidden_payload_terms": [
+    "contact",
+    "message_body",
+    "student",
+    "household",
+    "transcript",
+    "class_link",
+    "invoice",
+    "payment_method",
+    "provider_id",
+    "credential",
+    "raw_log"
+  ],
+  "activation_requirements": [
+    "BNA follow-up must implement a consumer from this manifest only after OT-80 accepts the adapter seams.",
+    "Consumer must verify signature_ref before accepting outcomes.",
+    "Consumer must preserve asynchronous delivery; no One Time route may synchronously call BNA.",
+    "Consumer evidence must not expose forbidden payload terms or raw provider identifiers."
+  ]
+}

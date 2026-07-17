@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "command_id": "44444444-4444-4444-8444-444444444444",
+  "idempotency_key": "tenant_demo_001:draft_01J00000000000000000000000:revision_01J00000000000000000000:buffer_destination_001:20260103T150000Z",
+  "tenant_id": "tenant_demo_001",
+  "draft_id": "draft_01J00000000000000000000000",
+  "revision_id": "revision_01J00000000000000000000",
+  "revision_sha256": "b3996bd4ac6603400c5b18e21236e15ca1faa7da5da14661a7a964c585ccbc43",
+  "approval": {
+    "approval_id": "social_approval_001",
+    "approved_by_actor_id": "actor_rabbi_001",
+    "approved_at": "2026-01-02T05:00:00Z",
+    "policy_version": "ot86-social-v1",
+    "approved_revision_sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+  },
+  "destination": {
+    "provider": "buffer",
+    "organization_id": "buffer_org_001",
+    "destination_id": "buffer_destination_001",
+    "platform": "linkedin",
+    "capability_version": "buffer-capabilities-v1"
+  },
+  "scheduled_for": "2026-01-03T15:00:00Z",
+  "timezone": "Asia/Jerusalem",
+  "privacy": {
+    "contains_learner_name": false,
+    "contains_learner_voice": false,
+    "contains_learner_face": false,
+    "contains_learner_question": false,
+    "contains_private_data": false,
+    "scan_status": "passed"
+  },
+  "audit_correlation_id": "corr_social_001",
+  "created_at": "2026-01-02T05:01:00Z"
+}

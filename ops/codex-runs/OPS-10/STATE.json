@@ -1,0 +1,168 @@
+{
+  "run_id": "OPS-10-full-staged-production-launch-2026-07-17",
+  "phase": "phase_7_staging_complete_production_blocked",
+  "status": "blocked_before_production",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.ops10-20260717-worktrees\\20260717T050800Z",
+  "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "head_sha": "see git HEAD for the commit containing this state file",
+  "source_packet": {
+    "raw_id": "RAW-20260717-002",
+    "zip_sha256": "D3E649C5D6F4782E96CDCA3AF4157D4A7D2311E279CF318DA4EB2E21908B3697",
+    "prompt_sha256": "B1F80C9C3E67B3B0EE60F19FA05B6437C99081247024218BC4ECF14888407B8F",
+    "manifest_sha256": "71040D245B560F74129B4FD01F985B5FE2BEF893E566B7AC8B3C2561258D6DB0"
+  },
+  "selected_inputs": {
+    "initial_base": {
+      "branch": "origin/integration/ops08-overnight-final-20260716T230543Z",
+      "sha": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+      "reason": "Newest known overnight integration checkpoint; Phase 1 discovery will refetch and freeze exact current inputs before convergence."
+    }
+  },
+  "candidate": {
+    "status": "staged_on_pg16_blocked_before_production",
+    "current_working_tree_repairs": [
+      "Targeted Prettier repair for known PR #60 Node 24 verify failures.",
+      "OPS-06 load/backpressure guarded cleanup repair.",
+      "Concurrent public lead idempotency advisory-lock repair after PR #61 OPS-06 artifact showed 8/12 fulfilled under contention.",
+      "OT-114 migration namespace renumber from 2010_ot114_crm_communications_support to 2016_ot114_crm_communications_support.",
+      "OT-39 drawer focus-loop e2e now covers every visible drawer link before wrapping to Close navigation after owner/support nav items were merged.",
+      "Migration runner accepts legacy raw CRLF/LF checksums for already-applied migrations and stores canonical LF checksums for new migrations."
+    ],
+    "frozen_inputs_recorded": true,
+    "local_gates_recorded": true,
+    "semantic_inputs": {
+      "ot107_student_helper": "satisfied_in_candidate; branch tail not applied because candidate already contains implementation and newer migration assertions",
+      "ot114_crm_communications_support": "merged_committed_pushed"
+    },
+    "requires_ci": []
+  },
+  "railway_readback": {
+    "staging": {
+      "project": "one-time-ot99-staging-96b42905",
+      "environment": "staging",
+      "web_service": "ot99-web",
+      "web_deployment_id": "d06dc5a5-41cf-4b41-b337-ebe4425bc371",
+      "web_image_digest": "sha256:56f600b00111537e352cf43b5bb67c2d04d99594b49b268facc91af4066ba33a",
+      "worker_service": "ot99-worker",
+      "worker_deployment_id": "21e2cdd2-a441-4225-a98e-6243c08c4da0",
+      "worker_image_digest": "sha256:12af9a6eb4f17696689a59f3943fbfc473ba9411a3d9c3104a1c64bb7a2693f0",
+      "database_service": "ot99-pg16",
+      "database_url_hash12": "b9df32a6a3a1",
+      "current_web_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+      "readiness_latest_migration": "2190_ot109_rabbi_content_publisher"
+    },
+    "production": {
+      "project": "one-time-production",
+      "environment": "production",
+      "web_service": "one-time-web",
+      "web_deployment_id": "15280d13-3e12-4c72-8460-10e0c6e99b3e",
+      "web_image_digest": "sha256:3390fcfe443897c8da1a698c98428cc85458f6a5bef789492a53ddf4a0003553",
+      "worker_or_cron_service": "one-time-delivery-cron",
+      "worker_or_cron_deployment_id": "387e2e49-2055-43c8-86f4-de11f0e60b59",
+      "database_service": "Postgres-j9Pi",
+      "database_url_hash12": "64f90e4cfe72",
+      "current_web_sha": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5"
+    },
+    "secrets_policy": "Railway variables were inspected only through redacted/hash projections; no raw DATABASE_URL, credential, token, private destination, password, or activation/reset link was recorded."
+  },
+  "completed_actions": [
+    "Validated OPS-10 ZIP and internal checksums before product work.",
+    "Created clean external worktree and release branch.",
+    "Copied original OPS-10 prompt into ops/codex-runs/OPS-10/ORIGINAL-PROMPT.md.",
+    "Committed and pushed initial OPS-10 scaffold.",
+    "Froze remote heads, PR #60/#59 status, production identity, and staging identity.",
+    "Repaired known PR #60 Prettier files.",
+    "Repaired OPS-06 expected Postgres forced-shutdown cleanup handling.",
+    "Ran local typecheck, lint, secret scan, targeted format, OPS-06 focused tests, alerts, and migration safety.",
+    "Opened draft PR #61 for pull-request CI gates.",
+    "Downloaded PR #61 failed OPS-06 artifact and identified concurrent signup idempotency as the remaining failure.",
+    "Added a transaction-scoped advisory lock for public lead idempotency keys and re-ran focused lead tests, OPS-06 focused tests, lint, typecheck, secret scan, and build locally.",
+    "Verified PR #61 rerun passed OPS-06, OT-37, OT-75, and OT-83 on commit a158c555835815d1d16d953624dc1ddb9995aee3 while Node 24 verify remained in progress.",
+    "Reviewed OT-107 branch-native delta and kept the newer candidate implementation/tests instead of applying stale branch-tail changes.",
+    "Merged OT-114 CRM communications/support locally, resolved the single app.ts import conflict, and ran focused OT-114/OT-107 local gates.",
+    "Committed and pushed the OT-114 semantic merge as a058455705a91308ff2311aa1809540c83163abd.",
+    "Verified PR #61 on a058455705a91308ff2311aa1809540c83163abd passed OPS-06 deterministic, OT-37 PostgreSQL assurance, OT-75 static readiness, and OT-83 learner-seat proof while Node 24 verify was still in progress.",
+    "Read back Railway staging and production project/service/deployment/database identities without printing secrets or raw database URLs.",
+    "Renumbered OT-114 migration to 2016_ot114_crm_communications_support and reran focused migration/auth CRM integration tests successfully.",
+    "Created OPS-10 handoff draft artifacts for decisions, migration plan, backup/restore, rollback, provider canaries, visual acceptance, performance, mutation ledger, and final report.",
+    "Committed the migration-renumber and OPS-10 handoff checkpoint as b10e1eb891e562754e62f532f737d3bd51526429.",
+    "Committed the refreshed OPS-10 portal visual evidence checkpoint as b5592fbfdaf3aad902c9f2237ea340c93d457480.",
+    "Investigated PR #61 Node 24 verify failure on commit b5592fbfdaf3aad902c9f2237ea340c93d457480 and confirmed the only failing case was the OT-39 mobile drawer focus-loop e2e after owner/support nav items existed.",
+    "Repaired the OT-39 drawer focus-loop test to assert all visible drawer links in tab order and final wrap to Close navigation.",
+    "Ran local focused drawer e2e, targeted Prettier check, lint, secret scan, and full browser e2e successfully after the Node 24 repair.",
+    "Committed and pushed the Node 24 drawer e2e repair as 812356b0c0582fadb1dfce0818775fa1a7b119e8; PR #61 required checks passed on that commit.",
+    "Discovered staging schema migration checksum drift caused by mixed CRLF/LF checksums in previously applied migrations; repaired the migration runner to accept legacy raw line-ending checksums while canonicalizing new checksums.",
+    "Committed and pushed the migration checksum repair as d13e9cd3117091e97ef973408d8742a13d1a9479; PR #61 required checks passed on that commit.",
+    "Set non-secret staging release variables APP_VERSION and COMMIT_SHA for web and worker, without printing Railway variables.",
+    "Applied staging migrations through the existing ot99-pg16 TCP proxy and staging web variables; applied migrations 2010 through 2190 and verified idempotency with 35 already-applied migrations.",
+    "Deployed staging web d06dc5a5-41cf-4b41-b337-ebe4425bc371 and worker 21e2cdd2-a441-4225-a98e-6243c08c4da0 from the final candidate SHA; both Railway service statuses are SUCCESS.",
+    "Staging HTTP smokes passed for /health, /ready, /version, and /login; /ready reported latest=2190_ot109_rabbi_content_publisher and /version reported ops10-d13e9cd."
+  ],
+  "next_safe_action": "Do not promote production until native production backup/restore proof, staging rollback rehearsal, exact production artifact path, and a PostgreSQL 16-compatible production database path are resolved.",
+  "blockers": [
+    {
+      "id": "OPS10-BLOCKER-LOCAL-PG",
+      "scope": "local_postgres_load_restore",
+      "status": "blocked_locally",
+      "reason": "Docker, pg_isready, and psql are not installed on this machine.",
+      "next_action": "Use GitHub Actions Postgres 16 services after push, or provide disposable Postgres 16 credentials for local drills."
+    },
+    {
+      "id": "OPS10-BLOCKER-PREDEPLOY-BACKUP-RESTORE",
+      "scope": "production_promotion",
+      "status": "not_yet_satisfied",
+      "reason": "Production backup/PITR state, native pg_dump -Fc backup, disposable restore verification, and staging rollback rehearsal are required before production promotion.",
+      "next_action": "Complete redacted backup/restore and rollback proof after final CI and before production mutation."
+    },
+    {
+      "id": "OPS10-BLOCKER-PROD-PG18",
+      "scope": "production_promotion",
+      "status": "blocked",
+      "reason": "Production web is bound to Railway service Postgres-j9Pi, which readback identified as PostgreSQL 18 while OPS-10 requires a PostgreSQL 16-compatible production path.",
+      "next_action": "Provision or verify a PostgreSQL 16-compatible production database path before promotion."
+    },
+    {
+      "id": "OPS10-BLOCKER-EXACT-ARTIFACT-PROMOTION",
+      "scope": "production_promotion",
+      "status": "blocked",
+      "reason": "Railway CLI source deploys rebuilt staging images; no same-image staging-to-production promotion path was proven.",
+      "next_action": "Establish exact image/digest promotion or an approved reproducible production deploy path before production mutation."
+    }
+  ],
+  "staging_mutations": [
+    {
+      "kind": "railway_variable_update",
+      "scope": "staging web/worker",
+      "description": "Updated non-secret APP_VERSION and COMMIT_SHA release readback variables for OPS-10 candidate SHAs."
+    },
+    {
+      "kind": "database_migration",
+      "scope": "staging ot99-pg16",
+      "description": "Applied migrations 2010 through 2190 through the existing TCP proxy; idempotent rerun reported 35 already applied."
+    },
+    {
+      "kind": "railway_deployment",
+      "scope": "staging web",
+      "deployment_id": "d06dc5a5-41cf-4b41-b337-ebe4425bc371",
+      "image_digest": "sha256:56f600b00111537e352cf43b5bb67c2d04d99594b49b268facc91af4066ba33a"
+    },
+    {
+      "kind": "railway_deployment",
+      "scope": "staging worker",
+      "deployment_id": "21e2cdd2-a441-4225-a98e-6243c08c4da0",
+      "image_digest": "sha256:12af9a6eb4f17696689a59f3943fbfc473ba9411a3d9c3104a1c64bb7a2693f0"
+    }
+  ],
+  "production_mutations": [],
+  "guardrails": {
+    "dns_changes_authorized": false,
+    "live_stripe_charges_authorized": false,
+    "broad_customer_sends_authorized": false,
+    "live_buffer_publication_authorized": false,
+    "production_contact_import_authorized": false,
+    "credential_disclosure_authorized": false,
+    "production_deploy_authorized_after_required_gates": true
+  },
+  "updated_at": "2026-07-17T09:48:15+03:00"
+}

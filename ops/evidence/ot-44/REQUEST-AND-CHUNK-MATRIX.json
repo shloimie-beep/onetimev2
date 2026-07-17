@@ -1,0 +1,33 @@
+{
+  "base_sha": "571b18f36cdc645f757cc3be6b0519f1af3225f6",
+  "requests": {
+    "global": {
+      "route": "/api/v1/communications",
+      "cursor_transport": "X-OT-Communications-Cursor",
+      "cache_control": "private, no-store"
+    },
+    "contact": {
+      "route": "/api/v1/crm/contacts/:contactId/communications",
+      "cursor_transport": "X-OT-Communications-Cursor",
+      "cache_control": "private, no-store"
+    },
+    "crm_overview": {
+      "communications_api_requests": 0,
+      "communications_chunk_requests": 0,
+      "proof": "tests/e2e/ot-44/communications-descriptor.spec.ts"
+    }
+  },
+  "chunks": {
+    "current_built_manifest": {
+      "assets/app-crm.js": {
+        "gzip_bytes": 63680,
+        "contains_communications_feature": false
+      }
+    },
+    "communications_lazy_chunk": {
+      "status": "integration_pending",
+      "reason": "Shared CRM entry and AppShell wiring are intentionally not edited in this branch.",
+      "later_wiring": "Import apps/web/src/client/app/communications/route-descriptor.ts from the accepted shell route registry and rebuild."
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "run_id": "OPS-10-full-staged-production-launch-2026-07-17",
+  "generated_at": "2026-07-17T05:20:00Z",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.ops10-20260717-worktrees\\20260717T050800Z",
+  "release_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "scaffold_commit": "04f0a6d2e974c8ac6e8feabd700becad7e4c2099",
+  "source_packet": {
+    "raw_id": "RAW-20260717-002",
+    "zip_path": "C:\\Users\\User\\Downloads\\OPS-10-FULL-STAGED-PRODUCTION-LAUNCH-2026-07-17.zip",
+    "zip_sha256": "D3E649C5D6F4782E96CDCA3AF4157D4A7D2311E279CF318DA4EB2E21908B3697",
+    "prompt_sha256": "B1F80C9C3E67B3B0EE60F19FA05B6437C99081247024218BC4ECF14888407B8F",
+    "manifest_sha256": "71040D245B560F74129B4FD01F985B5FE2BEF893E566B7AC8B3C2561258D6DB0",
+    "zip_validation": "passed"
+  },
+  "frozen_remote_heads": {
+    "main": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "codex/ops03b-email-step-up-login": "25b2a95aa4e3ae82aad20537dc300e9978c15b56",
+    "integration/ops08-overnight-final-20260716T230543Z": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+    "codex/ot107-student-ai-class-helper": "3871c38b75e7fc866f572ec80d3b2ec37cde6b6e",
+    "codex/ot114-crm-communications-support": "096dd614c9493cec1c29851e14f56166863ad26b"
+  },
+  "open_prs_reviewed": [
+    {
+      "number": 60,
+      "title": "OPS-08 overnight integration partial checkpoint",
+      "url": "https://github.com/webcraft-media/onetimev2/pull/60",
+      "head": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+      "base": "codex/ops03b-email-step-up-login",
+      "draft": true,
+      "merge_state": "UNSTABLE",
+      "checks": {
+        "Node 24 verify": "failed_before_ops10_prettier_repair",
+        "OPS-06 deterministic checks": "failed_before_ops10_pool_cleanup_repair",
+        "PostgreSQL 16 assurance harness": "passed",
+        "PostgreSQL 16 learner-seat proof": "passed"
+      }
+    },
+    {
+      "number": 59,
+      "title": "OT-114 CRM communications support",
+      "url": "https://github.com/webcraft-media/onetimev2/pull/59",
+      "head": "096dd614c9493cec1c29851e14f56166863ad26b",
+      "base": "codex/ops03-staging-readiness-repair",
+      "draft": true,
+      "merge_state": "UNSTABLE",
+      "checks": {
+        "Node 24 verify": "failed_before_ops10_semantic_integration",
+        "PostgreSQL 16 assurance harness": "passed",
+        "PostgreSQL 16 learner-seat proof": "passed"
+      }
+    }
+  ],
+  "deployed_identity": {
+    "production": {
+      "url": "https://join.onetimeonetime.com",
+      "deploy_info_status": 200,
+      "commit_sha": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "source_branch": "codex/onetime-final-integration-launch",
+      "target_project": "one-time-production",
+      "target_service": "one-time-web",
+      "observed_login_status": 404,
+      "observed_login_body": "Cannot GET /login",
+      "observed_version_status": 404,
+      "evidence_time": "2026-07-17T05:16:10Z"
+    },
+    "staging": {
+      "url": "https://ot99-web-staging.up.railway.app",
+      "version_status": 200,
+      "version": "ops03a-fb5f5ee",
+      "commit_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+      "target_app": "one-time",
+      "evidence_time": "2026-07-17T05:16:07Z"
+    }
+  },
+  "railway_inventory": {
+    "evidence_time": "2026-07-17T08:43:29+03:00",
+    "cli_user": "authenticated",
+    "worktree_link_status": "not_linked",
+    "staging_project": {
+      "id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "name": "one-time-ot99-staging-96b42905",
+      "environment": "staging",
+      "web_service": {
+        "id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+        "name": "ot99-web",
+        "deployment_id": "9efd2fc9-75c5-4455-b5bc-0bb16b85d3a2",
+        "image_digest": "sha256:8eabe8216c5e46c39b5ebfad75fe17ab167be74b1a9acada081f9226eefeec09",
+        "url": "https://ot99-web-staging.up.railway.app"
+      },
+      "worker_service": {
+        "id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+        "name": "ot99-worker",
+        "deployment_id": "0df0b354-6453-457b-b65b-43394601a6c7",
+        "image_digest": "sha256:56f7b3e5dbdf7d0df80f4b9a84ddb67d96790d1ddf89254c95a38db428598869"
+      },
+      "database_service": {
+        "id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+        "name": "ot99-pg16",
+        "deployment_id": "5a336d70-61a4-484a-92c9-3285ad596b4a",
+        "volume": "ot99-pg16-volume",
+        "database_url_hash12": "b9df32a6a3a1",
+        "binding_evidence": "ot99-web and ot99-worker DATABASE_URL hash matched ot99-pg16; no raw URL was recorded"
+      },
+      "unused_database_observed": {
+        "name": "Postgres",
+        "deployment_id": "738803fe-935b-4e02-b2b7-c71c3df10972",
+        "database_url_hash12": "8b7258bdf7e1"
+      }
+    },
+    "production_project": {
+      "id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+      "name": "one-time-production",
+      "environment": "production",
+      "web_service": {
+        "id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+        "name": "one-time-web",
+        "deployment_id": "15280d13-3e12-4c72-8460-10e0c6e99b3e",
+        "image_digest": "sha256:3390fcfe443897c8da1a698c98428cc85458f6a5bef789492a53ddf4a0003553",
+        "url": "https://join.onetimeonetime.com"
+      },
+      "worker_or_cron_service": {
+        "id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+        "name": "one-time-delivery-cron",
+        "deployment_id": "387e2e49-2055-43c8-86f4-de11f0e60b59",
+        "image_digest": "sha256:cca6c9720caf97d780c455e403c9228756c97da56ef722c31",
+        "status": "stopped_success_build_only"
+      },
+      "database_service": {
+        "id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+        "name": "Postgres-j9Pi",
+        "deployment_id": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+        "volume": "postgres-volume-YYfM",
+        "database_url_hash12": "64f90e4cfe72",
+        "binding_evidence": "one-time-web DATABASE_URL hash matched Postgres-j9Pi; no raw URL was recorded"
+      },
+      "other_databases_observed": [
+        {
+          "environment": "production",
+          "name": "Postgres",
+          "deployment_id": "6e3cfc7e-f795-448a-91e6-8fa9403b1c8a",
+          "database_url_hash12": "c5e1c52e9a54"
+        },
+        {
+          "environment": "crm-test",
+          "name": "Postgres-ib9s",
+          "deployment_id": "48642b37-70b0-4480-a7a1-28964a55fcd8",
+          "database_url_hash12": "8da0ce5caca8"
+        }
+      ]
+    }
+  },
+  "local_environment": {
+    "node": "v24.13.0",
+    "npm_ci": "passed",
+    "docker": "not_installed",
+    "postgres_client": "not_installed",
+    "railway_cli": "5.26.2",
+    "railway_link_status": "not_linked_in_release_worktree"
+  },
+  "candidate_policy": {
+    "initial_base": "integration/ops08-overnight-final-20260716T230543Z",
+    "required_repairs_before_candidate": [
+      "Prettier repair for PR #60 Node 24 verify failure",
+      "OPS-06 load/backpressure cleanup race repair",
+      "Semantic confirmation or integration of OT-107 student helper and OT-114 CRM/support work"
+    ],
+    "production_deploy": "authorized only after local gates, GitHub checks, immutable staging deploy, staging acceptance, backup/restore, rollback proof, and production acceptance are green"
+  }
+}

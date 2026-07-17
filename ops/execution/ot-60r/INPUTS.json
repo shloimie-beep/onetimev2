@@ -1,0 +1,79 @@
+{
+  "task_id": "OT-60R",
+  "prompt_path": "ops/execution/ot-60r/ORIGINAL-PROMPT.md",
+  "prompt_sha256": "A1507EEB4F2A652BDEBB1063F387AE0F14DA7C4686C13A5537E1F32ED67E4CA1",
+  "prompt_character_count": 15245,
+  "target_repository": "webcraft-media/onetimev2",
+  "target_branch": "codex/ot60r-recovery-convergence",
+  "draft_pr_base": "codex/crm-core-v1",
+  "deployment": "forbidden",
+  "production_provider_mutations": "forbidden",
+  "base_sha": "4ac288968ba24e30a5c3f8c6924f492eedf4338f",
+  "required_ancestors": [
+    "3465bd7d4c6b6829a6be6e4b4f8a003d608f3680",
+    "a73458d1884b8fcb4843c4852425009577f59ef7"
+  ],
+  "remote_inputs": [
+    {
+      "pr": 5,
+      "label": "shell",
+      "commit": "6ca5e568c328ea116a9413b57ea5920400f8bc14"
+    },
+    {
+      "pr": 7,
+      "label": "CRM privacy/performance",
+      "commit": "c1584577780d7b5125bce4fb81d2a454c9e84096"
+    },
+    {
+      "pr": 11,
+      "label": "OT-42 CRM module",
+      "commit": "b2c159a060d8aa50ec6feb69f1cae003fd633bf3"
+    },
+    {
+      "pr": 4,
+      "label": "delivery branch head",
+      "commit": "61d4755fe279ca47c37e7adbe8d1e6ce8b258dae"
+    },
+    {
+      "pr": 8,
+      "label": "delivery correction",
+      "commit": "571b18f36cdc645f757cc3be6b0519f1af3225f6"
+    },
+    {
+      "pr": 14,
+      "label": "Communications V1A",
+      "commit": "76cae19be515ee896f22d0da976082a09d1d25d6"
+    },
+    {
+      "pr": 12,
+      "label": "Stripe fixture-only",
+      "commit": "f4e4fb1dc202f8b17bbf1747c82ae3b0c1c5c899"
+    },
+    {
+      "pr": 13,
+      "label": "Telegram mock-only",
+      "commit": "e235af05759f0a97496552c6e8aabed7ba3eee18"
+    },
+    {
+      "pr": 15,
+      "label": "Parent/Student portals",
+      "commit": "9594c228b9ac3047f42bb9e8c804384cc45a3e40"
+    },
+    {
+      "pr": 6,
+      "label": "PostgreSQL assurance harness",
+      "commit": "0ea782d8551c26edd48b08d644b573e19b9835b1"
+    },
+    {
+      "pr": 10,
+      "label": "OT-47 evidence-only",
+      "commit": "9444176dbc55e0c5af048ec1df2ea75ffa8dde33"
+    }
+  ],
+  "superseded_security_inputs": ["PR #3 / OT-34", "PR #9 / OT-38"],
+  "known_absent_inputs_to_record": [
+    "OT-41 corrected-integration branch",
+    "OT-43 feature branch",
+    "OT-60 branch"
+  ]
+}

@@ -1,0 +1,100 @@
+name: OPS-11 PostgreSQL 18 Assurance
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ops11-postgres-18-assurance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres-18-assurance:
+    name: PostgreSQL 18 assurance and restore clone
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run OT-37 harness on PostgreSQL 18
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          OT37_OUTPUT_DIR: ops/evidence/ops-11/pg18
+        run: npx tsx scripts/postgres-assurance/run.ts
+
+      - name: Run native PostgreSQL 18 dump/restore clone smoke
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          OPS11_PG18_OUTPUT_DIR: ops/evidence/ops-11/pg18
+        run: npx tsx scripts/postgres-assurance/ops11-pg18-restore-clone.ts
+
+      - name: Secret scan
+        run: npm run secret:scan
+
+      - name: Format
+        run: >-
+          npx prettier --check
+          .github/workflows/ops11-postgres-18-assurance.yml
+          scripts/postgres-assurance/ops11-pg18-restore-clone.ts
+          ops/evidence/ops-11/pg18/latest-postgres-assurance-report.json
+          ops/evidence/ops-11/pg18/latest-postgres-assurance-report.md
+          ops/evidence/ops-11/pg18/pg18-restore-clone-report.json
+          ops/evidence/ops-11/pg18/pg18-restore-clone-report.md
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Upload sanitized OPS-11 PostgreSQL 18 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ops11-postgres-18-assurance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ops/evidence/ops-11/pg18/latest-postgres-assurance-report.json
+            ops/evidence/ops-11/pg18/latest-postgres-assurance-report.md
+            ops/evidence/ops-11/pg18/pg18-restore-clone-report.json
+            ops/evidence/ops-11/pg18/pg18-restore-clone-report.md
+          if-no-files-found: ignore
+          retention-days: 7

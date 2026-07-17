@@ -1,0 +1,89 @@
+{
+  "schema_version": "onetime.ot81.blocker_dispositions.v1",
+  "generated_at": "2026-07-15T11:50:43.723Z",
+  "starting_report": "ops/evidence/ot-76/ot80-final-candidate/day-one-certify-report.json",
+  "dispositions": [
+    {
+      "gate_id": "DAYONE-02",
+      "status": "fixed",
+      "evidence": [
+        "tests/e2e/landing-signup.spec.ts",
+        "tests/integration/lead-capture.test.ts",
+        "tests/integration/classes/class-fulfillment.test.ts"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-04",
+      "status": "fixed",
+      "evidence": [
+        "tests/integration/communications/api.test.ts",
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "ops/evidence/ot-44/READ-ONLY-PROOF.md"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-05",
+      "status": "fixed",
+      "evidence": [
+        "tests/integration/classes/class-fulfillment.test.ts"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-06",
+      "status": "fixed",
+      "evidence": [
+        "tests/integration/content/content-library.test.ts"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-07",
+      "status": "fixed",
+      "evidence": [
+        "tests/integration/portals/portal-mount.test.ts",
+        "ops/evidence/ot-52/SIBLING-ISOLATION.md"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-08",
+      "status": "fixed",
+      "evidence": [
+        "ops/day-one/visible-action-registry.json",
+        "tests/unit/ot72-provider-adapters.test.ts",
+        "tests/ot-52/portal-ui.test.ts"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-09",
+      "status": "fixed",
+      "evidence": [
+        "ops/day-one/visible-action-registry.json",
+        "tests/unit/day-one/visible-action-registry.test.ts"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-10",
+      "status": "fixed",
+      "evidence": [
+        "tests/accessibility/ot81-day-one-matrix.spec.ts",
+        "ops/evidence/ot-81/responsive-accessibility-matrix.json"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-11",
+      "status": "fixed",
+      "evidence": [
+        "tests/performance/ot81-day-one-performance.spec.ts",
+        "ops/evidence/ot-81/performance-30-sample.json"
+      ]
+    },
+    {
+      "gate_id": "DAYONE-13",
+      "status": "fixed",
+      "evidence": [
+        "ops/evidence/ot-81/migration-ledger.json",
+        "ops/release/ot75/runbooks/backup-pitr-restore-drill.md",
+        "ops/release/ot75/runbooks/rollback-and-source-readback.md"
+      ]
+    }
+  ]
+}
