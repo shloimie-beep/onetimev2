@@ -1,0 +1,106 @@
+{
+  "schema_version": "onetime.w12_100.staging_before_state.v1",
+  "generated_at": "2026-07-17T17:34:09.462Z",
+  "candidate_commit_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "base_url_hash": "eb60266bde81f4511b34212436d6c8d3914cf7e49be14683da35fdc97ca631e1",
+  "http": {
+    "version": {
+      "status": 200,
+      "ok": true,
+      "body": {
+        "version": "ops11-1197673",
+        "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+        "target_app": "one-time"
+      }
+    },
+    "health": {
+      "status": 200,
+      "ok": true,
+      "body": {
+        "ok": true,
+        "service": "onetime-web"
+      }
+    },
+    "ready_status": 200,
+    "ready_ok": true,
+    "ready_latest_migration": "latest=2190_ot109_rabbi_content_publisher",
+    "optional_provider_dependencies": {
+      "email_transport": "ok",
+      "whatsapp_transport": "ok",
+      "support_bridge": "disabled"
+    }
+  },
+  "deployments": {
+    "web": {
+      "service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "service_name": "ot99-web",
+      "latest_id": "6e3b45dc-761c-4f4b-a844-f8e4c7aabe6a",
+      "latest_status": "SUCCESS",
+      "latest_digest": "sha256:30285f6adce25a03c2305d6bede808e95e97e96f057fdedd592f338958250d4f",
+      "created_at": "2026-07-17T08:08:47.584Z"
+    },
+    "worker": {
+      "service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+      "service_name": "ot99-worker",
+      "latest_id": "914c18f8-4f59-4234-930a-932dd89790c4",
+      "latest_status": "SUCCESS",
+      "latest_digest": "sha256:cbd8a55e41bab2229ec5603efcba2262a91c8be773ffb176520db3a43b220a72",
+      "created_at": "2026-07-17T08:08:48.207Z"
+    }
+  },
+  "migration_ledger": {
+    "status": "blocked",
+    "local_migration_count": 38,
+    "applied_migration_count": 35,
+    "pending_migrations": 3,
+    "latest_local_migration": "2202_w12_05_telegram_operations",
+    "latest_applied_migration": "2190_ot109_rabbi_content_publisher",
+    "pending_ids_hash": "074bdc2e7eba1ab8bc4651b5b70e1babee705baa87bae35de2127d1079b58afa",
+    "private_values_recorded": false,
+    "raw_source_rows_included": false
+  },
+  "runtime_metadata": {
+    "worker_count": 5,
+    "fresh_worker_count": 1,
+    "fresh_workers": [
+      {
+        "worker_type": "delivery_outbox",
+        "state": "ready",
+        "version": "ops11-1197673",
+        "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+        "heartbeat_age_ms": 11975
+      }
+    ],
+    "queue_counts": [
+      {
+        "queue": "delivery_outbox",
+        "ready_count": 0,
+        "dead_letter_count": 0,
+        "retry_count": 0
+      },
+      {
+        "queue": "support_outbox",
+        "ready_count": null,
+        "dead_letter_count": null,
+        "retry_count": null
+      },
+      {
+        "queue": "account_lifecycle_outbox",
+        "ready_count": 0,
+        "dead_letter_count": 0,
+        "retry_count": 0
+      }
+    ]
+  },
+  "provider_modes_before_state": {
+    "email_transport": "ok",
+    "whatsapp_transport": "ok",
+    "support_bridge": "disabled",
+    "note": "Before-state reports email and WhatsApp optional dependencies as ok; staging provider modes were not mutated because the run stopped before backup/deploy."
+  },
+  "database_mutation_performed": false,
+  "provider_sends": false,
+  "provider_mutations": false,
+  "production_mutations": false,
+  "private_values_recorded": false
+}

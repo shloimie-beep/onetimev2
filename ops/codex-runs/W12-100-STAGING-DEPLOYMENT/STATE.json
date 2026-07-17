@@ -1,0 +1,45 @@
+{
+  "schema_version": "onetime.w12_100.staging_deployment_state.v1",
+  "generated_at": "2026-07-17T20:34:15.9828562+03:00",
+  "status": "blocked_before_staging_mutation",
+  "candidate_commit_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "evidence_branch": "codex/w12-100-isolated-staging-deployment-20260717",
+  "safety_scope": {
+    "staging_only": true,
+    "production_deployment": false,
+    "production_database": false,
+    "provider_sends": false,
+    "provider_mutations": false,
+    "real_audience_import": false,
+    "secret_values_recorded": false
+  },
+  "identity_check": {
+    "railway_project": "matched",
+    "staging_environment": "matched",
+    "web_service": "matched",
+    "worker_service": "matched",
+    "database_service": "matched",
+    "tcp_proxy": "matched",
+    "local_railway_link": "unlinked"
+  },
+  "before_state_captured": true,
+  "backup_gate": "blocked",
+  "blocked_reason": "The worktree is not Railway-linked and protected backup/PITR metadata could not be verified through exact-selector read-only CLI commands; pg_dump is also unavailable locally and Railway SSH has no registered key.",
+  "not_executed": [
+    "staging release variable changes",
+    "staging migrations through 2202",
+    "staging web deployment",
+    "staging worker deployment",
+    "post-deploy no-provider smoke",
+    "rollback rehearsal",
+    "roll-forward rehearsal"
+  ],
+  "artifacts": [
+    "ops/codex-runs/W12-100-STAGING-DEPLOYMENT/IMMUTABLE-CANDIDATE.json",
+    "ops/codex-runs/W12-100-STAGING-DEPLOYMENT/IDENTITY-CHECK.json",
+    "ops/codex-runs/W12-100-STAGING-DEPLOYMENT/BEFORE-STATE.json",
+    "ops/codex-runs/W12-100-STAGING-DEPLOYMENT/BACKUP-GATE.json",
+    "ops/codex-runs/W12-100-STAGING-DEPLOYMENT/EXTERNAL-ACTION-LEDGER.md",
+    "ops/codex-runs/W12-100-STAGING-DEPLOYMENT/FINAL-REPORT.md"
+  ]
+}

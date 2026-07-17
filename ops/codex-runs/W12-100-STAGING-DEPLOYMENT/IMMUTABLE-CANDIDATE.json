@@ -1,0 +1,17 @@
+{
+  "schema_version": "onetime.w12_100.staging_deployment.immutable_candidate.v1",
+  "recorded_at": "2026-07-17T20:22:36.8626867+03:00",
+  "candidate_commit_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "source_branch": "integration/w12-100-launch-readiness-convergence-20260717",
+  "evidence_branch": "codex/w12-100-isolated-staging-deployment-20260717",
+  "recorded_before_external_action": true,
+  "safety_scope": {
+    "staging_only": true,
+    "production_deployment": false,
+    "production_database": false,
+    "provider_sends": false,
+    "provider_mutations": false,
+    "real_audience_import": false,
+    "secret_values_in_output": false
+  }
+}

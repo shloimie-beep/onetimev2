@@ -1,0 +1,35 @@
+{
+  "schema_version": "onetime.w12_100.staging_backup_gate.v1",
+  "generated_at": "2026-07-17T17:34:09.462Z",
+  "status": "blocked",
+  "candidate_commit_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "checks": [
+    {
+      "id": "local_pg_dump",
+      "status": "blocked",
+      "detail": "pg_dump is not installed on this machine."
+    },
+    {
+      "id": "railway_volume_metadata_exact_selectors",
+      "status": "blocked",
+      "detail": "This Railway CLI volume list command does not accept explicit project/environment/service selectors; the worktree is intentionally not linked."
+    },
+    {
+      "id": "railway_ssh_backup_or_metadata",
+      "status": "blocked",
+      "detail": "Railway SSH cannot be used because no registered SSH keys are available."
+    },
+    {
+      "id": "pitr_or_backup_metadata",
+      "status": "blocked",
+      "detail": "No approved backup/PITR metadata source was available through exact-selector read-only CLI commands."
+    }
+  ],
+  "backup_created": false,
+  "backup_verified": false,
+  "protected_backup_outside_git": false,
+  "stopped_before_migrations": true,
+  "stopped_before_deploy": true,
+  "private_values_recorded": false,
+  "secrets_recorded": false
+}
