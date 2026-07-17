@@ -92,6 +92,13 @@ const envSchema = z.object({
   ENABLE_PAYMENT_TRANSPORT: booleanFromString,
   ONE_TIME_TELEGRAM_WEBHOOK_ENABLED: booleanFromString,
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET: z.string().min(16).optional(),
+  ONE_TIME_TELEGRAM_WEBHOOK_SECRET_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_TOKEN_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_SINGLE_CONSUMER_GATE: booleanFromString,
+  ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_LOCAL_POLLING_ENABLED: booleanFromString,
+  ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED: booleanFromString,
   ONE_TIME_TELEGRAM_BOT_KEY: z.string().min(1).default('one_time_internal_ops'),
   ONE_TIME_TELEGRAM_ENVIRONMENT: z.enum(['local', 'staging', 'production']).default('staging'),
   ZOOM_CLASSROOM_ENABLED: booleanFromString,
@@ -218,6 +225,20 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
   }
 
   if (
+    parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED &&
+    (parsed.ONE_TIME_TELEGRAM_LOCAL_POLLING_ENABLED ||
+      parsed.ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED)
+  ) {
+    throw new Error('Telegram webhook and polling consumers are mutually exclusive.');
+  }
+
+  if (parsed.ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED) {
+    throw new Error(
+      'Production Telegram polling is not implemented; use the protected webhook lane.',
+    );
+  }
+
+  if (
     parsed.NODE_ENV === 'production' &&
     ['owner', 'admin'].some(Boolean) &&
     !parsed.MFA_SECRET_ENCRYPTION_KEY
@@ -286,6 +307,15 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     whatsappCanaryAuthorized: parsed.ONETIME_WHATSAPP_CANARY_AUTHORIZED,
     oneTimeTelegramWebhookEnabled: parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED,
     oneTimeTelegramWebhookSecret: parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET,
+    oneTimeTelegramWebhookSecretConfigured:
+      parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET_CONFIGURED ||
+      Boolean(parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET),
+    oneTimeTelegramTokenConfigured: parsed.ONE_TIME_TELEGRAM_TOKEN_CONFIGURED,
+    oneTimeTelegramOwnerMappingConfigured: parsed.ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED,
+    oneTimeTelegramSingleConsumerGate: parsed.ONE_TIME_TELEGRAM_SINGLE_CONSUMER_GATE,
+    oneTimeTelegramCanaryChatConfigured: parsed.ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED,
+    oneTimeTelegramLocalPollingEnabled: parsed.ONE_TIME_TELEGRAM_LOCAL_POLLING_ENABLED,
+    oneTimeTelegramProductionPollingEnabled: parsed.ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED,
     oneTimeTelegramBotKey: parsed.ONE_TIME_TELEGRAM_BOT_KEY,
     oneTimeTelegramEnvironment: parsed.ONE_TIME_TELEGRAM_ENVIRONMENT,
     zoomClassroomEnabled: parsed.ZOOM_CLASSROOM_ENABLED,

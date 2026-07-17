@@ -2162,25 +2162,25 @@ function statusFromTelegramReadiness(
   config: AppConfig,
   env: NodeJS.ProcessEnv,
 ): ContentAdminProviderPortStatus {
-  const tokenConfigured =
-    env.ONE_TIME_TELEGRAM_TOKEN_CONFIGURED === 'true' || Boolean(env.ONE_TIME_TELEGRAM_BOT_TOKEN);
-  const ownerMappingConfigured = env.ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED === 'true';
-  const canaryChatConfigured = env.ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED === 'true';
+  void env;
   const readiness = telegramTransportReadiness({
     enabled: config.oneTimeTelegramWebhookEnabled,
     botKey: config.oneTimeTelegramBotKey,
     environment: config.oneTimeTelegramEnvironment,
-    tokenConfigured,
-    ownerMappingConfigured,
-    singleConsumerGate: true,
-    canaryChatConfigured,
+    tokenConfigured: config.oneTimeTelegramTokenConfigured,
+    ownerMappingConfigured: config.oneTimeTelegramOwnerMappingConfigured,
+    singleConsumerGate: config.oneTimeTelegramSingleConsumerGate,
+    canaryChatConfigured: config.oneTimeTelegramCanaryChatConfigured,
   });
   const missing = [
     !config.oneTimeTelegramWebhookEnabled ? 'ONE_TIME_TELEGRAM_WEBHOOK_ENABLED' : null,
-    !config.oneTimeTelegramWebhookSecret ? 'ONE_TIME_TELEGRAM_WEBHOOK_SECRET' : null,
-    !tokenConfigured ? 'ONE_TIME_TELEGRAM_TOKEN_CONFIGURED' : null,
-    !ownerMappingConfigured ? 'ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED' : null,
-    !canaryChatConfigured ? 'ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED' : null,
+    !config.oneTimeTelegramWebhookSecretConfigured ? 'ONE_TIME_TELEGRAM_WEBHOOK_SECRET' : null,
+    !config.oneTimeTelegramTokenConfigured ? 'ONE_TIME_TELEGRAM_TOKEN_CONFIGURED' : null,
+    !config.oneTimeTelegramOwnerMappingConfigured
+      ? 'ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED'
+      : null,
+    !config.oneTimeTelegramSingleConsumerGate ? 'ONE_TIME_TELEGRAM_SINGLE_CONSUMER_GATE' : null,
+    !config.oneTimeTelegramCanaryChatConfigured ? 'ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED' : null,
   ].filter((value): value is string => Boolean(value));
   return {
     port: 'telegram',

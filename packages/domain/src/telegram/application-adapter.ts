@@ -22,6 +22,7 @@ const baseCapabilities: BotCapability[] = [
   'gateway.status.read',
   'gateway.identity.read_self',
   'gateway.scope.read',
+  'app.link.open',
   'crm.lead.list',
   'crm.lead.read',
   'crm.signup.recent',
@@ -53,6 +54,8 @@ const baseCapabilities: BotCapability[] = [
   'social.draft.list',
   'social.draft.read',
   'social.draft.approval_link',
+  'delivery.status.read',
+  'delivery.retry',
   'telegram.audit.read_recent',
 ];
 
@@ -115,6 +118,8 @@ class SqlBackedOneTimeTelegramApplicationAdapter implements OneTimeBotApplicatio
       productKey: actor.productKey,
     };
     switch (request.capability) {
+      case 'app.link.open':
+        return this.appLink(request);
       case 'crm.lead.list': {
         const list = await listContacts({
           pool: this.pool,
@@ -180,6 +185,9 @@ class SqlBackedOneTimeTelegramApplicationAdapter implements OneTimeBotApplicatio
       case 'class.question.read_redacted':
         return this.readQuestion(actor, stringArg(request, 'ref'));
       case 'content.pipeline.read': {
+        if (stringArg(request, 'filter').toLowerCase() === 'vimeo') {
+          return this.vimeoProcessingStatus(actor);
+        }
         const items = await listContentLibrary({
           pool: this.pool,
           config: scopedConfig,
@@ -223,6 +231,8 @@ class SqlBackedOneTimeTelegramApplicationAdapter implements OneTimeBotApplicatio
         return this.readSocialDraft(actor, stringArg(request, 'ref'));
       case 'social.draft.approval_link':
         return this.socialApprovalLink(actor, stringArg(request, 'ref'));
+      case 'delivery.status.read':
+        return this.deliveryStatus(actor, stringArg(request, 'ref'));
       case 'telegram.audit.read_recent':
         return this.recentAudit(actor, Number(request.args.count ?? 10));
       default:
@@ -274,6 +284,9 @@ class SqlBackedOneTimeTelegramApplicationAdapter implements OneTimeBotApplicatio
     if (input.request.capability === 'class.question.resolve') {
       return this.resolveQuestion(actor, input);
     }
+    if (input.request.capability === 'delivery.retry') {
+      return this.retryApprovedDelivery(actor, input);
+    }
     if (input.request.capability === 'crm.lead.create') {
       return {
         status: 'feature_unavailable',
@@ -310,6 +323,157 @@ class SqlBackedOneTimeTelegramApplicationAdapter implements OneTimeBotApplicatio
       ),
       'Email and phone are redacted in Telegram.',
     ].join('\n');
+  }
+
+  private appLink(request: BotActionRequest) {
+    const kind = stringArg(request, 'kind').toLowerCase();
+    const ref = encodeURIComponent(stringArg(request, 'ref'));
+    const path =
+      kind === 'contact'
+        ? `/app/crm/contacts/${ref}`
+        : kind === 'class'
+          ? `/app/classes${ref ? `?class=${ref}` : ''}`
+          : kind === 'content'
+            ? `/app/content${ref ? `?item=${ref}` : ''}`
+            : kind === 'support'
+              ? `/app/support${ref ? `/receipts/${ref}` : ''}`
+              : null;
+    if (!path) {
+      return 'Available One Time app links: class, contact, content, support.';
+    }
+    return [
+      `One Time ${kind} link: ${secureWebLink(this.config, path)}`,
+      'Open in the authenticated web app for private details. Telegram keeps payloads redacted.',
+    ].join('\n');
+  }
+
+  private async vimeoProcessingStatus(actor: CanonicalOneTimeActor) {
+    const result = await this.pool.query(
+      `SELECT source_key, content_id, title, processing_state, attempts,
+              sanitized_error_code, next_reconcile_at, updated_at
+         FROM onetime.ot104r_vimeo_sources
+        WHERE account_key = $1
+          AND product_key = $2
+        ORDER BY updated_at DESC, source_key ASC
+        LIMIT 6`,
+      [actor.accountKey, actor.productKey],
+    );
+    if (!result.rows.length) return 'Vimeo/content processing: no scoped Vimeo sources.';
+    return [
+      'Vimeo/content processing:',
+      ...result.rows.map((row) =>
+        [
+          `${String(row.source_key)}: ${String(row.processing_state)} for content ${String(row.content_id)}`,
+          `title ${safeText(String(row.title), 72)}`,
+          `attempts ${Number(row.attempts ?? 0)}`,
+          row.sanitized_error_code ? `error ${String(row.sanitized_error_code)}` : 'error none',
+          row.next_reconcile_at ? `next ${toIso(row.next_reconcile_at)}` : 'next not scheduled',
+        ].join('; '),
+      ),
+      'Provider video IDs, raw URLs, transcripts, and private learner data are not shown.',
+    ].join('\n');
+  }
+
+  private async deliveryStatus(actor: CanonicalOneTimeActor, deliveryRef: string) {
+    if (deliveryRef) return this.deliveryStatusForRef(actor, deliveryRef);
+
+    const lifecycle = await this.pool.query(
+      `SELECT state, count(*)::int AS count
+         FROM onetime.account_lifecycle_delivery_outbox
+        WHERE account_key = $1
+          AND product_key = $2
+        GROUP BY state
+        ORDER BY state`,
+      [actor.accountKey, actor.productKey],
+    );
+    const publicOutbox = await this.pool.query(
+      `SELECT status, count(*)::int AS count
+         FROM onetime.outbox_events
+        WHERE account_key = $1
+          AND product_key = $2
+        GROUP BY status
+        ORDER BY status`,
+      [actor.accountKey, actor.productKey],
+    );
+    const failed = await this.pool.query(
+      `SELECT delivery_key, purpose, state, attempts, max_attempts, next_attempt_at,
+              last_error_code, updated_at, metadata
+         FROM onetime.account_lifecycle_delivery_outbox
+        WHERE account_key = $1
+          AND product_key = $2
+          AND state IN ('retry','provider_off','dead_letter')
+        ORDER BY updated_at DESC, delivery_key ASC
+        LIMIT 5`,
+      [actor.accountKey, actor.productKey],
+    );
+    const lines = ['Delivery status:'];
+    lines.push(
+      lifecycle.rows.length
+        ? `Lifecycle outbox: ${lifecycle.rows.map((row) => `${String(row.state)}=${Number(row.count)}`).join(', ')}.`
+        : 'Lifecycle outbox: no scoped deliveries.',
+    );
+    lines.push(
+      publicOutbox.rows.length
+        ? `Public delivery outbox: ${publicOutbox.rows.map((row) => `${String(row.status)}=${Number(row.count)}`).join(', ')}.`
+        : 'Public delivery outbox: no scoped deliveries.',
+    );
+    if (failed.rows.length) {
+      lines.push('Retry candidates:');
+      lines.push(...failed.rows.map((row) => deliveryLifecycleLine(row)));
+    }
+    lines.push('Destinations, encrypted payloads, and provider message IDs are redacted.');
+    return lines.join('\n');
+  }
+
+  private async deliveryStatusForRef(actor: CanonicalOneTimeActor, deliveryRef: string) {
+    const lifecycle = await this.pool.query(
+      `SELECT delivery_key, purpose, channel, transport_mode, state, attempts, max_attempts,
+              next_attempt_at, last_error_code, updated_at, metadata
+         FROM onetime.account_lifecycle_delivery_outbox
+        WHERE account_key = $1
+          AND product_key = $2
+          AND delivery_key = $3
+        LIMIT 1`,
+      [actor.accountKey, actor.productKey, deliveryRef],
+    );
+    const lifecycleRow = lifecycle.rows[0] as Record<string, unknown> | undefined;
+    if (lifecycleRow) {
+      return [
+        `Delivery ${String(lifecycleRow.delivery_key)}: ${String(lifecycleRow.state)}.`,
+        `Purpose: ${String(lifecycleRow.purpose)}; channel ${String(lifecycleRow.channel)}; mode ${String(lifecycleRow.transport_mode)}.`,
+        `Attempts: ${Number(lifecycleRow.attempts ?? 0)}/${Number(lifecycleRow.max_attempts ?? 0)}; next ${toIso(lifecycleRow.next_attempt_at)}.`,
+        `Retry approval: ${retryApproved(lifecycleRow.metadata) ? 'approved' : 'not approved'}.`,
+        lifecycleRow.last_error_code
+          ? `Last error: ${String(lifecycleRow.last_error_code)}.`
+          : 'Last error: none.',
+        'Destination, encrypted payload, and provider message ID are redacted.',
+      ].join('\n');
+    }
+
+    const publicOutbox = await this.pool.query(
+      `SELECT delivery_key, event_type, channel, transport_mode, status, attempts,
+              next_attempt_at, delivered_at, created_at
+         FROM onetime.outbox_events
+        WHERE account_key = $1
+          AND product_key = $2
+          AND delivery_key = $3
+        LIMIT 1`,
+      [actor.accountKey, actor.productKey, deliveryRef],
+    );
+    const outboxRow = publicOutbox.rows[0] as Record<string, unknown> | undefined;
+    if (outboxRow) {
+      return [
+        `Delivery ${String(outboxRow.delivery_key)}: ${String(outboxRow.status)}.`,
+        `Event: ${String(outboxRow.event_type)}; channel ${String(outboxRow.channel)}; mode ${String(outboxRow.transport_mode)}.`,
+        `Attempts: ${Number(outboxRow.attempts ?? 0)}; next ${toIso(outboxRow.next_attempt_at)}.`,
+        outboxRow.delivered_at
+          ? `Delivered: ${toIso(outboxRow.delivered_at)}.`
+          : 'Delivered: not recorded.',
+        'Payload and destination are redacted.',
+      ].join('\n');
+    }
+
+    return 'Delivery status: no scoped delivery matched that reference.';
   }
 
   private async listLeadTags(actor: CanonicalOneTimeActor, contactRef: string) {
@@ -912,6 +1076,124 @@ class SqlBackedOneTimeTelegramApplicationAdapter implements OneTimeBotApplicatio
     };
   }
 
+  private async retryApprovedDelivery(
+    actor: CanonicalOneTimeActor,
+    input: { request: BotActionRequest; idempotencyKey: string },
+  ): Promise<BotCommandResult> {
+    const deliveryRef = stringArg(input.request, 'delivery_ref') || stringArg(input.request, 'ref');
+    if (!deliveryRef) {
+      return unsupported(input.idempotencyKey, 'Delivery retry requires a delivery reference.');
+    }
+
+    const result = await inTransaction(this.pool, async (client) => {
+      const replay = await client.query(
+        `SELECT execution_key
+           FROM onetime.telegram_command_executions
+          WHERE bot_key = $1
+            AND environment = $2
+            AND account_key = $3
+            AND product_key = $4
+            AND actor_user_key = $5
+            AND idempotency_key = $6
+          LIMIT 1`,
+        [
+          this.config.oneTimeTelegramBotKey,
+          this.config.oneTimeTelegramEnvironment,
+          actor.accountKey,
+          actor.productKey,
+          actor.userKey,
+          input.idempotencyKey,
+        ],
+      );
+      if (replay.rowCount) return { replay: true as const };
+
+      const current = await client.query(
+        `SELECT delivery_key, token_key, purpose, state, attempts, max_attempts, metadata
+           FROM onetime.account_lifecycle_delivery_outbox
+          WHERE account_key = $1
+            AND product_key = $2
+            AND delivery_key = $3
+          FOR UPDATE`,
+        [actor.accountKey, actor.productKey, deliveryRef],
+      );
+      const row = current.rows[0] as Record<string, unknown> | undefined;
+      if (!row) return null;
+      if (!['retry', 'provider_off', 'dead_letter'].includes(String(row.state))) {
+        return {
+          denied: `Delivery ${deliveryRef} is ${String(row.state)} and is not a failed retryable delivery.`,
+        };
+      }
+      if (!retryApproved(row.metadata)) {
+        return {
+          denied: 'Delivery retry requires a prior approval marker in protected delivery metadata.',
+        };
+      }
+      if (Number(row.attempts ?? 0) >= Number(row.max_attempts ?? 0)) {
+        return {
+          denied: `Delivery ${deliveryRef} has no retry attempts remaining.`,
+        };
+      }
+      const retryMetadata = {
+        ...jsonObject(row.metadata),
+        telegram_retry_requested: true,
+        telegram_retry_actor_key: actor.userKey,
+        telegram_retry_idempotency_hash: stableDigest([input.idempotencyKey]),
+      };
+
+      await client.query(
+        `UPDATE onetime.account_lifecycle_delivery_outbox
+            SET state = 'retry',
+                next_attempt_at = now(),
+                lease_owner = NULL,
+                lease_expires_at = NULL,
+                last_error_code = NULL,
+                dead_lettered_at = NULL,
+                updated_at = now(),
+                metadata = $4::jsonb
+          WHERE account_key = $1
+            AND product_key = $2
+            AND delivery_key = $3`,
+        [actor.accountKey, actor.productKey, deliveryRef, JSON.stringify(retryMetadata)],
+      );
+      await client.query(
+        `INSERT INTO onetime.account_lifecycle_audit_events
+           (audit_key, account_key, product_key, actor_user_key, token_key,
+            action_type, success, metadata)
+         VALUES ($1,$2,$3,$4,$5,'telegram_delivery_retry_requested',true,$6::jsonb)
+         ON CONFLICT (audit_key) DO NOTHING`,
+        [
+          `lifecycle_audit_${stableDigest([deliveryRef, input.idempotencyKey]).slice(0, 32)}`,
+          actor.accountKey,
+          actor.productKey,
+          actor.userKey,
+          String(row.token_key),
+          JSON.stringify({
+            delivery_key: deliveryRef,
+            purpose: String(row.purpose),
+            previous_state: String(row.state),
+            transport: 'telegram',
+          }),
+        ],
+      );
+      await this.insertTelegramCommandExecution(client, actor, input, 'completed');
+      return { replay: false as const };
+    });
+
+    if (!result) return denied(input.idempotencyKey, 'No scoped lifecycle delivery was found.');
+    if ('denied' in result) return denied(input.idempotencyKey, result.denied);
+    return {
+      status: result.replay ? 'already_completed' : 'completed',
+      publicMessage: result.replay
+        ? `Delivery ${deliveryRef} retry was already requested. No duplicate write was made.`
+        : `Delivery ${deliveryRef} queued for approved retry. No Telegram send, provider send, or webhook mutation was performed.`,
+      idempotencyKey: input.idempotencyKey,
+      eventIds: [
+        `delivery_retry_${stableDigest([deliveryRef, input.idempotencyKey]).slice(0, 16)}`,
+      ],
+      resultRef: deliveryRef,
+    };
+  }
+
   private async resolveContactKey(actor: CanonicalOneTimeActor, contactRef: string) {
     if (!contactRef) return null;
     const result = await this.pool.query(
@@ -1325,6 +1607,41 @@ function socialState(value: string) {
     'cancelled',
   ] as const;
   return allowed.find((state) => state === normalized);
+}
+
+function deliveryLifecycleLine(row: Record<string, unknown>) {
+  return [
+    `${String(row.delivery_key)}: ${String(row.state)} ${String(row.purpose)}`,
+    `attempts ${Number(row.attempts ?? 0)}/${Number(row.max_attempts ?? 0)}`,
+    `next ${toIso(row.next_attempt_at)}`,
+    row.last_error_code ? `error ${String(row.last_error_code)}` : 'error none',
+    retryApproved(row.metadata) ? 'retry approved' : 'retry not approved',
+  ].join('; ');
+}
+
+function retryApproved(value: unknown) {
+  const metadata = jsonObject(value);
+  return ['retry_approved', 'approved_retry', 'operator_retry_approved'].some((key) => {
+    const marker = metadata[key];
+    return marker === true || marker === 'true' || marker === '1';
+  });
+}
+
+function jsonObject(value: unknown): Record<string, unknown> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      return {};
+    }
+  }
+  return {};
 }
 
 function contentReadiness(item: { lifecycle_state: string; latest_revision_number: number }) {
