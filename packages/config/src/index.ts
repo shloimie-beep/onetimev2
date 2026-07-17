@@ -29,8 +29,19 @@ const OT89_KNOWN_TEST_VALUES = new Set([
   'ot89-test-secret-do-not-use-reverse',
 ]);
 
+const deliveryEnvironmentSchema = z.enum(['local', 'test', 'isolated_staging', 'production']);
+
+function defaultDeliveryEnvironment(
+  nodeEnv: 'development' | 'test' | 'production',
+): 'local' | 'test' | 'production' {
+  if (nodeEnv === 'test') return 'test';
+  if (nodeEnv === 'production') return 'production';
+  return 'local';
+}
+
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  DELIVERY_ENVIRONMENT: deliveryEnvironmentSchema.optional(),
   PORT: numberFromString.default(3000),
   PUBLIC_BASE_URL: z.url().default('https://join.onetimeonetime.com'),
   APP_VERSION: z.string().min(1).default('local'),
@@ -60,7 +71,7 @@ const envSchema = z.object({
   MFA_SECRET_ENCRYPTION_KEY: z.string().optional(),
   ONE_TIME_LIFECYCLE_DELIVERY_KEY_ID: z.string().min(1).max(120).default('local-lifecycle-v1'),
   ONE_TIME_LIFECYCLE_DELIVERY_KEY: z.string().min(32).optional(),
-  OUTBOX_TRANSPORT_MODE: z.enum(['sink', 'mock']).default('sink'),
+  OUTBOX_TRANSPORT_MODE: z.enum(['sink', 'mock', 'provider']).default('sink'),
   ONE_TIME_EMAIL_FROM: z.string().optional(),
   ONE_TIME_EMAIL_REPLY_TO: z.string().optional(),
   ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: booleanFromString,
@@ -141,6 +152,8 @@ export type AppConfig = ReturnType<typeof loadConfig>;
 
 export function loadConfig(source: NodeJS.ProcessEnv) {
   const parsed = envSchema.parse(source);
+  const deliveryEnvironment =
+    parsed.DELIVERY_ENVIRONMENT ?? defaultDeliveryEnvironment(parsed.NODE_ENV);
   const guardedStripeTestTransport =
     parsed.ENABLE_PAYMENT_TRANSPORT && parsed.LIVE_STRIPE_CHARGES_AUTHORIZED === 'NO';
   const realTransportsEnabled =
@@ -167,6 +180,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     !parsed.RESEND_WEBHOOK_SECRET
   ) {
     throw new Error('RESEND_WEBHOOK_SECRET is required when Resend webhooks are enabled.');
+  }
+
+  if (deliveryEnvironment === 'production' && parsed.OUTBOX_TRANSPORT_MODE === 'provider') {
+    throw new Error('Production delivery provider mode is disabled pending a reviewed release.');
   }
 
   if (parsed.NODE_ENV === 'production' && parsed.OT89_SUPPORT_DELIVERY_MODE !== 'disabled') {
@@ -254,6 +271,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   return {
     nodeEnv: parsed.NODE_ENV,
+    deliveryEnvironment,
     isProduction: parsed.NODE_ENV === 'production',
     port: parsed.PORT,
     publicBaseUrl: parsed.PUBLIC_BASE_URL,
