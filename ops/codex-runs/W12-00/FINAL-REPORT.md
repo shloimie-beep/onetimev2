@@ -1,6 +1,6 @@
 # W12-00 Final Report
 
-Status: `validated_pending_pr`
+Status: `draft_pr_open`
 
 ## Outcome
 
@@ -48,4 +48,6 @@ DNS change, or secret access was performed by W12-00.
 
 ## PR
 
-Pending push and draft PR creation.
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/63`
+- Base: `release/ops10-full-staged-production-launch-20260717T050800Z`
+- Head: `codex/w12-00-canonical-director-handoff`

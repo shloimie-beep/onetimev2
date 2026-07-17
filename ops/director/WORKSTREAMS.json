@@ -12,7 +12,8 @@
       "title": "Canonical director handoff",
       "owner_scope": "ops/director/** and ops/codex-runs/W12-00/**",
       "branch": "codex/w12-00-canonical-director-handoff",
-      "status": "in_progress",
+      "status": "draft_pr_open",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/63",
       "notes": "This branch owns durable director memory, not product implementation."
     },
     {

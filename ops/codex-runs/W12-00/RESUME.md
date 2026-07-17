@@ -1,6 +1,6 @@
 # W12-00 Resume
 
-Status: `validated_pending_pr`
+Status: `draft_pr_open`
 
 Repo: `webcraft-media/onetimev2`
 
@@ -37,9 +37,7 @@ Branch: `codex/w12-00-canonical-director-handoff`
 
 ## Remaining Before Closeout
 
-- Commit and push branch.
-- Open draft PR.
-- Update `STATE.json` and `FINAL-REPORT.md` if PR metadata changes after push.
+- Push the final PR metadata commit.
 
 ## Validation Passed
 
@@ -49,6 +47,12 @@ Branch: `codex/w12-00-canonical-director-handoff`
 - `git diff --check`.
 - Current-ref readback before W12-00 commit:
   `c7d46066517d7a458d189f2c782cc06200f7861c`.
+
+## Draft PR
+
+- PR: `https://github.com/webcraft-media/onetimev2/pull/63`
+- Base: `release/ops10-full-staged-production-launch-20260717T050800Z`
+- Head: `codex/w12-00-canonical-director-handoff`
 
 ## Do Not Do
 
