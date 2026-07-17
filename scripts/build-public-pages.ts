@@ -269,7 +269,7 @@ function signupPage() {
       <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><small>Required only if you choose WhatsApp reminders.</small><p tabindex="-1" class="error" data-error-for="phone"></p></div>
       <fieldset class="service-communications" aria-describedby="service_communications_note"><legend>Required service communications</legend><p id="service_communications_note">By submitting, you ask One Time Mishnayos to respond to this signup. Service messages about signup receipt, account/security, class access, or support may be sent when needed. Optional daily reminders are separate.</p></fieldset>
       <fieldset class="optional-reminders" aria-describedby="optional_reminders_note"><legend>Optional class reminders</legend><p id="optional_reminders_note">Choose each reminder channel separately. No optional reminders are selected by default.</p><label><input id="email_reminder_consent" name="email_reminder_consent" type="checkbox" value="yes"> Email class reminders</label><label><input id="whatsapp_reminder_consent" name="whatsapp_reminder_consent" type="checkbox" value="yes"> WhatsApp class reminders</label><p class="policy-note">Reminder consent policy version: ${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}. You can stop optional messages by using unsubscribe instructions, replying STOP where supported, or contacting the One Time team.</p></fieldset>
-      <p class="signup-policy-note">By submitting, you agree to the <a href="/terms">Terms</a> and acknowledge the <a href="/privacy">Privacy Notice</a>, including the Communication and Reminder Consent and Parent/Guardian and Student Data Notice.</p>
+      <p class="signup-policy-note">By submitting, you agree to the <a href="/terms">Terms</a> and acknowledge the <a href="/privacy">Privacy Notice</a>, including the <a href="/communications-consent">Communication and Reminder Consent</a> and <a href="/student-data">Parent/Guardian and Student Data Notice</a>.</p>
       <button class="button button-primary" type="submit" data-enhanced-submit hidden>Sign Up Now</button>
       <p class="form-status" role="status" data-form-status></p>
     </form>
@@ -329,6 +329,7 @@ function renderLegalDocument(document: LegalDocument, headingLevel: 'h1' | 'h2' 
       <dl class="legal-meta">
         <div><dt>Effective date</dt><dd>${escapeHtml(document.effectiveDate)}</dd></div>
         <div><dt>Last updated</dt><dd>${escapeHtml(legalPolicyMetadata.lastUpdated)}</dd></div>
+        <div><dt>Review status</dt><dd>counsel_review_required</dd></div>
       </dl>
     </div>
     ${renderLegalSections(document.sections)}
@@ -412,6 +413,22 @@ await writeFile(
   legalPage('Terms of Use | One Time Mishnayos', termsOfUse, '/terms', [
     communicationConsentNotice,
   ]),
+);
+await writeFile(
+  path.join(outDir, 'communications-consent.html'),
+  legalPage(
+    'Communication and Reminder Consent | One Time Mishnayos',
+    communicationConsentNotice,
+    '/communications-consent',
+  ),
+);
+await writeFile(
+  path.join(outDir, 'student-data.html'),
+  legalPage(
+    'Parent/Guardian and Student Data Notice | One Time Mishnayos',
+    parentGuardianStudentDataNotice,
+    '/student-data',
+  ),
 );
 await writeFile(
   path.join(outDir, '404.html'),

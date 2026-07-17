@@ -7,6 +7,7 @@ import { OneTimeProviderDeliveryRouter } from '../../../apps/worker/src/delivery
 import { parseDeliveryProviderFeatureConfig } from '../../../apps/worker/src/delivery/provider-config.ts';
 import { InMemoryDeliveryProviderAdapter } from '../../../apps/worker/src/delivery/mock-provider-adapter.ts';
 import { runDeliveryBatch } from '../../../apps/worker/src/delivery/worker.ts';
+import { providerAttemptIdempotencyKey } from '../../../packages/domain/src/delivery/activation-policy.ts';
 import { captureLogger } from '../../support/delivery/logger.ts';
 import {
   MemoryDeliveryRepository,
@@ -103,7 +104,7 @@ describe('delivery provider transport gates', () => {
       {
         provider: 'resend',
         destinationRef: expect.any(String),
-        idempotencyKey: 'delivery_provider_1',
+        idempotencyKey: providerAttemptIdempotencyKey('delivery_provider_1', 1),
       },
     ]);
     expect(JSON.stringify({ receipt, calls: adapter.calls })).not.toContain(
@@ -128,16 +129,14 @@ describe('delivery provider transport gates', () => {
 
     await expect(
       router.send({ ...emailRequest, to: 'other@example.test' }, providerContext),
-    ).rejects.toThrow(/provider_destination_not_authorized/);
+    ).rejects.toThrow(/allowlisted_destination_missing/);
     expect(adapter.calls).toHaveLength(0);
   });
 
   it('exhausts bounded canary budget without falling back to sink success', async () => {
     const { adapter, router } = routerWithAdapter({ ONE_TIME_DELIVERY_CANARY_BUDGET: '0' });
 
-    await expect(router.send(emailRequest, providerContext)).rejects.toThrow(
-      /provider_canary_budget_exhausted/,
-    );
+    await expect(router.send(emailRequest, providerContext)).rejects.toThrow(/budget_exhausted/);
     expect(adapter.calls).toHaveLength(0);
   });
 
@@ -149,7 +148,9 @@ describe('delivery provider transport gates', () => {
 
     expect(second).toEqual(first);
     expect(adapter.calls).toHaveLength(1);
-    expect(adapter.calls[0]?.idempotencyKey).toBe('delivery_provider_1');
+    expect(adapter.calls[0]?.idempotencyKey).toBe(
+      providerAttemptIdempotencyKey('delivery_provider_1', 1),
+    );
     expect(adapter.calls[0]?.idempotencyKey).not.toContain(':2');
   });
 

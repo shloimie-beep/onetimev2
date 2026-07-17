@@ -2,6 +2,11 @@ import type {
   DeliveryEnvironment,
   DeliveryTransportMode,
 } from '../../../../packages/contracts/src/delivery/types.ts';
+import {
+  classifyDeliveryRuntimeEnvironment,
+  type DeliveryProviderMode,
+  type DeliveryRuntimeEnvironment,
+} from '../../../../packages/domain/src/delivery/activation-policy.ts';
 import { safeFingerprint } from '../../../../packages/domain/src/providers/shared.ts';
 
 export type DeliveryProviderFeatureConfig = {
@@ -14,6 +19,14 @@ export type DeliveryProviderFeatureConfig = {
   resendAuthorized: boolean;
   wapiEnabled: boolean;
   wapiAuthorized: boolean;
+  runtimeEnvironment: DeliveryRuntimeEnvironment;
+  providerMode: DeliveryProviderMode;
+  authorizationArtifactId: string | null;
+  stagingCanaryProof: string | null;
+  perRunBudget: number;
+  perProviderBudget: number;
+  providerTimeoutMs: number;
+  leaseSafetyMarginMs: number;
   resendWebhookEnabled: boolean;
   wapiWebhookEnabled: boolean;
   publicWhatsAppAutoreplyEnabled: boolean;
@@ -32,6 +45,10 @@ export type DeliveryProviderReadinessSnapshot = {
   environmentGate: 'missing' | 'matched' | 'mismatched';
   stagingIsolationProof: boolean;
   productionProviderMode: 'disabled';
+  runtimeEnvironment: DeliveryRuntimeEnvironment;
+  providerMode: DeliveryProviderMode;
+  authorizationConfigured: boolean;
+  stagingCanaryProofConfigured: boolean;
   resend: 'disabled' | 'configured' | 'authorized';
   wapi: 'disabled' | 'configured' | 'authorized';
   canaryEmail: 'missing' | 'configured';
@@ -39,6 +56,8 @@ export type DeliveryProviderReadinessSnapshot = {
   allowlistedEmailDestinations: number;
   allowlistedWhatsAppDestinations: number;
   canaryBudget: number;
+  perRunBudget: number;
+  perProviderBudget: number;
   safeFingerprint: string;
 };
 
@@ -50,6 +69,7 @@ const DELIVERY_ENVIRONMENTS = new Set<DeliveryEnvironment>([
 ]);
 
 const DELIVERY_TRANSPORT_MODES = new Set<DeliveryTransportMode>(['sink', 'provider']);
+const DELIVERY_PROVIDER_MODES = new Set<DeliveryProviderMode>(['sink', 'mock', 'provider']);
 
 const allowedKeys = new Set([
   'DELIVERY_ENVIRONMENT',
@@ -73,6 +93,15 @@ const allowedKeys = new Set([
   'ONE_TIME_WHATSAPP_STAGING_ISOLATED',
   'ONETIME_CANARY_WHATSAPP_RECIPIENT_E164',
   'ONETIME_WHATSAPP_CANARY_AUTHORIZED',
+  'ONE_TIME_RUNTIME_ENVIRONMENT',
+  'NODE_ENV',
+  'DELIVERY_PROVIDER_MODE',
+  'DELIVERY_PROVIDER_AUTHORIZATION_ID',
+  'DELIVERY_STAGING_CANARY_PROOF',
+  'DELIVERY_PROVIDER_PER_RUN_BUDGET',
+  'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
+  'DELIVERY_PROVIDER_TIMEOUT_MS',
+  'DELIVERY_PROVIDER_TIMEOUT_LEASE_SAFETY_MS',
 ]);
 
 const secretLikePattern = /\b(?:sk|rk|whsec|xoxb|bot|token|secret)[_-]?[A-Za-z0-9]{10,}/i;
@@ -99,18 +128,32 @@ export function parseDeliveryProviderFeatureConfig(
     }
   }
 
+  const providerModeText = text(source.DELIVERY_PROVIDER_MODE);
+  const inferredTransportFallback: DeliveryTransportMode =
+    providerModeText === 'provider' ? 'provider' : (options.transportMode ?? 'sink');
   const transportMode = parseTransportMode(
     text(source.DELIVERY_TRANSPORT_MODE) ?? text(source.OUTBOX_TRANSPORT_MODE),
-    options.transportMode ?? 'sink',
+    inferredTransportFallback,
+  );
+  const runtimeEnvironment = classifyDeliveryRuntimeEnvironment(
+    text(source.ONE_TIME_RUNTIME_ENVIRONMENT) ?? text(source.DELIVERY_ENVIRONMENT) ?? undefined,
+    text(source.NODE_ENV) ?? undefined,
   );
   const environment = parseEnvironment(
-    text(source.DELIVERY_ENVIRONMENT),
+    text(source.DELIVERY_ENVIRONMENT) ?? runtimeEnvironment,
     options.environment ?? 'local',
   );
-  const environmentGate = optionalEnvironment(
+  const providerMode = providerModeValue(source.DELIVERY_PROVIDER_MODE, transportMode);
+  const authorizationArtifactId = text(source.DELIVERY_PROVIDER_AUTHORIZATION_ID);
+  const stagingCanaryProof = text(source.DELIVERY_STAGING_CANARY_PROOF);
+  const explicitEnvironmentGate = optionalEnvironment(
     text(source.ONE_TIME_DELIVERY_PROVIDER_ENVIRONMENT_GATE),
   );
+  const environmentGate =
+    explicitEnvironmentGate ??
+    (providerMode === 'provider' && authorizationArtifactId ? environment : null);
   const stagingIsolationProof =
+    Boolean(stagingCanaryProof) ||
     bool(source.ONE_TIME_DELIVERY_STAGING_ISOLATED) ||
     bool(source.ONE_TIME_WHATSAPP_STAGING_ISOLATED);
   const transportEnabled = bool(source.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED);
@@ -119,7 +162,10 @@ export function parseDeliveryProviderFeatureConfig(
   const wapiEnabled = bool(source.ONE_TIME_WAPI_TRANSPORT_ENABLED);
   const wapiAuthorized =
     bool(source.ONE_TIME_WAPI_CANARY_AUTHORIZED) || bool(source.ONETIME_WHATSAPP_CANARY_AUTHORIZED);
-  if (!transportEnabled && (resendEnabled || wapiEnabled || resendAuthorized || wapiAuthorized)) {
+  if (
+    !transportEnabled &&
+    (resendEnabled || wapiEnabled || resendAuthorized || wapiAuthorized || authorizationArtifactId)
+  ) {
     throw new Error('Delivery provider subfeatures require provider transport to be enabled.');
   }
 
@@ -144,6 +190,34 @@ export function parseDeliveryProviderFeatureConfig(
     100,
     'ONE_TIME_DELIVERY_CANARY_BUDGET',
   );
+  const perRunBudget = boundedInteger(
+    source.DELIVERY_PROVIDER_PER_RUN_BUDGET,
+    canaryBudget,
+    0,
+    1000,
+    'DELIVERY_PROVIDER_PER_RUN_BUDGET',
+  );
+  const perProviderBudget = boundedInteger(
+    source.DELIVERY_PROVIDER_PER_PROVIDER_BUDGET,
+    canaryBudget,
+    0,
+    1000,
+    'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
+  );
+  const providerTimeoutMs = boundedInteger(
+    source.DELIVERY_PROVIDER_TIMEOUT_MS,
+    15_000,
+    1,
+    120_000,
+    'DELIVERY_PROVIDER_TIMEOUT_MS',
+  );
+  const leaseSafetyMarginMs = boundedInteger(
+    source.DELIVERY_PROVIDER_TIMEOUT_LEASE_SAFETY_MS,
+    5_000,
+    0,
+    300_000,
+    'DELIVERY_PROVIDER_TIMEOUT_LEASE_SAFETY_MS',
+  );
   const fingerprintSource = {
     transportMode,
     environment,
@@ -162,6 +236,12 @@ export function parseDeliveryProviderFeatureConfig(
     allowlistedEmailDestinations: allowlistedEmailDestinations.size,
     allowlistedWhatsAppDestinations: allowlistedWhatsAppDestinations.size,
     canaryBudget,
+    runtimeEnvironment,
+    providerMode,
+    authorizationConfigured: Boolean(authorizationArtifactId),
+    stagingCanaryProofConfigured: Boolean(stagingCanaryProof),
+    perRunBudget,
+    perProviderBudget,
   };
   const snapshot: DeliveryProviderReadinessSnapshot = {
     configured: transportMode === 'provider' && transportEnabled,
@@ -175,13 +255,19 @@ export function parseDeliveryProviderFeatureConfig(
           : 'mismatched',
     stagingIsolationProof,
     productionProviderMode: 'disabled',
-    resend: providerStatus(resendEnabled, resendAuthorized),
-    wapi: providerStatus(wapiEnabled, wapiAuthorized),
+    runtimeEnvironment,
+    providerMode,
+    authorizationConfigured: Boolean(authorizationArtifactId),
+    stagingCanaryProofConfigured: Boolean(stagingCanaryProof),
+    resend: providerStatus(resendEnabled, resendAuthorized || Boolean(authorizationArtifactId)),
+    wapi: providerStatus(wapiEnabled, wapiAuthorized || Boolean(authorizationArtifactId)),
     canaryEmail: canaryEmailDestination ? 'configured' : 'missing',
     canaryWhatsApp: canaryWhatsAppDestination ? 'configured' : 'missing',
     allowlistedEmailDestinations: allowlistedEmailDestinations.size,
     allowlistedWhatsAppDestinations: allowlistedWhatsAppDestinations.size,
     canaryBudget,
+    perRunBudget,
+    perProviderBudget,
     safeFingerprint: safeFingerprint(JSON.stringify(fingerprintSource)),
   };
   return {
@@ -194,6 +280,14 @@ export function parseDeliveryProviderFeatureConfig(
     resendAuthorized,
     wapiEnabled,
     wapiAuthorized,
+    runtimeEnvironment,
+    providerMode,
+    authorizationArtifactId,
+    stagingCanaryProof,
+    perRunBudget,
+    perProviderBudget,
+    providerTimeoutMs,
+    leaseSafetyMarginMs,
     resendWebhookEnabled: fingerprintSource.resendWebhookEnabled,
     wapiWebhookEnabled: fingerprintSource.wapiWebhookEnabled,
     publicWhatsAppAutoreplyEnabled: fingerprintSource.publicWhatsAppAutoreplyEnabled,
@@ -280,4 +374,13 @@ function boundedInteger(
     throw new Error(`${name} must be an integer between ${minimum} and ${maximum}.`);
   }
   return parsed;
+}
+
+function providerModeValue(value: unknown, fallbackTransportMode: DeliveryTransportMode) {
+  const textValue = text(value);
+  if (!textValue) return fallbackTransportMode === 'provider' ? 'provider' : 'sink';
+  if (!DELIVERY_PROVIDER_MODES.has(textValue as DeliveryProviderMode)) {
+    throw new Error('DELIVERY_PROVIDER_MODE must be sink, mock, or provider.');
+  }
+  return textValue as DeliveryProviderMode;
 }

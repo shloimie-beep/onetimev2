@@ -1,0 +1,28 @@
+{
+  "schema_version": "onetime.w13_10.security_privacy_findings.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "findings": [
+    {
+      "id": "W13-10-SEC-001",
+      "severity": "medium",
+      "route_or_module": "public signup consent",
+      "reproduction": "Base form had preselected email reminder and single reminder_consent checkbox.",
+      "expected": "No optional reminder inferred from a preselected channel.",
+      "observed": "Fixed in W13-10 with unchecked email/WhatsApp choices and consent_context.",
+      "affected_data": "optional communication consent",
+      "owner_lane": "W13-10",
+      "release_disposition": "fixed_in_branch"
+    },
+    {
+      "id": "W13-10-SEC-002",
+      "severity": "medium",
+      "route_or_module": "delivery provider router",
+      "reproduction": "Provider canary exact-match existed without a shared runtime/budget policy.",
+      "expected": "Typed blocker codes before adapter invocation.",
+      "observed": "Fixed in W13-10 activation-policy and tests.",
+      "affected_data": "provider outbound safety",
+      "owner_lane": "W13-10",
+      "release_disposition": "fixed_in_branch"
+    }
+  ]
+}

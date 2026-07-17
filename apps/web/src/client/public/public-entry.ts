@@ -1,5 +1,7 @@
 import './styles.css';
 
+import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../../../../../packages/domain/src/legal/policies.ts';
+
 const drawer = document.querySelector<HTMLElement>('[data-drawer]');
 const drawerOverlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
 const drawerToggle = document.querySelector<HTMLButtonElement>('[data-drawer-toggle]');
@@ -193,17 +195,21 @@ if (form) {
     form
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
-  const selectedReminderPreference = () => {
-    const wantsEmail = emailReminder?.checked === true;
-    const wantsWhatsapp = whatsappReminder?.checked === true;
-    if (wantsEmail && wantsWhatsapp) return 'both';
-    if (wantsEmail) return 'email';
-    if (wantsWhatsapp) return 'whatsapp';
+  const reminderChannels = () => [
+    ...(emailReminder?.checked ? (['email'] as const) : []),
+    ...(whatsappReminder?.checked ? (['whatsapp'] as const) : []),
+  ];
+  const currentReminder = () => {
+    const channels = reminderChannels();
+    if (channels.includes('email') && channels.includes('whatsapp')) return 'both';
+    if (channels.includes('email')) return 'email';
+    if (channels.includes('whatsapp')) return 'whatsapp';
     return 'none';
   };
 
   const syncConditionalFields = () => {
-    const needsPhone = whatsappReminder?.checked === true;
+    const reminder = currentReminder();
+    const needsPhone = reminder === 'whatsapp' || reminder === 'both';
     if (phone) {
       phone.required = needsPhone;
       phone.setAttribute('aria-required', String(needsPhone));
@@ -228,7 +234,8 @@ if (form) {
     clearErrors();
     if (!form.reportValidity()) return;
     const data = new FormData(form);
-    const reminderPreference = selectedReminderPreference();
+    const reminder = currentReminder();
+    const optionalReminderConsent = reminder !== 'none';
     const payload = {
       contact_name: String(data.get('contact_name') ?? ''),
       family_or_school: String(data.get('family_or_school') ?? ''),
@@ -238,8 +245,17 @@ if (form) {
       browser_timezone: detectedTimezone || undefined,
       email: String(data.get('email') ?? ''),
       phone: String(data.get('phone') ?? ''),
-      reminder_preference: reminderPreference,
-      reminder_consent: reminderPreference !== 'none',
+      reminder_preference: reminder,
+      reminder_consent: optionalReminderConsent,
+      consent_context: {
+        policy_version: COMMUNICATION_CONSENT_POLICY_VERSION,
+        purpose: 'optional_class_reminders',
+        source: 'public_signup',
+        channels: reminderChannels(),
+        captured_at: new Date().toISOString(),
+        withdrawal_state: 'not_withdrawn',
+        suppression_state: 'active',
+      },
       idempotency_key: idempotencyKey,
       attribution: {
         landing_path: '/signup',

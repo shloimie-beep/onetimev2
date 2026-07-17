@@ -1,8 +1,8 @@
 {
   "schema_version": "onetime.w13_100.state.v1",
   "generated_at": "2026-07-17T18:20:46Z",
-  "updated_at": "2026-07-17T18:20:46Z",
-  "status": "phase_1_recovery_in_progress",
+  "updated_at": "2026-07-17T18:38:52Z",
+  "status": "phase_2_convergence_in_progress",
   "terminal_outcome": null,
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -15,12 +15,18 @@
   },
   "phase": {
     "current": "phase_1_recover_chain_and_select_canonical_candidate",
-    "completed": ["created_isolated_worktree", "created_release_branch", "copied_original_prompt"],
-    "in_progress": ["dynamic_branch_run_discovery", "w13_w12_100_w12_09_convergence_assessment"],
+    "completed": [
+      "created_isolated_worktree",
+      "created_release_branch",
+      "copied_original_prompt",
+      "dynamic_branch_run_discovery",
+      "w13_10_semantic_merge_resolved",
+      "w13_10_focused_local_validation"
+    ],
+    "in_progress": ["w12_09_gamification_safety_review", "merge_checkpoint_commit"],
     "not_started": [
-      "semantic_merge",
       "product_repair",
-      "validation",
+      "full_validation",
       "staging_deploy",
       "provider_canaries",
       "real_import_rehearsal",
@@ -68,5 +74,5 @@
     "imports": 0
   },
   "blockers": [],
-  "next_action": "Complete dynamic branch/run discovery, then merge or port accepted W13-10 and W12-09 semantics onto the W12-100 convergence base."
+  "next_action": "Commit the W13-10 semantic merge checkpoint, then inspect and safely port only approved W12-09 gamification semantics without reverting W12-100/W13-10 launch records or migrations."
 }

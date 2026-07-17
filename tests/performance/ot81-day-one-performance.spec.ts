@@ -129,6 +129,8 @@ async function createSyntheticContact(page: Page) {
   await page.getByLabel('Family or School').fill('OT81 Performance Family');
   await page.getByLabel('Location').fill('Jerusalem');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
+  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
+  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
   await page.getByLabel('Email class reminders').check();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
   await page

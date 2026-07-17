@@ -178,6 +178,13 @@ describe('OT-72 Resend/WAPI provider truth', () => {
       DELIVERY_ENVIRONMENT: 'test',
       ONE_TIME_DELIVERY_PROVIDER_ENVIRONMENT_GATE: 'test',
       ONE_TIME_DELIVERY_STAGING_ISOLATED: 'true',
+      NODE_ENV: 'test',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      DELIVERY_PROVIDER_MODE: 'provider',
+      DELIVERY_PROVIDER_AUTHORIZATION_ID: 'auth_ot72_delivery',
+      DELIVERY_STAGING_CANARY_PROOF: 'proof_ot72_delivery',
+      DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
+      DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
       ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
       ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
       ONE_TIME_RESEND_CANARY_AUTHORIZED: 'true',
@@ -211,7 +218,7 @@ describe('OT-72 Resend/WAPI provider truth', () => {
           signal: new AbortController().signal,
         },
       ),
-    ).rejects.toThrow(/provider_destination_not_authorized/);
+    ).rejects.toThrow(/allowlisted_destination_missing/);
   });
 
   it('normalizes signed webhook evidence without raw provider IDs', () => {

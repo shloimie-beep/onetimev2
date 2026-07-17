@@ -12,6 +12,49 @@
       ],
       "finding": "W13-10 and W12-100 both descend from W12-99 but neither is ancestor of the other.",
       "decision": "Start from W12-100 and semantically recover W13-10."
+    },
+    {
+      "id": "COL-W13-100-002",
+      "area": "director records",
+      "refs": ["ops/director/*"],
+      "finding": "W13-10 director files were older than W12-100 convergence director truth.",
+      "decision": "Preserved W12-100 director records and represented W13-10 recovery in ops/codex-runs/W13-100 and imported W13-10 run artifacts."
+    },
+    {
+      "id": "COL-W13-100-003",
+      "area": "config and environment contract",
+      "refs": [".env.example", "packages/config/src/index.ts"],
+      "finding": "W12-100 added provider-capable outbox transport while W13-10 added runtime/provider authorization and budget controls.",
+      "decision": "Kept W12-100 OUTBOX provider support, added W13-10 provider mode, authorization, staging proof, budget, and timeout keys, and preserved production fail-closed guards."
+    },
+    {
+      "id": "COL-W13-100-004",
+      "area": "provider delivery router",
+      "refs": [
+        "apps/worker/src/delivery/provider-config.ts",
+        "apps/worker/src/delivery/provider-router.ts",
+        "packages/domain/src/delivery/retry.ts"
+      ],
+      "finding": "W12-100 provider transport used explicit environment, allowlist, canary, and receipt-cache gates while W13-10 added a provider activation policy and attempt idempotency.",
+      "decision": "Composed both layers: hard transport/environment/idempotency gates run first, W13 activation policy runs before adapter invocation, accepted receipts remain cached, and retry classification accepts both legacy and W13 blocker codes."
+    },
+    {
+      "id": "COL-W13-100-005",
+      "area": "public signup and legal generation",
+      "refs": ["apps/web/src/client/public/public-entry.ts", "scripts/build-public-pages.ts"],
+      "finding": "W12-100 public signup markup and legal-document renderer conflicted with W13-10 hidden consent fields and separate notice renderer.",
+      "decision": "Kept W12-100 visible channel-specific signup controls, added W13-10 consent_context payload, generated /communications-consent and /student-data through the shared legal-document renderer, and surfaced counsel_review_required in legal metadata."
+    },
+    {
+      "id": "COL-W13-100-006",
+      "area": "tests",
+      "refs": [
+        "tests/unit/delivery/provider-transport.test.ts",
+        "tests/unit/w13-10/delivery-activation-policy.test.ts",
+        "tests/e2e/w13-10/public-consent-legal.spec.ts"
+      ],
+      "finding": "Provider tests disagreed on blocker vocabulary and idempotency key shape; public consent tests disagreed with the merged DOM.",
+      "decision": "Updated expectations to W13 activation blocker vocabulary and attempt-scoped provider keys while preserving no-repeat provider calls for cached accepted receipts; public tests now assert merged visible labels and legal routes."
     }
   ]
 }
