@@ -1,0 +1,90 @@
+{
+  "schema_version": "onetime.w12_100.visual_evidence.v1",
+  "generated_at": "2026-07-17T15:24:25.920Z",
+  "screenshot_count": 9,
+  "records": [
+    {
+      "route": "/",
+      "viewport": "390x844",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\landing-mobile-reduced-motion.png",
+        "sha256": "856e64340d403d40ee0e5cdf62204a6c09a4154d51ac03b76e45e59752a7c7fb",
+        "bytes": 272858
+      }
+    },
+    {
+      "route": "/signup",
+      "viewport": "390x844",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\signup-mobile.png",
+        "sha256": "a3c4e1e598c34538a7c2cf95b28144abfad7284f85e4e8fc334471db6820f88e",
+        "bytes": 103930
+      }
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": "390x844",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\recovery-mobile.png",
+        "sha256": "d0245d5ae13019fb82645bb3157a3d17388ded03383e484ad938fa346d03fe94",
+        "bytes": 23828
+      }
+    },
+    {
+      "route": "/w12-100-missing-route",
+      "viewport": "390x844",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\404-mobile.png",
+        "sha256": "952733541b88a860dd7a46ebb30117056680099913d9602a67de93a94597ee9a",
+        "bytes": 28990
+      }
+    },
+    {
+      "route": "/app/dashboard",
+      "viewport": "desktop",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\dashboard-desktop.png",
+        "sha256": "737f10dfb0a74f34dcca20e327b9b304616b4f845f475c1101d487a795c44147",
+        "bytes": 75772
+      }
+    },
+    {
+      "route": "/app/classes/e2e_class_occurrence",
+      "viewport": "desktop",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\class-detail-desktop.png",
+        "sha256": "c6a13d6f6ff48b841712ad2c9a16c8b01577a4f3bb0b64265dcafb32f2f9ffb7",
+        "bytes": 73788
+      }
+    },
+    {
+      "route": "/app/billing",
+      "viewport": "desktop",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\billing-desktop.png",
+        "sha256": "8adefc7a1f3c1e4e5b3445582194115f2050461d0e693b58dbe95ca0b907dae6",
+        "bytes": 54021
+      }
+    },
+    {
+      "route": "/app/parent",
+      "viewport": "390x844",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\parent-mobile.png",
+        "sha256": "0a2268e8722942462546e6b21ea7a74c2d84a3d79a2d4e8dbc9bbb8870aae97e",
+        "bytes": 24015
+      }
+    },
+    {
+      "route": "/app/student",
+      "viewport": "390x844",
+      "screenshot": {
+        "path": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11\\ops\\evidence\\w12-100\\screenshots\\student-mobile.png",
+        "sha256": "91f741a75b687de290942acae63d6dcb86a47696c474fce09065252922cf23d1",
+        "bytes": 24936
+      }
+    }
+  ],
+  "external_actions": 0,
+  "production_mutations": 0
+}

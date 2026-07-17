@@ -1,0 +1,243 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-11",
+  "title": "UX accessibility performance SEO launch-readiness lane",
+  "status": "completed_with_blocked_dependencies",
+  "generated_at": "2026-07-17T15:52:00.000Z",
+  "repository": "webcraft-media/onetimev2",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11",
+  "branch": "codex/w12-100-11-ux-accessibility-performance-seo",
+  "base_branch": "integration/w12-final-convergence-20260717T123715Z",
+  "safety": {
+    "staging_deploy_performed": false,
+    "production_deploy_performed": false,
+    "production_database_read": false,
+    "production_data_mutation_performed": false,
+    "provider_mutation_performed": false,
+    "external_actions_count": 0,
+    "production_mutations_count": 0,
+    "provider_mutations_count": 0,
+    "secrets_or_private_rows_printed": false,
+    "private_rows_read": false,
+    "bna_runtime_touched": false
+  },
+  "objectives": [
+    {
+      "id": "setup",
+      "description": "Fetch all refs, verify canonical commit, create isolated worktree and branch.",
+      "status": "done",
+      "evidence": [
+        "Fetched all refs and tags.",
+        "Verified commit 0d8d7168f066668f035176d777bdaaa4dcc5accd exists.",
+        "Created isolated worktree C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11 on branch codex/w12-100-11-ux-accessibility-performance-seo."
+      ]
+    },
+    {
+      "id": "required_first_reads",
+      "description": "Read required AGENTS/director/W12-99 artifacts before implementation.",
+      "status": "done",
+      "evidence": [
+        "AGENTS.md",
+        "ops/director/START-HERE.md",
+        "ops/director/PRODUCT-INVARIANTS.md",
+        "ops/codex-runs/W12-99/FINAL-REPORT.md",
+        "ops/codex-runs/W12-99/STATE.json",
+        "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
+        "ops/codex-runs/W12-99/CANARY-REPORT.json",
+        "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
+        "ops/codex-runs/W12-99/ROLLBACK.md"
+      ]
+    },
+    {
+      "id": "route_journey_inventory",
+      "description": "Build route and journey inventory for public, authenticated, portals, portal test lab, and failure states.",
+      "status": "done",
+      "evidence": [
+        "ops/evidence/w12-100/ROUTE-JOURNEY-INVENTORY.json",
+        "21 unique route/journey IDs covered across landing, signup, legal, auth lifecycle, dashboard, CRM/detail, communications, classes/detail, content, billing, support, parent, student, portal test lab, and 404 failure state.",
+        "Focused route inventory command passed: npx playwright test tests/e2e/w12-100/route-journey-inventory.spec.ts (3 passed)."
+      ]
+    },
+    {
+      "id": "responsive_keyboard_a11y",
+      "description": "Verify required viewports, keyboard-only focus behavior, accessible names/error association/live regions.",
+      "status": "done",
+      "evidence": [
+        "ops/evidence/w12-100/ACCESSIBILITY-REPORT.json",
+        "Focused accessibility command passed: npx playwright test tests/accessibility/w12-100/launch-readiness-a11y.spec.ts (4 passed).",
+        "Broader accessibility command passed: npm run accessibility (17 passed)."
+      ]
+    },
+    {
+      "id": "performance_seo_bundle",
+      "description": "Verify LCP/CLS/bundle budgets, public/authenticated bundle separation, canonical/robots/OpenGraph/headings/navigation.",
+      "status": "done",
+      "evidence": [
+        "ops/evidence/w12-100/PERFORMANCE-SEO-BUNDLE-REPORT.json",
+        "Focused performance command passed: npx playwright test tests/performance/w12-100/seo-bundle-performance.spec.ts (3 passed).",
+        "npx tsx scripts/check-bundles.ts passed after the broader performance command stopped on an inherited OT-39 failure."
+      ]
+    },
+    {
+      "id": "major_browser_engines",
+      "description": "Smoke landing, signup, login, and 404 in Chromium, Firefox, and WebKit.",
+      "status": "done",
+      "evidence": [
+        "ops/evidence/w12-100/MAJOR-ENGINE-SMOKE-chromium.json",
+        "ops/evidence/w12-100/MAJOR-ENGINE-SMOKE-firefox.json",
+        "ops/evidence/w12-100/MAJOR-ENGINE-SMOKE-webkit.json",
+        "npx playwright test -c tests/e2e/w12-100/playwright.major.config.ts passed (3 passed)."
+      ]
+    },
+    {
+      "id": "visual_evidence",
+      "description": "Generate concise visual evidence without full-page duplicates.",
+      "status": "done",
+      "evidence": [
+        "ops/evidence/w12-100/VISUAL-EVIDENCE.json",
+        "9 viewport screenshots captured under ops/evidence/w12-100/screenshots/.",
+        "npx playwright test tests/visual/w12-100/compact-visual-evidence.spec.ts passed (1 passed)."
+      ]
+    },
+    {
+      "id": "collection_surface_privacy_terms",
+      "description": "Verify privacy and terms links on collection surfaces.",
+      "status": "blocked",
+      "evidence": ["ops/evidence/w12-100/ROUTE-JOURNEY-INVENTORY.json"],
+      "blocker": "Login, activation, forgot-password, and reset-password collection surfaces do not expose Privacy and Terms links at 360x800, 390x844, tablet, or desktop. The fix belongs to shared auth/account-lifecycle source outside this evidence lane."
+    },
+    {
+      "id": "communications_customer_shell",
+      "description": "Verify communications route readiness, customer-safe failure behavior, and responsive layout.",
+      "status": "blocked",
+      "evidence": [
+        "ops/evidence/w12-100/ROUTE-JOURNEY-INVENTORY.json",
+        "ops/evidence/w12-100/ACCESSIBILITY-REPORT.json"
+      ],
+      "blocker": "/app/communications returns a 404/error document instead of the app shell, exposes technical diagnostics, and overflows at 390x844 (scrollWidth 923, bodyScrollWidth 915). The fix belongs to the communications/app routing owner."
+    },
+    {
+      "id": "webkit_mobile_overflow",
+      "description": "Verify major browser mobile overflow behavior.",
+      "status": "blocked",
+      "evidence": ["ops/evidence/w12-100/MAJOR-ENGINE-SMOKE-webkit.json"],
+      "blocker": "WebKit 390x844 landing page has horizontal overflow (clientWidth 390, scrollWidth 1648, bodyScrollWidth 1640). The fix belongs to the public responsive CSS owner."
+    },
+    {
+      "id": "form_error_association",
+      "description": "Verify error association and live-region behavior on collection surfaces.",
+      "status": "blocked",
+      "evidence": ["ops/evidence/w12-100/ACCESSIBILITY-REPORT.json"],
+      "blocker": "Signup, login, and forgot-password expose focusable data-error-for targets, but visible fields are missing aria-describedby links to the error nodes. The fix belongs to shared form markup source outside this lane."
+    },
+    {
+      "id": "broad_performance_gate",
+      "description": "Run broader performance gates where practical.",
+      "status": "blocked",
+      "evidence": [
+        "npm run performance ran 10 Playwright performance tests: 9 passed, 1 failed.",
+        "Failure: tests/performance/ot-39/crm-performance.spec.ts:27 at line 135; OT-39 CRM detail_first_usable LCP assertion did not hold under the 30-sample gate."
+      ],
+      "blocker": "Inherited OT-39 CRM performance gate is outside the W12-100-11 ownership paths; no shared source or OT-39 evidence files were retained in this lane."
+    },
+    {
+      "id": "source_changes",
+      "description": "Do not redesign product source in this lane.",
+      "status": "already_satisfied",
+      "evidence": [
+        "No product source files were changed.",
+        "Broad-suite side effects outside lane-owned evidence paths were restored."
+      ]
+    },
+    {
+      "id": "publish",
+      "description": "Commit, push branch, and open draft PR against integration/w12-final-convergence-20260717T123715Z.",
+      "status": "done",
+      "evidence": [
+        "Committed W12-100-11 lane artifacts and evidence.",
+        "Pushed branch codex/w12-100-11-ux-accessibility-performance-seo.",
+        "Opened draft PR https://github.com/webcraft-media/onetimev2/pull/87 against integration/w12-final-convergence-20260717T123715Z with external actions count 0 and production mutations count 0."
+      ]
+    }
+  ],
+  "validation": [
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "summary": "Secret scan passed across 1315 repo text files."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "ESLint passed."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "summary": "tsc --noEmit -p tsconfig.typecheck.json passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "summary": "Production build and page generation passed; Vite emitted the existing unresolved font URL warning."
+    },
+    {
+      "command": "npm run test",
+      "status": "passed",
+      "summary": "Unit: 38 files / 196 tests passed. Integration: 38 files / 184 tests passed."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed",
+      "summary": "42 Playwright e2e tests passed."
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "summary": "17 Playwright accessibility tests passed."
+    },
+    {
+      "command": "npm run performance",
+      "status": "failed",
+      "summary": "9 Playwright performance tests passed; inherited OT-39 CRM performance test failed at detail_first_usable LCP <= 2500 ms assertion."
+    },
+    {
+      "command": "npx tsx scripts/check-bundles.ts",
+      "status": "passed",
+      "summary": "Standalone bundle checker passed after npm run performance stopped before its trailing bundle script."
+    }
+  ],
+  "defects": [
+    {
+      "id": "W12-100-11-DEF-001",
+      "status": "blocked",
+      "summary": "Privacy/Terms links missing from login, activation, forgot-password, and reset-password collection surfaces across required viewports.",
+      "evidence": "ops/evidence/w12-100/ROUTE-JOURNEY-INVENTORY.json"
+    },
+    {
+      "id": "W12-100-11-DEF-002",
+      "status": "blocked",
+      "summary": "/app/communications serves a 404/error document, exposes technical diagnostics, and overflows at 390x844.",
+      "evidence": "ops/evidence/w12-100/ROUTE-JOURNEY-INVENTORY.json"
+    },
+    {
+      "id": "W12-100-11-DEF-003",
+      "status": "blocked",
+      "summary": "WebKit 390x844 landing smoke records horizontal overflow (scrollWidth 1648).",
+      "evidence": "ops/evidence/w12-100/MAJOR-ENGINE-SMOKE-webkit.json"
+    },
+    {
+      "id": "W12-100-11-DEF-004",
+      "status": "blocked",
+      "summary": "Signup, login, and forgot-password fields are missing aria-describedby links to their error nodes.",
+      "evidence": "ops/evidence/w12-100/ACCESSIBILITY-REPORT.json"
+    },
+    {
+      "id": "W12-100-11-DEP-001",
+      "status": "blocked",
+      "summary": "Inherited OT-39 CRM performance gate failed in npm run performance at the detail_first_usable LCP assertion.",
+      "evidence": "tests/performance/ot-39/crm-performance.spec.ts:135"
+    }
+  ]
+}
