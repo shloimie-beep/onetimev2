@@ -1,0 +1,16 @@
+{
+  "lane": "W12-02",
+  "shared_hotspots": [
+    {
+      "path": "packages/db/migrations/2200_w12_02_communication_history.sql",
+      "reason": "New forward migration number. W12-99 should reconcile if another W12 lane claims the same migration number."
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "reason": "Root domain export added for the communication history dry-run adapter."
+    }
+  ],
+  "server_root_navigation_edits": [],
+  "root_package_or_lockfile_edits": [],
+  "production_deploy": false
+}

@@ -13,32 +13,41 @@ test('Communications owned markup has no serious or critical accessibility viola
         <main class="communications-surface">
           <header class="communications-header">
             <h1 id="communications-heading">Communications</h1>
-            <p>Local communication intents only. Provider delivery, inbound messages, replies, and mailbox completeness are unavailable.</p>
+            <p>Canonical history from local intents, provider-off drafts, stored webhooks, and provider status events. Missing provider exports stay marked unavailable.</p>
           </header>
+          <section aria-label="Communications source truth">
+            <span>Mailbox not complete</span>
+            <span>No live send controls</span>
+            <span>Provider history not proven</span>
+          </section>
           <form aria-label="Communications filters">
             <label>From <input type="date" value="2026-07-01"></label>
             <label>To <input type="date" value="2026-07-14"></label>
             <label>Channel <select><option>All</option></select></label>
+            <label>Direction <select><option>All</option></select></label>
             <label>Intent type <select><option>All</option></select></label>
-            <label>Local status <select><option>All</option></select></label>
+            <label>Truth status <select><option>All</option></select></label>
+            <label>Source <select><option>All</option></select></label>
             <button type="submit">Apply</button>
             <button type="button">Clear</button>
           </form>
-          <p role="status">Loading local communication intents...</p>
+          <p role="status">Loading communication history...</p>
           <table>
             <thead>
               <tr>
                 <th scope="col">Recipient</th>
-                <th scope="col">Intent</th>
+                <th scope="col">Thread</th>
                 <th scope="col">Channel</th>
-                <th scope="col">Local status</th>
+                <th scope="col">Direction</th>
+                <th scope="col">Truth status</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>Email recipient</td>
-                <td>Family signup email acknowledgement</td>
+                <td>Contact outbound history</td>
                 <td>Email</td>
+                <td>Outbound</td>
                 <td>Queued</td>
               </tr>
             </tbody>

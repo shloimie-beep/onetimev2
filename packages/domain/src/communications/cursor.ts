@@ -12,8 +12,10 @@ export type CommunicationsCursorFilters = {
   from: string;
   to: string;
   channel?: string | undefined;
+  direction?: string | undefined;
   intent_type?: string | undefined;
   status?: string | undefined;
+  source?: string | undefined;
   limit: number;
 };
 
@@ -45,8 +47,10 @@ export function hashCursorFilters(secret: string, filters: CommunicationsCursorF
     from: filters.from,
     to: filters.to,
     channel: filters.channel ?? null,
+    direction: filters.direction ?? null,
     intent_type: filters.intent_type ?? null,
     status: filters.status ?? null,
+    source: filters.source ?? null,
     limit: filters.limit,
   };
   return hashCursorScope(secret, [JSON.stringify(normalized)]);

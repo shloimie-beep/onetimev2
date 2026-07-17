@@ -28,6 +28,26 @@ export const communicationsEventMap: Record<
     label: 'Single-recipient reply draft',
     channel: 'email',
   },
+  'whatsapp_inbound_message.v1': {
+    intentType: 'whatsapp_inbound_message',
+    label: 'Stored WhatsApp inbound message',
+    channel: 'whatsapp',
+  },
+  'whatsapp_provider_delivery_event.v1': {
+    intentType: 'whatsapp_provider_event',
+    label: 'Stored WhatsApp provider status',
+    channel: 'whatsapp',
+  },
+  'historical_import_event.v1': {
+    intentType: 'historical_import_event',
+    label: 'Historical communication import event',
+    channel: 'email',
+  },
+  'history_unavailable.v1': {
+    intentType: 'history_unavailable',
+    label: 'Historical provider history unavailable',
+    channel: 'internal_email',
+  },
 };
 
 export type NormalizedOutboxStatus = {
@@ -39,12 +59,23 @@ export type NormalizedOutboxStatus = {
 export function normalizeCommunicationsStatus(input: {
   status: string | null | undefined;
   deliveredAt?: string | Date | null | undefined;
+  eventType?: string | undefined;
 }): NormalizedOutboxStatus {
+  if (input.eventType === 'crm_single_recipient_reply_draft.v1') {
+    return {
+      localState: 'draft_saved',
+      stateLabel: 'Draft saved, provider off',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
   if (input.status === 'pending') {
     return { localState: 'queued', stateLabel: 'Queued', stateAt: null };
   }
   if (input.status === 'provider_accepted') {
     return { localState: 'provider_accepted', stateLabel: 'Provider accepted', stateAt: null };
+  }
+  if (input.status === 'sent') {
+    return { localState: 'provider_sent', stateLabel: 'Provider sent', stateAt: null };
   }
   if (input.status === 'delivered') {
     return {
@@ -52,6 +83,19 @@ export function normalizeCommunicationsStatus(input: {
       stateLabel: 'Delivered',
       stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
     };
+  }
+  if (input.status === 'read') {
+    return {
+      localState: 'read',
+      stateLabel: 'Read',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
+  if (input.status === 'durable' || input.status === 'received') {
+    return { localState: 'received', stateLabel: 'Stored inbound', stateAt: null };
+  }
+  if (input.status === 'processed') {
+    return { localState: 'processed', stateLabel: 'Processed locally', stateAt: null };
   }
   if (input.status === 'failed') {
     return { localState: 'failed', stateLabel: 'Failed', stateAt: null };
@@ -64,6 +108,16 @@ export function normalizeCommunicationsStatus(input: {
   }
   if (input.status === 'suppressed') {
     return { localState: 'suppressed', stateLabel: 'Suppressed', stateAt: null };
+  }
+  if (input.status === 'duplicate') {
+    return { localState: 'duplicate', stateLabel: 'Duplicate ignored', stateAt: null };
+  }
+  if (input.status === 'history_unavailable') {
+    return {
+      localState: 'history_unavailable',
+      stateLabel: 'Provider history unavailable',
+      stateAt: null,
+    };
   }
   if (input.status === 'sink_delivered') {
     return {

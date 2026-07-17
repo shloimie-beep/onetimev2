@@ -1,0 +1,34 @@
+{
+  "lane": "W12-02",
+  "branch": "codex/w12-02-communication-history",
+  "worktree": "C:\\Users\\User\\BNA-W12-02-communication-history",
+  "target_repo": "webcraft-media/onetimev2",
+  "base_source": {
+    "type": "pull_request_head",
+    "pr": 61,
+    "pr_title": "OPS-10 full staged production launch candidate",
+    "head_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "head_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "checks_observed": "success"
+  },
+  "zip_validation": {
+    "zip_path": "C:\\Users\\User\\Downloads\\W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+    "zip_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+    "entry_count": 23,
+    "file_entry_count": 20,
+    "total_uncompressed_bytes": 53281,
+    "sha256sums_checked": 19,
+    "safety": "pass",
+    "hashes": "pass"
+  },
+  "safety": {
+    "live_sends": false,
+    "provider_mutations": false,
+    "production_backfill": false,
+    "broad_data_export": false,
+    "deploy": false,
+    "raw_message_bodies_in_artifacts": false
+  },
+  "status": "implemented_local_verified",
+  "updated_at": "2026-07-17T10:45:00Z"
+}
