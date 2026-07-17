@@ -1,9 +1,9 @@
 {
   "schema_version": "onetime.director.w12_99_candidate.v1",
-  "generated_at": "2026-07-17T15:56:23+03:00",
+  "generated_at": "2026-07-17T17:44:58+03:00",
   "repository": "webcraft-media/onetimev2",
   "candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
-  "candidate_head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+  "candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
   "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
   "release_pr": {
     "number": 61,
@@ -30,11 +30,7 @@
   "excluded_lanes": [
     {
       "lane": "W12-09",
-      "reason": "Excluded by scope clarification."
-    },
-    {
-      "lane": "OPS-13A",
-      "reason": "Wrong prompt in this thread; no usable preflight."
+      "reason": "Excluded by scope clarification and still pending explicit decision."
     },
     {
       "lane": "BNA P1/P2/P3",
@@ -60,8 +56,9 @@
     "gamification",
     "real CRM import",
     "provider acceptance",
-    "staging deployment",
-    "production promotion"
+    "W12 staging deployment",
+    "production promotion",
+    "OPS-13B execution"
   ],
   "evidence": [
     "ops/codex-runs/W12-99/STATE.json",
@@ -69,5 +66,75 @@
     "ops/codex-runs/W12-99/CONFLICT-LEDGER.md",
     "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
     "ops/codex-runs/W12-99/CANARY-REPORT.json"
+  ],
+  "draft_pr_state": {
+    "number": 73,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "state": "OPEN",
+    "is_draft": true,
+    "mergeable": "MERGEABLE",
+    "merge_state_status": "CLEAN",
+    "checks": [
+      {
+        "name": "Node 24 verify",
+        "workflow": "CI",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T13:23:01Z"
+      },
+      {
+        "name": "OPS-06 deterministic checks",
+        "workflow": "OPS-06 Reliability Observability",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T13:13:51Z"
+      },
+      {
+        "name": "PostgreSQL 18 assurance and restore clone",
+        "workflow": "OPS-11 PostgreSQL 18 Assurance",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T13:13:35Z"
+      },
+      {
+        "name": "PostgreSQL 16 assurance harness",
+        "workflow": "OT-37 PostgreSQL Assurance",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T13:13:36Z"
+      },
+      {
+        "name": "PostgreSQL 16 learner-seat proof",
+        "workflow": "OT-83 PostgreSQL Concurrency",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T13:13:08Z"
+      }
+    ],
+    "check_summary": {
+      "total": 5,
+      "success": 5,
+      "failure": 0,
+      "pending": 0
+    }
+  },
+  "preflight_inputs": [
+    {
+      "lane": "OPS-13A",
+      "status": "available_preflight_input_not_acceptance_proof",
+      "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/72",
+      "evidence": [
+        "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+        "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
+        "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
+        "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+        "ops/codex-runs/OPS-13A/RESUME.md",
+        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+        "ops/codex-runs/OPS-13A/STATE.json"
+      ],
+      "notes": "Integrated by W12-100-00 as sanitized preflight artifacts only; OPS-13B was not run."
+    }
   ]
 }

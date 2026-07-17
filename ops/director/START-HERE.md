@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-17T13:32:48+03:00
+Generated: 2026-07-17T17:44:58+03:00
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -26,16 +26,34 @@ The W12-00 execution artifacts live in `ops/codex-runs/W12-00/`.
 - Repository: `webcraft-media/onetimev2`
 - Default branch: `main`
 - Production URL: `https://join.onetimeonetime.com`
-- Production `/version` readback during W12-00:
+- Production `/version` readback remains:
   `ops11-1197673` /
   `1197673fa409bfc4c649c2683f782e86775caa5e`
-- Selected director base:
+- Production runtime is distinct from the W12 candidate. Do not describe a W12
+  branch as deployed production.
+- Selected release/director base:
   `c7d46066517d7a458d189f2c782cc06200f7861c`
 - Selected base rationale:
   `ops/codex-runs/W12-00/BASE-SELECTION.md`
 - Release PR:
   `https://github.com/webcraft-media/onetimev2/pull/61`
-- PR #61 state when inspected: draft, open, all six listed checks green.
+- W12-99 candidate branch:
+  `integration/w12-final-convergence-20260717T123715Z`
+- W12-99 candidate head:
+  `0d8d7168f066668f035176d777bdaaa4dcc5accd`
+- W12-99 draft PR:
+  `https://github.com/webcraft-media/onetimev2/pull/73`
+- PR #73 state when inspected by W12-100-00: open draft, clean/mergeable,
+  five listed checks successful.
+- W12-00 through W12-08 are integrated by W12-99.
+- W12-09 remains excluded pending an explicit decision.
+- OPS-13A is now available as a sanitized preflight input from PR #72 at
+  `d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4`. It is not import acceptance,
+  provider acceptance, or launch proof.
+- No W12 staging deployment, real import, provider acceptance, or production
+  promotion has been performed.
+- W12-100 owns isolated staging and launch proof.
+- BNA remains a separate convergence train.
 
 ## What Not To Do From This Handoff
 
@@ -46,6 +64,9 @@ The W12-00 execution artifacts live in `ops/codex-runs/W12-00/`.
   imports, or destructive database operations.
 - Do not merge W12 feature lanes manually here. W12-99 owns final semantic
   convergence after feature branches have draft PRs.
+- Do not run OPS-13B unless a later prompt explicitly scopes it.
+- Do not treat OPS-13A source metadata row counts as deduplicated people
+  counts.
 
 ## Fast Orientation
 
