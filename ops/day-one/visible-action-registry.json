@@ -637,6 +637,68 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
+      "action_id": "classes.open_detail.button",
+      "label": "Open class details",
+      "surface": "button",
+      "route": "/app/classes/:occurrenceKey",
+      "roles": ["owner", "admin"],
+      "capability": "classes:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/classes/:occurrenceKey"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "class_detail_read"
+      },
+      "states": {
+        "loading": "Loading class details.",
+        "success": "Class details are visible.",
+        "error": "Class details could not load.",
+        "permission": "Only owner/admin roles can view class details.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/classes/class-fulfillment.test.ts"]
+    },
+    {
+      "action_id": "classes.back_to_list.button",
+      "label": "Back to classes",
+      "surface": "button",
+      "route": "/app/classes",
+      "roles": ["owner", "admin"],
+      "capability": "classes:read",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/classes"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "classes_read"
+      },
+      "states": {
+        "loading": "Loading classes.",
+        "success": "Class list is visible.",
+        "error": "Class list could not load.",
+        "permission": "Only owner/admin roles can view classes.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/classes/class-fulfillment.test.ts"]
+    },
+    {
       "action_id": "content.library.view.route",
       "label": "Content Library",
       "surface": "route",

@@ -576,16 +576,19 @@ textarea:focus-visible,
 .contact-form-shell,
 .dashboard-surface,
 .readonly-list,
+.class-detail,
 .action-registry {
   min-width: 0;
 }
 
-.dashboard-surface {
+.dashboard-surface,
+.class-detail {
   display: grid;
   gap: 14px;
 }
 
 .dashboard-grid,
+.class-detail-grid,
 .action-registry-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -666,13 +669,32 @@ textarea:focus-visible,
   border-color: #ede518;
 }
 
+.state-action_needed {
+  border-color: #ede518;
+}
+
+.state-processing {
+  border-color: #86e8ff;
+}
+
+.state-not_connected,
 .state-needs_setup {
   border-color: #86e8ff;
 }
 
+.state-no_data_yet,
 .state-unavailable {
   border-color: #66777d;
   background: #101719;
+}
+
+.state-temporarily_unavailable {
+  border-color: #66777d;
+  background: #101719;
+}
+
+.state-ready {
+  border-color: #65d6a6;
 }
 
 .readonly-list {
@@ -710,6 +732,25 @@ textarea:focus-visible,
 .action-registry {
   display: grid;
   gap: 10px;
+}
+
+.diagnostics-disclosure {
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #0d1a20;
+  padding: 12px 14px;
+}
+
+.diagnostics-disclosure summary {
+  min-height: 44px;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 44px;
+}
+
+.diagnostics-disclosure[open] summary {
+  margin-bottom: 10px;
 }
 
 .action-registry h2 {

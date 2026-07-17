@@ -2,6 +2,7 @@ import type { AppConfig } from '../../../config/src/index.ts';
 import type {
   ClassOccurrenceDetail,
   ClassOccurrenceSummary,
+  ClassProductState,
   ClassReadiness,
 } from '../../../contracts/src/classes/index.ts';
 import {
@@ -45,6 +46,11 @@ export type ClassFulfillmentResult = {
   deliveryKeys: string[];
   dispatchMode: DailyClassWindow['dispatchMode'] | null;
 };
+
+type ClassSummaryBase = Omit<
+  ClassOccurrenceSummary,
+  'product_state' | 'protected_access_state' | 'next_action'
+>;
 
 export async function scheduleClassFulfillmentForLead(input: {
   pool: DbPool;
@@ -118,11 +124,21 @@ export async function getClassOccurrenceDetail(input: {
   );
   const row = result.rows[0];
   if (!row) return null;
-  const counts = await fulfillmentCounts(input.pool, input.config, input.occurrenceKey);
+  const [counts, enrollment, attendance, content, questions] = await Promise.all([
+    fulfillmentCounts(input.pool, input.config, input.occurrenceKey),
+    enrollmentCounts(input.pool, input.config),
+    attendanceSummary(input.pool, input.config, input.occurrenceKey),
+    contentSummary(input.pool, input.config, input.occurrenceKey),
+    questionSummary(input.pool, input.config, input.occurrenceKey),
+  ]);
   const summary = occurrenceSummary(row, input.now ?? new Date());
   return {
     ...summary,
     readiness: readinessForOccurrence(summary.occurrence_key),
+    enrollment_counts: enrollment,
+    attendance_summary: attendance,
+    content_summary: content,
+    question_summary: questions,
     fulfillment_counts: counts,
   };
 }
@@ -362,10 +378,105 @@ async function fulfillmentCounts(pool: DbPool, config: AppConfig, occurrenceKey:
   return counts;
 }
 
+async function enrollmentCounts(pool: DbPool, config: AppConfig) {
+  const result = await pool.query(
+    `SELECT
+        (SELECT count(*)::int
+           FROM onetime.portal_households
+          WHERE account_key = $1
+            AND product_key = $2
+            AND status = 'active') AS households,
+        (SELECT count(*)::int
+           FROM onetime.portal_learners
+          WHERE account_key = $1
+            AND product_key = $2
+            AND learner_status = 'active') AS learners`,
+    [config.accountKey, config.productKey],
+  );
+  const row = result.rows[0] ?? {};
+  return {
+    households: numberFromRow(row.households),
+    learners: numberFromRow(row.learners),
+  };
+}
+
+async function attendanceSummary(pool: DbPool, config: AppConfig, occurrenceKey: string) {
+  const result = await pool.query(
+    `SELECT
+        (SELECT count(*)::int
+           FROM onetime.class_attendance_marks
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = $3) AS manual_marks,
+        (SELECT count(*)::int
+           FROM onetime.classroom_attendance_attempts
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = $3) AS launch_attempts,
+        (SELECT count(*)::int
+           FROM onetime.classroom_attendance_attempts
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = $3
+            AND status IN ('joining', 'joined', 'left')) AS joined_attempts`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  const row = result.rows[0] ?? {};
+  return {
+    manual_marks: numberFromRow(row.manual_marks),
+    launch_attempts: numberFromRow(row.launch_attempts),
+    joined_attempts: numberFromRow(row.joined_attempts),
+  };
+}
+
+async function contentSummary(pool: DbPool, config: AppConfig, occurrenceKey: string) {
+  const result = await pool.query(
+    `SELECT
+        count(*) FILTER (WHERE item_type = 'video')::int AS videos,
+        count(*) FILTER (WHERE item_type IN ('sheet', 'review'))::int AS review_sheets,
+        count(*) FILTER (WHERE lifecycle_state IN ('received', 'transcribing', 'processing'))::int
+          AS processing,
+        count(*) FILTER (WHERE lifecycle_state IN ('review_needed', 'failed'))::int AS needs_review
+       FROM onetime.content_items
+      WHERE account_key = $1
+        AND product_key = $2
+        AND occurrence_key = $3
+        AND retention_state = 'active'`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  const row = result.rows[0] ?? {};
+  return {
+    videos: numberFromRow(row.videos),
+    review_sheets: numberFromRow(row.review_sheets),
+    processing: numberFromRow(row.processing),
+    needs_review: numberFromRow(row.needs_review),
+  };
+}
+
+async function questionSummary(pool: DbPool, config: AppConfig, occurrenceKey: string) {
+  const result = await pool.query(
+    `SELECT
+        count(*) FILTER (WHERE status = 'new')::int AS new_questions,
+        count(*) FILTER (WHERE status = 'featured')::int AS featured_questions,
+        count(*) FILTER (WHERE status = 'answered')::int AS answered_questions
+       FROM onetime.classroom_student_questions
+      WHERE account_key = $1
+        AND product_key = $2
+        AND occurrence_key = $3`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  const row = result.rows[0] ?? {};
+  return {
+    new_questions: numberFromRow(row.new_questions),
+    featured_questions: numberFromRow(row.featured_questions),
+    answered_questions: numberFromRow(row.answered_questions),
+  };
+}
+
 function occurrenceSummary(row: Record<string, unknown>, now: Date): ClassOccurrenceSummary {
   const startsAt = asDate(row.starts_at);
   const joinableUntil = asDate(row.joinable_until);
-  return {
+  const base: ClassSummaryBase = {
     occurrence_key: String(row.occurrence_key),
     class_series_key: String(row.class_series_key),
     title: String(row.title),
@@ -383,13 +494,21 @@ function occurrenceSummary(row: Record<string, unknown>, now: Date): ClassOccurr
     delivery_state: String(row.delivery_state) as ClassOccurrenceSummary['delivery_state'],
     recording_state: String(row.recording_state) as ClassOccurrenceSummary['recording_state'],
   };
+  const protectedAccess = protectedAccessProductState(base.access_state);
+  const productState = classProductState(base, protectedAccess);
+  return {
+    ...base,
+    product_state: productState,
+    protected_access_state: protectedAccess,
+    next_action: productState.action_label,
+  };
 }
 
 function readinessForOccurrence(occurrenceKey: string): ClassReadiness {
   return {
     occurrence_key: occurrenceKey,
     provider_status: 'provider_unavailable',
-    reason: 'Live class provider wiring is owned by the OT-72 provider sandbox train.',
+    reason: 'Protected classroom access is not connected yet.',
     protected_launch_required: true,
     raw_provider_target_present: false,
     launch_descriptor: {
@@ -434,13 +553,96 @@ function derivedPortalSummary(now: Date, hasAccess: boolean): UpcomingClassSumma
 function providerUnavailableAction(classKey: string): ProtectedActionDescriptor {
   return {
     action_key: stableKey('class_launch_action', [classKey]),
-    label: 'Class provider unavailable',
+    label: 'Class access not connected',
     kind: 'class_launch',
     method: 'POST',
     href: null,
     launch_token_ref: 'provider_unavailable',
     expires_at: null,
   };
+}
+
+function protectedAccessProductState(accessState: string): ClassProductState {
+  if (accessState === 'ready' || accessState === 'available') {
+    return {
+      label: 'Ready',
+      explanation: 'Protected classroom access is ready.',
+      action_label: 'Open classroom access',
+    };
+  }
+  if (accessState === 'pending' || accessState === 'issued') {
+    return {
+      label: 'Processing',
+      explanation: 'Protected classroom access is being prepared.',
+      action_label: 'Check access',
+    };
+  }
+  if (accessState === 'provider_unavailable' || accessState === 'unavailable') {
+    return {
+      label: 'Not connected',
+      explanation: 'Protected classroom access is not connected yet.',
+      action_label: 'Review classroom setup',
+    };
+  }
+  if (accessState === 'failed' || accessState === 'expired') {
+    return {
+      label: 'Action needed',
+      explanation: 'Protected classroom access needs owner review before families can join.',
+      action_label: 'Review access issue',
+    };
+  }
+  return {
+    label: 'No data yet',
+    explanation: 'No protected classroom access state has been recorded yet.',
+    action_label: 'Review classroom setup',
+  };
+}
+
+function classProductState(
+  summary: ClassSummaryBase,
+  protectedAccess: ClassProductState,
+): ClassProductState {
+  if (summary.status === 'cancelled') {
+    return {
+      label: 'Temporarily unavailable',
+      explanation: 'This class occurrence is cancelled.',
+      action_label: null,
+    };
+  }
+  if (summary.recording_state === 'failed' || summary.attendance_state === 'failed') {
+    return {
+      label: 'Action needed',
+      explanation: 'This class has a recording or attendance issue that needs review.',
+      action_label: 'Review class issue',
+    };
+  }
+  if (protectedAccess.label === 'Not connected' || protectedAccess.label === 'Action needed') {
+    return protectedAccess;
+  }
+  if (summary.delivery_state === 'pending' || summary.reminder_state === 'pending') {
+    return {
+      label: 'Processing',
+      explanation: 'Class reminders or delivery records are still being prepared.',
+      action_label: 'Check reminder status',
+    };
+  }
+  if (summary.status === 'completed' && summary.recording_state === 'not_expected') {
+    return {
+      label: 'No data yet',
+      explanation: 'The class ended, but no recording or review content is associated yet.',
+      action_label: 'Review class content',
+    };
+  }
+  return {
+    label: 'Ready',
+    explanation: 'The class schedule and current classroom records are ready to review.',
+    action_label: 'Open class details',
+  };
+}
+
+function numberFromRow(value: unknown) {
+  const parsed = Number(value ?? 0);
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 function billingRequiredAction(classKey: string): ProtectedActionDescriptor {

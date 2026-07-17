@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
+  ClassOccurrenceDetail,
   ClassOccurrenceSummary,
   ContactDetail,
   ContactListItem,
@@ -22,6 +23,7 @@ import {
   createTag,
   createIdempotencyKey,
   getAssignees,
+  getClassDetail,
   getClasses,
   getContact,
   getOwnerDashboard,
@@ -120,6 +122,11 @@ function CrmApp() {
     loading: false,
     error: '',
   });
+  const [selectedClass, setSelectedClass] = useState<ClassOccurrenceDetail | null>(null);
+  const [classDetailState, setClassDetailState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
   const [contentRoutePath, setContentRoutePath] = useState(
     location.pathname.startsWith('/app/content') ? location.pathname : '/app/content',
   );
@@ -209,6 +216,7 @@ function CrmApp() {
     }
     const ownerSurface = ownerSurfaceFromPath(location.pathname);
     if (ownerSurface && ownerSurface !== 'crm') {
+      const classDetailMatch = location.pathname.match(/^\/app\/classes\/([^/]+)$/);
       setSurface(ownerSurface);
       setCommunicationsMode(null);
       setSupportReceiptId(null);
@@ -217,7 +225,18 @@ function CrmApp() {
       setCreating(false);
       setListLoading(false);
       if (ownerSurface === 'dashboard' || ownerSurface === 'billing') await loadDashboard();
-      if (ownerSurface === 'classes') await loadClasses();
+      if (ownerSurface === 'classes') {
+        await loadClasses();
+        if (classDetailMatch?.[1]) {
+          await loadClassDetail(decodeURIComponent(classDetailMatch[1]));
+        } else {
+          setSelectedClass(null);
+          setClassDetailState({ loading: false, error: '' });
+        }
+      } else {
+        setSelectedClass(null);
+        setClassDetailState({ loading: false, error: '' });
+      }
       if (ownerSurface === 'content') setContentRoutePath(location.pathname);
       return;
     }
@@ -334,6 +353,23 @@ function CrmApp() {
     setClassesState({ loading: false, error: '' });
   }
 
+  async function loadClassDetail(occurrenceKey: string) {
+    setClassDetailState({ loading: true, error: '' });
+    try {
+      const json = await getClassDetail(occurrenceKey);
+      setSelectedClass(json.occurrence);
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setSelectedClass(null);
+      setClassDetailState({
+        loading: false,
+        error: errorMessage(error, 'Class details could not load.'),
+      });
+      return;
+    }
+    setClassDetailState({ loading: false, error: '' });
+  }
+
   function openContact(contactId: string) {
     returnFocusContactId.current = contactId;
     history.pushState({}, '', `/app/crm/contacts/${encodeURIComponent(contactId)}`);
@@ -406,6 +442,7 @@ function CrmApp() {
     nextSurface: Exclude<OwnerSurface, 'crm'>,
     href = ownerSurfacePath(nextSurface),
   ) {
+    const classDetailMatch = href.match(/^\/app\/classes\/([^/]+)$/);
     history.pushState({}, '', href);
     setSurface(nextSurface);
     setCommunicationsMode(null);
@@ -415,8 +452,33 @@ function CrmApp() {
     setCreating(false);
     setListLoading(false);
     if (nextSurface === 'dashboard' || nextSurface === 'billing') void loadDashboard();
-    if (nextSurface === 'classes') void loadClasses();
+    if (nextSurface === 'classes') {
+      void loadClasses();
+      if (classDetailMatch?.[1]) void loadClassDetail(decodeURIComponent(classDetailMatch[1]));
+      else {
+        setSelectedClass(null);
+        setClassDetailState({ loading: false, error: '' });
+      }
+    } else {
+      setSelectedClass(null);
+      setClassDetailState({ loading: false, error: '' });
+    }
     if (nextSurface === 'content') setContentRoutePath(href);
+  }
+
+  function openClassDetail(occurrenceKey: string) {
+    const href = `/app/classes/${encodeURIComponent(occurrenceKey)}`;
+    history.pushState({}, '', href);
+    setSurface('classes');
+    void loadClassDetail(occurrenceKey);
+  }
+
+  function backToClasses() {
+    history.pushState({}, '', '/app/classes');
+    setSurface('classes');
+    setSelectedClass(null);
+    setClassDetailState({ loading: false, error: '' });
+    void loadClasses();
   }
 
   async function logout() {
@@ -487,6 +549,8 @@ function CrmApp() {
     setDashboardState({ loading: false, error: '' });
     setClasses([]);
     setClassesState({ loading: false, error: '' });
+    setSelectedClass(null);
+    setClassDetailState({ loading: false, error: '' });
     setContentRoutePath('/app/content');
     setListLoading(false);
     setDetailLoading(false);
@@ -601,8 +665,8 @@ function CrmApp() {
       ? ownerSurfaceDescription(surface)
       : communicationsMode
         ? communicationsMode.kind === 'contact'
-          ? 'Read-only local communication intents for this contact.'
-          : 'Read-only local communication intents from the One Time outbox.'
+          ? 'Communication history and draft activity for this contact.'
+          : 'One Time communication activity and draft follow-up status.'
         : creating
           ? 'Create a One Time contact without sending messages or granting access.'
           : editing
@@ -705,9 +769,15 @@ function CrmApp() {
       {surface === 'classes' && (
         <ClassesPanel
           classes={classes}
+          selectedClass={selectedClass}
           loading={classesState.loading}
           error={classesState.error}
+          detailLoading={classDetailState.loading}
+          detailError={classDetailState.error}
+          onOpen={openClassDetail}
+          onBack={backToClasses}
           onRetry={() => void loadClasses()}
+          onRetryDetail={(occurrenceKey) => void loadClassDetail(occurrenceKey)}
         />
       )}
       {surface === 'content' && (
@@ -836,7 +906,7 @@ function ReadOnlyToolbar({
 }) {
   return (
     <div className="detail-toolbar">
-      <span className="toolbar-summary">Read-only, API-backed status</span>
+      <span className="toolbar-summary">Last refreshed from your One Time workspace.</span>
       <button
         type="button"
         className="button-secondary"
@@ -897,11 +967,13 @@ function DashboardPanel({
             <article key={section.id} className={`dashboard-card state-${section.state}`}>
               <header>
                 <h2>{section.label}</h2>
-                <Chip label={readableState(section.state)} tone="status" />
+                <Chip label={productStateLabel(section.state)} tone="status" />
               </header>
               <strong>{section.value_label}</strong>
               <p>{section.detail}</p>
-              {section.updated_at && <small>Updated {formatDate(section.updated_at)}</small>}
+              {section.trend_label && <p>{section.trend_label}</p>}
+              {section.next_action && <small>Next: {section.next_action}</small>}
+              {section.updated_at && <small>Last updated {formatDate(section.updated_at)}</small>}
               {href && actionId && actionIds.has(actionId) && (
                 <button
                   type="button"
@@ -916,21 +988,33 @@ function DashboardPanel({
           );
         })}
       </div>
-      <VisibleActionRegistry actions={dashboard.actions} />
+      <DiagnosticsDisclosure dashboard={dashboard} />
     </section>
   );
 }
 
 function ClassesPanel({
   classes,
+  selectedClass,
   loading,
   error,
+  detailLoading,
+  detailError,
+  onOpen,
+  onBack,
   onRetry,
+  onRetryDetail,
 }: {
   classes: ClassOccurrenceSummary[];
+  selectedClass: ClassOccurrenceDetail | null;
   loading: boolean;
   error: string;
+  detailLoading: boolean;
+  detailError: string;
+  onOpen: (occurrenceKey: string) => void;
+  onBack: () => void;
   onRetry: () => void;
+  onRetryDetail: (occurrenceKey: string) => void;
 }) {
   if (loading && classes.length === 0) return <ReadOnlySkeleton label="Loading classes" />;
   if (error) {
@@ -944,22 +1028,165 @@ function ClassesPanel({
       />
     );
   }
+  if (detailLoading && !selectedClass) return <ReadOnlySkeleton label="Loading class details" />;
+  if (detailError && !selectedClass) {
+    return (
+      <StatePanel
+        kind="error"
+        title="Class details could not load"
+        body={detailError}
+        actionLabel="Back to classes"
+        onAction={onBack}
+      />
+    );
+  }
+  if (selectedClass) {
+    return (
+      <section className="class-detail" aria-busy={loading || detailLoading}>
+        <button
+          type="button"
+          className="button-secondary"
+          data-action-id="classes.back_to_list.button"
+          onClick={onBack}
+        >
+          Back to classes
+        </button>
+        {detailError && (
+          <p className="notice-banner error" role="alert">
+            {detailError}
+          </p>
+        )}
+        <article
+          className={`readonly-row state-${productStateClass(selectedClass.product_state.label)}`}
+        >
+          <div>
+            <h2>{selectedClass.title}</h2>
+            <p>{formatDate(selectedClass.starts_at)}</p>
+            <div className="chip-row">
+              <Chip label={selectedClass.product_state.label} tone="status" />
+              <Chip label={readableState(selectedClass.status)} tone="source" />
+            </div>
+            <p>{selectedClass.product_state.explanation}</p>
+          </div>
+          <dl>
+            <div>
+              <dt>Next action</dt>
+              <dd>{selectedClass.next_action ?? 'No owner action needed right now'}</dd>
+            </div>
+            <div>
+              <dt>Protected access</dt>
+              <dd>{selectedClass.protected_access_state.label}</dd>
+            </div>
+            <div>
+              <dt>Classroom link</dt>
+              <dd>
+                {selectedClass.readiness.raw_provider_target_present
+                  ? 'Protected link available'
+                  : 'Not connected yet'}
+              </dd>
+            </div>
+          </dl>
+        </article>
+        <div className="class-detail-grid">
+          <ClassMetricGroup
+            title="Enrollment"
+            rows={[
+              ['Households', selectedClass.enrollment_counts.households],
+              ['Learners', selectedClass.enrollment_counts.learners],
+            ]}
+          />
+          <ClassMetricGroup
+            title="Attendance"
+            rows={[
+              ['Manual marks', selectedClass.attendance_summary.manual_marks],
+              ['Classroom launches', selectedClass.attendance_summary.launch_attempts],
+              ['Joined sessions', selectedClass.attendance_summary.joined_attempts],
+            ]}
+          />
+          <ClassMetricGroup
+            title="Content"
+            rows={[
+              ['Recordings', selectedClass.content_summary.videos],
+              ['Review sheets', selectedClass.content_summary.review_sheets],
+              ['Processing', selectedClass.content_summary.processing],
+              ['Needs review', selectedClass.content_summary.needs_review],
+            ]}
+          />
+          <ClassMetricGroup
+            title="Questions"
+            rows={[
+              ['New questions', selectedClass.question_summary.new_questions],
+              ['Featured', selectedClass.question_summary.featured_questions],
+              ['Answered', selectedClass.question_summary.answered_questions],
+            ]}
+          />
+          <ClassMetricGroup
+            title="Reminder progress"
+            rows={[
+              ['Queued', selectedClass.fulfillment_counts.queued],
+              ['Satisfied', selectedClass.fulfillment_counts.satisfied],
+              ['Suppressed', selectedClass.fulfillment_counts.suppressed],
+              ['Skipped', selectedClass.fulfillment_counts.skipped],
+              ['Access not connected', selectedClass.fulfillment_counts.provider_unavailable],
+            ]}
+          />
+          <article className="readonly-row">
+            <div>
+              <h2>Protected classroom</h2>
+              <p>{selectedClass.readiness.reason}</p>
+            </div>
+            <dl>
+              <div>
+                <dt>Access state</dt>
+                <dd>{selectedClass.protected_access_state.explanation}</dd>
+              </div>
+              <div>
+                <dt>Launch requirement</dt>
+                <dd>Protected access required</dd>
+              </div>
+              <div>
+                <dt>Classroom target</dt>
+                <dd>No classroom link is shown until access is connected.</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+        <button
+          type="button"
+          className="button-secondary"
+          data-action-id="classes.open_detail.button"
+          disabled={detailLoading}
+          onClick={() => onRetryDetail(selectedClass.occurrence_key)}
+        >
+          {detailLoading ? 'Refreshing...' : 'Refresh class details'}
+        </button>
+      </section>
+    );
+  }
   if (classes.length === 0) {
     return (
       <StatePanel
         kind="empty"
-        title="No class occurrences"
-        body="No bounded class occurrence records are available."
+        title="No classes yet"
+        body="No class schedule has been recorded yet."
       />
     );
   }
   return (
     <section className="readonly-list" aria-busy={loading}>
       {classes.map((classItem) => (
-        <article className="readonly-row" key={classItem.occurrence_key}>
+        <article
+          className={`readonly-row state-${productStateClass(classItem.product_state.label)}`}
+          key={classItem.occurrence_key}
+        >
           <div>
             <h2>{classItem.title}</h2>
             <p>{formatDate(classItem.starts_at)}</p>
+            <div className="chip-row">
+              <Chip label={classItem.product_state.label} tone="status" />
+              <Chip label={readableState(classItem.status)} tone="source" />
+            </div>
+            <p>{classItem.product_state.explanation}</p>
           </div>
           <dl>
             <div>
@@ -967,17 +1194,43 @@ function ClassesPanel({
               <dd>{readableState(classItem.status)}</dd>
             </div>
             <div>
-              <dt>Launch</dt>
-              <dd>{readableState(classItem.access_state)}</dd>
+              <dt>Protected access</dt>
+              <dd>{classItem.protected_access_state.label}</dd>
             </div>
             <div>
-              <dt>Delivery</dt>
-              <dd>{readableState(classItem.delivery_state)}</dd>
+              <dt>Next action</dt>
+              <dd>{classItem.next_action ?? 'No owner action needed right now'}</dd>
             </div>
           </dl>
+          <button
+            type="button"
+            className="button-secondary"
+            data-action-id="classes.open_detail.button"
+            onClick={() => onOpen(classItem.occurrence_key)}
+          >
+            Open class details
+          </button>
         </article>
       ))}
     </section>
+  );
+}
+
+function ClassMetricGroup({ title, rows }: { title: string; rows: Array<[string, number]> }) {
+  return (
+    <article className="readonly-row">
+      <div>
+        <h2>{title}</h2>
+      </div>
+      <dl>
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
+    </article>
   );
 }
 
@@ -1028,15 +1281,15 @@ function BillingPanel({
         <dl>
           <div>
             <dt>Status</dt>
-            <dd>{readableState(billing.state)}</dd>
+            <dd>{productStateLabel(billing.state)}</dd>
           </div>
           <div>
             <dt>Count</dt>
             <dd>{billing.value_label}</dd>
           </div>
           <div>
-            <dt>Provider mutations</dt>
-            <dd>None</dd>
+            <dt>Live payments</dt>
+            <dd>Off unless explicitly approved</dd>
           </div>
         </dl>
       </article>
@@ -1044,12 +1297,35 @@ function BillingPanel({
   );
 }
 
-function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['actions'] }) {
-  const visible = actions.filter((action) => action.roles.includes('owner'));
+function DiagnosticsDisclosure({ dashboard }: { dashboard: OwnerDashboardResponse }) {
+  const visible = dashboard.actions.filter((action) => action.roles.includes('owner'));
   return (
-    <section className="action-registry" aria-labelledby="action-registry-title">
-      <h2 id="action-registry-title">Operator action coverage</h2>
+    <details className="diagnostics-disclosure action-registry">
+      <summary>Diagnostics</summary>
       <div className="action-registry-grid">
+        {dashboard.dashboard.sections.map((section) => (
+          <article key={section.id}>
+            <h3>{section.label}</h3>
+            <dl>
+              <div>
+                <dt>Source</dt>
+                <dd>{formatRegistryLabel(section.diagnostics.source)}</dd>
+              </div>
+              <div>
+                <dt>State code</dt>
+                <dd>{formatRegistryLabel(section.diagnostics.state_code)}</dd>
+              </div>
+              <div>
+                <dt>Checked</dt>
+                <dd>
+                  {section.diagnostics.checked_at
+                    ? formatDate(section.diagnostics.checked_at)
+                    : 'Not checked yet'}
+                </dd>
+              </div>
+            </dl>
+          </article>
+        ))}
         {visible.map((action) => (
           <article key={action.action_id}>
             <h3>{action.label}</h3>
@@ -1060,23 +1336,21 @@ function VisibleActionRegistry({ actions }: { actions: OwnerDashboardResponse['a
               </div>
               <div>
                 <dt>Control</dt>
-                <dd>{action.handler.method === 'GET' ? 'Read-only view' : 'Protected update'}</dd>
+                <dd>{action.handler.method === 'GET' ? 'View' : 'Protected update'}</dd>
               </div>
               <div>
                 <dt>Activity record</dt>
-                <dd>Recorded for operator review.</dd>
+                <dd>Recorded for admin review.</dd>
               </div>
               <div>
                 <dt>Duplicate protection</dt>
-                <dd>
-                  {action.idempotency.required ? 'Duplicate taps are ignored.' : 'Read-only safe.'}
-                </dd>
+                <dd>{action.idempotency.required ? 'Enabled' : 'Not required'}</dd>
               </div>
             </dl>
           </article>
         ))}
       </div>
-    </section>
+    </details>
   );
 }
 
@@ -2108,7 +2382,7 @@ function sourceLabel(value: string) {
 
 function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/dashboard') return 'dashboard';
-  if (pathname === '/app/classes') return 'classes';
+  if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
   if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
@@ -2134,13 +2408,14 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
 
 function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'dashboard') {
-    return 'Bounded owner/admin status from CRM, classes, communications, content, portals and billing projections.';
+    return 'Workspace snapshot for leads, classes, communications, content, members, support, and billing.';
   }
-  if (surface === 'classes') return 'Read-only class occurrence status from the classes API.';
+  if (surface === 'classes')
+    return 'Class schedule, access, content, questions, and learner readiness.';
   if (surface === 'content') {
-    return 'Operational Rabbi and One Time content review, prompts, artifacts, social drafts and provider-off status.';
+    return 'Rabbi and One Time content review, prompts, artifacts, social drafts, and provider-off status.';
   }
-  if (surface === 'billing') return 'Read-only billing readiness and projection status.';
+  if (surface === 'billing') return 'Billing setup and access projection status.';
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
   return 'One Time signup and contact review.';
 }
@@ -2155,12 +2430,29 @@ function dashboardOpenActionId(href: string | null) {
 }
 
 function dashboardOpenLabel(href: string) {
-  if (href === '/app/crm') return 'Open CRM';
-  if (href === '/app/classes') return 'Open Classes';
-  if (href === communicationsRouteDescriptor.path) return 'Open Communications';
-  if (href === '/app/content') return 'Open Content';
-  if (href === '/app/billing') return 'Open Billing';
+  if (href === '/app/crm') return 'Review leads';
+  if (href === '/app/classes') return 'Open classroom';
+  if (href === communicationsRouteDescriptor.path) return 'Review communications';
+  if (href === '/app/content') return 'Configure content';
+  if (href === '/app/billing') return 'Open billing';
   return 'Open';
+}
+
+function productStateLabel(value: string) {
+  if (value === 'ready') return 'Ready';
+  if (value === 'processing') return 'Processing';
+  if (value === 'action_needed') return 'Action needed';
+  if (value === 'not_connected') return 'Not connected';
+  if (value === 'no_data_yet') return 'No data yet';
+  if (value === 'temporarily_unavailable') return 'Temporarily unavailable';
+  return readableState(value);
+}
+
+function productStateClass(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '');
 }
 
 function readableState(value: string) {
@@ -2171,7 +2463,7 @@ function deliveryLabel(value: string) {
   if (value === 'queued') return 'Queued for support desk';
   if (value === 'delivery_delayed') return 'Delivery delayed';
   if (value === 'delivered') return 'Accepted by support desk';
-  if (value === 'dead_letter') return 'Needs operator review';
+  if (value === 'dead_letter') return 'Needs admin review';
   return readableState(value);
 }
 
