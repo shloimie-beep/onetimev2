@@ -1,0 +1,8 @@
+{
+  "schema_version": "onetime.w13_100.visible_action_audit.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "status": "not_started",
+  "audited_routes": [],
+  "findings": [],
+  "next_action": "Run registry and browser-visible action audit after semantic convergence."
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "onetime.w13_100.lane_recovery_matrix.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "status": "discovery_in_progress",
+  "lanes": [
+    {
+      "lane": "W12-100 convergence",
+      "ref": "origin/integration/w12-100-launch-readiness-convergence-20260717",
+      "head": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+      "classification": "selected_starting_base",
+      "recovery_action": "inspect artifacts and keep unless superseded by W13 semantic convergence"
+    },
+    {
+      "lane": "W13-10",
+      "ref": "origin/codex/w13-10-complete-launch-foundations",
+      "head": "698570f2d6b2701d1345794d16b93affd1ff96ae",
+      "classification": "diverged_from_w12_100_at_w12_99",
+      "recovery_action": "inspect, then merge or port accepted launch-foundation semantics"
+    },
+    {
+      "lane": "W12-09/W13 gamification",
+      "ref": "origin/codex/w12-09-student-gamification",
+      "head": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+      "classification": "newly_authorized_subject_to_safety_review",
+      "recovery_action": "inspect for safe controlled Day-One inclusion"
+    }
+  ]
+}

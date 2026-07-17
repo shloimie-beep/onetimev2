@@ -1,0 +1,21 @@
+{
+  "schema_version": "onetime.w13_100.product_decisions.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "source": "W13-100 operator prompt",
+  "decisions": {
+    "include_safe_gamification": true,
+    "family_plan_usd_monthly": 67,
+    "family_plan_active_learner_seats": 3,
+    "stripe_live_charges_authorized": false,
+    "routine_parent_student_authenticator_app_required": false,
+    "owner_admin_step_up_allowed_for_sensitive_actions": true,
+    "real_crm_import_scope": "OPS-13A exact approved six-source primary manifest after rehearsal and gates",
+    "import_triggered_sends_forbidden": true,
+    "transactional_email_after_green_canary": true,
+    "telegram_after_green_canary": "protected mapped owner/admin chats only",
+    "whatsapp_after_green_canary": "public lead assistance and subscriber support handoff only",
+    "buffer_publication_authorized": false,
+    "bna_bridge_live_authorized": false,
+    "ship_safe_core_even_if_optional_blocked": true
+  }
+}

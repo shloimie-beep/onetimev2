@@ -1,0 +1,17 @@
+{
+  "schema_version": "onetime.w13_100.collision_ledger.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "status": "open",
+  "collisions": [
+    {
+      "id": "COL-W13-100-001",
+      "area": "release ancestry",
+      "refs": [
+        "origin/integration/w12-100-launch-readiness-convergence-20260717",
+        "origin/codex/w13-10-complete-launch-foundations"
+      ],
+      "finding": "W13-10 and W12-100 both descend from W12-99 but neither is ancestor of the other.",
+      "decision": "Start from W12-100 and semantically recover W13-10."
+    }
+  ]
+}

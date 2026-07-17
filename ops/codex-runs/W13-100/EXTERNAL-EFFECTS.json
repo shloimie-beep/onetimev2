@@ -1,0 +1,24 @@
+{
+  "schema_version": "onetime.w13_100.external_effects.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "effects": {
+    "emails_sent": 0,
+    "whatsapp_messages": 0,
+    "telegram_actions": 0,
+    "zoom_meetings": 0,
+    "zoom_registrants": 0,
+    "vimeo_operations": 0,
+    "helper_queries": 0,
+    "buffer_drafts": 0,
+    "buffer_posts": 0,
+    "stripe_test_objects": 0,
+    "stripe_live_objects": 0,
+    "bna_events": 0,
+    "deployments": 0,
+    "migrations": 0,
+    "imports": 0,
+    "dns_changes": 0
+  },
+  "secrets_printed_or_committed": false,
+  "private_data_printed_or_committed": false
+}

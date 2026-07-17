@@ -1,0 +1,8 @@
+{
+  "schema_version": "onetime.w13_100.provider_canaries.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "status": "not_started",
+  "canaries": [],
+  "provider_sends": 0,
+  "provider_mutations": 0
+}

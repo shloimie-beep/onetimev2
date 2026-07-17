@@ -1,0 +1,72 @@
+{
+  "schema_version": "onetime.w13_100.state.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "updated_at": "2026-07-17T18:20:46Z",
+  "status": "phase_1_recovery_in_progress",
+  "terminal_outcome": null,
+  "repository": {
+    "full_name": "webcraft-media/onetimev2",
+    "remote": "https://github.com/webcraft-media/onetimev2.git",
+    "worktree": "C:/Users/User/OneTimeOneTime-w13-100-final-launch",
+    "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "head_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+    "base_ref": "origin/integration/w12-100-launch-readiness-convergence-20260717",
+    "base_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c"
+  },
+  "phase": {
+    "current": "phase_1_recover_chain_and_select_canonical_candidate",
+    "completed": ["created_isolated_worktree", "created_release_branch", "copied_original_prompt"],
+    "in_progress": ["dynamic_branch_run_discovery", "w13_w12_100_w12_09_convergence_assessment"],
+    "not_started": [
+      "semantic_merge",
+      "product_repair",
+      "validation",
+      "staging_deploy",
+      "provider_canaries",
+      "real_import_rehearsal",
+      "production_deploy",
+      "production_import",
+      "operator_handoff"
+    ]
+  },
+  "canonical_candidates": {
+    "w12_99_anchor": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "w12_100_convergence": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+    "w13_10": "698570f2d6b2701d1345794d16b93affd1ff96ae",
+    "w12_09_gamification": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+    "selected_start": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+    "final_candidate_sha": null,
+    "final_image_digest": null
+  },
+  "safety": {
+    "production_deployments": 0,
+    "production_database_mutations": 0,
+    "production_import_batches": 0,
+    "provider_sends": 0,
+    "provider_mutations": 0,
+    "stripe_live_actions": 0,
+    "buffer_publications": 0,
+    "dns_changes": 0,
+    "secrets_printed_or_committed": false,
+    "private_rows_printed_or_committed": false
+  },
+  "external_effects": {
+    "emails_sent": 0,
+    "whatsapp_messages": 0,
+    "telegram_actions": 0,
+    "zoom_meetings": 0,
+    "zoom_registrants": 0,
+    "vimeo_operations": 0,
+    "helper_queries": 0,
+    "buffer_drafts": 0,
+    "buffer_posts": 0,
+    "stripe_test_objects": 0,
+    "stripe_live_objects": 0,
+    "bna_events": 0,
+    "deployments": 0,
+    "migrations": 0,
+    "imports": 0
+  },
+  "blockers": [],
+  "next_action": "Complete dynamic branch/run discovery, then merge or port accepted W13-10 and W12-09 semantics onto the W12-100 convergence base."
+}

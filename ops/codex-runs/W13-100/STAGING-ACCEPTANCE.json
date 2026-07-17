@@ -1,0 +1,11 @@
+{
+  "schema_version": "onetime.w13_100.staging_acceptance.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "status": "not_started",
+  "staging_url": null,
+  "source_sha": null,
+  "image_digest": null,
+  "deployments": [],
+  "journeys": [],
+  "rollback_rehearsal": null
+}

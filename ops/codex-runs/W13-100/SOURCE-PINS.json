@@ -1,0 +1,49 @@
+{
+  "schema_version": "onetime.w13_100.source_pins.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "repository": "webcraft-media/onetimev2",
+  "pins": [
+    {
+      "id": "w12_99_anchor",
+      "branch": "integration/w12-final-convergence-20260717T123715Z",
+      "sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "pr": 73,
+      "role": "historical accepted anchor"
+    },
+    {
+      "id": "w12_100_convergence",
+      "branch": "integration/w12-100-launch-readiness-convergence-20260717",
+      "sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+      "pr": 89,
+      "role": "selected W13-100 starting base"
+    },
+    {
+      "id": "w13_10_launch_foundations",
+      "branch": "codex/w13-10-complete-launch-foundations",
+      "sha": "698570f2d6b2701d1345794d16b93affd1ff96ae",
+      "pr": 88,
+      "role": "newer W13 lane to recover and converge"
+    },
+    {
+      "id": "w12_09_gamification",
+      "branch": "codex/w12-09-student-gamification",
+      "sha": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+      "pr": 71,
+      "role": "now authorized for controlled Day One if safe"
+    },
+    {
+      "id": "ops_13a_evidence",
+      "branch": "codex/ops13a-real-data-provider-preflight",
+      "sha": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+      "pr": 72,
+      "role": "sanitized source/provider evidence only"
+    },
+    {
+      "id": "production_before_w13_100",
+      "branch": null,
+      "sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "pr": null,
+      "role": "current production /version source reported by director and prior live readback"
+    }
+  ]
+}

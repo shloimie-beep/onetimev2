@@ -1,0 +1,11 @@
+{
+  "schema_version": "onetime.w13_100.production_acceptance.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "status": "not_started",
+  "health": null,
+  "ready": null,
+  "version": null,
+  "journeys": [],
+  "providers": [],
+  "import": null
+}
