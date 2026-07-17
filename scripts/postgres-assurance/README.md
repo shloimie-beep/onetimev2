@@ -15,6 +15,19 @@ The GitHub Actions workflow uses Node 24 and PostgreSQL 16:
 .github/workflows/ot37-postgres-assurance.yml
 ```
 
+OPS-11 adds a PostgreSQL 18 workflow that reuses the same assurance harness and
+runs a native custom-format dump/restore clone smoke with official PostgreSQL 18
+client tools:
+
+```text
+.github/workflows/ops11-postgres-18-assurance.yml
+scripts/postgres-assurance/ops11-pg18-restore-clone.ts
+```
+
+The OPS-11 restore-clone smoke writes sanitized evidence only: versions, dump
+size/checksum, archive entry count, schema counts, and aggregate hashes. It must
+not record row contents or database URLs.
+
 In OT-60R convergence, the workflow also runs on
 `codex/ot60r-recovery-convergence` and checks the integrated migration stack
 through `1600_ot51_telegram_bot_foundation.sql`.
