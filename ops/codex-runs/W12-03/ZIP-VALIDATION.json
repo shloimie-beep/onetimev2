@@ -1,0 +1,38 @@
+{
+  "schema_version": "onetime.codex_run.zip_validation.v1",
+  "run_id": "W12-03",
+  "validated_at": "2026-07-17T13:28:15+03:00",
+  "archive": {
+    "path": "C:\\Users\\User\\Downloads\\W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+    "filename": "W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+    "size_bytes": 33260,
+    "sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+    "matching_archives_in_downloads": 1
+  },
+  "extraction": {
+    "root": "C:\\Users\\User\\AppData\\Local\\Temp\\bna-w12-03-zip-20260717132815",
+    "top_level_directory": "W12-NEXT-PARALLEL-WAVE-2026-07-17",
+    "entries": 23,
+    "files": 20
+  },
+  "safety": {
+    "absolute_paths": 0,
+    "drive_rooted_paths": 0,
+    "path_traversal_entries": 0,
+    "nul_names": 0,
+    "empty_names": 0,
+    "duplicate_normalized_paths": 0,
+    "extraction_escapes": 0,
+    "result": "passed"
+  },
+  "internal_hashes": {
+    "source": "SHA256SUMS.txt",
+    "result": "all_listed_files_match",
+    "important_files": {
+      "00-START-HERE.md": "fdd3a0e0a166476a6ad9a43ff0c223e025832bc006d1db0fa653037a55e41fa6",
+      "prompts/CODEX-W12-03-PORTAL-TEST-LAB.md": "8f1c356a38a5ca56ff1a44d7e3a4ff0505cad55d9b4521b86b7330ddc86e290d",
+      "MANIFEST.json": "80d9b17c5d94e88c27ccd4d9f36915aa2c635b1e5af6512ba00687718e4c6f87",
+      "SHA256SUMS.txt": "aff275732bff6b9489ab37e8d67ed9e727b75dda390a54dc0fdb98705b4f2ce8"
+    }
+  }
+}

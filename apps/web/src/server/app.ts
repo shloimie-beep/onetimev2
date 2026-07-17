@@ -189,6 +189,7 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
+import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
@@ -472,6 +473,19 @@ export function createApp({
     sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
     setPrivateNoStore,
     ...(clock ? { clock } : {}),
+  });
+
+  registerPortalTestLabRoutes({
+    app,
+    config,
+    pool,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      ensureSessionCsrfCookie: (req, res, session) =>
+        ensureSessionCsrfCookie(req, res, pool, config, session),
+      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      setPrivateNoStore,
+    },
   });
 
   app.get('/health', (_req, res) => {
@@ -2824,7 +2838,9 @@ function createParentBillingSummaryAdapter(
           summary.entitlement?.status === 'suspended' ||
           summary.subscription?.status === 'past_due' ||
           summary.subscription?.status === 'unpaid',
-        current_period_end: summary.subscription?.current_period_end ?? null,
+        current_period_end: summary.subscription?.current_period_end
+          ? toIso(summary.subscription.current_period_end)
+          : null,
         cancel_at_period_end: summary.subscription?.cancel_at_period_end === true,
       };
     },

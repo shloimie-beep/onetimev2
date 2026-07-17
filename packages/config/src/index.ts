@@ -121,6 +121,7 @@ const envSchema = z.object({
   OT89_MOCK_BNA_OUTAGE: booleanFromString,
   OT89_SUPPORT_DEPLOYMENT_ID: z.string().min(1).max(64).default('local-ot89a'),
   LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
+  PORTAL_TEST_LAB_ENABLED: booleanFromString,
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -161,6 +162,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.OT89_MOCK_BNA_ENABLED) {
     throw new Error('OT89 mock BNA endpoint is forbidden in production.');
+  }
+
+  if (parsed.NODE_ENV === 'production' && parsed.PORTAL_TEST_LAB_ENABLED) {
+    throw new Error('Portal Test Lab is forbidden in production.');
   }
 
   const ot89ProvidedSecrets = [
@@ -324,5 +329,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     bufferAccessToken: parsed.BUFFER_ACCESS_TOKEN,
     bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
     bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
+    portalTestLabEnabled: parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED,
   };
 }

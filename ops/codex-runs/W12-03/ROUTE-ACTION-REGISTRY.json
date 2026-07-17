@@ -1,0 +1,113 @@
+{
+  "schema_version": "onetime.w12_03.portal_test_lab_route_action_registry.v1",
+  "run_id": "W12-03",
+  "external_mutations_performed": false,
+  "routes": [
+    {
+      "route_id": "portal_test_lab.shell",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/portal-test-lab"
+      },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": [
+        "tests/integration/portals/portal-test-lab.test.ts",
+        "tests/e2e/w12-03-portal-test-lab.spec.ts"
+      ],
+      "negative_tests": ["parent role denied", "anonymous redirected"]
+    }
+  ],
+  "actions": [
+    {
+      "action_id": "portal_test_lab.reseed",
+      "label": "Re-seed test lab",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:seed",
+      "handler": {
+        "method": "POST",
+        "path": "/app/portal-test-lab/reseed"
+      },
+      "confirmation": {
+        "required": false,
+        "reason": "Test-only idempotent fixture provisioning."
+      },
+      "audit": {
+        "mode": "local_fixture_write",
+        "event": "portal_test_lab_reseeded"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/integration/portals/portal-test-lab.test.ts"],
+      "negative_tests": ["requires owner/admin session", "requires session CSRF"]
+    },
+    {
+      "action_id": "portal_test_lab.reset",
+      "label": "Reset lab state",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:reset",
+      "handler": {
+        "method": "POST",
+        "path": "/app/portal-test-lab/reset"
+      },
+      "confirmation": {
+        "required": false,
+        "reason": "Only W12 fictional local fixture rows are reset."
+      },
+      "audit": {
+        "mode": "local_fixture_write",
+        "event": "portal_test_lab_reset"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": [
+        "tests/integration/portals/portal-test-lab.test.ts",
+        "tests/e2e/w12-03-portal-test-lab.spec.ts"
+      ],
+      "negative_tests": ["requires owner/admin session", "requires session CSRF"]
+    },
+    {
+      "action_id": "portal_test_lab.login_link",
+      "label": "Open fictional identity login",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:read",
+      "handler": {
+        "method": "GET",
+        "path": "/login"
+      },
+      "confirmation": {
+        "required": false,
+        "reason": "Navigates to the normal login screen prefilled with a fictional identity email only."
+      },
+      "audit": {
+        "mode": "none",
+        "event": null
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "readiness_state": "ready",
+      "external_mutation": false,
+      "positive_tests": ["tests/e2e/w12-03-portal-test-lab.spec.ts"],
+      "negative_tests": [
+        "does not display passwords",
+        "does not create sessions by role impersonation"
+      ]
+    }
+  ]
+}
