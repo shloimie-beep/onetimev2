@@ -303,7 +303,7 @@ export async function processQueuedWhatsAppOutbox(input: {
     pool: input.pool,
     config: input.config,
     now,
-    limit: input.limit ?? 25,
+    limit: input.canaryOnly ? 1 : (input.limit ?? 25),
     leaseOwner,
     leaseExpiresAt: new Date(now.getTime() + (input.leaseMs ?? 120_000)),
     canaryOnly: Boolean(input.canaryOnly),
@@ -349,6 +349,28 @@ export async function processQueuedWhatsAppOutbox(input: {
           { owner: leaseOwner, generation: leaseGeneration },
         );
         if (completed) suppressed += 1;
+        else leaseLost += 1;
+        continue;
+      }
+    }
+
+    if (input.canaryOnly) {
+      const canaryBudgetClaimed = await claimWhatsAppCanaryBudget(input.pool, input.config, {
+        providerAccountKey: String(row.provider_account_key),
+        recipientKey: String(row.recipient_key),
+        now,
+      });
+      if (!canaryBudgetClaimed) {
+        const completed = await setOutboxDeadLettered(
+          input.pool,
+          input.config,
+          outboxKey,
+          new WhatsAppProviderSendError('meta_whatsapp_canary_budget_not_claimed', {
+            retryable: false,
+          }),
+          { owner: leaseOwner, generation: leaseGeneration },
+        );
+        if (completed) deadLettered += 1;
         else leaseLost += 1;
         continue;
       }
@@ -434,6 +456,41 @@ export async function processQueuedWhatsAppOutbox(input: {
   }
 
   return { claimed: rows.length, sent, suppressed, retried, deadLettered, leaseLost };
+}
+
+async function claimWhatsAppCanaryBudget(
+  pool: DbPool,
+  config: AppConfig,
+  input: { providerAccountKey: string; recipientKey: string; now: Date },
+) {
+  const result = await pool.query(
+    `UPDATE onetime.whatsapp_canary_budget
+        SET status = 'consumed',
+            consumed_at = $5
+      WHERE account_key = $1
+        AND product_key = $2
+        AND provider_account_key = $3
+        AND recipient_key = $4
+        AND purpose = 'ot85_staging_canary'
+        AND status = 'available'
+        AND NOT EXISTS (
+          SELECT 1
+            FROM onetime.whatsapp_canary_budget AS consumed
+           WHERE consumed.account_key = $1
+             AND consumed.product_key = $2
+             AND consumed.purpose = 'ot85_staging_canary'
+             AND consumed.status = 'consumed'
+        )
+      RETURNING budget_key`,
+    [
+      config.accountKey,
+      config.productKey,
+      input.providerAccountKey,
+      input.recipientKey,
+      input.now.toISOString(),
+    ],
+  );
+  return Boolean(result.rowCount);
 }
 
 async function claimQueuedWhatsAppOutbox(input: {

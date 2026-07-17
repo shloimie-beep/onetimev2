@@ -230,6 +230,69 @@ describe('OT-100 WhatsApp provider runtime', () => {
     expect(summary).toMatchObject({ claimed: 1, deadLettered: 1 });
     expect(fetchCalled).toBe(false);
   });
+
+  it('enforces one consumed canary budget before fake provider dispatch', async () => {
+    await sendInbound('canary-budget-1', 'What is the program?');
+    await sendInbound('canary-budget-2', 'What is the program?');
+    await pool.query(
+      `UPDATE onetime.whatsapp_outbox_messages
+          SET canary = true
+        WHERE account_key = $1
+          AND product_key = $2`,
+      [config.accountKey, config.productKey],
+    );
+    const queued = await pool.query(
+      `SELECT provider_account_key, recipient_key
+         FROM onetime.whatsapp_outbox_messages
+        ORDER BY created_at ASC`,
+    );
+    expect(queued.rowCount).toBe(2);
+    await pool.query(
+      `INSERT INTO onetime.whatsapp_canary_budget
+       (budget_key, account_key, product_key, provider_account_key, recipient_key)
+       VALUES ('wa_budget_w12_100_08',$1,$2,$3,$4)`,
+      [
+        config.accountKey,
+        config.productKey,
+        String(queued.rows[0].provider_account_key),
+        String(queued.rows[0].recipient_key),
+      ],
+    );
+
+    const adapter = new RecordingMetaAdapter('wamid.ot100.canary.budget');
+    const first = await processQueuedWhatsAppOutbox({
+      pool,
+      config,
+      adapter,
+      now: WORKER_NOW,
+      leaseOwner: 'ot100-canary-worker-1',
+      canaryOnly: true,
+    });
+    const second = await processQueuedWhatsAppOutbox({
+      pool,
+      config,
+      adapter,
+      now: new Date(WORKER_NOW.getTime() + 1_000),
+      leaseOwner: 'ot100-canary-worker-2',
+      canaryOnly: true,
+    });
+
+    expect(first).toMatchObject({ claimed: 1, sent: 1, deadLettered: 0 });
+    expect(second).toMatchObject({ claimed: 1, sent: 0, deadLettered: 1 });
+    expect(adapter.requests).toHaveLength(1);
+    const statuses = await pool.query(
+      `SELECT status
+         FROM onetime.whatsapp_outbox_messages
+        ORDER BY created_at ASC`,
+    );
+    expect(statuses.rows.map((row) => String(row.status))).toEqual(['sent', 'dead_lettered']);
+    const budgets = await pool.query(
+      `SELECT status
+         FROM onetime.whatsapp_canary_budget
+        WHERE budget_key = 'wa_budget_w12_100_08'`,
+    );
+    expect(budgets.rows[0]).toMatchObject({ status: 'consumed' });
+  });
 });
 
 class RecordingMetaAdapter extends SinkWhatsAppProviderAdapter {

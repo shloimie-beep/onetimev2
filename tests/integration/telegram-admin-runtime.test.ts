@@ -43,7 +43,7 @@ describe('OT-101R SQL-backed Telegram admin runtime', () => {
       PUBLIC_BASE_URL: 'https://staging.onetime.example',
       ONE_TIME_TELEGRAM_ENVIRONMENT: 'local',
     });
-    const { engine } = await seedRuntime(config);
+    const { engine, userKey } = await seedRuntime(config);
 
     const status = await engine.handle(updateFixture({ text: '/status' }));
     const signups = await engine.handle(updateFixture({ updateId: '2', text: '/signups' }));
@@ -135,6 +135,26 @@ describe('OT-101R SQL-backed Telegram admin runtime', () => {
     );
     expect(deliveryExecution.rowCount).toBe(1);
 
+    await seedOtherScopeDelivery(userKey);
+    const otherScopePreview = await engine.handle(
+      updateFixture({ updateId: '14', text: '/delivery-retry other_scope_delivery_fixture' }),
+    );
+    const otherScopeRetry = await engine.handle(
+      updateFixture({
+        updateId: '15',
+        kind: 'callback_query',
+        callbackData: requireString(otherScopePreview[0]?.buttons?.[0]?.callbackData),
+      }),
+    );
+    expect(otherScopeRetry[0]?.text).toContain('No scoped lifecycle delivery was found');
+    const otherScopeDelivery = await pool.query(
+      `SELECT state, metadata
+         FROM onetime.account_lifecycle_delivery_outbox
+        WHERE delivery_key = 'other_scope_delivery_fixture'`,
+    );
+    expect(otherScopeDelivery.rows[0]).toMatchObject({ state: 'dead_letter' });
+    expect(otherScopeDelivery.rows[0].metadata).toMatchObject({ retry_approved: true });
+
     const events = await pool.query(
       `SELECT event_type FROM onetime.action_gateway_event_outbox ORDER BY event_type`,
     );
@@ -190,7 +210,7 @@ async function seedRuntime(config: AppConfig) {
     new DeterministicTestPayloadCodec(),
     new TelegramSqlAuditSink(pool),
   );
-  return { engine };
+  return { engine, userKey };
 }
 
 async function seedContact(config: AppConfig, userKey: string) {
@@ -267,6 +287,33 @@ async function seedDelivery(config: AppConfig, userKey: string) {
         'delivery_idem_fixture','fixture_error','2026-07-16T10:30:00Z',
         '{"retry_approved":true}'::jsonb)`,
     [config.accountKey, config.productKey],
+  );
+}
+
+async function seedOtherScopeDelivery(userKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.account_lifecycle_tokens
+       (token_key, account_key, product_key, token_type, token_hash, email_normalized,
+        display_name, target_role, subject_user_key, expires_at, created_by_user_key)
+     VALUES
+       ('other_scope_lifecycle_token_fixture','other_account','other_product',
+        'owner_admin_invitation',$1,'owner@example.test','Owner','owner',$2,
+        '2026-07-31T00:00:00Z',$2)`,
+    ['d'.repeat(64), userKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_lifecycle_delivery_outbox
+       (delivery_key, account_key, product_key, token_key, purpose, channel, transport_mode,
+        destination_ref, key_id, nonce, ciphertext, auth_tag, encrypted_payload_expires_at,
+        state, attempts, max_attempts, next_attempt_at, idempotency_key, last_error_code,
+        dead_lettered_at, metadata)
+     VALUES
+       ('other_scope_delivery_fixture','other_account','other_product',
+        'other_scope_lifecycle_token_fixture','owner_admin_invitation','email','sink',
+        'redacted-destination','fixture-key','nonce','ciphertext','auth-tag',
+        '2026-07-31T00:00:00Z','dead_letter',1,5,'2026-07-16T11:00:00Z',
+        'other_scope_delivery_idem_fixture','fixture_error','2026-07-16T10:30:00Z',
+        '{"retry_approved":true}'::jsonb)`,
   );
 }
 
