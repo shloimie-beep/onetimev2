@@ -1,0 +1,228 @@
+{
+  "schema_version": "onetime.w12_100_04.real_source_preflight.v1",
+  "lane_id": "W12-100-04",
+  "generated_at": "2026-07-17T14:56:24.334Z",
+  "status": "blocked",
+  "blocked_reasons": ["BLOCKED_SANITIZED_SOURCE_PACKET_NOT_PROVIDED"],
+  "approved_scope": {
+    "source_files": 6,
+    "one_time_rabbi_followers_sources": 1,
+    "email_audience_sources": 5,
+    "expected_naive_rows": 2509,
+    "approved_source_group_fingerprint": "0bee9ddd75358d7eb987c2581c79ff1e555a848d7830e002c80d3d34cf3e1e32"
+  },
+  "validation": {
+    "source_dir_provided": false,
+    "source_dir_available": false,
+    "exact_filename_match_required": true,
+    "exact_hash_match_required": true,
+    "unapproved_supported_file_count": 0,
+    "unapproved_supported_file_fingerprint_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_results": [
+      {
+        "id": "DL-SHEET-f93f34d98e",
+        "file_name": "Rabbi Scheller Followers.xlsx",
+        "status": "missing",
+        "expected_rows": 812,
+        "expected_columns": 2,
+        "approved_hash_fingerprint": "611779c0c04371afe739408b86081d03dc086b205f86d4ce12a06a2858c1ad7c",
+        "detected_hash_fingerprint": null
+      },
+      {
+        "id": "DL-SHEET-3d4dceeb1b",
+        "file_name": "subscribed_email_audience_export_HASH.csv",
+        "status": "missing",
+        "expected_rows": 1311,
+        "expected_columns": 31,
+        "approved_hash_fingerprint": "f983ca203a064ee64d0f0719b784bfc732a7dad50eadf905ee13ccc8a50bdda1",
+        "detected_hash_fingerprint": null
+      },
+      {
+        "id": "DL-SHEET-8c69f34fcd",
+        "file_name": "unsubscribed_email_audience_export_HASH.csv",
+        "status": "missing",
+        "expected_rows": 152,
+        "expected_columns": 35,
+        "approved_hash_fingerprint": "2badb1f6096f8d4186a4ce490958ec8b7c1ba8aca58f2831aaa6899f334a7e6f",
+        "detected_hash_fingerprint": null
+      },
+      {
+        "id": "DL-SHEET-ead777c4b0",
+        "file_name": "cleaned_email_audience_export_HASH.csv",
+        "status": "missing",
+        "expected_rows": 60,
+        "expected_columns": 33,
+        "approved_hash_fingerprint": "75ca42a88eced5a9af1d087e75e7ccb395f7909d1339861142fe8afced084c52",
+        "detected_hash_fingerprint": null
+      },
+      {
+        "id": "DL-SHEET-25eb3cb2d6",
+        "file_name": "subscribers_detailed.csv",
+        "status": "missing",
+        "expected_rows": 86,
+        "expected_columns": 8,
+        "approved_hash_fingerprint": "e2589fd4589df36ae1732e2143906e5e820f0cb976bf53e1af9c3071c5f983d1",
+        "detected_hash_fingerprint": null
+      },
+      {
+        "id": "DL-SHEET-2900326013",
+        "file_name": "subscribers.csv",
+        "status": "missing",
+        "expected_rows": 88,
+        "expected_columns": 5,
+        "approved_hash_fingerprint": "f5b6f777969d6e48836d5ef8b81d620fd5d9f326ccd3ff6bbf2c35f35c9b764f",
+        "detected_hash_fingerprint": null
+      }
+    ]
+  },
+  "summary": {
+    "total_rows": 0,
+    "expected_naive_rows": 2509,
+    "unique_identity_count": 0,
+    "duplicate_identity_rows": 0,
+    "disposition_counts": {
+      "matched_existing_contact": 0,
+      "stage_new_contact": 0,
+      "duplicate_input": 0,
+      "no_op": 0,
+      "manual_review": 0
+    },
+    "w12_01_compatible_disposition_counts": {
+      "matched_existing_contact": 0,
+      "stage_new_contact": 0,
+      "duplicate_input": 0,
+      "manual_review": 0,
+      "no_op": 0
+    },
+    "communication_eligible_rows": 0,
+    "do_not_contact_rows": 0,
+    "matched_existing_rows": 0,
+    "staged_new_rows": 0,
+    "no_op_rows": 0,
+    "manual_review_rows": 0
+  },
+  "source_summaries": [],
+  "manual_review_categories": {
+    "missing_email_and_missing_phone": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "duplicate_input_same_identity": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "email_match_phone_conflict": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phone_match_email_conflict": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "same_name_different_identity": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "conflicting_consent_or_suppression": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "legacy_member_without_current_consent": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pipeline_stage_ambiguous": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "school_vs_family_classification_ambiguous": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "household_guardian_role_ambiguous": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "learner_without_guardian": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "minor_or_student_safety_unclear": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source_ownership_unclear": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "external_lead_source_requires_operator_approval": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "existing_production_record_conflict": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "private_message_or_note_requires_exclusion": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_ownership_and_consent_blockers": {
+    "approved_operator_owned_sources": 6,
+    "source_ownership_blockers": [],
+    "consent_blocker_counts": {
+      "suppressed_or_opted_out": 0,
+      "unknown_consent": 0,
+      "channel_specific_consent_absent": 0,
+      "conflicting_consent_or_suppression": 0
+    }
+  },
+  "consent_suppression_precedence": {
+    "applied_before_eligibility": true,
+    "precedence_order": [
+      "manual/legal suppression, abuse suppression, complaint, hard bounce, or provider suppression",
+      "explicit unsubscribe, STOP, opt-out, or unsubscribed export",
+      "missing channel-specific consent",
+      "subscribed or opted-in source with no stronger suppression",
+      "unknown consent"
+    ]
+  },
+  "excluded_sources_policy": {
+    "communications_exports_excluded": true,
+    "message_bodies_excluded": true,
+    "external_lead_lists_excluded": true,
+    "unknown_spreadsheets_excluded": true
+  },
+  "w12_01_import_contract_compatibility": {
+    "dry_run_tables_available": [
+      "onetime.legacy_audience_import_batches",
+      "onetime.legacy_audience_import_rows",
+      "onetime.legacy_audience_match_candidates",
+      "onetime.legacy_audience_segment_snapshots",
+      "onetime.legacy_audience_rollback_records",
+      "onetime.legacy_audience_audit_events"
+    ],
+    "source_kinds": ["xlsx_normalized", "csv_normalized"],
+    "raw_row_contents_included": false,
+    "production_side_effects": false,
+    "database_writes_performed": false,
+    "apply_mode_implemented": false
+  },
+  "privacy_and_safety": {
+    "row_values_printed": false,
+    "emails_printed": false,
+    "phones_printed": false,
+    "names_printed": false,
+    "addresses_printed": false,
+    "notes_or_messages_printed": false,
+    "production_database_connected": false,
+    "production_database_read": false,
+    "database_writes_performed": false,
+    "external_actions_count": 0,
+    "provider_mutation_count": 0,
+    "production_mutation_count": 0,
+    "temporary_files_created": 0,
+    "temporary_cleanup_performed": true
+  }
+}
