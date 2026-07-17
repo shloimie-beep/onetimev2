@@ -23,6 +23,11 @@ export const communicationsEventMap: Record<
     label: 'Internal owner alert',
     channel: 'internal_email',
   },
+  'crm_single_recipient_reply_draft.v1': {
+    intentType: 'single_recipient_reply',
+    label: 'Single-recipient reply draft',
+    channel: 'email',
+  },
 };
 
 export type NormalizedOutboxStatus = {
@@ -36,16 +41,38 @@ export function normalizeCommunicationsStatus(input: {
   deliveredAt?: string | Date | null | undefined;
 }): NormalizedOutboxStatus {
   if (input.status === 'pending') {
-    return { localState: 'intent_queued', stateLabel: 'Queued locally', stateAt: null };
+    return { localState: 'queued', stateLabel: 'Queued', stateAt: null };
   }
-  if (input.status === 'sink_delivered') {
+  if (input.status === 'provider_accepted') {
+    return { localState: 'provider_accepted', stateLabel: 'Provider accepted', stateAt: null };
+  }
+  if (input.status === 'delivered') {
     return {
-      localState: 'sink_processed',
-      stateLabel: 'Processed in test mode',
+      localState: 'delivered',
+      stateLabel: 'Delivered',
       stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
     };
   }
-  return { localState: 'status_unavailable', stateLabel: 'Status unavailable', stateAt: null };
+  if (input.status === 'failed') {
+    return { localState: 'failed', stateLabel: 'Failed', stateAt: null };
+  }
+  if (input.status === 'bounced') {
+    return { localState: 'bounced', stateLabel: 'Bounced', stateAt: null };
+  }
+  if (input.status === 'complained') {
+    return { localState: 'complained', stateLabel: 'Complained', stateAt: null };
+  }
+  if (input.status === 'suppressed') {
+    return { localState: 'suppressed', stateLabel: 'Suppressed', stateAt: null };
+  }
+  if (input.status === 'sink_delivered') {
+    return {
+      localState: 'draft_saved',
+      stateLabel: 'Processed in test mode, not delivery',
+      stateAt: input.deliveredAt ? toIso(input.deliveredAt) : null,
+    };
+  }
+  return { localState: 'unknown', stateLabel: 'Unknown', stateAt: null };
 }
 
 export function normalizeCommunicationsEvent(
@@ -57,7 +84,12 @@ export function normalizeCommunicationsEvent(
   channel: CommunicationsChannel;
 } {
   const mapped = communicationsEventMap[eventType];
-  if (mapped && mapped.channel === channel) return mapped;
+  if (
+    mapped &&
+    (mapped.channel === channel || eventType === 'crm_single_recipient_reply_draft.v1')
+  ) {
+    return { ...mapped, channel: isCommunicationsChannel(channel) ? channel : mapped.channel };
+  }
   return {
     intentType: 'internal_lead_alert' as const,
     label: 'Communication intent unavailable',

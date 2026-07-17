@@ -262,11 +262,20 @@ export {
 } from './portals/student-class-helper.ts';
 export {
   CrmDuplicateError,
+  CrmReplyError,
   CrmVersionConflictError,
+  appendContactNote,
+  archiveContact,
+  assignCrmTag,
+  confirmSingleRecipientReply,
   createContact,
+  createCrmTag,
   getContactDetail,
+  listCrmTags,
   listAssignableUsers,
   listContacts,
+  previewSingleRecipientReply,
+  removeCrmTag,
   updateContact,
 } from './crm/service.ts';
 export { createOneTimeTelegramApplicationAdapter } from './telegram/application-adapter.ts';

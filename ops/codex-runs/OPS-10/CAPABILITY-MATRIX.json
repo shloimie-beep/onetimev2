@@ -16,11 +16,12 @@
     {
       "id": "owner_admin_dashboard_crm",
       "required": true,
-      "candidate_code_status": "present_pending_acceptance",
+      "candidate_code_status": "present_locally_verified_pending_ci",
       "production_status": "not_currently_deployed",
       "evidence": [
         "Owner dashboard and CRM route code is present in apps/web/src/server/app.ts and app shell/client bundles.",
-        "Local typecheck and lint passed after OPS-10 repairs."
+        "OT-114 CRM tags, notes, archive, enriched detail, timeline, and provider-off reply drafts were merged locally.",
+        "Local typecheck, lint, OT-114 integration tests, OT-114 browser e2e, build, brand check, and secret scan passed after the merge."
       ],
       "next_gate": "authenticated owner/admin synthetic acceptance on staging"
     },
@@ -39,11 +40,12 @@
     {
       "id": "parent_student_portals_classes",
       "required": true,
-      "candidate_code_status": "present_pending_acceptance",
+      "candidate_code_status": "present_locally_verified_pending_ci",
       "production_status": "not_currently_deployed",
       "evidence": [
         "Parent/student portal routes, class repositories, and portal tests exist in candidate code.",
-        "OPS-83 PostgreSQL learner-seat proof passed on PR #60 before OPS-10."
+        "OPS-83 PostgreSQL learner-seat proof passed on PR #61 commit a158c555835815d1d16d953624dc1ddb9995aee3.",
+        "OT-107 student Class Helper implementation was already present in the candidate; focused unit and portal e2e tests passed locally after OT-114 merge."
       ],
       "next_gate": "portal e2e/a11y acceptance and staging protected-route smoke"
     },
@@ -60,10 +62,11 @@
     {
       "id": "providers_optional_runtime",
       "required": false,
-      "candidate_code_status": "present_with_optional_provider_mutations_blocked",
+      "candidate_code_status": "present_with_optional_provider_mutations_blocked_and_support_bridge_contract_recorded",
       "production_status": "not_promoted",
       "evidence": [
         "Provider control, delivery worker, Telegram, WhatsApp, Vimeo, Buffer, Stripe test-mode, and support modules exist in candidate code.",
+        "OT-114 BNA support event consumer contract was merged under ops/codex-runs/OT-114/.",
         "OPS-10 packet explicitly blocks live Stripe charges, live Buffer publication, broad sends, production imports, public Zoom mutation, and DNS changes."
       ],
       "next_gate": "bounded staging canaries only, with optional providers disabled if credentials are unavailable"

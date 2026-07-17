@@ -1154,6 +1154,89 @@ textarea:focus-visible,
   line-height: 1.5;
 }
 
+.fact-list,
+.compact-list,
+.timeline-list,
+.support-ticket-list {
+  display: grid;
+  gap: 8px;
+}
+
+.fact-list {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-top: 10px;
+}
+
+.fact-list span,
+.compact-list li,
+.timeline-list li,
+.support-ticket-list a,
+.reply-preview {
+  min-width: 0;
+  border: 1px solid #34464d;
+  border-radius: 8px;
+  background: #071117;
+  padding: 10px;
+}
+
+.compact-list,
+.timeline-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compact-list li,
+.timeline-list li,
+.support-ticket-list a {
+  display: grid;
+  gap: 4px;
+  color: #f8fafb;
+  text-decoration: none;
+}
+
+.compact-list span,
+.timeline-list span,
+.support-ticket-list span,
+.support-ticket-list small {
+  color: #c8d6d9;
+}
+
+.detail-columns,
+.support-layout,
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.inline-editor,
+.support-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.inline-editor label,
+.support-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.inline-editor textarea,
+.support-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.support-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.support-ticket-list {
+  align-content: start;
+}
+
 .state-panel {
   display: grid;
   gap: 10px;
@@ -1287,6 +1370,11 @@ textarea:focus-visible,
   .action-registry-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .detail-columns,
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 900px) {
@@ -1305,6 +1393,11 @@ textarea:focus-visible,
 
   .dashboard-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .support-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.38fr);
+    align-items: start;
   }
 }
 

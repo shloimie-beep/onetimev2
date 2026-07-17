@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import type { AppConfig } from '../../../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
@@ -39,6 +41,7 @@ export function registerSupportRoutes(input: {
   config: AppConfig;
   pool: DbPool;
   session: SupportSessionPorts;
+  distDir?: string | undefined;
 }) {
   input.app.post(
     '/api/internal/integrations/onetime/support-events/v1',
@@ -102,26 +105,13 @@ export function registerSupportRoutes(input: {
   input.app.get('/app/support', async (req: RequestWithTrace, res) => {
     input.session.setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    if (!isSupportSubmissionAvailable(input.config)) {
-      res.status(200).type('html').send(supportLeadOnlyHtml('Subscriber support is unavailable'));
-      return;
-    }
     const session = await input.session.sessionFromRequest(req);
     if (!session) {
       res.status(200).type('html').send(supportLeadOnlyHtml('Sign in for subscriber support'));
       return;
     }
-    const active = await hasActiveSupportEntitlement({
-      target: input.pool,
-      config: input.config,
-      userKey: session.user.user_key,
-    });
-    if (!active) {
-      res.status(200).type('html').send(supportLeadOnlyHtml('Subscriber support is unavailable'));
-      return;
-    }
-    const csrfToken = await input.session.ensureSessionCsrfCookie(req, res, session);
-    res.status(200).type('html').send(supportFormHtml(csrfToken, input.config));
+    await input.session.ensureSessionCsrfCookie(req, res, session);
+    await sendSupportShell(input, res);
   });
 
   input.app.get('/app/support/receipts/:receiptId', async (req: RequestWithTrace, res) => {
@@ -132,17 +122,62 @@ export function registerSupportRoutes(input: {
       res.status(200).type('html').send(supportLeadOnlyHtml('Sign in for subscriber support'));
       return;
     }
-    const receipt = await readSupportReceipt({
-      pool: input.pool,
-      config: input.config,
-      session,
-      receiptId: String(req.params.receiptId),
-    });
-    if (!receipt) {
-      res.status(404).type('html').send(supportLeadOnlyHtml('Support receipt not found'));
+    await input.session.ensureSessionCsrfCookie(req, res, session);
+    await sendSupportShell(input, res);
+  });
+
+  input.app.get('/api/v1/support/eligibility', async (req: RequestWithTrace, res) => {
+    input.session.setPrivateNoStore(res);
+    const session = await input.session.sessionFromRequest(req);
+    if (!session) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
       return;
     }
-    res.status(200).type('html').send(supportReceiptHtml(receipt));
+    const active = await hasActiveSupportEntitlement({
+      target: input.pool,
+      config: input.config,
+      userKey: session.user.user_key,
+      role: session.user.role,
+    });
+    const available = isSupportSubmissionAvailable(input.config);
+    res.json({
+      success: true,
+      available,
+      can_create_ticket: available && active,
+      reason: !available ? 'support_unavailable' : active ? 'authorized' : 'subscriber_required',
+      csrf_token: await input.session.ensureSessionCsrfCookie(req, res, session),
+      categories: supportCategories(),
+    });
+  });
+
+  input.app.get('/api/v1/support/tickets', async (req: RequestWithTrace, res) => {
+    input.session.setPrivateNoStore(res);
+    const session = await input.session.sessionFromRequest(req);
+    if (!session) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    const result = await input.pool.query(
+      `SELECT receipt_id, status, delivery_state, public_summary, updated_at
+         FROM onetime.support_status_projection
+        WHERE account_key = $1
+          AND product_key = $2
+          AND actor_user_key = $3
+        ORDER BY updated_at DESC
+        LIMIT 25`,
+      [input.config.accountKey, input.config.productKey, session.user.user_key],
+    );
+    res.json({
+      success: true,
+      tickets: result.rows.map((row) => ({
+        receipt_id: String(row.receipt_id),
+        status: String(row.status),
+        delivery_state: String(row.delivery_state),
+        public_summary: String(row.public_summary),
+        updated_at:
+          row.updated_at instanceof Date ? row.updated_at.toISOString() : String(row.updated_at),
+      })),
+    });
   });
 
   input.app.get(
@@ -346,153 +381,55 @@ function supportLeadOnlyHtml(title: string) {
 </html>`;
 }
 
-function supportFormHtml(csrfToken: string, config: AppConfig) {
-  const categories = [
-    'bug',
-    'access_login',
-    'class_zoom',
-    'billing',
-    'content',
-    'complaint',
-    'other',
+async function sendSupportShell(
+  input: { config: AppConfig; distDir?: string | undefined },
+  res: Response,
+) {
+  try {
+    const html = await readFile(path.join(supportDistDir(input), 'app', 'crm.html'), 'utf8');
+    res.status(200).type('html').send(html);
+    return;
+  } catch {
+    if (input.config.nodeEnv === 'test') {
+      res.status(200).type('html').send(supportTestShellHtml());
+      return;
+    }
+    res
+      .status(500)
+      .type('text')
+      .send('Built support app shell is unavailable. Run npm run build before serving support.');
+  }
+}
+
+function supportTestShellHtml() {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Support | One Time Mishnayos</title>
+  <meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+  <main id="crm-root" data-surface="support"></main>
+</body>
+</html>`;
+}
+
+function supportDistDir(input: { distDir?: string | undefined }) {
+  return input.distDir ?? path.resolve(process.cwd(), 'dist/apps/web/public');
+}
+
+function supportCategories() {
+  return [
+    { value: 'access_login', label: 'Access/login' },
+    { value: 'class_zoom', label: 'Class/Zoom' },
+    { value: 'billing', label: 'Billing' },
+    { value: 'content', label: 'Content' },
+    { value: 'technical_bug', label: 'Technical bug' },
+    { value: 'account_family', label: 'Account/family' },
+    { value: 'other', label: 'Other' },
   ];
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Subscriber Support | One Time Mishnayos</title>
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#050505">
-  <link rel="stylesheet" href="/assets/app-crm.css">
-</head>
-<body>
-  <main class="app-workspace support-workspace">
-    <section class="dashboard-section" aria-labelledby="support-heading">
-      <h1 id="support-heading">Subscriber Support</h1>
-      <form class="editor-form support-form" data-support-form action="/api/v1/support/tickets" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
-        <input type="hidden" name="idempotency_key" data-idempotency-key value="">
-        <input type="hidden" name="app_release" value="${escapeHtml(config.appVersion)}">
-        <div class="field">
-          <label for="support-category">Category</label>
-          <select id="support-category" name="category" required>
-            ${categories.map((category) => `<option value="${category}">${categoryLabel(category)}</option>`).join('')}
-          </select>
-        </div>
-        <div class="field">
-          <label for="support-title-input">Title</label>
-          <input id="support-title-input" name="title" minlength="5" maxlength="120" required>
-        </div>
-        <div class="field">
-          <label for="support-message">Message</label>
-          <textarea id="support-message" name="message" minlength="20" maxlength="6000" rows="7" required></textarea>
-        </div>
-        <div class="field">
-          <label for="support-steps">Steps to reproduce</label>
-          <textarea id="support-steps" name="steps_to_reproduce" maxlength="5000" rows="4"></textarea>
-        </div>
-        <div class="field-grid">
-          <div class="field">
-            <label for="support-expected">Expected behavior</label>
-            <textarea id="support-expected" name="expected_behavior" maxlength="1500" rows="3"></textarea>
-          </div>
-          <div class="field">
-            <label for="support-actual">Actual behavior</label>
-            <textarea id="support-actual" name="actual_behavior" maxlength="1500" rows="3"></textarea>
-          </div>
-        </div>
-        <div class="field-grid">
-          <div class="field">
-            <label for="support-occurrence">Occurrence</label>
-            <select id="support-occurrence" name="occurrence">
-              <option value="not_applicable">Not applicable</option>
-              <option value="once">Once</option>
-              <option value="intermittent">Intermittent</option>
-              <option value="always">Always</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="support-provider">Provider area</label>
-            <select id="support-provider" name="provider">
-              <option value="none">None</option>
-              <option value="authentication">Authentication</option>
-              <option value="zoom">Zoom</option>
-              <option value="payments">Payments</option>
-              <option value="content_delivery">Content delivery</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-        </div>
-        <div class="field-grid">
-          <div class="field">
-            <label for="support-error-code">Error code</label>
-            <input id="support-error-code" name="error_code" maxlength="100" pattern="[A-Z0-9][A-Z0-9._:-]{0,99}">
-          </div>
-          <div class="field">
-            <label for="support-reply">Reply preference</label>
-            <select id="support-reply" name="reply_preference">
-              <option value="in_app">In app</option>
-              <option value="email">Email</option>
-              <option value="whatsapp">WhatsApp</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label for="support-attachments">Attachments</label>
-          <input id="support-attachments" name="attachments" type="file" multiple accept="image/png,image/jpeg,image/webp,text/plain">
-        </div>
-        <button class="button button-primary" type="submit">Submit support request</button>
-        <p class="form-status" role="status" tabindex="-1" data-support-status></p>
-      </form>
-    </section>
-  </main>
-  <script type="module" src="/assets/app-support.js"></script>
-</body>
-</html>`;
-}
-
-function supportReceiptHtml(receipt: {
-  receipt_id: string;
-  source_ticket_id: string;
-  status: string;
-  public_summary: string;
-  delivery_state: string;
-  status_version: number;
-}) {
-  return `<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Support Receipt | One Time Mishnayos</title>
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#050505">
-  <link rel="stylesheet" href="/assets/app-crm.css">
-</head>
-<body>
-  <main class="app-workspace">
-    <section class="state-panel" aria-labelledby="receipt-title">
-      <h1 id="receipt-title">Support Receipt</h1>
-      <dl>
-        <dt>Receipt</dt><dd>${escapeHtml(receipt.receipt_id)}</dd>
-        <dt>Status</dt><dd>${escapeHtml(receipt.status)}</dd>
-        <dt>Delivery</dt><dd>${escapeHtml(receipt.delivery_state)}</dd>
-        <dt>Version</dt><dd>${receipt.status_version}</dd>
-      </dl>
-      <p>${escapeHtml(receipt.public_summary)}</p>
-      <a class="button" href="/app/support">Open support form</a>
-    </section>
-  </main>
-</body>
-</html>`;
-}
-
-function categoryLabel(category: string) {
-  return category
-    .split('_')
-    .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
-    .join(' ');
 }
 
 function escapeHtml(value: string) {

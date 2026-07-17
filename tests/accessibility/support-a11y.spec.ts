@@ -41,7 +41,7 @@ async function login(page: Page, email: string, password: string) {
 }
 
 async function fillSupportForm(page: Page) {
-  await page.getByLabel('Category').selectOption('bug');
+  await page.getByLabel('Category').selectOption('technical_bug');
   await page.getByLabel('Title').fill('Class page support a11y');
   await page.getByLabel('Message').fill('The class page is not opening after login for axe test.');
   await page.getByLabel('Steps to reproduce').fill('Sign in\nOpen the class page');

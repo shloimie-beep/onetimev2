@@ -50,12 +50,21 @@ export class PostgresCommunicationsReadRepository implements CommunicationsReadR
       params.push(input.rawEventType);
       where.push(`outbox.event_type = $${params.length}`);
     }
-    if (input.filters.status === 'intent_queued') {
+    if (input.filters.status === 'queued') {
       where.push("outbox.status = 'pending'");
-    } else if (input.filters.status === 'sink_processed') {
+    } else if (input.filters.status === 'draft_saved') {
       where.push("outbox.status = 'sink_delivered'");
-    } else if (input.filters.status === 'status_unavailable') {
-      where.push("(outbox.status IS NULL OR outbox.status NOT IN ('pending', 'sink_delivered'))");
+    } else if (
+      ['provider_accepted', 'delivered', 'failed', 'bounced', 'complained', 'suppressed'].includes(
+        input.filters.status ?? '',
+      )
+    ) {
+      params.push(input.filters.status);
+      where.push(`outbox.status = $${params.length}`);
+    } else if (input.filters.status === 'unknown') {
+      where.push(
+        "(outbox.status IS NULL OR outbox.status NOT IN ('pending', 'sink_delivered', 'provider_accepted', 'delivered', 'failed', 'bounced', 'complained', 'suppressed'))",
+      );
     }
     if (input.cursor) {
       params.push(input.cursor.lastCreatedAt, input.cursor.lastId);

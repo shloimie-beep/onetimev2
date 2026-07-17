@@ -455,6 +455,132 @@ describe('CRM vertical slice', () => {
     expect(Number(outbox.rows[0].count)).toBe(0);
   });
 
+  it('supports durable tags, notes, archive, and provider-off single-recipient reply drafts', async () => {
+    const signup = await postLead(signupPayload('reply-ready@example.test', 'idem-reply-ready'));
+    expect(signup.status).toBe(200);
+    const login = await loginAs('admin@example.test', 'AdminPass!234');
+    const list = await apiSearch<ListJson>({ search: 'reply-ready@example.test' }, login);
+    const contact = list.contacts[0];
+    if (!contact) throw new Error('expected reply-ready contact');
+
+    const firstTag = await apiWrite<TagJson>('/api/v1/crm/tags', 'POST', login, {
+      display_name: 'Needs Callback',
+    });
+    const secondTag = await apiWrite<TagJson>('/api/v1/crm/tags', 'POST', login, {
+      display_name: 'Support Watch',
+    });
+    expect(firstTag.tag.display_name).toBe('Needs Callback');
+    await apiWrite<{ success: true; assigned: true }>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}/tags/${encodeURIComponent(
+        firstTag.tag.tag_id,
+      )}`,
+      'POST',
+      login,
+      {},
+    );
+    await apiWrite<{ success: true; assigned: true }>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}/tags/${encodeURIComponent(
+        secondTag.tag.tag_id,
+      )}`,
+      'POST',
+      login,
+      {},
+    );
+
+    const note = await apiWrite<NoteJson>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}/notes`,
+      'POST',
+      login,
+      { body: 'Called parent about the support follow-up.' },
+    );
+    expect(note.note.body).toContain('support follow-up');
+
+    const detail = await apiGet<ContactDetailJson>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}`,
+      login.cookies,
+    );
+    expect(detail.contact.tags.map((tag) => tag.display_name).sort()).toEqual([
+      'Needs Callback',
+      'Support Watch',
+    ]);
+    expect(detail.contact.system_facts.map((fact) => fact.dimension)).toEqual(
+      expect.arrayContaining(['lead', 'source', 'signup']),
+    );
+    expect(detail.contact.notes.map((item) => item.body)).toContain(
+      'Called parent about the support follow-up.',
+    );
+    expect(detail.contact.timeline.some((item) => item.kind === 'note')).toBe(true);
+
+    const replyBody = 'Thanks for writing in. We are reviewing this with the support desk.';
+    const preview = await apiWrite<ReplyPreviewJson>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}/replies/preview`,
+      'POST',
+      login,
+      { channel: 'email', body: replyBody },
+    );
+    expect(preview.preview).toMatchObject({
+      channel: 'email',
+      provider_ready: false,
+      external_send_allowed: false,
+      confirmation_required: true,
+      send_mode: 'provider_off_draft',
+      blockers: [],
+    });
+    expect(preview.preview.destination_masked).toContain('@***.');
+
+    const confirmed = await apiWrite<ReplyConfirmJson>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}/replies/confirm`,
+      'POST',
+      login,
+      {
+        channel: 'email',
+        body: replyBody,
+        body_revision: preview.preview.body_revision,
+        idempotency_key: 'reply-idem-ot114',
+      },
+    );
+    expect(confirmed.reply).toMatchObject({
+      external_send_attempted: false,
+      delivery_state: 'draft_saved_provider_off',
+      message: 'Reply draft saved. It was not externally sent.',
+    });
+    const replay = await apiWrite<ReplyConfirmJson>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}/replies/confirm`,
+      'POST',
+      login,
+      {
+        channel: 'email',
+        body: replyBody,
+        body_revision: preview.preview.body_revision,
+        idempotency_key: 'reply-idem-ot114',
+      },
+    );
+    expect(replay.reply.draft_id).toBe(confirmed.reply.draft_id);
+
+    const replyRows = await pool.query(
+      `SELECT drafts.external_send_attempted, events.transport_mode, events.event_type, events.payload
+         FROM onetime.crm_reply_drafts AS drafts
+         JOIN onetime.outbox_events AS events ON events.delivery_key = drafts.outbox_delivery_key`,
+    );
+    expect(replyRows.rowCount).toBe(1);
+    expect(replyRows.rows[0]).toMatchObject({
+      external_send_attempted: false,
+      transport_mode: 'sink',
+      event_type: 'crm_single_recipient_reply_draft.v1',
+    });
+    expect(replyRows.rows[0].payload).toMatchObject({ external_send_attempted: false });
+
+    const archived = await apiWrite<{ success: true; archived: true }>(
+      `/api/v1/crm/contacts/${encodeURIComponent(contact.contact_id)}/archive`,
+      'POST',
+      login,
+      { reason: 'Completed OT-114 archive smoke.' },
+    );
+    expect(archived.archived).toBe(true);
+    const afterArchive = await apiSearch<ListJson>({ search: 'reply-ready@example.test' }, login);
+    expect(afterArchive.contacts).toHaveLength(0);
+  });
+
   it('blocks viewer writes and hides other account contacts', async () => {
     await pool.query(
       `INSERT INTO onetime.contacts
@@ -499,6 +625,14 @@ type ListJson = {
     family_school_classification: string;
   }>;
 };
+type TagJson = {
+  success: true;
+  tag: { tag_id: string; display_name: string; visual_token: string | null };
+};
+type NoteJson = {
+  success: true;
+  note: { note_id: string; body: string };
+};
 type ContactJson = {
   success: true;
   contact: {
@@ -508,6 +642,36 @@ type ContactJson = {
     lead_status: string;
     version: number;
     audit_safe_signup_provenance: { signup_key: string | null };
+  };
+};
+type ContactDetailJson = ContactJson & {
+  contact: ContactJson['contact'] & {
+    tags: Array<{ tag_id: string; display_name: string }>;
+    system_facts: Array<{ dimension: string; value: string }>;
+    notes: Array<{ note_id: string; body: string }>;
+    timeline: Array<{ kind: string; label: string }>;
+  };
+};
+type ReplyPreviewJson = {
+  success: true;
+  preview: {
+    channel: 'email' | 'whatsapp';
+    destination_masked: string;
+    body_revision: string;
+    provider_ready: false;
+    external_send_allowed: false;
+    confirmation_required: boolean;
+    send_mode: 'provider_off_draft';
+    blockers: string[];
+  };
+};
+type ReplyConfirmJson = {
+  success: true;
+  reply: {
+    draft_id: string;
+    external_send_attempted: false;
+    delivery_state: 'draft_saved_provider_off';
+    message: string;
   };
 };
 
@@ -628,7 +792,7 @@ async function apiWrite<T>(
     },
     body: JSON.stringify(body),
   });
-  expect([200, 201]).toContain(response.status);
+  expect([200, 201, 202]).toContain(response.status);
   return (await response.json()) as T;
 }
 

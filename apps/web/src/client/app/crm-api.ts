@@ -5,6 +5,8 @@ import type {
   ContentLibraryItemSummary,
   OwnerDashboardResponse,
   SessionUser,
+  ContactNote,
+  ContactTag,
 } from '@onetime/contracts';
 
 export type ApiSession = {
@@ -35,6 +37,77 @@ export type ListResponse = {
 export type ContactResponse = {
   success: true;
   contact: ContactDetail;
+};
+
+export type TagListResponse = {
+  success: true;
+  tags: Array<ContactTag & { version: number }>;
+};
+
+export type NoteResponse = {
+  success: true;
+  note: ContactNote;
+};
+
+export type SupportEligibilityResponse = {
+  success: true;
+  available: boolean;
+  can_create_ticket: boolean;
+  reason: 'authorized' | 'subscriber_required' | 'support_unavailable';
+  csrf_token: string;
+  categories: Array<{ value: string; label: string }>;
+};
+
+export type SupportTicketSummary = {
+  receipt_id: string;
+  status: string;
+  delivery_state: string;
+  public_summary: string;
+  updated_at: string;
+};
+
+export type SupportTicketListResponse = {
+  success: true;
+  tickets: SupportTicketSummary[];
+};
+
+export type SupportReceiptStatusResponse = {
+  success: true;
+  receipt: SupportTicketSummary & {
+    source_ticket_id: string;
+    bna_ticket_ref: string | null;
+    status_version: number;
+  };
+};
+
+export type ReplyPreviewResponse = {
+  success: true;
+  preview: {
+    preview_id: string;
+    contact_id: string;
+    channel: 'email' | 'whatsapp';
+    destination_masked: string;
+    body_revision: string;
+    provider_ready: false;
+    external_send_allowed: false;
+    confirmation_required: boolean;
+    send_mode: 'provider_off_draft';
+    blockers: string[];
+    message: string;
+  };
+};
+
+export type ReplyConfirmResponse = {
+  success: true;
+  reply: {
+    draft_id: string;
+    destination_masked: string;
+    body_revision: string;
+    outbox_delivery_key: string;
+    external_send_attempted: false;
+    delivery_state: 'draft_saved_provider_off';
+    message: string;
+  };
 };
 
 export type ClassListResponse = {
@@ -199,6 +272,143 @@ export async function getContact(contactId: string) {
 
 export async function getAssignees() {
   return authenticatedJson<AssigneeListResponse>('/api/v1/crm/assignees');
+}
+
+export async function listTags() {
+  return authenticatedJson<TagListResponse>('/api/v1/crm/tags');
+}
+
+export async function createTag(csrfToken: string, displayName: string) {
+  return authenticatedJson<{ success: true; tag: ContactTag & { version: number } }>(
+    '/api/v1/crm/tags',
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({ display_name: displayName }),
+    },
+  );
+}
+
+export async function assignTag(csrfToken: string, contactId: string, tagId: string) {
+  return authenticatedJson<{ success: true; assigned: true }>(
+    `/api/v1/crm/contacts/${encodeURIComponent(contactId)}/tags/${encodeURIComponent(tagId)}`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({}),
+    },
+  );
+}
+
+export async function appendNote(csrfToken: string, contactId: string, body: string) {
+  return authenticatedJson<NoteResponse>(
+    `/api/v1/crm/contacts/${encodeURIComponent(contactId)}/notes`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({ body }),
+    },
+  );
+}
+
+export async function archiveContactRequest(csrfToken: string, contactId: string, reason: string) {
+  return authenticatedJson<{ success: true; archived: true; contact_id: string }>(
+    `/api/v1/crm/contacts/${encodeURIComponent(contactId)}/archive`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({ reason }),
+    },
+  );
+}
+
+export async function previewReply(
+  csrfToken: string,
+  contactId: string,
+  channel: 'email' | 'whatsapp',
+  body: string,
+) {
+  return authenticatedJson<ReplyPreviewResponse>(
+    `/api/v1/crm/contacts/${encodeURIComponent(contactId)}/replies/preview`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+      body: JSON.stringify({ channel, body }),
+    },
+  );
+}
+
+export async function confirmReply(input: {
+  csrfToken: string;
+  contactId: string;
+  channel: 'email' | 'whatsapp';
+  body: string;
+  bodyRevision: string;
+  idempotencyKey: string;
+}) {
+  return authenticatedJson<ReplyConfirmResponse>(
+    `/api/v1/crm/contacts/${encodeURIComponent(input.contactId)}/replies/confirm`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-csrf-token': input.csrfToken,
+      },
+      body: JSON.stringify({
+        channel: input.channel,
+        body: input.body,
+        body_revision: input.bodyRevision,
+        idempotency_key: input.idempotencyKey,
+      }),
+    },
+  );
+}
+
+export async function getSupportEligibility() {
+  return authenticatedJson<SupportEligibilityResponse>('/api/v1/support/eligibility');
+}
+
+export async function listSupportTickets() {
+  return authenticatedJson<SupportTicketListResponse>('/api/v1/support/tickets');
+}
+
+export async function getSupportReceiptStatus(receiptId: string) {
+  return authenticatedJson<SupportReceiptStatusResponse>(
+    `/api/v1/support/receipts/${encodeURIComponent(receiptId)}/status`,
+  );
+}
+
+export async function submitSupportTicket(csrfToken: string, payload: Record<string, unknown>) {
+  return authenticatedJson<{
+    success: true;
+    receipt_id: string;
+    source_ticket_id: string;
+    status_path: string;
+    delivery_state: string;
+    duplicate_submission: boolean;
+  }>('/api/v1/support/tickets', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function getOwnerDashboard() {

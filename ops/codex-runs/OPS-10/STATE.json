@@ -28,6 +28,10 @@
     ],
     "frozen_inputs_recorded": true,
     "local_gates_recorded": true,
+    "semantic_inputs": {
+      "ot107_student_helper": "satisfied_in_candidate; branch tail not applied because candidate already contains implementation and newer migration assertions",
+      "ot114_crm_communications_support": "merged_locally_pending_commit"
+    },
     "requires_ci": ["GitHub Node 24 verify", "GitHub OPS-06 deterministic Postgres load/restore"]
   },
   "completed_actions": [
@@ -41,9 +45,12 @@
     "Ran local typecheck, lint, secret scan, targeted format, OPS-06 focused tests, alerts, and migration safety.",
     "Opened draft PR #61 for pull-request CI gates.",
     "Downloaded PR #61 failed OPS-06 artifact and identified concurrent signup idempotency as the remaining failure.",
-    "Added a transaction-scoped advisory lock for public lead idempotency keys and re-ran focused lead tests, OPS-06 focused tests, lint, typecheck, secret scan, and build locally."
+    "Added a transaction-scoped advisory lock for public lead idempotency keys and re-ran focused lead tests, OPS-06 focused tests, lint, typecheck, secret scan, and build locally.",
+    "Verified PR #61 rerun passed OPS-06, OT-37, OT-75, and OT-83 on commit a158c555835815d1d16d953624dc1ddb9995aee3 while Node 24 verify remained in progress.",
+    "Reviewed OT-107 branch-native delta and kept the newer candidate implementation/tests instead of applying stale branch-tail changes.",
+    "Merged OT-114 CRM communications/support locally, resolved the single app.ts import conflict, and ran focused OT-114/OT-107 local gates."
   ],
-  "next_safe_action": "Commit and push the lead idempotency repair, then wait for PR #61 CI/OPS-06 rerun before staging deployment or semantic convergence claims.",
+  "next_safe_action": "Commit and push the OT-114 semantic merge, then wait for PR #61 checks on the new head before staging deployment.",
   "blockers": [
     {
       "id": "OPS10-BLOCKER-LOCAL-PG",
@@ -64,5 +71,5 @@
     "credential_disclosure_authorized": false,
     "production_deploy_authorized_after_required_gates": true
   },
-  "updated_at": "2026-07-17T08:24:00+03:00"
+  "updated_at": "2026-07-17T08:34:00+03:00"
 }

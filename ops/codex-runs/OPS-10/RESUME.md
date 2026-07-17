@@ -32,11 +32,15 @@ at `4e907992d8c7312a02e75dc879a5b5030f2b5942`.
 - Draft PR #61 opened against `main` to trigger pull-request CI and Postgres gates.
 - PR #61 first OPS-06 run failed only `concurrent_signup_idempotency`: 12 participants, 8 fulfilled, 4 rejected, 1 persisted contact.
 - Public lead capture now takes a transaction-scoped advisory lock on `(account_key, product_key, idempotency_key)` before checking/storing idempotency state, so concurrent duplicate submissions replay the stored response instead of racing the final insert.
+- PR #61 rerun on `a158c555835815d1d16d953624dc1ddb9995aee3` passed OPS-06, OT-37, OT-75, and OT-83; Node 24 verify was still in progress at the time of the OT-114 local merge.
+- OT-107 was reviewed against its merge-base delta. The release candidate already contains the student helper implementation, run folder, and newer migration assertions; the remaining branch tail was not applied because it would weaken newer tests.
+- OT-114 was merged locally. The only conflict was the domain import list in `apps/web/src/server/app.ts`; the resolution keeps OPS-10 email step-up login helpers and OT-114 CRM/support reply helpers.
 
 ## Local Gate Snapshot
 
 - Passed: `npm ci`, targeted Prettier check, `git diff --check`, `npm run typecheck`, `npm run lint`, `npm run secret:scan`, OPS-06 focused vitest, `npm run ops06:alerts`, and `npm run ops06:migrations`.
 - After the idempotency repair, also passed focused lead tests, OPS-06 focused tests, lint, typecheck, secret scan, and `npm run build`.
+- After the OT-114 merge, passed OT-114 unit/integration tests, OT-107 unit/e2e tests, lint, typecheck, secret scan, brand check, build, targeted Prettier, OT-114 browser e2e, and OT-114 accessibility/performance tests.
 - Blocked locally: Postgres 16 load/restore because Docker, `pg_isready`, and `psql` are unavailable on this machine.
 - Noisy but not authoritative locally: full `npm run format` reports Windows line-ending normalization across hundreds of unchanged files. The known Linux CI offenders were fixed and targeted-clean.
 
@@ -47,10 +51,9 @@ at `4e907992d8c7312a02e75dc879a5b5030f2b5942`.
 
 ## Next Safe Action
 
-Commit and push the lead idempotency repair checkpoint, then continue semantic convergence after PR #61 reruns:
+Commit and push the OT-114 semantic merge checkpoint, then continue after PR #61 reruns on the new head:
 
-- inspect OT-107 student helper delta against the frozen candidate;
-- inspect and integrate or explicitly block OT-114 CRM communications/support;
+- wait for Node 24 verify / PR #61 checks on the new head;
 - run build/unit/integration/e2e/a11y/performance gates as feasible;
 - use GitHub Actions as authoritative OPS-06 load/restore proof unless disposable local Postgres 16 credentials are provided;
 - only after green gates, create immutable staging deployment and smoke `/login`, `/forgot-password`, `/activate`, `/reset-password`, owner/admin CRM/dashboard, parent/student portals, content workspace, and lead capture.

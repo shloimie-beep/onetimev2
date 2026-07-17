@@ -84,13 +84,18 @@ import {
   acceptStudentSetup,
   activateOt110aPromptVersion,
   admitContentOutcome,
+  appendContactNote,
   authenticateUser,
+  archiveContact,
+  assignCrmTag,
   canEditContacts,
   captureLead,
   completePasswordReset,
   completeStudentReset,
+  confirmSingleRecipientReply,
   createAccountLifecycleCredentialAdapter,
   createContact,
+  createCrmTag,
   createClassPortalAccessAdapter,
   createClassroomPortalAccessAdapter,
   createClassroomService,
@@ -128,7 +133,9 @@ import {
   performOt110aContentAction,
   previewOt110aPromptPatch,
   inspectOt86bBufferReadinessFromEnv,
+  listCrmTags,
   listOt86bSocialDrafts,
+  previewSingleRecipientReply,
   receiveOt86PublicationManifest,
   receiveOt86bSocialEvent,
   requestPasswordReset,
@@ -137,10 +144,12 @@ import {
   rollbackOt110aPromptVersion,
   revokeSession,
   rotateSessionCsrf,
+  removeCrmTag,
   receiveWhatsAppWebhook,
   updateContact,
   verifyEmailChallengeCode,
   verifyEmailChallengeLink,
+  CrmReplyError,
   verifyLoginCsrf,
   verifyRecentEmailAssurance,
   verifySessionCsrf,
@@ -231,6 +240,24 @@ const emailChallengeLinkPayloadSchema = z.object({
 });
 const emailChallengeResendPayloadSchema = z.object({
   challenge_token: z.string().trim().min(32).max(240),
+});
+const crmNotePayloadSchema = z.object({
+  body: z.string().trim().min(1).max(4000),
+});
+const crmTagPayloadSchema = z.object({
+  display_name: z.string().trim().min(1).max(60),
+});
+const crmReplyChannelSchema = z.enum(['email', 'whatsapp']);
+const crmReplyPreviewPayloadSchema = z.object({
+  channel: crmReplyChannelSchema,
+  body: z.string().trim().min(2).max(4000),
+});
+const crmReplyConfirmPayloadSchema = crmReplyPreviewPayloadSchema.extend({
+  body_revision: z.string().trim().min(8).max(80),
+  idempotency_key: z.string().trim().min(8).max(160),
+});
+const crmArchivePayloadSchema = z.object({
+  reason: z.string().trim().max(240).optional(),
 });
 
 class PublicRouteError extends Error {
@@ -402,6 +429,7 @@ export function createApp({
     app,
     config,
     pool,
+    distDir,
     session: {
       sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
       ensureSessionCsrfCookie: (req, res, session) =>
@@ -1286,6 +1314,12 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
+    if (!canReadContacts(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view CRM contacts.', req.traceId));
+      return;
+    }
     try {
       if (typeof req.query.search === 'string' && req.query.search.trim()) {
         res
@@ -1307,6 +1341,12 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
+    if (!canReadContacts(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view CRM contacts.', req.traceId));
+      return;
+    }
     if (!(await requireSessionCsrf(req, res, pool, session))) return;
     try {
       const result = await withTiming(req, 'db', () =>
@@ -1874,6 +1914,12 @@ export function createApp({
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
     if (!session) return;
+    if (!canReadContacts(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view CRM contacts.', req.traceId));
+      return;
+    }
     const contactId = String(req.params.contactId);
     const contact = await withTiming(req, 'db', () =>
       getContactDetail({ pool, config, contactId }),
@@ -1923,6 +1969,245 @@ export function createApp({
       handleApiError(error, req, res);
     }
   });
+
+  app.post('/api/v1/crm/contacts/:contactId/archive', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canEditContacts(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role can view CRM contacts only.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = crmArchivePayloadSchema.parse(req.body);
+      const result = await withTiming(req, 'db', () =>
+        archiveContact({
+          pool,
+          config,
+          contactId: String(req.params.contactId),
+          actorUserKey: session.user.user_key,
+          reason: payload.reason,
+        }),
+      );
+      if (!result) {
+        res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+        return;
+      }
+      res.json({ success: true, ...result });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/crm/tags', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canReadContacts(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Your role cannot view CRM tags.', req.traceId));
+      return;
+    }
+    res.json({
+      success: true,
+      tags: await withTiming(req, 'db', () => listCrmTags({ pool, config })),
+    });
+  });
+
+  app.post('/api/v1/crm/tags', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canEditContacts(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot manage tags.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = crmTagPayloadSchema.parse(req.body);
+      const tag = await withTiming(req, 'db', () =>
+        createCrmTag({
+          pool,
+          config,
+          displayName: payload.display_name,
+          actorUserKey: session.user.user_key,
+        }),
+      );
+      res.status(201).json({ success: true, tag });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/crm/contacts/:contactId/tags/:tagId', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canEditContacts(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot manage tags.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const result = await withTiming(req, 'db', () =>
+        assignCrmTag({
+          pool,
+          config,
+          contactId: String(req.params.contactId),
+          tagId: String(req.params.tagId),
+          actorUserKey: session.user.user_key,
+        }),
+      );
+      if (!result) {
+        res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+        return;
+      }
+      res.json({ success: true, ...result });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/crm/contacts/:contactId/tags/:tagId/remove',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!canEditContacts(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Your role cannot manage tags.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const result = await withTiming(req, 'db', () =>
+          removeCrmTag({
+            pool,
+            config,
+            contactId: String(req.params.contactId),
+            tagId: String(req.params.tagId),
+            actorUserKey: session.user.user_key,
+          }),
+        );
+        if (!result) {
+          res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+          return;
+        }
+        res.json({ success: true, ...result });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post('/api/v1/crm/contacts/:contactId/notes', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canEditContacts(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot append notes.', req.traceId));
+      return;
+    }
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = crmNotePayloadSchema.parse(req.body);
+      const note = await withTiming(req, 'db', () =>
+        appendContactNote({
+          pool,
+          config,
+          contactId: String(req.params.contactId),
+          body: payload.body,
+          actorUserKey: session.user.user_key,
+        }),
+      );
+      if (!note) {
+        res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+        return;
+      }
+      res.status(201).json({ success: true, note });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/crm/contacts/:contactId/replies/preview',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Your role cannot compose replies.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = crmReplyPreviewPayloadSchema.parse(req.body);
+        const preview = await withTiming(req, 'db', () =>
+          previewSingleRecipientReply({
+            pool,
+            config,
+            contactId: String(req.params.contactId),
+            channel: payload.channel,
+            body: payload.body,
+          }),
+        );
+        if (!preview) {
+          res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+          return;
+        }
+        res.json(preview);
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/crm/contacts/:contactId/replies/confirm',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!['owner', 'admin'].includes(session.user.role)) {
+        res
+          .status(403)
+          .json(publicError('FORBIDDEN', 'Your role cannot compose replies.', req.traceId));
+        return;
+      }
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const payload = crmReplyConfirmPayloadSchema.parse(req.body);
+        const reply = await withTiming(req, 'db', () =>
+          confirmSingleRecipientReply({
+            pool,
+            config,
+            contactId: String(req.params.contactId),
+            channel: payload.channel,
+            body: payload.body,
+            bodyRevision: payload.body_revision,
+            idempotencyKey: payload.idempotency_key,
+            actorUserKey: session.user.user_key,
+          }),
+        );
+        if (!reply) {
+          res.status(404).json(publicError('NOT_FOUND', 'Contact was not found.', req.traceId));
+          return;
+        }
+        res.status(202).json(reply);
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
 
   const communicationsSessionPort: ReadOnlySessionScopePort = {
     resolve: (req) => readOnlyCommunicationsSession(req, pool, config),
@@ -2728,6 +3013,15 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof CrmReplyError) {
+    res.status(error.status).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      request_id: req.traceId,
+    });
+    return;
+  }
   if (error instanceof IdempotencyConflictError) {
     res.status(409).json({
       success: false,
@@ -2800,6 +3094,10 @@ function statusForOt110aError(code: string) {
 
 function canReadClasses(role: string) {
   return role === 'owner' || role === 'admin';
+}
+
+function canReadContacts(role: string) {
+  return role === 'owner' || role === 'admin' || role === 'crm_agent' || role === 'viewer';
 }
 
 function canReadContentLibrary(role: string) {

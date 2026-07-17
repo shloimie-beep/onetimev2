@@ -12,8 +12,14 @@ import {
   contactCommunicationsTabDescriptor,
 } from './communications/route-descriptor.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { SupportFeature } from './support/SupportFeature.js';
 import {
   AuthExpiredError,
+  appendNote,
+  archiveContactRequest,
+  assignTag,
+  confirmReply,
+  createTag,
   createIdempotencyKey,
   getAssignees,
   getClasses,
@@ -22,6 +28,7 @@ import {
   getSession,
   listContacts,
   logoutSession,
+  previewReply,
   resolveCrmCapabilities,
   saveContactRequest,
   type Assignee,
@@ -61,7 +68,7 @@ type Notice = {
 };
 
 type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
-type OwnerSurface = 'dashboard' | 'crm' | 'classes' | 'content' | 'billing';
+type OwnerSurface = 'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'support';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -102,6 +109,7 @@ function CrmApp() {
   const [editing, setEditing] = useState(false);
   const [surface, setSurface] = useState<OwnerSurface>('crm');
   const [communicationsMode, setCommunicationsMode] = useState<CommunicationsMode | null>(null);
+  const [supportReceiptId, setSupportReceiptId] = useState<string | null>(null);
   const [dashboard, setDashboard] = useState<OwnerDashboardResponse | null>(null);
   const [dashboardState, setDashboardState] = useState<AsyncPanelState>({
     loading: false,
@@ -129,6 +137,11 @@ function CrmApp() {
   const canAssign = capabilities.contacts.assign;
   const canReadCommunications = session?.user.role === 'owner' || session?.user.role === 'admin';
   const canReadOwnerShell = canReadCommunications;
+  const canReadCrm =
+    session?.user.role === 'owner' ||
+    session?.user.role === 'admin' ||
+    session?.user.role === 'crm_agent' ||
+    session?.user.role === 'viewer';
 
   useEffect(() => {
     void loadSession();
@@ -181,10 +194,24 @@ function CrmApp() {
 
   async function routeFromLocation() {
     if (sessionExpired) return;
+    const supportReceiptMatch = location.pathname.match(/^\/app\/support\/receipts\/([^/]+)$/);
+    if (location.pathname === '/app/support' || supportReceiptMatch?.[1]) {
+      setSurface('support');
+      setSupportReceiptId(
+        supportReceiptMatch?.[1] ? decodeURIComponent(supportReceiptMatch[1]) : null,
+      );
+      setCommunicationsMode(null);
+      setSelected(null);
+      setEditing(false);
+      setCreating(false);
+      setListLoading(false);
+      return;
+    }
     const ownerSurface = ownerSurfaceFromPath(location.pathname);
     if (ownerSurface && ownerSurface !== 'crm') {
       setSurface(ownerSurface);
       setCommunicationsMode(null);
+      setSupportReceiptId(null);
       setSelected(null);
       setEditing(false);
       setCreating(false);
@@ -220,6 +247,7 @@ function CrmApp() {
     }
     setSurface('crm');
     setCommunicationsMode(null);
+    setSupportReceiptId(null);
     const match = location.pathname.match(/^\/app\/crm\/contacts\/([^/]+)$/);
     const contactId = match?.[1];
     if (contactId) {
@@ -344,6 +372,7 @@ function CrmApp() {
     setEditing(false);
     setCreating(true);
     setCommunicationsMode(null);
+    setSupportReceiptId(null);
     history.pushState({}, '', '/app/crm');
   }
 
@@ -351,6 +380,7 @@ function CrmApp() {
     history.pushState({}, '', communicationsRouteDescriptor.path);
     setSurface('crm');
     setCommunicationsMode({ kind: 'global' });
+    setSupportReceiptId(null);
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -365,6 +395,7 @@ function CrmApp() {
     );
     setSurface('crm');
     setCommunicationsMode({ kind: 'contact', contactId });
+    setSupportReceiptId(null);
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -378,6 +409,7 @@ function CrmApp() {
     history.pushState({}, '', href);
     setSurface(nextSurface);
     setCommunicationsMode(null);
+    setSupportReceiptId(null);
     setSelected(null);
     setEditing(false);
     setCreating(false);
@@ -450,6 +482,7 @@ function CrmApp() {
     setEditing(false);
     setSurface('crm');
     setCommunicationsMode(null);
+    setSupportReceiptId(null);
     setDashboard(null);
     setDashboardState({ loading: false, error: '' });
     setClasses([]);
@@ -468,7 +501,8 @@ function CrmApp() {
     const returnTo =
       location.pathname.startsWith('/app/crm') ||
       location.pathname === communicationsRouteDescriptor.path ||
-      Boolean(ownerSurfaceFromPath(location.pathname))
+      Boolean(ownerSurfaceFromPath(location.pathname)) ||
+      location.pathname.startsWith('/app/support')
         ? location.pathname
         : '/app/crm';
     window.location.assign(`/login?return_to=${encodeURIComponent(returnTo)}`);
@@ -496,12 +530,16 @@ function CrmApp() {
           },
         ]
       : []),
-    {
-      id: 'crm',
-      label: 'CRM',
-      href: '/app/crm',
-      current: surface === 'crm' && !communicationsMode,
-    },
+    ...(canReadCrm
+      ? [
+          {
+            id: 'crm',
+            label: 'CRM',
+            href: '/app/crm',
+            current: surface === 'crm' && !communicationsMode,
+          },
+        ]
+      : []),
     ...(canReadOwnerShell
       ? [
           {
@@ -531,6 +569,16 @@ function CrmApp() {
             label: communicationsRouteDescriptor.label,
             href: communicationsRouteDescriptor.path,
             current: communicationsMode?.kind === 'global',
+          },
+        ]
+      : []),
+    ...(session
+      ? [
+          {
+            id: 'support',
+            label: 'Support',
+            href: '/app/support',
+            current: surface === 'support',
           },
         ]
       : []),
@@ -584,7 +632,7 @@ function CrmApp() {
         loading={dashboardState.loading}
         onRefresh={() => void loadDashboard()}
       />
-    ) : communicationsMode?.kind === 'contact' ? (
+    ) : surface === 'support' ? null : communicationsMode?.kind === 'contact' ? (
       <ContactCommunicationsToolbar
         onBack={() => {
           history.pushState(
@@ -686,6 +734,12 @@ function CrmApp() {
           onRetry={() => void loadDashboard()}
         />
       )}
+      {surface === 'support' && (
+        <SupportFeature
+          receiptId={supportReceiptId ?? undefined}
+          onProtectedStateCleared={clearProtectedState}
+        />
+      )}
       {surface === 'crm' && communicationsMode && (
         <Suspense
           fallback={
@@ -729,7 +783,12 @@ function CrmApp() {
             contact={selected}
             loading={detailLoading}
             error={detailError}
+            csrfToken={session?.csrf_token ?? ''}
+            canEdit={canEdit}
+            canReply={canReadCommunications}
             onRetry={() => void loadContact(selected.contact_id)}
+            onChanged={() => void loadContact(selected.contact_id)}
+            onArchived={() => void backToList()}
           />
         ))}
       {surface === 'crm' && !communicationsMode && !creating && !selected && !editing && (
@@ -1360,12 +1419,22 @@ function ContactOverview({
   contact,
   loading,
   error,
+  csrfToken,
+  canEdit,
+  canReply,
   onRetry,
+  onChanged,
+  onArchived,
 }: {
   contact: ContactDetail;
   loading: boolean;
   error: string;
+  csrfToken: string;
+  canEdit: boolean;
+  canReply: boolean;
   onRetry: () => void;
+  onChanged: () => void;
+  onArchived: () => void;
 }) {
   const facts = [
     ['Family / School', capitalize(contact.family_school_classification)],
@@ -1409,14 +1478,355 @@ function ContactOverview({
               </div>
             ))}
           </dl>
-          {contact.internal_note && (
-            <section className="note-panel">
-              <h2>Internal note</h2>
-              <p>{contact.internal_note}</p>
-            </section>
+          <section className="note-panel">
+            <h2>Tags and system facts</h2>
+            <div className="chip-row">
+              {contact.tags.map((tag) => (
+                <Chip key={tag.tag_id} label={tag.display_name} tone="source" />
+              ))}
+              {contact.tags.length === 0 && <span>No custom tags</span>}
+            </div>
+            <div className="fact-list">
+              {contact.system_facts.map((fact) => (
+                <span key={`${fact.dimension}:${fact.value}`}>{fact.label}</span>
+              ))}
+            </div>
+            {canEdit && (
+              <TagComposer
+                csrfToken={csrfToken}
+                contactId={contact.contact_id}
+                onSaved={onChanged}
+              />
+            )}
+          </section>
+
+          <section className="detail-columns">
+            <DetailList
+              title="Household / relationships"
+              empty="No relationships recorded."
+              items={contact.relationships.map((relationship) => ({
+                key: relationship.relationship_id,
+                title: relationship.display_name,
+                meta: `${readableState(relationship.type)}${
+                  relationship.label ? ` - ${relationship.label}` : ''
+                }`,
+              }))}
+            />
+            <DetailList
+              title="Enrollment / subscription"
+              empty="No enrollment summary available."
+              items={contact.enrollment_summary.map((item) => ({
+                key: item.label,
+                title: item.label,
+                meta: item.value,
+              }))}
+            />
+          </section>
+
+          <section className="detail-columns">
+            <DetailList
+              title="Support tickets"
+              empty="No support tickets for this contact."
+              items={contact.support_tickets.map((ticket) => ({
+                key: ticket.receipt_id,
+                title: readableState(ticket.status),
+                meta: `${deliveryLabel(ticket.delivery_state)} - ${ticket.public_summary}`,
+              }))}
+            />
+            <DetailList
+              title="Tasks"
+              empty="No tasks recorded."
+              items={contact.tasks.map((task) => ({
+                key: task.task_id,
+                title: task.title,
+                meta: `${readableState(task.status)} - ${formatDate(task.due_at)}`,
+              }))}
+            />
+          </section>
+
+          <section className="note-panel">
+            <h2>Notes</h2>
+            {contact.notes.length === 0 ? (
+              <p>No notes recorded.</p>
+            ) : (
+              <ol className="timeline-list">
+                {contact.notes.map((note) => (
+                  <li key={note.note_id}>
+                    <strong>{note.author_label}</strong>
+                    <span>{formatDate(note.created_at)}</span>
+                    <p>{note.body}</p>
+                  </li>
+                ))}
+              </ol>
+            )}
+            {canEdit && (
+              <NoteComposer
+                csrfToken={csrfToken}
+                contactId={contact.contact_id}
+                onSaved={onChanged}
+              />
+            )}
+          </section>
+
+          {canReply && (
+            <ReplyComposer csrfToken={csrfToken} contact={contact} onSaved={onChanged} />
+          )}
+
+          <section className="note-panel">
+            <h2>Timeline</h2>
+            {contact.timeline.length === 0 ? (
+              <p>No timeline activity recorded.</p>
+            ) : (
+              <ol className="timeline-list">
+                {contact.timeline.map((item) => (
+                  <li key={item.timeline_id}>
+                    <strong>{item.label}</strong>
+                    <span>
+                      {formatDate(item.occurred_at)} - {item.status_label}
+                    </span>
+                    {item.detail && <p>{item.detail}</p>}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+
+          {canEdit && (
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={async () => {
+                await archiveContactRequest(
+                  csrfToken,
+                  contact.contact_id,
+                  'Archived from CRM detail',
+                );
+                onArchived();
+              }}
+            >
+              Archive contact
+            </button>
           )}
         </>
       )}
+    </section>
+  );
+}
+
+function DetailList({
+  title,
+  empty,
+  items,
+}: {
+  title: string;
+  empty: string;
+  items: Array<{ key: string; title: string; meta: string }>;
+}) {
+  return (
+    <section className="note-panel">
+      <h2>{title}</h2>
+      {items.length === 0 ? (
+        <p>{empty}</p>
+      ) : (
+        <ul className="compact-list">
+          {items.map((item) => (
+            <li key={item.key}>
+              <strong>{item.title}</strong>
+              <span>{item.meta}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function TagComposer({
+  csrfToken,
+  contactId,
+  onSaved,
+}: {
+  csrfToken: string;
+  contactId: string;
+  onSaved: () => void;
+}) {
+  const [tagName, setTagName] = useState('');
+  const [status, setStatus] = useState('');
+  return (
+    <form
+      className="inline-editor"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        setStatus('');
+        try {
+          const tag = await createTag(csrfToken, tagName);
+          await assignTag(csrfToken, contactId, tag.tag.tag_id);
+          setTagName('');
+          setStatus('Tag saved.');
+          onSaved();
+        } catch (error) {
+          setStatus(errorMessage(error, 'Tag could not be saved.'));
+        }
+      }}
+    >
+      <label>
+        <span>Add tag</span>
+        <input value={tagName} onChange={(event) => setTagName(event.target.value)} />
+      </label>
+      <button type="submit" className="button-secondary">
+        Add tag
+      </button>
+      {status && <p role="status">{status}</p>}
+    </form>
+  );
+}
+
+function NoteComposer({
+  csrfToken,
+  contactId,
+  onSaved,
+}: {
+  csrfToken: string;
+  contactId: string;
+  onSaved: () => void;
+}) {
+  const [body, setBody] = useState('');
+  const [status, setStatus] = useState('');
+  return (
+    <form
+      className="inline-editor"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        setStatus('');
+        try {
+          await appendNote(csrfToken, contactId, body);
+          setBody('');
+          setStatus('Note saved.');
+          onSaved();
+        } catch (error) {
+          setStatus(errorMessage(error, 'Note could not be saved.'));
+        }
+      }}
+    >
+      <label>
+        <span>Add note</span>
+        <textarea value={body} onChange={(event) => setBody(event.target.value)} rows={3} />
+      </label>
+      <button type="submit" className="button-secondary">
+        Save note
+      </button>
+      {status && <p role="status">{status}</p>}
+    </form>
+  );
+}
+
+function ReplyComposer({
+  csrfToken,
+  contact,
+  onSaved,
+}: {
+  csrfToken: string;
+  contact: ContactDetail;
+  onSaved: () => void;
+}) {
+  const [channel, setChannel] = useState<'email' | 'whatsapp'>('email');
+  const [body, setBody] = useState('');
+  const [preview, setPreview] = useState<
+    Awaited<ReturnType<typeof previewReply>>['preview'] | null
+  >(null);
+  const [status, setStatus] = useState('');
+  const idempotencyKey = useRef(createIdempotencyKey());
+  return (
+    <section className="note-panel">
+      <h2>Single-recipient reply</h2>
+      <form
+        className="inline-editor"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          setStatus('');
+          try {
+            const nextPreview = await previewReply(csrfToken, contact.contact_id, channel, body);
+            setPreview(nextPreview.preview);
+            idempotencyKey.current = createIdempotencyKey();
+          } catch (error) {
+            setStatus(errorMessage(error, 'Reply preview could not be created.'));
+          }
+        }}
+      >
+        <label>
+          <span>Channel</span>
+          <select
+            value={channel}
+            onChange={(event) => setChannel(event.target.value as 'email' | 'whatsapp')}
+          >
+            <option value="email">Email</option>
+            <option value="whatsapp">WhatsApp</option>
+          </select>
+        </label>
+        <label>
+          <span>Reply body</span>
+          <textarea value={body} onChange={(event) => setBody(event.target.value)} rows={4} />
+        </label>
+        <button type="submit" className="button-secondary">
+          Preview reply
+        </button>
+      </form>
+      {preview && (
+        <div className="reply-preview" role="status">
+          <dl className="detail-grid">
+            <div>
+              <dt>Destination</dt>
+              <dd>{preview.destination_masked}</dd>
+            </div>
+            <div>
+              <dt>Channel</dt>
+              <dd>{capitalize(preview.channel)}</dd>
+            </div>
+            <div>
+              <dt>Revision</dt>
+              <dd>{preview.body_revision}</dd>
+            </div>
+            <div>
+              <dt>Provider mode</dt>
+              <dd>Provider off - draft only</dd>
+            </div>
+          </dl>
+          <p>{preview.message}</p>
+          {preview.blockers.length > 0 && (
+            <ul className="compact-list">
+              {preview.blockers.map((blocker) => (
+                <li key={blocker}>{blocker}</li>
+              ))}
+            </ul>
+          )}
+          <button
+            type="button"
+            className="button-primary"
+            disabled={!preview.confirmation_required}
+            onClick={async () => {
+              try {
+                const result = await confirmReply({
+                  csrfToken,
+                  contactId: contact.contact_id,
+                  channel,
+                  body,
+                  bodyRevision: preview.body_revision,
+                  idempotencyKey: idempotencyKey.current,
+                });
+                setStatus(result.reply.message);
+                setPreview(null);
+                setBody('');
+                onSaved();
+              } catch (error) {
+                setStatus(errorMessage(error, 'Reply draft could not be saved.'));
+              }
+            }}
+          >
+            Confirm draft
+          </button>
+        </div>
+      )}
+      {status && <p role="status">{status}</p>}
     </section>
   );
 }
@@ -1701,11 +2111,15 @@ function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/classes') return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
+  if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
+    return 'support';
+  }
   if (pathname === '/app/crm') return 'crm';
   return null;
 }
 
 function ownerSurfacePath(surface: Exclude<OwnerSurface, 'crm'>) {
+  if (surface === 'support') return '/app/support';
   return `/app/${surface}`;
 }
 
@@ -1714,6 +2128,7 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'classes') return 'Classes';
   if (surface === 'content') return 'Content Workspace';
   if (surface === 'billing') return 'Products/Billing status';
+  if (surface === 'support') return 'Support';
   return 'CRM';
 }
 
@@ -1726,6 +2141,7 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
     return 'Operational Rabbi and One Time content review, prompts, artifacts, social drafts and provider-off status.';
   }
   if (surface === 'billing') return 'Read-only billing readiness and projection status.';
+  if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
   return 'One Time signup and contact review.';
 }
 
@@ -1749,6 +2165,14 @@ function dashboardOpenLabel(href: string) {
 
 function readableState(value: string) {
   return value.replaceAll('_', ' ').replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
+function deliveryLabel(value: string) {
+  if (value === 'queued') return 'Queued for support desk';
+  if (value === 'delivery_delayed') return 'Delivery delayed';
+  if (value === 'delivered') return 'Accepted by support desk';
+  if (value === 'dead_letter') return 'Needs operator review';
+  return readableState(value);
 }
 
 function capitalize(value: string) {
