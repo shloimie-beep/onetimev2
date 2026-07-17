@@ -1,0 +1,154 @@
+{
+  "lane_id": "W12-100-01",
+  "branch": "codex/w12-100-01-security-boundary-audit",
+  "base_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "base_branch": "integration/w12-final-convergence-20260717T123715Z",
+  "worktree": "C:/Users/User/.w12-100-20260717-worktrees/W12-100-01",
+  "status": "local_audit_complete_pending_commit_push_pr",
+  "draft_pr_url": null,
+  "safety_counts": {
+    "external_actions": 0,
+    "production_mutations": 0,
+    "provider_resource_mutations": 0,
+    "deployments": 0,
+    "production_database_reads": 0,
+    "secrets_serialized_or_committed": 0
+  },
+  "objectives": [
+    {
+      "id": "verify_canonical_start_commit",
+      "status": "done",
+      "evidence": "Fetched all refs, verified commit 0d8d7168f066668f035176d777bdaaa4dcc5accd exists, and created the lane from that exact commit."
+    },
+    {
+      "id": "create_isolated_worktree_and_branch",
+      "status": "done",
+      "evidence": "Created C:/Users/User/.w12-100-20260717-worktrees/W12-100-01 on codex/w12-100-01-security-boundary-audit."
+    },
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": "Read AGENTS.md, director start/invariants, and W12-99 final state, capability, canary, import, and rollback files before implementation."
+    },
+    {
+      "id": "threat_model_security_audit",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md contains threat model rows for every requested boundary."
+    },
+    {
+      "id": "add_adversarial_tests_for_high_risk_boundaries",
+      "status": "done",
+      "evidence": "Added auth browser, portal isolation, and provider boundary tests under tests/integration/security/."
+    },
+    {
+      "id": "account_product_scoping",
+      "status": "done",
+      "evidence": "Audited via portal isolation, auth/CRM, billing, and provider-scoped existing suites."
+    },
+    {
+      "id": "owner_parent_student_authorization_boundaries",
+      "status": "done",
+      "evidence": "New portal isolation tests prove parent cross-household denial, student parent-route denial, and sibling question isolation."
+    },
+    {
+      "id": "sessions_rotation_expiration_revocation",
+      "status": "done",
+      "evidence": "Existing auth/account suites prove session issuance, logout, security-version invalidation, and trusted-device revocation; new tests add production cookie assertions."
+    },
+    {
+      "id": "cookie_flags_trusted_device",
+      "status": "done",
+      "evidence": "New auth browser tests assert HttpOnly, Secure, SameSite=Strict session cookie and Strict CSRF cookie in production config."
+    },
+    {
+      "id": "login_timing_rate_limits_owner_email_assurance_mfa",
+      "status": "done",
+      "evidence": "Existing auth-crm suite covers timing resistance, failed-login rate limits, email challenge single-use and supersession, and trusted-device paths."
+    },
+    {
+      "id": "csrf_state_changing_browser_routes",
+      "status": "done",
+      "evidence": "New portal tests prove missing CSRF and hostile Origin are rejected on student writes; existing suites cover CRM, billing, content, classroom, and support writes."
+    },
+    {
+      "id": "return_to_open_redirect_resistance",
+      "status": "done",
+      "evidence": "New auth tests fuzz absolute, scheme-relative, encoded, backslash, newline, and javascript return_to values across page rendering, password login, and email challenge completion."
+    },
+    {
+      "id": "activation_reset_token_lifecycle",
+      "status": "done",
+      "evidence": "Existing account-lifecycle web suite covers activation and reset token flows; no source edit required in this lane."
+    },
+    {
+      "id": "webhook_signature_replay_body_limit_dedupe",
+      "status": "done",
+      "evidence": "New provider tests cover Zoom signature acceptance/rejection, stale timestamps, duplicate event dedupe, and raw ID redaction; router uses raw body with 128kb limit."
+    },
+    {
+      "id": "provider_url_ssrf",
+      "status": "done",
+      "evidence": "New provider tests prove billing return paths are canonical/server-built, browser-supplied paths rejected, and billing network guard blocks metadata IP fetch."
+    },
+    {
+      "id": "sql_parameterization_dynamic_identifiers",
+      "status": "done",
+      "evidence": "Audit found scoped repository/service tests exercising parameterized account/product/household keys; no dynamic identifier bug was reproducibly found in this lane."
+    },
+    {
+      "id": "sensitive_logging_error_redaction",
+      "status": "done",
+      "evidence": "New Zoom webhook projection assertion rejects raw meeting, participant, and registrant IDs; existing billing/provider suites assert redacted provider errors and digests."
+    },
+    {
+      "id": "csp_security_headers",
+      "status": "done",
+      "evidence": "New auth browser test asserts production CSP frame-ancestors 'none', X-Frame-Options SAMEORIGIN, and X-Content-Type-Options nosniff."
+    },
+    {
+      "id": "portal_test_lab_production_prohibition",
+      "status": "done",
+      "evidence": "New config test proves production fails closed when PORTAL_TEST_LAB_ENABLED=true."
+    },
+    {
+      "id": "bna_boundary_enforcement",
+      "status": "done",
+      "evidence": "New config test proves OT89 mock BNA and real email transport are forbidden in production; W12-99 and product invariants keep BNA follow-up separate."
+    },
+    {
+      "id": "source_changes",
+      "status": "already_satisfied",
+      "evidence": "No app, config, migration, worker delivery, or deployment source files were edited."
+    },
+    {
+      "id": "release_blocking_findings",
+      "status": "already_satisfied",
+      "evidence": "No reproducible release-blocking security defect was found by this lane."
+    },
+    {
+      "id": "focused_validation",
+      "status": "done",
+      "evidence": "Focused security integration command passed: 3 files, 7 tests."
+    },
+    {
+      "id": "directly_affected_and_broader_validation",
+      "status": "done",
+      "evidence": "Focused suite passed: 3 files, 7 tests. npm run integration passed: 41 files, 191 tests. npm run unit passed: 38 files, 196 tests. Post-artifact npm run secret:scan, npm run lint, npm run typecheck, npm run build, git diff --check, and scoped Prettier check passed. Repo-wide npm run format was attempted and failed on 938 inherited baseline files; owned files pass scoped Prettier."
+    },
+    {
+      "id": "push_branch_and_open_draft_pr",
+      "status": "needs_operator_decision",
+      "evidence": "Local lane packet prepared. Draft PR URL will be recorded after final gates, commit, and push."
+    }
+  ],
+  "changed_files": [
+    "ops/codex-runs/W12-100-01/CHANGED-FILES.txt",
+    "ops/codex-runs/W12-100-01/FINAL-REPORT.md",
+    "ops/codex-runs/W12-100-01/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/W12-100-01/RESUME.md",
+    "ops/codex-runs/W12-100-01/STATE.json",
+    "tests/integration/security/auth-browser-boundaries.test.ts",
+    "tests/integration/security/portal-isolation-boundaries.test.ts",
+    "tests/integration/security/provider-boundaries.test.ts"
+  ]
+}
