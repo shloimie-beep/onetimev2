@@ -2,13 +2,20 @@
   "schema_version": "onetime.codex_run.state.v1",
   "run_id": "W12-100-10",
   "title": "SRE launch runbook and fail-closed Railway toolkit",
-  "status": "local_complete_pending_commit_push_pr",
+  "status": "pushed_draft_pr_open",
   "generated_at": "2026-07-17T18:18:19+03:00",
   "repository": "webcraft-media/onetimev2",
   "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
   "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-10",
   "branch": "codex/w12-100-10-sre-launch-runbook",
   "target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
+  "draft_pr": {
+    "number": 85,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/85",
+    "draft": true,
+    "base": "integration/w12-final-convergence-20260717T123715Z",
+    "head": "codex/w12-100-10-sre-launch-runbook"
+  },
   "safety": {
     "staging_deploy_performed": false,
     "production_deploy_performed": false,
@@ -111,8 +118,8 @@
     },
     {
       "id": "commit_push_pr",
-      "status": "blocked",
-      "evidence": "Pending commit, push, clean status confirmation, and draft PR creation after artifacts are committed."
+      "status": "done",
+      "evidence": "Committed, pushed branch, confirmed clean status, and opened draft PR #85 against integration/w12-final-convergence-20260717T123715Z."
     }
   ],
   "validation": [
@@ -159,12 +166,5 @@
       "status": "passed"
     }
   ],
-  "blockers": [
-    {
-      "id": "commit_push_pr_pending",
-      "status": "blocked",
-      "owner": "Codex",
-      "next_action": "Commit, push branch, confirm clean status, and open draft PR."
-    }
-  ]
+  "blockers": []
 }

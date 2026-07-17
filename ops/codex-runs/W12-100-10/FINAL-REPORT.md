@@ -9,6 +9,8 @@ W12-100-10 SRE launch-readiness lane. No deploy, Railway mutation, provider
 mutation, production database private-row read, external send, or production
 configuration change was performed.
 
+Draft PR: <https://github.com/webcraft-media/onetimev2/pull/85>
+
 ## Implemented
 
 - `scripts/w12-100/deploy/railway-launch-toolkit.ts`
@@ -70,3 +72,5 @@ When opening the draft PR, include:
 - blockers: none for implementation, PR/merge/deploy remain future operator actions;
 - external actions count: 0;
 - production mutation count: 0.
+
+PR #85 contains those counts in the body.

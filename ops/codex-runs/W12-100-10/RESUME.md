@@ -2,7 +2,9 @@
 
 Branch: `codex/w12-100-10-sre-launch-runbook`
 
-Current state: local implementation complete; commit, push, and draft PR remain.
+Current state: pushed, clean, draft PR open.
+
+Draft PR: <https://github.com/webcraft-media/onetimev2/pull/85>
 
 ## What Changed
 
@@ -35,10 +37,8 @@ Current state: local implementation complete; commit, push, and draft PR remain.
 - Provider sends/mutations: 0
 - Production database private-row reads: 0
 
-## Remaining Steps
+## Remaining Operator Actions
 
-1. Commit all lane-owned changes.
-2. Confirm git status is clean after commit.
-3. Push `codex/w12-100-10-sre-launch-runbook`.
-4. Open a draft PR against `integration/w12-final-convergence-20260717T123715Z`.
-5. Put exact tests, blockers, external actions count, and mutation count in the PR body.
+1. Review draft PR #85.
+2. Do not deploy from this lane.
+3. Use the runbooks only in a later approved launch window with exact Railway IDs, backup metadata, deployment evidence, and probe token.
