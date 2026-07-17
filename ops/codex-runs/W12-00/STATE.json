@@ -1,0 +1,68 @@
+{
+  "schema_version": "onetime.codex_run_state.v1",
+  "run_id": "W12-00-canonical-director-handoff-2026-07-17",
+  "lane": "W12-00",
+  "status": "validated_pending_pr",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.w12-20260717-worktrees\\W12-00",
+  "branch": "codex/w12-00-canonical-director-handoff",
+  "base": {
+    "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "release_branch": "origin/release/ops10-full-staged-production-launch-20260717T050800Z",
+    "deployed_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "base_selection": "ops/codex-runs/W12-00/BASE-SELECTION.md"
+  },
+  "source_packet": {
+    "zip_path": "C:\\Users\\User\\Downloads\\W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+    "zip_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+    "prompt_sha256": "0f400c654471044ab143efda784dc90e233c9758e4b89a298427f22e474cb059",
+    "archive_validation": "ops/codex-runs/W12-00/ARCHIVE-VALIDATION.json",
+    "original_prompt": "ops/codex-runs/W12-00/ORIGINAL-PROMPT.md"
+  },
+  "created_artifacts": [
+    "ops/director/START-HERE.md",
+    "ops/director/CURRENT-STATE.json",
+    "ops/director/CAPABILITY-MATRIX.json",
+    "ops/director/WORKSTREAMS.json",
+    "ops/director/DEPLOYMENTS.json",
+    "ops/director/PRODUCT-INVARIANTS.md",
+    "ops/director/DECISION-REGISTER.md",
+    "ops/director/NEW-CHAT-PROMPT.md",
+    "ops/director/BRANCH-FLEET.json",
+    "ops/codex-runs/W12-00/BASE-SELECTION.md",
+    "ops/codex-runs/W12-00/STATE.json",
+    "ops/codex-runs/W12-00/RESUME.md",
+    "ops/codex-runs/W12-00/FINAL-REPORT.md",
+    "ops/codex-runs/W12-00/CHANGED-FILES.txt",
+    "ops/codex-runs/W12-00/HOTSPOTS.json",
+    "ops/codex-runs/W12-00/ARCHIVE-VALIDATION.json"
+  ],
+  "external_actions": {
+    "read_only_github_inspection": true,
+    "read_only_live_http_version_probe": true,
+    "deployments": 0,
+    "database_mutations": 0,
+    "provider_calls": 0,
+    "user_mutations": 0,
+    "sends": 0,
+    "charges": 0,
+    "dns_changes": 0,
+    "secrets_exposed": false
+  },
+  "validation": {
+    "json_validation": "passed",
+    "link_validation": "passed",
+    "secret_scan": "passed",
+    "formatting": "passed",
+    "git_diff_check": "passed",
+    "current_ref_readback": {
+      "head_before_w12_commit": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "status": "passed"
+    }
+  },
+  "draft_pr": {
+    "url": null,
+    "status": "pending_push"
+  },
+  "updated_at": "2026-07-17T13:45:56+03:00"
+}

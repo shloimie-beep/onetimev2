@@ -1,0 +1,21 @@
+{
+  "schema_version": "onetime.hotspots.v1",
+  "generated_at": "2026-07-17T13:32:48+03:00",
+  "hotspots_touched": [
+    {
+      "path": "AGENTS.md",
+      "reason": "Additive pointer to director handoff for fresh sessions.",
+      "risk": "low",
+      "compatibility_note": "Existing architecture, brand, safety, and verification rules remain intact."
+    }
+  ],
+  "shared_hotspots_not_touched": [
+    "package.json",
+    "package-lock.json",
+    ".github/workflows/**",
+    "apps/web/src/server/app.ts",
+    "packages/db/migrations/**",
+    "packages/brand-system/**"
+  ],
+  "requires_w12_99_reconciliation": false
+}
