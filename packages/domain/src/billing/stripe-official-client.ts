@@ -33,8 +33,10 @@ export function createOfficialStripeTestClient(secretKey: string): StripeTestCli
         stripe.customers.create(params as Stripe.CustomerCreateParams, options),
       retrieve: async (providerCustomerRef) => {
         const customer = await stripe.customers.retrieve(providerCustomerRef);
-        if (customer.deleted) return { id: customer.id, deleted: true };
-        return { id: customer.id };
+        const livemode = 'livemode' in customer ? customer.livemode : undefined;
+        const base = livemode === undefined ? { id: customer.id } : { id: customer.id, livemode };
+        if (customer.deleted) return { ...base, deleted: true };
+        return base;
       },
     },
     subscriptions: {
@@ -43,13 +45,18 @@ export function createOfficialStripeTestClient(secretKey: string): StripeTestCli
         return {
           id: subscription.id,
           status: normalizeStatus(subscription.status),
+          livemode: subscription.livemode,
         };
       },
     },
     invoices: {
       retrieve: async (providerInvoiceRef) => {
         const invoice = await stripe.invoices.retrieve(providerInvoiceRef);
-        return { id: invoice.id ?? providerInvoiceRef, status: invoice.status ?? 'unknown' };
+        return {
+          id: invoice.id ?? providerInvoiceRef,
+          status: invoice.status ?? 'unknown',
+          livemode: invoice.livemode,
+        };
       },
     },
   };

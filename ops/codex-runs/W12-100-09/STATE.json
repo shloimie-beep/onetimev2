@@ -1,0 +1,169 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-09",
+  "title": "Billing TEST-mode launch readiness",
+  "status": "ready_for_draft_pr",
+  "generated_at": "2026-07-17T18:01:32+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-09",
+  "branch": "codex/w12-100-09-billing-test-readiness",
+  "base": {
+    "required_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "verified_exact_commit_exists": true,
+    "created_from_exact_commit": true,
+    "target_pr_base": "integration/w12-final-convergence-20260717T123715Z"
+  },
+  "safety": {
+    "staging_deploy_performed": false,
+    "production_deploy_performed": false,
+    "production_database_read": false,
+    "production_database_write": false,
+    "stripe_external_api_calls": 0,
+    "stripe_live_actions": 0,
+    "provider_resource_mutations": 0,
+    "external_actions_count": 0,
+    "production_mutation_count": 0,
+    "secrets_or_private_rows_printed": false,
+    "test_resource_setup_run": false,
+    "external_stripe_canary_run": false,
+    "w12_09_integrated": false,
+    "bna_code_or_data_touched": false
+  },
+  "objectives": [
+    {
+      "id": "setup_exact_worktree",
+      "status": "done",
+      "evidence": "Fetched all refs, verified commit object 0d8d7168f066668f035176d777bdaaa4dcc5accd, and created isolated worktree C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-09 on branch codex/w12-100-09-billing-test-readiness."
+    },
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": "Read AGENTS.md, director START-HERE and PRODUCT-INVARIANTS, and all listed W12-99 report/state/capability/canary/import/rollback artifacts before editing."
+    },
+    {
+      "id": "billing_checkout_creation",
+      "status": "done",
+      "evidence": "Focused tests cover fixture checkout idempotency and official test-adapter checkout creation with server-side redirect vault storage and no network calls."
+    },
+    {
+      "id": "billing_customer_portal_creation",
+      "status": "done",
+      "evidence": "Focused tests cover customer portal session creation after local customer mapping and server-side redirect vault storage."
+    },
+    {
+      "id": "redirect_token_consumption",
+      "status": "done",
+      "evidence": "tests/integration/w12-100-09-billing-readiness.test.ts consumes checkout and portal redirect tokens once and verifies second consumption returns null."
+    },
+    {
+      "id": "product_price_amount_currency_account_product_scope_principal_guards",
+      "status": "done",
+      "evidence": "Existing OT-46/OT-87/OT-105 billing tests plus W12-100-09 tests cover account, product, price, amount, currency, product-scope, and principal boundaries."
+    },
+    {
+      "id": "webhook_signature_replay_idempotency",
+      "status": "done",
+      "evidence": "Existing OT-46 and OT-105 tests cover forged/changed/stale signatures, duplicate event replay, digest mismatch, and idempotent checkout."
+    },
+    {
+      "id": "out_of_order_events",
+      "status": "done",
+      "evidence": "Existing OT-46/OT-105 tests cover stale subscription events and provider readback on ignored older subscription events."
+    },
+    {
+      "id": "subscription_entitlement_projection",
+      "status": "done",
+      "evidence": "Existing OT-87 and OT-105 tests plus W12-100-09 tests cover active paid access, trial/manual review, past_due suspension, and failed latest invoice no-access projection."
+    },
+    {
+      "id": "cancellation_expiration_payment_failure_duplicate_invoice",
+      "status": "done",
+      "evidence": "W12-100-09 focused integration test covers checkout expiration, scheduled cancellation, expired cancellation revocation, payment_failed latest invoice no-access, and duplicate invoice idempotency."
+    },
+    {
+      "id": "test_live_object_separation",
+      "status": "done",
+      "evidence": "Stripe test adapter now rejects livemode=true on retrieved customer/subscription/invoice objects; W12-100-09 tests prove live-mode checkout, portal, webhook, create-customer, retrieve-customer, retrieve-subscription, and retrieve-invoice objects are rejected."
+    },
+    {
+      "id": "reconciliation_dry_run_and_apply_authorization",
+      "status": "done",
+      "evidence": "W12-100-09 focused test runs the reconciliation script with a sanitized environment and apply mode; it blocks before Stripe/database work without explicit authorization and records zero local/Stripe/live mutations."
+    },
+    {
+      "id": "redacted_provider_errors",
+      "status": "done",
+      "evidence": "Billing reconciliation catches provider exceptions and stores/returns provider_unavailable rather than thrown provider text; focused test verifies no full customer-like error body is persisted."
+    },
+    {
+      "id": "no_secret_or_full_customer_object_logging",
+      "status": "done",
+      "evidence": "No new logs include provider objects. Existing audit redaction remains in place, focused test verifies redacted reconciliation failure, and secret scan passed across 1302 repo text files after artifacts."
+    },
+    {
+      "id": "launch_decision_matrix",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records A/B/C launch matrix. A is safe, B is local-ready but requires separate operator validation, C is not chosen."
+    },
+    {
+      "id": "live_paid_production_launch",
+      "status": "needs_operator_decision",
+      "evidence": "Live Stripe mode is intentionally rejected. Missing live-mode controls and business decisions are documented in FINAL-REPORT.md; no C launch decision was made."
+    }
+  ],
+  "validation": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "details": "359 packages installed, 0 vulnerabilities."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-09-billing-readiness.test.ts",
+      "status": "passed",
+      "details": "1 file, 6 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/ot46-billing-config-policy.test.ts tests/unit/ot72-provider-adapters.test.ts",
+      "status": "passed",
+      "details": "2 files, 25 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/ot46-billing-services.test.ts tests/integration/ot87-billing-entitlements.test.ts tests/integration/ot105-stripe-test-billing-canary.test.ts tests/integration/w12-100-09-billing-readiness.test.ts",
+      "status": "passed",
+      "details": "4 files, 22 tests."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1297 repo text files before run artifacts and 1302 repo text files after run artifacts."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "details": "38 files, 196 tests."
+    },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "details": "39 files, 190 tests."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Vite public/app bundles, public pages, and final typecheck passed; inherited font URL warning only."
+    }
+  ],
+  "notes": [
+    "No staging or production deployment was performed.",
+    "No external Stripe canary, resource setup, provider webhook send, or provider mutation was run.",
+    "STATE will be committed with final branch head recorded by git/PR metadata after commit."
+  ]
+}

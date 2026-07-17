@@ -1,0 +1,9 @@
+packages/domain/src/billing/service.ts
+packages/domain/src/billing/stripe-official-client.ts
+packages/domain/src/billing/stripe-test-adapter.ts
+tests/integration/w12-100-09-billing-readiness.test.ts
+ops/codex-runs/W12-100-09/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-09/STATE.json
+ops/codex-runs/W12-100-09/FINAL-REPORT.md
+ops/codex-runs/W12-100-09/RESUME.md
+ops/codex-runs/W12-100-09/CHANGED-FILES.txt
