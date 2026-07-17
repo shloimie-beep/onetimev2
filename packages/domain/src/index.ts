@@ -1,5 +1,13 @@
 export { campaignTicker } from './landing/campaign.ts';
 export { campaign, landingContent, sharedNav } from './landing/content.ts';
+export {
+  communicationConsentNotice,
+  legalPolicyMetadata,
+  parentGuardianStudentDataNotice,
+  privacyDataCategories,
+  privacyNotice,
+  termsOfUse,
+} from './legal/index.ts';
 export { captureLead, IdempotencyConflictError } from './lead/service.ts';
 export {
   normalizeEmail,
