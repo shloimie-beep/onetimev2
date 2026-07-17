@@ -1,0 +1,30 @@
+{
+  "schema_version": "onetime.w12_100_12.sbom_generation_result.v1",
+  "status": "blocked",
+  "generated_by_lane": "W12-100-12",
+  "commands": [
+    {
+      "command": "npm sbom --sbom-format cyclonedx",
+      "exit_code": 1,
+      "error_code": "EINVALIDPURLTYPE",
+      "redacted_error_summary": "npm could not generate package URLs for workspace package entries with names but no versions."
+    },
+    {
+      "command": "npm sbom --package-lock-only --sbom-format cyclonedx",
+      "exit_code": 1,
+      "error_code": "EINVALIDPURLTYPE",
+      "redacted_error_summary": "package-lock-only mode failed with the same workspace package URL error."
+    }
+  ],
+  "required_follow_up": {
+    "status": "needs_operator_decision",
+    "reason": "Fixing npm SBOM generation likely requires adding workspace package versions or using a different SBOM generator, which is outside this lane's no-release-behavior-change audit scope.",
+    "separate_branch_plan": "Create a supply-chain-hardening branch to choose npm workspace package version metadata or a pinned CycloneDX/SPDX generator, then run npm sbom and CI gates."
+  },
+  "safety_counters": {
+    "external_actions_sent": 0,
+    "provider_resource_mutations": 0,
+    "production_database_reads": 0,
+    "production_database_writes": 0
+  }
+}

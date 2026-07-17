@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T17:17:56.257Z",
   "allowed_statuses": [
     "working_live",
     "working_staging",
@@ -16,8 +16,11 @@
     "deployed_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
     "w12_99_candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
-    "w12_99_candidate_head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
-    "w12_99_evidence": "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json"
+    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "w12_99_evidence": "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
+    "w12_99_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "ops_13a_preflight_head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+    "ops_13a_preflight": "ops/codex-runs/OPS-13A"
   },
   "capabilities": [
     {
@@ -69,9 +72,12 @@
         "apps/web/src/server/features/audience-reconciliation/router.ts",
         "packages/domain/src/crm/service.ts",
         "ops/codex-runs/OT-114/STATE.json",
-        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json"
+        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json",
+        "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
+        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json"
       ],
-      "notes": "CRM CRUD/tags/notes are implemented; real Rabbi audience spreadsheet import and conflict approval are not proven complete."
+      "notes": "CRM CRUD/tags/notes are implemented in the live runtime family; W12-99 integrates counts-only/synthetic import tooling. OPS-13A adds sanitized source metadata as a preflight input only: its row totals are naive source rows, not deduplicated people counts, and no real import is accepted or applied."
     },
     {
       "id": "communications_history_replies",
@@ -97,7 +103,7 @@
         "packages/domain/src/billing/stripe-test-adapter.ts",
         "tests/integration/ot105-stripe-test-billing-canary.test.ts"
       ],
-      "notes": "Billing foundation and test-mode adapters exist. Live Stripe actions are not authorized and are not configured as live capability."
+      "notes": "Billing foundation and test-mode adapters exist. OPS-13A records a Stripe test-mode canary plan only; no live Stripe action and no accepted test canary has been run."
     },
     {
       "id": "parent_student_portals",
@@ -124,7 +130,7 @@
         "apps/web/src/server/features/classroom/zoom-webhook-router.ts",
         "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
       ],
-      "notes": "Classroom and Zoom provider seams are implemented. Customer Zoom mutations/canaries require protected approval and were not run by W12-00."
+      "notes": "Classroom and Zoom provider seams are implemented. W12-99 integrates provider-off classroom work, and OPS-13A records a bounded canary plan only. No real Zoom meeting canary or provider acceptance is accepted yet."
     },
     {
       "id": "content_vimeo_knowledge",
@@ -137,7 +143,7 @@
         "packages/domain/src/content/vimeo-private-runtime.ts",
         "packages/contracts/src/content"
       ],
-      "notes": "Content workspace and Vimeo runtime seams exist. Protected Vimeo canaries and final admin classroom product sample are not proven live."
+      "notes": "Content workspace and Vimeo runtime seams exist. W12-99 integrates the content/classroom slice, and OPS-13A records a protected-video canary plan only. No protected Vimeo canary or provider acceptance is accepted yet."
     },
     {
       "id": "buffer_social",
@@ -163,7 +169,7 @@
         "packages/domain/src/telegram",
         "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
       ],
-      "notes": "Runtime code exists, but protected bot config/operator mapping and bounded live canaries are not proven."
+      "notes": "Runtime code exists, and W12-99 integrated the Telegram operations lane provider-off. Protected bot config/operator mapping and bounded live canaries are not proven or accepted."
     },
     {
       "id": "whatsapp",
@@ -176,7 +182,7 @@
         "apps/web/src/server/app.ts",
         "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
       ],
-      "notes": "WhatsApp runtime and webhook surfaces exist, but live public number/provider configuration and consented canaries are not proven."
+      "notes": "WhatsApp runtime and webhook surfaces exist, and W12-99 integrated the public assistant with provider-off behavior. Live public number/provider configuration and consented canaries are not proven or accepted."
     },
     {
       "id": "support_bna_bridge",
@@ -189,7 +195,7 @@
         "ops/codex-runs/OT-114/BNA-SUPPORT-EVENT-CONSUMER-CONTRACT.md",
         "ops/codex-runs/OT-114/STATE.json"
       ],
-      "notes": "One Time support producer exists; real BNA receiver/canary is blocked because BNA endpoint work is out of scope for this repo lane."
+      "notes": "One Time support producer exists. BNA remains a separate convergence train; real BNA receiver/canary work is not accepted in this One Time lane."
     },
     {
       "id": "workers_queues",
@@ -242,5 +248,83 @@
       ],
       "notes": "Staging rollback/roll-forward was rehearsed, but native Railway rollback to old production was unavailable because old deployments were REMOVED."
     }
-  ]
+  ],
+  "release_status": {
+    "production_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "production_runtime_is_distinct_from_w12_candidate": true,
+    "w12_candidate_staging_deployed": false,
+    "real_import_accepted": false,
+    "provider_acceptance_accepted": false,
+    "w12_100_owns_staging_and_launch_proof": true
+  },
+  "preflight_inputs": [
+    {
+      "id": "ops_13a_real_data_provider_preflight",
+      "status": "available_preflight_input_not_acceptance_proof",
+      "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+      "pr": 72,
+      "evidence_paths": [
+        "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+        "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
+        "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
+        "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+        "ops/codex-runs/OPS-13A/RESUME.md",
+        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+        "ops/codex-runs/OPS-13A/STATE.json"
+      ],
+      "caveats": [
+        "Counts are metadata/source-row estimates only and are not deduplicated people counts.",
+        "No production private rows were read.",
+        "No real import or provider canary was run."
+      ]
+    }
+  ],
+  "w12_100_convergence": {
+    "schema_version": "onetime.director.w12_100_convergence_ref.v1",
+    "generated_at": "2026-07-17T17:17:56.257Z",
+    "branch": "integration/w12-100-launch-readiness-convergence-20260717",
+    "base_w12_99_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "integrated_head_before_closeout": "4112930380fc9ae5bcdac9f316246e285cc93b35",
+    "accepted_lanes": [
+      "W12-100-00",
+      "W12-100-01",
+      "W12-100-02",
+      "W12-100-03",
+      "W12-100-04",
+      "W12-100-06",
+      "W12-100-07",
+      "W12-100-08",
+      "W12-100-09",
+      "W12-100-10",
+      "W12-100-11",
+      "W12-100-12",
+      "W12-100-13-assessment-only"
+    ],
+    "skipped_lanes": [
+      {
+        "lane": "W12-100-05",
+        "reason": "Skipped because lane STATE/FINAL-REPORT classify it blocked_environment_or_rehearsal."
+      },
+      {
+        "lane": "PR-71 / W12-09 gamification product code",
+        "reason": "Skipped because W12-100-13 recommends deferral and the operator did not explicitly approve PR #71 integration."
+      },
+      {
+        "lane": "PR-72 direct merge",
+        "reason": "Not merged directly; the exact eight OPS-13A files entered through W12-100-00 as requested."
+      }
+    ],
+    "draft_pr_target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
+    "deploy_performed": false,
+    "marked_ready": false,
+    "artifacts_dir": "ops/codex-runs/W12-100-CONVERGENCE",
+    "validation_summary": {
+      "local_non_database_gates": "passed",
+      "db_verify": "blocked_missing_database_url",
+      "postgres_16": "blocked_missing_local_postgres_docker_psql",
+      "postgres_18": "blocked_missing_local_postgres_docker_psql"
+    }
+  }
 }

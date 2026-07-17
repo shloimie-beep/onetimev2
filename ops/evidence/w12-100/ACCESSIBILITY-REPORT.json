@@ -1,0 +1,612 @@
+{
+  "schema_version": "onetime.w12_100.accessibility_report.v1",
+  "generated_at": "2026-07-17T17:06:54.603Z",
+  "records": [
+    {
+      "route": "/",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/signup",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/terms",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/login",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/activate",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/reset-password",
+      "viewport": "360x800",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/signup",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/terms",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/login",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/activate",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/reset-password",
+      "viewport": "390x844",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/signup",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/terms",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/login",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/activate",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/reset-password",
+      "viewport": "tablet",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/signup",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/terms",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/login",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/activate",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/reset-password",
+      "viewport": "desktop",
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": []
+    },
+    {
+      "route": "/app/dashboard",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/crm",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/communications",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/classes",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/content",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/billing",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/support",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/parent",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/student",
+      "viewport": "390x844",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      }
+    },
+    {
+      "route": "/app/dashboard",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/crm",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/communications",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/classes",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/content",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/billing",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/support",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/parent",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "route": "/app/student",
+      "viewport": "desktop",
+      "heading_visible": true,
+      "critical_or_serious_violations": [],
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      }
+    },
+    {
+      "collection_surface_error_association_review": [
+        {
+          "route": "/signup",
+          "status_count": 2,
+          "error_targets": [
+            {
+              "field": "contact_name",
+              "focusable": true
+            },
+            {
+              "field": "family_or_school",
+              "focusable": true
+            },
+            {
+              "field": "location",
+              "focusable": true
+            },
+            {
+              "field": "timezone",
+              "focusable": true
+            },
+            {
+              "field": "email",
+              "focusable": true
+            },
+            {
+              "field": "phone",
+              "focusable": true
+            }
+          ],
+          "missing_describedby": [
+            {
+              "name": "contact_name",
+              "id": "contact_name"
+            },
+            {
+              "name": "family_or_school",
+              "id": "family_or_school"
+            },
+            {
+              "name": "audience_type",
+              "id": ""
+            },
+            {
+              "name": "audience_type",
+              "id": ""
+            },
+            {
+              "name": "location",
+              "id": "location"
+            },
+            {
+              "name": "email",
+              "id": "email"
+            },
+            {
+              "name": "phone",
+              "id": "phone"
+            },
+            {
+              "name": "email_reminder_consent",
+              "id": "email_reminder_consent"
+            },
+            {
+              "name": "whatsapp_reminder_consent",
+              "id": "whatsapp_reminder_consent"
+            }
+          ]
+        },
+        {
+          "route": "/login",
+          "status_count": 2,
+          "error_targets": [
+            {
+              "field": "email",
+              "focusable": true
+            },
+            {
+              "field": "password",
+              "focusable": true
+            },
+            {
+              "field": "email_code",
+              "focusable": true
+            }
+          ],
+          "missing_describedby": [
+            {
+              "name": "email",
+              "id": "email"
+            },
+            {
+              "name": "password",
+              "id": "password"
+            }
+          ]
+        },
+        {
+          "route": "/forgot-password",
+          "status_count": 1,
+          "error_targets": [
+            {
+              "field": "email",
+              "focusable": true
+            }
+          ],
+          "missing_describedby": [
+            {
+              "name": "email",
+              "id": "forgot_email"
+            }
+          ]
+        },
+        {
+          "route": "/activate",
+          "status_count": 2,
+          "error_targets": [
+            {
+              "field": "password",
+              "focusable": true
+            },
+            {
+              "field": "password_confirm",
+              "focusable": true
+            }
+          ],
+          "missing_describedby": []
+        },
+        {
+          "route": "/reset-password",
+          "status_count": 2,
+          "error_targets": [
+            {
+              "field": "password",
+              "focusable": true
+            },
+            {
+              "field": "password_confirm",
+              "focusable": true
+            }
+          ],
+          "missing_describedby": []
+        }
+      ]
+    }
+  ],
+  "external_actions": 0,
+  "production_mutations": 0
+}

@@ -1,0 +1,1444 @@
+{
+  "schema_version": "onetime.w12_100_12.supply_chain_inventory.v1",
+  "deterministic": true,
+  "repository": "onetimeonetime",
+  "root_package": {
+    "name": "onetimeonetime",
+    "version": "0.1.0",
+    "private": true,
+    "node_engine": ">=24 <25",
+    "node24": "compatible",
+    "script_names": [
+      "accessibility",
+      "billing:reconcile:test",
+      "billing:reconcile:test:apply",
+      "brand:check",
+      "brand:fixtures",
+      "brand:visual",
+      "build",
+      "build:client",
+      "build:pages",
+      "clean",
+      "db:migrate",
+      "db:verify",
+      "dev",
+      "dev:worker",
+      "e2e",
+      "format",
+      "format:write",
+      "integration",
+      "lint",
+      "ops06:alerts",
+      "ops06:backup-restore",
+      "ops06:load",
+      "ops06:migrations",
+      "ops06:probes",
+      "ops06:verify",
+      "outbox:sink",
+      "performance",
+      "secret:scan",
+      "start",
+      "start:worker",
+      "stripe:test:canary",
+      "stripe:test:resources:setup",
+      "stripe:test:resources:validate",
+      "test",
+      "typecheck",
+      "unit",
+      "verify",
+      "version:print"
+    ]
+  },
+  "source_files": [
+    {
+      "path": ".env.example",
+      "sha256": "bda80c8ab89b2c8890cccb3727069f1ac5ef98eb31f0cf1b3d7f9567eac2f38b",
+      "bytes": 4060
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "46508400c03e986a1646a4a3dc2a98040c9480a422d8f3d658f0233d92f52efb",
+      "bytes": 1763
+    },
+    {
+      "path": ".github/workflows/ops06-reliability-observability.yml",
+      "sha256": "f6a5a4761dedb0f041bf8534690c185410569658f6d457bd4ea85f1cb5ad5dbc",
+      "bytes": 2376
+    },
+    {
+      "path": ".github/workflows/ops11-postgres-18-assurance.yml",
+      "sha256": "08fc8f1eacf4de27d2188d55a62adeeef1d2a4c87e69e135e73b5dd4d0ebbab9",
+      "bytes": 2997
+    },
+    {
+      "path": ".github/workflows/ot37-postgres-assurance.yml",
+      "sha256": "c4cd76decb9993c9365b308c936d177182981616eeb9fa14900fbc93e75eff72",
+      "bytes": 2449
+    },
+    {
+      "path": ".github/workflows/ot75-release-readiness.yml",
+      "sha256": "e8e180c7d92c1c05595a1f163bb46caa12819263254ce5b71be845d77aa93ebd",
+      "bytes": 1730
+    },
+    {
+      "path": ".github/workflows/ot83-postgres-concurrency.yml",
+      "sha256": "0753a1dd9d1a34ec2de029dceb1df31c773b8051f745c2f63022d306ce65c31b",
+      "bytes": 2054
+    },
+    {
+      "path": "Dockerfile",
+      "sha256": "4249a675211d7873d5de95a056654699907ac7528fb1baf72afaa0fa867c29f9",
+      "bytes": 828
+    },
+    {
+      "path": "ops/codex-runs/OPS-11/railway-pg18-proof/Dockerfile",
+      "sha256": "8a2da64df893d7ef3b05fad63871562d887dda7e6596daaad50ec740247ee070",
+      "bytes": 214
+    },
+    {
+      "path": "ops/codex-runs/OPS-11/railway-pg18-proof/railway.json",
+      "sha256": "b0bc4ca490f5def232e31b7a080f16ba64a297d47ff2a8b59b8bebe16adb0629",
+      "bytes": 265
+    },
+    {
+      "path": "ops/release/ot75/environment-schema.json",
+      "sha256": "c06641d295d53c39fa74d5ed69a1401f03392e29ee78c2d9d271c5759e63e21a",
+      "bytes": 3738
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "5308eebc01cb0756bd3a3dc90bab5e5094b7e1fe1d03507914d63db29f738b55",
+      "bytes": 213389
+    },
+    {
+      "path": "package.json",
+      "sha256": "b569dd2a206e30371a46ce853da9bde9129666a86be53bd81b35ad811ca68131",
+      "bytes": 3935
+    },
+    {
+      "path": "railway.json",
+      "sha256": "53c89d863cf679f62bf4911ded79ab72e6c35a0b7e462b46d7aa25cb12e32c9f",
+      "bytes": 272
+    },
+    {
+      "path": "railway.web.staging.json",
+      "sha256": "2414b3400d57de800ac2a13c8cc1bde29379b12f1874ed9559156bfb60593229",
+      "bytes": 364
+    },
+    {
+      "path": "railway.worker.staging.json",
+      "sha256": "c4eb14dbbaec127cdfa7e395b6e7d3f8176da1d410b4adbcedbb7b7cab9e7e51",
+      "bytes": 259
+    }
+  ],
+  "lockfile": {
+    "lockfile_version": 3,
+    "package_count": 434,
+    "missing_integrity_count": 0,
+    "non_registry_resolved": [],
+    "local_workspace_links": [
+      "@onetime/brand-system:packages/brand-system",
+      "@onetime/config:packages/config",
+      "@onetime/contracts:packages/contracts",
+      "@onetime/db:packages/db",
+      "@onetime/domain:packages/domain",
+      "@onetime/observability:packages/observability",
+      "@onetime/web:apps/web",
+      "@onetime/worker:apps/worker"
+    ],
+    "install_script_packages": [
+      {
+        "name": "esbuild",
+        "version": "0.28.1",
+        "dev": false,
+        "optional": false
+      },
+      {
+        "name": "fsevents",
+        "version": "2.3.2",
+        "dev": false,
+        "optional": true
+      },
+      {
+        "name": "fsevents",
+        "version": "2.3.3",
+        "dev": false,
+        "optional": true
+      },
+      {
+        "name": "fsevents",
+        "version": "2.3.3",
+        "dev": false,
+        "optional": true
+      }
+    ],
+    "deprecated_packages": [],
+    "node24_incompatible_packages": [
+      {
+        "name": "@img/sharp-win32-ia32",
+        "version": "0.35.3",
+        "node_engine": "^20.9.0"
+      }
+    ]
+  },
+  "dependencies": {
+    "direct_exposure": {
+      "runtime": [
+        {
+          "name": "@vitejs/plugin-react",
+          "declared_range": "^5.0.0",
+          "locked_version": "5.2.0",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "dotenv",
+          "declared_range": "^17.2.0",
+          "locked_version": "17.4.2",
+          "license": "BSD-2-Clause",
+          "has_install_script": false
+        },
+        {
+          "name": "express",
+          "declared_range": "^5.1.0",
+          "locked_version": "5.2.1",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "helmet",
+          "declared_range": "^8.1.0",
+          "locked_version": "8.3.0",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "libphonenumber-js",
+          "declared_range": "^1.13.8",
+          "locked_version": "1.13.8",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "pg",
+          "declared_range": "^8.16.3",
+          "locked_version": "8.22.0",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "pino",
+          "declared_range": "^9.7.0",
+          "locked_version": "9.14.0",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "react",
+          "declared_range": "^19.1.0",
+          "locked_version": "19.2.7",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "react-dom",
+          "declared_range": "^19.1.0",
+          "locked_version": "19.2.7",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "sharp",
+          "declared_range": "^0.35.3",
+          "locked_version": "0.35.3",
+          "license": "Apache-2.0",
+          "has_install_script": false
+        },
+        {
+          "name": "stripe",
+          "declared_range": "^22.3.1",
+          "locked_version": "22.3.1",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "zod",
+          "declared_range": "^4.0.5",
+          "locked_version": "4.4.3",
+          "license": "MIT",
+          "has_install_script": false
+        }
+      ],
+      "development": [
+        {
+          "name": "@axe-core/playwright",
+          "declared_range": "^4.10.2",
+          "locked_version": "4.12.1",
+          "license": "MPL-2.0",
+          "has_install_script": false
+        },
+        {
+          "name": "@eslint/js",
+          "declared_range": "^9.31.0",
+          "locked_version": "9.39.5",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "@playwright/test",
+          "declared_range": "^1.54.1",
+          "locked_version": "1.61.1",
+          "license": "Apache-2.0",
+          "has_install_script": false
+        },
+        {
+          "name": "@types/express",
+          "declared_range": "^5.0.3",
+          "locked_version": "5.0.6",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "@types/node",
+          "declared_range": "^24.0.14",
+          "locked_version": "24.13.3",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "@types/pg",
+          "declared_range": "^8.15.4",
+          "locked_version": "8.20.0",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "@types/react",
+          "declared_range": "^19.1.8",
+          "locked_version": "19.2.17",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "@types/react-dom",
+          "declared_range": "^19.1.6",
+          "locked_version": "19.2.3",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "eslint",
+          "declared_range": "^9.31.0",
+          "locked_version": "9.39.5",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "globals",
+          "declared_range": "^16.3.0",
+          "locked_version": "16.5.0",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "pg-mem",
+          "declared_range": "^3.0.5",
+          "locked_version": "3.0.14",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "prettier",
+          "declared_range": "^3.6.2",
+          "locked_version": "3.9.5",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "tsx",
+          "declared_range": "^4.20.3",
+          "locked_version": "4.23.1",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "typescript",
+          "declared_range": "^5.8.3",
+          "locked_version": "5.9.3",
+          "license": "Apache-2.0",
+          "has_install_script": false
+        },
+        {
+          "name": "typescript-eslint",
+          "declared_range": "^8.37.0",
+          "locked_version": "8.64.0",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "vite",
+          "declared_range": "^7.0.4",
+          "locked_version": "7.3.6",
+          "license": "MIT",
+          "has_install_script": false
+        },
+        {
+          "name": "vitest",
+          "declared_range": "^3.2.4",
+          "locked_version": "3.2.7",
+          "license": "MIT",
+          "has_install_script": false
+        }
+      ]
+    },
+    "duplicate_versions": [
+      {
+        "name": "balanced-match",
+        "versions": ["1.0.2", "4.0.4"]
+      },
+      {
+        "name": "brace-expansion",
+        "versions": ["1.1.16", "5.0.7"]
+      },
+      {
+        "name": "content-type",
+        "versions": ["1.0.5", "2.0.0"]
+      },
+      {
+        "name": "eslint-visitor-keys",
+        "versions": ["3.4.3", "4.2.1", "5.0.1"]
+      },
+      {
+        "name": "fsevents",
+        "versions": ["2.3.2", "2.3.3"]
+      },
+      {
+        "name": "globals",
+        "versions": ["14.0.0", "16.5.0"]
+      },
+      {
+        "name": "ignore",
+        "versions": ["5.3.2", "7.0.6"]
+      },
+      {
+        "name": "js-tokens",
+        "versions": ["4.0.0", "9.0.1"]
+      },
+      {
+        "name": "lru-cache",
+        "versions": ["5.1.1", "6.0.0"]
+      },
+      {
+        "name": "minimatch",
+        "versions": ["10.2.5", "3.1.5"]
+      },
+      {
+        "name": "semver",
+        "versions": ["6.3.1", "7.8.5"]
+      },
+      {
+        "name": "yallist",
+        "versions": ["3.1.1", "4.0.0"]
+      }
+    ],
+    "license_summary": {
+      "counts": [
+        {
+          "license": "0BSD",
+          "count": 1
+        },
+        {
+          "license": "Apache-2.0",
+          "count": 33
+        },
+        {
+          "license": "Apache-2.0 AND LGPL-3.0-or-later",
+          "count": 3
+        },
+        {
+          "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
+          "count": 1
+        },
+        {
+          "license": "BlueOak-1.0.0",
+          "count": 1
+        },
+        {
+          "license": "BSD-2-Clause",
+          "count": 7
+        },
+        {
+          "license": "BSD-3-Clause",
+          "count": 4
+        },
+        {
+          "license": "CC-BY-4.0",
+          "count": 1
+        },
+        {
+          "license": "CC0-1.0",
+          "count": 1
+        },
+        {
+          "license": "ISC",
+          "count": 21
+        },
+        {
+          "license": "LGPL-3.0-or-later",
+          "count": 10
+        },
+        {
+          "license": "MIT",
+          "count": 339
+        },
+        {
+          "license": "MPL-2.0",
+          "count": 2
+        },
+        {
+          "license": "Public Domain",
+          "count": 1
+        },
+        {
+          "license": "Python-2.0",
+          "count": 1
+        },
+        {
+          "license": "UNSPECIFIED",
+          "count": 8
+        }
+      ],
+      "missing": [
+        "@onetime/brand-system@unknown",
+        "@onetime/config@unknown",
+        "@onetime/contracts@unknown",
+        "@onetime/db@unknown",
+        "@onetime/domain@unknown",
+        "@onetime/observability@unknown",
+        "@onetime/web@unknown",
+        "@onetime/worker@unknown"
+      ],
+      "restricted": [
+        {
+          "name": "@img/sharp-libvips-darwin-arm64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-darwin-x64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linux-arm",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linux-arm64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linux-ppc64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linux-riscv64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linux-s390x",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linux-x64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linuxmusl-arm64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-libvips-linuxmusl-x64",
+          "version": "1.3.2",
+          "license": "LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-wasm32",
+          "version": "0.35.3",
+          "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT"
+        },
+        {
+          "name": "@img/sharp-win32-arm64",
+          "version": "0.35.3",
+          "license": "Apache-2.0 AND LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-win32-ia32",
+          "version": "0.35.3",
+          "license": "Apache-2.0 AND LGPL-3.0-or-later"
+        },
+        {
+          "name": "@img/sharp-win32-x64",
+          "version": "0.35.3",
+          "license": "Apache-2.0 AND LGPL-3.0-or-later"
+        }
+      ]
+    },
+    "package_scope_counts": {
+      "runtime_direct": 12,
+      "development_direct": 17,
+      "transitive_total": 434,
+      "transitive_dev_marked": 179,
+      "transitive_optional_marked": 83
+    }
+  },
+  "vulnerability_reports": {
+    "production": {
+      "file": "ops/codex-runs/W12-100-12/npm-audit-production.json",
+      "present": true,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "dependency_count": 442,
+      "vulnerable_packages": []
+    },
+    "development": {
+      "file": "ops/codex-runs/W12-100-12/npm-audit-development.json",
+      "present": true,
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "dependency_count": 442,
+      "vulnerable_packages": []
+    }
+  },
+  "workflows": {
+    "files": [
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "46508400c03e986a1646a4a3dc2a98040c9480a422d8f3d658f0233d92f52efb",
+        "triggers": {
+          "pull_request": true,
+          "pull_request_target": false,
+          "workflow_dispatch": false,
+          "push": true
+        },
+        "permissions": {
+          "has_top_level_permissions": true,
+          "broad_write_lines": []
+        },
+        "action_uses": [
+          {
+            "workflow": ".github/workflows/ci.yml",
+            "line": 26,
+            "value": "actions/checkout@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ci.yml",
+            "line": 31,
+            "value": "actions/setup-node@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ci.yml",
+            "line": 74,
+            "value": "actions/upload-artifact@v4",
+            "pin_type": "tag_or_branch"
+          }
+        ],
+        "artifact_uploads": [
+          {
+            "line": 74,
+            "retention_days": 3
+          }
+        ],
+        "secret_output_risks": []
+      },
+      {
+        "path": ".github/workflows/ops06-reliability-observability.yml",
+        "sha256": "f6a5a4761dedb0f041bf8534690c185410569658f6d457bd4ea85f1cb5ad5dbc",
+        "triggers": {
+          "pull_request": true,
+          "pull_request_target": false,
+          "workflow_dispatch": true,
+          "push": true
+        },
+        "permissions": {
+          "has_top_level_permissions": true,
+          "broad_write_lines": []
+        },
+        "action_uses": [
+          {
+            "workflow": ".github/workflows/ops06-reliability-observability.yml",
+            "line": 40,
+            "value": "actions/checkout@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ops06-reliability-observability.yml",
+            "line": 45,
+            "value": "actions/setup-node@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ops06-reliability-observability.yml",
+            "line": 85,
+            "value": "actions/upload-artifact@v4",
+            "pin_type": "tag_or_branch"
+          }
+        ],
+        "artifact_uploads": [
+          {
+            "line": 85,
+            "retention_days": 7
+          }
+        ],
+        "secret_output_risks": []
+      },
+      {
+        "path": ".github/workflows/ops11-postgres-18-assurance.yml",
+        "sha256": "08fc8f1eacf4de27d2188d55a62adeeef1d2a4c87e69e135e73b5dd4d0ebbab9",
+        "triggers": {
+          "pull_request": true,
+          "pull_request_target": false,
+          "workflow_dispatch": true,
+          "push": false
+        },
+        "permissions": {
+          "has_top_level_permissions": true,
+          "broad_write_lines": []
+        },
+        "action_uses": [
+          {
+            "workflow": ".github/workflows/ops11-postgres-18-assurance.yml",
+            "line": 37,
+            "value": "actions/checkout@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ops11-postgres-18-assurance.yml",
+            "line": 42,
+            "value": "actions/setup-node@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ops11-postgres-18-assurance.yml",
+            "line": 91,
+            "value": "actions/upload-artifact@v4",
+            "pin_type": "tag_or_branch"
+          }
+        ],
+        "artifact_uploads": [
+          {
+            "line": 91,
+            "retention_days": 7
+          }
+        ],
+        "secret_output_risks": []
+      },
+      {
+        "path": ".github/workflows/ot37-postgres-assurance.yml",
+        "sha256": "c4cd76decb9993c9365b308c936d177182981616eeb9fa14900fbc93e75eff72",
+        "triggers": {
+          "pull_request": true,
+          "pull_request_target": false,
+          "workflow_dispatch": true,
+          "push": true
+        },
+        "permissions": {
+          "has_top_level_permissions": true,
+          "broad_write_lines": []
+        },
+        "action_uses": [
+          {
+            "workflow": ".github/workflows/ot37-postgres-assurance.yml",
+            "line": 41,
+            "value": "actions/checkout@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ot37-postgres-assurance.yml",
+            "line": 46,
+            "value": "actions/setup-node@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ot37-postgres-assurance.yml",
+            "line": 85,
+            "value": "actions/upload-artifact@v4",
+            "pin_type": "tag_or_branch"
+          }
+        ],
+        "artifact_uploads": [
+          {
+            "line": 85,
+            "retention_days": 7
+          }
+        ],
+        "secret_output_risks": []
+      },
+      {
+        "path": ".github/workflows/ot75-release-readiness.yml",
+        "sha256": "e8e180c7d92c1c05595a1f163bb46caa12819263254ce5b71be845d77aa93ebd",
+        "triggers": {
+          "pull_request": true,
+          "pull_request_target": false,
+          "workflow_dispatch": true,
+          "push": false
+        },
+        "permissions": {
+          "has_top_level_permissions": true,
+          "broad_write_lines": []
+        },
+        "action_uses": [
+          {
+            "workflow": ".github/workflows/ot75-release-readiness.yml",
+            "line": 28,
+            "value": "actions/checkout@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ot75-release-readiness.yml",
+            "line": 33,
+            "value": "actions/setup-node@v4",
+            "pin_type": "tag_or_branch"
+          }
+        ],
+        "artifact_uploads": [],
+        "secret_output_risks": []
+      },
+      {
+        "path": ".github/workflows/ot83-postgres-concurrency.yml",
+        "sha256": "0753a1dd9d1a34ec2de029dceb1df31c773b8051f745c2f63022d306ce65c31b",
+        "triggers": {
+          "pull_request": true,
+          "pull_request_target": false,
+          "workflow_dispatch": true,
+          "push": true
+        },
+        "permissions": {
+          "has_top_level_permissions": true,
+          "broad_write_lines": []
+        },
+        "action_uses": [
+          {
+            "workflow": ".github/workflows/ot83-postgres-concurrency.yml",
+            "line": 48,
+            "value": "actions/checkout@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ot83-postgres-concurrency.yml",
+            "line": 51,
+            "value": "actions/setup-node@v4",
+            "pin_type": "tag_or_branch"
+          },
+          {
+            "workflow": ".github/workflows/ot83-postgres-concurrency.yml",
+            "line": 71,
+            "value": "actions/upload-artifact@v4",
+            "pin_type": "tag_or_branch"
+          }
+        ],
+        "artifact_uploads": [
+          {
+            "line": 71,
+            "retention_days": 7
+          }
+        ],
+        "secret_output_risks": []
+      }
+    ],
+    "action_pin_summary": {
+      "sha": 0,
+      "tag_or_branch": 17,
+      "unpinned": 0,
+      "local": 0,
+      "docker": 0
+    },
+    "fork_safety": {
+      "pull_request_target_workflows": [],
+      "secret_output_risk_lines": []
+    }
+  },
+  "build_reproducibility": {
+    "descriptors": [
+      {
+        "path": "Dockerfile",
+        "sha256": "4249a675211d7873d5de95a056654699907ac7528fb1baf72afaa0fa867c29f9",
+        "from_images": ["node:24-alpine", "node:24-alpine"],
+        "digest_pinned_images": [],
+        "npm_ci_lines": [
+          {
+            "line": 11,
+            "text": "RUN npm ci"
+          }
+        ],
+        "start_command_mentions_tsx": false
+      },
+      {
+        "path": "ops/codex-runs/OPS-11/railway-pg18-proof/Dockerfile",
+        "sha256": "8a2da64df893d7ef3b05fad63871562d887dda7e6596daaad50ec740247ee070",
+        "from_images": ["postgres:18"],
+        "digest_pinned_images": [],
+        "npm_ci_lines": [],
+        "start_command_mentions_tsx": false
+      },
+      {
+        "path": "ops/codex-runs/OPS-11/railway-pg18-proof/railway.json",
+        "sha256": "b0bc4ca490f5def232e31b7a080f16ba64a297d47ff2a8b59b8bebe16adb0629",
+        "from_images": [],
+        "digest_pinned_images": [],
+        "npm_ci_lines": [],
+        "start_command_mentions_tsx": false
+      },
+      {
+        "path": "railway.json",
+        "sha256": "53c89d863cf679f62bf4911ded79ab72e6c35a0b7e462b46d7aa25cb12e32c9f",
+        "from_images": [],
+        "digest_pinned_images": [],
+        "npm_ci_lines": [],
+        "start_command_mentions_tsx": false
+      },
+      {
+        "path": "railway.web.staging.json",
+        "sha256": "2414b3400d57de800ac2a13c8cc1bde29379b12f1874ed9559156bfb60593229",
+        "from_images": [],
+        "digest_pinned_images": [],
+        "npm_ci_lines": [],
+        "start_command_mentions_tsx": false
+      },
+      {
+        "path": "railway.worker.staging.json",
+        "sha256": "c4eb14dbbaec127cdfa7e395b6e7d3f8176da1d410b4adbcedbb7b7cab9e7e51",
+        "from_images": [],
+        "digest_pinned_images": [],
+        "npm_ci_lines": [],
+        "start_command_mentions_tsx": false
+      }
+    ],
+    "docker_base_images_digest_pinned": false,
+    "runtime_start_imports_tsx": true,
+    "tsx_declared_as_runtime_dependency": false
+  },
+  "sbom_generation": {
+    "tracked_sbom_files": [],
+    "generation_result_files": ["ops/codex-runs/W12-100-12/SBOM-GENERATION-RESULT.json"],
+    "npm_sbom_recommended_command": "npm sbom --sbom-format cyclonedx"
+  },
+  "env_name_alignment": {
+    "env_example_count": 106,
+    "schema_name_count": 17,
+    "code_reference_count": 106,
+    "schema_not_in_env_example": [
+      "OT75_ACTIVE_SOURCE_SHA",
+      "OT75_BACKUP_PITR_EVIDENCE_URI",
+      "OT75_DUPLICATE_DATA_AUDIT_REPORT",
+      "OT75_EXPECTED_SOURCE_SHA",
+      "OT75_MIGRATION_LEDGER_SHA256",
+      "OT75_OWNER_ADMIN_BOOTSTRAP_REPORT",
+      "OT75_PRODUCTION_DATABASE_REFERENCE_ID",
+      "OT75_PRODUCTION_WEB_SERVICE",
+      "OT75_PROVIDER_STATE_REPORT",
+      "OT75_RESTORE_DRILL_EVIDENCE_URI",
+      "OT75_STAGING_DATABASE_REFERENCE_ID",
+      "OT75_STAGING_DELIVERY_WORKER_SERVICE",
+      "OT75_STAGING_DOMAIN",
+      "OT75_STAGING_PROVIDER_WORKER_SERVICE",
+      "OT75_STAGING_TELEGRAM_WORKER_SERVICE",
+      "OT75_STAGING_WEB_SERVICE",
+      "OT75_WORKER_ISOLATION_APPROVED"
+    ],
+    "code_not_in_env_example": [
+      "BRANCH_NAME",
+      "BUFFER_CANARY_DESTINATION_ALLOWLIST",
+      "GITHUB_HEAD_REF",
+      "GITHUB_REF_NAME",
+      "ONE_TIME_HELPER_FIXTURE_ALLOWLIST",
+      "ONE_TIME_HELPER_RUNTIME_ENABLED",
+      "ONE_TIME_STRIPE_TEST_ACCOUNT_REF",
+      "ONE_TIME_STRIPE_TEST_CANARY_FIXTURE",
+      "ONE_TIME_STRIPE_TEST_PROTECTED_STORE_URL",
+      "ONE_TIME_TELEGRAM_CANARY_CHAT_REF",
+      "OPENAI_API_KEY",
+      "OPS06_ALLOW_PG_ASSURANCE",
+      "OPS06_BASE_URL",
+      "OPS06_OUTPUT_DIR",
+      "OPS06_SYNTHETIC_CONTACTS",
+      "OPS06_SYNTHETIC_EVENTS",
+      "OPS11_PG18_OUTPUT_DIR",
+      "OT_TEST_ADMIN_EMAIL",
+      "OT_TEST_ADMIN_PASSWORD",
+      "OT_TEST_CLOCK",
+      "OT_TEST_DATABASE",
+      "OT_TEST_OWNER_EMAIL",
+      "OT_TEST_OWNER_PASSWORD",
+      "OT_TEST_PARENT_EMAIL",
+      "OT_TEST_PARENT_PASSWORD",
+      "OT_TEST_STUDENT_EMAIL",
+      "OT_TEST_STUDENT_PASSWORD",
+      "OT_TEST_VIEWER_EMAIL",
+      "OT_TEST_VIEWER_PASSWORD",
+      "OT_TEST_ZOOM_STUDENT_EMAIL",
+      "OT_TEST_ZOOM_STUDENT_PASSWORD",
+      "OT104R_VIMEO_PROVIDER_MODE",
+      "OT106_BUFFER_CHANNEL_ALIASES",
+      "OT106_BUFFER_MAX_ATTEMPTS",
+      "OT106_BUFFER_PROVIDER_MODE",
+      "OT106_QUEUE_PROOF_BATCH_SIZE",
+      "OT106_QUEUE_PROOF_SIZE",
+      "OT37_OUTPUT_DIR",
+      "OT52_ALLOW_POSTGRES_WRITE",
+      "OT52_POSTGRES_SSL",
+      "OT52_POSTGRES_URL",
+      "OT75_EXPECTED_SOURCE_SHA",
+      "OT75_PRODUCTION_READBACK_SHA",
+      "OT75_SCOPE_BASE_SHA",
+      "OT75_SCOPE_HEAD_SHA",
+      "OT75_STAGING_READBACK_SHA",
+      "OT76_SCOPE_BASE_SHA",
+      "OT80_DELIVERY_WORKER_SOURCE_SHA",
+      "OT80_PROVIDER_WORKER_SOURCE_SHA",
+      "OT80_RELEASE_ID",
+      "OT80_TELEGRAM_WORKER_SOURCE_SHA",
+      "OT80_WEB_SOURCE_SHA",
+      "OT83_ALLOW_POSTGRES_WRITE",
+      "OT83_POSTGRES_SSL",
+      "OT83_POSTGRES_URL",
+      "OT86_PERF_DOCS_PER_SECTION",
+      "OT86_PERF_ITEMS",
+      "OT86_PERF_SAMPLES",
+      "OT86_PERF_SECTIONS_PER_ITEM",
+      "OT86B_PERF_APPROVALS",
+      "OT86B_PERF_COMMANDS",
+      "OT86B_PERF_REVISIONS_PER_DRAFT",
+      "OT86B_PERF_SAMPLES",
+      "OT86B_PERF_SOURCES",
+      "PGDATABASE",
+      "PGHOST",
+      "PGPASSWORD",
+      "PGPORT",
+      "PGUSER",
+      "PROCESS_TYPE",
+      "RAILWAY_PROCESS_TYPE",
+      "USERPROFILE",
+      "VIMEO_PRIVATE_PROVIDER_ENABLED"
+    ],
+    "env_example_not_seen_in_code_or_schema": [
+      "APP_VERSION",
+      "AUTH_CSRF_SECRET",
+      "COMMIT_SHA",
+      "DATABASE_SSL",
+      "ENABLE_REAL_EMAIL_TRANSPORT",
+      "ENABLE_REAL_TELEGRAM_TRANSPORT",
+      "ENABLE_REAL_WHATSAPP_TRANSPORT",
+      "ENABLE_STRIPE_TEST_CHECKOUT",
+      "ENABLE_STRIPE_TEST_PORTAL",
+      "ENABLE_STRIPE_TEST_RECONCILIATION",
+      "ENABLE_STRIPE_TEST_WEBHOOK_PROJECTION",
+      "ENABLE_STRIPE_TEST_WEBHOOKS",
+      "LEAD_ACCOUNT_RATE_LIMIT_MAX",
+      "LEAD_GLOBAL_RATE_LIMIT_MAX",
+      "LEAD_IDENTIFIER_RATE_LIMIT_MAX",
+      "LEAD_RATE_LIMIT_MAX",
+      "LEAD_RATE_LIMIT_WINDOW_MS",
+      "LOGIN_ACCOUNT_RATE_LIMIT_MAX",
+      "LOGIN_GLOBAL_RATE_LIMIT_MAX",
+      "LOGIN_IDENTIFIER_RATE_LIMIT_MAX",
+      "LOGIN_IP_RATE_LIMIT_MAX",
+      "LOGIN_RATE_LIMIT_WINDOW_MS",
+      "MFA_SECRET_ENCRYPTION_KEY",
+      "NODE_ENV",
+      "ONE_TIME_ADMIN_CUSTOMER_LABEL",
+      "ONE_TIME_BILLING_CANONICAL_PUBLIC_ORIGIN",
+      "ONE_TIME_DELIVERY_OWNER_ALERT_EMAIL",
+      "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+      "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL",
+      "ONE_TIME_EMAIL_FROM",
+      "ONE_TIME_EMAIL_REPLY_TO",
+      "ONE_TIME_ENTITLEMENT_EMERGENCY_MODE",
+      "ONE_TIME_OWNER_INTERNAL_LABEL",
+      "ONE_TIME_OWNER_TEST_EMAIL",
+      "ONE_TIME_OWNER_TEST_WHATSAPP",
+      "ONE_TIME_PROTECTED_CLASS_TARGET_URL",
+      "ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK",
+      "ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT",
+      "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+      "ONE_TIME_RESEND_WEBHOOK_ENABLED",
+      "ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY",
+      "ONE_TIME_WHATSAPP_ASSISTANT_COPY_VERSION",
+      "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+      "ONE_TIME_WHATSAPP_PROVIDER_ENV",
+      "ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+      "ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+      "ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+      "ONETIME_CANARY_WHATSAPP_RECIPIENT_E164",
+      "ONETIME_WHATSAPP_CANARY_AUTHORIZED",
+      "OPERATIONS_WORKER_HEARTBEAT_TTL_MS",
+      "OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID",
+      "OT86_PREVIOUS_PUBLISH_SIGNING_SECRET",
+      "OT86_PUBLISH_SIGNING_KEY_ID",
+      "OT86_PUBLISH_SIGNING_SECRET",
+      "OT89_MOCK_BNA_OUTAGE",
+      "OT89_SUPPORT_DEPLOYMENT_ID",
+      "OUTBOX_TRANSPORT_MODE",
+      "RESEND_API_KEY",
+      "RESEND_BOUNCE_WEBHOOK_ENABLED",
+      "RESEND_DOMAIN_DKIM_READY",
+      "RESEND_DOMAIN_DMARC_POLICY",
+      "RESEND_DOMAIN_SPF_READY",
+      "RESEND_DOMAIN_VERIFIED",
+      "RESEND_SUPPRESSION_READBACK_READY",
+      "RESEND_WEBHOOK_SECRET",
+      "RUN_MIGRATIONS_ON_STARTUP",
+      "SESSION_LAST_SEEN_WRITE_INTERVAL_MS",
+      "TRUSTED_PROXY_HOPS",
+      "VIMEO_CLIENT_ID",
+      "VIMEO_CLIENT_SECRET",
+      "WHATSAPP_ASSISTANT_ACCOUNT_RATE_LIMIT_MAX",
+      "WHATSAPP_ASSISTANT_RATE_LIMIT_WINDOW_MS",
+      "WHATSAPP_ASSISTANT_SENDER_RATE_LIMIT_MAX"
+    ],
+    "secret_like_names_in_env_example": [
+      "AUTH_CSRF_SECRET",
+      "BUFFER_ACCESS_TOKEN",
+      "DATABASE_URL",
+      "ENABLE_STRIPE_TEST_WEBHOOK_PROJECTION",
+      "ENABLE_STRIPE_TEST_WEBHOOKS",
+      "MFA_SECRET_ENCRYPTION_KEY",
+      "ONE_TIME_ACCOUNT_KEY",
+      "ONE_TIME_PRODUCT_KEY",
+      "ONE_TIME_RESEND_WEBHOOK_ENABLED",
+      "ONE_TIME_STRIPE_TEST_PUBLISHABLE_KEY",
+      "ONE_TIME_STRIPE_TEST_SECRET_KEY",
+      "ONE_TIME_STRIPE_TEST_WEBHOOK_ENDPOINT_ID",
+      "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+      "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+      "ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+      "ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+      "OPERATIONS_PROBE_TOKEN",
+      "OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID",
+      "OT86_PREVIOUS_PUBLISH_SIGNING_SECRET",
+      "OT86_PUBLISH_SIGNING_KEY_ID",
+      "OT86_PUBLISH_SIGNING_SECRET",
+      "OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+      "OT89_BNA_TO_ONETIME_HMAC_SECRET",
+      "OT89_SUPPORT_HMAC_KEY_ID",
+      "OT89_SUPPORT_HMAC_SECRET",
+      "RESEND_API_KEY",
+      "RESEND_BOUNCE_WEBHOOK_ENABLED",
+      "RESEND_WEBHOOK_SECRET",
+      "VIMEO_ACCESS_TOKEN",
+      "VIMEO_CLIENT_SECRET",
+      "VIMEO_WEBHOOK_SECRET"
+    ]
+  },
+  "generated_evidence_and_binary_growth": {
+    "tracked_binary_file_count": 210,
+    "tracked_binary_total_bytes": 53922979,
+    "largest_tracked_binary_files": [
+      {
+        "path": "ops/evidence/ot-73/screenshots/landing-1440x900.png",
+        "bytes": 4777316
+      },
+      {
+        "path": "ops/evidence/ot-73/screenshots/landing-768x1024.png",
+        "bytes": 4064543
+      },
+      {
+        "path": "ops/evidence/ops-07/screenshots/landing-768x1024.png",
+        "bytes": 3194426
+      },
+      {
+        "path": "ops/evidence/ot-82/screenshots/landing/landing__default__1440x1000.png",
+        "bytes": 2887590
+      },
+      {
+        "path": "ops/evidence/ops-07/screenshots/landing-1440x1000.png",
+        "bytes": 2886021
+      },
+      {
+        "path": "ops/evidence/ot-24/screenshots/landing-desktop.png",
+        "bytes": 2308620
+      },
+      {
+        "path": "ops/evidence/ot-82/screenshots/landing/landing__default__768x1024.png",
+        "bytes": 2110435
+      },
+      {
+        "path": "ops/evidence/ot-73/screenshots/landing-390x844.png",
+        "bytes": 1754429
+      },
+      {
+        "path": "ops/evidence/ot-24/screenshots/landing-390x844.png",
+        "bytes": 1534847
+      },
+      {
+        "path": "ops/evidence/ot-24/screenshots/landing-360x800.png",
+        "bytes": 1381794
+      },
+      {
+        "path": "ops/evidence/ot-73/screenshots/landing-360x800.png",
+        "bytes": 1312362
+      },
+      {
+        "path": "ops/evidence/ops-07/screenshots/landing-390x844.png",
+        "bytes": 1269094
+      },
+      {
+        "path": "ops/evidence/ot-108/screenshots/desktop-full.jpg",
+        "bytes": 1062442
+      },
+      {
+        "path": "ops/evidence/ot-82/screenshots/landing/landing__default__390x844.png",
+        "bytes": 1042428
+      },
+      {
+        "path": "ops/evidence/ot-82/screenshots/landing/landing__default__360x800.png",
+        "bytes": 963290
+      },
+      {
+        "path": "ops/evidence/ops-07/screenshots/landing-360x800.png",
+        "bytes": 963098
+      },
+      {
+        "path": "ops/evidence/ot-108/screenshots/tablet-full.jpg",
+        "bytes": 910479
+      },
+      {
+        "path": "ops/evidence/ot-112/screenshots/fixture-default-1440x1000.png",
+        "bytes": 853341
+      },
+      {
+        "path": "ops/evidence/w12-07/screenshots/desktop-full.jpg",
+        "bytes": 809593
+      },
+      {
+        "path": "ops/evidence/w12-07/screenshots/tablet-full.jpg",
+        "bytes": 654432
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "branch-protection-not-repo-local",
+      "title": "Branch protection assumptions are not fully represented in repository files",
+      "severity": "info",
+      "exploitability": "not_exploitable_locally",
+      "category": "branch_protection_assumptions",
+      "evidence": [
+        "Repository workflows can prove CI intent, but required checks/reviews/admin bypass rules live in GitHub settings."
+      ],
+      "recommendation": "Verify integration and main branch protection in GitHub settings before launch; record required checks and bypass policy."
+    },
+    {
+      "id": "docker-base-image-not-digest-pinned",
+      "title": "Docker base images are tag-pinned, not digest-pinned",
+      "severity": "medium",
+      "exploitability": "conditional",
+      "category": "docker_railway_reproducibility",
+      "evidence": [
+        "Dockerfile:node:24-alpine",
+        "Dockerfile:node:24-alpine",
+        "ops/codex-runs/OPS-11/railway-pg18-proof/Dockerfile:postgres:18"
+      ],
+      "recommendation": "Pin Docker base images to reviewed sha256 digests after compatibility smoke tests.",
+      "upgrade_recommendation_ids": ["pin-node-24-alpine-digest"]
+    },
+    {
+      "id": "duplicate-transitive-dependencies",
+      "title": "Duplicate dependency versions increase review and patch surface",
+      "severity": "low",
+      "exploitability": "indirect",
+      "category": "duplicate_dependencies",
+      "evidence": [
+        "balanced-match: 1.0.2, 4.0.4",
+        "brace-expansion: 1.1.16, 5.0.7",
+        "content-type: 1.0.5, 2.0.0",
+        "eslint-visitor-keys: 3.4.3, 4.2.1, 5.0.1",
+        "fsevents: 2.3.2, 2.3.3",
+        "globals: 14.0.0, 16.5.0",
+        "ignore: 5.3.2, 7.0.6",
+        "js-tokens: 4.0.0, 9.0.1",
+        "lru-cache: 5.1.1, 6.0.0",
+        "minimatch: 10.2.5, 3.1.5",
+        "semver: 6.3.1, 7.8.5",
+        "yallist: 3.1.1, 4.0.0"
+      ],
+      "recommendation": "Track duplicates during normal dependency refreshes; do not bulk-dedupe in launch lanes."
+    },
+    {
+      "id": "env-example-name-drift",
+      "title": ".env.example does not cover every schema/code-referenced environment name",
+      "severity": "low",
+      "exploitability": "indirect",
+      "category": "env_example_config_schema_drift",
+      "evidence": ["schema_not_in_env_example=17", "code_not_in_env_example=73"],
+      "recommendation": "Update .env.example names in a config-doc branch after owners confirm which test/local names should be documented."
+    },
+    {
+      "id": "github-actions-not-sha-pinned",
+      "title": "GitHub Actions use mutable tags or unpinned refs",
+      "severity": "medium",
+      "exploitability": "conditional",
+      "category": "action_version_pinning",
+      "evidence": [
+        ".github/workflows/ci.yml:26 actions/checkout@v4 (tag_or_branch)",
+        ".github/workflows/ci.yml:31 actions/setup-node@v4 (tag_or_branch)",
+        ".github/workflows/ci.yml:74 actions/upload-artifact@v4 (tag_or_branch)",
+        ".github/workflows/ops06-reliability-observability.yml:40 actions/checkout@v4 (tag_or_branch)",
+        ".github/workflows/ops06-reliability-observability.yml:45 actions/setup-node@v4 (tag_or_branch)",
+        ".github/workflows/ops06-reliability-observability.yml:85 actions/upload-artifact@v4 (tag_or_branch)",
+        ".github/workflows/ops11-postgres-18-assurance.yml:37 actions/checkout@v4 (tag_or_branch)",
+        ".github/workflows/ops11-postgres-18-assurance.yml:42 actions/setup-node@v4 (tag_or_branch)",
+        ".github/workflows/ops11-postgres-18-assurance.yml:91 actions/upload-artifact@v4 (tag_or_branch)",
+        ".github/workflows/ot37-postgres-assurance.yml:41 actions/checkout@v4 (tag_or_branch)",
+        ".github/workflows/ot37-postgres-assurance.yml:46 actions/setup-node@v4 (tag_or_branch)",
+        ".github/workflows/ot37-postgres-assurance.yml:85 actions/upload-artifact@v4 (tag_or_branch)",
+        ".github/workflows/ot75-release-readiness.yml:28 actions/checkout@v4 (tag_or_branch)",
+        ".github/workflows/ot75-release-readiness.yml:33 actions/setup-node@v4 (tag_or_branch)",
+        ".github/workflows/ot83-postgres-concurrency.yml:48 actions/checkout@v4 (tag_or_branch)",
+        ".github/workflows/ot83-postgres-concurrency.yml:51 actions/setup-node@v4 (tag_or_branch)",
+        ".github/workflows/ot83-postgres-concurrency.yml:71 actions/upload-artifact@v4 (tag_or_branch)"
+      ],
+      "recommendation": "Pin third-party GitHub Actions to reviewed full-length SHAs in a dedicated CI branch.",
+      "upgrade_recommendation_ids": [
+        "pin-actions-checkout-v4",
+        "pin-actions-setup-node-v4",
+        "pin-actions-upload-artifact-v4"
+      ]
+    },
+    {
+      "id": "license-review-required",
+      "title": "License inventory contains copyleft-family or unspecified entries",
+      "severity": "low",
+      "exploitability": "indirect",
+      "category": "licenses",
+      "evidence": ["restricted_license_entries=14", "missing_license_entries=8"],
+      "recommendation": "Review Sharp/libvips LGPL obligations and add/document workspace package license metadata in a legal/compliance branch."
+    },
+    {
+      "id": "node24-engine-incompatibility",
+      "title": "Some locked packages declare Node engines that do not include Node 24",
+      "severity": "medium",
+      "exploitability": "not_exploitable_locally",
+      "category": "node24_compatibility",
+      "evidence": ["@img/sharp-win32-ia32@0.35.3 engines.node=^20.9.0"],
+      "recommendation": "Upgrade or replace incompatible packages in a dependency branch with Node 24 CI proof."
+    },
+    {
+      "id": "npm-install-scripts-present",
+      "title": "npm install/build scripts execute during dependency install",
+      "severity": "medium",
+      "exploitability": "conditional",
+      "category": "install_script_behavior",
+      "evidence": ["esbuild@0.28.1", "fsevents@2.3.2", "fsevents@2.3.3", "fsevents@2.3.3"],
+      "recommendation": "Keep npm ci locked, review install-script packages on upgrade, and consider isolated build attestations."
+    },
+    {
+      "id": "runtime-dependencies-include-build-tools",
+      "title": "Runtime dependencies include build-only candidates",
+      "severity": "low",
+      "exploitability": "indirect",
+      "category": "runtime_dependency_minimization",
+      "evidence": ["@vitejs/plugin-react@5.2.0"],
+      "recommendation": "Review whether build-only packages can move to devDependencies after server/runtime boot no longer needs them."
+    },
+    {
+      "id": "runtime-start-imports-devdependency-tsx",
+      "title": "Runtime start path imports tsx while tsx is declared as a dev dependency",
+      "severity": "medium",
+      "exploitability": "not_exploitable_locally",
+      "category": "runtime_dependency_minimization",
+      "evidence": [
+        "package.json start=node --import tsx apps/web/src/server/index.ts",
+        "scripts/railway-start.mjs imports tsx",
+        "devDependencies.tsx=^4.20.3"
+      ],
+      "recommendation": "In a separate runtime branch, either compile server/worker JavaScript for production or classify tsx as a runtime dependency and prove production-install boot."
+    },
+    {
+      "id": "sbom-generation-blocked-or-missing",
+      "title": "SBOM generation is blocked or no committed SBOM output was found",
+      "severity": "medium",
+      "exploitability": "indirect",
+      "category": "sbom_generation",
+      "evidence": ["ops/codex-runs/W12-100-12/SBOM-GENERATION-RESULT.json"],
+      "recommendation": "Fix npm SBOM package-url blockers or add a CI-compatible SBOM generator in a dedicated hardening branch."
+    },
+    {
+      "id": "tracked-binary-evidence-growth",
+      "title": "Tracked binary evidence and media increase repository growth pressure",
+      "severity": "low",
+      "exploitability": "not_exploitable_locally",
+      "category": "generated_evidence_and_binary_growth",
+      "evidence": [
+        "binary_file_count=210",
+        "largest=ops/evidence/ot-73/screenshots/landing-1440x900.png:4777316"
+      ],
+      "recommendation": "Keep launch evidence summarized in JSON/Markdown and move bulky screenshots/archives to short-retention artifacts where possible."
+    }
+  ],
+  "recommended_upgrades": [
+    {
+      "id": "pin-actions-checkout-v4",
+      "current_version": "actions/checkout@v4",
+      "target_version": "actions/checkout@<reviewed-full-length-commit-sha>",
+      "breaking_risk": "low",
+      "affected_tests": ["GitHub Actions CI workflows", "npm run secret:scan", "npm run test"],
+      "separate_branch_plan": "Create a workflow-hardening branch that pins each action tag to a reviewed SHA."
+    },
+    {
+      "id": "pin-actions-setup-node-v4",
+      "current_version": "actions/setup-node@v4",
+      "target_version": "actions/setup-node@<reviewed-full-length-commit-sha>",
+      "breaking_risk": "low",
+      "affected_tests": ["GitHub Actions CI workflows", "npm run secret:scan", "npm run test"],
+      "separate_branch_plan": "Create a workflow-hardening branch that pins each action tag to a reviewed SHA."
+    },
+    {
+      "id": "pin-actions-upload-artifact-v4",
+      "current_version": "actions/upload-artifact@v4",
+      "target_version": "actions/upload-artifact@<reviewed-full-length-commit-sha>",
+      "breaking_risk": "low",
+      "affected_tests": ["GitHub Actions CI workflows", "npm run secret:scan", "npm run test"],
+      "separate_branch_plan": "Create a workflow-hardening branch that pins each action tag to a reviewed SHA."
+    },
+    {
+      "id": "pin-node-24-alpine-digest",
+      "current_version": "node:24-alpine, postgres:18",
+      "target_version": "<each-base-image>@sha256:<reviewed-digest>",
+      "breaking_risk": "medium",
+      "affected_tests": [
+        "npm run build",
+        "npm run e2e",
+        "Railway staging smoke in a non-production lane"
+      ],
+      "separate_branch_plan": "Create a Docker reproducibility branch that resolves and reviews each base image digest."
+    }
+  ],
+  "safety_counters": {
+    "external_actions_sent": 0,
+    "provider_resource_mutations": 0,
+    "production_database_reads": 0,
+    "production_database_writes": 0
+  }
+}

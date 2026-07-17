@@ -1,0 +1,5 @@
+ops/codex-runs/W12-100-13/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-13/STATE.json
+ops/codex-runs/W12-100-13/FINAL-REPORT.md
+ops/codex-runs/W12-100-13/RESUME.md
+ops/codex-runs/W12-100-13/CHANGED-FILES.txt

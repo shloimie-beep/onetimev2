@@ -3,6 +3,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
+import {
+  buildWhatsAppPublicAssistantStatus,
+  receiveWhatsAppWebhook,
+} from '../../../packages/domain/src/index.ts';
 
 const WEBHOOK_SECRET = 'ot85-fixture-webhook-secret';
 
@@ -87,6 +91,20 @@ describe('OT-85 WhatsApp webhook route', () => {
     expect(deepLink.searchParams.get('text')).toBe('Shalom fixture lead question');
     expect(JSON.stringify(body)).not.toContain('CANARY');
     expect(JSON.stringify(body)).not.toContain('RECIPIENT_E164');
+
+    const unsafeDeepLink = buildWhatsAppPublicAssistantStatus(
+      loadConfig({
+        NODE_ENV: 'test',
+        PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+        ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK: 'https://example.test/not-whatsapp',
+        ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT: 'safe public prefill',
+      }),
+    );
+    expect(unsafeDeepLink.deep_link).toEqual({
+      available: false,
+      href: null,
+      reason: 'WHATSAPP_PUBLIC_LINK_UNSAFE_HOST',
+    });
   });
 
   it('verifies challenge tokens, preserves raw bytes for signed Meta payloads, and rejects forged signatures', async () => {
@@ -147,6 +165,39 @@ describe('OT-85 WhatsApp webhook route', () => {
     });
     expect(rejected.status).toBe(403);
     await expectCount('whatsapp_inbox_events', 1);
+  });
+
+  it('rejects malformed and oversized signed payloads without durable inbox rows', async () => {
+    const malformed = Buffer.from('{not-json');
+    const rejected = await fetch(`${baseUrl}/api/v1/whatsapp/meta/webhook`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-hub-signature-256': signature(malformed),
+      },
+      body: malformed,
+    });
+    expect(rejected.status).toBe(400);
+    expect(await rejected.json()).toMatchObject({
+      success: false,
+      code: 'invalid_payload',
+      accepted: 0,
+    });
+
+    const oversized = Buffer.alloc(129 * 1024, 0x20);
+    const oversizedResult = await receiveWhatsAppWebhook({
+      pool,
+      config,
+      rawBody: oversized,
+      signatureHeader: signature(oversized),
+    });
+    expect(oversizedResult).toMatchObject({
+      ok: false,
+      status: 400,
+      code: 'invalid_payload',
+      accepted: 0,
+    });
+    await expectCount('whatsapp_inbox_events', 0);
   });
 });
 

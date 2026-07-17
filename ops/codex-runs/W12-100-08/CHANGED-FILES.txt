@@ -1,0 +1,12 @@
+ops/codex-runs/W12-100-08/CHANGED-FILES.txt
+ops/codex-runs/W12-100-08/FINAL-REPORT.md
+ops/codex-runs/W12-100-08/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-08/RESUME.md
+ops/codex-runs/W12-100-08/STATE.json
+ops/codex-runs/W12-100-08/TELEGRAM-STAGING-READINESS-MATRIX.json
+ops/codex-runs/W12-100-08/WHATSAPP-STAGING-READINESS-MATRIX.json
+packages/domain/src/whatsapp/service.ts
+tests/integration/telegram-admin-runtime.test.ts
+tests/integration/whatsapp/ot100-provider-runtime.test.ts
+tests/integration/whatsapp/ot85-webhook-route.test.ts
+tests/unit/telegram/telegram-foundation.test.ts

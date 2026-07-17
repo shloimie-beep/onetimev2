@@ -14,6 +14,7 @@ import {
 import { loadDeliveryWorkerConfig } from '../delivery/config.ts';
 import { createDeliveryLogger } from '../delivery/logger.ts';
 import { PollingLoopControl, runNonOverlappingPollingLoop } from '../delivery/loop.ts';
+import { OneTimeProviderDeliveryRouter } from '../delivery/provider-router.ts';
 import { PostgresDeliveryRepository } from '../delivery/repository.ts';
 import { SinkDeliveryRouter } from '../delivery/sink-router.ts';
 import { runDeliveryBatch } from '../delivery/worker.ts';
@@ -37,14 +38,16 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
           readiness: {
             mode: 'once',
             batch_size: config.batchSize,
-            transport_mode: config.appConfig.outboxTransportMode,
+            transport_mode: config.transportMode,
+            delivery_environment: config.appConfig.deliveryEnvironment,
+            provider_readiness: config.provider.snapshot,
           },
         }),
       logger,
     );
     const delivery = await runDeliveryBatch({
       repository: new PostgresDeliveryRepository(pool),
-      router: new SinkDeliveryRouter(),
+      router: createOutboxRouter(config),
       logger,
       messageConfig: config.message,
       options: {
@@ -52,8 +55,10 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
         productKey: config.productKey,
         batchSize: config.batchSize,
         concurrency: config.concurrency,
+        transportMode: config.transportMode,
         claimLeaseMs: config.claimLeaseMs,
         providerTimeoutMs: config.providerTimeoutMs,
+        providerTimeoutLeaseSafetyMs: config.providerTimeoutLeaseSafetyMs,
         maxAttempts: config.maxAttempts,
       },
     });
@@ -114,7 +119,9 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             batch_size: config.batchSize,
             concurrency: config.concurrency,
             poll_interval_ms: config.pollIntervalMs,
-            transport_mode: config.appConfig.outboxTransportMode,
+            transport_mode: config.transportMode,
+            delivery_environment: config.appConfig.deliveryEnvironment,
+            provider_readiness: config.provider.snapshot,
           },
         }),
       logger,
@@ -145,7 +152,7 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
         try {
           await runDeliveryBatch({
             repository: new PostgresDeliveryRepository(pool),
-            router: new SinkDeliveryRouter(),
+            router: createOutboxRouter(config),
             logger,
             messageConfig: config.message,
             options: {
@@ -153,8 +160,10 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
               productKey: config.productKey,
               batchSize: config.batchSize,
               concurrency: config.concurrency,
+              transportMode: config.transportMode,
               claimLeaseMs: config.claimLeaseMs,
               providerTimeoutMs: config.providerTimeoutMs,
+              providerTimeoutLeaseSafetyMs: config.providerTimeoutLeaseSafetyMs,
               maxAttempts: config.maxAttempts,
             },
           });
@@ -216,6 +225,11 @@ async function safeHeartbeat(
       failure_code: 'worker_heartbeat_failed',
     });
   }
+}
+
+function createOutboxRouter(config: ReturnType<typeof loadDeliveryWorkerConfig>) {
+  if (config.transportMode === 'sink') return new SinkDeliveryRouter();
+  return new OneTimeProviderDeliveryRouter(config.provider, {});
 }
 
 if (process.argv.includes('--once')) {

@@ -1,0 +1,300 @@
+{
+  "task_id": "OPS-13A",
+  "generated_at": "2026-07-17T12:47:11.1107723Z",
+  "privacy_model": {
+    "raw_rows_included": false,
+    "emails_included": false,
+    "phones_included": false,
+    "message_bodies_included": false,
+    "provider_credentials_included": false,
+    "private_links_included": false,
+    "recorded_fields": [
+      "sanitized file names",
+      "SHA-256 hashes",
+      "row-count estimates",
+      "column counts",
+      "sanitized header signals",
+      "source ownership",
+      "readiness"
+    ]
+  },
+  "source_ownership": {
+    "downloads_spreadsheets": "operator-owned local Downloads exports represented through an existing sanitized metadata inventory",
+    "legacy_bna_onetime_artifacts": "local BNA/One Time evidence and historical run artifacts used as references only",
+    "standalone_onetime_repo": "webcraft-media/onetimev2 code, migrations, and run packets",
+    "protected_railway_systems": "production and staging identities/readiness from OPS-11 artifacts and public read-only endpoints only",
+    "provider_accounts": "readiness recorded without secret values and without provider API mutations"
+  },
+  "scan_boundaries": {
+    "primary_sanitized_inventory": {
+      "label": "downloads-spreadsheet-inventory.json",
+      "inventory_sha256": "EB3879DCFE361EBD65331214EF44D6F6F644CEAC1A130ED7080B80FD784E0296",
+      "generated_at": "2026-06-21T13:46:05.453Z",
+      "source_directory_label": "Downloads",
+      "source_directory_absolute_path_omitted": true,
+      "total_files": 203,
+      "total_import_candidates": 56
+    },
+    "local_keyword_scan": {
+      "roots_scanned": [
+        "Downloads",
+        "OneTimeOneTime",
+        "OneTimeOneTime-ops13a-preflight",
+        "BNA-W12-01-crm-audience-import",
+        "onetimev2"
+      ],
+      "result": "found One Time/Rabbi prompt bundles, code exports, migration artifacts, live-smoke evidence, and the Rabbi Scheller Followers spreadsheet; no canonical old Replit database export was identified",
+      "raw_contents_opened": false
+    },
+    "protected_systems": {
+      "production_private_rows_read": false,
+      "reason": "repo AGENTS.md forbids production Rabbi database connection or private production data reads from this task",
+      "provider_secret_values_read": false
+    }
+  },
+  "classification_summary": {
+    "one_time_rabbi_scheller_followers": {
+      "files": 1,
+      "import_candidates": 1,
+      "rows_known": 812,
+      "rows_unknown": 0,
+      "column_counts": [2],
+      "recommended_lane": "one_time_crm_import_candidate"
+    },
+    "email_audience_export": {
+      "files": 5,
+      "import_candidates": 5,
+      "rows_known": 1697,
+      "rows_unknown": 0,
+      "column_counts": [5, 8, 31, 33, 35],
+      "recommended_lane": "email_audience_reconciliation"
+    },
+    "legacy_crm_or_pipeline_export": {
+      "files": 29,
+      "import_candidates": 29,
+      "rows_known": 125914,
+      "rows_unknown": 0,
+      "column_counts": [8, 10, 13, 15, 16, 17, 29],
+      "recommended_lane": "first_party_crm_migration_candidate_no_ghl_runtime"
+    },
+    "contact_list_candidate": {
+      "files": 21,
+      "import_candidates": 21,
+      "rows_known": 183707,
+      "rows_unknown": 1,
+      "recommended_lane": "needs_operator_review"
+    },
+    "communications_export": {
+      "files": 13,
+      "import_candidates": 0,
+      "rows_known": 3551,
+      "rows_unknown": 0,
+      "recommended_lane": "communications_history_reference"
+    },
+    "external_lead_list": {
+      "files": 48,
+      "import_candidates": 0,
+      "rows_known": 4352,
+      "rows_unknown": 0,
+      "recommended_lane": "possible_lead_import_needs_operator_approval"
+    },
+    "accounting_export": {
+      "files": 2,
+      "import_candidates": 0,
+      "rows_known": 29,
+      "rows_unknown": 0,
+      "recommended_lane": "accounting_reference_not_crm_import"
+    },
+    "import_mapping_reference": {
+      "files": 2,
+      "import_candidates": 0,
+      "rows_known": 3,
+      "rows_unknown": 0,
+      "recommended_lane": "mapping_reference_only"
+    },
+    "research_or_campaign_working_file": {
+      "files": 4,
+      "import_candidates": 0,
+      "rows_known": 263,
+      "rows_unknown": 0,
+      "recommended_lane": "needs_operator_review"
+    },
+    "unknown_spreadsheet": {
+      "files": 78,
+      "import_candidates": 0,
+      "rows_known": 7745033,
+      "rows_unknown": 2,
+      "recommended_lane": "needs_operator_review"
+    }
+  },
+  "primary_source_files": [
+    {
+      "id": "DL-SHEET-f93f34d98e",
+      "file_name": "Rabbi Scheller Followers.xlsx",
+      "classification": "one_time_rabbi_scheller_followers",
+      "sha256": "e17bbb32c8b2e642b8a6c5041ee36e720467fc4e666b0b5d59de1bb7f688a405",
+      "row_count_estimate": 812,
+      "column_count": 2,
+      "header_signal_names": [],
+      "source_owner": "operator local Downloads",
+      "readiness": "dry_run_candidate_only"
+    },
+    {
+      "id": "DL-SHEET-3d4dceeb1b",
+      "file_name": "subscribed_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "sha256": "b1e7bb30e6464d4c3239590cba97e65842cc2736c77eb95d323e05d4b38ce319",
+      "row_count_estimate": 1311,
+      "column_count": 31,
+      "header_signal_names": ["address", "email", "name", "phone", "subscription_status"],
+      "source_owner": "operator local Downloads",
+      "readiness": "dry_run_candidate_only"
+    },
+    {
+      "id": "DL-SHEET-8c69f34fcd",
+      "file_name": "unsubscribed_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "sha256": "4a5f84834b4e4f806775b945df09a03c73bd86e82afb15be84c0405ec38a2089",
+      "row_count_estimate": 152,
+      "column_count": 35,
+      "header_signal_names": [
+        "address",
+        "campaign_source",
+        "email",
+        "name",
+        "phone",
+        "subscription_status"
+      ],
+      "source_owner": "operator local Downloads",
+      "readiness": "suppression_precedence_source"
+    },
+    {
+      "id": "DL-SHEET-ead777c4b0",
+      "file_name": "cleaned_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "sha256": "b3093f6d3a7b4e9e9745740a734213d366c83d7c079c7b13c8f79089e63c94ca",
+      "row_count_estimate": 60,
+      "column_count": 33,
+      "header_signal_names": [
+        "address",
+        "campaign_source",
+        "email",
+        "name",
+        "phone",
+        "subscription_status"
+      ],
+      "source_owner": "operator local Downloads",
+      "readiness": "dry_run_candidate_only"
+    },
+    {
+      "id": "DL-SHEET-25eb3cb2d6",
+      "file_name": "subscribers_detailed.csv",
+      "classification": "email_audience_export",
+      "sha256": "0e05cd969c15e73240f4c2d681ca5208d9ada1ff95d908b2f14d337c67cdf6ca",
+      "row_count_estimate": 86,
+      "column_count": 8,
+      "header_signal_names": ["email", "name"],
+      "source_owner": "operator local Downloads",
+      "readiness": "dry_run_candidate_only"
+    },
+    {
+      "id": "DL-SHEET-2900326013",
+      "file_name": "subscribers.csv",
+      "classification": "email_audience_export",
+      "sha256": "3732cb909f796920ed3e418b94a3c89b98ce63fffc1741c2edd6d07d59d30437",
+      "row_count_estimate": 88,
+      "column_count": 5,
+      "header_signal_names": ["email", "name"],
+      "source_owner": "operator local Downloads",
+      "readiness": "dry_run_candidate_only"
+    }
+  ],
+  "legacy_crm_candidate_examples": [
+    {
+      "file_name": "opportunities (16).csv",
+      "sha256": "c902da35905396424a8518259b194c7edaeb23c744b40d6bb981d959c1b620bf",
+      "row_count_estimate": 4407,
+      "column_count": 29,
+      "header_signal_names": ["campaign_source", "email", "name", "opportunity_pipeline", "phone"],
+      "readiness": "candidate_only_operator_must_select_canonical_export"
+    },
+    {
+      "file_name": "opportunities (15).csv",
+      "sha256": "f1a881327b51b28022ecdcc56c104a3accff3aef62640062029a4a237f9250ff",
+      "row_count_estimate": 4327,
+      "column_count": 29,
+      "header_signal_names": ["campaign_source", "email", "name", "opportunity_pipeline", "phone"],
+      "readiness": "candidate_only_operator_must_select_canonical_export"
+    },
+    {
+      "file_name": "ghl-bulk-import-all-2026-04-21 (3).csv",
+      "sha256": "b90cfda93763f74ec14656968a4e17322812730cd144332bca1a53fae7ce485f",
+      "row_count_estimate": 2756,
+      "column_count": 17,
+      "header_signal_names": [
+        "address",
+        "campaign_source",
+        "email",
+        "name",
+        "opportunity_pipeline",
+        "phone"
+      ],
+      "readiness": "candidate_only_no_active_ghl_runtime"
+    }
+  ],
+  "reference_only_event_sources": [
+    {
+      "file_name": "call-log-AC_REDACTED_HASH.csv",
+      "classification": "communications_export",
+      "sha256": "43f9f63c2fb1baa745464154b97c168ee1c4efa7e1216932ae0cd29ba5945596",
+      "row_count_estimate": 845,
+      "column_count": 22,
+      "header_signal_names": ["communication_log", "phone", "student_or_parent"],
+      "readiness": "reference_only_no_import"
+    },
+    {
+      "file_name": "sms-log-AC_REDACTED_2026-04-26.csv",
+      "classification": "communications_export",
+      "sha256": "85f95a005a7724e4a249daca8400c8190b99ef89869dbe868b22b9602383974d",
+      "row_count_estimate": 322,
+      "column_count": 15,
+      "header_signal_names": ["communication_log"],
+      "readiness": "reference_only_no_import"
+    }
+  ],
+  "protected_system_inventory": {
+    "existing_contacts_leads_households_members_learners_consent_suppression_signup_data": {
+      "schema_available": true,
+      "production_counts_read": false,
+      "reason": "production private data reads were out of scope for OPS-13A"
+    },
+    "stored_email_events_webhooks_exports": {
+      "local_exports_available": true,
+      "repo_surfaces": [
+        "onetime.outbox_events",
+        "onetime.account_lifecycle_delivery_outbox",
+        "onetime.legacy_activation_campaign_intents",
+        "onetime.crm_reply_drafts"
+      ],
+      "live_ready_signal": "email_transport ok",
+      "provider_event_rows_read": false
+    },
+    "stored_whatsapp_events_exports": {
+      "local_exports_available": true,
+      "repo_surfaces": [
+        "onetime.whatsapp_conversations",
+        "onetime.whatsapp_inbox_events",
+        "onetime.whatsapp_outbox_messages",
+        "onetime.whatsapp_delivery_events",
+        "onetime.whatsapp_consent_events",
+        "onetime.whatsapp_suppressions"
+      ],
+      "live_ready_signal": "whatsapp transport disabled by runtime flag",
+      "provider_event_rows_read": false
+    },
+    "old_onetime_replit_exports": {
+      "canonical_export_found": false,
+      "next_action": "operator must identify a canonical old Replit export before treating it as a data source"
+    }
+  }
+}

@@ -746,7 +746,7 @@ export function createApp({
   );
 
   app.get(
-    /^\/app\/(?:dashboard|classes|content|billing)(?:\/.*)?$/,
+    /^\/app\/(?:dashboard|classes|content|billing|communications|support)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await sessionFromRequest(req, pool, config);
       if (!session) {

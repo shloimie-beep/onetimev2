@@ -1,0 +1,2536 @@
+{
+  "schema_version": "onetime.w12_100.route_journey_inventory.v1",
+  "generated_at": "2026-07-17T17:14:07.638Z",
+  "route_count": 21,
+  "records": [
+    {
+      "id": "landing",
+      "path": "/",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Give your son a love for learning Torah.",
+          "Everything He Needs to Learn, Review, and Remember",
+          "What He'll Gain",
+          "How It Works",
+          "Seen Across the Jewish World",
+          "A Ready-to-Run Mishnayos Class—Wherever Your Son Learns",
+          "A world-renowned Torah teacher."
+        ],
+        "canonical": "https://join.onetimeonetime.com/",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:2ed3bc31"
+      }
+    },
+    {
+      "id": "signup",
+      "path": "/signup",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Sign Up Now",
+          "Thank you - we received your Family signup."
+        ],
+        "canonical": "https://join.onetimeonetime.com/signup",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/signup",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:4a535d20"
+      }
+    },
+    {
+      "id": "privacy",
+      "path": "/privacy",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Privacy Notice | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
+        ],
+        "canonical": "https://join.onetimeonetime.com/privacy",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/privacy",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:6257c3d2"
+      }
+    },
+    {
+      "id": "terms",
+      "path": "/terms",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Terms of Use | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
+        ],
+        "canonical": "https://join.onetimeonetime.com/terms",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/terms",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:62325094"
+      }
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Login | One Time Mishnayos",
+        "headings": [
+          "Welcome back"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:296eec7c"
+      }
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Activate account | One Time Mishnayos",
+        "headings": [
+          "Set your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:1914ca01"
+      }
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Forgot password | One Time Mishnayos",
+        "headings": [
+          "Reset your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:5df5ebac"
+      }
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Choose a new password | One Time Mishnayos",
+        "headings": [
+          "Choose a new password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:52f9a600"
+      }
+    },
+    {
+      "id": "404",
+      "path": "/w12-100-missing-route",
+      "audience": "failure",
+      "browser": "chromium",
+      "viewport": "360x800",
+      "status": 404,
+      "ok": false,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 360,
+        "scrollWidth": 360,
+        "bodyScrollWidth": 360
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Not Found | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Not found"
+        ],
+        "canonical": "https://join.onetimeonetime.com/404",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/404",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:2eb985b1"
+      }
+    },
+    {
+      "id": "landing",
+      "path": "/",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Give your son a love for learning Torah.",
+          "Everything He Needs to Learn, Review, and Remember",
+          "What He'll Gain",
+          "How It Works",
+          "Seen Across the Jewish World",
+          "A Ready-to-Run Mishnayos Class—Wherever Your Son Learns",
+          "A world-renowned Torah teacher."
+        ],
+        "canonical": "https://join.onetimeonetime.com/",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:2ed3bc31"
+      }
+    },
+    {
+      "id": "signup",
+      "path": "/signup",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Sign Up Now",
+          "Thank you - we received your Family signup."
+        ],
+        "canonical": "https://join.onetimeonetime.com/signup",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/signup",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:4a535d20"
+      }
+    },
+    {
+      "id": "privacy",
+      "path": "/privacy",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Privacy Notice | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
+        ],
+        "canonical": "https://join.onetimeonetime.com/privacy",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/privacy",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:6257c3d2"
+      }
+    },
+    {
+      "id": "terms",
+      "path": "/terms",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Terms of Use | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
+        ],
+        "canonical": "https://join.onetimeonetime.com/terms",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/terms",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:62325094"
+      }
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Login | One Time Mishnayos",
+        "headings": [
+          "Welcome back"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:296eec7c"
+      }
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Activate account | One Time Mishnayos",
+        "headings": [
+          "Set your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:1914ca01"
+      }
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Forgot password | One Time Mishnayos",
+        "headings": [
+          "Reset your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:5df5ebac"
+      }
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Choose a new password | One Time Mishnayos",
+        "headings": [
+          "Choose a new password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:52f9a600"
+      }
+    },
+    {
+      "id": "404",
+      "path": "/w12-100-missing-route",
+      "audience": "failure",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 404,
+      "ok": false,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Not Found | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Not found"
+        ],
+        "canonical": "https://join.onetimeonetime.com/404",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/404",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:2eb985b1"
+      }
+    },
+    {
+      "id": "landing",
+      "path": "/",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Give your son a love for learning Torah.",
+          "Everything He Needs to Learn, Review, and Remember",
+          "What He'll Gain",
+          "How It Works",
+          "Seen Across the Jewish World",
+          "A Ready-to-Run Mishnayos Class—Wherever Your Son Learns",
+          "A world-renowned Torah teacher."
+        ],
+        "canonical": "https://join.onetimeonetime.com/",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:22703d02"
+      }
+    },
+    {
+      "id": "signup",
+      "path": "/signup",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Sign Up Now",
+          "Thank you - we received your Family signup."
+        ],
+        "canonical": "https://join.onetimeonetime.com/signup",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/signup",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:87484f1"
+      }
+    },
+    {
+      "id": "privacy",
+      "path": "/privacy",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Privacy Notice | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
+        ],
+        "canonical": "https://join.onetimeonetime.com/privacy",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/privacy",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:4e9d907c"
+      }
+    },
+    {
+      "id": "terms",
+      "path": "/terms",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Terms of Use | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
+        ],
+        "canonical": "https://join.onetimeonetime.com/terms",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/terms",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:6f5cfb7e"
+      }
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Login | One Time Mishnayos",
+        "headings": [
+          "Welcome back"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:296eec7c"
+      }
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Activate account | One Time Mishnayos",
+        "headings": [
+          "Set your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:1914ca01"
+      }
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Forgot password | One Time Mishnayos",
+        "headings": [
+          "Reset your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:5df5ebac"
+      }
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Choose a new password | One Time Mishnayos",
+        "headings": [
+          "Choose a new password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:52f9a600"
+      }
+    },
+    {
+      "id": "404",
+      "path": "/w12-100-missing-route",
+      "audience": "failure",
+      "browser": "chromium",
+      "viewport": "tablet",
+      "status": 404,
+      "ok": false,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 768,
+        "scrollWidth": 768,
+        "bodyScrollWidth": 768
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Not Found | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Not found"
+        ],
+        "canonical": "https://join.onetimeonetime.com/404",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/404",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:4bd60ba0"
+      }
+    },
+    {
+      "id": "landing",
+      "path": "/",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Give Your Son A Love For Learning Torah | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Give your son a love for learning Torah.",
+          "Everything He Needs to Learn, Review, and Remember",
+          "What He'll Gain",
+          "How It Works",
+          "Seen Across the Jewish World",
+          "A Ready-to-Run Mishnayos Class—Wherever Your Son Learns",
+          "A world-renowned Torah teacher."
+        ],
+        "canonical": "https://join.onetimeonetime.com/",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:22703d02"
+      }
+    },
+    {
+      "id": "signup",
+      "path": "/signup",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Sign Up Now | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Sign Up Now",
+          "Thank you - we received your Family signup."
+        ],
+        "canonical": "https://join.onetimeonetime.com/signup",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/signup",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:87484f1"
+      }
+    },
+    {
+      "id": "privacy",
+      "path": "/privacy",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Privacy Notice | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
+        ],
+        "canonical": "https://join.onetimeonetime.com/privacy",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/privacy",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:4e9d907c"
+      }
+    },
+    {
+      "id": "terms",
+      "path": "/terms",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Terms of Use | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
+        ],
+        "canonical": "https://join.onetimeonetime.com/terms",
+        "robots": "index, follow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/terms",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:6f5cfb7e"
+      }
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Login | One Time Mishnayos",
+        "headings": [
+          "Welcome back"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:296eec7c"
+      }
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Activate account | One Time Mishnayos",
+        "headings": [
+          "Set your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:1914ca01"
+      }
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Forgot password | One Time Mishnayos",
+        "headings": [
+          "Reset your password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:5df5ebac"
+      }
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "audience": "public",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "Choose a new password | One Time Mishnayos",
+        "headings": [
+          "Choose a new password"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:52f9a600"
+      }
+    },
+    {
+      "id": "404",
+      "path": "/w12-100-missing-route",
+      "audience": "failure",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 404,
+      "ok": false,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Not Found | One Time Mishnayos",
+        "headings": [
+          "One Time Menu",
+          "Not found"
+        ],
+        "canonical": "https://join.onetimeonetime.com/404",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/404",
+        "scripts": [
+          "/assets/public.js"
+        ],
+        "stylesheets": [
+          "/assets/public.css"
+        ],
+        "text_sample_hash": "domhash:4bd60ba0"
+      }
+    },
+    {
+      "id": "dashboard",
+      "path": "/app/dashboard",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Dashboard",
+          "New leads",
+          "Upcoming class",
+          "Communication attention",
+          "Content processing",
+          "Current members",
+          "Payment setup",
+          "Support"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:6b28ada"
+      }
+    },
+    {
+      "id": "crm",
+      "path": "/app/crm",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "CRM"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:60bb5d84"
+      }
+    },
+    {
+      "id": "crm_contact_detail",
+      "path": "/app/crm/contacts/0a1c331c-4a27-4785-bc65-87143df6fa22",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "[synthetic-contact]",
+          "Tags and system facts",
+          "Household / relationships",
+          "Enrollment / subscription",
+          "Support tickets",
+          "Tasks",
+          "Notes",
+          "Single-recipient reply"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:5f67df4d"
+      }
+    },
+    {
+      "id": "communications",
+      "path": "/app/communications",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Communications",
+          "Communications",
+          "Contact outbound history",
+          "Contact outbound history",
+          "Unlinked outbound intent"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css",
+          "/assets/app-CommunicationsFeature.css"
+        ],
+        "text_sample_hash": "domhash:7e394ea6"
+      }
+    },
+    {
+      "id": "classes",
+      "path": "/app/classes",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Classes",
+          "E2E Daily Mishnah",
+          "Daily One Time Mishnayos",
+          "W12 Portal Lab Mishnah"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:26539d6"
+      }
+    },
+    {
+      "id": "class_detail",
+      "path": "/app/classes/e2e_class_occurrence",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Classes",
+          "E2E Daily Mishnah",
+          "Enrollment",
+          "Attendance",
+          "Content",
+          "Questions",
+          "Reminder progress",
+          "Protected classroom"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:167d7e8c"
+      }
+    },
+    {
+      "id": "content",
+      "path": "/app/content",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Content Workspace"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css",
+          "/assets/app-ContentWorkspace.css"
+        ],
+        "text_sample_hash": "domhash:62f27ab5"
+      }
+    },
+    {
+      "id": "billing",
+      "path": "/app/billing",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Products/Billing status",
+          "Payment setup"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:1c7ab0ce"
+      }
+    },
+    {
+      "id": "support",
+      "path": "/app/support",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Support",
+          "Subscriber Support",
+          "Recent support"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:712fd44c"
+      }
+    },
+    {
+      "id": "dashboard",
+      "path": "/app/dashboard",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Dashboard",
+          "New leads",
+          "Upcoming class",
+          "Communication attention",
+          "Content processing",
+          "Current members",
+          "Payment setup",
+          "Support"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:5c7f67d6"
+      }
+    },
+    {
+      "id": "crm",
+      "path": "/app/crm",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "CRM"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:795017ed"
+      }
+    },
+    {
+      "id": "crm_contact_detail",
+      "path": "/app/crm/contacts/0a1c331c-4a27-4785-bc65-87143df6fa22",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "[synthetic-contact]",
+          "Tags and system facts",
+          "Household / relationships",
+          "Enrollment / subscription",
+          "Support tickets",
+          "Tasks",
+          "Notes",
+          "Single-recipient reply"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:4f55ed25"
+      }
+    },
+    {
+      "id": "communications",
+      "path": "/app/communications",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Communications",
+          "Communications",
+          "Contact outbound history",
+          "Contact outbound history",
+          "Unlinked outbound intent"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css",
+          "/assets/app-CommunicationsFeature.css"
+        ],
+        "text_sample_hash": "domhash:1521dbbd"
+      }
+    },
+    {
+      "id": "classes",
+      "path": "/app/classes",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Classes",
+          "E2E Daily Mishnah",
+          "Daily One Time Mishnayos",
+          "W12 Portal Lab Mishnah"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:1f05083e"
+      }
+    },
+    {
+      "id": "class_detail",
+      "path": "/app/classes/e2e_class_occurrence",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Classes",
+          "E2E Daily Mishnah",
+          "Enrollment",
+          "Attendance",
+          "Content",
+          "Questions",
+          "Reminder progress",
+          "Protected classroom"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:3012dedc"
+      }
+    },
+    {
+      "id": "content",
+      "path": "/app/content",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Content Workspace"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css",
+          "/assets/app-ContentWorkspace.css"
+        ],
+        "text_sample_hash": "domhash:30975a1f"
+      }
+    },
+    {
+      "id": "billing",
+      "path": "/app/billing",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Products/Billing status",
+          "Payment setup"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:74d162be"
+      }
+    },
+    {
+      "id": "support",
+      "path": "/app/support",
+      "audience": "owner",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Support",
+          "Subscriber Support",
+          "Recent support"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:10a27e4e"
+      }
+    },
+    {
+      "id": "parent_portal",
+      "path": "/app/parent",
+      "audience": "parent",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Parent Portal | One Time Mishnayos",
+        "headings": [
+          "Parent Portal",
+          "Parent Portal",
+          "Household",
+          "E2E Alpha Learner",
+          "Progress And Rewards"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/parent",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/parent",
+        "scripts": [
+          "/assets/app-portal.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:1daf6dc2"
+      }
+    },
+    {
+      "id": "student_portal",
+      "path": "/app/student",
+      "audience": "student",
+      "browser": "chromium",
+      "viewport": "390x844",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": true,
+        "terms": true
+      },
+      "metadata": {
+        "title": "Student Portal | One Time Mishnayos",
+        "headings": [
+          "Student Portal",
+          "Student Portal",
+          "Today",
+          "Library",
+          "Class Helper",
+          "Progress",
+          "Questions",
+          "Updates"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/student",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/student",
+        "scripts": [
+          "/assets/app-portal.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:33262cd0"
+      }
+    },
+    {
+      "id": "portal_test_lab",
+      "path": "/app/portal-test-lab",
+      "audience": "test_lab",
+      "browser": "chromium",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
+      "overflow": {
+        "clientWidth": 1440,
+        "scrollWidth": 1440,
+        "bodyScrollWidth": 1440
+      },
+      "missing_accessible_names": [],
+      "safety_findings": [],
+      "privacy_terms": {
+        "privacy": false,
+        "terms": false
+      },
+      "metadata": {
+        "title": "W12 Portal Test Lab | One Time Mishnayos",
+        "headings": [
+          "W12 Portal Test Lab",
+          "Lab Status",
+          "Fictional Identities",
+          "Boundaries"
+        ],
+        "canonical": null,
+        "robots": "noindex, nofollow",
+        "og_title_present": false,
+        "og_description_present": false,
+        "og_url": null,
+        "scripts": [],
+        "stylesheets": [
+          "/assets/app-crm.css"
+        ],
+        "text_sample_hash": "domhash:2913f89c"
+      }
+    }
+  ],
+  "defects": [
+    {
+      "id": "login",
+      "path": "/login",
+      "viewport": "360x800",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "viewport": "360x800",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "viewport": "360x800",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "viewport": "360x800",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "viewport": "390x844",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "viewport": "390x844",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "viewport": "390x844",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "viewport": "390x844",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "viewport": "tablet",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "viewport": "tablet",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "viewport": "tablet",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "viewport": "tablet",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "viewport": "desktop",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "activation",
+      "path": "/activate",
+      "viewport": "desktop",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_recovery",
+      "path": "/forgot-password",
+      "viewport": "desktop",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "viewport": "desktop",
+      "kind": "collection_surface_privacy_terms",
+      "privacy": false,
+      "terms": false
+    }
+  ],
+  "external_actions": 0,
+  "production_mutations": 0
+}

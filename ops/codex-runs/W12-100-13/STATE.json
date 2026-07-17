@@ -1,0 +1,160 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-13",
+  "title": "Gamification scope assessment",
+  "status": "validated_ready_for_commit",
+  "generated_at": "2026-07-17T17:52:01+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-13",
+  "branch": "codex/w12-100-13-gamification-scope-assessment",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "verified_starting_commit_exists": true,
+  "comparison": {
+    "target_pr": 71,
+    "target_pr_url": "https://github.com/webcraft-media/onetimev2/pull/71",
+    "target_pr_state": "open",
+    "target_pr_draft": true,
+    "target_pr_head_branch": "codex/w12-09-student-gamification",
+    "target_pr_head_sha": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+    "target_pr_base_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "target_pr_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "w12_99_head_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "merge_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c"
+  },
+  "objectives": [
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": "Read AGENTS.md, ops/director/START-HERE.md, PRODUCT-INVARIANTS.md, and W12-99 final/state/capability/canary/import/rollback artifacts before writing lane files."
+    },
+    {
+      "id": "changed_file_inventory",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records the intrinsic PR #71 62-file inventory and the W12-99 direct-tree delta summary."
+    },
+    {
+      "id": "migration_shared_hotspot_inventory",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md lists the 2200 W12-09 migration, W12-99 migration-prefix collision, server/client/contracts/domain/brand/action-registry hotspots, and crm-entry conflict."
+    },
+    {
+      "id": "functional_scope",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md summarizes contracts, domain service, repository, API routes, parent/student surfaces, admin surface, registry and tests."
+    },
+    {
+      "id": "student_safety_assessment",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records self-only checks, no public ranking/shame verification, and remaining launch-risk concerns for levels/streaks/celebrations."
+    },
+    {
+      "id": "parent_admin_visibility_assessment",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records household-scoped parent visibility and owner/admin aggregate/individual/correction-audit visibility."
+    },
+    {
+      "id": "privacy_implications",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records account/product scoping, private/no-store route posture, parent-generated reward text, and opaque ID exposure in admin audit."
+    },
+    {
+      "id": "accessibility_implications",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records reported W12-09 browser harness/a11y evidence and remaining integration/a11y gaps after W12-99 rebase."
+    },
+    {
+      "id": "manipulation_addiction_risk_assessment",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records meaningful-event limits, blocked abuse words, but launch-risk concerns around streak/level/celebration incentive design."
+    },
+    {
+      "id": "public_ranking_shame_state_verification",
+      "status": "done",
+      "evidence": "Keyword checks and code inspection found only guardrail/copy references, not public leaderboard/ranking/shame mechanics."
+    },
+    {
+      "id": "reward_point_integrity_rules",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records idempotency, correction, role, CSRF, and parent reward integrity posture."
+    },
+    {
+      "id": "merge_conflict_forecast",
+      "status": "done",
+      "evidence": "git merge-tree --write-tree forecasted a textual conflict in apps/web/src/client/app/crm-entry.tsx and semantic migration-prefix conflict."
+    },
+    {
+      "id": "test_gap_analysis",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md lists existing W12-09 tests and missing W12-99-integrated route/security/migration/full-gate coverage."
+    },
+    {
+      "id": "deployment_migration_risk",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md records additive schema risk, migration renumbering requirement, and no deploy/no production DB access in this lane."
+    },
+    {
+      "id": "estimated_convergence_order",
+      "status": "done",
+      "evidence": "FINAL-REPORT.md gives a post-launch convergence sequence."
+    },
+    {
+      "id": "recommendation",
+      "status": "done",
+      "evidence": "Recommendation: defer until after launch."
+    }
+  ],
+  "recommendation": "defer until after launch",
+  "safety": {
+    "staging_deploy_performed": false,
+    "production_deploy_performed": false,
+    "production_database_read": false,
+    "production_database_write": false,
+    "provider_mutation_performed": false,
+    "email_whatsapp_telegram_payment_post_zoom_or_webhook_sent": false,
+    "external_actions_count": 0,
+    "production_mutations_count": 0,
+    "product_source_modified": false,
+    "bna_files_modified": false
+  },
+  "validation": [
+    {
+      "command": "git fetch origin +refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/* +refs/pull/*/head:refs/remotes/origin/pr/* --prune",
+      "status": "passed"
+    },
+    {
+      "command": "git cat-file -e \"0d8d7168f066668f035176d777bdaaa4dcc5accd^{commit}\"",
+      "status": "passed"
+    },
+    {
+      "command": "git merge-tree --write-tree 0d8d7168f066668f035176d777bdaaa4dcc5accd fc075bb688c69d8a03681633df8e6ea32ff685a9",
+      "status": "conflict_forecast_only",
+      "details": "Exit 1; textual conflict in apps/web/src/client/app/crm-entry.tsx. No worktree mutation."
+    },
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('ops/codex-runs/W12-100-13/STATE.json','utf8'))\"",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    },
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "details": "Installed 359 packages; 0 vulnerabilities."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1301 repo text files."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    }
+  ]
+}

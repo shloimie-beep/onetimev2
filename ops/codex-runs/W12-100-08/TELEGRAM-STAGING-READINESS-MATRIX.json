@@ -1,0 +1,85 @@
+{
+  "schema_version": "onetime.w12_100_08.messaging_readiness_matrix.v1",
+  "lane_id": "W12-100-08",
+  "provider": "telegram",
+  "environment": "staging",
+  "generated_at": "2026-07-17T17:54:53+03:00",
+  "protected_values": [
+    { "name": "bot_token", "status": "absent" },
+    { "name": "webhook_secret", "status": "absent" },
+    { "name": "operator_private_chat_allowlist", "status": "absent" },
+    { "name": "owner_identity_mapping", "status": "absent" },
+    { "name": "payload_encryption_secret", "status": "absent" }
+  ],
+  "controls": [
+    {
+      "name": "one_active_consumer_model",
+      "status": "valid",
+      "evidence": ["Telegram consumer lease tests", "validateTelegramRuntimeTopology"]
+    },
+    {
+      "name": "webhook_polling_mutual_exclusion",
+      "status": "valid",
+      "evidence": ["tests/unit/telegram/telegram-foundation.test.ts"]
+    },
+    {
+      "name": "webhook_secret_validation",
+      "status": "valid",
+      "evidence": ["createTelegramWebhookHandler rejects missing or wrong secret"]
+    },
+    {
+      "name": "bounded_body_depth_size_array_string_limits",
+      "status": "valid",
+      "evidence": ["tests/unit/telegram/telegram-foundation.test.ts"]
+    },
+    {
+      "name": "encrypted_durable_inbox",
+      "status": "valid",
+      "evidence": ["TelegramSqlInboxRepository stores payload_ciphertext and payload_digest"]
+    },
+    {
+      "name": "event_dedupe_and_replay_protection",
+      "status": "valid",
+      "evidence": ["inbox duplicate update-id tests", "confirmation single-use tests"]
+    },
+    {
+      "name": "operator_chat_allowlist",
+      "status": "valid",
+      "evidence": ["TelegramIdentityResolver private chat mapping tests"]
+    },
+    {
+      "name": "capability_and_role_enforcement",
+      "status": "valid",
+      "evidence": ["owner/admin role tests", "owner-only audit denial"]
+    },
+    {
+      "name": "redacted_contact_support_question_output",
+      "status": "valid",
+      "evidence": ["fixture adapter and SQL-backed runtime redacted output tests"]
+    },
+    {
+      "name": "preview_confirmation_digest_for_writes",
+      "status": "valid",
+      "evidence": ["Payload hash and idempotency preview assertions"]
+    },
+    {
+      "name": "confirmation_expiry_and_single_use",
+      "status": "valid",
+      "evidence": ["expiry, replay, cancel, and consume tests"]
+    },
+    {
+      "name": "delivery_retry_scope_boundary",
+      "status": "valid",
+      "evidence": ["tests/integration/telegram-admin-runtime.test.ts"]
+    },
+    {
+      "name": "raw_token_or_chat_id_in_evidence",
+      "status": "absent",
+      "evidence": ["normalized update tests assert raw numeric IDs are not stored"]
+    }
+  ],
+  "external_actions_count": 0,
+  "production_mutation_count": 0,
+  "raw_secret_values_included": false,
+  "raw_private_destinations_included": false
+}
