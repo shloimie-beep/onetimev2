@@ -1,7 +1,7 @@
 {
   "run_id": "OPS-10-full-staged-production-launch-2026-07-17",
-  "phase": "phase_6_candidate_ci_and_predeploy_readiness",
-  "status": "in_progress",
+  "phase": "phase_7_staging_complete_production_blocked",
+  "status": "blocked_before_production",
   "repository": "webcraft-media/onetimev2",
   "worktree": "C:\\Users\\User\\.ops10-20260717-worktrees\\20260717T050800Z",
   "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
@@ -20,13 +20,14 @@
     }
   },
   "candidate": {
-    "status": "integrated_pending_ci_after_node24_drawer_e2e_repair",
+    "status": "staged_on_pg16_blocked_before_production",
     "current_working_tree_repairs": [
       "Targeted Prettier repair for known PR #60 Node 24 verify failures.",
       "OPS-06 load/backpressure guarded cleanup repair.",
       "Concurrent public lead idempotency advisory-lock repair after PR #61 OPS-06 artifact showed 8/12 fulfilled under contention.",
       "OT-114 migration namespace renumber from 2010_ot114_crm_communications_support to 2016_ot114_crm_communications_support.",
-      "OT-39 drawer focus-loop e2e now covers every visible drawer link before wrapping to Close navigation after owner/support nav items were merged."
+      "OT-39 drawer focus-loop e2e now covers every visible drawer link before wrapping to Close navigation after owner/support nav items were merged.",
+      "Migration runner accepts legacy raw CRLF/LF checksums for already-applied migrations and stores canonical LF checksums for new migrations."
     ],
     "frozen_inputs_recorded": true,
     "local_gates_recorded": true,
@@ -34,21 +35,22 @@
       "ot107_student_helper": "satisfied_in_candidate; branch tail not applied because candidate already contains implementation and newer migration assertions",
       "ot114_crm_communications_support": "merged_committed_pushed"
     },
-    "requires_ci": [
-      "PR #61 checks on the pushed checkpoint commit containing the Node 24 drawer e2e repair"
-    ]
+    "requires_ci": []
   },
   "railway_readback": {
     "staging": {
       "project": "one-time-ot99-staging-96b42905",
       "environment": "staging",
       "web_service": "ot99-web",
-      "web_deployment_id": "9efd2fc9-75c5-4455-b5bc-0bb16b85d3a2",
+      "web_deployment_id": "d06dc5a5-41cf-4b41-b337-ebe4425bc371",
+      "web_image_digest": "sha256:56f600b00111537e352cf43b5bb67c2d04d99594b49b268facc91af4066ba33a",
       "worker_service": "ot99-worker",
-      "worker_deployment_id": "0df0b354-6453-457b-b65b-43394601a6c7",
+      "worker_deployment_id": "21e2cdd2-a441-4225-a98e-6243c08c4da0",
+      "worker_image_digest": "sha256:12af9a6eb4f17696689a59f3943fbfc473ba9411a3d9c3104a1c64bb7a2693f0",
       "database_service": "ot99-pg16",
       "database_url_hash12": "b9df32a6a3a1",
-      "current_web_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36"
+      "current_web_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+      "readiness_latest_migration": "2190_ot109_rabbi_content_publisher"
     },
     "production": {
       "project": "one-time-production",
@@ -88,9 +90,16 @@
     "Committed the refreshed OPS-10 portal visual evidence checkpoint as b5592fbfdaf3aad902c9f2237ea340c93d457480.",
     "Investigated PR #61 Node 24 verify failure on commit b5592fbfdaf3aad902c9f2237ea340c93d457480 and confirmed the only failing case was the OT-39 mobile drawer focus-loop e2e after owner/support nav items existed.",
     "Repaired the OT-39 drawer focus-loop test to assert all visible drawer links in tab order and final wrap to Close navigation.",
-    "Ran local focused drawer e2e, targeted Prettier check, lint, secret scan, and full browser e2e successfully after the Node 24 repair."
+    "Ran local focused drawer e2e, targeted Prettier check, lint, secret scan, and full browser e2e successfully after the Node 24 repair.",
+    "Committed and pushed the Node 24 drawer e2e repair as 812356b0c0582fadb1dfce0818775fa1a7b119e8; PR #61 required checks passed on that commit.",
+    "Discovered staging schema migration checksum drift caused by mixed CRLF/LF checksums in previously applied migrations; repaired the migration runner to accept legacy raw line-ending checksums while canonicalizing new checksums.",
+    "Committed and pushed the migration checksum repair as d13e9cd3117091e97ef973408d8742a13d1a9479; PR #61 required checks passed on that commit.",
+    "Set non-secret staging release variables APP_VERSION and COMMIT_SHA for web and worker, without printing Railway variables.",
+    "Applied staging migrations through the existing ot99-pg16 TCP proxy and staging web variables; applied migrations 2010 through 2190 and verified idempotency with 35 already-applied migrations.",
+    "Deployed staging web d06dc5a5-41cf-4b41-b337-ebe4425bc371 and worker 21e2cdd2-a441-4225-a98e-6243c08c4da0 from the final candidate SHA; both Railway service statuses are SUCCESS.",
+    "Staging HTTP smokes passed for /health, /ready, /version, and /login; /ready reported latest=2190_ot109_rabbi_content_publisher and /version reported ops10-d13e9cd."
   ],
-  "next_safe_action": "Commit and push the Node 24 drawer e2e repair, then wait for PR #61 checks on the new head before any staging deployment.",
+  "next_safe_action": "Do not promote production until native production backup/restore proof, staging rollback rehearsal, exact production artifact path, and a PostgreSQL 16-compatible production database path are resolved.",
   "blockers": [
     {
       "id": "OPS10-BLOCKER-LOCAL-PG",
@@ -105,9 +114,46 @@
       "status": "not_yet_satisfied",
       "reason": "Production backup/PITR state, native pg_dump -Fc backup, disposable restore verification, and staging rollback rehearsal are required before production promotion.",
       "next_action": "Complete redacted backup/restore and rollback proof after final CI and before production mutation."
+    },
+    {
+      "id": "OPS10-BLOCKER-PROD-PG18",
+      "scope": "production_promotion",
+      "status": "blocked",
+      "reason": "Production web is bound to Railway service Postgres-j9Pi, which readback identified as PostgreSQL 18 while OPS-10 requires a PostgreSQL 16-compatible production path.",
+      "next_action": "Provision or verify a PostgreSQL 16-compatible production database path before promotion."
+    },
+    {
+      "id": "OPS10-BLOCKER-EXACT-ARTIFACT-PROMOTION",
+      "scope": "production_promotion",
+      "status": "blocked",
+      "reason": "Railway CLI source deploys rebuilt staging images; no same-image staging-to-production promotion path was proven.",
+      "next_action": "Establish exact image/digest promotion or an approved reproducible production deploy path before production mutation."
     }
   ],
-  "staging_mutations": [],
+  "staging_mutations": [
+    {
+      "kind": "railway_variable_update",
+      "scope": "staging web/worker",
+      "description": "Updated non-secret APP_VERSION and COMMIT_SHA release readback variables for OPS-10 candidate SHAs."
+    },
+    {
+      "kind": "database_migration",
+      "scope": "staging ot99-pg16",
+      "description": "Applied migrations 2010 through 2190 through the existing TCP proxy; idempotent rerun reported 35 already applied."
+    },
+    {
+      "kind": "railway_deployment",
+      "scope": "staging web",
+      "deployment_id": "d06dc5a5-41cf-4b41-b337-ebe4425bc371",
+      "image_digest": "sha256:56f600b00111537e352cf43b5bb67c2d04d99594b49b268facc91af4066ba33a"
+    },
+    {
+      "kind": "railway_deployment",
+      "scope": "staging worker",
+      "deployment_id": "21e2cdd2-a441-4225-a98e-6243c08c4da0",
+      "image_digest": "sha256:12af9a6eb4f17696689a59f3943fbfc473ba9411a3d9c3104a1c64bb7a2693f0"
+    }
+  ],
   "production_mutations": [],
   "guardrails": {
     "dns_changes_authorized": false,
@@ -118,5 +164,5 @@
     "credential_disclosure_authorized": false,
     "production_deploy_authorized_after_required_gates": true
   },
-  "updated_at": "2026-07-17T09:10:06+03:00"
+  "updated_at": "2026-07-17T09:48:15+03:00"
 }

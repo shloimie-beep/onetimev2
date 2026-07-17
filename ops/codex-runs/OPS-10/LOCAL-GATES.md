@@ -74,6 +74,8 @@ Generated: 2026-07-17T05:20:00Z
 | #61 | OT-75 static readiness | Passed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` | GitHub Actions after OPS-10 handoff/evidence checkpoint |
 | #61 | OT-83 learner-seat proof | Passed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` | GitHub Actions after OPS-10 handoff/evidence checkpoint |
 | #61 | Node 24 verify | Failed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` in `tests/e2e/ot-39/crm-privacy-usability.spec.ts` drawer focus loop | GitHub Actions job `87816272085`; failure artifact confirmed focus moved past CRM after owner/support nav items existed |
+| #61 | All required checks | Passed on commit `812356b0c0582fadb1dfce0818775fa1a7b119e8` after OT-39 drawer e2e repair | Node 24 verify, OPS-06 deterministic, PostgreSQL 16 assurance, PostgreSQL learner-seat proof, static readiness |
+| #61 | All required checks | Passed on commit `d13e9cd3117091e97ef973408d8742a13d1a9479` after migration checksum line-ending repair | Node 24 verify, OPS-06 deterministic, PostgreSQL 16 assurance, PostgreSQL learner-seat proof, static readiness |
 
 ## Node 24 E2E Repair Gates
 
@@ -85,6 +87,20 @@ Generated: 2026-07-17T05:20:00Z
 | Secret scan        | `npm run secret:scan`                                                                                                 | Passed across 1154 repo text files |
 | Full browser e2e   | `npm run e2e`                                                                                                         | Passed, 35 tests                   |
 
+## Migration Checksum And Staging Gates
+
+| Gate                                    | Command / Evidence                                                                                                                         | Result                                                                                                                |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Migration checksum repair focus         | `npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts tests/integration/auth-crm.test.ts` | Passed, 14 tests                                                                                                      |
+| Migration checksum repair typecheck     | `npm run typecheck`                                                                                                                        | Passed                                                                                                                |
+| Migration checksum repair lint          | `npm run lint`                                                                                                                             | Passed                                                                                                                |
+| Migration checksum repair secret scan   | `npm run secret:scan`                                                                                                                      | Passed across 1154 repo text files                                                                                    |
+| Migration checksum repair build         | `npm run build`                                                                                                                            | Passed                                                                                                                |
+| Migration checksum repair OPS-06 safety | `npm run ops06:migrations`                                                                                                                 | Passed; evidence timestamp refreshed                                                                                  |
+| Staging migration apply                 | Existing Railway TCP proxy to `ot99-pg16`; `runMigrations` through staging web variables with proxy host/port only                         | Applied 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2100, 2130, 2160, 2190                                              |
+| Staging migration idempotency           | Re-ran `runMigrations` through staging web variables with proxy host/port only                                                             | `total=35 applied=0 already_applied=35 latest=2190_ot109_rabbi_content_publisher`                                     |
+| Staging web smoke                       | `GET /health`, `GET /ready`, `GET /version`, `GET /login`                                                                                  | 200; `/ready` latest migration `2190_ot109_rabbi_content_publisher`; `/version` matched deployed SHA at time of smoke |
+
 ## Railway Readback
 
 No raw Railway variables, database URLs, credentials, passwords, tokens, private
@@ -92,16 +108,19 @@ destinations, activation links, or reset links were printed or stored.
 
 | Target     | Project                          | Environment  | Service                  | Current deployment ID                  | Current image digest                                                      | DB binding proof                            |
 | ---------- | -------------------------------- | ------------ | ------------------------ | -------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------- |
-| Staging    | `one-time-ot99-staging-96b42905` | `staging`    | `ot99-web`               | `9efd2fc9-75c5-4455-b5bc-0bb16b85d3a2` | `sha256:8eabe8216c5e46c39b5ebfad75fe17ab167be74b1a9acada081f9226eefeec09` | `DATABASE_URL` hash matched `ot99-pg16`     |
-| Staging    | `one-time-ot99-staging-96b42905` | `staging`    | `ot99-worker`            | `0df0b354-6453-457b-b65b-43394601a6c7` | `sha256:56f7b3e5dbdf7d0df80f4b9a84ddb67d96790d1ddf89254c95a38db428598869` | `DATABASE_URL` hash matched `ot99-pg16`     |
+| Staging    | `one-time-ot99-staging-96b42905` | `staging`    | `ot99-web`               | `d06dc5a5-41cf-4b41-b337-ebe4425bc371` | `sha256:56f600b00111537e352cf43b5bb67c2d04d99594b49b268facc91af4066ba33a` | `DATABASE_URL` hash matched `ot99-pg16`     |
+| Staging    | `one-time-ot99-staging-96b42905` | `staging`    | `ot99-worker`            | `21e2cdd2-a441-4225-a98e-6243c08c4da0` | `sha256:12af9a6eb4f17696689a59f3943fbfc473ba9411a3d9c3104a1c64bb7a2693f0` | `DATABASE_URL` hash matched `ot99-pg16`     |
 | Production | `one-time-production`            | `production` | `one-time-web`           | `15280d13-3e12-4c72-8460-10e0c6e99b3e` | `sha256:3390fcfe443897c8da1a698c98428cc85458f6a5bef789492a53ddf4a0003553` | `DATABASE_URL` hash matched `Postgres-j9Pi` |
 | Production | `one-time-production`            | `production` | `one-time-delivery-cron` | `387e2e49-2055-43c8-86f4-de11f0e60b59` | `sha256:cca6c9720caf97d780c455e403c9228756c97da56ef722c31f124a4376b1bc31` | stopped build-only cron runner              |
 
 ## Live Observation
 
-| Target                                            | Route              | Result                                                             |
-| ------------------------------------------------- | ------------------ | ------------------------------------------------------------------ |
-| Production `https://join.onetimeonetime.com`      | `/api/deploy-info` | 200, old commit `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`         |
-| Production `https://join.onetimeonetime.com`      | `/login`           | 404, `Cannot GET /login`                                           |
-| Production `https://join.onetimeonetime.com`      | `/version`         | 404, `Cannot GET /version`                                         |
-| Staging `https://ot99-web-staging.up.railway.app` | `/version`         | 200, `ops03a-fb5f5ee` / `fb5f5eebc539afc9e93833e9417ee67524d62c36` |
+| Target                                            | Route              | Result                                                                               |
+| ------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------ |
+| Production `https://join.onetimeonetime.com`      | `/api/deploy-info` | 200, old commit `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5`                           |
+| Production `https://join.onetimeonetime.com`      | `/login`           | 404, `Cannot GET /login`                                                             |
+| Production `https://join.onetimeonetime.com`      | `/version`         | 404, `Cannot GET /version`                                                           |
+| Staging `https://ot99-web-staging.up.railway.app` | `/health`          | 200, `{"ok":true,"service":"onetime-web"}`                                           |
+| Staging `https://ot99-web-staging.up.railway.app` | `/ready`           | 200, database ok, latest migration `2190_ot109_rabbi_content_publisher`, no blockers |
+| Staging `https://ot99-web-staging.up.railway.app` | `/version`         | 200, `ops10-d13e9cd` / `d13e9cd3117091e97ef973408d8742a13d1a9479`                    |
+| Staging `https://ot99-web-staging.up.railway.app` | `/login`           | 200, login page rendered                                                             |
