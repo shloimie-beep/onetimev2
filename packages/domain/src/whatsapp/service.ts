@@ -12,6 +12,8 @@ import type {
 import { inTransaction, type DbPool, type Queryable } from '../../../db/src/index.ts';
 import type { AuthenticatedSession } from '../auth/service.ts';
 import { stableKey } from '../lead/normalize.ts';
+import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
+import { WHATSAPP_ASSISTANT_COPY } from './copy.ts';
 import {
   decryptForWhatsApp,
   digestBuffer,
@@ -48,6 +50,39 @@ export type WhatsAppWebhookDisposition = {
   processed: number;
 };
 
+export type WhatsAppPublicAssistantStatus = {
+  success: true;
+  availability: 'available' | 'provider_off' | 'unavailable';
+  assistant: {
+    display_name: string;
+    copy_version: string;
+    opening_question: string;
+    signup_path: string;
+  };
+  deep_link: {
+    available: boolean;
+    href: string | null;
+    reason: string | null;
+  };
+  provider: {
+    webhook_configured: boolean;
+    verify_token_configured: boolean;
+    provider_env: string;
+    staging_isolated: boolean;
+    canary_authorized: boolean;
+    canary_recipient_configured: boolean;
+    send_mode: 'provider_off' | 'staging_canary_ready' | 'staging_canary_blocked';
+    blockers: string[];
+  };
+  safety: {
+    no_broad_send_authorized: true;
+    no_provider_registration_performed: true;
+    support_ticket_requires_authenticated_entitlement: true;
+    private_data_available_in_public_assistant: false;
+    raw_canary_value_returned: false;
+  };
+};
+
 type ConversationRow = {
   conversation_key: string;
   provider_account_key: string;
@@ -82,6 +117,47 @@ export function verifyWhatsAppWebhookChallenge(config: AppConfig, query: Record<
     return null;
   }
   return challenge;
+}
+
+export function buildWhatsAppPublicAssistantStatus(
+  config: AppConfig,
+): WhatsAppPublicAssistantStatus {
+  const deepLink = buildPublicDeepLink(config);
+  const canary = evaluateWhatsAppCanaryReadinessSafe(config);
+  const providerOff = !config.whatsappWebhookSecret || !config.whatsappVerifyToken;
+  return {
+    success: true,
+    availability: deepLink.available ? 'available' : providerOff ? 'provider_off' : 'unavailable',
+    assistant: {
+      display_name: WHATSAPP_ASSISTANT_COPY.displayName,
+      copy_version: config.whatsappAssistantCopyVersion,
+      opening_question: WHATSAPP_ASSISTANT_COPY.openingQuestion,
+      signup_path: '/signup',
+    },
+    deep_link: deepLink,
+    provider: {
+      webhook_configured: Boolean(config.whatsappWebhookSecret),
+      verify_token_configured: Boolean(config.whatsappVerifyToken),
+      provider_env: config.whatsappProviderEnv,
+      staging_isolated: config.whatsappStagingIsolated,
+      canary_authorized: config.whatsappCanaryAuthorized,
+      canary_recipient_configured: Boolean(config.whatsappCanaryRecipientE164),
+      send_mode:
+        canary.checkpoint === 'READY_FOR_CANARY'
+          ? 'staging_canary_ready'
+          : providerOff
+            ? 'provider_off'
+            : 'staging_canary_blocked',
+      blockers: canary.blockers,
+    },
+    safety: {
+      no_broad_send_authorized: true,
+      no_provider_registration_performed: true,
+      support_ticket_requires_authenticated_entitlement: true,
+      private_data_available_in_public_assistant: false,
+      raw_canary_value_returned: false,
+    },
+  };
 }
 
 export async function receiveWhatsAppWebhook(input: {
@@ -579,6 +655,47 @@ export function evaluateWhatsAppCanaryReadiness(config: AppConfig) {
   return { checkpoint: 'READY_FOR_CANARY' as const };
 }
 
+function evaluateWhatsAppCanaryReadinessSafe(config: AppConfig) {
+  const blockers: string[] = [];
+  if (!config.whatsappCanaryRecipientE164) blockers.push('canary_recipient_missing');
+  if (!config.whatsappCanaryAuthorized) blockers.push('canary_authorization_missing');
+  if (config.whatsappProviderEnv !== 'STAGING') blockers.push('provider_env_not_staging');
+  if (!config.whatsappStagingIsolated) blockers.push('staging_isolation_not_confirmed');
+  try {
+    if (config.whatsappCanaryRecipientE164) {
+      normalizeWhatsAppE164(config.whatsappCanaryRecipientE164);
+    }
+  } catch {
+    blockers.push('canary_recipient_invalid');
+  }
+  return {
+    checkpoint: blockers.length === 0 ? ('READY_FOR_CANARY' as const) : ('BLOCKED' as const),
+    blockers,
+  };
+}
+
+function buildPublicDeepLink(config: AppConfig): WhatsAppPublicAssistantStatus['deep_link'] {
+  const configured = config.whatsappPublicDeepLink?.trim();
+  if (!configured) {
+    return { available: false, href: null, reason: 'WHATSAPP_PUBLIC_LINK_UNCONFIGURED' };
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(configured);
+  } catch {
+    return { available: false, href: null, reason: 'WHATSAPP_PUBLIC_LINK_INVALID' };
+  }
+  const host = parsed.hostname.toLowerCase();
+  const allowed = parsed.protocol === 'https:' && (host === 'wa.me' || host === 'api.whatsapp.com');
+  if (!allowed) {
+    return { available: false, href: null, reason: 'WHATSAPP_PUBLIC_LINK_UNSAFE_HOST' };
+  }
+  const prefill =
+    config.whatsappPublicPrefillText?.trim() || WHATSAPP_ASSISTANT_COPY.defaultPrefill;
+  parsed.searchParams.set('text', prefill);
+  return { available: true, href: parsed.toString(), reason: null };
+}
+
 async function ingestInboundMessage(input: {
   pool: DbPool;
   config: AppConfig;
@@ -811,16 +928,26 @@ async function routeIntent(
     return;
   }
 
+  const rateLimit = await consumeWhatsAppAssistantRateLimit(client, config, input);
+  if (!rateLimit.allowed) {
+    await enqueueWhatsAppMessage(client, config, {
+      conversationKey: input.conversation.conversation_key,
+      providerAccountKey: input.conversation.provider_account_key,
+      recipientE164: input.e164,
+      messageKind: 'UNKNOWN_FALLBACK',
+      body: WHATSAPP_ASSISTANT_COPY.rateLimited,
+      idempotencyKey: stableKey('wa_outbox', [input.event.event_key, 'rate-limited']),
+      metadata: {
+        rate_limited: true,
+        limit_scope: rateLimit.scope ?? 'whatsapp_assistant',
+        retry_after_seconds: rateLimit.retryAfterSeconds ?? null,
+      },
+    });
+    return;
+  }
+
   if (input.intent.type === 'abuse.detected') {
-    await recordLeadEvent(client, config, input.conversation, {
-      eventType: 'human_handoff_requested',
-      audienceType: input.conversation.audience_type ?? 'family',
-      metadata: { reason: 'abuse_detected', source_inbox_event_key: input.event.event_key },
-    });
-    await enqueueStandard(client, config, input, 'HUMAN_HANDOFF_ACK');
-    await updateConversation(client, config, input.conversation.conversation_key, {
-      state: 'HUMAN_HANDOFF_PENDING',
-    });
+    await handleAbuseDetected(client, config, input);
     return;
   }
 
@@ -1233,6 +1360,94 @@ async function offerAccountLink(
   });
   await updateConversation(client, config, input.conversation.conversation_key, {
     state: 'ACCOUNT_LINK_OFFERED',
+  });
+}
+
+async function consumeWhatsAppAssistantRateLimit(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    conversation: ConversationRow;
+    now: Date;
+  },
+) {
+  return consumeRateLimitBudgets({
+    pool: client as DbPool,
+    config,
+    now: input.now,
+    budgets: [
+      {
+        scope: 'whatsapp_assistant_sender',
+        subject: `${input.conversation.provider_account_key}:${input.conversation.sender_key}`,
+        limit: config.whatsappAssistantSenderRateLimitMax,
+        windowMs: config.whatsappAssistantRateLimitWindowMs,
+      },
+      {
+        scope: 'whatsapp_assistant_account',
+        subject: input.conversation.provider_account_key,
+        limit: config.whatsappAssistantAccountRateLimitMax,
+        windowMs: config.whatsappAssistantRateLimitWindowMs,
+      },
+    ],
+  });
+}
+
+async function handleAbuseDetected(
+  client: Queryable,
+  config: AppConfig,
+  input: {
+    conversation: ConversationRow;
+    event: InboxRow;
+    e164: string;
+    now: Date;
+  },
+) {
+  await recordLeadEvent(client, config, input.conversation, {
+    eventType: 'human_handoff_requested',
+    audienceType: input.conversation.audience_type ?? 'family',
+    metadata: {
+      reason: 'abuse_detected',
+      source_inbox_event_key: input.event.event_key,
+      raw_body_stored: false,
+    },
+  });
+  await client.query(
+    `INSERT INTO onetime.whatsapp_suppressions
+     (suppression_key, account_key, product_key, provider_account_key, sender_key,
+      conversation_key, reason, source_inbox_event_key)
+     VALUES ($1,$2,$3,$4,$5,$6,'abuse',$7)
+     ON CONFLICT DO NOTHING`,
+    [
+      `wa_suppression_${randomUUID()}`,
+      config.accountKey,
+      config.productKey,
+      input.conversation.provider_account_key,
+      input.conversation.sender_key,
+      input.conversation.conversation_key,
+      input.event.event_key,
+    ],
+  );
+  await client.query(
+    `UPDATE onetime.whatsapp_outbox_messages
+        SET status = 'suppressed'
+      WHERE account_key = $1
+        AND product_key = $2
+        AND conversation_key = $3
+        AND status IN ('queued', 'retry_wait')`,
+    [config.accountKey, config.productKey, input.conversation.conversation_key],
+  );
+  await enqueueWhatsAppMessage(client, config, {
+    conversationKey: input.conversation.conversation_key,
+    providerAccountKey: input.conversation.provider_account_key,
+    recipientE164: input.e164,
+    messageKind: 'SUPPRESSION_STATE_NOTICE',
+    body: WHATSAPP_ASSISTANT_COPY.abuseSuppressed,
+    idempotencyKey: stableKey('wa_outbox', [input.event.event_key, 'abuse-suppressed']),
+    metadata: { abuse_detected: true, raw_body_stored: false },
+  });
+  await updateConversation(client, config, input.conversation.conversation_key, {
+    state: 'SUPPRESSED',
+    suppression_state: 'suppressed',
   });
 }
 
@@ -1934,31 +2149,31 @@ function entity(intent: WhatsAppCompiledIntent, kind: string) {
 function standardBody(kind: WhatsAppMessageKind) {
   switch (kind) {
     case 'QUALIFY_AUDIENCE':
-      return 'Hi. Are you reaching out for a Family or for a School?';
+      return WHATSAPP_ASSISTANT_COPY.openingQuestion;
     case 'ASK_GUARDIAN_NAME':
-      return 'Please send the parent or guardian name for this Family interest.';
+      return WHATSAPP_ASSISTANT_COPY.guardianNameQuestion;
     case 'ASK_SCHOOL_CONTACT_NAME':
-      return 'Please send the school contact name for this School interest.';
+      return WHATSAPP_ASSISTANT_COPY.schoolContactNameQuestion;
     case 'ASK_CONTACT_PREFERENCE':
-      return 'How should a person follow up: WhatsApp, phone, email, or human follow-up here?';
+      return WHATSAPP_ASSISTANT_COPY.contactPreferenceQuestion;
     case 'ASK_FAMILY_REMINDER_PREFERENCE':
-      return 'Do you want separate WhatsApp reminder consent recorded for Family class reminders? Reply yes or no.';
+      return WHATSAPP_ASSISTANT_COPY.reminderConsentQuestion;
     case 'FAMILY_LEAD_ACK':
-      return 'Thank you. Your Family interest was saved for human follow-up. This did not create portal access or send a class link.';
+      return WHATSAPP_ASSISTANT_COPY.familyAck;
     case 'SCHOOL_LEAD_ACK':
-      return 'Thank you. Your School inquiry was saved for human follow-up only. This did not create household, subscriber, portal, class access, reminder, or class-link records.';
+      return WHATSAPP_ASSISTANT_COPY.schoolAck;
     case 'HUMAN_HANDOFF_ACK':
-      return 'A human follow-up request was recorded. No private account, student, billing, class-link, or support-ticket information is shared in WhatsApp.';
+      return WHATSAPP_ASSISTANT_COPY.humanHandoffAck;
     case 'SAFE_STATUS_RESPONSE':
-      return 'This chat has a short verified safe-status grant. For any account, student, billing, ticket, or class-link details, use the signed-in portal.';
+      return WHATSAPP_ASSISTANT_COPY.safeStatusResponse;
     case 'PRIVATE_DATA_BLOCKED':
-      return 'I cannot share private account, child, billing, class-link, CRM, or support-ticket information in WhatsApp.';
+      return WHATSAPP_ASSISTANT_COPY.privateDataBlocked;
     case 'TECHNICAL_HELP_REDIRECT':
-      return 'Technical support tickets are handled outside this public WhatsApp assistant. I can record that you want human follow-up, but I cannot create or expose support-ticket details here.';
+      return WHATSAPP_ASSISTANT_COPY.technicalHelpRedirect;
     case 'UNKNOWN_FALLBACK':
-      return 'I can collect Family or School interest, answer approved public program questions, or request a human follow-up.';
+      return WHATSAPP_ASSISTANT_COPY.unknownFallback;
     default:
-      return 'I can help with approved public One Time questions and lead follow-up.';
+      return WHATSAPP_ASSISTANT_COPY.unknownFallback;
   }
 }
 

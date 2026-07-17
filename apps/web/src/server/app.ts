@@ -119,6 +119,7 @@ import {
   getOt110aContentWorkspaceOverview,
   getSessionUserByKey,
   getSessionByToken,
+  buildWhatsAppPublicAssistantStatus,
   inspectAccountLifecycleToken,
   buildOwnerDashboard,
   listClassOccurrences,
@@ -326,6 +327,11 @@ export function createApp({
       return;
     }
     res.status(200).type('text/plain').send(challenge);
+  });
+
+  app.get('/api/v1/whatsapp/public-assistant', (_req, res) => {
+    setPrivateNoStore(res);
+    res.status(200).json(buildWhatsAppPublicAssistantStatus(config));
   });
 
   app.post(

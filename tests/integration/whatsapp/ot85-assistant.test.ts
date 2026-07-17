@@ -7,6 +7,7 @@ import {
   processQueuedWhatsAppOutbox,
   receiveWhatsAppWebhook,
   SinkWhatsAppProviderAdapter,
+  WHATSAPP_ASSISTANT_COPY,
 } from '../../../packages/domain/src/index.ts';
 import { decryptForWhatsApp } from '../../../packages/domain/src/whatsapp/crypto.ts';
 
@@ -37,6 +38,22 @@ afterEach(async () => {
 });
 
 describe('OT-85 WhatsApp assistant', () => {
+  it('opens with the W12-06 public assistant copy and stores no raw reply body', async () => {
+    await send('copy-1', 'Hello');
+
+    const messages = await outboxMessages();
+    expect(messages).toEqual([
+      expect.objectContaining({
+        message_kind: 'QUALIFY_AUDIENCE',
+        body: WHATSAPP_ASSISTANT_COPY.openingQuestion,
+      }),
+    ]);
+    expect(messages[0]?.metadata).toMatchObject({
+      raw_body_present: false,
+      raw_recipient_present: false,
+    });
+  });
+
   it('captures a Family WhatsApp lead with encrypted inbox/outbox and explicit reminder consent', async () => {
     await send('family-1', 'I want to sign up my family');
     await send('family-2', 'Miriam Parent');
@@ -199,6 +216,80 @@ describe('OT-85 WhatsApp assistant', () => {
     await expectCount('whatsapp_outbox_messages', 1);
   });
 
+  it('rate-limits public assistant chatter before mutating lead records', async () => {
+    config.whatsappAssistantSenderRateLimitMax = 1;
+
+    await send('rate-1', 'Hello');
+    await send('rate-2', 'I want to sign up my family');
+
+    await expectCount('contacts', 0);
+    await expectCount('signup_leads', 0);
+
+    const messages = await outboxMessages();
+    expect(messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message_kind: 'UNKNOWN_FALLBACK',
+          body: WHATSAPP_ASSISTANT_COPY.rateLimited,
+          metadata: expect.objectContaining({
+            rate_limited: true,
+            limit_scope: 'whatsapp_assistant_sender',
+          }),
+        }),
+      ]),
+    );
+  });
+
+  it('suppresses abusive public chats with redacted audit metadata and no lead side effects', async () => {
+    await send('abuse-1', 'you stupid spam bot');
+
+    await expectCount('contacts', 0);
+    await expectCount('signup_leads', 0);
+
+    const suppression = await pool.query(
+      `SELECT status, reason
+         FROM onetime.whatsapp_suppressions`,
+    );
+    expect(suppression.rows).toEqual([
+      expect.objectContaining({ status: 'active', reason: 'abuse' }),
+    ]);
+
+    const conversations = await pool.query(
+      `SELECT state, suppression_state
+         FROM onetime.whatsapp_conversations`,
+    );
+    expect(conversations.rows[0]).toMatchObject({
+      state: 'SUPPRESSED',
+      suppression_state: 'suppressed',
+    });
+
+    const events = await pool.query(
+      `SELECT event_type, metadata
+         FROM onetime.whatsapp_lead_events`,
+    );
+    expect(events.rows).toEqual([
+      expect.objectContaining({
+        event_type: 'human_handoff_requested',
+        metadata: expect.objectContaining({
+          reason: 'abuse_detected',
+          raw_body_stored: false,
+        }),
+      }),
+    ]);
+
+    const messages = await outboxMessages();
+    expect(messages).toEqual([
+      expect.objectContaining({
+        message_kind: 'SUPPRESSION_STATE_NOTICE',
+        body: WHATSAPP_ASSISTANT_COPY.abuseSuppressed,
+        metadata: expect.objectContaining({
+          abuse_detected: true,
+          raw_body_stored: false,
+        }),
+      }),
+    ]);
+  });
+
   it('blocks private data, billing, class-link, CRM, and ticket requests without creating leads', async () => {
     await send('private-1', 'Send my child class link, billing invoice, CRM notes, and ticket');
 
@@ -351,6 +442,24 @@ async function send(id: string, text: string, from = PHONE) {
     }),
   );
   return receiveWhatsAppWebhook({ pool, config, rawBody, adapter, now: NOW });
+}
+
+async function outboxMessages() {
+  const rows = await pool.query(
+    `SELECT message_kind, status, body_ciphertext, body_iv, body_tag, metadata
+       FROM onetime.whatsapp_outbox_messages
+      ORDER BY created_at ASC`,
+  );
+  return rows.rows.map((row) => ({
+    message_kind: String(row.message_kind),
+    status: String(row.status),
+    body: decryptForWhatsApp(config, {
+      ciphertext: String(row.body_ciphertext),
+      iv: String(row.body_iv),
+      tag: String(row.body_tag),
+    }),
+    metadata: row.metadata as Record<string, unknown>,
+  }));
 }
 
 async function expectCount(table: string, expected: number) {

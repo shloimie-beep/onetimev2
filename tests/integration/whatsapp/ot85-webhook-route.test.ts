@@ -21,6 +21,8 @@ beforeEach(async () => {
     ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY: 'ot85_meta_route',
     ONE_TIME_WHATSAPP_WEBHOOK_SECRET: WEBHOOK_SECRET,
     ONE_TIME_WHATSAPP_VERIFY_TOKEN: 'ot85-verify-token',
+    ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK: 'https://wa.me/14155552671',
+    ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT: 'Shalom fixture lead question',
   });
   pool = createMemoryPool();
   await runMigrations(pool);
@@ -42,6 +44,51 @@ afterEach(async () => {
 });
 
 describe('OT-85 WhatsApp webhook route', () => {
+  it('serves safe public assistant copy and availability without exposing canary config', async () => {
+    const response = await fetch(`${baseUrl}/api/v1/whatsapp/public-assistant`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toContain('no-store');
+
+    const body = (await response.json()) as {
+      success: boolean;
+      availability: string;
+      assistant: { display_name: string; copy_version: string; opening_question: string };
+      deep_link: { available: boolean; href: string | null; reason: string | null };
+      provider: { send_mode: string; blockers: string[] };
+      safety: Record<string, unknown>;
+    };
+    expect(body).toMatchObject({
+      success: true,
+      availability: 'available',
+      assistant: {
+        display_name: "Rabbi Scheller's digital assistant",
+        copy_version: 'w12-06-public-assistant-v1',
+      },
+      deep_link: { available: true, reason: null },
+      provider: {
+        send_mode: 'staging_canary_blocked',
+        blockers: expect.arrayContaining([
+          'canary_recipient_missing',
+          'canary_authorization_missing',
+        ]),
+      },
+      safety: {
+        no_broad_send_authorized: true,
+        no_provider_registration_performed: true,
+        support_ticket_requires_authenticated_entitlement: true,
+        private_data_available_in_public_assistant: false,
+        raw_canary_value_returned: false,
+      },
+    });
+    expect(body.assistant.opening_question).toContain("Rabbi Scheller's digital assistant");
+    expect(body.deep_link.href).toBeTruthy();
+    const deepLink = new URL(body.deep_link.href ?? '');
+    expect(deepLink.origin).toBe('https://wa.me');
+    expect(deepLink.searchParams.get('text')).toBe('Shalom fixture lead question');
+    expect(JSON.stringify(body)).not.toContain('CANARY');
+    expect(JSON.stringify(body)).not.toContain('RECIPIENT_E164');
+  });
+
   it('verifies challenge tokens, preserves raw bytes for signed Meta payloads, and rejects forged signatures', async () => {
     const challenge = await fetch(
       `${baseUrl}/api/v1/whatsapp/meta/webhook?hub.mode=subscribe&hub.verify_token=ot85-verify-token&hub.challenge=challenge-123`,
