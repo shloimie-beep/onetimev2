@@ -1,0 +1,170 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-10",
+  "title": "SRE launch runbook and fail-closed Railway toolkit",
+  "status": "local_complete_pending_commit_push_pr",
+  "generated_at": "2026-07-17T18:18:19+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-10",
+  "branch": "codex/w12-100-10-sre-launch-runbook",
+  "target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
+  "safety": {
+    "staging_deploy_performed": false,
+    "production_deploy_performed": false,
+    "railway_mutation_performed": false,
+    "production_database_private_rows_read": false,
+    "external_sends_performed": false,
+    "provider_mutation_performed": false,
+    "provider_resources_mutated": false,
+    "secrets_or_private_values_committed": false,
+    "bna_code_or_data_touched": false,
+    "w12_09_integrated": false,
+    "external_actions_count": 0,
+    "production_mutations_count": 0
+  },
+  "objectives": [
+    {
+      "id": "first_reads",
+      "status": "done",
+      "evidence": "Read AGENTS.md, ops/director/START-HERE.md, ops/director/PRODUCT-INVARIANTS.md, and all required W12-99 artifacts before editing."
+    },
+    {
+      "id": "isolated_worktree_branch",
+      "status": "done",
+      "evidence": "Fetched refs, verified canonical commit exists, and created C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-10 on branch codex/w12-100-10-sre-launch-runbook from 0d8d7168f066668f035176d777bdaaa4dcc5accd."
+    },
+    {
+      "id": "immutable_railway_identity_toolkit",
+      "status": "done",
+      "evidence": "scripts/w12-100/deploy/railway-launch-toolkit.ts requires project, environment, web service, worker service, database service, candidate commit, and expected image digest."
+    },
+    {
+      "id": "staging_production_guardrails",
+      "status": "done",
+      "evidence": "Toolkit rejects production-like staging targets, requires exact mutation confirmation text, validates git HEAD, and allowlists Railway commands."
+    },
+    {
+      "id": "railway_state_ambiguity_rejection",
+      "status": "done",
+      "evidence": "Toolkit checks Railway status JSON for exact immutable IDs, duplicate service names, and raw env-value shapes."
+    },
+    {
+      "id": "version_health_ready_worker_verification",
+      "status": "done",
+      "evidence": "Toolkit verifies /version, /health, /ready, provider-safe optional dependencies, /api/internal/ops/diagnostics worker heartbeat, queue depth, queue age, retries, and dead letters."
+    },
+    {
+      "id": "separate_migration_operation",
+      "status": "done",
+      "evidence": "scripts/w12-100/deploy/migration-status.ts emits counts-only pending migration metadata; migrate operations are separate from deploy operations."
+    },
+    {
+      "id": "backup_freshness_metadata",
+      "status": "done",
+      "evidence": "Toolkit validates redacted backup metadata freshness, PITR metadata, and absence of secret-like material."
+    },
+    {
+      "id": "deployment_records_without_env_values",
+      "status": "done",
+      "evidence": "Toolkit extracts deployment IDs, source SHAs, and digests from deployment-list evidence and records no env values."
+    },
+    {
+      "id": "rollback_rollforward_support",
+      "status": "done",
+      "evidence": "Runbooks and toolkit support staging rollback to rollback.predeploy_commit_sha and roll-forward to candidate.commit_sha."
+    },
+    {
+      "id": "database_delete_replacement_refusal",
+      "status": "done",
+      "evidence": "Railway command allowlist rejects delete/remove/rm/down/connect/variable/volume/config apply/source/files/upload/domain paths."
+    },
+    {
+      "id": "provider_transports_off",
+      "status": "done",
+      "evidence": "Manifest and readiness checks require provider transports disabled, off, sink, mock, or not configured."
+    },
+    {
+      "id": "machine_readable_evidence",
+      "status": "done",
+      "evidence": "Launch toolkit, migration helper, and observability checker emit JSON evidence with explicit external action and production mutation counts."
+    },
+    {
+      "id": "alert_observability_checks",
+      "status": "done",
+      "evidence": "scripts/w12-100/ops/observability-checks.ts defines and evaluates all requested launch observability surfaces."
+    },
+    {
+      "id": "runbooks",
+      "status": "done",
+      "evidence": "ops/runbooks/w12-100 includes staging deploy, rollback, roll-forward, production promotion, post-deploy verification, and alert observability runbooks, including native rollback limitation."
+    },
+    {
+      "id": "focused_automated_tests",
+      "status": "done",
+      "evidence": "Focused Vitest tests added under scripts/w12-100/deploy and scripts/w12-100/ops."
+    },
+    {
+      "id": "validation",
+      "status": "done",
+      "evidence": "Focused tests, secret scan, lint, typecheck, unit, integration, build, and scoped Prettier check passed."
+    },
+    {
+      "id": "commit_push_pr",
+      "status": "blocked",
+      "evidence": "Pending commit, push, clean status confirmation, and draft PR creation after artifacts are committed."
+    }
+  ],
+  "validation": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "details": "359 packages installed; 0 vulnerabilities."
+    },
+    {
+      "command": "npx vitest run scripts/w12-100/deploy/railway-launch-toolkit.test.ts scripts/w12-100/ops/observability-checks.test.ts --environment node",
+      "status": "passed",
+      "details": "2 files, 11 tests."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1308 repo text files."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "details": "38 files, 196 tests."
+    },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "details": "38 files, 184 tests."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Build passed with inherited Vite font URL runtime-resolution warning."
+    },
+    {
+      "command": "npx prettier --check <lane-owned files>",
+      "status": "passed"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "commit_push_pr_pending",
+      "status": "blocked",
+      "owner": "Codex",
+      "next_action": "Commit, push branch, confirm clean status, and open draft PR."
+    }
+  ]
+}
