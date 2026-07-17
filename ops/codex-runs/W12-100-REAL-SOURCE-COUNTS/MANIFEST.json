@@ -1,0 +1,21 @@
+{
+  "schema_version": "onetime.w12_100.real_source_counts_manifest.v1",
+  "generated_at": "2026-07-17T20:41:35.3579462+03:00",
+  "status": "blocked_before_manifest_generation",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "approved_primary_source_group": {
+    "expected_file_count": 6,
+    "processed_file_count": 0,
+    "approved_file_set_manifest_sha256": null,
+    "ruleset_sha256": null,
+    "manifest_sha256_over_file_set_and_ruleset": null
+  },
+  "blocked_reason": "The staging runtime prerequisite failed before file/hash/category validation. The approved six-file primary source group was not opened.",
+  "unexpected_file_rejection_performed": false,
+  "unexpected_hash_rejection_performed": false,
+  "unexpected_sheet_rejection_performed": false,
+  "unexpected_source_category_rejection_performed": false,
+  "source_contents_recorded": false,
+  "row_values_recorded": false,
+  "IMPORT_APPLY_AUTHORIZED": false
+}
