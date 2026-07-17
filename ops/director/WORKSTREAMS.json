@@ -1,10 +1,11 @@
 {
   "schema_version": "onetime.director.workstreams.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T16:17:17.487Z",
   "base": {
-    "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
-    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
-    "run_w12_99_last": true
+    "selected_base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "selected_base_branch": "integration/w12-final-convergence-20260717T123715Z",
+    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "run_w12_99_last": false
   },
   "parallel_w12_lanes": [
     {
@@ -107,5 +108,131 @@
     "Apply real audience data only after explicit approval of exact counts/conflicts/rollback.",
     "Run one-recipient protected provider canaries only with explicit authorization and protected credentials.",
     "Promote the exact verified build only after rollback/readiness proof."
-  ]
+  ],
+  "w13_parallel_lanes": {
+    "schema_version": "onetime.w13_10.lane_ownership.v1",
+    "generated_at": "2026-07-17T16:17:17.487Z",
+    "lanes": [
+      {
+        "lane": "W13-01",
+        "primary_owner": "gamification implementation only",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "No billing, CRM, or launch gates.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-02",
+        "primary_owner": "source inventory/import reconciliation",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "Own canonical import contracts.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-03",
+        "primary_owner": "identity lifecycle and portal boundaries",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "Do not relax student/parent isolation.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-04",
+        "primary_owner": "content, helper grounding, Vimeo, Buffer provider-off behavior",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "No live provider mutation.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-05",
+        "primary_owner": "class occurrence and learner access contracts",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "Consume entitlement truth.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-06",
+        "primary_owner": "Telegram, WhatsApp, support-v2 producer behavior",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "Consume W13-10 consent/provider policy.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-07",
+        "primary_owner": "CRM/contact presentation",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "Consume W13-02 data contracts.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-08",
+        "primary_owner": "billing and entitlement truth",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "Prices/seats remain decision-gated.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-09",
+        "primary_owner": "independent QA harnesses",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "No broad redesign.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 2
+      },
+      {
+        "lane": "W13-10",
+        "primary_owner": "governance, provider activation, legal, migration, security, SRE, supply chain",
+        "allowed_shared_interfaces": [
+          "packages/contracts/**",
+          "packages/domain/src/delivery/**",
+          "ops/codex-runs/W13-10/**"
+        ],
+        "forbidden_duplicate_model": "This branch.",
+        "expected_hotspots": ["apps/web/src/server/app.ts", "packages/contracts/src/index.ts"],
+        "convergence_order": 1
+      }
+    ]
+  }
 }

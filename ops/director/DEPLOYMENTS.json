@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.deployments.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T16:17:17.487Z",
   "production": {
     "url": "https://join.onetimeonetime.com",
     "environment": "production",
@@ -76,5 +76,10 @@
       "HEAD/status https://join.onetimeonetime.com/",
       "HEAD/status https://join.onetimeonetime.com/signup"
     ]
+  },
+  "w12_99_exact_staging_deployment": {
+    "status": "not_verified",
+    "source_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "note": "W13-10 did not deploy or call Railway."
   }
 }

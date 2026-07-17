@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T16:17:17.487Z",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
     "remote": "https://github.com/webcraft-media/onetimev2.git",
@@ -8,11 +8,11 @@
     "default_branch_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9"
   },
   "selected_base": {
-    "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
-    "short_sha": "c7d4606",
-    "branch": "origin/release/ops10-full-staged-production-launch-20260717T050800Z",
-    "local_branch": "codex/w12-00-canonical-director-handoff",
-    "reason_path": "ops/codex-runs/W12-00/BASE-SELECTION.md"
+    "sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "short_sha": "0d8d716",
+    "branch": "origin/integration/w12-final-convergence-20260717T123715Z",
+    "local_branch": "codex/w13-10-complete-launch-foundations",
+    "reason_path": "ops/codex-runs/W13-10/ORIGINAL-PROMPT.md"
   },
   "deployed_runtime": {
     "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
@@ -118,8 +118,8 @@
   },
   "w12_99_candidate": {
     "branch": "integration/w12-final-convergence-20260717T123715Z",
-    "head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
-    "status": "pushed_draft_pr_open",
+    "head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "status": "exact_base_for_w13_10",
     "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
     "included_lanes": [
       "W12-00",
@@ -133,7 +133,7 @@
       "W12-08"
     ],
     "excluded_lanes": ["W12-09", "OPS-13A", "BNA P1/P2/P3"],
-    "record": "ops/director/W12-99-CANDIDATE.json"
+    "record": "ops/codex-runs/W12-99/FINAL-REPORT.md"
   },
   "primary_evidence_paths": [
     "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json",
@@ -145,5 +145,13 @@
     "apps/web/src/server/app.ts",
     "packages/db/migrations",
     "tests"
-  ]
+  ],
+  "w13_10_lane": {
+    "branch": "codex/w13-10-complete-launch-foundations",
+    "base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "task_id": "W13-10",
+    "status": "in_progress_local",
+    "external_effects": 0,
+    "production_mutations": 0
+  }
 }

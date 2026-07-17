@@ -1,0 +1,38 @@
+{
+  "schema_version": "onetime.w13_10.legal_content_status.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "public_pages": [
+    {
+      "path": "/privacy",
+      "status": "counsel_review_required",
+      "source": "packages/domain/src/legal/policies.ts"
+    },
+    {
+      "path": "/terms",
+      "status": "counsel_review_required",
+      "source": "packages/domain/src/legal/policies.ts"
+    },
+    {
+      "path": "/communications-consent",
+      "status": "counsel_review_required",
+      "source": "packages/domain/src/legal/policies.ts"
+    },
+    {
+      "path": "/student-data",
+      "status": "counsel_review_required",
+      "source": "packages/domain/src/legal/policies.ts"
+    }
+  ],
+  "signup_consent": {
+    "required_service_communication": "separate_from_optional_reminders",
+    "optional_channels": ["email", "whatsapp"],
+    "prechecked_optional_consent": false,
+    "public_student_sensitive_collection": false
+  },
+  "browser_storage_audit": {
+    "local_storage": "not_used_by_public_signup_code",
+    "cookies": "no nonessential public tracking cookie found in public-entry/build script",
+    "analytics": "no analytics script found in public page generator",
+    "third_party_resources": "public assets served from app paths"
+  }
+}

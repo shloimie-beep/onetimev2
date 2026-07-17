@@ -1,0 +1,17 @@
+{
+  "schema_version": "onetime.w13_10.sre_readiness.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "deployment_guard": "scripts/w13-10/staging-deploy-guard.ts",
+  "deployment_mutations": 0,
+  "required_checks": [
+    "web health/readiness/version",
+    "worker heartbeat and drain state",
+    "queue depth and oldest age",
+    "database locks and migration drift",
+    "backup and restore proof age",
+    "auth/rate-limit spikes",
+    "webhook verification/replay failures",
+    "provider canary budget violations",
+    "public signup errors and latency"
+  ]
+}

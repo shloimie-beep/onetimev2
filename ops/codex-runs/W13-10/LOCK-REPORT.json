@@ -1,0 +1,8 @@
+{
+  "schema_version": "onetime.w13_10.lock_report.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "representative_rows": "synthetic_only",
+  "lock_classes": ["DDL migration locks require controlled staging rehearsal"],
+  "estimated_blocking_status": "needs_disposable_postgres_rehearsal",
+  "no_production_rows_read": true
+}

@@ -2268,7 +2268,15 @@ export function createApp({
 
 function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
-  const staticPages = new Set(['/signup', '/login', '/privacy', '/terms', '/404']);
+  const staticPages = new Set([
+    '/signup',
+    '/login',
+    '/privacy',
+    '/terms',
+    '/communications-consent',
+    '/student-data',
+    '/404',
+  ]);
   if (staticPages.has(pathname)) return `${pathname.slice(1)}.html`;
   const appPages = new Set([
     '/app/crm',

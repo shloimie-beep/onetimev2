@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T16:17:17.487Z",
   "allowed_statuses": [
     "working_live",
     "working_staging",
@@ -12,12 +12,13 @@
     "not_built"
   ],
   "source_ref": {
-    "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "selected_base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
     "deployed_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
     "w12_99_candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
-    "w12_99_candidate_head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
-    "w12_99_evidence": "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json"
+    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "w12_99_evidence": "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
+    "w13_10_evidence": "ops/codex-runs/W13-10/FINAL-REPORT.md"
   },
   "capabilities": [
     {

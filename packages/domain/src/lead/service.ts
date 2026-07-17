@@ -8,11 +8,13 @@ import type { AppConfig } from '../../../config/src/index.ts';
 import { DELIVERY_EVENT_TYPES } from '../../../contracts/src/delivery/types.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
+import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../legal/policies.ts';
 import { scheduleClassFulfillmentForLead } from '../classes/service.ts';
 import {
   normalizeEmail,
   normalizePhone,
   requestHash,
+  selectedChannels,
   stableKey,
   successCopy,
 } from './normalize.ts';
@@ -33,7 +35,6 @@ type OutboxEvent = {
 
 const OFFER_VERSION = 'free-until-rosh-hashanah-2026';
 const CONTENT_VERSION = 'landing-v1-2026-07-14';
-const CONSENT_POLICY = 'one-time-class-reminders-v1-2026-07-14';
 const DELIVERY_POLICY_VERSION = 'ot40-immediate-receipt-v1';
 
 export class IdempotencyConflictError extends Error {
@@ -52,6 +53,7 @@ export async function captureLead({
   const email = normalizeEmail(parsed.email);
   const phone = normalizePhone(parsed.phone);
   const reqHash = requestHash(parsed);
+  const capturedAt = (now ?? new Date()).toISOString();
 
   const response = await inTransaction(pool, async (client) => {
     await client.query('SELECT pg_advisory_xact_lock($1)', [
@@ -82,8 +84,8 @@ export async function captureLead({
       outbox_intents: outboxDeliveryKeys(config, parsed, contactKey, signupKey),
       message,
     };
-    await upsertSignup(client, config, parsed, contactKey, signupKey);
-    await insertAudit(client, config, parsed, contactKey, signupKey);
+    await upsertSignup(client, config, parsed, contactKey, signupKey, capturedAt);
+    await insertAudit(client, config, parsed, contactKey, signupKey, capturedAt);
     await insertOutboxIntents(client, config, parsed, contactKey, signupKey, email, phone);
     await client.query(
       `INSERT INTO onetime.idempotency_records
@@ -194,8 +196,8 @@ async function upsertContact(
       email,
       phone,
       payload.reminder_preference,
-      payload.reminder_preference === 'none' ? null : CONSENT_POLICY,
-      payload.reminder_consent,
+      payload.reminder_preference === 'none' ? null : COMMUNICATION_CONSENT_POLICY_VERSION,
+      hasOptionalReminderConsent(payload),
       'one_time_public_signup',
       OFFER_VERSION,
       CONTENT_VERSION,
@@ -210,6 +212,7 @@ async function upsertSignup(
   payload: LeadPayload,
   contactKey: string,
   signupKey: string,
+  capturedAt: string,
 ) {
   await client.query(
     `INSERT INTO onetime.signup_leads (
@@ -230,6 +233,7 @@ async function upsertSignup(
         browser_timezone: payload.browser_timezone ?? null,
         location: payload.location,
         reminder_preference: payload.reminder_preference,
+        consent: consentRecord(payload, capturedAt),
       }),
     ],
   );
@@ -241,6 +245,7 @@ async function insertAudit(
   payload: LeadPayload,
   contactKey: string,
   signupKey: string,
+  capturedAt: string,
 ) {
   const eventKey = stableKey('audit', [signupKey, 'captured']);
   await client.query(
@@ -261,6 +266,7 @@ async function insertAudit(
         no_payment: true,
         no_access_grant: true,
         no_automatic_task: true,
+        consent: consentRecord(payload, capturedAt),
       }),
     ],
   );
@@ -356,7 +362,12 @@ function outboxEvents(
 
   const wantsWhatsapp =
     payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both';
-  if (payload.audience_type === 'family' && wantsWhatsapp && phone && payload.reminder_consent) {
+  if (
+    payload.audience_type === 'family' &&
+    wantsWhatsapp &&
+    phone &&
+    hasOptionalReminderConsent(payload)
+  ) {
     const whatsappEventType = DELIVERY_EVENT_TYPES.familySignupWhatsAppConfirmation;
     events.push({
       deliveryKey: stableKey('delivery', [signupKey, whatsappEventType]),
@@ -372,4 +383,34 @@ function outboxEvents(
   }
 
   return events;
+}
+
+function hasOptionalReminderConsent(payload: LeadPayload) {
+  return payload.reminder_preference !== 'none' && payload.reminder_consent === true;
+}
+
+function consentRecord(payload: LeadPayload, capturedAt: string) {
+  const channels = selectedChannels(payload.reminder_preference);
+  return {
+    required_service_communication: {
+      policy_version: COMMUNICATION_CONSENT_POLICY_VERSION,
+      purpose: 'required_service_communication',
+      source: 'public_signup',
+      channels: ['email'],
+      captured_at: capturedAt,
+      withdrawal_state: 'not_withdrawn',
+      suppression_state: 'active',
+    },
+    optional_class_reminders: {
+      policy_version:
+        payload.consent_context?.policy_version ?? COMMUNICATION_CONSENT_POLICY_VERSION,
+      purpose: 'optional_class_reminders',
+      source: 'public_signup',
+      channels,
+      captured_at: payload.consent_context?.captured_at ?? capturedAt,
+      withdrawal_state: payload.consent_context?.withdrawal_state ?? 'not_withdrawn',
+      suppression_state: payload.consent_context?.suppression_state ?? 'active',
+      granted: hasOptionalReminderConsent(payload),
+    },
+  };
 }

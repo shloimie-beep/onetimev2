@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.branch_fleet.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T16:17:17.487Z",
   "repository": "webcraft-media/onetimev2",
   "release_candidate": {
     "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
@@ -13,8 +13,8 @@
   },
   "w12_99_integration": {
     "branch": "integration/w12-final-convergence-20260717T123715Z",
-    "sha": "recorded_by_git_branch_and_draft_pr_head_after_commit",
-    "status": "pushed_draft_pr_open",
+    "sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "status": "pushed_draft_pr_open_exact_base",
     "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
     "included_lanes": [
       "W12-00",
@@ -229,5 +229,19 @@
       "date": "2026-07-17 01:58:26 +0300",
       "subject": "Record OT-112 PR handoff"
     }
-  ]
+  ],
+  "w13_10": {
+    "branch": "codex/w13-10-complete-launch-foundations",
+    "base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "status": "local_branch_created",
+    "pr_target": "integration/w12-final-convergence-20260717T123715Z"
+  },
+  "pr_72_ops13a": {
+    "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+    "status": "planning_evidence_not_w12_99_ancestry"
+  },
+  "pr_71_w12_09": {
+    "head": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+    "status": "optional_source_explicitly_excluded_from_w12_99"
+  }
 }

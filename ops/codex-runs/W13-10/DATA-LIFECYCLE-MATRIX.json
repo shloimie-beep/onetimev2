@@ -1,0 +1,156 @@
+{
+  "schema_version": "onetime.w13_10.data_lifecycle_matrix.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "rows": [
+    {
+      "category": "public_signup",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "blocks_optional_outbound",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "account_security",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "contact_crm",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "household_guardian_learner",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "class_enrollment_attendance_progress",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "content_questions_helper",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "communications_support",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "blocks_optional_outbound",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "provider_events",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "billing_test_billing",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    },
+    {
+      "category": "audit_rate_limit_operational",
+      "source": "application_code_and_migrations",
+      "purpose": "operate_one_time_mishnayos_launch_foundation",
+      "authorized_roles": [
+        "owner_admin_scoped",
+        "parent_scoped",
+        "student_scoped_where_applicable"
+      ],
+      "storage_boundary": "one_time_repository_and_database_schema",
+      "retention_decision_status": "needs_operator_decision",
+      "deletion_export_decision_status": "needs_operator_decision",
+      "suppression_behavior": "not_applicable",
+      "evidence_path": "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json"
+    }
+  ]
+}
