@@ -94,6 +94,12 @@ export type Ot104rVimeoAdapter = {
   ): Promise<Ot104rVimeoTextTrackDownload>;
 };
 
+export type Ot104rRealVimeoAdapterOptions = {
+  env?: NodeJS.ProcessEnv | undefined;
+  apiBaseUrl?: string | undefined;
+  fetchImpl?: typeof fetch | undefined;
+};
+
 export type Ot104rVimeoWebhookReceiptResult = {
   status: 200 | 202 | 400 | 401 | 409 | 413 | 415 | 503;
   code:
@@ -300,16 +306,19 @@ export function createOt104rSinkVimeoAdapter(
 }
 
 export function createOt104rRealVimeoAdapter(
-  env: NodeJS.ProcessEnv = process.env,
+  input: NodeJS.ProcessEnv | Ot104rRealVimeoAdapterOptions = process.env,
 ): Ot104rVimeoAdapter {
+  const options = isOt104rRealVimeoAdapterOptions(input) ? input : { env: input };
+  const env = options.env ?? process.env;
   const readiness = inspectOt104rVimeoReadinessFromEnv(env);
   if (readiness.mode !== 'real' || !readiness.configured) {
     return createOt104rUnconfiguredVimeoAdapter(readiness);
   }
   const token = mustEnv(env, 'VIMEO_ACCESS_TOKEN');
-  const baseUrl = 'https://api.vimeo.com';
+  const baseUrl = trimTrailingSlash(options.apiBaseUrl ?? 'https://api.vimeo.com');
+  const fetchImpl = options.fetchImpl ?? fetch;
   async function vimeoJson(path: string, init: RequestInit = {}) {
-    const response = await fetch(`${baseUrl}${path}`, {
+    const response = await fetchImpl(`${baseUrl}${path}`, {
       ...init,
       headers: {
         accept: 'application/json',
@@ -334,7 +343,7 @@ export function createOt104rRealVimeoAdapter(
   }
   return {
     async readiness() {
-      const response = await fetch(`${baseUrl}/me`, {
+      const response = await fetchImpl(`${baseUrl}/me`, {
         headers: { accept: 'application/json', authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
@@ -399,6 +408,12 @@ export function createOt104rRealVimeoAdapter(
       return { ...track, body: text };
     },
   };
+}
+
+function isOt104rRealVimeoAdapterOptions(
+  value: NodeJS.ProcessEnv | Ot104rRealVimeoAdapterOptions,
+): value is Ot104rRealVimeoAdapterOptions {
+  return 'env' in value || 'apiBaseUrl' in value || 'fetchImpl' in value;
 }
 
 export async function registerOt104rVimeoSource(input: {
@@ -1604,6 +1619,10 @@ function mustEnv(env: NodeJS.ProcessEnv, key: string) {
   const value = env[key];
   if (!value) throw new Ot104rVimeoRuntimeError('VIMEO_CONFIG_MISSING', `${key} is required.`, 503);
   return value;
+}
+
+function trimTrailingSlash(value: string) {
+  return value.replace(/\/+$/, '');
 }
 
 function sha256(value: string | Buffer) {

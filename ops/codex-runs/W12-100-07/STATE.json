@@ -1,0 +1,209 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-07",
+  "title": "Classroom/content launch-readiness protocol coverage",
+  "status": "ready_for_draft_pr",
+  "generated_at": "2026-07-17T18:01:22+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-07",
+  "branch": "codex/w12-100-07-classroom-content-readiness",
+  "draft_pr_target": "integration/w12-final-convergence-20260717T123715Z",
+  "safety_counters": {
+    "restricted_external_actions": 0,
+    "production_mutations": 0,
+    "provider_mutations": 0,
+    "staging_deployments": 0,
+    "production_database_reads": 0,
+    "private_rows_read": 0,
+    "real_provider_calls": 0
+  },
+  "objectives": [
+    {
+      "id": "W12-100-07-001",
+      "objective": "Fetch all refs, verify the canonical commit, and create an isolated worktree/branch.",
+      "status": "done",
+      "evidence": [
+        "git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/tags/*:refs/tags/*' '+refs/pull/*/head:refs/remotes/origin/pr/*' --prune",
+        "git rev-parse '0d8d7168f066668f035176d777bdaaa4dcc5accd^{commit}'",
+        "git worktree add -b codex/w12-100-07-classroom-content-readiness C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-07 0d8d7168f066668f035176d777bdaaa4dcc5accd"
+      ]
+    },
+    {
+      "id": "W12-100-07-002",
+      "objective": "Read required repo and W12-99 handoff files before implementation.",
+      "status": "done",
+      "evidence": [
+        "AGENTS.md",
+        "ops/director/START-HERE.md",
+        "ops/director/PRODUCT-INVARIANTS.md",
+        "ops/codex-runs/W12-99/FINAL-REPORT.md",
+        "ops/codex-runs/W12-99/STATE.json",
+        "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
+        "ops/codex-runs/W12-99/CANARY-REPORT.json",
+        "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
+        "ops/codex-runs/W12-99/ROLLBACK.md"
+      ]
+    },
+    {
+      "id": "W12-100-07-003",
+      "objective": "Audit and test the classroom/content vertical slice from source registration through social draft handoff.",
+      "status": "done",
+      "evidence": [
+        "Focused unit suite: 22 tests passed.",
+        "Focused integration suite: 36 tests passed.",
+        "Full unit suite: 39 files / 198 tests passed.",
+        "Full integration suite: 38 files / 184 tests passed.",
+        "E2E: 38 tests passed.",
+        "Accessibility: 13 tests passed.",
+        "Performance: 7 tests passed plus bundle budget output."
+      ]
+    },
+    {
+      "id": "W12-100-07-004",
+      "objective": "Build provider fake servers for Zoom and Vimeo protocol tests without real provider calls.",
+      "status": "done",
+      "evidence": [
+        "tests/unit/providers/w12-100-provider-protocol-fakes.test.ts",
+        "Zoom fake server covers OAuth token, recurring meeting creation, and learner registrant creation.",
+        "Vimeo fake server covers account readiness, private video inspection, controlled upload intent, text-track list, and text-track download.",
+        "npx vitest run --config vitest.unit.config.ts tests/unit/providers/w12-100-provider-protocol-fakes.test.ts"
+      ]
+    },
+    {
+      "id": "W12-100-07-005",
+      "objective": "No private Vimeo or Zoom URL appears in ordinary UI, logs, or committed evidence.",
+      "status": "already_satisfied",
+      "evidence": [
+        "New protocol tests assert sanitized adapter outputs and captured request bodies exclude raw provider URLs and credential values.",
+        "Existing integration/E2E coverage asserts protected launch and content payloads omit raw provider URLs.",
+        "Generated browser evidence churn was restored and not committed."
+      ]
+    },
+    {
+      "id": "W12-100-07-006",
+      "objective": "Provider-off states are labeled truthfully and missing provider state degrades safely.",
+      "status": "already_satisfied",
+      "evidence": [
+        "tests/integration/content/ot104r-vimeo-private-runtime.test.ts",
+        "tests/unit/classroom/classroom-contracts.test.ts",
+        "tests/integration/content/ot110a-admin-content-workspace.test.ts"
+      ]
+    },
+    {
+      "id": "W12-100-07-007",
+      "objective": "Learner launch grants are scoped, short-lived, and single-purpose.",
+      "status": "already_satisfied",
+      "evidence": [
+        "tests/integration/classroom/zoom-learner-classroom.test.ts",
+        "tests/unit/classroom/ot103-zoom-provider.test.ts"
+      ]
+    },
+    {
+      "id": "W12-100-07-008",
+      "objective": "Attendance is not matched only by display name.",
+      "status": "already_satisfied",
+      "evidence": [
+        "tests/unit/classroom/ot103-zoom-provider.test.ts",
+        "packages/domain/src/providers/zoom-webhook.ts projects attendance from provider IDs and digests, not display name alone."
+      ]
+    },
+    {
+      "id": "W12-100-07-009",
+      "objective": "Content approval is required before student/helper visibility, helper citations are valid, and unsupported answers abstain.",
+      "status": "already_satisfied",
+      "evidence": [
+        "tests/integration/content/ot86-content-pipeline.test.ts",
+        "tests/integration/content/content-library.test.ts",
+        "tests/unit/ot107-student-class-helper.test.ts"
+      ]
+    },
+    {
+      "id": "W12-100-07-010",
+      "objective": "Private student questions remain separate from ordinary helper queries.",
+      "status": "already_satisfied",
+      "evidence": [
+        "tests/unit/ot107-student-class-helper.test.ts",
+        "tests/integration/classroom/zoom-learner-classroom.test.ts"
+      ]
+    },
+    {
+      "id": "W12-100-07-011",
+      "objective": "Class scheduling uses Asia/Jerusalem correctly across DST boundaries.",
+      "status": "already_satisfied",
+      "evidence": [
+        "tests/unit/classes/schedule.test.ts",
+        "tests/unit/classroom/classroom-contracts.test.ts"
+      ]
+    },
+    {
+      "id": "W12-100-07-012",
+      "objective": "Retry operations are authorized, idempotent, and audited.",
+      "status": "already_satisfied",
+      "evidence": [
+        "tests/integration/content/ot104r-vimeo-private-runtime.test.ts",
+        "tests/integration/classroom/zoom-learner-classroom.test.ts",
+        "tests/integration/social/ot86b-social-publishing.test.ts"
+      ]
+    },
+    {
+      "id": "W12-100-07-013",
+      "objective": "No BNA content or provider context crosses into this One Time lane.",
+      "status": "already_satisfied",
+      "evidence": [
+        "Required invariant reads completed.",
+        "No BNA files, branches, sessions, or provider runtime were read or edited.",
+        "Content/helper tests assert One Time account/product scope."
+      ]
+    },
+    {
+      "id": "W12-100-07-014",
+      "objective": "Produce exact protected configuration and staging-canary prerequisites for later use.",
+      "status": "done",
+      "evidence": [
+        "ops/codex-runs/W12-100-07/FINAL-REPORT.md#protected-configuration-and-canary-prerequisites"
+      ]
+    }
+  ],
+  "validation": [
+    { "command": "npm ci", "status": "passed" },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/providers/w12-100-provider-protocol-fakes.test.ts",
+      "status": "passed",
+      "details": "2 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/classes/schedule.test.ts tests/unit/classroom/classroom-contracts.test.ts tests/unit/classroom/ot103-zoom-provider.test.ts tests/unit/ot107-student-class-helper.test.ts tests/unit/content/redaction.test.ts tests/unit/providers/w12-100-provider-protocol-fakes.test.ts",
+      "status": "passed",
+      "details": "6 files, 22 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/classroom/zoom-learner-classroom.test.ts tests/integration/content/content-library.test.ts tests/integration/content/ot104r-vimeo-private-runtime.test.ts tests/integration/content/ot109-rabbi-content-publisher.test.ts tests/integration/content/ot110a-admin-content-workspace.test.ts tests/integration/content/ot86-content-pipeline.test.ts tests/integration/social/ot86b-social-publishing.test.ts",
+      "status": "passed",
+      "details": "7 files, 36 tests."
+    },
+    { "command": "npm run secret:scan", "status": "passed", "details": "1302 repo text files." },
+    { "command": "npm run lint", "status": "passed" },
+    { "command": "npm run typecheck", "status": "passed" },
+    { "command": "npm run unit", "status": "passed", "details": "39 files, 198 tests." },
+    { "command": "npm run integration", "status": "passed", "details": "38 files, 184 tests." },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Vite font URL warning only; build completed."
+    },
+    { "command": "npm run e2e", "status": "passed", "details": "38 tests." },
+    { "command": "npm run accessibility", "status": "passed", "details": "13 tests." },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "details": "7 tests plus bundle budget output."
+    },
+    {
+      "command": "npx prettier --check packages/domain/src/content/vimeo-private-runtime.ts tests/unit/providers/w12-100-provider-protocol-fakes.test.ts ops/codex-runs/W12-100-07/ORIGINAL-PROMPT.md ops/codex-runs/W12-100-07/STATE.json ops/codex-runs/W12-100-07/FINAL-REPORT.md ops/codex-runs/W12-100-07/RESUME.md",
+      "status": "passed"
+    },
+    { "command": "npm run brand:check", "status": "passed" }
+  ],
+  "blockers": []
+}
