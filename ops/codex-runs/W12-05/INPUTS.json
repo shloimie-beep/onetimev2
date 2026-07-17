@@ -1,0 +1,32 @@
+{
+  "lane": "W12-05",
+  "package": {
+    "path": "C:\\Users\\User\\Downloads\\W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+    "sha256": "D26BF78FB3887F1B7D705CEDE101ACB0AE3F611C2C86F73C850FCC9AB213FD3B",
+    "entry_count": 23,
+    "unsafe_entry_count": 0,
+    "sha256sums_verified": true,
+    "sha256sums_verified_file_count": 19
+  },
+  "validated_sources": {
+    "start_here_sha256": "FDD3A0E0A166476A6AD9A43FF0C223E025832BC006D1DB0FA653037A55E41FA6",
+    "prompt_sha256": "ABE0426A68B291CD92221FED42D91867E4418DFBDD3141B2FF4F26DB9E024F1C",
+    "manifest_sha256": "80D9B17C5D94E88C27CCD4D9F36915AA2C635B1E5AF6512BA00687718E4C6F87"
+  },
+  "repository": {
+    "owner_repo": "webcraft-media/onetimev2",
+    "worktree": "C:\\Users\\User\\.w12-20260717-worktrees\\W12-05",
+    "branch": "codex/w12-05-telegram-operations",
+    "base_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c"
+  },
+  "prohibited_actions": {
+    "production_webhook_registration": false,
+    "token_in_chat_or_git": false,
+    "real_telegram_send": false,
+    "deploy": false,
+    "bna_mutation": false,
+    "broad_send": false,
+    "payment_mutation": false
+  }
+}

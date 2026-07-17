@@ -25,12 +25,12 @@ import { TelegramIdentityResolver } from './identity.ts';
 
 const HELP_TEXT = [
   'One Time Telegram commands:',
-  '/status, /whoami, /scope, /leads, /new-leads, /signups, /lead <ref>, /contact <ref>, /classes, /class <ref>, /content, /content-item <ref>, /content-readiness <ref>, /tasks, /task <ref>, /support, /ticket <ref>, /questions, /question <ref>, /social, /social-draft <ref>.',
-  'Write commands include /lead-create, /tag-add, /tag-remove, /class-status, /content-retry, /task-create, /task-update, /ticket-assign, /ticket-status, /question-select, and /question-resolve when enabled. Every write previews first and requires explicit confirmation.',
+  '/status, /whoami, /scope, /today, /upcoming, /link <class|contact|content|support> <ref>, /leads, /new-leads, /signups, /lead <ref>, /contact <ref>, /classes, /class <ref>, /content, /vimeo, /content-item <ref>, /content-readiness <ref>, /delivery, /delivery <ref>, /tasks, /task <ref>, /support, /ticket <ref>, /questions, /question <ref>, /social, /social-draft <ref>.',
+  'Write commands include /lead-create, /tag-add, /tag-remove, /class-status, /content-retry, /delivery-retry, /task-create, /task-update, /ticket-assign, /ticket-status, /question-select, and /question-resolve when enabled. Every write previews first and requires explicit confirmation.',
 ].join('\n');
 
 const forbiddenRequestPattern =
-  /delete|drop table|select\s+\*|sql|shell|print env|token|secret|export|mass send|bulk send|publish|buffer publish|billing|charge|refund|provider config|role change|impersonate|view as|act as|switch role|another account|other product|academy|bna bot/i;
+  /delete|drop table|select\s+\*|sql|shell|print env|token|secret|export|mass send|bulk send|publish|buffer publish|webhook|setwebhook|production config|prod config|billing|charge|refund|provider config|role change|impersonate|view as|act as|switch role|another account|other product|academy|bna bot/i;
 
 export class TelegramCommandEngine {
   constructor(
@@ -494,6 +494,26 @@ function classifyDeterministic(text: string): BotCommand | null {
     return read('gateway.identity.read_self');
   }
   if (['/scope', 'scope'].includes(lower)) return read('gateway.scope.read');
+  if (['/today', 'today', "today's class", 'today class'].includes(lower)) {
+    return read('class.schedule.read', { date: 'today' });
+  }
+  if (['/upcoming', 'upcoming', 'upcoming schedule'].includes(lower)) {
+    return read('class.schedule.read', { date: 'upcoming' });
+  }
+  if (
+    lower.startsWith('/link ') ||
+    lower.startsWith('link ') ||
+    lower.startsWith('/open ') ||
+    lower.startsWith('open ')
+  ) {
+    const args = splitArgs(stripAnyCommand(text, ['link', 'open']), 2);
+    if (!args) return missing();
+    const [kindRaw, refRaw] = args;
+    if (!kindRaw || !refRaw) return missing();
+    const kind = kindRaw.toLowerCase();
+    if (!['class', 'contact', 'content', 'support'].includes(kind)) return null;
+    return read('app.link.open', { kind, ref: refRaw.slice(0, 100) });
+  }
   if (lower === '/leads' || lower === 'leads') return read('crm.lead.list');
   if (lower === '/new-leads' || lower === 'new leads') {
     return read('crm.lead.list', { status: 'new' });
@@ -540,6 +560,9 @@ function classifyDeterministic(text: string): BotCommand | null {
   }
   if (lower.startsWith('/class ')) return readWithRef(text, 'class', 'class.status.read');
   if (lower === '/content' || lower === 'content') return read('content.pipeline.read');
+  if (['/vimeo', 'vimeo', 'vimeo status', '/vimeo-status'].includes(lower)) {
+    return read('content.pipeline.read', { filter: 'vimeo' });
+  }
   if (lower.startsWith('/content ')) {
     return read('content.pipeline.read', { filter: stripCommand(text, 'content').slice(0, 80) });
   }
@@ -555,6 +578,29 @@ function classifyDeterministic(text: string): BotCommand | null {
       { content_ref: stripCommand(text, 'content-retry') },
       'deterministic',
     );
+  }
+  if (lower === '/delivery' || lower === 'delivery' || lower === '/delivery-status') {
+    return read('delivery.status.read');
+  }
+  if (lower.startsWith('/delivery ') || lower.startsWith('/delivery-status ')) {
+    const ref = stripAnyCommand(text, ['delivery-status', 'delivery']);
+    if (!ref) return missing();
+    return read('delivery.status.read', { ref: ref.slice(0, 120) });
+  }
+  if (
+    lower.startsWith('/delivery-retry ') ||
+    lower.startsWith('/retry-delivery ') ||
+    lower.startsWith('delivery retry ') ||
+    lower.startsWith('retry delivery ')
+  ) {
+    const ref = stripAnyCommand(text, [
+      'delivery-retry',
+      'retry-delivery',
+      'delivery retry',
+      'retry delivery',
+    ]);
+    if (!ref) return missing();
+    return write('delivery.retry', { delivery_ref: ref.slice(0, 120) }, 'deterministic');
   }
   if (lower === '/tasks' || lower === 'tasks') return read('task.list');
   if (lower.startsWith('/tasks ') || lower.startsWith('tasks ')) {
@@ -661,6 +707,32 @@ function classifyDeterministic(text: string): BotCommand | null {
 }
 
 function classifyNaturalLanguage(text: string): BotCommand | null {
+  if (/today'?s class|what .*today.*class|class today/i.test(text)) {
+    return read('class.schedule.read', { date: 'today' }, 'natural_language');
+  }
+  if (/upcoming schedule|next classes|upcoming classes/i.test(text)) {
+    return read('class.schedule.read', { date: 'upcoming' }, 'natural_language');
+  }
+  if (/vimeo.*status|content processing status/i.test(text)) {
+    return read('content.pipeline.read', { filter: 'vimeo' }, 'natural_language');
+  }
+  const findContact = text.match(/^find contact (.+)$/i);
+  if (findContact?.[1]) {
+    return read(
+      'crm.contact.read_redacted',
+      { ref: findContact[1].trim().slice(0, 100) },
+      'natural_language',
+    );
+  }
+  const deliveryStatus = text.match(/^delivery status(?: for)?\s*(.*)$/i);
+  if (deliveryStatus) {
+    const ref = deliveryStatus[1]?.trim().slice(0, 120);
+    return read('delivery.status.read', ref ? { ref } : {}, 'natural_language');
+  }
+  const retryDelivery = text.match(/^retry delivery ([A-Za-z0-9:_-]{2,120})$/i);
+  if (retryDelivery?.[1]) {
+    return write('delivery.retry', { delivery_ref: retryDelivery[1] }, 'natural_language');
+  }
   if (/^(show|list) new leads$/i.test(text)) return read('crm.lead.list', { status: 'new' });
   if (/^(show|list) recent signups$/i.test(text)) return read('crm.signup.recent');
   if (/^(show|list) social drafts$/i.test(text)) return read('social.draft.list');
@@ -702,8 +774,12 @@ function classifyNaturalLanguage(text: string): BotCommand | null {
   return null;
 }
 
-function read(capability: BotReadCapability, args: BotActionArgs = {}): BotCommand {
-  return { type: 'read', capability, source: 'deterministic', args };
+function read(
+  capability: BotReadCapability,
+  args: BotActionArgs = {},
+  source: BotCommandSource = 'deterministic',
+): BotCommand {
+  return { type: 'read', capability, source, args };
 }
 
 function write(
@@ -729,6 +805,14 @@ function readWithRef(text: string, command: string, capability: BotReadCapabilit
 
 function stripCommand(text: string, command: string) {
   return text.replace(new RegExp(`^/?${command}\\s*`, 'i'), '').trim();
+}
+
+function stripAnyCommand(text: string, commands: string[]) {
+  for (const command of commands) {
+    const next = stripCommand(text, command);
+    if (next !== text.trim()) return next;
+  }
+  return text.trim();
 }
 
 function splitArgs(value: string, count: number) {
@@ -785,6 +869,7 @@ function isWriteCapability(capability: BotCapability): capability is BotWriteCap
     'support.ticket.status.update',
     'class.question.select',
     'class.question.resolve',
+    'delivery.retry',
   ].includes(capability);
 }
 

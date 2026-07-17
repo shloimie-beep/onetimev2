@@ -99,6 +99,42 @@ describe('OT-101R SQL-backed Telegram admin runtime', () => {
     );
     expect(supportUpdated[0]?.text).toContain('updated to resolved');
 
+    const deliverySummary = await engine.handle(
+      updateFixture({ updateId: '10', text: '/delivery' }),
+    );
+    expect(deliverySummary[0]?.text).toContain('dead_letter=1');
+    const deliveryDetail = await engine.handle(
+      updateFixture({ updateId: '11', text: '/delivery lifecycle_delivery_fixture' }),
+    );
+    expect(deliveryDetail[0]?.text).toContain('Retry approval: approved');
+    const deliveryPreview = await engine.handle(
+      updateFixture({ updateId: '12', text: '/delivery-retry lifecycle_delivery_fixture' }),
+    );
+    expect(deliveryPreview[0]?.text).toContain('Action: delivery.retry');
+    const deliveryRetried = await engine.handle(
+      updateFixture({
+        updateId: '13',
+        kind: 'callback_query',
+        callbackData: requireString(deliveryPreview[0]?.buttons?.[0]?.callbackData),
+      }),
+    );
+    expect(deliveryRetried[0]?.text).toContain('queued for approved retry');
+    const retriedDelivery = await pool.query(
+      `SELECT state, metadata
+         FROM onetime.account_lifecycle_delivery_outbox
+        WHERE delivery_key = 'lifecycle_delivery_fixture'`,
+    );
+    expect(retriedDelivery.rows[0]).toMatchObject({ state: 'retry' });
+    expect(retriedDelivery.rows[0].metadata).toMatchObject({
+      telegram_retry_requested: true,
+    });
+    const deliveryExecution = await pool.query(
+      `SELECT capability
+         FROM onetime.telegram_command_executions
+        WHERE capability = 'delivery.retry'`,
+    );
+    expect(deliveryExecution.rowCount).toBe(1);
+
     const events = await pool.query(
       `SELECT event_type FROM onetime.action_gateway_event_outbox ORDER BY event_type`,
     );
@@ -143,6 +179,7 @@ async function seedRuntime(config: AppConfig) {
   });
   await seedContact(config, userKey);
   await seedSupport(config, userKey);
+  await seedDelivery(config, userKey);
   await seedSocial(config);
 
   const adapter = createOneTimeTelegramApplicationAdapter({ pool, config });
@@ -203,6 +240,33 @@ async function seedSupport(config: AppConfig, userKey: string) {
        ('ots_fixture_1','otr_fixture_1',$1,$2,$3,'pending_operator',
         'Operator decision needed for a fixture ticket.','queued')`,
     [config.accountKey, config.productKey, userKey],
+  );
+}
+
+async function seedDelivery(config: AppConfig, userKey: string) {
+  const tokenHash = 'c'.repeat(64);
+  await pool.query(
+    `INSERT INTO onetime.account_lifecycle_tokens
+       (token_key, account_key, product_key, token_type, token_hash, email_normalized,
+        display_name, target_role, subject_user_key, expires_at, created_by_user_key)
+     VALUES
+       ('lifecycle_token_fixture',$1,$2,'owner_admin_invitation',$3,'owner@example.test',
+        'Owner','owner',$4,'2026-07-31T00:00:00Z',$4)`,
+    [config.accountKey, config.productKey, tokenHash, userKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_lifecycle_delivery_outbox
+       (delivery_key, account_key, product_key, token_key, purpose, channel, transport_mode,
+        destination_ref, key_id, nonce, ciphertext, auth_tag, encrypted_payload_expires_at,
+        state, attempts, max_attempts, next_attempt_at, idempotency_key, last_error_code,
+        dead_lettered_at, metadata)
+     VALUES
+       ('lifecycle_delivery_fixture',$1,$2,'lifecycle_token_fixture','owner_admin_invitation',
+        'email','sink','redacted-destination','fixture-key','nonce','ciphertext','auth-tag',
+        '2026-07-31T00:00:00Z','dead_letter',1,5,'2026-07-16T11:00:00Z',
+        'delivery_idem_fixture','fixture_error','2026-07-16T10:30:00Z',
+        '{"retry_approved":true}'::jsonb)`,
+    [config.accountKey, config.productKey],
   );
 }
 
