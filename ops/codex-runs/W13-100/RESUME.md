@@ -1,7 +1,7 @@
 # W13-100 Resume
 
 Generated: 2026-07-17T18:38:52Z
-Updated: 2026-07-17T19:12:48Z
+Updated: 2026-07-17T19:15:17Z
 
 Worktree:
 `C:\Users\User\OneTimeOneTime-w13-100-final-launch`
@@ -9,7 +9,7 @@ Worktree:
 Branch:
 `release/w13-100-controlled-day-one-20260717T182046Z`
 
-Current status: `phase_2_convergence_checkpoint_committed`
+Current status: `phase_2_convergence_checkpoint_pr_open`
 
 ## Resume Command
 
@@ -48,6 +48,13 @@ contracts, domain service, PostgreSQL repository, additive migration 2203,
 portal summaries, parent reward goals, owner `/app/rewards`, visible-action
 registry entries, unit tests, and browser harness. The local W12-09 checkpoint
 commit is `5a2802c611db755992a2f1596b6cb21fbac1f84f`.
+
+Draft PR #91 is open at:
+`https://github.com/webcraft-media/onetimev2/pull/91`
+
+The PR targets `integration/w12-final-convergence-20260717T123715Z` and must
+remain draft until staging/rollback, database assurance, protected checks, and
+operator authorization complete.
 
 Local validation passed after W12-09:
 

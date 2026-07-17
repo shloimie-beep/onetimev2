@@ -1,9 +1,9 @@
 # W13-100 Final Report
 
 Generated: 2026-07-17T18:20:46Z
-Updated: 2026-07-17T19:12:48Z
+Updated: 2026-07-17T19:15:17Z
 
-Status: local semantic convergence checkpoint ready.
+Status: local semantic convergence checkpoint ready with draft PR open.
 
 The isolated W13-100 worktree and branch were created from W12-100 convergence
 `ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c`.
@@ -22,6 +22,13 @@ ported locally and checkpointed at
 - additive migration `2203_w13_100_student_gamification.sql`;
 - visible-action registry coverage for rewards and parent reward-goal creation;
 - local browser guardrails: no public rankings, random rewards, or empty-click points.
+
+Draft PR:
+
+- https://github.com/webcraft-media/onetimev2/pull/91
+- base: `integration/w12-final-convergence-20260717T123715Z`
+- head at PR creation: `85dce2a3df029adf348ffe15bafbd13ff2ad6c81`
+- draft: yes
 
 Local validation passed:
 

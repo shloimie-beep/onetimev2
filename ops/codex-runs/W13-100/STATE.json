@@ -1,17 +1,25 @@
 {
   "schema_version": "onetime.w13_100.state.v1",
   "generated_at": "2026-07-17T18:20:46Z",
-  "updated_at": "2026-07-17T19:12:48Z",
-  "status": "phase_2_convergence_checkpoint_committed",
+  "updated_at": "2026-07-17T19:15:17Z",
+  "status": "phase_2_convergence_checkpoint_pr_open",
   "terminal_outcome": null,
   "repository": {
     "full_name": "webcraft-media/onetimev2",
     "remote": "https://github.com/webcraft-media/onetimev2.git",
     "worktree": "C:/Users/User/OneTimeOneTime-w13-100-final-launch",
     "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
-    "head_sha": "5a2802c611db755992a2f1596b6cb21fbac1f84f",
+    "head_sha": "85dce2a3df029adf348ffe15bafbd13ff2ad6c81",
     "base_ref": "origin/integration/w12-100-launch-readiness-convergence-20260717",
-    "base_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c"
+    "base_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+    "draft_pr": {
+      "number": 91,
+      "url": "https://github.com/webcraft-media/onetimev2/pull/91",
+      "base_ref": "integration/w12-final-convergence-20260717T123715Z",
+      "head_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+      "head_sha_at_creation": "85dce2a3df029adf348ffe15bafbd13ff2ad6c81",
+      "draft": true
+    }
   },
   "phase": {
     "current": "phase_2_semantic_convergence",
@@ -26,7 +34,8 @@
       "w12_09_additive_migration_rebased_to_2203",
       "scoped_prettier_over_touched_files",
       "local_full_validation_without_live_database",
-      "merge_checkpoint_commit"
+      "merge_checkpoint_commit",
+      "draft_pr_opened"
     ],
     "in_progress": [],
     "not_started": [
@@ -92,5 +101,5 @@
       "next_action": "Keep all deployments, provider canaries, imports, and production promotion blocked until exact identities and authorizations are supplied."
     }
   ],
-  "next_action": "Push the branch and continue only with non-production/external actions after exact identities and authorizations are present."
+  "next_action": "Continue only with non-production/external actions after exact identities and authorizations are present; keep PR #91 draft until staging/rollback, database assurance, protected checks, and operator authorization complete."
 }
