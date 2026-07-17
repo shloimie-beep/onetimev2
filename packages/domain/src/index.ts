@@ -364,6 +364,7 @@ export {
 } from './support/worker.ts';
 export {
   consumeWhatsAppAccountLink,
+  buildWhatsAppPublicAssistantStatus,
   digestForTests as whatsappDigestForTests,
   evaluateWhatsAppCanaryReadiness,
   ingestWhatsAppProviderEvents,
@@ -372,6 +373,10 @@ export {
   receiveWhatsAppWebhook,
   verifyWhatsAppWebhookChallenge,
 } from './whatsapp/service.ts';
+export {
+  WHATSAPP_ASSISTANT_COPY,
+  W12_06_WHATSAPP_ASSISTANT_COPY_VERSION,
+} from './whatsapp/copy.ts';
 export {
   MetaWhatsAppCloudAdapter,
   OT100_META_GRAPH_VERSION,

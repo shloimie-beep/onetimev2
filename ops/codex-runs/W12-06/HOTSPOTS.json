@@ -1,0 +1,36 @@
+{
+  "schema_version": "w12_hotspots.v1",
+  "run_id": "W12-06",
+  "shared_hotspots": [
+    {
+      "path": "packages/domain/src/whatsapp/service.ts",
+      "reason": "Core WhatsApp assistant routing, public status, durable rate limits, abuse suppression, and reply copy routing."
+    },
+    {
+      "path": "packages/domain/src/whatsapp/copy.ts",
+      "reason": "New versioned public assistant copy source used by runtime and tests."
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "reason": "Protected runtime config keys for public WhatsApp deep link, copy version, and assistant rate budgets."
+    },
+    {
+      "path": "apps/web/src/server/app.ts",
+      "reason": "Read-only landing-widget backend contract at /api/v1/whatsapp/public-assistant."
+    },
+    {
+      "path": "tests/integration/whatsapp/ot85-assistant.test.ts",
+      "reason": "Assistant behavior, rate-limit, abuse suppression, and encrypted reply assertions."
+    },
+    {
+      "path": "tests/integration/whatsapp/ot85-webhook-route.test.ts",
+      "reason": "Webhook route regression plus safe public assistant status contract."
+    },
+    {
+      "path": ".env.example",
+      "reason": "Names only for protected config. No provider secrets or personal canary values."
+    }
+  ],
+  "migration_changes": [],
+  "external_provider_changes": []
+}
