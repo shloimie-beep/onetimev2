@@ -108,7 +108,10 @@
     {
       "id": "whatsapp.replay_duplicate_malformed_oversized_handling",
       "status": "done",
-      "evidence": ["tests/integration/whatsapp/ot85-assistant.test.ts", "tests/integration/whatsapp/ot85-webhook-route.test.ts"]
+      "evidence": [
+        "tests/integration/whatsapp/ot85-assistant.test.ts",
+        "tests/integration/whatsapp/ot85-webhook-route.test.ts"
+      ]
     },
     {
       "id": "whatsapp.sender_account_rate_limits",
@@ -138,7 +141,9 @@
     {
       "id": "whatsapp.no_browser_persistence_of_private_state",
       "status": "done",
-      "evidence": ["rg found no localStorage/sessionStorage/indexedDB/document.cookie in public WhatsApp scope"]
+      "evidence": [
+        "rg found no localStorage/sessionStorage/indexedDB/document.cookie in public WhatsApp scope"
+      ]
     },
     {
       "id": "whatsapp.account_product_scope",
@@ -148,12 +153,18 @@
     {
       "id": "whatsapp.one_recipient_canary_budget_enforcement",
       "status": "done",
-      "evidence": ["packages/domain/src/whatsapp/service.ts", "tests/integration/whatsapp/ot100-provider-runtime.test.ts"]
+      "evidence": [
+        "packages/domain/src/whatsapp/service.ts",
+        "tests/integration/whatsapp/ot100-provider-runtime.test.ts"
+      ]
     },
     {
       "id": "readiness_matrices",
       "status": "done",
-      "evidence": ["TELEGRAM-STAGING-READINESS-MATRIX.json", "WHATSAPP-STAGING-READINESS-MATRIX.json"]
+      "evidence": [
+        "TELEGRAM-STAGING-READINESS-MATRIX.json",
+        "WHATSAPP-STAGING-READINESS-MATRIX.json"
+      ]
     },
     {
       "id": "safety.no_deploy_no_external_actions_no_production_mutation",
@@ -168,22 +179,62 @@
   ],
   "validation": [
     { "command": "npm ci", "status": "passed" },
-    { "command": "npx vitest run --config vitest.unit.config.ts tests/unit/telegram/telegram-foundation.test.ts", "status": "passed", "details": "12 tests" },
-    { "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-admin-runtime.test.ts", "status": "passed", "details": "1 test" },
-    { "command": "npx vitest run --config vitest.integration.config.ts tests/integration/whatsapp/ot85-webhook-route.test.ts tests/integration/whatsapp/ot100-provider-runtime.test.ts", "status": "passed", "details": "7 tests" },
-    { "command": "npx vitest run --config vitest.unit.config.ts tests/unit/telegram/ot84-action-gateway.test.ts tests/unit/telegram/ot101r-admin-runtime.test.ts tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/whatsapp/ot100-meta-provider.test.ts", "status": "passed", "details": "17 tests" },
-    { "command": "npx vitest run --config vitest.integration.config.ts tests/integration/whatsapp/ot85-assistant.test.ts", "status": "passed", "details": "11 tests" },
-    { "command": "rg -n \"localStorage|sessionStorage|indexedDB|document.cookie\" apps/web/src/client/public packages/domain/src/whatsapp", "status": "passed", "details": "No matches; rg exit 1 means no forbidden persistence API found." },
-    { "command": "npm run secret:scan", "status": "passed", "details": "Secret scan passed across 1303 repo text files after final artifacts." },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/telegram/telegram-foundation.test.ts",
+      "status": "passed",
+      "details": "12 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-admin-runtime.test.ts",
+      "status": "passed",
+      "details": "1 test"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/whatsapp/ot85-webhook-route.test.ts tests/integration/whatsapp/ot100-provider-runtime.test.ts",
+      "status": "passed",
+      "details": "7 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/telegram/ot84-action-gateway.test.ts tests/unit/telegram/ot101r-admin-runtime.test.ts tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/whatsapp/ot100-meta-provider.test.ts",
+      "status": "passed",
+      "details": "17 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/whatsapp/ot85-assistant.test.ts",
+      "status": "passed",
+      "details": "11 tests"
+    },
+    {
+      "command": "rg -n \"localStorage|sessionStorage|indexedDB|document.cookie\" apps/web/src/client/public packages/domain/src/whatsapp",
+      "status": "passed",
+      "details": "No matches; rg exit 1 means no forbidden persistence API found."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1303 repo text files after final artifacts."
+    },
     { "command": "npm run lint", "status": "passed" },
     { "command": "npm run typecheck", "status": "passed" },
     { "command": "npm run unit", "status": "passed", "details": "38 files, 197 tests." },
     { "command": "npm run integration", "status": "passed", "details": "38 files, 186 tests." },
-    { "command": "npm run brand:check", "status": "passed", "details": "manifest/token/routes/raw source scan passed; bundle budgets skipped before build." },
-    { "command": "npm run build", "status": "passed", "details": "Inherited Vite font URL warning only." },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "details": "manifest/token/routes/raw source scan passed; bundle budgets skipped before build."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Inherited Vite font URL warning only."
+    },
     { "command": "npm run e2e", "status": "passed", "details": "38 tests." },
     { "command": "npm run accessibility", "status": "passed", "details": "13 tests." },
-    { "command": "npm run performance", "status": "passed", "details": "7 tests plus bundle budget summary." }
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "details": "7 tests plus bundle budget summary."
+    }
   ],
   "safety": {
     "staging_deploy_performed": false,

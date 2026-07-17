@@ -67,3 +67,10 @@ decision supersedes them.
   real import, provider acceptance, or deduplicated people counts.
 - BNA remains a separate convergence train unless a later One Time prompt
   explicitly scopes a bridge contract.
+
+## W12-100 Convergence Invariants
+
+- Public signup consent remains service-communication plus optional reminder consent; optional reminders are not selected by default.
+- `/app/communications` and `/app/support` are owner/admin protected app-shell routes, not public or static routes.
+- PR #71 gamification remains deferred unless W12-100-13 and the operator explicitly approve it later.
+- Provider, payment, send, staging deployment, and production database actions remain disabled without explicit operator approval.

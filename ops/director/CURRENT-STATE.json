@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v1",
-  "generated_at": "2026-07-17T17:44:58+03:00",
+  "generated_at": "2026-07-17T17:17:56.257Z",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
     "remote": "https://github.com/webcraft-media/onetimev2.git",
@@ -326,5 +326,51 @@
     "no_real_import_yet": true,
     "no_provider_acceptance_yet": true,
     "bna_convergence_train": "separate_not_integrated"
+  },
+  "w12_100_convergence": {
+    "schema_version": "onetime.director.w12_100_convergence_ref.v1",
+    "generated_at": "2026-07-17T17:17:56.257Z",
+    "branch": "integration/w12-100-launch-readiness-convergence-20260717",
+    "base_w12_99_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "integrated_head_before_closeout": "4112930380fc9ae5bcdac9f316246e285cc93b35",
+    "accepted_lanes": [
+      "W12-100-00",
+      "W12-100-01",
+      "W12-100-02",
+      "W12-100-03",
+      "W12-100-04",
+      "W12-100-06",
+      "W12-100-07",
+      "W12-100-08",
+      "W12-100-09",
+      "W12-100-10",
+      "W12-100-11",
+      "W12-100-12",
+      "W12-100-13-assessment-only"
+    ],
+    "skipped_lanes": [
+      {
+        "lane": "W12-100-05",
+        "reason": "Skipped because lane STATE/FINAL-REPORT classify it blocked_environment_or_rehearsal."
+      },
+      {
+        "lane": "PR-71 / W12-09 gamification product code",
+        "reason": "Skipped because W12-100-13 recommends deferral and the operator did not explicitly approve PR #71 integration."
+      },
+      {
+        "lane": "PR-72 direct merge",
+        "reason": "Not merged directly; the exact eight OPS-13A files entered through W12-100-00 as requested."
+      }
+    ],
+    "draft_pr_target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
+    "deploy_performed": false,
+    "marked_ready": false,
+    "artifacts_dir": "ops/codex-runs/W12-100-CONVERGENCE",
+    "validation_summary": {
+      "local_non_database_gates": "passed",
+      "db_verify": "blocked_missing_database_url",
+      "postgres_16": "blocked_missing_local_postgres_docker_psql",
+      "postgres_18": "blocked_missing_local_postgres_docker_psql"
+    }
   }
 }

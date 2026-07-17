@@ -1,12 +1,12 @@
 {
   "schema_version": "onetime.w12_100.performance_seo_bundle_report.v1",
-  "generated_at": "2026-07-17T15:32:05.652Z",
+  "generated_at": "2026-07-17T17:07:20.508Z",
   "records": [
     {
       "route": "/",
       "viewport": "390x844",
       "status": 200,
-      "usable_ms": 891,
+      "usable_ms": 802,
       "lcp_ms": 332,
       "cls": 0,
       "metadata": {
@@ -23,8 +23,8 @@
       "route": "/signup",
       "viewport": "390x844",
       "status": 200,
-      "usable_ms": 558,
-      "lcp_ms": 80,
+      "usable_ms": 650,
+      "lcp_ms": 156,
       "cls": 0,
       "metadata": {
         "canonical": "https://join.onetimeonetime.com/signup",
@@ -40,12 +40,12 @@
       "route": "/privacy",
       "viewport": "390x844",
       "status": 200,
-      "usable_ms": 528,
-      "lcp_ms": 28,
+      "usable_ms": 522,
+      "lcp_ms": 40,
       "cls": 0,
       "metadata": {
         "canonical": "https://join.onetimeonetime.com/privacy",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "ogTitle": "Give your son a love for learning Torah.",
         "ogDescription": "Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.",
         "ogUrl": "https://join.onetimeonetime.com/privacy",
@@ -57,12 +57,12 @@
       "route": "/terms",
       "viewport": "390x844",
       "status": 200,
-      "usable_ms": 519,
-      "lcp_ms": 24,
+      "usable_ms": 547,
+      "lcp_ms": 52,
       "cls": 0,
       "metadata": {
         "canonical": "https://join.onetimeonetime.com/terms",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "ogTitle": "Give your son a love for learning Torah.",
         "ogDescription": "Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.",
         "ogUrl": "https://join.onetimeonetime.com/terms",
@@ -74,8 +74,8 @@
       "route": "/",
       "viewport": "desktop",
       "status": 200,
-      "usable_ms": 546,
-      "lcp_ms": 104,
+      "usable_ms": 553,
+      "lcp_ms": 88,
       "cls": 0,
       "metadata": {
         "canonical": "https://join.onetimeonetime.com/",
@@ -91,7 +91,7 @@
       "route": "/signup",
       "viewport": "desktop",
       "status": 200,
-      "usable_ms": 536,
+      "usable_ms": 525,
       "lcp_ms": 76,
       "cls": 0,
       "metadata": {
@@ -108,12 +108,12 @@
       "route": "/privacy",
       "viewport": "desktop",
       "status": 200,
-      "usable_ms": 525,
-      "lcp_ms": 40,
+      "usable_ms": 528,
+      "lcp_ms": 52,
       "cls": 0,
       "metadata": {
         "canonical": "https://join.onetimeonetime.com/privacy",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "ogTitle": "Give your son a love for learning Torah.",
         "ogDescription": "Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.",
         "ogUrl": "https://join.onetimeonetime.com/privacy",
@@ -125,12 +125,12 @@
       "route": "/terms",
       "viewport": "desktop",
       "status": 200,
-      "usable_ms": 526,
-      "lcp_ms": 56,
+      "usable_ms": 522,
+      "lcp_ms": 44,
       "cls": 0,
       "metadata": {
         "canonical": "https://join.onetimeonetime.com/terms",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "ogTitle": "Give your son a love for learning Torah.",
         "ogDescription": "Join One Time Mishnayos live from Eretz Yisrael with Rabbi Eli Scheller.",
         "ogUrl": "https://join.onetimeonetime.com/terms",
@@ -165,12 +165,12 @@
     {
       "bundle_metrics": {
         "public_js": {
-          "raw_bytes": 13116,
-          "gzip_bytes": 4201
+          "raw_bytes": 13046,
+          "gzip_bytes": 4177
         },
         "public_css": {
-          "raw_bytes": 21376,
-          "gzip_bytes": 5518
+          "raw_bytes": 23444,
+          "gzip_bytes": 5899
         },
         "crm_js_raw_bytes": 258003,
         "portal_js_raw_bytes": 233704,

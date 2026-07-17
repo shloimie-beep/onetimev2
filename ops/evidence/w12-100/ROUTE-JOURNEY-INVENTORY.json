@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.w12_100.route_journey_inventory.v1",
-  "generated_at": "2026-07-17T15:30:31.370Z",
+  "generated_at": "2026-07-17T17:14:07.638Z",
   "route_count": 21,
   "records": [
     {
@@ -87,7 +87,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:44da9ad5"
+        "text_sample_hash": "domhash:4a535d20"
       }
     },
     {
@@ -111,13 +111,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Privacy | One Time Mishnayos",
+        "title": "Privacy Notice | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Privacy"
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
         ],
         "canonical": "https://join.onetimeonetime.com/privacy",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/privacy",
@@ -127,7 +133,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:5cdd6b71"
+        "text_sample_hash": "domhash:6257c3d2"
       }
     },
     {
@@ -151,13 +157,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Terms | One Time Mishnayos",
+        "title": "Terms of Use | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Terms"
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
         ],
         "canonical": "https://join.onetimeonetime.com/terms",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/terms",
@@ -167,7 +179,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:1b1b01ed"
+        "text_sample_hash": "domhash:62325094"
       }
     },
     {
@@ -450,7 +462,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:44da9ad5"
+        "text_sample_hash": "domhash:4a535d20"
       }
     },
     {
@@ -474,13 +486,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Privacy | One Time Mishnayos",
+        "title": "Privacy Notice | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Privacy"
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
         ],
         "canonical": "https://join.onetimeonetime.com/privacy",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/privacy",
@@ -490,7 +508,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:5cdd6b71"
+        "text_sample_hash": "domhash:6257c3d2"
       }
     },
     {
@@ -514,13 +532,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Terms | One Time Mishnayos",
+        "title": "Terms of Use | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Terms"
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
         ],
         "canonical": "https://join.onetimeonetime.com/terms",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/terms",
@@ -530,7 +554,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:1b1b01ed"
+        "text_sample_hash": "domhash:62325094"
       }
     },
     {
@@ -813,7 +837,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:69551424"
+        "text_sample_hash": "domhash:87484f1"
       }
     },
     {
@@ -837,13 +861,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Privacy | One Time Mishnayos",
+        "title": "Privacy Notice | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Privacy"
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
         ],
         "canonical": "https://join.onetimeonetime.com/privacy",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/privacy",
@@ -853,7 +883,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:3ee665a0"
+        "text_sample_hash": "domhash:4e9d907c"
       }
     },
     {
@@ -877,13 +907,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Terms | One Time Mishnayos",
+        "title": "Terms of Use | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Terms"
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
         ],
         "canonical": "https://join.onetimeonetime.com/terms",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/terms",
@@ -893,7 +929,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:3218eedc"
+        "text_sample_hash": "domhash:6f5cfb7e"
       }
     },
     {
@@ -1176,7 +1212,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:69551424"
+        "text_sample_hash": "domhash:87484f1"
       }
     },
     {
@@ -1200,13 +1236,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Privacy | One Time Mishnayos",
+        "title": "Privacy Notice | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Privacy"
+          "Privacy Notice",
+          "Scope",
+          "How We Use Information",
+          "Providers And Integrations",
+          "Suppression And Contact Choices",
+          "Retention And Deletion",
+          "Data We May Process"
         ],
         "canonical": "https://join.onetimeonetime.com/privacy",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/privacy",
@@ -1216,7 +1258,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:3ee665a0"
+        "text_sample_hash": "domhash:4e9d907c"
       }
     },
     {
@@ -1240,13 +1282,19 @@
         "terms": true
       },
       "metadata": {
-        "title": "Terms | One Time Mishnayos",
+        "title": "Terms of Use | One Time Mishnayos",
         "headings": [
           "One Time Menu",
-          "Terms"
+          "Terms of Use",
+          "Using One Time Mishnayos",
+          "Accounts And Access",
+          "Parent, Guardian, And Student Use",
+          "Communications",
+          "Payment And Cancellation",
+          "Content And Providers"
         ],
         "canonical": "https://join.onetimeonetime.com/terms",
-        "robots": "noindex, nofollow",
+        "robots": "index, follow",
         "og_title_present": true,
         "og_description_present": true,
         "og_url": "https://join.onetimeonetime.com/terms",
@@ -1256,7 +1304,7 @@
         "stylesheets": [
           "/assets/public.css"
         ],
-        "text_sample_hash": "domhash:3218eedc"
+        "text_sample_hash": "domhash:6f5cfb7e"
       }
     },
     {
@@ -1498,7 +1546,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:38d3455b"
+        "text_sample_hash": "domhash:6b28ada"
       }
     },
     {
@@ -1537,12 +1585,12 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:66ff2620"
+        "text_sample_hash": "domhash:60bb5d84"
       }
     },
     {
       "id": "crm_contact_detail",
-      "path": "/app/crm/contacts/90031bc2-d935-438b-a5bb-30dcda1dba03",
+      "path": "/app/crm/contacts/0a1c331c-4a27-4785-bc65-87143df6fa22",
       "audience": "owner",
       "browser": "chromium",
       "viewport": "390x844",
@@ -1583,7 +1631,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:13d1ae97"
+        "text_sample_hash": "domhash:5f67df4d"
       }
     },
     {
@@ -1592,33 +1640,42 @@
       "audience": "owner",
       "browser": "chromium",
       "viewport": "390x844",
-      "status": 404,
-      "ok": false,
-      "readiness_error": "expect(locator).toBeVisible() failed",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
       "overflow": {
         "clientWidth": 390,
-        "scrollWidth": 923,
-        "bodyScrollWidth": 915
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
       },
       "missing_accessible_names": [],
-      "safety_findings": [
-        "technical_diagnostic_visible"
-      ],
+      "safety_findings": [],
       "privacy_terms": {
-        "privacy": false,
-        "terms": false
+        "privacy": true,
+        "terms": true
       },
       "metadata": {
-        "title": "Error",
-        "headings": [],
-        "canonical": null,
-        "robots": null,
-        "og_title_present": false,
-        "og_description_present": false,
-        "og_url": null,
-        "scripts": [],
-        "stylesheets": [],
-        "text_sample_hash": "domhash:3434dd65"
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Communications",
+          "Communications",
+          "Contact outbound history",
+          "Contact outbound history",
+          "Unlinked outbound intent"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css",
+          "/assets/app-CommunicationsFeature.css"
+        ],
+        "text_sample_hash": "domhash:7e394ea6"
       }
     },
     {
@@ -1645,7 +1702,6 @@
         "title": "CRM | One Time Mishnayos",
         "headings": [
           "Classes",
-          "Daily One Time Mishnayos",
           "E2E Daily Mishnah",
           "Daily One Time Mishnayos",
           "W12 Portal Lab Mishnah"
@@ -1661,7 +1717,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:770b5daa"
+        "text_sample_hash": "domhash:26539d6"
       }
     },
     {
@@ -1707,7 +1763,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:15851453"
+        "text_sample_hash": "domhash:167d7e8c"
       }
     },
     {
@@ -1747,7 +1803,7 @@
           "/assets/app-crm.css",
           "/assets/app-ContentWorkspace.css"
         ],
-        "text_sample_hash": "domhash:1535056"
+        "text_sample_hash": "domhash:62f27ab5"
       }
     },
     {
@@ -1874,7 +1930,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:d4ebba9"
+        "text_sample_hash": "domhash:5c7f67d6"
       }
     },
     {
@@ -1913,12 +1969,12 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:7944a20d"
+        "text_sample_hash": "domhash:795017ed"
       }
     },
     {
       "id": "crm_contact_detail",
-      "path": "/app/crm/contacts/90031bc2-d935-438b-a5bb-30dcda1dba03",
+      "path": "/app/crm/contacts/0a1c331c-4a27-4785-bc65-87143df6fa22",
       "audience": "owner",
       "browser": "chromium",
       "viewport": "desktop",
@@ -1959,7 +2015,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:2fe69b6f"
+        "text_sample_hash": "domhash:4f55ed25"
       }
     },
     {
@@ -1968,33 +2024,42 @@
       "audience": "owner",
       "browser": "chromium",
       "viewport": "desktop",
-      "status": 404,
-      "ok": false,
-      "readiness_error": "expect(locator).toBeVisible() failed",
+      "status": 200,
+      "ok": true,
+      "readiness_error": null,
       "overflow": {
         "clientWidth": 1440,
         "scrollWidth": 1440,
-        "bodyScrollWidth": 1424
+        "bodyScrollWidth": 1440
       },
       "missing_accessible_names": [],
-      "safety_findings": [
-        "technical_diagnostic_visible"
-      ],
+      "safety_findings": [],
       "privacy_terms": {
-        "privacy": false,
-        "terms": false
+        "privacy": true,
+        "terms": true
       },
       "metadata": {
-        "title": "Error",
-        "headings": [],
-        "canonical": null,
-        "robots": null,
-        "og_title_present": false,
-        "og_description_present": false,
-        "og_url": null,
-        "scripts": [],
-        "stylesheets": [],
-        "text_sample_hash": "domhash:3434dd65"
+        "title": "CRM | One Time Mishnayos",
+        "headings": [
+          "Communications",
+          "Communications",
+          "Contact outbound history",
+          "Contact outbound history",
+          "Unlinked outbound intent"
+        ],
+        "canonical": "https://join.onetimeonetime.com/app/crm",
+        "robots": "noindex, nofollow",
+        "og_title_present": true,
+        "og_description_present": true,
+        "og_url": "https://join.onetimeonetime.com/app/crm",
+        "scripts": [
+          "/assets/app-crm.js"
+        ],
+        "stylesheets": [
+          "/assets/app-crm.css",
+          "/assets/app-CommunicationsFeature.css"
+        ],
+        "text_sample_hash": "domhash:1521dbbd"
       }
     },
     {
@@ -2021,7 +2086,6 @@
         "title": "CRM | One Time Mishnayos",
         "headings": [
           "Classes",
-          "Daily One Time Mishnayos",
           "E2E Daily Mishnah",
           "Daily One Time Mishnayos",
           "W12 Portal Lab Mishnah"
@@ -2037,7 +2101,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:360a28be"
+        "text_sample_hash": "domhash:1f05083e"
       }
     },
     {
@@ -2083,7 +2147,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:5c1571bb"
+        "text_sample_hash": "domhash:3012dedc"
       }
     },
     {
@@ -2123,7 +2187,7 @@
           "/assets/app-crm.css",
           "/assets/app-ContentWorkspace.css"
         ],
-        "text_sample_hash": "domhash:62dc835c"
+        "text_sample_hash": "domhash:30975a1f"
       }
     },
     {
@@ -2247,7 +2311,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:73520fb9"
+        "text_sample_hash": "domhash:1daf6dc2"
       }
     },
     {
@@ -2293,7 +2357,7 @@
         "stylesheets": [
           "/assets/app-crm.css"
         ],
-        "text_sample_hash": "domhash:1e71633f"
+        "text_sample_hash": "domhash:33262cd0"
       }
     },
     {
@@ -2465,63 +2529,6 @@
       "kind": "collection_surface_privacy_terms",
       "privacy": false,
       "terms": false
-    },
-    {
-      "id": "communications",
-      "path": "/app/communications",
-      "viewport": "390x844",
-      "kind": "route_status",
-      "status": 404
-    },
-    {
-      "id": "communications",
-      "path": "/app/communications",
-      "viewport": "390x844",
-      "kind": "horizontal_overflow",
-      "overflow": {
-        "clientWidth": 390,
-        "scrollWidth": 923,
-        "bodyScrollWidth": 915
-      }
-    },
-    {
-      "id": "communications",
-      "path": "/app/communications",
-      "viewport": "390x844",
-      "kind": "route_readiness",
-      "message": "expect(locator).toBeVisible() failed"
-    },
-    {
-      "id": "communications",
-      "path": "/app/communications",
-      "viewport": "390x844",
-      "kind": "customer_safety",
-      "codes": [
-        "technical_diagnostic_visible"
-      ]
-    },
-    {
-      "id": "communications",
-      "path": "/app/communications",
-      "viewport": "desktop",
-      "kind": "route_status",
-      "status": 404
-    },
-    {
-      "id": "communications",
-      "path": "/app/communications",
-      "viewport": "desktop",
-      "kind": "route_readiness",
-      "message": "expect(locator).toBeVisible() failed"
-    },
-    {
-      "id": "communications",
-      "path": "/app/communications",
-      "viewport": "desktop",
-      "kind": "customer_safety",
-      "codes": [
-        "technical_diagnostic_visible"
-      ]
     }
   ],
   "external_actions": 0,

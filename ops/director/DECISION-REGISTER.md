@@ -20,3 +20,11 @@ Generated: 2026-07-17T17:44:58+03:00
 | DEC-W12-100-004 | open     | W12 staging and launch proof are still W12-100 responsibilities.                                                                           | `ops/director/DEPLOYMENTS.json`; W12-99 no-staging/no-import/no-canary records.                                 | Deploy/smoke an isolated staging candidate only in a scoped W12-100 launch-proof lane.             |
 | DEC-W12-100-005 | accepted | Source metadata row counts are not deduplicated people counts.                                                                             | `ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json`; `ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json`.                   | Record naive rows, hashes, columns, and statuses until a protected dry-run computes dedupe counts. |
 | DEC-W12-100-006 | accepted | BNA remains a separate convergence train.                                                                                                  | `AGENTS.md`; `ops/director/PRODUCT-INVARIANTS.md`; W12-99 excluded-lane records.                                | Do not merge BNA runtime, data, sessions, or provider actions into this One Time lane.             |
+
+## W12-100 Convergence Decisions
+
+- Integrated accepted W12-100 lanes in order, skipping W12-100-05 because it is blocked.
+- Integrated OPS-13A artifacts through W12-100-00 only, not direct PR #72.
+- Skipped PR #71 product code because W12-100-13 recommends deferral and no operator approval was given.
+- Repaired owner/admin app-shell route composition for `/app/communications` and `/app/support`.
+- Database verification and PostgreSQL 16/18 assurance remain environment-blocked locally.

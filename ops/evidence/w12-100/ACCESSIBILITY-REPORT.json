@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.w12_100.accessibility_report.v1",
-  "generated_at": "2026-07-17T15:31:41.319Z",
+  "generated_at": "2026-07-17T17:06:54.603Z",
   "records": [
     {
       "route": "/",
@@ -255,16 +255,14 @@
     {
       "route": "/app/communications",
       "viewport": "390x844",
-      "heading_visible": false,
+      "heading_visible": true,
       "critical_or_serious_violations": [],
       "missing_accessible_names": [],
-      "safety_findings": [
-        "technical_diagnostic_visible"
-      ],
+      "safety_findings": [],
       "overflow": {
         "clientWidth": 390,
-        "scrollWidth": 923,
-        "bodyScrollWidth": 915
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
       }
     },
     {
@@ -374,16 +372,14 @@
     {
       "route": "/app/communications",
       "viewport": "desktop",
-      "heading_visible": false,
+      "heading_visible": true,
       "critical_or_serious_violations": [],
       "missing_accessible_names": [],
-      "safety_findings": [
-        "technical_diagnostic_visible"
-      ],
+      "safety_findings": [],
       "overflow": {
         "clientWidth": 1440,
         "scrollWidth": 1440,
-        "bodyScrollWidth": 1424
+        "bodyScrollWidth": 1440
       }
     },
     {
@@ -468,7 +464,7 @@
       "collection_surface_error_association_review": [
         {
           "route": "/signup",
-          "status_count": 1,
+          "status_count": 2,
           "error_targets": [
             {
               "field": "contact_name",
@@ -492,10 +488,6 @@
             },
             {
               "field": "phone",
-              "focusable": true
-            },
-            {
-              "field": "reminder_consent",
               "focusable": true
             }
           ],
@@ -529,24 +521,12 @@
               "id": "phone"
             },
             {
-              "name": "reminder_preference",
-              "id": ""
+              "name": "email_reminder_consent",
+              "id": "email_reminder_consent"
             },
             {
-              "name": "reminder_preference",
-              "id": ""
-            },
-            {
-              "name": "reminder_preference",
-              "id": ""
-            },
-            {
-              "name": "reminder_preference",
-              "id": ""
-            },
-            {
-              "name": "reminder_consent",
-              "id": "reminder_consent"
+              "name": "whatsapp_reminder_consent",
+              "id": "whatsapp_reminder_consent"
             }
           ]
         },

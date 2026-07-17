@@ -56,7 +56,9 @@
     {
       "name": "browser_private_state_persistence",
       "status": "absent",
-      "evidence": ["rg found no localStorage/sessionStorage/indexedDB/document.cookie in public WhatsApp scope"]
+      "evidence": [
+        "rg found no localStorage/sessionStorage/indexedDB/document.cookie in public WhatsApp scope"
+      ]
     },
     {
       "name": "account_product_scope",

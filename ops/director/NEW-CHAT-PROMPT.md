@@ -51,3 +51,7 @@ ops/director/CAPABILITY-MATRIX.json and the relevant open decision in
 ops/director/DECISION-REGISTER.md. Preserve prompt/state/resume/final artifacts
 for your lane under ops/codex-runs/<LANE>/, commit, push, and use a draft PR.
 ```
+
+## W12-100 Convergence Pickup
+
+Pick up `integration/w12-100-launch-readiness-convergence-20260717` from `ops/codex-runs/W12-100-CONVERGENCE/RESUME.md`. Keep the PR draft, do not deploy, and do not mark ready. Re-run database verification only with approved disposable/staging credentials.

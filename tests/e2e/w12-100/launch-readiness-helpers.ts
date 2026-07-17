@@ -346,10 +346,9 @@ export async function createSyntheticContact(page: Page) {
   await page.getByLabel('Family or School').fill('W12 100 Synthetic Family');
   await page.getByLabel('Location').fill('Jerusalem');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await page
-    .getByLabel('Confirm that we may send the selected class information and reminders.')
-    .check();
-  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  const submit = page.getByRole('button', { name: 'Sign Up Now' });
+  await expect(submit).toBeVisible();
+  await submit.click();
   await expect(
     page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
   ).toBeVisible();

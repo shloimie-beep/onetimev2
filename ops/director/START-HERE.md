@@ -78,3 +78,7 @@ The W12-00 execution artifacts live in `ops/codex-runs/W12-00/`.
 - Use `BRANCH-FLEET.json` to avoid duplicate branch/PR work.
 - Use `PRODUCT-INVARIANTS.md` and `DECISION-REGISTER.md` before changing
   product behavior.
+
+## W12-100 Convergence Refresh
+
+Branch `integration/w12-100-launch-readiness-convergence-20260717` integrates accepted W12-100 lane heads on top of W12-99 head `0d8d7168f066668f035176d777bdaaa4dcc5accd`. Read `ops/codex-runs/W12-100-CONVERGENCE/FINAL-REPORT.md`, `TEST-REPORT.md`, and `MIGRATION-REPORT.md` before follow-up work. No deployment, provider mutation, production database action, PR ready transition, or GitHub UI merge was performed.
