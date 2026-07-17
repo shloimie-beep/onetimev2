@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T17:44:58+03:00",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
     "remote": "https://github.com/webcraft-media/onetimev2.git",
@@ -118,9 +118,64 @@
   },
   "w12_99_candidate": {
     "branch": "integration/w12-final-convergence-20260717T123715Z",
-    "head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+    "head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
     "status": "pushed_draft_pr_open",
     "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "pr": {
+      "number": 73,
+      "url": "https://github.com/webcraft-media/onetimev2/pull/73",
+      "state": "OPEN",
+      "is_draft": true,
+      "base_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "base_ref_oid": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "head_ref": "integration/w12-final-convergence-20260717T123715Z",
+      "head_ref_oid": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "mergeable": "MERGEABLE",
+      "merge_state_status": "CLEAN",
+      "checks": [
+        {
+          "name": "Node 24 verify",
+          "workflow": "CI",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:23:01Z"
+        },
+        {
+          "name": "OPS-06 deterministic checks",
+          "workflow": "OPS-06 Reliability Observability",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:13:51Z"
+        },
+        {
+          "name": "PostgreSQL 18 assurance and restore clone",
+          "workflow": "OPS-11 PostgreSQL 18 Assurance",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:13:35Z"
+        },
+        {
+          "name": "PostgreSQL 16 assurance harness",
+          "workflow": "OT-37 PostgreSQL Assurance",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:13:36Z"
+        },
+        {
+          "name": "PostgreSQL 16 learner-seat proof",
+          "workflow": "OT-83 PostgreSQL Concurrency",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:13:08Z"
+        }
+      ],
+      "check_summary": {
+        "total": 5,
+        "success": 5,
+        "failure": 0,
+        "pending": 0
+      }
+    },
     "included_lanes": [
       "W12-00",
       "W12-01",
@@ -132,8 +187,14 @@
       "W12-07",
       "W12-08"
     ],
-    "excluded_lanes": ["W12-09", "OPS-13A", "BNA P1/P2/P3"],
-    "record": "ops/director/W12-99-CANDIDATE.json"
+    "excluded_lanes": ["W12-09", "BNA P1/P2/P3"],
+    "record": "ops/director/W12-99-CANDIDATE.json",
+    "staging_deploy_performed": false,
+    "real_import_performed": false,
+    "provider_acceptance_performed": false,
+    "production_runtime_is_distinct_from_candidate": true,
+    "production_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "launch_readiness_owner": "W12-100"
   },
   "primary_evidence_paths": [
     "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json",
@@ -144,6 +205,126 @@
     "ops/codex-runs/OPS-11/MUTATION-LEDGER.json",
     "apps/web/src/server/app.ts",
     "packages/db/migrations",
-    "tests"
-  ]
+    "tests",
+    "ops/codex-runs/W12-99/STATE.json",
+    "ops/codex-runs/W12-99/FINAL-REPORT.md",
+    "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
+    "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
+    "ops/codex-runs/W12-99/CANARY-REPORT.json",
+    "ops/codex-runs/OPS-13A/STATE.json",
+    "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+    "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+    "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+    "ops/codex-runs/W12-100-00/STATE.json"
+  ],
+  "ops_13a_preflight": {
+    "status": "available_preflight_input_not_acceptance_proof",
+    "branch": "codex/ops13a-real-data-provider-preflight",
+    "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/72",
+    "pr": {
+      "number": 72,
+      "url": "https://github.com/webcraft-media/onetimev2/pull/72",
+      "state": "OPEN",
+      "is_draft": true,
+      "base_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "base_ref_oid": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "head_ref": "codex/ops13a-real-data-provider-preflight",
+      "head_ref_oid": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+      "mergeable": "MERGEABLE",
+      "merge_state_status": "CLEAN",
+      "checks": [
+        {
+          "name": "Node 24 verify",
+          "workflow": "CI",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:13:47Z"
+        },
+        {
+          "name": "OPS-06 deterministic checks",
+          "workflow": "OPS-06 Reliability Observability",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:04:52Z"
+        },
+        {
+          "name": "PostgreSQL 18 assurance and restore clone",
+          "workflow": "OPS-11 PostgreSQL 18 Assurance",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:04:35Z"
+        },
+        {
+          "name": "PostgreSQL 16 assurance harness",
+          "workflow": "OT-37 PostgreSQL Assurance",
+          "status": "COMPLETED",
+          "conclusion": "SUCCESS",
+          "completed_at": "2026-07-17T13:04:40Z"
+        }
+      ],
+      "check_summary": {
+        "total": 4,
+        "success": 4,
+        "failure": 0,
+        "pending": 0
+      },
+      "changed_files": [
+        "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+        "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
+        "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
+        "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+        "ops/codex-runs/OPS-13A/RESUME.md",
+        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+        "ops/codex-runs/OPS-13A/STATE.json"
+      ],
+      "changed_file_count": 8,
+      "changed_file_set_verdict": "only_ops_codex_runs_ops_13a_artifacts"
+    },
+    "integrated_by_lane": "W12-100-00",
+    "artifacts": [
+      "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
+      "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+      "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
+      "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
+      "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+      "ops/codex-runs/OPS-13A/RESUME.md",
+      "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+      "ops/codex-runs/OPS-13A/STATE.json"
+    ],
+    "evidence": [
+      "ops/codex-runs/OPS-13A/STATE.json",
+      "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+      "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+      "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+      "ops/codex-runs/OPS-13A/FINAL-REPORT.md"
+    ],
+    "guardrail_summary": {
+      "deployments": 0,
+      "imports": 0,
+      "production_private_data_reads": 0,
+      "production_data_writes": 0,
+      "sends": 0,
+      "provider_mutations": 0,
+      "meetings_created": 0,
+      "videos_uploaded": 0,
+      "payments_or_charges": 0
+    },
+    "caveats": [
+      "Sanitized source metadata counts are naive source-row counts, not deduplicated people counts.",
+      "OPS-13A did not run a dry-run batch, real import, or provider acceptance canary.",
+      "OPS-13B was not run in W12-100-00."
+    ]
+  },
+  "w12_100_launch_readiness": {
+    "owning_train": "W12-100",
+    "current_lane": "W12-100-00",
+    "current_branch": "codex/w12-100-00-director-and-ops13a-convergence",
+    "staging_and_launch_proof_owner": "W12-100",
+    "no_w12_staging_deploy_yet": true,
+    "no_real_import_yet": true,
+    "no_provider_acceptance_yet": true,
+    "bna_convergence_train": "separate_not_integrated"
+  }
 }
