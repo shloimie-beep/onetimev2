@@ -1,0 +1,20 @@
+{
+  "lane": "W12-01",
+  "hotspots": [
+    {
+      "path": "packages/db/migrations/2201_w12_01_crm_audience_import.sql",
+      "reason": "Migration numbering is a shared release hotspot and may need reconciliation by W12-99 before final staging convergence.",
+      "owner": "W12-99 final reconciliation"
+    },
+    {
+      "path": "packages/contracts/src/audience-reconciliation/index.ts",
+      "reason": "Shared audience-reconciliation contract expanded for W12-01 taxonomy, inventory, conflict decision, and apply-plan APIs.",
+      "owner": "W12-01 provisional, W12-99 conflict check"
+    },
+    {
+      "path": "apps/web/src/server/features/audience-reconciliation/router.ts",
+      "reason": "Shared admin API surface expanded for source inventory, taxonomy, conflict decisions, and apply plans.",
+      "owner": "W12-01 provisional, W12-99 conflict check"
+    }
+  ]
+}

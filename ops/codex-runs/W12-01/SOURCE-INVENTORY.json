@@ -1,0 +1,1154 @@
+{
+  "inventory_key": "legacy_source_inventory_a61907c46e1e1a56cb030d2f",
+  "generated_at": "2026-07-17T10:50:07.864Z",
+  "generated_by": "codex-w12-01",
+  "source_roots": ["Downloads"],
+  "files": [
+    {
+      "file_ref": "legacy_source_file_0a120c00d5a9134cac87024b",
+      "source_root_label": "Downloads",
+      "file_name": "google_ads_no_gbp_medical_leads_UPDATED_v8.xlsx",
+      "extension": ".xlsx",
+      "byte_size": 10243,
+      "last_modified": "2026-02-23T11:09:28.110Z",
+      "sha256": "929b4511a03a5596ca678a746d8db588b0759acb7658d161287112da15ce2006",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["Sheet1"],
+      "column_names_by_sheet": {
+        "Sheet1": [
+          "Country",
+          "City",
+          "Business Name",
+          "Practitioner Type",
+          "Field / Specialty",
+          "Phone",
+          "Address / Service Area",
+          "Landing Page URL",
+          "Search Language",
+          "Search Query (Ad Trigger)",
+          "Ad Evidence",
+          "Has Google Business Profile?",
+          "Has Google Stars?",
+          "Call Status",
+          "Call Date",
+          "Follow-up Date",
+          "Owner/Contact Name",
+          "Notes"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "Sheet1": 26
+      },
+      "warnings": [
+        "operator_review_required_before_import",
+        "possible_pii_columns_detected",
+        "xlsx_parser_metadata_only"
+      ],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_0b130d8c5ff2acb97aafaf2b",
+      "source_root_label": "Downloads",
+      "file_name": "webcraft_leads.csv",
+      "extension": ".csv",
+      "byte_size": 5709,
+      "last_modified": "2026-03-11T14:39:26.118Z",
+      "sha256": "4f128d7a72be9471445930bc5bf7f629864aa9678cb8b370ef53591f43e59efa",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Name",
+          "Phone",
+          "Category",
+          "Location",
+          "Status",
+          "Next Step",
+          "Running Ads",
+          "Est Spend NIS/mo",
+          "Website",
+          "GBP",
+          "Facebook",
+          "Ad Library",
+          "Notes"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 14
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_0f07de37481f7a1dd686452b",
+      "source_root_label": "Downloads",
+      "file_name": "enriched_facebook_ads_leads_100.csv",
+      "extension": ".csv",
+      "byte_size": 129830,
+      "last_modified": "2026-03-12T12:31:16.146Z",
+      "sha256": "acb630cc10d6f791f907b5d98761de622fccd00a672abc86384a4c6967fe802a",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Business Name",
+          "Category",
+          "Phone Number",
+          "Facebook Page",
+          "Ad Library Link",
+          "Website on FB",
+          "Other Info from FB Profile",
+          "Website",
+          "Google Business Profile"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 416
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_20b6ae5f36cd71f4e4596bb1",
+      "source_root_label": "Downloads",
+      "file_name": "Jewish_Gut_Health_Directory_WITH_EMAIL.csv",
+      "extension": ".csv",
+      "byte_size": 3632,
+      "last_modified": "2026-02-08T12:58:38.912Z",
+      "sha256": "8f7281b30ed0f602a412a5ed378b8b6fbc820b6d4d968ed39fbb49eabaaac01f",
+      "duplicate_of_sha256": "8f7281b30ed0f602a412a5ed378b8b6fbc820b6d4d968ed39fbb49eabaaac01f",
+      "classification": "duplicate",
+      "classification_reasons": ["duplicate_sha256"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "First Name",
+          "Last Name",
+          "Modality",
+          "Phone",
+          "Public Email",
+          "Website",
+          "LinkedIn",
+          "Gut Score",
+          "Gut Reference / Proof",
+          "JC"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 30
+      },
+      "warnings": ["possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_243f5905e770a2682272a06a",
+      "source_root_label": "Downloads",
+      "file_name": "combined_leads_enrichment_queue (1).csv",
+      "extension": ".csv",
+      "byte_size": 53370,
+      "last_modified": "2026-01-31T19:17:00.322Z",
+      "sha256": "2aa4d2d479fdcd693b07662da17474fee425ec3d970b857ddc495020561de25b",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "business_name",
+          "category",
+          "city_state",
+          "service_area",
+          "neighborhood_seed",
+          "source_sheet",
+          "best_public_link",
+          "website",
+          "phone",
+          "jewish_signal",
+          "public_demand_signals",
+          "claim_24_7",
+          "website_tech_score",
+          "overwhelm_score",
+          "comment_draft",
+          "dm_opener",
+          "notes",
+          "linkedin_url",
+          "facebook_url",
+          "instagram_url",
+          "google_business_profile_url",
+          "yelp_url",
+          "enrichment_status",
+          "last_checked"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 81
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_29af37ad0e1be3e1ee341484",
+      "source_root_label": "Downloads",
+      "file_name": "jewish_gut_health_directory_email_drafts.csv",
+      "extension": ".csv",
+      "byte_size": 43341,
+      "last_modified": "2026-02-08T14:33:42.303Z",
+      "sha256": "ad01ccc55b9825f2f8a80d98eb63f77319054c215d3ac3b1b0988268dac35518",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": ["To", "First Name", "Last Name", "Subject", "Body"]
+      },
+      "row_counts_by_sheet": {
+        "csv": 30
+      },
+      "warnings": [
+        "no_email_or_phone_identity_columns_detected",
+        "operator_review_required_before_import",
+        "possible_pii_columns_detected"
+      ],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_2ccf85231c15b81264ee5bc8",
+      "source_root_label": "Downloads",
+      "file_name": "jewish_home_services_leads.csv",
+      "extension": ".csv",
+      "byte_size": 11079,
+      "last_modified": "2026-01-25T13:45:26.024Z",
+      "sha256": "7e1ffead91216103ef86cb9ce4be7cd1723f9e3142d084e40c835e4720103e3d",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Business Name",
+          "Category",
+          "City/State",
+          "Service Area",
+          "24/7/Emergency Claim",
+          "Best Public Link",
+          "Website",
+          "Phone",
+          "Jewish-Context Proof",
+          "Website/Tech Score",
+          "Overwhelm Score",
+          "Silence-breaker Comment Draft",
+          "Optional DM Opener",
+          "Notes"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 11
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_38490d35312d348056f828c9",
+      "source_root_label": "Downloads",
+      "file_name": "combined_leads_enrichment_queue.csv",
+      "extension": ".csv",
+      "byte_size": 53370,
+      "last_modified": "2026-01-27T17:00:08.679Z",
+      "sha256": "2aa4d2d479fdcd693b07662da17474fee425ec3d970b857ddc495020561de25b",
+      "duplicate_of_sha256": "2aa4d2d479fdcd693b07662da17474fee425ec3d970b857ddc495020561de25b",
+      "classification": "duplicate",
+      "classification_reasons": ["duplicate_sha256"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "business_name",
+          "category",
+          "city_state",
+          "service_area",
+          "neighborhood_seed",
+          "source_sheet",
+          "best_public_link",
+          "website",
+          "phone",
+          "jewish_signal",
+          "public_demand_signals",
+          "claim_24_7",
+          "website_tech_score",
+          "overwhelm_score",
+          "comment_draft",
+          "dm_opener",
+          "notes",
+          "linkedin_url",
+          "facebook_url",
+          "instagram_url",
+          "google_business_profile_url",
+          "yelp_url",
+          "enrichment_status",
+          "last_checked"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 81
+      },
+      "warnings": ["possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_466bf5714826b15e10b854b7",
+      "source_root_label": "Downloads",
+      "file_name": "Jewish_Gut_Health_Directory_MISSING_EMAIL_HAS_OTHER_CONTACT.csv",
+      "extension": ".csv",
+      "byte_size": 101,
+      "last_modified": "2026-02-08T12:59:59.289Z",
+      "sha256": "d0c88f0263642054fa3f1862775a9f29c5af2a980749b48323fdf0541f5e4696",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "First Name",
+          "Last Name",
+          "Modality",
+          "Phone",
+          "Public Email",
+          "Website",
+          "LinkedIn",
+          "Gut Score",
+          "Gut Reference / Proof",
+          "JC"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 0
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_4910409a80c3b1ca38218155",
+      "source_root_label": "Downloads",
+      "file_name": "facebook_ads_leads_100.csv",
+      "extension": ".csv",
+      "byte_size": 128795,
+      "last_modified": "2026-03-12T12:11:10.485Z",
+      "sha256": "0b05066d3132e4be0b9b50d131d4e489499b130cde6d0707b00de8fd23465384",
+      "duplicate_of_sha256": "0b05066d3132e4be0b9b50d131d4e489499b130cde6d0707b00de8fd23465384",
+      "classification": "duplicate",
+      "classification_reasons": ["duplicate_sha256"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Business Name",
+          "Category",
+          "Phone Number",
+          "Facebook Page",
+          "Ad Library Link",
+          "Website on FB",
+          "Other Info from FB Profile"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 333
+      },
+      "warnings": ["possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_4b20fd8f9a4a3754b85e1e93",
+      "source_root_label": "Downloads",
+      "file_name": "webcraft-leads-ghl-import.csv",
+      "extension": ".csv",
+      "byte_size": 660188,
+      "last_modified": "2026-03-21T17:30:33.338Z",
+      "sha256": "d8b7bca49f7e21360cd1f645dc0c2bada059c14630189bfb0366bec3b776ea29",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "First Name",
+          "Phone",
+          "Company Name",
+          "Tags",
+          "Source",
+          "Category",
+          "City",
+          "Heat",
+          "Google Rating",
+          "Google Reviews",
+          "Has Website",
+          "Website URL",
+          "Facebook Page",
+          "Running Ads",
+          "Google Business Profile",
+          "Ad Library Link"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 1747
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_5db3d7f338c397824681e5e0",
+      "source_root_label": "Downloads",
+      "file_name": "jewish_gut_health_directory_HAS_EMAIL.csv",
+      "extension": ".csv",
+      "byte_size": 3632,
+      "last_modified": "2026-02-08T14:34:15.816Z",
+      "sha256": "8f7281b30ed0f602a412a5ed378b8b6fbc820b6d4d968ed39fbb49eabaaac01f",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "First Name",
+          "Last Name",
+          "Modality",
+          "Phone",
+          "Public Email",
+          "Website",
+          "LinkedIn",
+          "Gut Score",
+          "Gut Reference / Proof",
+          "JC"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 30
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_61f1e1d330be2277384cc1dd",
+      "source_root_label": "Downloads",
+      "file_name": "enriched_facebook_ads_leads_100_enriched.csv",
+      "extension": ".csv",
+      "byte_size": 136606,
+      "last_modified": "2026-03-12T13:17:29.780Z",
+      "sha256": "b854d1d466ec598fefdd324093a739a28f572f66e39b66bc7125b73fa226b94e",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": []
+      },
+      "row_counts_by_sheet": {
+        "csv": 417
+      },
+      "warnings": [
+        "no_email_or_phone_identity_columns_detected",
+        "operator_review_required_before_import"
+      ],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_684c59d3afcfaee3437b67ff",
+      "source_root_label": "Downloads",
+      "file_name": "unsubscribed_email_audience_export_b12dfa345d.csv",
+      "extension": ".csv",
+      "byte_size": 33067,
+      "last_modified": "2026-06-21T11:37:17.598Z",
+      "sha256": "4a5f84834b4e4f806775b945df09a03c73bd86e82afb15be84c0405ec38a2089",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Email Address",
+          "First Name",
+          "Last Name",
+          "Address",
+          "Phone Number",
+          "Birthday",
+          "country",
+          "product_id",
+          "product_name",
+          "action",
+          "action_type",
+          "status",
+          "platform",
+          "event_created_at",
+          "customer_created_at",
+          "marketing_opt_in",
+          "MEMBER_RATING",
+          "OPTIN_TIME",
+          "OPTIN_IP",
+          "CONFIRM_TIME",
+          "CONFIRM_IP",
+          "GMTOFF",
+          "DSTOFF",
+          "TIMEZONE",
+          "CC",
+          "REGION",
+          "UNSUB_TIME",
+          "UNSUB_CAMPAIGN_TITLE",
+          "UNSUB_CAMPAIGN_ID",
+          "UNSUB_REASON",
+          "UNSUB_REASON_OTHER",
+          "LEID",
+          "EUID",
+          "NOTES",
+          "TAGS"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 152
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_7419e8dab87ba1751f5f527d",
+      "source_root_label": "Downloads",
+      "file_name": "webcraft_leads_first20_crosscheck.csv",
+      "extension": ".csv",
+      "byte_size": 4198,
+      "last_modified": "2026-03-12T10:13:43.090Z",
+      "sha256": "93c64fd40c43199435dc71d8129ffb34a77828f23f9703bd0e8d35b2866ebdba",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Business Name",
+          "Phone",
+          "Category",
+          "Location",
+          "Status",
+          "Website Check",
+          "Facebook Present",
+          "GBP/Listing Present",
+          "Ad/Online Presence",
+          "Primary Source Link",
+          "Phone Duplicate Flag",
+          "Notes"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 20
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_7b1eea71e73e5d38de2195f8",
+      "source_root_label": "Downloads",
+      "file_name": "facebook_ads_leads_100 (1).csv",
+      "extension": ".csv",
+      "byte_size": 128795,
+      "last_modified": "2026-03-12T15:06:36.047Z",
+      "sha256": "0b05066d3132e4be0b9b50d131d4e489499b130cde6d0707b00de8fd23465384",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Business Name",
+          "Category",
+          "Phone Number",
+          "Facebook Page",
+          "Ad Library Link",
+          "Website on FB",
+          "Other Info from FB Profile"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 333
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_7ec5587ec18c4b747ef12609",
+      "source_root_label": "Downloads",
+      "file_name": "cleaned_email_audience_export_b12dfa345d.csv",
+      "extension": ".csv",
+      "byte_size": 12324,
+      "last_modified": "2026-06-21T11:37:14.239Z",
+      "sha256": "b3093f6d3a7b4e9e9745740a734213d366c83d7c079c7b13c8f79089e63c94ca",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Email Address",
+          "First Name",
+          "Last Name",
+          "Address",
+          "Phone Number",
+          "Birthday",
+          "country",
+          "product_id",
+          "product_name",
+          "action",
+          "action_type",
+          "status",
+          "platform",
+          "event_created_at",
+          "customer_created_at",
+          "marketing_opt_in",
+          "MEMBER_RATING",
+          "OPTIN_TIME",
+          "OPTIN_IP",
+          "CONFIRM_TIME",
+          "CONFIRM_IP",
+          "GMTOFF",
+          "DSTOFF",
+          "TIMEZONE",
+          "CC",
+          "REGION",
+          "CLEAN_TIME",
+          "CLEAN_CAMPAIGN_TITLE",
+          "CLEAN_CAMPAIGN_ID",
+          "LEID",
+          "EUID",
+          "NOTES",
+          "TAGS"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 57
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_815e6d4ac3010d95a7275bf8",
+      "source_root_label": "Downloads",
+      "file_name": "subscribers_detailed.csv",
+      "extension": ".csv",
+      "byte_size": 12912,
+      "last_modified": "2026-06-17T15:53:16.995Z",
+      "sha256": "0e05cd969c15e73240f4c2d681ca5208d9ada1ff95d908b2f14d337c67cdf6ca",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": ["email", "name", "status", "plan", "location", "joined", "trial_end", "notes"]
+      },
+      "row_counts_by_sheet": {
+        "csv": 86
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_822e252845bf1f327ff2c5b1",
+      "source_root_label": "Downloads",
+      "file_name": "Facebook_Ads_Leads_No_Phone_Numbers.xlsx",
+      "extension": ".xlsx",
+      "byte_size": 13038,
+      "last_modified": "2026-03-12T15:21:34.354Z",
+      "sha256": "43a13cac1298927f2d6fba391c339eca7a54c0f8068d05103cafe959496ebe19",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["No Phone"],
+      "column_names_by_sheet": {
+        "No Phone": ["Businesses Without Phone Number &#8212; Facebook Pages"]
+      },
+      "row_counts_by_sheet": {
+        "No Phone": 319
+      },
+      "warnings": [
+        "operator_review_required_before_import",
+        "possible_pii_columns_detected",
+        "xlsx_parser_metadata_only"
+      ],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_8b0a62c77dfbe25f01fcafc3",
+      "source_root_label": "Downloads",
+      "file_name": "Jewish_Gut_Health_Directory_NO_CONTACT_INFO.csv",
+      "extension": ".csv",
+      "byte_size": 101,
+      "last_modified": "2026-02-08T13:00:14.745Z",
+      "sha256": "d0c88f0263642054fa3f1862775a9f29c5af2a980749b48323fdf0541f5e4696",
+      "duplicate_of_sha256": "d0c88f0263642054fa3f1862775a9f29c5af2a980749b48323fdf0541f5e4696",
+      "classification": "duplicate",
+      "classification_reasons": ["duplicate_sha256"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "First Name",
+          "Last Name",
+          "Modality",
+          "Phone",
+          "Public Email",
+          "Website",
+          "LinkedIn",
+          "Gut Score",
+          "Gut Reference / Proof",
+          "JC"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 0
+      },
+      "warnings": ["possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_8e6f3d1b5512c4c03b457f69",
+      "source_root_label": "Downloads",
+      "file_name": "Minneapolis_updated_leads_with_phones_only.csv",
+      "extension": ".csv",
+      "byte_size": 41304,
+      "last_modified": "2026-01-18T18:22:03.890Z",
+      "sha256": "91fcbd858fa6b1f5d140574cdc5dbac7d0b33bf00c3edf7ac19d32b85786d26c",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Company",
+          "Phone",
+          "PhoneNational10",
+          "Website",
+          "Address",
+          "City",
+          "State",
+          "PostalCode",
+          "Category",
+          "Rating",
+          "ReviewCount",
+          "Hours",
+          "Source",
+          "SourceFiles",
+          "SourceURL",
+          "Notes"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 134
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_90c916d9cd971154d9c7d50f",
+      "source_root_label": "Downloads",
+      "file_name": "subscribers.csv",
+      "extension": ".csv",
+      "byte_size": 4897,
+      "last_modified": "2026-06-16T16:56:27.489Z",
+      "sha256": "3732cb909f796920ed3e418b94a3c89b98ce63fffc1741c2edd6d07d59d30437",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": ["email", "name", "status", "plan", "joined"]
+      },
+      "row_counts_by_sheet": {
+        "csv": 88
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_9a06d0947467b8d57cf915cf",
+      "source_root_label": "Downloads",
+      "file_name": "Minneapolis_updated_leads_master.csv",
+      "extension": ".csv",
+      "byte_size": 164302,
+      "last_modified": "2026-01-18T18:24:00.369Z",
+      "sha256": "cc0c14b6b703704f28a17fc8043b12c57b28de215238bc5b23eee5cae6af791c",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Company",
+          "PhoneE164",
+          "PhoneNational10",
+          "Website",
+          "Address",
+          "City",
+          "State",
+          "PostalCode",
+          "Category",
+          "Rating",
+          "BBBRating",
+          "ReviewCount",
+          "Hours",
+          "Notes",
+          "DirectionsURL",
+          "BookingURL",
+          "SourceFiles",
+          "SourceType",
+          "SourceURL",
+          "WebsiteDomain",
+          "DuplicateCount",
+          "DedupeKey",
+          "Phone",
+          "Source"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 364
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_9aee38837f787714d882f8db",
+      "source_root_label": "Downloads",
+      "file_name": "WebCraft-Leads-GHL-Import (1).csv",
+      "extension": ".csv",
+      "byte_size": 606689,
+      "last_modified": "2026-03-21T18:57:52.820Z",
+      "sha256": "89e94653cae282a6c3451bf5df957c303d447d87486b0c24f3706a2f73d65a90",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "First Name",
+          "Phone",
+          "Company Name",
+          "Tags",
+          "Source",
+          "Category",
+          "City",
+          "Heat",
+          "Google Rating",
+          "Google Reviews",
+          "Has Website",
+          "Website URL",
+          "Facebook Page",
+          "Running Ads",
+          "Google Business Profile",
+          "Ad Library Link"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 1747
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_9c2a84ee2b5e6cdc579ef3be",
+      "source_root_label": "Downloads",
+      "file_name": "WebCraft-Leads-GHL-Import (2).csv",
+      "extension": ".csv",
+      "byte_size": 606689,
+      "last_modified": "2026-03-21T18:58:48.729Z",
+      "sha256": "89e94653cae282a6c3451bf5df957c303d447d87486b0c24f3706a2f73d65a90",
+      "duplicate_of_sha256": "89e94653cae282a6c3451bf5df957c303d447d87486b0c24f3706a2f73d65a90",
+      "classification": "duplicate",
+      "classification_reasons": ["duplicate_sha256"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "First Name",
+          "Phone",
+          "Company Name",
+          "Tags",
+          "Source",
+          "Category",
+          "City",
+          "Heat",
+          "Google Rating",
+          "Google Reviews",
+          "Has Website",
+          "Website URL",
+          "Facebook Page",
+          "Running Ads",
+          "Google Business Profile",
+          "Ad Library Link"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 1747
+      },
+      "warnings": ["possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_a1fd472edaed246e0e3e935b",
+      "source_root_label": "Downloads",
+      "file_name": "minnesota_plumbing_receptionist_emails.csv",
+      "extension": ".csv",
+      "byte_size": 765,
+      "last_modified": "2026-02-04T20:07:47.030Z",
+      "sha256": "5bcdba54b1337d51e757f308d1339111f4ef6626abea4db4191cf3f4e281b2cd",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": ["business_name", "email"]
+      },
+      "row_counts_by_sheet": {
+        "csv": 20
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_a8e15d8cb61c533769c5dac8",
+      "source_root_label": "Downloads",
+      "file_name": "rabbi_sheller_business_structure_projections.xlsx",
+      "extension": ".xlsx",
+      "byte_size": 34892,
+      "last_modified": "2026-06-24T13:26:10.651Z",
+      "sha256": "9f73bfe17e72e21c5d4860da70655d493a51af905a0fd7b5a1b77f4434ccc501",
+      "duplicate_of_sha256": null,
+      "classification": "unrelated",
+      "classification_reasons": ["no_one_time_or_contact_signal"],
+      "sheet_names": [],
+      "column_names_by_sheet": {},
+      "row_counts_by_sheet": {},
+      "warnings": [
+        "excluded_from_one_time_import_by_default",
+        "no_email_or_phone_identity_columns_detected",
+        "xlsx_parser_metadata_only"
+      ],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_bd20ae063f61333f60b23fef",
+      "source_root_label": "Downloads",
+      "file_name": "contacts.csv",
+      "extension": ".csv",
+      "byte_size": 26682,
+      "last_modified": "2026-03-29T06:34:48.541Z",
+      "sha256": "c51aba00416822111b1744d0f8e9bd6ff181202c96cbf5176358136432fcffc2",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": ["Name", "Phone", "Email"]
+      },
+      "row_counts_by_sheet": {
+        "csv": 890
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_e0742da3d3df4c43db6fed27",
+      "source_root_label": "Downloads",
+      "file_name": "jewish plumbers leads.csv",
+      "extension": ".csv",
+      "byte_size": 53444,
+      "last_modified": "2026-01-31T16:23:05.767Z",
+      "sha256": "278296ca5d3ab683cc5e2f99654752e817363922796bb14d4ee659045e52fe56",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "business_name",
+          "category",
+          "city_state",
+          "service_area",
+          "neighborhood_seed",
+          "source_sheet",
+          "best_public_link",
+          "website",
+          "phone",
+          "jewish_signal",
+          "public_demand_signals",
+          "claim_24_7",
+          "website_tech_score",
+          "overwhelm_score",
+          "comment_draft",
+          "dm_opener",
+          "notes",
+          "linkedin_url",
+          "facebook_url",
+          "instagram_url",
+          "google_business_profile_url",
+          "yelp_url",
+          "enrichment_status",
+          "last_checked"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 81
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_e07ca4585cf6f476b4b59af8",
+      "source_root_label": "Downloads",
+      "file_name": "webcraft_leads (1).csv",
+      "extension": ".csv",
+      "byte_size": 87853,
+      "last_modified": "2026-03-12T09:54:25.298Z",
+      "sha256": "8254c5b2b5b3c884a36fbbaae96e3ff815ffe105c677a54161326b8091ffabd8",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Name",
+          "Phone",
+          "Category",
+          "Location",
+          "Status",
+          "Next Step",
+          "Running Ads",
+          "Est Spend NIS/mo",
+          "Website",
+          "GBP",
+          "Facebook",
+          "Ad Library",
+          "Notes",
+          "FB Followers",
+          "Google Reviews",
+          "Directory Links",
+          "Custom SMS"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 20
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_f7892c2ce649b84cfaa539b8",
+      "source_root_label": "Downloads",
+      "file_name": "subscribed_email_audience_export_b12dfa345d.csv",
+      "extension": ".csv",
+      "byte_size": 230650,
+      "last_modified": "2026-06-21T11:37:20.132Z",
+      "sha256": "b1e7bb30e6464d4c3239590cba97e65842cc2736c77eb95d323e05d4b38ce319",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": [
+          "Email Address",
+          "First Name",
+          "Last Name",
+          "Address",
+          "Phone Number",
+          "Birthday",
+          "country",
+          "product_id",
+          "product_name",
+          "action",
+          "action_type",
+          "status",
+          "platform",
+          "event_created_at",
+          "customer_created_at",
+          "marketing_opt_in",
+          "MEMBER_RATING",
+          "OPTIN_TIME",
+          "OPTIN_IP",
+          "CONFIRM_TIME",
+          "CONFIRM_IP",
+          "GMTOFF",
+          "DSTOFF",
+          "TIMEZONE",
+          "CC",
+          "REGION",
+          "LAST_CHANGED",
+          "LEID",
+          "EUID",
+          "NOTES",
+          "TAGS"
+        ]
+      },
+      "row_counts_by_sheet": {
+        "csv": 1311
+      },
+      "warnings": ["operator_review_required_before_import", "possible_pii_columns_detected"],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_fa309b415adc78bfd66d066c",
+      "source_root_label": "Downloads",
+      "file_name": "minnesota_plumbing_receptionist_emails_filled.csv",
+      "extension": ".csv",
+      "byte_size": 924,
+      "last_modified": "2026-02-04T20:20:20.321Z",
+      "sha256": "8b3e938e2acaeeadcec1c9ed955dde1b97c713488ed95ae1722b0d3c6573600a",
+      "duplicate_of_sha256": null,
+      "classification": "mixed_needs_review",
+      "classification_reasons": ["contact_or_audience_columns_without_one_time_proof"],
+      "sheet_names": ["csv"],
+      "column_names_by_sheet": {
+        "csv": ["business_name"]
+      },
+      "row_counts_by_sheet": {
+        "csv": 20
+      },
+      "warnings": [
+        "no_email_or_phone_identity_columns_detected",
+        "operator_review_required_before_import",
+        "possible_pii_columns_detected"
+      ],
+      "raw_values_included": false
+    },
+    {
+      "file_ref": "legacy_source_file_fd2cff8825d1a206e43c74f2",
+      "source_root_label": "Downloads",
+      "file_name": "Rabbi Scheller Followers.xlsx",
+      "extension": ".xlsx",
+      "byte_size": 35683,
+      "last_modified": "2026-06-21T11:37:23.695Z",
+      "sha256": "e17bbb32c8b2e642b8a6c5041ee36e720467fc4e666b0b5d59de1bb7f688a405",
+      "duplicate_of_sha256": null,
+      "classification": "proven_one_time",
+      "classification_reasons": [
+        "one_time_or_rabbi_filename_or_columns",
+        "contact_columns_present"
+      ],
+      "sheet_names": ["ta-speaker_540_followers"],
+      "column_names_by_sheet": {
+        "ta-speaker_540_followers": ["user_name", "user_email"]
+      },
+      "row_counts_by_sheet": {
+        "ta-speaker_540_followers": 811
+      },
+      "warnings": ["possible_pii_columns_detected", "xlsx_parser_metadata_only"],
+      "raw_values_included": false
+    }
+  ],
+  "summary": {
+    "file_count": 33,
+    "proven_one_time": 1,
+    "mixed_needs_review": 26,
+    "unrelated": 1,
+    "duplicate": 5,
+    "unsupported_files": 0,
+    "possible_pii_files": 31
+  },
+  "manifest_sha256": "399f33d13668e27568b1956af453a29c53a780c75ace51011daeb4ac9e418c46",
+  "raw_values_included": false,
+  "production_side_effects": false
+}

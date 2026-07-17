@@ -6,9 +6,14 @@ import type {
   LegacyActivationCampaignPreview,
   LegacyActivationCampaignQueueResult,
   LegacyActivationCampaignStatus,
+  LegacyAudienceApplyPlanRequest,
+  LegacyAudienceApplyPlanResult,
+  LegacyAudienceConflictDecisionRequest,
+  LegacyAudienceConflictDecisionResult,
   LegacyAudienceDryRunReport,
   LegacyAudienceInputRow,
   LegacyAudienceRollbackRequest,
+  LegacyAudienceSourceInventoryManifest,
 } from '../../../contracts/src/audience-reconciliation/index.ts';
 import type { DbPool, Queryable } from '../index.ts';
 import { inTransaction } from '../index.ts';
@@ -41,6 +46,11 @@ export type RollbackRecordResult = {
   rollback_key: string;
   batch_key: string;
   status: 'recorded' | 'reviewed' | 'closed';
+  replayed: boolean;
+};
+
+export type RecordSourceInventoryResult = {
+  manifest: LegacyAudienceSourceInventoryManifest;
   replayed: boolean;
 };
 
@@ -218,6 +228,44 @@ export function createPostgresLegacyAudienceRepository(pool: DbPool) {
       });
     },
 
+    async recordSourceInventory(input: {
+      actor: LegacyAudienceRepositoryActor;
+      manifest: LegacyAudienceSourceInventoryManifest;
+    }): Promise<RecordSourceInventoryResult> {
+      return inTransaction(pool, async (client) => {
+        const existing = await client.query(
+          `SELECT manifest_payload
+             FROM onetime.legacy_audience_source_inventories
+            WHERE account_key = $1
+              AND product_key = $2
+              AND manifest_sha256 = $3
+            LIMIT 1`,
+          [input.actor.accountKey, input.actor.productKey, input.manifest.manifest_sha256],
+        );
+        if (existing.rowCount) {
+          return {
+            manifest: existing.rows[0].manifest_payload as LegacyAudienceSourceInventoryManifest,
+            replayed: true,
+          };
+        }
+        await client.query(
+          `INSERT INTO onetime.legacy_audience_source_inventories
+           (inventory_key, account_key, product_key, manifest_sha256, manifest_payload,
+            generated_by_user_key, raw_values_included, production_side_effects)
+           VALUES ($1,$2,$3,$4,$5::jsonb,$6,false,false)`,
+          [
+            input.manifest.inventory_key,
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.manifest.manifest_sha256,
+            JSON.stringify(input.manifest),
+            input.actor.userKey,
+          ],
+        );
+        return { manifest: input.manifest, replayed: false };
+      });
+    },
+
     async getBatchReport(
       actor: LegacyAudienceRepositoryActor,
       batchKey: string,
@@ -301,6 +349,152 @@ export function createPostgresLegacyAudienceRepository(pool: DbPool) {
           status: 'recorded',
           replayed: false,
         };
+      });
+    },
+
+    async recordConflictDecision(
+      actor: LegacyAudienceRepositoryActor,
+      request: LegacyAudienceConflictDecisionRequest,
+    ): Promise<LegacyAudienceConflictDecisionResult> {
+      return inTransaction(pool, async (client) => {
+        const row = await client.query(
+          `SELECT row_key
+             FROM onetime.legacy_audience_import_rows
+            WHERE account_key = $1
+              AND product_key = $2
+              AND batch_key = $3
+              AND row_key = $4
+            LIMIT 1`,
+          [actor.accountKey, actor.productKey, request.batch_key, request.row_key],
+        );
+        if (!row.rowCount) throw new LegacyAudienceBatchNotFoundError();
+
+        const existing = await client.query(
+          `SELECT decision_key, decision
+             FROM onetime.legacy_audience_conflict_decisions
+            WHERE account_key = $1
+              AND product_key = $2
+              AND row_key = $3
+              AND idempotency_key = $4
+            LIMIT 1`,
+          [actor.accountKey, actor.productKey, request.row_key, request.idempotency_key],
+        );
+        if (existing.rowCount) {
+          return {
+            decision_key: String(existing.rows[0].decision_key),
+            batch_key: request.batch_key,
+            row_key: request.row_key,
+            decision: existing.rows[0].decision as LegacyAudienceConflictDecisionResult['decision'],
+            replayed: true,
+            production_side_effects: false,
+          };
+        }
+
+        const decisionKey = stableKey('legacy_conflict_decision', [
+          actor.accountKey,
+          actor.productKey,
+          request.row_key,
+          request.idempotency_key,
+        ]);
+        await client.query(
+          `INSERT INTO onetime.legacy_audience_conflict_decisions
+           (decision_key, batch_key, row_key, account_key, product_key, selected_contact_key,
+            decision, idempotency_key, decided_by_user_key, reason, raw_values_included,
+            production_side_effects)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,false,false)`,
+          [
+            decisionKey,
+            request.batch_key,
+            request.row_key,
+            actor.accountKey,
+            actor.productKey,
+            request.selected_contact_key ?? null,
+            request.decision,
+            request.idempotency_key,
+            actor.userKey,
+            request.reason,
+          ],
+        );
+        return {
+          decision_key: decisionKey,
+          batch_key: request.batch_key,
+          row_key: request.row_key,
+          decision: request.decision,
+          replayed: false,
+          production_side_effects: false,
+        };
+      });
+    },
+
+    async recordApplyPlan(input: {
+      actor: LegacyAudienceRepositoryActor;
+      request: LegacyAudienceApplyPlanRequest;
+      result: LegacyAudienceApplyPlanResult;
+    }): Promise<{ result: LegacyAudienceApplyPlanResult; replayed: boolean }> {
+      return inTransaction(pool, async (client) => {
+        const batch = await client.query(
+          `SELECT batch_key
+             FROM onetime.legacy_audience_import_batches
+            WHERE account_key = $1
+              AND product_key = $2
+              AND batch_key = $3
+            LIMIT 1`,
+          [input.actor.accountKey, input.actor.productKey, input.request.batch_key],
+        );
+        if (!batch.rowCount) throw new LegacyAudienceBatchNotFoundError();
+
+        const existing = await client.query(
+          `SELECT manifest_sha256, result_payload
+             FROM onetime.legacy_audience_change_ledger
+            WHERE account_key = $1
+              AND product_key = $2
+              AND batch_key = $3
+              AND idempotency_key = $4
+            LIMIT 1`,
+          [
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.request.batch_key,
+            input.request.idempotency_key,
+          ],
+        );
+        if (existing.rowCount) {
+          if (existing.rows[0].manifest_sha256 !== input.request.manifest_sha256) {
+            throw new LegacyAudienceIdempotencyConflictError();
+          }
+          return {
+            result: existing.rows[0].result_payload as LegacyAudienceApplyPlanResult,
+            replayed: true,
+          };
+        }
+
+        await client.query(
+          `INSERT INTO onetime.legacy_audience_change_ledger
+           (apply_plan_key, batch_key, account_key, product_key, mode, target_environment,
+            status, manifest_sha256, idempotency_key, blocked_reasons, planned_counts,
+            result_payload, operator_authorization_fingerprint, real_bulk_import_applied,
+            production_side_effects, created_by_user_key)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13,false,false,$14)`,
+          [
+            input.result.apply_plan_key,
+            input.request.batch_key,
+            input.actor.accountKey,
+            input.actor.productKey,
+            input.result.mode,
+            input.result.target_environment,
+            input.result.status,
+            input.request.manifest_sha256,
+            input.request.idempotency_key,
+            JSON.stringify(input.result.blocked_reasons),
+            JSON.stringify(input.result.planned_counts),
+            JSON.stringify(input.result),
+            input.request.operator_authorization_statement
+              ? sha256(input.request.operator_authorization_statement)
+              : null,
+            input.actor.userKey,
+          ],
+        );
+        return { result: input.result, replayed: false };
       });
     },
 
@@ -841,6 +1035,10 @@ function normalizePhone(phone: string | undefined) {
 function stableKey(prefix: string, parts: string[]) {
   const hash = createHash('sha256').update(parts.join('\0')).digest('hex').slice(0, 24);
   return `${prefix}_${hash}`;
+}
+
+function sha256(value: string) {
+  return createHash('sha256').update(value).digest('hex');
 }
 
 function asRecord(value: unknown): Record<string, unknown> {

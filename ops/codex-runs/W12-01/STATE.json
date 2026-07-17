@@ -1,0 +1,86 @@
+{
+  "lane": "W12-01",
+  "status": "ready_for_draft_pr",
+  "repo": "webcraft-media/onetimev2",
+  "worktree_label": "external isolated W12-01 worktree",
+  "branch": "codex/w12-01-crm-audience-import",
+  "deterministic_base": {
+    "source": "PR #61 head; no newer accepted production source was found during intake",
+    "base_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "base_commit": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "pr_url": "https://github.com/webcraft-media/onetimev2/pull/61"
+  },
+  "input_archive": {
+    "zip_name": "W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+    "zip_location_label": "Downloads",
+    "exactly_one_match": true,
+    "zip_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+    "entry_count": 23,
+    "unsafe_entry_count": 0,
+    "embedded_sha256s_verified": 19,
+    "embedded_sha256s_failed": 0,
+    "prompt_sha256": "118b2c97a78ee16cb6dae81c400f72812e91bf0fda5bba08901dc3afe73aa19f"
+  },
+  "source_inventory": {
+    "manifest_sha256": "399f33d13668e27568b1956af453a29c53a780c75ace51011daeb4ac9e418c46",
+    "file_count": 33,
+    "proven_one_time": 1,
+    "mixed_needs_review": 26,
+    "unrelated": 1,
+    "duplicate": 5,
+    "possible_pii_files": 31,
+    "raw_values_included": false,
+    "production_side_effects": false
+  },
+  "safety_flags": {
+    "raw_spreadsheets_committed": false,
+    "raw_pii_committed": false,
+    "real_bulk_import_applied": false,
+    "provider_mutation": false,
+    "production_db_read": false,
+    "broad_send": false,
+    "deployment": false
+  },
+  "evidence_files": [
+    "ops/codex-runs/W12-01/ARCHIVE-SAFETY.json",
+    "ops/codex-runs/W12-01/SOURCE-INVENTORY.json",
+    "ops/codex-runs/W12-01/SOURCE-INVENTORY.md",
+    "ops/codex-runs/W12-01/SYNTHETIC-DRY-RUN-REPORT.json",
+    "ops/codex-runs/W12-01/APPLY-PLAN-DRY-RUN.json",
+    "ops/codex-runs/W12-01/APPLY-PLAN-PRODUCTION-BLOCKED.json"
+  ],
+  "validation": {
+    "completed": [
+      "npm ci",
+      "npm run typecheck",
+      "npx vitest run --config vitest.unit.config.ts tests/unit/ot74-audience-reconciliation.test.ts tests/unit/ot74-audience-panel.test.ts tests/unit/ot111-legacy-activation-campaign.test.ts tests/unit/w12-01-audience-import.test.ts",
+      "npx vitest run --config vitest.integration.config.ts tests/integration/ot74-audience-repository.test.ts tests/integration/ot74-audience-router.test.ts",
+      "npx tsx scripts/w12-01/source-inventory.ts --root=<Downloads> --label=Downloads --out-dir=ops/codex-runs/W12-01",
+      "npx tsx scripts/ot74/audience-dry-run.ts --rows=10000",
+      "npx tsx scripts/ot111/legacy-activation-campaign-dry-run.ts",
+      "npx tsx scripts/w12-01/synthetic-dry-run-report.ts --out=ops/codex-runs/W12-01/SYNTHETIC-DRY-RUN-REPORT.json",
+      "npx tsx scripts/w12-01/audience-apply-plan.ts --report=ops/codex-runs/W12-01/SYNTHETIC-DRY-RUN-REPORT.json --mode=dry_run --target-environment=test",
+      "npx tsx scripts/w12-01/audience-apply-plan.ts --report=ops/codex-runs/W12-01/SYNTHETIC-DRY-RUN-REPORT.json --apply --target-environment=production",
+      "privacy scan over ops/codex-runs/W12-01",
+      "npx prettier --check --ignore-unknown <W12-01 touched files>",
+      "npm run lint",
+      "npm run secret:scan",
+      "final npm run typecheck",
+      "final focused unit/integration rerun"
+    ],
+    "inherited_base_warnings": [
+      {
+        "command": "npm run format",
+        "result": "failed on 827 pre-existing files from the PR #61 base; W12-01 touched files pass scoped Prettier check"
+      }
+    ],
+    "blocked": [
+      {
+        "command": "npm run db:verify",
+        "result": "blocked because DATABASE_URL is unset and no local disposable PostgreSQL runtime is available",
+        "local_checks": ["docker not installed", "psql not installed", "DATABASE_URL not set"],
+        "fallback_evidence": "tests/integration/ot74-audience-repository.test.ts applies migrations and records W12-01 tables through pg-mem without contact mutation"
+      }
+    ]
+  }
+}
