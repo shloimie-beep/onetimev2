@@ -1,0 +1,12 @@
+ops/codex-runs/W12-100-05/CHANGED-FILES.txt
+ops/codex-runs/W12-100-05/COMPATIBILITY-MATRIX.md
+ops/codex-runs/W12-100-05/FINAL-REPORT.md
+ops/codex-runs/W12-100-05/FORWARD-ROLLBACK-PLAN.md
+ops/codex-runs/W12-100-05/MIGRATION-REHEARSAL.json
+ops/codex-runs/W12-100-05/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-05/RESUME.md
+ops/codex-runs/W12-100-05/STAGING-MIGRATION-RUNBOOK.md
+ops/codex-runs/W12-100-05/STATE.json
+scripts/w12-100/postgres/migration-rehearsal.ts
+scripts/w12-100/postgres/rehearsal-model.ts
+tests/integration/w12-100-postgres/migration-rehearsal-model.test.ts
