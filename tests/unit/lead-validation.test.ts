@@ -4,8 +4,12 @@ import {
   campaign,
   campaignTicker,
   landingContent,
+  legalPolicyMetadata,
   normalizePhone,
+  privacyDataCategories,
+  privacyNotice,
   successCopy,
+  termsOfUse,
 } from '../../packages/domain/src/index.ts';
 
 const basePayload = {
@@ -105,5 +109,34 @@ describe('lead validation and content contracts', () => {
       'A Love of Learning',
     ]);
     expect(landingContent.gain.cards.some((card) => card.image?.includes('lakewood'))).toBe(false);
+  });
+
+  it('ships launch legal content with the current data categories and no live billing claim', () => {
+    expect(legalPolicyMetadata.policySetVersion).toBe('one-time-public-legal-v1-2026-07-17');
+    expect(legalPolicyMetadata.consentPolicyVersion).toBe('one-time-class-reminders-v1-2026-07-14');
+    expect(privacyNotice.title).toBe('Privacy Notice');
+    expect(termsOfUse.title).toBe('Terms of Use');
+    expect(privacyDataCategories.map((category) => category.label)).toEqual([
+      'Signup records',
+      'Account records',
+      'Household and guardian records',
+      'Learner records',
+      'Class and classroom records',
+      'Progress and learning records',
+      'Communications records',
+      'Support records',
+      'Provider event records',
+      'Payment and test-payment records',
+      'Security records',
+      'Operational records',
+    ]);
+    expect(JSON.stringify(privacyDataCategories)).toContain(
+      'The public form is for parent, guardian, or school contact details.',
+    );
+    expect(JSON.stringify(termsOfUse)).toContain('fixture and Stripe test-mode evidence');
+    expect(JSON.stringify(termsOfUse)).not.toMatch(
+      /paid checkout is live|live paid checkout is available/i,
+    );
+    expect(JSON.stringify(privacyNotice)).not.toMatch(/\bCOPPA\b|\bFERPA\b|\bGDPR\b|\bHIPAA\b/);
   });
 });
