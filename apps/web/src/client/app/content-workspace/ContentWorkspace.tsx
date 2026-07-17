@@ -783,6 +783,7 @@ function SourceDetailView({
         <Badge>{readable(source.lifecycle_stage)}</Badge>
       </div>
       <ProviderPorts ports={source.provider_ports} />
+      <VerticalSlicePanel slice={source.vertical_slice} />
       <section className="detail-grid">
         <Card className="content-panel">
           <h3>Protected Player</h3>
@@ -791,12 +792,16 @@ function SourceDetailView({
         </Card>
         <Card className="content-panel">
           <h3>Transcript</h3>
-          {source.transcript_revisions.map((revision) => (
-            <p key={revision.revision_key}>
-              v{revision.revision_number}: {revision.state} -{' '}
-              {revision.transcript_hash.slice(0, 12)}
-            </p>
-          ))}
+          {source.transcript_revisions.length === 0 ? (
+            <p>No transcript revision yet.</p>
+          ) : (
+            source.transcript_revisions.map((revision) => (
+              <p key={revision.revision_key}>
+                v{revision.revision_number}: {revision.state} -{' '}
+                {revision.transcript_hash.slice(0, 12)}
+              </p>
+            ))
+          )}
           <Button
             type="button"
             variant="secondary"
@@ -875,6 +880,106 @@ function SourceDetailView({
         <Input value={reason} onChange={(event) => setReason(event.target.value)} />
       </label>
       <ActivityView events={source.activity} />
+    </section>
+  );
+}
+
+function VerticalSlicePanel({ slice }: { slice: ContentAdminSourceDetail['vertical_slice'] }) {
+  const activeSteps = slice.flow_steps.filter((step) =>
+    ['ready', 'done'].includes(step.state),
+  ).length;
+  return (
+    <section className="content-vertical-slice" aria-label="Content classroom pipeline">
+      <Card className="content-panel content-flow-panel">
+        <div className="content-panel-heading">
+          <h3>Content Flow</h3>
+          <Badge>
+            {activeSteps}/{slice.flow_steps.length} active
+          </Badge>
+        </div>
+        <ol className="content-flow-list">
+          {slice.flow_steps.map((step) => (
+            <li key={step.key} data-state={step.state}>
+              <span>
+                <strong>{step.label}</strong>
+                <small>{step.detail}</small>
+              </span>
+              <span>
+                <Badge>{readable(step.state)}</Badge>
+                <small>{formatOptionalDate(step.updated_at)}</small>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </Card>
+      <Card className="content-panel content-slice-card">
+        <h3>Classroom</h3>
+        <dl>
+          <div>
+            <dt>Class</dt>
+            <dd>{slice.classroom.class_key ?? 'Needs association'}</dd>
+          </div>
+          <div>
+            <dt>Title</dt>
+            <dd>{slice.classroom.title}</dd>
+          </div>
+          <div>
+            <dt>Starts</dt>
+            <dd>{formatOptionalDate(slice.classroom.starts_at)}</dd>
+          </div>
+          <div>
+            <dt>Recording</dt>
+            <dd>{readable(slice.classroom.recording_state)}</dd>
+          </div>
+          <div>
+            <dt>Portal</dt>
+            <dd>{readable(slice.classroom.portal_eligibility)}</dd>
+          </div>
+          <div>
+            <dt>Helper</dt>
+            <dd>{readable(slice.classroom.helper_eligibility)}</dd>
+          </div>
+        </dl>
+      </Card>
+      <Card className="content-panel content-slice-card">
+        <h3>Provider Setup</h3>
+        <dl>
+          <div>
+            <dt>State</dt>
+            <dd>{readable(slice.provider_setup.state)}</dd>
+          </div>
+          <div>
+            <dt>Missing</dt>
+            <dd>{slice.provider_setup.missing_provider_count}</dd>
+          </div>
+          <div>
+            <dt>Provider-Off</dt>
+            <dd>{slice.provider_setup.can_continue_provider_off ? 'Available' : 'Blocked'}</dd>
+          </div>
+        </dl>
+        <p>{slice.provider_setup.owner_action}</p>
+      </Card>
+      <Card className="content-panel content-slice-card">
+        <h3>Social Handoff</h3>
+        <dl>
+          <div>
+            <dt>State</dt>
+            <dd>{readable(slice.social_handoff.state)}</dd>
+          </div>
+          <div>
+            <dt>Drafts</dt>
+            <dd>{slice.social_handoff.draft_count}</dd>
+          </div>
+          <div>
+            <dt>Live Publish</dt>
+            <dd>{slice.social_handoff.buffer_live_publish_allowed ? 'Allowed' : 'Disabled'}</dd>
+          </div>
+          <div>
+            <dt>Revision Lock</dt>
+            <dd>{slice.social_handoff.exact_revision_required ? 'Exact' : 'Open'}</dd>
+          </div>
+        </dl>
+      </Card>
     </section>
   );
 }
@@ -1050,6 +1155,10 @@ function formatDate(value: string) {
   return new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeStyle: 'short' }).format(
     new Date(value),
   );
+}
+
+function formatOptionalDate(value: string | null) {
+  return value ? formatDate(value) : 'Not set';
 }
 
 function errorMessage(error: unknown) {
