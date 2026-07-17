@@ -1,0 +1,25 @@
+{
+  "schema_version": "onetime.w12_100.staging_sublanes.vimeo_local_canary_probe.v1",
+  "generated_at": "2026-07-17T20:56:00+03:00",
+  "command": "node bin/ot104r-vimeo-canary --mode read-only --json",
+  "exit_code": 1,
+  "provider": "vimeo",
+  "mode": "read-only",
+  "status": "unconfigured",
+  "writes_performed": false,
+  "provider_network_call_performed": false,
+  "missing_variable_names": [
+    "VIMEO_ACCESS_TOKEN",
+    "VIMEO_CLIENT_ID",
+    "VIMEO_CLIENT_SECRET",
+    "VIMEO_ACCOUNT_ID",
+    "VIMEO_WEBHOOK_SECRET"
+  ],
+  "capability_names": ["sink_adapter_supported"],
+  "safe_reason_code": "vimeo_configuration_missing",
+  "private_urls_printed": false,
+  "download_links_printed": false,
+  "upload_tickets_printed": false,
+  "access_tokens_printed": false,
+  "raw_webhooks_printed": false
+}
