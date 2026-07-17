@@ -1,0 +1,62 @@
+{
+  "schema_version": "onetime.w12_100.telegram_canary_state.v1",
+  "generated_at": "2026-07-17T20:47:06.4052860+03:00",
+  "status": "blocked_before_telegram_invocation",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "observed_staging_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "observed_staging_version": "ops11-1197673",
+  "expected_latest_migration": "2202_w12_05_telegram_operations",
+  "observed_latest_migration": "2190_ot109_rabbi_content_publisher",
+  "blocked_reasons": [
+    "Staging /version does not report the exact W12-100 candidate SHA.",
+    "Staging /ready does not report W12-100 Telegram migration 2202.",
+    "Protected Telegram bot token is not present in the local shell.",
+    "Protected Telegram webhook secret is not present in the local shell.",
+    "Protected private operator chat allowlist is not present in the local shell.",
+    "Telegram canary authorization is not present in the local shell.",
+    "W12-100-08 readiness matrix records protected Telegram values as absent."
+  ],
+  "budget": {
+    "allowlisted_private_operator_chats": 1,
+    "read_only_commands_allowed": 3,
+    "staging_only_writes_allowed": 1,
+    "broadcast_payment_publication_export_delete_provider_management_role_management_allowed": 0,
+    "read_only_commands_run": 0,
+    "staging_only_writes_run": 0,
+    "forbidden_command_count": 0
+  },
+  "required_commands": {
+    "status": "not_executed",
+    "schedule": "not_executed",
+    "redacted_lookup": "not_executed",
+    "preview_reversible_staging_write": "not_executed",
+    "confirm_exact_digest": "not_executed",
+    "replay_confirmation_rejection": "not_executed"
+  },
+  "prerequisites": {
+    "protected_bot_token": "blocked_missing_local_env",
+    "protected_webhook_secret": "blocked_missing_local_env",
+    "active_one_time_bot_registry": "not_evaluated_after_runtime_block",
+    "active_operator_chat_mapping": "blocked_missing_local_env",
+    "webhook_polling_single_consumer_proof": "available_as_local_test_evidence_not_live_verified",
+    "exact_staging_environment": "blocked_wrong_runtime",
+    "confirmation_digest_verification": "not_evaluated"
+  },
+  "safety": {
+    "chat_id_printed": false,
+    "token_printed": false,
+    "contact_data_printed": false,
+    "message_bodies_printed": false,
+    "webhook_payload_printed": false,
+    "telegram_provider_invocations": 0,
+    "telegram_provider_mutations": 0,
+    "production_mutations": 0,
+    "canary_authorization_disabled_or_expired": "not_applicable_no_authorization_enabled"
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-TELEGRAM-CANARY/live-evidence/staging-version-ready.json",
+    "ops/codex-runs/W12-100-08/TELEGRAM-STAGING-READINESS-MATRIX.json",
+    "ops/codex-runs/W12-100-TELEGRAM-CANARY/EXTERNAL-ACTION-LEDGER.md",
+    "ops/codex-runs/W12-100-TELEGRAM-CANARY/FINAL-REPORT.md"
+  ]
+}
