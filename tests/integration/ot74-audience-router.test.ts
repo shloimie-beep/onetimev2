@@ -101,6 +101,95 @@ describe('OT-74 audience reconciliation router', () => {
     expect(harness.calls).toEqual(['getBatchReport', 'recordCampaignPreview']);
   });
 
+  it('returns governed taxonomy without row values', async () => {
+    const harness = await createHarness({});
+    const response = await fetch(`${harness.baseUrl}/api/v1/audience-reconciliation/taxonomy`);
+    const body = (await response.json()) as {
+      success: boolean;
+      taxonomy: Array<{ fact_code: string }>;
+      raw_values_included: boolean;
+      production_side_effects: boolean;
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.taxonomy.map((fact) => fact.fact_code)).toContain('campaign_candidate');
+    expect(body.raw_values_included).toBe(false);
+    expect(body.production_side_effects).toBe(false);
+  });
+
+  it('records source inventory and apply plans without exposing raw values', async () => {
+    const report = dryRunReport();
+    const harness = await createHarness({ batchReport: report });
+    const inventoryResponse = await fetch(
+      `${harness.baseUrl}/api/v1/audience-reconciliation/source-inventories`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(sourceInventoryBody()),
+      },
+    );
+    const inventory = (await inventoryResponse.json()) as Record<string, unknown>;
+
+    expect(inventoryResponse.status).toBe(200);
+    expect(JSON.stringify(inventory)).not.toContain('router@example.test');
+
+    const applyResponse = await fetch(
+      `${harness.baseUrl}/api/v1/audience-reconciliation/batches/${report.batch_key}/apply-plans`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          idempotency_key: 'router-apply-plan-001',
+          mode: 'dry_run',
+          manifest_sha256: report.source_digest,
+          expected_total_rows: report.summary.total_rows,
+          expected_unique_rows: report.summary.unique_rows,
+          expected_manual_review_rows: report.summary.manual_review_rows,
+          target_environment: 'test',
+        }),
+      },
+    );
+    const apply = (await applyResponse.json()) as {
+      success: boolean;
+      apply_plan: { real_bulk_import_applied: boolean; production_side_effects: boolean };
+    };
+
+    expect(applyResponse.status).toBe(200);
+    expect(apply.success).toBe(true);
+    expect(apply.apply_plan.real_bulk_import_applied).toBe(false);
+    expect(apply.apply_plan.production_side_effects).toBe(false);
+    expect(harness.calls).toEqual(['recordSourceInventory', 'getBatchReport', 'recordApplyPlan']);
+  });
+
+  it('records conflict decisions behind csrf without raw contact data', async () => {
+    const report = dryRunReport();
+    const harness = await createHarness({});
+    const response = await fetch(
+      `${harness.baseUrl}/api/v1/audience-reconciliation/batches/${report.batch_key}/conflict-decisions`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          row_key: report.row_outcomes[0]?.row_key,
+          idempotency_key: 'router-conflict-001',
+          decision: 'needs_more_info',
+          reason: 'Synthetic review stays blocked until source owner confirms.',
+        }),
+      },
+    );
+    const body = (await response.json()) as {
+      success: boolean;
+      decision: { production_side_effects: boolean };
+    };
+
+    expect(response.status).toBe(200);
+    expect(body.success).toBe(true);
+    expect(body.decision.production_side_effects).toBe(false);
+    expect(JSON.stringify(body)).not.toContain('campaign-router@example.test');
+    expect(harness.calls).toEqual(['recordConflictDecision']);
+  });
+
   async function createHarness(options: {
     session?: Ot74AudienceSession | null;
     role?: string;
@@ -164,6 +253,10 @@ function repositoryWithCalls(
       calls.push('recordDryRun');
       return { report, replayed: false };
     },
+    recordSourceInventory: async ({ manifest }) => {
+      calls.push('recordSourceInventory');
+      return { manifest, replayed: false };
+    },
     getBatchReport: async () => {
       calls.push('getBatchReport');
       return batchReport ?? null;
@@ -176,6 +269,21 @@ function repositoryWithCalls(
         status: 'recorded',
         replayed: false,
       };
+    },
+    recordConflictDecision: async (_actor, request) => {
+      calls.push('recordConflictDecision');
+      return {
+        decision_key: 'decision_test',
+        batch_key: request.batch_key,
+        row_key: request.row_key,
+        decision: request.decision,
+        replayed: false,
+        production_side_effects: false,
+      };
+    },
+    recordApplyPlan: async ({ result }) => {
+      calls.push('recordApplyPlan');
+      return { result, replayed: false };
     },
     recordCampaignPreview: async ({ preview }) => {
       calls.push('recordCampaignPreview');
@@ -208,6 +316,46 @@ function repositoryWithCalls(
         production_side_effects: false,
       };
     },
+  };
+}
+
+function sourceInventoryBody() {
+  return {
+    inventory_key: 'legacy_source_inventory_router',
+    generated_at: '2026-07-17T09:00:00.000Z',
+    generated_by: 'router-test',
+    source_roots: ['Downloads'],
+    files: [
+      {
+        file_ref: 'legacy_source_file_router',
+        source_root_label: 'Downloads',
+        file_name: 'Rabbi Scheller Followers.xlsx',
+        extension: '.xlsx',
+        byte_size: 1234,
+        last_modified: '2026-07-17T09:00:00.000Z',
+        sha256: 'a'.repeat(64),
+        duplicate_of_sha256: null,
+        classification: 'proven_one_time',
+        classification_reasons: ['one_time_or_rabbi_filename_or_columns'],
+        sheet_names: ['Followers'],
+        column_names_by_sheet: { Followers: ['Name', 'Email'] },
+        row_counts_by_sheet: { Followers: 12 },
+        warnings: ['possible_pii_columns_detected'],
+        raw_values_included: false,
+      },
+    ],
+    summary: {
+      file_count: 1,
+      proven_one_time: 1,
+      mixed_needs_review: 0,
+      unrelated: 0,
+      duplicate: 0,
+      unsupported_files: 0,
+      possible_pii_files: 1,
+    },
+    manifest_sha256: 'b'.repeat(64),
+    raw_values_included: false,
+    production_side_effects: false,
   };
 }
 

@@ -1,0 +1,25 @@
+﻿{
+  "apply_plan_key": "legacy_apply_plan_033ca0db27e78e3f12568f0e",
+  "batch_key": "legacy_batch_c7e56cd889e1c8afb40412cd",
+  "status": "blocked",
+  "mode": "apply",
+  "target_environment": "production",
+  "blocked_reasons": [
+    "manual_review_unresolved",
+    "missing_operator_authorization",
+    "production_target_declared"
+  ],
+  "planned_counts": {
+    "rows_seen": 3,
+    "rows_unique": 3,
+    "matched_existing_contacts": 1,
+    "staged_new_contacts": 1,
+    "manual_review_rows": 1,
+    "do_not_contact_rows": 1,
+    "contact_mutations_applied": 0,
+    "sends_queued": 0
+  },
+  "exact_authorization_required": "APPROVE_ONE_TIME_AUDIENCE_IMPORT:9f9a71346fa6cf8a4d1176fb3f68e0643f43e138b92cb1b1a998e47fb68034c5:3:production",
+  "real_bulk_import_applied": false,
+  "production_side_effects": false
+}

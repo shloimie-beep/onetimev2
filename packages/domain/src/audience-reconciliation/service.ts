@@ -1,7 +1,10 @@
 import { createHash } from 'node:crypto';
 import {
   legacyAudienceDryRunRequestSchema,
+  legacyAudienceApplyPlanRequestSchema,
   legacyAudienceInputRowSchema,
+  type LegacyAudienceApplyPlanRequest,
+  type LegacyAudienceApplyPlanResult,
   type LegacyAudienceDisposition,
   type LegacyAudienceDryRunReport,
   type LegacyAudienceDryRunRequest,
@@ -10,6 +13,7 @@ import {
   type LegacyAudienceSegmentCode,
   type LegacyAudienceSegmentContract,
   type LegacyAudienceSource,
+  type LegacyAudienceTaxonomyFactCode,
   type LegacyAudienceType,
   type LegacyConsentState,
   type LegacyLeadState,
@@ -112,6 +116,140 @@ export const legacyAudienceSegmentContracts: LegacyAudienceSegmentContract[] = [
   },
 ];
 
+export const legacyAudienceGovernedTaxonomy: Array<{
+  fact_code: LegacyAudienceTaxonomyFactCode;
+  display_name: string;
+  description: string;
+  may_drive_campaign: boolean;
+}> = [
+  {
+    fact_code: 'contact_person',
+    display_name: 'Contact / person',
+    description: 'A reachable person or reviewed contact candidate, independent of household.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'household',
+    display_name: 'Household',
+    description: 'Family grouping concept; never inferred from shared names alone.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'parent_guardian',
+    display_name: 'Parent / guardian',
+    description: 'Guardian relationship fact, separate from learner or member state.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'learner',
+    display_name: 'Learner',
+    description: 'Learner/student fact, not proof of current membership.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'family_lead',
+    display_name: 'Family lead',
+    description: 'Family inquiry or parent lead.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'school_lead',
+    display_name: 'School lead',
+    description: 'School/class-group inquiry requiring human follow-up and no entitlement.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'legacy_system_contact',
+    display_name: 'Legacy-system contact',
+    description: 'Presence in the old system, distinct from active user and member/subscriber.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'active_legacy_user',
+    display_name: 'Active legacy user',
+    description: 'Old system says this identity was active.',
+    may_drive_campaign: true,
+  },
+  {
+    fact_code: 'member_subscriber',
+    display_name: 'Member / subscriber',
+    description: 'Subscriber/member label from a source; not campaign permission by itself.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'current_activation',
+    display_name: 'Current activation',
+    description: 'Already activated in the new system; excluded from activation campaigns.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'enrollment',
+    display_name: 'Enrollment',
+    description: 'Enrollment-like source label; requires separate scope proof.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'consent_opted_in',
+    display_name: 'Consent opted in',
+    description: 'Source indicates opt-in consent, still subject to suppression and review.',
+    may_drive_campaign: true,
+  },
+  {
+    fact_code: 'consent_unknown',
+    display_name: 'Consent unknown',
+    description: 'No affirmative consent found; does not permit sending.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'do_not_send',
+    display_name: 'Do not send',
+    description: 'Communication must remain blocked for this row.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'suppressed',
+    display_name: 'Suppressed',
+    description: 'Suppression or opt-out fact from source or matched contact.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'bounced',
+    display_name: 'Bounced',
+    description: 'Bounce-like source tag; communication blocked until reviewed.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'invalid',
+    display_name: 'Invalid',
+    description: 'Invalid or wrong-number/email source tag; communication blocked.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'source_provenance',
+    display_name: 'Source provenance',
+    description: 'Source workbook/sheet/batch identity retained without raw values.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'import_source_batch',
+    display_name: 'Import source/date/batch',
+    description: 'Import batch provenance fact; never a membership fact.',
+    may_drive_campaign: false,
+  },
+  {
+    fact_code: 'campaign_candidate',
+    display_name: 'Campaign candidate',
+    description: 'Counts-only eligibility fact after consent, suppression, and activation checks.',
+    may_drive_campaign: true,
+  },
+  {
+    fact_code: 'manual_review',
+    display_name: 'Manual review',
+    description: 'Ambiguous, conflicting, missing, or unsafe source row.',
+    may_drive_campaign: false,
+  },
+];
+
 export function createLegacyAudienceDryRun(input: {
   scope: LegacyAudienceActorScope;
   request: LegacyAudienceDryRunRequest;
@@ -167,6 +305,74 @@ export function createLegacyAudienceDryRun(input: {
     row_outcomes: rowOutcomes,
     generated_at: (input.now ?? new Date()).toISOString(),
     raw_row_contents_included: false,
+    production_side_effects: false,
+  };
+}
+
+export function createLegacyAudienceApplyPlan(input: {
+  report: LegacyAudienceDryRunReport;
+  request: LegacyAudienceApplyPlanRequest;
+}): LegacyAudienceApplyPlanResult {
+  const request = legacyAudienceApplyPlanRequestSchema.parse(input.request);
+  const exactAuthorizationRequired = [
+    'APPROVE_ONE_TIME_AUDIENCE_IMPORT',
+    input.report.source_digest,
+    String(input.report.summary.total_rows),
+    request.target_environment,
+  ].join(':');
+  const blockedReasons = new Set<LegacyAudienceApplyPlanResult['blocked_reasons'][number]>();
+  if (request.manifest_sha256 !== input.report.source_digest) {
+    blockedReasons.add('manifest_hash_mismatch');
+  }
+  if (
+    request.expected_total_rows !== input.report.summary.total_rows ||
+    request.expected_unique_rows !== input.report.summary.unique_rows ||
+    request.expected_manual_review_rows !== input.report.summary.manual_review_rows
+  ) {
+    blockedReasons.add('count_mismatch');
+  }
+  if (input.report.summary.manual_review_rows > 0) {
+    blockedReasons.add('manual_review_unresolved');
+  }
+  if (request.mode === 'apply') {
+    if (request.operator_authorization_statement !== exactAuthorizationRequired) {
+      blockedReasons.add('missing_operator_authorization');
+    }
+    if (request.target_environment === 'production') {
+      blockedReasons.add('production_target_declared');
+    }
+  }
+
+  return {
+    apply_plan_key: stableKey('legacy_apply_plan', [
+      input.report.batch_key,
+      request.idempotency_key,
+      request.manifest_sha256,
+      request.mode,
+      request.target_environment,
+    ]),
+    batch_key: input.report.batch_key,
+    status:
+      request.mode === 'dry_run'
+        ? 'dry_run'
+        : blockedReasons.size
+          ? 'blocked'
+          : 'authorized_not_applied',
+    mode: request.mode,
+    target_environment: request.target_environment,
+    blocked_reasons: Array.from(blockedReasons).sort(),
+    planned_counts: {
+      rows_seen: input.report.summary.total_rows,
+      rows_unique: input.report.summary.unique_rows,
+      matched_existing_contacts: input.report.summary.matched_existing_contacts,
+      staged_new_contacts: input.report.summary.staged_new_contacts,
+      manual_review_rows: input.report.summary.manual_review_rows,
+      do_not_contact_rows: input.report.summary.do_not_contact_rows,
+      contact_mutations_applied: 0,
+      sends_queued: 0,
+    },
+    exact_authorization_required: exactAuthorizationRequired,
+    real_bulk_import_applied: false,
     production_side_effects: false,
   };
 }
@@ -312,6 +518,14 @@ function classifyRow(input: {
   const uniqueReasonCodes = uniqueReasons(reasons);
   const candidateContactKeys = input.match.candidates.map((candidate) => candidate.contact_key);
   const rowKey = stableKey('legacy_row', [input.batchKey, input.row.rowFingerprint]);
+  const taxonomyFactCodes = taxonomyFactsFor({
+    row: input.row,
+    disposition,
+    reasons: uniqueReasonCodes,
+    segmentCodes,
+    communicationEligible,
+    suppressedByContact,
+  });
 
   return {
     row_key: rowKey,
@@ -332,6 +546,7 @@ function classifyRow(input: {
     disposition,
     reasons: uniqueReasonCodes.length ? uniqueReasonCodes : ['new_identity'],
     segment_codes: Array.from(segmentCodes).sort(),
+    taxonomy_fact_codes: taxonomyFactCodes,
     matched_contact_key: input.match.contact?.contact_key ?? null,
     matched_contact_id:
       input.match.contact?.public_contact_id ?? input.match.contact?.contact_key ?? null,
@@ -442,10 +657,12 @@ function summarizeRows(rowOutcomes: LegacyAudienceDryRunReport['row_outcomes']) 
   const reasonCounts: Record<string, number> = {};
   const dispositionCounts: Record<string, number> = {};
   const segmentCounts: Record<string, number> = {};
+  const taxonomyFactCounts: Record<string, number> = {};
   for (const outcome of rowOutcomes) {
     addCount(dispositionCounts, outcome.disposition);
     for (const reason of outcome.reasons) addCount(reasonCounts, reason);
     for (const segment of outcome.segment_codes) addCount(segmentCounts, segment);
+    for (const fact of outcome.taxonomy_fact_codes) addCount(taxonomyFactCounts, fact);
   }
   return {
     total_rows: rowOutcomes.length,
@@ -472,7 +689,59 @@ function summarizeRows(rowOutcomes: LegacyAudienceDryRunReport['row_outcomes']) 
     reason_counts: reasonCounts,
     disposition_counts: dispositionCounts,
     segment_counts: segmentCounts,
+    taxonomy_fact_counts: taxonomyFactCounts,
   };
+}
+
+function taxonomyFactsFor(input: {
+  row: NormalizedRow;
+  disposition: LegacyAudienceDisposition;
+  reasons: LegacyAudienceReasonCode[];
+  segmentCodes: Set<LegacyAudienceSegmentCode>;
+  communicationEligible: boolean;
+  suppressedByContact: boolean;
+}): LegacyAudienceTaxonomyFactCode[] {
+  const facts = new Set<LegacyAudienceTaxonomyFactCode>([
+    'contact_person',
+    'source_provenance',
+    'import_source_batch',
+  ]);
+  const sourceTags = new Set(input.row.sourceTags.map((tag) => tag.toLowerCase()));
+  if (input.row.audienceType === 'family') facts.add('family_lead');
+  if (input.row.audienceType === 'school') facts.add('school_lead');
+  if (input.row.leadState === 'lead') facts.add('lead');
+  if (input.row.legacySystemState === 'present') facts.add('legacy_system_contact');
+  if (input.row.activeLegacyUser) facts.add('active_legacy_user');
+  if (input.row.newSystemActivated) facts.add('current_activation');
+  if (input.row.consentState === 'opted_in') facts.add('consent_opted_in');
+  if (input.row.consentState === 'unknown') facts.add('consent_unknown');
+  if (input.row.suppressionState === 'suppressed' || input.suppressedByContact) {
+    facts.add('suppressed');
+    facts.add('do_not_send');
+  }
+  if (input.row.consentState === 'opted_out') facts.add('do_not_send');
+  if (input.segmentCodes.has('do_not_contact')) facts.add('do_not_send');
+  if (input.disposition === 'manual_review') facts.add('manual_review');
+  if (input.communicationEligible) facts.add('campaign_candidate');
+  if (sourceTags.has('household') || sourceTags.has('family')) facts.add('household');
+  if (sourceTags.has('guardian') || sourceTags.has('parent')) facts.add('parent_guardian');
+  if (sourceTags.has('learner') || sourceTags.has('student')) facts.add('learner');
+  if (sourceTags.has('member') || sourceTags.has('subscriber')) facts.add('member_subscriber');
+  if (sourceTags.has('enrolled') || sourceTags.has('enrollment')) facts.add('enrollment');
+  if (sourceTags.has('bounced') || sourceTags.has('bounce')) {
+    facts.add('bounced');
+    facts.add('do_not_send');
+  }
+  if (
+    sourceTags.has('invalid') ||
+    sourceTags.has('wrong_number') ||
+    sourceTags.has('wrong-number')
+  ) {
+    facts.add('invalid');
+    facts.add('do_not_send');
+  }
+  if (input.reasons.includes('missing_identity')) facts.add('manual_review');
+  return Array.from(facts).sort();
 }
 
 function indexContacts(contacts: LegacyAudienceExistingContact[]) {
