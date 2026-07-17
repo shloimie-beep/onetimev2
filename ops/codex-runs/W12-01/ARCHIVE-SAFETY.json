@@ -1,0 +1,178 @@
+﻿{
+  "validated_at": "2026-07-17T10:53:14.7667172Z",
+  "zip_name": "W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+  "zip_location_label": "Downloads",
+  "exactly_one_match": true,
+  "zip_size_bytes": 33260,
+  "zip_last_write_time_utc": "2026-07-17T10:22:07.4906273Z",
+  "zip_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+  "entry_count": 23,
+  "unsafe_entry_count": 0,
+  "total_uncompressed_size": 53281,
+  "embedded_sha256s_verified": 19,
+  "embedded_sha256s_failed": 0,
+  "embedded_sha256_failures": [],
+  "entries": [
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/",
+      "compressed_size": 0,
+      "uncompressed_size": 0,
+      "sha256": null,
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/01-NEW-CHAT-SUPERVISOR-PROMPT.md",
+      "compressed_size": 1586,
+      "uncompressed_size": 3130,
+      "sha256": "44ee32839d9d6c35ff72ae49f2d4474fa89cc4a8ee3812a8a104aa14c21c939d",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/gpt-pro/",
+      "compressed_size": 0,
+      "uncompressed_size": 0,
+      "sha256": null,
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/gpt-pro/GPT-BNA-SEP-P1-CONTROL-PLANE.md",
+      "compressed_size": 1137,
+      "uncompressed_size": 1997,
+      "sha256": "d1a7a500a691ac3923de8c799aa5d6dffd943b4e746a4b6e4c08c3fc51eac129",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/gpt-pro/GPT-BNA-SEP-P2-SCHOOL.md",
+      "compressed_size": 1287,
+      "uncompressed_size": 2234,
+      "sha256": "16e5664b9ab4d47dd5eb4c75a335e0ae859e8e39981935723eb2b319d83f6297",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/gpt-pro/GPT-BNA-SEP-P3-PRODUCT-FACTORY.md",
+      "compressed_size": 1345,
+      "uncompressed_size": 2420,
+      "sha256": "6f83080d4e204700b23ab5cb4f80150f7c1071678c6c3c6e145e74db6e709bf0",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/MANIFEST.json",
+      "compressed_size": 302,
+      "uncompressed_size": 576,
+      "sha256": "80d9b17c5d94e88c27ccd4d9f36915aa2c635b1e5af6512ba00687718e4c6f87",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/SHA256SUMS.txt",
+      "compressed_size": 1146,
+      "uncompressed_size": 1981,
+      "sha256": "aff275732bff6b9489ab37e8d67ed9e727b75dda390a54dc0fdb98705b4f2ce8",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/04-VERIFIED-GAP-SNAPSHOT.md",
+      "compressed_size": 977,
+      "uncompressed_size": 1772,
+      "sha256": "71d9ec47fc4f6decad78c1f6f2576eef30e9edec414c15a4eea2362d608e001c",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/03-EXECUTION-AND-CONVERGENCE.md",
+      "compressed_size": 1142,
+      "uncompressed_size": 2067,
+      "sha256": "5a4fb19c97dc288ecc92710c6d0353950bed0f44a9217f34f338dec1aa3817a4",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/",
+      "compressed_size": 0,
+      "uncompressed_size": 0,
+      "sha256": null,
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-00-CANONICAL-DIRECTOR-HANDOFF.md",
+      "compressed_size": 1602,
+      "uncompressed_size": 2918,
+      "sha256": "0f400c654471044ab143efda784dc90e233c9758e4b89a298427f22e474cb059",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-03-PORTAL-TEST-LAB.md",
+      "compressed_size": 1200,
+      "uncompressed_size": 2306,
+      "sha256": "8f1c356a38a5ca56ff1a44d7e3a4ff0505cad55d9b4521b86b7330ddc86e290d",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-99-SEMANTIC-CONVERGENCE.md",
+      "compressed_size": 1842,
+      "uncompressed_size": 3555,
+      "sha256": "d4328f11f3ea848dcfeff5cccee83a5e78443750af8773199b97d36a78cbce8c",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-06-WHATSAPP-LEAD-ASSISTANT.md",
+      "compressed_size": 1297,
+      "uncompressed_size": 2474,
+      "sha256": "c655fbbafce121e5a6105308c7c1083e6b2fcb39889d5e65ef86e0d8c2eb2e37",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-05-TELEGRAM-OPERATIONS.md",
+      "compressed_size": 1249,
+      "uncompressed_size": 2381,
+      "sha256": "abe0426a68b291cd92221fed42d91867e4418dfbdd3141b2ff4f26db9e024f1c",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-02-COMMUNICATION-HISTORY.md",
+      "compressed_size": 1523,
+      "uncompressed_size": 2979,
+      "sha256": "6e671f70bfea933aef8107c607c003defa3ef58c78de2623ee594b937a46f66e",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-04-CONTENT-VIMEO-CLASSROOM.md",
+      "compressed_size": 1259,
+      "uncompressed_size": 2443,
+      "sha256": "d8625d90a436ef144b6e3a56b1f4b775f75838df3363e2597c27d55b60bd5631",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-07-PREMIUM-LANDING.md",
+      "compressed_size": 1919,
+      "uncompressed_size": 3449,
+      "sha256": "8d3e82ea6d00a978759b71e7db2439b4db5820f92c59a87b70c50bcbd65c875f",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-01-CRM-AUDIENCE-IMPORT.md",
+      "compressed_size": 1907,
+      "uncompressed_size": 3696,
+      "sha256": "118b2c97a78ee16cb6dae81c400f72812e91bf0fda5bba08901dc3afe73aa19f",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/prompts/CODEX-W12-08-ADMIN-CLASSROOM-PRODUCTIZATION.md",
+      "compressed_size": 1348,
+      "uncompressed_size": 2521,
+      "sha256": "224424075617818559155cf16d3aaedf83abf80bb0fc9dd8be2f475ce7b5d743",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/02-COPY-PASTE-LAUNCHERS.md",
+      "compressed_size": 1245,
+      "uncompressed_size": 4433,
+      "sha256": "c2108b8a16cc887cb3a092443329fcbe998aed8b028f887f8ecd61cc05d19b97",
+      "unsafe": false
+    },
+    {
+      "name": "W12-NEXT-PARALLEL-WAVE-2026-07-17/00-START-HERE.md",
+      "compressed_size": 1941,
+      "uncompressed_size": 3949,
+      "sha256": "fdd3a0e0a166476a6ad9a43ff0c223e025832bc006d1db0fa653037a55e41fa6",
+      "unsafe": false
+    }
+  ]
+}

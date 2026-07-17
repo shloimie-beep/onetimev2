@@ -66,11 +66,17 @@ const carousel = document.querySelector<HTMLElement>('[data-gallery]');
 if (carousel) {
   const slides = [...carousel.querySelectorAll<HTMLElement>('[data-gallery-slide]')];
   const buttons = [...carousel.querySelectorAll<HTMLButtonElement>('[data-gallery-dot]')];
+  const track = carousel.querySelector<HTMLElement>('[data-gallery-track]');
   const viewport = carousel.querySelector<HTMLElement>('[data-gallery-viewport]');
   const status = carousel.querySelector<HTMLElement>('[data-gallery-status]');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let index = 0;
   let pointerStartX: number | null = null;
+  const positionTrack = () => {
+    if (!track || !viewport) return;
+    const offset = index * viewport.getBoundingClientRect().width;
+    track.style.transform = `translate3d(${-offset}px, 0, 0)`;
+  };
   const show = (next: number) => {
     index = (next + slides.length) % slides.length;
     slides.forEach((slide, slideIndex) => {
@@ -86,12 +92,9 @@ if (carousel) {
     buttons.forEach((button, buttonIndex) => {
       button.setAttribute('aria-pressed', String(buttonIndex === index));
     });
+    positionTrack();
     const current = slides[index];
-    current?.scrollIntoView({
-      block: 'nearest',
-      inline: 'center',
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-    });
+    if (prefersReducedMotion) track?.classList.add('is-reduced-motion');
     const caption = current?.querySelector('figcaption')?.textContent?.trim();
     if (status && caption) status.textContent = `Showing ${caption}`;
   };
@@ -129,7 +132,42 @@ if (carousel) {
     if (Math.abs(delta) < 36) return;
     show(index + (delta < 0 ? 1 : -1));
   });
+  window.addEventListener('resize', positionTrack);
   show(0);
+}
+
+document.querySelectorAll<HTMLImageElement>('[data-image-watch]').forEach((image) => {
+  image.addEventListener(
+    'error',
+    () => {
+      image
+        .closest<HTMLElement>('[data-gallery-slide], .benefit-visual')
+        ?.setAttribute('data-image-error', 'true');
+    },
+    { once: true },
+  );
+});
+
+const whatsappAssistant = document.querySelector<HTMLElement>('[data-whatsapp-assistant]');
+if (whatsappAssistant) {
+  const toggle = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-toggle]');
+  const panel = whatsappAssistant.querySelector<HTMLElement>('[data-whatsapp-panel]');
+  const close = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-close]');
+  let assistantDismissed = false;
+  const setPanel = (open: boolean) => {
+    if (!toggle || !panel) return;
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+  };
+  toggle?.addEventListener('click', () => setPanel(Boolean(panel?.hidden)));
+  close?.addEventListener('click', () => {
+    assistantDismissed = true;
+    setPanel(false);
+    toggle?.focus();
+  });
+  window.setTimeout(() => {
+    if (!assistantDismissed) setPanel(true);
+  }, 6500);
 }
 
 const form = document.querySelector<HTMLFormElement>('[data-signup-form]');

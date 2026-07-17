@@ -79,6 +79,12 @@ const envSchema = z.object({
   ONE_TIME_WHATSAPP_VERIFY_TOKEN: z.string().min(8).optional(),
   ONETIME_CANARY_WHATSAPP_RECIPIENT_E164: z.string().optional(),
   ONETIME_WHATSAPP_CANARY_AUTHORIZED: booleanFromString,
+  ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK: z.url().optional(),
+  ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT: z.string().trim().max(240).optional(),
+  ONE_TIME_WHATSAPP_ASSISTANT_COPY_VERSION: z.string().min(1).default('w12-06-public-assistant-v1'),
+  WHATSAPP_ASSISTANT_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
+  WHATSAPP_ASSISTANT_SENDER_RATE_LIMIT_MAX: numberFromString.default(8),
+  WHATSAPP_ASSISTANT_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(300),
   OT86_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
   OT86_PUBLISH_SIGNING_SECRET: z.string().optional(),
   OT86_PREVIOUS_PUBLISH_SIGNING_KEY_ID: z.string().optional(),
@@ -92,6 +98,13 @@ const envSchema = z.object({
   ENABLE_PAYMENT_TRANSPORT: booleanFromString,
   ONE_TIME_TELEGRAM_WEBHOOK_ENABLED: booleanFromString,
   ONE_TIME_TELEGRAM_WEBHOOK_SECRET: z.string().min(16).optional(),
+  ONE_TIME_TELEGRAM_WEBHOOK_SECRET_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_TOKEN_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_SINGLE_CONSUMER_GATE: booleanFromString,
+  ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED: booleanFromString,
+  ONE_TIME_TELEGRAM_LOCAL_POLLING_ENABLED: booleanFromString,
+  ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED: booleanFromString,
   ONE_TIME_TELEGRAM_BOT_KEY: z.string().min(1).default('one_time_internal_ops'),
   ONE_TIME_TELEGRAM_ENVIRONMENT: z.enum(['local', 'staging', 'production']).default('staging'),
   ZOOM_CLASSROOM_ENABLED: booleanFromString,
@@ -121,6 +134,7 @@ const envSchema = z.object({
   OT89_MOCK_BNA_OUTAGE: booleanFromString,
   OT89_SUPPORT_DEPLOYMENT_ID: z.string().min(1).max(64).default('local-ot89a'),
   LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
+  PORTAL_TEST_LAB_ENABLED: booleanFromString,
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -161,6 +175,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.OT89_MOCK_BNA_ENABLED) {
     throw new Error('OT89 mock BNA endpoint is forbidden in production.');
+  }
+
+  if (parsed.NODE_ENV === 'production' && parsed.PORTAL_TEST_LAB_ENABLED) {
+    throw new Error('Portal Test Lab is forbidden in production.');
   }
 
   const ot89ProvidedSecrets = [
@@ -210,6 +228,20 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     if (parsed.ONE_TIME_TELEGRAM_ENVIRONMENT !== 'production') {
       throw new Error('Production Telegram webhook must use production Telegram environment.');
     }
+  }
+
+  if (
+    parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED &&
+    (parsed.ONE_TIME_TELEGRAM_LOCAL_POLLING_ENABLED ||
+      parsed.ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED)
+  ) {
+    throw new Error('Telegram webhook and polling consumers are mutually exclusive.');
+  }
+
+  if (parsed.ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED) {
+    throw new Error(
+      'Production Telegram polling is not implemented; use the protected webhook lane.',
+    );
   }
 
   if (
@@ -279,8 +311,23 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     whatsappVerifyToken: parsed.ONE_TIME_WHATSAPP_VERIFY_TOKEN,
     whatsappCanaryRecipientE164: parsed.ONETIME_CANARY_WHATSAPP_RECIPIENT_E164,
     whatsappCanaryAuthorized: parsed.ONETIME_WHATSAPP_CANARY_AUTHORIZED,
+    whatsappPublicDeepLink: parsed.ONE_TIME_PUBLIC_WHATSAPP_DEEP_LINK,
+    whatsappPublicPrefillText: parsed.ONE_TIME_PUBLIC_WHATSAPP_PREFILL_TEXT,
+    whatsappAssistantCopyVersion: parsed.ONE_TIME_WHATSAPP_ASSISTANT_COPY_VERSION,
+    whatsappAssistantRateLimitWindowMs: parsed.WHATSAPP_ASSISTANT_RATE_LIMIT_WINDOW_MS,
+    whatsappAssistantSenderRateLimitMax: parsed.WHATSAPP_ASSISTANT_SENDER_RATE_LIMIT_MAX,
+    whatsappAssistantAccountRateLimitMax: parsed.WHATSAPP_ASSISTANT_ACCOUNT_RATE_LIMIT_MAX,
     oneTimeTelegramWebhookEnabled: parsed.ONE_TIME_TELEGRAM_WEBHOOK_ENABLED,
     oneTimeTelegramWebhookSecret: parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET,
+    oneTimeTelegramWebhookSecretConfigured:
+      parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET_CONFIGURED ||
+      Boolean(parsed.ONE_TIME_TELEGRAM_WEBHOOK_SECRET),
+    oneTimeTelegramTokenConfigured: parsed.ONE_TIME_TELEGRAM_TOKEN_CONFIGURED,
+    oneTimeTelegramOwnerMappingConfigured: parsed.ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED,
+    oneTimeTelegramSingleConsumerGate: parsed.ONE_TIME_TELEGRAM_SINGLE_CONSUMER_GATE,
+    oneTimeTelegramCanaryChatConfigured: parsed.ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED,
+    oneTimeTelegramLocalPollingEnabled: parsed.ONE_TIME_TELEGRAM_LOCAL_POLLING_ENABLED,
+    oneTimeTelegramProductionPollingEnabled: parsed.ONE_TIME_TELEGRAM_PRODUCTION_POLLING_ENABLED,
     oneTimeTelegramBotKey: parsed.ONE_TIME_TELEGRAM_BOT_KEY,
     oneTimeTelegramEnvironment: parsed.ONE_TIME_TELEGRAM_ENVIRONMENT,
     zoomClassroomEnabled: parsed.ZOOM_CLASSROOM_ENABLED,
@@ -324,5 +371,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     bufferAccessToken: parsed.BUFFER_ACCESS_TOKEN,
     bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
     bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
+    portalTestLabEnabled: parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED,
   };
 }

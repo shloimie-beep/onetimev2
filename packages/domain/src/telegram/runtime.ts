@@ -32,8 +32,8 @@ export function createOneTimeTelegramAdminRuntime(input: {
 }): OneTimeTelegramAdminRuntime {
   validateTelegramRuntimeTopology({
     webhookEnabled: input.config.oneTimeTelegramWebhookEnabled,
-    localPollingEnabled: false,
-    productionPollingEnabled: false,
+    localPollingEnabled: input.config.oneTimeTelegramLocalPollingEnabled,
+    productionPollingEnabled: input.config.oneTimeTelegramProductionPollingEnabled,
   });
 
   const botKey = asBotKey(input.config.oneTimeTelegramBotKey);
@@ -78,10 +78,10 @@ export function createOneTimeTelegramAdminRuntime(input: {
     enabled: input.config.oneTimeTelegramWebhookEnabled,
     botKey,
     environment,
-    tokenConfigured: false,
-    ownerMappingConfigured: false,
-    singleConsumerGate: true,
-    canaryChatConfigured: false,
+    tokenConfigured: input.config.oneTimeTelegramTokenConfigured,
+    ownerMappingConfigured: input.config.oneTimeTelegramOwnerMappingConfigured,
+    singleConsumerGate: input.config.oneTimeTelegramSingleConsumerGate,
+    canaryChatConfigured: input.config.oneTimeTelegramCanaryChatConfigured,
   });
   return {
     engine,

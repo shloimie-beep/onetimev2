@@ -1,0 +1,42 @@
+{
+  "lane": "W12-05",
+  "status": "code_complete_activation_pending",
+  "branch": "codex/w12-05-telegram-operations",
+  "base": {
+    "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "sha": "c7d46066517d7a458d189f2c782cc06200f7861c"
+  },
+  "implemented": [
+    "Added Telegram capabilities for safe app links, delivery status, and approved delivery retry.",
+    "Added deterministic and natural-language commands for today/upcoming schedule, app links, contact lookup, delivery status, Vimeo/content status, and delivery retry.",
+    "Backed delivery status and delivery retry by scoped SQL application data with redacted output.",
+    "Required delivery.retry to use preview/confirm, idempotency, actor/capability authorization, command execution audit, lifecycle audit, and approved metadata.",
+    "Moved Telegram readiness to protected boolean config flags instead of raw token inspection.",
+    "Added migration 2202_w12_05_telegram_operations.sql for Telegram capability constraints.",
+    "Added focused unit and SQL-backed integration tests."
+  ],
+  "activation_pending": [
+    "Protected staging token entry outside Git/chat.",
+    "Protected Telegram webhook secret and owner/admin mapping configuration.",
+    "Operator-approved staging webhook registration.",
+    "Bounded staging canary with allowlisted chat.",
+    "Production webhook registration remains prohibited for this lane."
+  ],
+  "external_mutations": {
+    "production_webhook_registered": false,
+    "webhook_mutated": false,
+    "token_written_to_git_or_chat": false,
+    "real_telegram_send": false,
+    "deploy": false,
+    "bna_mutation": false
+  },
+  "validation": {
+    "npm_ci": "passed",
+    "unit_telegram_foundation": "passed",
+    "integration_telegram_admin_runtime": "passed",
+    "typecheck": "passed",
+    "secret_scan": "passed",
+    "targeted_prettier_check": "passed",
+    "full_format_check": "failed on existing release-branch baseline files outside this lane"
+  }
+}

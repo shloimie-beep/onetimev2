@@ -1,0 +1,246 @@
+{
+  "schema_version": "onetime.director.capability_matrix.v1",
+  "generated_at": "2026-07-17T13:32:48+03:00",
+  "allowed_statuses": [
+    "working_live",
+    "working_staging",
+    "implemented_provider_off",
+    "fixture_only",
+    "degraded",
+    "not_configured",
+    "blocked",
+    "not_built"
+  ],
+  "source_ref": {
+    "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "deployed_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "w12_99_candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
+    "w12_99_candidate_head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+    "w12_99_evidence": "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json"
+  },
+  "capabilities": [
+    {
+      "id": "public_landing_signup",
+      "title": "Public landing and signup",
+      "status": "working_live",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/app.ts",
+        "scripts/build-public-pages.ts",
+        "tests/e2e/landing-signup.spec.ts",
+        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
+      ],
+      "notes": "Live root and /signup returned 200 in W12-00 readback; lead submission is implemented and tested, but W12-00 did not submit a production lead."
+    },
+    {
+      "id": "auth_activation_recovery",
+      "title": "Auth, activation, reset, and recovery",
+      "status": "working_live",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/app.ts",
+        "packages/domain/src/auth/service.ts",
+        "ops/codex-runs/OPS-11/LOGIN-DELIVERY.md",
+        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
+      ],
+      "notes": "OPS-11 reports live /login, /activate, /forgot-password, /reset-password and one protected admin activation email delivered without storing private destination or token."
+    },
+    {
+      "id": "owner_admin_dashboard",
+      "title": "Owner/Admin dashboard",
+      "status": "degraded",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/client/app/crm-entry.tsx",
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json"
+      ],
+      "notes": "Dashboard code is deployed in the live source family, but OPS-11 leaves the human admin login/password setup as the next operator action."
+    },
+    {
+      "id": "crm_import_tags",
+      "title": "CRM, audience import, tags, notes, and archive",
+      "status": "degraded",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/crm/register.ts",
+        "apps/web/src/server/features/audience-reconciliation/router.ts",
+        "packages/domain/src/crm/service.ts",
+        "ops/codex-runs/OT-114/STATE.json",
+        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json"
+      ],
+      "notes": "CRM CRUD/tags/notes are implemented; real Rabbi audience spreadsheet import and conflict approval are not proven complete."
+    },
+    {
+      "id": "communications_history_replies",
+      "title": "Communications, history, and replies",
+      "status": "implemented_provider_off",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/communications/register.ts",
+        "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
+        "packages/domain/src/communications/service.ts",
+        "ops/codex-runs/OT-114/STATE.json"
+      ],
+      "notes": "Provider-off drafts and communications views exist. Complete mailbox, inbound provider history, and broad sends remain unproven/not authorized."
+    },
+    {
+      "id": "billing_stripe",
+      "title": "Billing and Stripe",
+      "status": "fixture_only",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/features/billing/router.ts",
+        "packages/domain/src/billing/fixture-adapter.ts",
+        "packages/domain/src/billing/stripe-test-adapter.ts",
+        "tests/integration/ot105-stripe-test-billing-canary.test.ts"
+      ],
+      "notes": "Billing foundation and test-mode adapters exist. Live Stripe actions are not authorized and are not configured as live capability."
+    },
+    {
+      "id": "parent_student_portals",
+      "title": "Parent and student portals",
+      "status": "degraded",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/features/portals/routers.ts",
+        "apps/web/src/client/features/portals/PortalFeatures.tsx",
+        "ops/evidence/ot-83r/REAL-APP-JOURNEYS.json",
+        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json"
+      ],
+      "notes": "Routes and synthetic journeys exist, but W12 packet identifies the missing operator-facing test lab with separate synthetic identities."
+    },
+    {
+      "id": "classes_zoom",
+      "title": "Classes, classroom, and Zoom",
+      "status": "implemented_provider_off",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "packages/domain/src/classes/service.ts",
+        "packages/domain/src/classroom/service.ts",
+        "packages/domain/src/providers/zoom.ts",
+        "apps/web/src/server/features/classroom/zoom-webhook-router.ts",
+        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
+      ],
+      "notes": "Classroom and Zoom provider seams are implemented. Customer Zoom mutations/canaries require protected approval and were not run by W12-00."
+    },
+    {
+      "id": "content_vimeo_knowledge",
+      "title": "Content, Vimeo, knowledge, and classroom vertical slice",
+      "status": "implemented_provider_off",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/client/app/content-workspace/ContentWorkspace.tsx",
+        "packages/domain/src/content/service.ts",
+        "packages/domain/src/content/vimeo-private-runtime.ts",
+        "packages/contracts/src/content"
+      ],
+      "notes": "Content workspace and Vimeo runtime seams exist. Protected Vimeo canaries and final admin classroom product sample are not proven live."
+    },
+    {
+      "id": "buffer_social",
+      "title": "Buffer and social publishing",
+      "status": "implemented_provider_off",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "packages/domain/src/social/buffer-runtime.ts",
+        "packages/contracts/src/social/buffer-runtime.ts",
+        "apps/web/src/server/app.ts",
+        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
+      ],
+      "notes": "Draft/readiness capability exists. Live Buffer publication is not authorized."
+    },
+    {
+      "id": "telegram",
+      "title": "Telegram operations",
+      "status": "not_configured",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/telegram-bot/src/index.ts",
+        "apps/telegram-bot/src/ingress.ts",
+        "packages/domain/src/telegram",
+        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
+      ],
+      "notes": "Runtime code exists, but protected bot config/operator mapping and bounded live canaries are not proven."
+    },
+    {
+      "id": "whatsapp",
+      "title": "WhatsApp lead assistant",
+      "status": "not_configured",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "packages/domain/src/whatsapp",
+        "packages/contracts/src/whatsapp/index.ts",
+        "apps/web/src/server/app.ts",
+        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
+      ],
+      "notes": "WhatsApp runtime and webhook surfaces exist, but live public number/provider configuration and consented canaries are not proven."
+    },
+    {
+      "id": "support_bna_bridge",
+      "title": "Support and BNA bridge",
+      "status": "blocked",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/features/support/router.ts",
+        "packages/domain/src/support",
+        "ops/codex-runs/OT-114/BNA-SUPPORT-EVENT-CONSUMER-CONTRACT.md",
+        "ops/codex-runs/OT-114/STATE.json"
+      ],
+      "notes": "One Time support producer exists; real BNA receiver/canary is blocked because BNA endpoint work is out of scope for this repo lane."
+    },
+    {
+      "id": "workers_queues",
+      "title": "Workers, queues, and transactional outbox",
+      "status": "working_live",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/worker/src/main/index.ts",
+        "apps/worker/src/delivery",
+        "packages/domain/src/outbox/sink.ts",
+        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
+      ],
+      "notes": "OPS-11 reports production worker service running with sink mode, batch size 1, and lifecycle proof. Provider default remains off."
+    },
+    {
+      "id": "observability",
+      "title": "Observability, health, readiness, metrics, and version",
+      "status": "working_live",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/server/ops-routes.ts",
+        "packages/observability/src/ops.ts",
+        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
+      ],
+      "notes": "Live /health, /ready, and /version were reported by OPS-11 and read back during W12-00."
+    },
+    {
+      "id": "backups",
+      "title": "Backups and restore proof",
+      "status": "working_live",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "ops/codex-runs/OPS-11/BACKUP-RESTORE.md",
+        "ops/codex-runs/OPS-11/DATABASE-PATH.md",
+        "scripts/postgres-assurance/ops11-pg18-restore-clone.ts",
+        "ops/codex-runs/OPS-11/STATE.json"
+      ],
+      "notes": "OPS-11 reports native PG18 production dump and disposable restore proof passed; dump stayed outside git."
+    },
+    {
+      "id": "rollback",
+      "title": "Rollback",
+      "status": "degraded",
+      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "evidence_paths": [
+        "ops/codex-runs/OPS-11/PRODUCTION-ROLLBACK.md",
+        "ops/codex-runs/OPS-11/STAGING-ROLLBACK.md",
+        "ops/codex-runs/OPS-11/STATE.json"
+      ],
+      "notes": "Staging rollback/roll-forward was rehearsed, but native Railway rollback to old production was unavailable because old deployments were REMOVED."
+    }
+  ]
+}

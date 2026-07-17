@@ -60,6 +60,7 @@ export const botCapabilities = [
   'gateway.status.read',
   'gateway.identity.read_self',
   'gateway.scope.read',
+  'app.link.open',
   'crm.lead.list',
   'crm.lead.read',
   'crm.signup.recent',
@@ -91,6 +92,8 @@ export const botCapabilities = [
   'social.draft.list',
   'social.draft.read',
   'social.draft.approval_link',
+  'delivery.status.read',
+  'delivery.retry',
   'telegram.audit.read_recent',
 ] as const;
 
@@ -111,6 +114,7 @@ export const botWriteCapabilities = [
   'support.ticket.status.update',
   'class.question.select',
   'class.question.resolve',
+  'delivery.retry',
 ] as const satisfies readonly BotCapability[];
 
 export type BotWriteCapability = (typeof botWriteCapabilities)[number];

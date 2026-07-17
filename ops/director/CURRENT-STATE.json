@@ -1,0 +1,149 @@
+{
+  "schema_version": "onetime.director.current_state.v1",
+  "generated_at": "2026-07-17T13:32:48+03:00",
+  "repository": {
+    "full_name": "webcraft-media/onetimev2",
+    "remote": "https://github.com/webcraft-media/onetimev2.git",
+    "default_branch": "main",
+    "default_branch_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9"
+  },
+  "selected_base": {
+    "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "short_sha": "c7d4606",
+    "branch": "origin/release/ops10-full-staged-production-launch-20260717T050800Z",
+    "local_branch": "codex/w12-00-canonical-director-handoff",
+    "reason_path": "ops/codex-runs/W12-00/BASE-SELECTION.md"
+  },
+  "deployed_runtime": {
+    "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "version": "ops11-1197673",
+    "target_app": "one-time",
+    "production_url": "https://join.onetimeonetime.com",
+    "w12_00_readback": {
+      "version_endpoint": {
+        "status": 200,
+        "body": {
+          "version": "ops11-1197673",
+          "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+          "target_app": "one-time"
+        }
+      },
+      "ready_status": 200,
+      "login_status": 200,
+      "root_status": 200,
+      "signup_status": 200
+    },
+    "repo_evidence": [
+      "ops/codex-runs/OPS-11/FINAL-REPORT.md",
+      "ops/codex-runs/OPS-11/STATE.json",
+      "ops/codex-runs/OPS-11/ARTIFACT-PROMOTION.md",
+      "ops/codex-runs/OPS-11/RESUME.md"
+    ]
+  },
+  "release_pr": {
+    "number": 61,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "title": "OPS-10 full staged production launch candidate",
+    "state": "OPEN",
+    "is_draft": true,
+    "base_ref": "main",
+    "base_ref_oid": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "head_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "head_ref_oid": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "updated_at": "2026-07-17T09:04:08Z",
+    "checks": [
+      {
+        "name": "Node 24 verify",
+        "workflow": "CI",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T09:14:32Z"
+      },
+      {
+        "name": "OPS-06 deterministic checks",
+        "workflow": "OPS-06 Reliability Observability",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T09:05:27Z"
+      },
+      {
+        "name": "PostgreSQL 18 assurance and restore clone",
+        "workflow": "OPS-11 PostgreSQL 18 Assurance",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T09:05:33Z"
+      },
+      {
+        "name": "PostgreSQL 16 assurance harness",
+        "workflow": "OT-37 PostgreSQL Assurance",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T09:05:15Z"
+      },
+      {
+        "name": "Static release readiness gates",
+        "workflow": "OT-75 Release Readiness",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T09:04:34Z"
+      },
+      {
+        "name": "PostgreSQL 16 learner-seat proof",
+        "workflow": "OT-83 PostgreSQL Concurrency",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "completed_at": "2026-07-17T09:04:53Z"
+      }
+    ]
+  },
+  "post_runtime_commits_in_selected_base": [
+    {
+      "sha": "16221ba",
+      "summary": "chore: close OPS-11 production gate evidence",
+      "classification": "non_product_release_evidence"
+    },
+    {
+      "sha": "c7d4606",
+      "summary": "test: pin OT111 canary queue time",
+      "classification": "test_only"
+    }
+  ],
+  "safety_contract": {
+    "deployments_authorized_by_w12_00": false,
+    "secrets_allowed_in_artifacts": false,
+    "provider_calls_authorized": false,
+    "database_mutations_authorized": false,
+    "user_mutations_authorized": false,
+    "broad_sends_authorized": false
+  },
+  "w12_99_candidate": {
+    "branch": "integration/w12-final-convergence-20260717T123715Z",
+    "head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+    "status": "pushed_draft_pr_open",
+    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "included_lanes": [
+      "W12-00",
+      "W12-01",
+      "W12-02",
+      "W12-03",
+      "W12-04",
+      "W12-05",
+      "W12-06",
+      "W12-07",
+      "W12-08"
+    ],
+    "excluded_lanes": ["W12-09", "OPS-13A", "BNA P1/P2/P3"],
+    "record": "ops/director/W12-99-CANDIDATE.json"
+  },
+  "primary_evidence_paths": [
+    "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json",
+    "ops/codex-runs/OPS-10/FINAL-REPORT.md",
+    "ops/codex-runs/OPS-10/STATE.json",
+    "ops/codex-runs/OPS-11/FINAL-REPORT.md",
+    "ops/codex-runs/OPS-11/STATE.json",
+    "ops/codex-runs/OPS-11/MUTATION-LEDGER.json",
+    "apps/web/src/server/app.ts",
+    "packages/db/migrations",
+    "tests"
+  ]
+}

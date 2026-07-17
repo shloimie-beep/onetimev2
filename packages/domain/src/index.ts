@@ -10,6 +10,14 @@ export {
 } from './lead/normalize.ts';
 export { processOutboxSink } from './outbox/sink.ts';
 export {
+  communicationHistorySourceTruthMatrix,
+  dryRunCommunicationHistoryBackfill,
+  unavailableProviderHistoryReport,
+  type CommunicationHistoryDryRunInput,
+  type CommunicationHistoryDryRunReport,
+  type CommunicationHistorySourceTruthRow,
+} from './communications/history-ingestion.ts';
+export {
   ONE_TIME_CLASS_SERIES_KEY,
   ONE_TIME_CLASS_TITLE,
   createClassPortalAccessAdapter,
@@ -364,6 +372,7 @@ export {
 } from './support/worker.ts';
 export {
   consumeWhatsAppAccountLink,
+  buildWhatsAppPublicAssistantStatus,
   digestForTests as whatsappDigestForTests,
   evaluateWhatsAppCanaryReadiness,
   ingestWhatsAppProviderEvents,
@@ -372,6 +381,10 @@ export {
   receiveWhatsAppWebhook,
   verifyWhatsAppWebhookChallenge,
 } from './whatsapp/service.ts';
+export {
+  WHATSAPP_ASSISTANT_COPY,
+  W12_06_WHATSAPP_ASSISTANT_COPY_VERSION,
+} from './whatsapp/copy.ts';
 export {
   MetaWhatsAppCloudAdapter,
   OT100_META_GRAPH_VERSION,

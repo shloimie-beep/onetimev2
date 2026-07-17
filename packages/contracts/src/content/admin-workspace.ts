@@ -274,6 +274,50 @@ export const contentAdminSourceDetailSchema = contentAdminSourceSummarySchema.ex
   social_drafts: z.array(contentAdminSocialDraftSchema),
   knowledge_sections: z.array(contentAdminKnowledgeSectionSchema),
   activity: z.array(contentAdminActivityEventSchema),
+  vertical_slice: z.object({
+    workspace_scope: z.literal('rabbi_sheller_provider/one_time_mishnah_class'),
+    flow_steps: z
+      .array(
+        z.object({
+          key: z.enum([
+            'private_source',
+            'vimeo_ingest',
+            'transcript',
+            'approved_knowledge',
+            'review_outputs',
+            'classroom_library',
+            'buffer_draft',
+          ]),
+          label: z.string().min(1).max(80),
+          state: z.enum(['waiting', 'ready', 'done', 'failed', 'blocked']),
+          detail: z.string().min(1).max(240),
+          updated_at: nullableIsoStringSchema,
+        }),
+      )
+      .min(1)
+      .max(10),
+    classroom: z.object({
+      class_key: z.string().nullable(),
+      title: z.string().min(1).max(180),
+      starts_at: nullableIsoStringSchema,
+      recording_state: z.string().min(1).max(80),
+      content_visibility: z.enum(['not_published', 'published_to_library', 'review_only']),
+      portal_eligibility: z.enum(['not_eligible', 'eligible_for_entitled_learners']),
+      helper_eligibility: z.enum(['not_indexed', 'eligible_with_citations', 'revoked']),
+    }),
+    provider_setup: z.object({
+      state: z.enum(['provider_off', 'needs_configuration', 'ready', 'degraded']),
+      owner_action: z.string().min(1).max(240),
+      missing_provider_count: z.number().int().min(0).max(20),
+      can_continue_provider_off: z.literal(true),
+    }),
+    social_handoff: z.object({
+      state: z.enum(['not_ready', 'draft_ready', 'draft_scheduled', 'provider_off']),
+      draft_count: z.number().int().min(0),
+      buffer_live_publish_allowed: z.literal(false),
+      exact_revision_required: z.literal(true),
+    }),
+  }),
 });
 export type ContentAdminSourceDetail = z.infer<typeof contentAdminSourceDetailSchema>;
 

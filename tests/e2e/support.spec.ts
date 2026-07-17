@@ -125,7 +125,7 @@ async function login(page: Page, email: string, password: string) {
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Password').fill(password);
   await page.getByRole('button', { name: 'Login' }).click();
-  await page.waitForLoadState('networkidle');
+  await page.waitForURL('**/app/support');
 }
 
 async function fillSupportForm(page: Page, suffix: string) {

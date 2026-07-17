@@ -1,0 +1,23 @@
+{
+  "lane": "W12-05",
+  "hotspots": [
+    {
+      "path": "packages/db/migrations/2202_w12_05_telegram_operations.sql",
+      "reason": "New forward-only migration number is provisional in the parallel W12 wave and must be reconciled by W12-99 if another lane claims the same slot.",
+      "owner": "W12-99 convergence"
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "reason": "Shared runtime config gained Telegram readiness booleans and topology guards.",
+      "owner": "W12-99 convergence"
+    },
+    {
+      "path": "packages/domain/src/content/admin-workspace.ts",
+      "reason": "Shared content admin provider-readiness view now uses safe Telegram config indicators instead of raw token presence.",
+      "owner": "W12-99 convergence"
+    }
+  ],
+  "root_package_files_touched": false,
+  "ci_workflows_touched": false,
+  "production_deploy_touched": false
+}

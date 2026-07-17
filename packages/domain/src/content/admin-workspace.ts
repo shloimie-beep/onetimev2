@@ -551,15 +551,318 @@ export async function getOt110aContentSourceDetail(input: {
     listKnowledgeSections(input.pool, input.config, input.sourceKey),
     listActivity(input.pool, input.config, input.sourceKey),
   ]);
+  const providerPorts = providerPortStatuses(input.ports);
   return {
     ...summary,
-    provider_ports: providerPortStatuses(input.ports),
+    provider_ports: providerPorts,
     transcript_revisions: transcripts,
     artifact_revisions: artifacts,
     social_drafts: socialDrafts,
     knowledge_sections: knowledgeSections,
     activity,
+    vertical_slice: await buildContentVerticalSlice({
+      pool: input.pool,
+      config: input.config,
+      summary,
+      transcripts,
+      artifacts,
+      socialDrafts,
+      knowledgeSections,
+      providerPorts,
+    }),
   };
+}
+
+async function buildContentVerticalSlice(input: {
+  pool: DbPool;
+  config: AppConfig;
+  summary: ContentAdminSourceSummary;
+  transcripts: ContentAdminSourceDetail['transcript_revisions'];
+  artifacts: ContentAdminArtifactRevision[];
+  socialDrafts: ContentAdminSocialDraft[];
+  knowledgeSections: ContentAdminKnowledgeSection[];
+  providerPorts: ContentAdminProviderPortStatus[];
+}): Promise<ContentAdminSourceDetail['vertical_slice']> {
+  const classroom = await contentClassroomProjection({
+    pool: input.pool,
+    config: input.config,
+    sourceKey: input.summary.source_key,
+    sourceTitle: input.summary.title,
+    publishedRevisionKey: input.summary.published_revision_key,
+    providerState: input.summary.provider_state,
+    knowledgeSections: input.knowledgeSections,
+  });
+  const providerSetup = contentProviderSetupGuidance(input.providerPorts);
+  const socialHandoff = contentSocialHandoff(input.socialDrafts, providerSetup.state);
+  return {
+    workspace_scope: 'rabbi_sheller_provider/one_time_mishnah_class',
+    flow_steps: [
+      flowStep(
+        'private_source',
+        'Private Source',
+        input.summary.lifecycle_stage === 'failed' ? 'failed' : 'done',
+        'Source metadata is scoped to One Time and no raw provider reference is exposed.',
+        input.summary.updated_at,
+      ),
+      flowStep(
+        'vimeo_ingest',
+        'Vimeo / Reference',
+        providerStepState(input.summary.provider_state, providerSetup.state),
+        providerSetup.state === 'ready'
+          ? 'Protected provider setup is present; run only bounded canaries with approved assets.'
+          : 'Provider-off review can continue with opaque references and deterministic fixtures.',
+        input.summary.updated_at,
+      ),
+      flowStep(
+        'transcript',
+        'Transcript',
+        transcriptStepState(input.summary, input.transcripts),
+        transcriptStepDetail(input.summary, input.transcripts),
+        input.transcripts[0]?.received_at ?? input.summary.updated_at,
+      ),
+      flowStep(
+        'approved_knowledge',
+        'Approved Knowledge',
+        knowledgeStepState(input.knowledgeSections),
+        input.knowledgeSections.some((section) => section.readiness_state === 'indexed')
+          ? 'Helper search is limited to approved entitled sections with citations.'
+          : 'Knowledge waits for transcript and artifact approval before helper eligibility.',
+        input.knowledgeSections[0]?.updated_at ?? input.summary.updated_at,
+      ),
+      flowStep(
+        'review_outputs',
+        'Review Outputs',
+        artifactStepState(input.summary.artifact_counts),
+        artifactStepDetail(input.summary.artifact_counts),
+        input.artifacts[0]?.updated_at ?? input.summary.updated_at,
+      ),
+      flowStep(
+        'classroom_library',
+        'Classroom / Library',
+        classroom.content_visibility === 'published_to_library'
+          ? 'done'
+          : classroom.class_key
+            ? 'ready'
+            : 'waiting',
+        classroom.class_key
+          ? 'Class association is visible for admin review and portal projection.'
+          : 'Attach this source to a One Time class before claiming a complete classroom slice.',
+        input.summary.updated_at,
+      ),
+      flowStep(
+        'buffer_draft',
+        'Buffer Draft Seam',
+        socialHandoff.draft_count > 0
+          ? 'ready'
+          : providerSetup.state === 'provider_off'
+            ? 'blocked'
+            : 'waiting',
+        socialHandoff.draft_count > 0
+          ? 'Exact-revision social drafts exist; live Buffer publication remains disabled.'
+          : 'Social draft handoff waits for approved social output; live publish is not allowed.',
+        input.socialDrafts[0]?.updated_at ?? input.summary.updated_at,
+      ),
+    ],
+    classroom,
+    provider_setup: providerSetup,
+    social_handoff: socialHandoff,
+  };
+}
+
+type ContentAdminFlowStep = ContentAdminSourceDetail['vertical_slice']['flow_steps'][number];
+type ContentAdminClassroomProjection = ContentAdminSourceDetail['vertical_slice']['classroom'];
+type ContentAdminProviderSetup = ContentAdminSourceDetail['vertical_slice']['provider_setup'];
+type ContentAdminSocialHandoff = ContentAdminSourceDetail['vertical_slice']['social_handoff'];
+
+function flowStep(
+  key: ContentAdminFlowStep['key'],
+  label: string,
+  state: ContentAdminFlowStep['state'],
+  detail: string,
+  updatedAt: string | null,
+): ContentAdminFlowStep {
+  return { key, label, state, detail, updated_at: updatedAt };
+}
+
+async function contentClassroomProjection(input: {
+  pool: DbPool;
+  config: AppConfig;
+  sourceKey: string;
+  sourceTitle: string;
+  publishedRevisionKey: string | null;
+  providerState: string;
+  knowledgeSections: ContentAdminKnowledgeSection[];
+}): Promise<ContentAdminClassroomProjection> {
+  const result = await input.pool.query(
+    `SELECT items.occurrence_key,
+            items.published_revision_key,
+            items.latest_revision_key,
+            items.lifecycle_state,
+            items.title AS content_title,
+            series.title AS class_title,
+            occurrences.starts_at,
+            occurrences.recording_state
+       FROM onetime.content_items AS items
+       LEFT JOIN onetime.class_occurrences AS occurrences
+         ON occurrences.account_key = items.account_key
+        AND occurrences.product_key = items.product_key
+        AND occurrences.occurrence_key = items.occurrence_key
+       LEFT JOIN onetime.class_series AS series
+         ON series.account_key = occurrences.account_key
+        AND series.product_key = occurrences.product_key
+        AND series.class_series_key = occurrences.class_series_key
+      WHERE items.account_key = $1
+        AND items.product_key = $2
+        AND items.content_item_key = $3
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, input.sourceKey],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  const publishedRevisionKey =
+    nullableString(row?.published_revision_key) ?? input.publishedRevisionKey;
+  const classKey = nullableString(row?.occurrence_key);
+  const hasIndexedKnowledge = input.knowledgeSections.some(
+    (section) => section.readiness_state === 'indexed',
+  );
+  const hasRevokedKnowledge = input.knowledgeSections.some(
+    (section) => section.readiness_state === 'revoked',
+  );
+  return {
+    class_key: classKey,
+    title: truncateContentAdminTitle(
+      nullableString(row?.class_title) ??
+        (classKey ? 'One Time class occurrence' : 'Class association needed'),
+    ),
+    starts_at: nullableIso(row?.starts_at),
+    recording_state: truncateStatus(nullableString(row?.recording_state) ?? input.providerState),
+    content_visibility: publishedRevisionKey
+      ? 'published_to_library'
+      : row?.latest_revision_key
+        ? 'review_only'
+        : 'not_published',
+    portal_eligibility: publishedRevisionKey ? 'eligible_for_entitled_learners' : 'not_eligible',
+    helper_eligibility: hasIndexedKnowledge
+      ? 'eligible_with_citations'
+      : hasRevokedKnowledge
+        ? 'revoked'
+        : 'not_indexed',
+  };
+}
+
+function contentProviderSetupGuidance(
+  providerPorts: ContentAdminProviderPortStatus[],
+): ContentAdminProviderSetup {
+  const contentPorts = providerPorts.filter(
+    (port) => port.port === 'vimeo' || port.port === 'buffer',
+  );
+  const missingProviderCount = new Set(contentPorts.flatMap((port) => port.missing_variables)).size;
+  const hasProviderOff = contentPorts.some(
+    (port) => port.mode === 'provider_off' || port.state === 'unconfigured',
+  );
+  const hasDegraded = contentPorts.some(
+    (port) => port.mode === 'degraded' || port.state === 'blocked' || port.state === 'error',
+  );
+  const state: ContentAdminProviderSetup['state'] = hasProviderOff
+    ? 'provider_off'
+    : hasDegraded
+      ? 'degraded'
+      : missingProviderCount > 0
+        ? 'needs_configuration'
+        : 'ready';
+  return {
+    state,
+    owner_action:
+      state === 'ready'
+        ? 'Run only bounded read canaries with an approved test asset before claiming real provider readiness.'
+        : 'Continue provider-off fixture proof; owner can configure protected Vimeo and Buffer settings later.',
+    missing_provider_count: missingProviderCount,
+    can_continue_provider_off: true,
+  };
+}
+
+function contentSocialHandoff(
+  drafts: ContentAdminSocialDraft[],
+  providerState: ContentAdminProviderSetup['state'],
+): ContentAdminSocialHandoff {
+  const hasScheduled = drafts.some(
+    (draft) => draft.workflow_state === 'scheduled' || draft.buffer_command_state === 'scheduled',
+  );
+  return {
+    state: hasScheduled
+      ? 'draft_scheduled'
+      : drafts.length > 0
+        ? 'draft_ready'
+        : providerState === 'provider_off'
+          ? 'provider_off'
+          : 'not_ready',
+    draft_count: drafts.length,
+    buffer_live_publish_allowed: false,
+    exact_revision_required: true,
+  };
+}
+
+function providerStepState(
+  providerState: string,
+  setupState: ContentAdminProviderSetup['state'],
+): ContentAdminFlowStep['state'] {
+  if (/failed|dead|error/i.test(providerState)) return 'failed';
+  if (setupState === 'provider_off') return 'ready';
+  if (setupState === 'ready') return 'done';
+  if (setupState === 'degraded') return 'blocked';
+  return 'waiting';
+}
+
+function transcriptStepState(
+  summary: ContentAdminSourceSummary,
+  transcripts: ContentAdminSourceDetail['transcript_revisions'],
+): ContentAdminFlowStep['state'] {
+  if (summary.lifecycle_stage === 'failed') return 'failed';
+  if (transcripts.some((revision) => revision.approved_at)) return 'done';
+  if (transcripts.length > 0 || summary.lifecycle_stage === 'transcript_review') return 'ready';
+  return 'waiting';
+}
+
+function transcriptStepDetail(
+  summary: ContentAdminSourceSummary,
+  transcripts: ContentAdminSourceDetail['transcript_revisions'],
+) {
+  if (transcripts.some((revision) => revision.approved_at)) {
+    return 'Transcript has an approved revision available for artifacts and knowledge.';
+  }
+  if (transcripts.length > 0 || summary.lifecycle_stage === 'transcript_review') {
+    return 'Transcript is available for human approval before outputs are generated.';
+  }
+  return 'Transcript is waiting on provider-off fixture input or approved private source processing.';
+}
+
+function knowledgeStepState(
+  sections: ContentAdminKnowledgeSection[],
+): ContentAdminFlowStep['state'] {
+  if (sections.some((section) => section.readiness_state === 'indexed')) return 'done';
+  if (sections.some((section) => section.readiness_state === 'revoked')) return 'blocked';
+  return 'waiting';
+}
+
+function artifactStepState(
+  counts: ContentAdminSourceSummary['artifact_counts'],
+): ContentAdminFlowStep['state'] {
+  if (counts.published > 0) return 'done';
+  if (counts.approved > 0 || counts.review_needed > 0 || counts.drafts > 0) return 'ready';
+  return 'waiting';
+}
+
+function artifactStepDetail(counts: ContentAdminSourceSummary['artifact_counts']) {
+  if (counts.published > 0) {
+    return 'Approved review outputs have been published to the local One Time pipeline.';
+  }
+  if (counts.approved > 0 || counts.review_needed > 0 || counts.drafts > 0) {
+    return 'Review sheet, worksheet, newsletter, social, or classroom drafts are ready for review.';
+  }
+  return 'Draft outputs wait for transcript approval and deterministic generation.';
+}
+
+function truncateStatus(value: string) {
+  return value.length > 80 ? `${value.slice(0, 77)}...` : value;
 }
 
 export async function listOt110aSocialWorkspace(input: {
@@ -1859,25 +2162,25 @@ function statusFromTelegramReadiness(
   config: AppConfig,
   env: NodeJS.ProcessEnv,
 ): ContentAdminProviderPortStatus {
-  const tokenConfigured =
-    env.ONE_TIME_TELEGRAM_TOKEN_CONFIGURED === 'true' || Boolean(env.ONE_TIME_TELEGRAM_BOT_TOKEN);
-  const ownerMappingConfigured = env.ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED === 'true';
-  const canaryChatConfigured = env.ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED === 'true';
+  void env;
   const readiness = telegramTransportReadiness({
     enabled: config.oneTimeTelegramWebhookEnabled,
     botKey: config.oneTimeTelegramBotKey,
     environment: config.oneTimeTelegramEnvironment,
-    tokenConfigured,
-    ownerMappingConfigured,
-    singleConsumerGate: true,
-    canaryChatConfigured,
+    tokenConfigured: config.oneTimeTelegramTokenConfigured,
+    ownerMappingConfigured: config.oneTimeTelegramOwnerMappingConfigured,
+    singleConsumerGate: config.oneTimeTelegramSingleConsumerGate,
+    canaryChatConfigured: config.oneTimeTelegramCanaryChatConfigured,
   });
   const missing = [
     !config.oneTimeTelegramWebhookEnabled ? 'ONE_TIME_TELEGRAM_WEBHOOK_ENABLED' : null,
-    !config.oneTimeTelegramWebhookSecret ? 'ONE_TIME_TELEGRAM_WEBHOOK_SECRET' : null,
-    !tokenConfigured ? 'ONE_TIME_TELEGRAM_TOKEN_CONFIGURED' : null,
-    !ownerMappingConfigured ? 'ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED' : null,
-    !canaryChatConfigured ? 'ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED' : null,
+    !config.oneTimeTelegramWebhookSecretConfigured ? 'ONE_TIME_TELEGRAM_WEBHOOK_SECRET' : null,
+    !config.oneTimeTelegramTokenConfigured ? 'ONE_TIME_TELEGRAM_TOKEN_CONFIGURED' : null,
+    !config.oneTimeTelegramOwnerMappingConfigured
+      ? 'ONE_TIME_TELEGRAM_OWNER_MAPPING_CONFIGURED'
+      : null,
+    !config.oneTimeTelegramSingleConsumerGate ? 'ONE_TIME_TELEGRAM_SINGLE_CONSUMER_GATE' : null,
+    !config.oneTimeTelegramCanaryChatConfigured ? 'ONE_TIME_TELEGRAM_CANARY_CHAT_CONFIGURED' : null,
   ].filter((value): value is string => Boolean(value));
   return {
     port: 'telegram',

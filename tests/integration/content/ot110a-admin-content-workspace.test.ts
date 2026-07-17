@@ -2,27 +2,48 @@ import { createHash } from 'node:crypto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
+import {
+  ot86bApprovedForSocialEventSchema,
+  type Ot86bApprovedForSocialEvent,
+} from '../../../packages/contracts/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/db/src/index.ts';
 import {
+  applyNextOt86Publication,
   activateOt110aPromptVersion,
   admitContentOutcome,
+  canonicalJson,
   createAccountUser,
   createOt110aGeneratedArtifact,
   createOt110aIntegratedProviderPorts,
+  createOt110aProviderOffPorts,
   createOt110aPromptPatch,
   decryptAuthEmailChallengeDeliveryPayloadForTests,
+  dispatchNextOt86bSocialEvent,
+  generateNextOt86bDraftJob,
   getOt110aContentCreateWorkspace,
+  getOt110aContentSourceDetail,
   getOt110aContentWorkspaceOverview,
   grantOt110aContentAdminCapability,
   listOt110aPromptTemplates,
   previewOt110aPromptPatch,
+  receiveOt86bSocialEvent,
+  receiveOt86PublicationManifest,
   registerOt109Source,
   resolveOt110aContentAdminActor,
   rollbackOt110aPromptVersion,
+  signOt86Manifest,
+  validateOt86bSocialEventChecksum,
+  validateOt86ManifestChecksum,
+  withOt86ManifestChecksum,
+  type Ot86SigningSecret,
 } from '../../../packages/domain/src/index.ts';
 
 let pool: DbPool;
 let config: AppConfig;
+const secret: Ot86SigningSecret = {
+  keyId: 'w12-04-test-signing-key',
+  secret: 'test-only-w12-04-content-vimeo-classroom-secret',
+};
 
 const contentOutcome = {
   idempotency_key: 'ot110a-content-outcome-001',
@@ -50,6 +71,8 @@ beforeEach(async () => {
     APP_VERSION: 'test',
     COMMIT_SHA: 'test',
     OUTBOX_TRANSPORT_MODE: 'sink',
+    OT86_PUBLISH_SIGNING_KEY_ID: secret.keyId,
+    OT86_PUBLISH_SIGNING_SECRET: secret.secret,
   });
   pool = createMemoryPool();
   await runMigrations(pool);
@@ -253,6 +276,136 @@ describe('OT-110A admin Content workspace domain', () => {
     });
     expect(rolledBack.template.active_version_key).toBe(lessonTemplate?.active_version_key);
   });
+
+  it('projects the W12-04 provider-off Vimeo classroom vertical slice without provider secrets', async () => {
+    const sourceKey = 'w12_04_content_vimeo_classroom';
+    const versionId = 'w12_04_version_001';
+    const occurrenceKey = 'w12_04_class_occurrence';
+    await seedW12ClassOccurrence(occurrenceKey);
+    const ownerUserKey = await createAccountUser({
+      pool,
+      config,
+      email: 'w12-04-owner@example.test',
+      password: 'OwnerPass!234',
+      displayName: 'W12 Owner',
+      role: 'owner',
+      mfaCapable: false,
+    });
+    const owner = await resolveOt110aContentAdminActor({
+      pool,
+      config,
+      user: { user_key: ownerUserKey, role: 'owner' },
+    });
+
+    await admitContentOutcome({
+      pool,
+      config,
+      actorUserKey: ownerUserKey,
+      payload: {
+        idempotency_key: 'w12-04-provider-off-content-outcome',
+        item_key: sourceKey,
+        title: 'Fictional W12-04 Rabbi classroom fixture',
+        item_type: 'video',
+        occurrence_key: occurrenceKey,
+        revision_number: 1,
+        lifecycle_state: 'published',
+        entitlement_scope: 'all_active_learners',
+        transcript_metadata: {
+          summary: 'Approved fictional Rabbi transcript for W12-04 provider-off proof.',
+          transcript_state: 'approved_fixture',
+        },
+        source_metadata: {
+          source_label: 'Private provider-off fixture',
+          provider_reference: 'opaque_vimeo_fixture_reference',
+        },
+        review_sheet_metadata: {
+          review_state: 'approved_fixture',
+        },
+        playback_metadata: {
+          provider: 'vimeo',
+          mode: 'provider_off',
+          descriptor: 'opaque_fixture_reference',
+        },
+      },
+    });
+
+    const createWorkspace = await getOt110aContentCreateWorkspace({ pool, config, actor: owner });
+    for (const artifactKind of [
+      'review_sheet',
+      'worksheet',
+      'newsletter_email',
+      'social_caption',
+      'helper_knowledge',
+      'classroom_resource',
+    ] as const) {
+      const template = createWorkspace.prompt_templates.find(
+        (candidate) => candidate.artifact_kind === artifactKind,
+      );
+      expect(template?.active_version_key).toBeTruthy();
+      await createOt110aGeneratedArtifact({
+        pool,
+        config,
+        actor: owner,
+        payload: {
+          source_key: sourceKey,
+          artifact_kind: artifactKind,
+          prompt_version_key: String(template?.active_version_key),
+          reason: `W12-04 fixture ${artifactKind}.`,
+        },
+      });
+    }
+
+    await receiveSignedManifest(w12Manifest({ tenantId: config.accountKey, sourceKey, versionId }));
+    expect(await applyNextOt86Publication({ pool })).toMatchObject({
+      applied: true,
+      action: 'publish',
+    });
+    await receiveSignedSocialEvent(
+      w12SocialEvent({ tenantId: config.accountKey, sourceKey, versionId }),
+    );
+    expect(await dispatchNextOt86bSocialEvent({ pool })).toMatchObject({ dispatched: true });
+    const generator = await generateNextOt86bDraftJob({ pool });
+    expect(generator.generated).toBe(true);
+
+    const detail = await getOt110aContentSourceDetail({
+      pool,
+      config,
+      actor: owner,
+      sourceKey,
+      ports: createOt110aProviderOffPorts(),
+    });
+
+    expect(detail?.vertical_slice.workspace_scope).toBe(
+      'rabbi_sheller_provider/one_time_mishnah_class',
+    );
+    expect(detail?.vertical_slice.flow_steps.map((step) => step.key)).toEqual([
+      'private_source',
+      'vimeo_ingest',
+      'transcript',
+      'approved_knowledge',
+      'review_outputs',
+      'classroom_library',
+      'buffer_draft',
+    ]);
+    expect(detail?.vertical_slice.classroom).toMatchObject({
+      class_key: occurrenceKey,
+      content_visibility: 'published_to_library',
+      portal_eligibility: 'eligible_for_entitled_learners',
+      helper_eligibility: 'eligible_with_citations',
+      recording_state: 'available',
+    });
+    expect(detail?.vertical_slice.provider_setup).toMatchObject({
+      state: 'provider_off',
+      can_continue_provider_off: true,
+    });
+    expect(detail?.vertical_slice.social_handoff).toMatchObject({
+      state: 'draft_ready',
+      draft_count: 4,
+      buffer_live_publish_allowed: false,
+      exact_revision_required: true,
+    });
+    expect(JSON.stringify(detail)).not.toMatch(/https:\/\/player\.vimeo\.com|Bearer|password/i);
+  });
 });
 
 describe('OT-110A admin Content workspace API', () => {
@@ -407,6 +560,236 @@ function mergeCookies(...headers: string[]) {
     }
   }
   return [...cookies.entries()].map(([key, value]) => `${key}=${value}`).join('; ');
+}
+
+async function seedW12ClassOccurrence(occurrenceKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.class_series
+       (class_series_key, account_key, product_key, title, timezone, local_start_time,
+        reminder_local_time, status)
+     VALUES ($1, $2, $3, $4, 'Asia/Jerusalem', '20:00', '19:30', 'active')`,
+    ['w12_04_class_series', config.accountKey, config.productKey, 'W12-04 Fixture Series'],
+  );
+  await pool.query(
+    `INSERT INTO onetime.class_occurrences
+       (occurrence_key, account_key, product_key, class_series_key, local_class_date,
+        starts_at, reminder_due_at, joinable_until, occurrence_state, access_state,
+        recording_state)
+     VALUES ($1, $2, $3, $4, '2026-07-17', $5, $6, $7, 'completed', 'ready', 'available')`,
+    [
+      occurrenceKey,
+      config.accountKey,
+      config.productKey,
+      'w12_04_class_series',
+      new Date('2026-07-17T17:00:00.000Z'),
+      new Date('2026-07-17T16:30:00.000Z'),
+      new Date('2026-07-18T17:00:00.000Z'),
+    ],
+  );
+}
+
+function w12Manifest(input: { tenantId: string; sourceKey: string; versionId: string }) {
+  const body = 'Fictional approved Rabbi class excerpt for W12-04 provider-off classroom proof.';
+  return withOt86ManifestChecksum({
+    schema_version: 1,
+    event_type: 'content.publication_manifest',
+    message_id: '44444444-4444-4444-8444-444444444444',
+    idempotency_key: `${input.tenantId}:${input.sourceKey}:${input.versionId}:publish`,
+    action: 'publish',
+    tenant_id: input.tenantId,
+    content_id: input.sourceKey,
+    version_id: input.versionId,
+    sequence: 1,
+    occurred_at: '2026-07-17T17:05:00.000Z',
+    canonical_path: `/library/classes/${input.sourceKey}`,
+    approval: {
+      approval_id: 'w12_04_approval_001',
+      approved_by_actor_id: 'actor_w12_04_owner',
+      approved_at: '2026-07-17T17:02:00.000Z',
+      policy_version: 'ot86-privacy-v1',
+    },
+    source: {
+      source_kind: 'rabbi_class',
+      bna_record_id: 'one_time_source_fixture_001',
+      source_sha256: digest('w12-04-private-source-fixture'),
+      vimeo_reference: {
+        provider: 'vimeo',
+        video_id: 'w12-04-fixture-video',
+        reference_mode: 'manual_approved_reference',
+      },
+    },
+    artifacts: [
+      {
+        artifact_id: 'w12_04_artifact_video',
+        kind: 'video',
+        uri: 'https://objects.example.invalid/w12-04/video.mp4',
+        mime_type: 'video/mp4',
+        sha256: digest('w12-04-video-artifact'),
+        byte_length: 2048,
+        privacy: manifestPrivacy(),
+      },
+    ],
+    sections: [
+      {
+        section_id: 'w12_04_section_001',
+        title: 'Provider-off classroom proof',
+        ordinal: 0,
+        start_ms: 0,
+        end_ms: 120000,
+        canonical_path: `/library/classes/${input.sourceKey}`,
+        deep_link: `/library/classes/${input.sourceKey}#section-w12_04_section_001`,
+        text_sha256: digest(body),
+      },
+    ],
+    search_documents: [
+      {
+        document_id: 'w12_04_document_001',
+        section_id: 'w12_04_section_001',
+        title: 'Provider-off classroom proof',
+        body,
+        token_count: 11,
+        sha256: digest(body),
+      },
+    ],
+    privacy: manifestPrivacy(),
+    checksum_algorithm: 'sha256',
+  });
+}
+
+async function receiveSignedManifest(manifest: ReturnType<typeof w12Manifest>) {
+  const rawBody = signedRawManifest(manifest);
+  const headers = signedHeaders(rawBody, manifest.message_id);
+  const result = await receiveOt86PublicationManifest({
+    pool,
+    rawBody,
+    headers,
+    secrets: [secret],
+    now: new Date(Number(headers.timestamp) * 1000),
+  });
+  expect(result).toMatchObject({ status: 202, receipt_state: 'queued' });
+}
+
+function w12SocialEvent(input: {
+  tenantId: string;
+  sourceKey: string;
+  versionId: string;
+}): Ot86bApprovedForSocialEvent {
+  const excerpt = 'A parent-safe approved excerpt for deterministic social draft generation.';
+  return withSocialChecksum({
+    schema_version: 1,
+    event_type: 'content.approved_for_social',
+    origin: 'ot86a-content-pipeline',
+    event_id: '55555555-5555-4555-8555-555555555555',
+    idempotency_key: `${input.tenantId}:${input.sourceKey}:${input.versionId}:social`,
+    tenant_id: input.tenantId,
+    content_id: input.sourceKey,
+    version_id: input.versionId,
+    sequence: 1,
+    occurred_at: '2026-07-17T17:06:00.000Z',
+    approval: {
+      approval_id: 'w12_04_social_approval_001',
+      approved_for_social: true,
+      approved_by_actor_id: 'actor_w12_04_owner',
+      approved_at: '2026-07-17T17:04:00.000Z',
+      policy_version: 'ot86-social-v1',
+    },
+    content: {
+      canonical_title: 'Fictional W12-04 Rabbi classroom fixture',
+      canonical_url: `https://join.onetimeonetime.com/library/classes/${input.sourceKey}`,
+      summary: 'Approved non-private One Time class summary for W12-04 social drafts.',
+      approved_excerpts: [
+        {
+          excerpt_id: 'w12_04_excerpt_001',
+          section_id: 'w12_04_section_001',
+          text: excerpt,
+          deep_link: `https://join.onetimeonetime.com/library/classes/${input.sourceKey}#section-w12_04_section_001`,
+          text_sha256: digest(excerpt),
+        },
+      ],
+      media: [
+        {
+          asset_id: 'w12_04_graphic_001',
+          kind: 'graphic',
+          uri: 'https://objects.example.invalid/w12-04/social-graphic.png',
+          mime_type: 'image/png',
+          sha256: digest('w12-04-social-graphic'),
+          subject_classification: 'graphics_only',
+          privacy: socialPrivacy(),
+        },
+      ],
+    },
+    privacy: socialPrivacy(),
+  });
+}
+
+async function receiveSignedSocialEvent(event: Ot86bApprovedForSocialEvent) {
+  const rawBody = rawSocialEvent(event);
+  const headers = signedHeaders(rawBody, event.event_id);
+  const result = await receiveOt86bSocialEvent({
+    pool,
+    rawBody,
+    headers,
+    secrets: [secret],
+    now: new Date(Number(headers.timestamp) * 1000),
+  });
+  expect(result).toMatchObject({ status: 202, receipt_state: 'queued' });
+}
+
+function withSocialChecksum(
+  event: Omit<Ot86bApprovedForSocialEvent, 'payload_sha256'>,
+): Ot86bApprovedForSocialEvent {
+  return ot86bApprovedForSocialEventSchema.parse({
+    ...event,
+    payload_sha256: digest(canonicalJson(event)),
+  });
+}
+
+function signedRawManifest(manifest: ReturnType<typeof w12Manifest>) {
+  expect(validateOt86ManifestChecksum(manifest)).toBe(true);
+  return Buffer.from(JSON.stringify(manifest), 'utf8');
+}
+
+function rawSocialEvent(event: Ot86bApprovedForSocialEvent) {
+  expect(validateOt86bSocialEventChecksum(event)).toBe(true);
+  return Buffer.from(JSON.stringify(event), 'utf8');
+}
+
+function signedHeaders(rawBody: Buffer, deliveryId: string) {
+  const timestamp = '1784311200';
+  return {
+    contentType: 'application/json',
+    keyId: secret.keyId,
+    timestamp,
+    deliveryId,
+    signature: signOt86Manifest({
+      keyId: secret.keyId,
+      secret: secret.secret,
+      timestamp,
+      rawBody,
+    }),
+  };
+}
+
+function manifestPrivacy() {
+  return {
+    source_scope: 'approved_rabbi_content',
+    contains_learner_name: false,
+    contains_learner_voice: false,
+    contains_learner_face: false,
+    contains_learner_question: false,
+    contains_private_data: false,
+    approved_for_student_kb: true,
+  } as const;
+}
+
+function socialPrivacy() {
+  return {
+    contains_learner_name: false,
+    contains_learner_voice: false,
+    contains_learner_face: false,
+    contains_learner_question: false,
+    contains_private_data: false,
+  } as const;
 }
 
 function digest(value: string) {

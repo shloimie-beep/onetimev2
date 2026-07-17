@@ -5,8 +5,11 @@ import {
   legacyActivationCampaignControlRequestSchema,
   legacyActivationCampaignPreviewRequestSchema,
   legacyActivationCampaignQueueRequestSchema,
+  legacyAudienceApplyPlanRequestSchema,
+  legacyAudienceConflictDecisionRequestSchema,
   legacyAudienceDryRunRequestSchema,
   legacyAudienceRollbackRequestSchema,
+  legacyAudienceSourceInventoryManifestSchema,
   type LegacyActivationCampaignPreview,
   type LegacyActivationCampaignQueueResult,
   type LegacyAudienceDryRunReport,
@@ -19,7 +22,9 @@ import {
   type LegacyActivationLifecyclePort,
 } from '../../../../../../packages/domain/src/audience-reconciliation/activation-campaign.ts';
 import {
+  createLegacyAudienceApplyPlan,
   createLegacyAudienceDryRun,
+  legacyAudienceGovernedTaxonomy,
   legacyAudienceSegmentContracts,
 } from '../../../../../../packages/domain/src/audience-reconciliation/service.ts';
 import {
@@ -70,6 +75,46 @@ export function createOt74AudienceReconciliationRouter(deps: Ot74AudienceRouterD
       if (!session) return;
       if (!canRead(session.actor.role)) return forbidden(res);
       res.json({ success: true, segments: legacyAudienceSegmentContracts });
+    }),
+  );
+
+  router.get(
+    '/taxonomy',
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canRead(session.actor.role)) return forbidden(res);
+      res.json({
+        success: true,
+        taxonomy: legacyAudienceGovernedTaxonomy,
+        segments: legacyAudienceSegmentContracts,
+        raw_values_included: false,
+        production_side_effects: false,
+      });
+    }),
+  );
+
+  router.post(
+    '/source-inventories',
+    express.json({ limit: '1mb' }),
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canManage(session.actor.role)) return forbidden(res);
+      if (!(await deps.guards.verifyCsrf(req, session))) {
+        res.status(403).json(errorBody('CSRF_REQUIRED', 'Refresh the page and try again.'));
+        return;
+      }
+      const manifest = legacyAudienceSourceInventoryManifestSchema.parse(req.body);
+      const recorded = await deps.repository.recordSourceInventory({
+        actor: session.actor,
+        manifest,
+      });
+      res.json({
+        success: true,
+        replayed: recorded.replayed,
+        inventory: safeInventory(recorded.manifest),
+      });
     }),
   );
 
@@ -139,6 +184,59 @@ export function createOt74AudienceReconciliationRouter(deps: Ot74AudienceRouterD
       });
       const rollback = await deps.repository.recordRollbackRequest(session.actor, request);
       res.json({ success: true, rollback });
+    }),
+  );
+
+  router.post(
+    '/batches/:batchKey/conflict-decisions',
+    express.json({ limit: '16kb' }),
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canManage(session.actor.role)) return forbidden(res);
+      if (!(await deps.guards.verifyCsrf(req, session))) {
+        res.status(403).json(errorBody('CSRF_REQUIRED', 'Refresh the page and try again.'));
+        return;
+      }
+      const request = legacyAudienceConflictDecisionRequestSchema.parse({
+        ...req.body,
+        batch_key: String(req.params.batchKey),
+      });
+      const decision = await deps.repository.recordConflictDecision(session.actor, request);
+      res.json({ success: true, decision });
+    }),
+  );
+
+  router.post(
+    '/batches/:batchKey/apply-plans',
+    express.json({ limit: '32kb' }),
+    asyncHandler(async (req, res) => {
+      const session = await requireSession(req, res, deps.guards);
+      if (!session) return;
+      if (!canRollback(session.actor.role)) return forbidden(res);
+      if (!(await deps.guards.verifyCsrf(req, session))) {
+        res.status(403).json(errorBody('CSRF_REQUIRED', 'Refresh the page and try again.'));
+        return;
+      }
+      const request = legacyAudienceApplyPlanRequestSchema.parse({
+        ...req.body,
+        batch_key: String(req.params.batchKey),
+      });
+      const report = await deps.repository.getBatchReport(
+        session.actor,
+        String(req.params.batchKey),
+      );
+      if (!report) {
+        res.status(404).json(errorBody('NOT_FOUND', 'Legacy audience batch was not found.'));
+        return;
+      }
+      const result = createLegacyAudienceApplyPlan({ report, request });
+      const recorded = await deps.repository.recordApplyPlan({
+        actor: session.actor,
+        request,
+        result,
+      });
+      res.json({ success: true, replayed: recorded.replayed, apply_plan: recorded.result });
     }),
   );
 
@@ -324,6 +422,37 @@ function safeReport(report: LegacyAudienceDryRunReport) {
     generated_at: report.generated_at,
     summary: report.summary,
     raw_row_contents_included: false,
+    production_side_effects: false,
+  };
+}
+
+function safeInventory(
+  manifest: ReturnType<typeof legacyAudienceSourceInventoryManifestSchema.parse>,
+) {
+  return {
+    inventory_key: manifest.inventory_key,
+    generated_at: manifest.generated_at,
+    source_roots: manifest.source_roots,
+    summary: manifest.summary,
+    manifest_sha256: manifest.manifest_sha256,
+    files: manifest.files.map((file) => ({
+      file_ref: file.file_ref,
+      source_root_label: file.source_root_label,
+      file_name: file.file_name,
+      extension: file.extension,
+      byte_size: file.byte_size,
+      last_modified: file.last_modified,
+      sha256: file.sha256,
+      duplicate_of_sha256: file.duplicate_of_sha256,
+      classification: file.classification,
+      classification_reasons: file.classification_reasons,
+      sheet_names: file.sheet_names,
+      column_names_by_sheet: file.column_names_by_sheet,
+      row_counts_by_sheet: file.row_counts_by_sheet,
+      warnings: file.warnings,
+      raw_values_included: false,
+    })),
+    raw_values_included: false,
     production_side_effects: false,
   };
 }

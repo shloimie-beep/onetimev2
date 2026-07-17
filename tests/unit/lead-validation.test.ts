@@ -88,10 +88,8 @@ describe('lead validation and content contracts', () => {
     const retention = landingContent.gain.cards.find((card) => card.title === 'Retention');
     const progress = landingContent.gain.cards.find((card) => card.title === 'Progress');
     expect(clarity?.image).toBe('/assets/outcomes/clarity-class.webp');
-    expect(retention?.image).toBeNull();
-    expect(retention && 'visualTreatment' in retention ? retention.visualTreatment : null).toBe(
-      'memory-review',
-    );
+    expect(retention?.image).toBe('/assets/outcomes/retention-review-class-720.webp');
+    expect(retention?.alt).toContain('Rabbi Scheller teaching beside a large classroom display');
     expect(progress?.image).toBe('/assets/outcomes/accomplishment-toronto-class.jpg');
     expect(progress?.alt).toContain('Toronto');
     expect(progress?.assetBlocker).toBeNull();

@@ -12,18 +12,18 @@ type QueryCountRow = Record<string, unknown>;
 
 export function ownerAdminVisibleActions(): VisibleAction[] {
   const readStates = {
-    loading: 'Loading bounded data.',
-    success: 'Data loaded.',
-    error: 'The source could not be loaded.',
-    permission: 'The signed-in role cannot use this action.',
-    offline: 'Network unavailable; no cached protected data is used.',
+    loading: 'Checking your workspace.',
+    success: 'Workspace view is current.',
+    error: 'This view could not be refreshed.',
+    permission: 'This account cannot use that control.',
+    offline: 'Reconnect before opening protected workspace data.',
   };
   const writeStates = {
-    loading: 'Saving request.',
-    success: 'Request completed.',
-    error: 'The request could not be completed.',
-    permission: 'The signed-in role cannot use this action.',
-    offline: 'Network unavailable; retry before changing data.',
+    loading: 'Saving your change.',
+    success: 'Change saved.',
+    error: 'The change could not be saved.',
+    permission: 'This account cannot use that control.',
+    offline: 'Reconnect before changing workspace data.',
   };
   return [
     action('dashboard.view.route', 'Dashboard', 'route', '/app/dashboard', ['owner', 'admin'], {
@@ -209,6 +209,34 @@ export function ownerAdminVisibleActions(): VisibleAction[] {
       },
     ),
     action(
+      'classes.open_detail.button',
+      'Open class details',
+      'button',
+      '/app/classes/:occurrenceKey',
+      ['owner', 'admin'],
+      {
+        capability: 'classes:read',
+        handler: ['GET', '/api/v1/classes/:occurrenceKey'],
+        idempotency: [false, null],
+        audit: ['local_read', 'class_detail_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'classes.back_to_list.button',
+      'Back to classes',
+      'button',
+      '/app/classes',
+      ['owner', 'admin'],
+      {
+        capability: 'classes:read',
+        handler: ['GET', '/api/v1/classes'],
+        idempotency: [false, null],
+        audit: ['local_read', 'classes_read'],
+        states: readStates,
+      },
+    ),
+    action(
       'content.library.view.route',
       'Content Library',
       'route',
@@ -357,21 +385,29 @@ async function newLeadsSection(pool: DbPool, config: AppConfig): Promise<OwnerDa
         AND archived_at IS NULL`,
     [config.accountKey, config.productKey],
   );
-  if (!row) return unavailable('new_leads', 'New leads', 'CRM contact source is unavailable.');
+  if (!row)
+    return unavailable('new_leads', 'New leads', 'CRM contact source is temporarily unavailable.');
   const count = numberValue(row.count);
   return section({
     id: 'new_leads',
     label: 'New leads',
-    state: count > 0 ? 'action_required' : 'ready',
+    state: count > 0 ? 'action_needed' : 'ready',
     value: count,
-    valueLabel: `${count} new`,
+    valueLabel: count > 0 ? `${count} new lead${count === 1 ? '' : 's'}` : 'Ready',
     detail:
       count > 0
-        ? 'New CRM leads are waiting for review.'
-        : 'CRM is connected and no new leads are waiting.',
+        ? 'New family or school inquiries are waiting for review.'
+        : 'CRM is ready and no new leads are waiting.',
+    nextAction: count > 0 ? 'Open CRM and review the newest inquiries.' : null,
+    trendLabel: 'Updated by lead and contact activity.',
     href: '/app/crm',
     capability: 'crm:contacts:read',
     updatedAt: isoOrNull(row.updated_at),
+    diagnostics: {
+      source: 'contacts',
+      stateCode: count > 0 ? 'lead_status:new' : 'lead_status:none_new',
+      detail: 'Counts active contacts with lead_status new in this account/product.',
+    },
   });
 }
 
@@ -398,35 +434,58 @@ async function nextClassSection(
     [config.accountKey, config.productKey, now],
   );
   if (row === undefined) {
-    return unavailable('next_class', 'Next class', 'Class occurrence source is unavailable.');
+    return unavailable(
+      'next_class',
+      'Upcoming class',
+      'Class schedule is temporarily unavailable.',
+    );
   }
   if (!row) {
     return section({
       id: 'next_class',
-      label: 'Next class',
-      state: 'needs_setup',
+      label: 'Upcoming class',
+      state: 'action_needed',
       value: null,
-      valueLabel: 'Needs setup',
-      detail: 'No upcoming class occurrence is recorded yet.',
+      valueLabel: 'Action needed',
+      detail: 'No upcoming class is scheduled yet.',
+      nextAction: 'Create or import the next class schedule before learners need it.',
+      trendLabel: null,
       href: '/app/classes',
       capability: 'classes:read',
       updatedAt: null,
+      diagnostics: {
+        source: 'class_occurrences',
+        stateCode: 'missing_upcoming_occurrence',
+        detail: 'No non-cancelled future class occurrence matched the account/product.',
+      },
     });
   }
   const startsAt = isoOrNull(row.starts_at);
   const accessState = String(row.access_state ?? 'provider_unavailable');
+  const accessProduct = accessState === 'ready' ? 'ready' : 'not_connected';
   return section({
     id: 'next_class',
-    label: 'Next class',
-    state: accessState === 'ready' ? 'ready' : 'needs_setup',
+    label: 'Upcoming class',
+    state: accessProduct,
     value: null,
     valueLabel: startsAt ? formatIsoLabel(startsAt) : 'Scheduled',
-    detail: `${String(row.title ?? 'Class')} is ${String(
-      row.occurrence_state ?? 'scheduled',
-    )}; launch provider is ${readable(accessState)}.`,
+    detail:
+      accessState === 'ready'
+        ? `${String(row.title ?? 'Class')} is scheduled and protected access is ready.`
+        : `${String(row.title ?? 'Class')} is scheduled; protected access is not connected yet.`,
+    nextAction:
+      accessState === 'ready'
+        ? 'Open the class detail before the session starts.'
+        : 'Review protected classroom access before learner launch.',
+    trendLabel: 'Next scheduled class.',
     href: '/app/classes',
     capability: 'classes:read',
     updatedAt: startsAt,
+    diagnostics: {
+      source: 'class_occurrences',
+      stateCode: `access_state:${accessState}`,
+      detail: `occurrence_state:${String(row.occurrence_state ?? 'scheduled')}`,
+    },
   });
 }
 
@@ -448,25 +507,37 @@ async function communicationsSection(
   if (!row) {
     return unavailable(
       'communications_delivery',
-      'Communications/delivery',
-      'Outbox source is unavailable.',
+      'Communication attention',
+      'Communication status is temporarily unavailable.',
     );
   }
   const pending = numberValue(row.pending_count);
   const total = numberValue(row.total_count);
   return section({
     id: 'communications_delivery',
-    label: 'Communications/delivery',
-    state: pending > 0 ? 'action_required' : 'ready',
+    label: 'Communication attention',
+    state: pending > 0 ? 'action_needed' : total > 0 ? 'ready' : 'no_data_yet',
     value: pending,
-    valueLabel: `${pending} pending`,
+    valueLabel: pending > 0 ? `${pending} need attention` : total > 0 ? 'Ready' : 'No data yet',
     detail:
       total > 0
-        ? `${total} local sink intent records are available for review.`
-        : 'Outbox sink is connected and has no local intents yet.',
+        ? `${total} communication records are available for review.`
+        : 'No local communication history is available yet.',
+    nextAction:
+      pending > 0
+        ? 'Open Communications and review pending drafts or follow-up items.'
+        : total > 0
+          ? null
+          : 'Connect or import communication history when the approved source is ready.',
+    trendLabel: total > 0 ? 'Local communication records only.' : null,
     href: '/app/communications',
     capability: 'communications:read',
     updatedAt: isoOrNull(row.updated_at),
+    diagnostics: {
+      source: 'outbox_events',
+      stateCode: `pending:${pending};total:${total};transport:sink`,
+      detail: 'Counts sink-mode delivery records only; no provider send is implied.',
+    },
   });
 }
 
@@ -487,23 +558,40 @@ async function contentReviewSection(
     [config.accountKey, config.productKey],
   );
   if (!row)
-    return unavailable('content_review', 'Content review', 'Content library is unavailable.');
+    return unavailable(
+      'content_review',
+      'Content processing',
+      'Content status is temporarily unavailable.',
+    );
   const total = numberValue(row.total_count);
   const review = numberValue(row.review_count);
   const published = numberValue(row.published_count);
   return section({
     id: 'content_review',
-    label: 'Content review',
-    state: review > 0 ? 'action_required' : total > 0 ? 'ready' : 'needs_setup',
+    label: 'Content processing',
+    state: review > 0 ? 'action_needed' : total > 0 ? 'ready' : 'no_data_yet',
     value: review,
-    valueLabel: `${review} review needed`,
+    valueLabel:
+      review > 0 ? `${review} need review` : total > 0 ? `${published} published` : 'No data yet',
     detail:
       total > 0
-        ? `${published} published library items; ${review} need review.`
-        : 'No content outcome has been admitted yet.',
+        ? `${published} library items are published; ${review} need review.`
+        : 'No class recordings or review sheets have been admitted yet.',
+    nextAction:
+      review > 0
+        ? 'Open Content and review the waiting item.'
+        : total > 0
+          ? null
+          : 'Configure content intake or admit the first class item.',
+    trendLabel: total > 0 ? `${total} active content items` : null,
     href: '/app/content',
     capability: 'content:library:read',
     updatedAt: isoOrNull(row.updated_at),
+    diagnostics: {
+      source: 'content_items',
+      stateCode: `review:${review};published:${published};total:${total}`,
+      detail: 'Counts active content items and lifecycle review state.',
+    },
   });
 }
 
@@ -528,8 +616,8 @@ async function portalAccountSection(
   if (!row) {
     return unavailable(
       'portal_account_setup',
-      'Portal/account setup',
-      'Portal account source is unavailable.',
+      'Current members',
+      'Member account status is temporarily unavailable.',
     );
   }
   const households = numberValue(row.household_count);
@@ -539,21 +627,38 @@ async function portalAccountSection(
   const needsSetup = households === 0 || learners === 0;
   return section({
     id: 'portal_account_setup',
-    label: 'Portal/account setup',
+    label: 'Current members',
     state: needsSetup
-      ? 'needs_setup'
+      ? 'no_data_yet'
       : setup > 0 || pendingDelivery > 0
-        ? 'action_required'
+        ? 'action_needed'
         : 'ready',
     value: setup + pendingDelivery,
-    valueLabel: `${setup + pendingDelivery} setup items`,
+    valueLabel:
+      households === 0
+        ? 'No data yet'
+        : `${households} household${households === 1 ? '' : 's'}, ${learners} learner${
+            learners === 1 ? '' : 's'
+          }`,
     detail:
       households === 0
-        ? 'No active portal households are configured.'
-        : `${households} households and ${learners} learners; ${setup} student access records need setup or reset.`,
+        ? 'No active member households are available yet.'
+        : `${setup} learner access record${setup === 1 ? '' : 's'} need setup or reset; ${pendingDelivery} account email${pendingDelivery === 1 ? '' : 's'} are queued.`,
+    nextAction:
+      households === 0
+        ? 'Seed the Portal Test Lab or import approved members.'
+        : setup > 0 || pendingDelivery > 0
+          ? 'Open member access setup before inviting families.'
+          : null,
+    trendLabel: learners > 0 ? 'Active portal records.' : null,
     href: null,
     capability: 'accounts:lifecycle:read',
     updatedAt: null,
+    diagnostics: {
+      source: 'portal_households/portal_learners/portal_student_access_state',
+      stateCode: `households:${households};learners:${learners};setup:${setup};queued:${pendingDelivery}`,
+      detail: 'Counts active household, learner, student setup, and lifecycle email rows.',
+    },
   });
 }
 
@@ -573,25 +678,35 @@ async function billingSection(pool: DbPool, config: AppConfig): Promise<OwnerDas
   if (!row) {
     return unavailable(
       'billing_readiness',
-      'Products/Billing status',
-      'Billing projection source is unavailable.',
+      'Payment setup',
+      'Billing state is temporarily unavailable.',
     );
   }
   const prices = numberValue(row.price_count);
   const subscriptions = numberValue(row.subscription_count);
   return section({
     id: 'billing_readiness',
-    label: 'Products/Billing status',
-    state: prices > 0 ? 'ready' : 'needs_setup',
+    label: 'Payment setup',
+    state: prices > 0 ? 'ready' : 'not_connected',
     value: subscriptions,
-    valueLabel: prices > 0 ? `${subscriptions} subscriptions` : 'Needs setup',
+    valueLabel:
+      prices > 0
+        ? `${subscriptions} subscription${subscriptions === 1 ? '' : 's'}`
+        : 'Not connected',
     detail:
       prices > 0
-        ? 'Synthetic billing status projections are readable; payment transport remains disabled.'
-        : 'No synthetic billing price is configured for this product.',
+        ? 'Billing projections are readable; live payment actions remain disabled unless separately approved.'
+        : 'No billing price is configured for this product.',
+    nextAction: prices > 0 ? null : 'Configure approved billing products before taking payments.',
+    trendLabel: prices > 0 ? `${prices} configured price${prices === 1 ? '' : 's'}` : null,
     href: '/app/billing',
     capability: 'billing:status:read',
     updatedAt: isoOrNull(row.updated_at),
+    diagnostics: {
+      source: 'billing_offer_prices/billing_subscription_projections',
+      stateCode: `prices:${prices};subscriptions:${subscriptions}`,
+      detail: 'Billing projection only; no live charge is authorized by this view.',
+    },
   });
 }
 
@@ -599,13 +714,20 @@ function supportSection(): OwnerDashboardSection {
   return section({
     id: 'support',
     label: 'Support',
-    state: 'unavailable',
+    state: 'temporarily_unavailable',
     value: null,
-    valueLabel: 'Unavailable',
-    detail: 'No owner/admin support source is mounted in this build.',
+    valueLabel: 'Temporarily unavailable',
+    detail: 'Owner support summaries are not mounted in this dashboard yet.',
+    nextAction: 'Open Support for subscriber ticket tools.',
+    trendLabel: null,
     href: null,
     capability: 'support:read',
     updatedAt: null,
+    diagnostics: {
+      source: 'support',
+      stateCode: 'support_dashboard_source_unmounted',
+      detail: 'Support routes exist separately; dashboard aggregation is not mounted.',
+    },
   });
 }
 
@@ -636,9 +758,16 @@ function section(input: {
   value: number | null;
   valueLabel: string;
   detail: string;
+  nextAction: string | null;
+  trendLabel: string | null;
   href: string | null;
   capability: string;
   updatedAt: string | null;
+  diagnostics: {
+    source: string;
+    stateCode: string;
+    detail: string;
+  };
 }): OwnerDashboardSection {
   return {
     id: input.id,
@@ -647,9 +776,17 @@ function section(input: {
     value: input.value,
     value_label: input.valueLabel,
     detail: input.detail,
+    next_action: input.nextAction,
+    trend_label: input.trendLabel,
     href: input.href,
     capability: input.capability,
     updated_at: input.updatedAt,
+    diagnostics: {
+      source: input.diagnostics.source,
+      state_code: input.diagnostics.stateCode,
+      detail: input.diagnostics.detail,
+      checked_at: input.updatedAt,
+    },
   };
 }
 
@@ -661,13 +798,20 @@ function unavailable(
   return section({
     id,
     label,
-    state: 'unavailable',
+    state: 'temporarily_unavailable',
     value: null,
-    valueLabel: 'Unavailable',
+    valueLabel: 'Temporarily unavailable',
     detail,
+    nextAction: 'Try again shortly or open Diagnostics if the issue persists.',
+    trendLabel: null,
     href: null,
     capability: `${id}:read`,
     updatedAt: null,
+    diagnostics: {
+      source: id,
+      stateCode: 'query_unavailable',
+      detail: 'The dashboard query failed without exposing database or provider details.',
+    },
   });
 }
 
@@ -728,8 +872,4 @@ function formatIsoLabel(value: string) {
     hour: 'numeric',
     minute: '2-digit',
   }).format(new Date(value));
-}
-
-function readable(value: string) {
-  return value.replaceAll('_', ' ');
 }

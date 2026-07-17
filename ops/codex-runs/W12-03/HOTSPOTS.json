@@ -1,0 +1,46 @@
+{
+  "schema_version": "onetime.codex_run.hotspots.v1",
+  "run_id": "W12-03",
+  "hotspots": [
+    {
+      "path": "apps/web/src/server/app.ts",
+      "reason": "mounts protected app routes and API routers; W12-03 adds the owner/admin-only Portal Test Lab route"
+    },
+    {
+      "path": "apps/web/src/server/features/portal-test-lab/router.ts",
+      "reason": "owns W12 fictional fixture seeding/reset plus the gated owner/admin-only lab surface"
+    },
+    {
+      "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
+      "reason": "renders the explicit billing-unavailable state used by the parent portal journey"
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "reason": "adds the non-production PORTAL_TEST_LAB_ENABLED feature gate and production guard"
+    },
+    {
+      "path": "tests/support/test-server.ts",
+      "reason": "seeds the local memory-backed fictional test identities and household data used by E2E"
+    },
+    {
+      "path": "tests/support/w12-portal-test-lab-session.ts",
+      "reason": "provides a fixed local-only admin session token for Playwright setup without exposing current credentials"
+    },
+    {
+      "path": "tests/integration/portals/portal-test-lab.test.ts",
+      "reason": "verifies owner/admin-only access, separate parent/student sessions, no sibling bleed, and secret-free lab output"
+    },
+    {
+      "path": "tests/e2e/w12-03-portal-test-lab.spec.ts",
+      "reason": "captures browser evidence for admin, parent, and three separate learner journeys across responsive viewports"
+    },
+    {
+      "path": "ops/day-one/visible-action-registry.json",
+      "reason": "visible lab route/actions need handler, state, and evidence coverage"
+    },
+    {
+      "path": "ops/day-one/ot81-release-manifest.json",
+      "reason": "protected route manifest needs W12-03 lab routes"
+    }
+  ]
+}

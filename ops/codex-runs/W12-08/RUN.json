@@ -1,0 +1,16 @@
+{
+  "run_id": "W12-08",
+  "title": "Admin dashboard and classroom productization",
+  "source_zip": "C:\\Users\\User\\Downloads\\W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+  "zip_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+  "prompt_sha256": "224424075617818559155cf16d3aaedf83abf80bb0fc9dd8be2f475ce7b5d743",
+  "target_repo": "webcraft-media/onetimev2",
+  "branch": "codex/w12-08-admin-classroom-productization",
+  "base_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+  "production_mutations_authorized": false,
+  "provider_mutations_authorized": false,
+  "deployment_authorized": false,
+  "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/67",
+  "status": "draft_pr_open"
+}

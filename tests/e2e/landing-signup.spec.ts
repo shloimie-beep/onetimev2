@@ -84,7 +84,7 @@ test('landing preserves exact receive structure and asset assignments', async ({
   await expect(ticker.locator('.campaign-ticker-item')).toHaveCount(6);
   await expect(ticker).toHaveCSS('height', '32px');
   await expect(page.locator('.yellow-text')).toHaveCount(0);
-  await expect(page.locator('a.button-primary[href="/signup"]')).toHaveCount(3);
+  await expect(page.locator('a.button-primary[href="/signup"]')).toHaveCount(4);
   await expect(
     page.getByText(/ROSH HASHANAH SPECIAL|\$67|month afterward|No card today|trial/i),
   ).toHaveCount(0);
@@ -99,6 +99,7 @@ test('landing preserves exact receive structure and asset assignments', async ({
     'receive',
     'gain',
     'how-it-works',
+    'world',
     'who',
     'rabbi',
     'final-cta',
@@ -107,6 +108,7 @@ test('landing preserves exact receive structure and asset assignments', async ({
     'WORLDWIDE MISHNAH LEARNING',
     'LIVE FROM ERETZ YISRAEL',
   ]);
+  await expect(page.locator('.hero .schedule')).toHaveCount(0);
   await expect(page.getByText('Live every day at 7:00 p.m. Israel time.')).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Everything He Needs to Learn, Review, and Remember' }),
@@ -136,7 +138,15 @@ test('landing preserves exact receive structure and asset assignments', async ({
   await expect(
     page.locator('article[data-benefit="Clarity"] img[src="/assets/outcomes/clarity-class.webp"]'),
   ).toBeVisible();
-  await expect(page.locator('article[data-benefit="Retention"] .retention-visual')).toBeVisible();
+  await expect(
+    page.locator(
+      'article[data-benefit="Retention"] img[src="/assets/outcomes/retention-review-class-720.webp"]',
+    ),
+  ).toBeVisible();
+  await expect(page.locator('article[data-benefit="Retention"] img')).toHaveAttribute(
+    'srcset',
+    /retention-review-class-480\.webp 480w/,
+  );
   await expect(page.locator('img[src="/assets/students/smiley-kid.png"]')).toHaveCount(1);
   await expect(
     page
@@ -145,7 +155,7 @@ test('landing preserves exact receive structure and asset assignments', async ({
       )
       .locator('img[src="/assets/outcomes/accomplishment-toronto-class.jpg"]'),
   ).toHaveCount(0);
-  await expect(page.locator('article[data-benefit="Retention"] img')).toHaveCount(0);
+  await expect(page.locator('article[data-benefit="Retention"] img')).toHaveCount(1);
   await expect(page.locator('.benefit-card h3')).toHaveText([
     'Clarity',
     'Retention',
@@ -175,7 +185,7 @@ test('landing preserves exact receive structure and asset assignments', async ({
   ]);
   await expect(page.getByText(/teacher replacement|absent-rebbe|substitute/i)).toHaveCount(0);
   await expect(page.locator('.gallery')).toBeVisible();
-  await expect(page.locator('.gallery h3')).toHaveText('Seen Across the Jewish World');
+  await expect(page.locator('.gallery h2')).toHaveText('Seen Across the Jewish World');
   await expect(page.locator('.gallery-slide[data-active="true"]').locator('figcaption')).toHaveText(
     'Atlanta, Georgia',
   );
@@ -200,6 +210,27 @@ test('landing preserves exact receive structure and asset assignments', async ({
   await expect(page.locator('.gallery-slide[data-active="true"]').locator('figcaption')).toHaveText(
     'Flatbush, New York',
   );
+  const galleryGeometry = await page.locator('.gallery').evaluate((element) => {
+    const active = element.querySelector<HTMLElement>('.gallery-slide[data-active="true"]');
+    const viewport = element.querySelector<HTMLElement>('.gallery-viewport');
+    const activeBox = active?.getBoundingClientRect();
+    const viewportBox = viewport?.getBoundingClientRect();
+    return {
+      overflowX: viewport ? getComputedStyle(viewport).overflowX : '',
+      activeLeft: activeBox?.left ?? 0,
+      activeRight: activeBox?.right ?? 0,
+      viewportLeft: viewportBox?.left ?? 0,
+      viewportRight: viewportBox?.right ?? 0,
+    };
+  });
+  expect(galleryGeometry.overflowX).toBe('hidden');
+  expect(galleryGeometry.activeLeft).toBeGreaterThanOrEqual(galleryGeometry.viewportLeft - 1);
+  expect(galleryGeometry.activeRight).toBeLessThanOrEqual(galleryGeometry.viewportRight + 1);
+  await page.getByRole('button', { name: 'WhatsApp help' }).click();
+  await expect(page.getByText('Offline readiness')).toBeVisible();
+  await expect(page.getByText('The WhatsApp assistant is being connected.')).toBeVisible();
+  await page.getByRole('button', { name: 'Dismiss WhatsApp helper' }).click();
+  await expect(page.getByText('Offline readiness')).toBeHidden();
   expect(requests.some((url) => url.includes('operations') || url.includes('bna'))).toBe(false);
   const html = await page.content();
   expect(html).not.toContain('Monitored platform');
@@ -270,6 +301,18 @@ test('landing ticker has a readable reduced-motion state', async ({ page }) => {
   await expect(firstTickerItem).toBeVisible();
   await expect(firstTickerItem).toContainText('JOIN NOW — FREE UNTIL ROSH HASHANAH');
   await expect(page.locator('.campaign-ticker-track')).toHaveCSS('animation-name', 'none');
+});
+
+test('landing gallery shows a graceful fallback when an image fails', async ({ page }) => {
+  await page.goto('/');
+  const activeSlide = page.locator('.gallery-slide[data-active="true"]');
+  await activeSlide.scrollIntoViewIfNeeded();
+  await activeSlide.locator('img').evaluate((image) => {
+    image.dispatchEvent(new Event('error'));
+  });
+  await expect(activeSlide).toHaveAttribute('data-image-error', 'true');
+  await expect(activeSlide.locator('.image-fallback')).toBeVisible();
+  await expect(activeSlide.locator('figcaption')).toHaveText('Atlanta, Georgia');
 });
 
 test('family and school signup submit through canonical lead endpoint', async ({ page }) => {

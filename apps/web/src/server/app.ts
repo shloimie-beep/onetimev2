@@ -119,6 +119,7 @@ import {
   getOt110aContentWorkspaceOverview,
   getSessionUserByKey,
   getSessionByToken,
+  buildWhatsAppPublicAssistantStatus,
   inspectAccountLifecycleToken,
   buildOwnerDashboard,
   listClassOccurrences,
@@ -189,6 +190,7 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
+import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
@@ -326,6 +328,11 @@ export function createApp({
       return;
     }
     res.status(200).type('text/plain').send(challenge);
+  });
+
+  app.get('/api/v1/whatsapp/public-assistant', (_req, res) => {
+    setPrivateNoStore(res);
+    res.status(200).json(buildWhatsAppPublicAssistantStatus(config));
   });
 
   app.post(
@@ -472,6 +479,19 @@ export function createApp({
     sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
     setPrivateNoStore,
     ...(clock ? { clock } : {}),
+  });
+
+  registerPortalTestLabRoutes({
+    app,
+    config,
+    pool,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      ensureSessionCsrfCookie: (req, res, session) =>
+        ensureSessionCsrfCookie(req, res, pool, config, session),
+      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      setPrivateNoStore,
+    },
   });
 
   app.get('/health', (_req, res) => {
@@ -2824,7 +2844,9 @@ function createParentBillingSummaryAdapter(
           summary.entitlement?.status === 'suspended' ||
           summary.subscription?.status === 'past_due' ||
           summary.subscription?.status === 'unpaid',
-        current_period_end: summary.subscription?.current_period_end ?? null,
+        current_period_end: summary.subscription?.current_period_end
+          ? toIso(summary.subscription.current_period_end)
+          : null,
         cancel_at_period_end: summary.subscription?.cancel_at_period_end === true,
       };
     },

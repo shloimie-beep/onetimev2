@@ -87,29 +87,32 @@ describe('OT-71 owner/admin dashboard shell', () => {
       const json = JSON.parse(dashboardText) as OwnerDashboardResponse;
       const sections = new Map(json.dashboard.sections.map((section) => [section.id, section]));
       expect(sections.get('new_leads')).toMatchObject({
-        state: 'action_required',
+        state: 'action_needed',
         value: 1,
         href: '/app/crm',
       });
       expect(sections.get('next_class')).toMatchObject({
-        state: 'needs_setup',
+        state: 'not_connected',
         href: '/app/classes',
       });
       expect(sections.get('communications_delivery')?.value).toBeGreaterThan(0);
       expect(sections.get('content_review')).toMatchObject({
-        state: 'action_required',
+        state: 'action_needed',
         value: 1,
         href: '/app/content',
       });
       expect(sections.get('portal_account_setup')).toMatchObject({
-        state: 'action_required',
+        state: 'action_needed',
         href: null,
       });
       expect(sections.get('billing_readiness')).toMatchObject({
         state: 'ready',
         href: '/app/billing',
       });
-      expect(sections.get('support')).toMatchObject({ state: 'unavailable', href: null });
+      expect(sections.get('support')).toMatchObject({
+        state: 'temporarily_unavailable',
+        href: null,
+      });
 
       const actionIds = json.actions.map((action) => action.action_id);
       expect(new Set(actionIds).size).toBe(actionIds.length);
@@ -120,6 +123,8 @@ describe('OT-71 owner/admin dashboard shell', () => {
           'dashboard.open_crm.button',
           'crm.contacts.search.form',
           'classes.view.route',
+          'classes.open_detail.button',
+          'classes.back_to_list.button',
           'content.library.view.route',
           'communications.view.route',
           'billing.status.view.route',
@@ -161,6 +166,9 @@ describe('OT-71 owner/admin dashboard shell', () => {
 });
 
 async function seedDashboardSources() {
+  const classStartsAt = new Date(Date.now() + 24 * 60 * 60_000);
+  const reminderDueAt = new Date(classStartsAt.getTime() - 30 * 60_000);
+  const joinableUntil = new Date(classStartsAt.getTime() + 90 * 60_000);
   await captureLead({
     pool,
     config,
@@ -189,14 +197,15 @@ async function seedDashboardSources() {
        (occurrence_key, account_key, product_key, class_series_key, local_class_date,
         starts_at, reminder_due_at, joinable_until, occurrence_state, access_state)
      VALUES
-       ('class_dashboard_001', $1, $2, 'class_series_dashboard', '2026-07-16',
+       ('class_dashboard_001', $1, $2, 'class_series_dashboard', $6,
         $3, $4, $5, 'scheduled', 'provider_unavailable')`,
     [
       config.accountKey,
       config.productKey,
-      new Date('2026-07-16T16:00:00.000Z'),
-      new Date('2026-07-16T15:30:00.000Z'),
-      new Date('2026-07-16T17:30:00.000Z'),
+      classStartsAt,
+      reminderDueAt,
+      joinableUntil,
+      classStartsAt.toISOString().slice(0, 10),
     ],
   );
   await pool.query(

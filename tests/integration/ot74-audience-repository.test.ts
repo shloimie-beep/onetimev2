@@ -10,8 +10,14 @@ import {
   createLegacyActivationCampaignPreview,
   queueLegacyActivationCampaignIntents,
 } from '../../packages/domain/src/audience-reconciliation/activation-campaign.ts';
-import { createLegacyAudienceDryRun } from '../../packages/domain/src/audience-reconciliation/service.ts';
-import type { LegacyAudienceInputRow } from '../../packages/contracts/src/audience-reconciliation/index.ts';
+import {
+  createLegacyAudienceApplyPlan,
+  createLegacyAudienceDryRun,
+} from '../../packages/domain/src/audience-reconciliation/service.ts';
+import type {
+  LegacyAudienceInputRow,
+  LegacyAudienceSourceInventoryManifest,
+} from '../../packages/contracts/src/audience-reconciliation/index.ts';
 
 const actor = { accountKey: 'acct_ot74', productKey: 'prod_ot74', userKey: 'user_ot74' };
 
@@ -128,6 +134,75 @@ describe('OT-74 legacy audience PostgreSQL repository', () => {
     expect(rollback.replayed).toBe(false);
     expect(replay.replayed).toBe(true);
     await expectScalar('SELECT COUNT(*) FROM onetime.legacy_audience_rollback_records', '1');
+    await expectScalar('SELECT COUNT(*) FROM onetime.contacts', '3');
+  });
+
+  it('records source inventory, conflict decisions, and apply-plan ledgers without mutations', async () => {
+    const manifest = sourceInventoryManifest();
+    const recordedInventory = await repository.recordSourceInventory({ actor, manifest });
+    const replayInventory = await repository.recordSourceInventory({ actor, manifest });
+    expect(recordedInventory.replayed).toBe(false);
+    expect(replayInventory.replayed).toBe(true);
+
+    const request = dryRunRequest([
+      row({ source_row_number: 2, email: 'review@example.test' }),
+      row({ source_row_number: 3, display_name: 'Needs Review' }),
+    ]);
+    const report = createLegacyAudienceDryRun({ scope: actor, request, existingContacts: [] });
+    await repository.recordDryRun({ actor, idempotencyKey: request.idempotency_key, report });
+    const reviewRow = report.row_outcomes.find(
+      (outcome) => outcome.disposition === 'manual_review',
+    );
+    if (!reviewRow) throw new Error('expected manual review row');
+
+    const decision = await repository.recordConflictDecision(actor, {
+      batch_key: report.batch_key,
+      row_key: reviewRow.row_key,
+      idempotency_key: 'conflict-decision-001',
+      decision: 'needs_more_info',
+      reason: 'Synthetic row is missing identity.',
+    });
+    const replayDecision = await repository.recordConflictDecision(actor, {
+      batch_key: report.batch_key,
+      row_key: reviewRow.row_key,
+      idempotency_key: 'conflict-decision-001',
+      decision: 'needs_more_info',
+      reason: 'Synthetic row is missing identity.',
+    });
+    expect(decision.replayed).toBe(false);
+    expect(replayDecision.replayed).toBe(true);
+
+    const applyRequest = {
+      batch_key: report.batch_key,
+      idempotency_key: 'apply-plan-001',
+      mode: 'dry_run' as const,
+      manifest_sha256: report.source_digest,
+      expected_total_rows: report.summary.total_rows,
+      expected_unique_rows: report.summary.unique_rows,
+      expected_manual_review_rows: report.summary.manual_review_rows,
+      target_environment: 'test' as const,
+    };
+    const applyPlan = createLegacyAudienceApplyPlan({ report, request: applyRequest });
+    const recordedPlan = await repository.recordApplyPlan({
+      actor,
+      request: applyRequest,
+      result: applyPlan,
+    });
+    const replayPlan = await repository.recordApplyPlan({
+      actor,
+      request: applyRequest,
+      result: applyPlan,
+    });
+
+    expect(recordedPlan.result.real_bulk_import_applied).toBe(false);
+    expect(replayPlan.replayed).toBe(true);
+    await expectScalar(
+      "SELECT COUNT(*) FROM onetime.schema_migrations WHERE id = '2201_w12_01_crm_audience_import'",
+      '1',
+    );
+    await expectScalar('SELECT COUNT(*) FROM onetime.legacy_audience_source_inventories', '1');
+    await expectScalar('SELECT COUNT(*) FROM onetime.legacy_audience_conflict_decisions', '1');
+    await expectScalar('SELECT COUNT(*) FROM onetime.legacy_audience_change_ledger', '1');
     await expectScalar('SELECT COUNT(*) FROM onetime.contacts', '3');
   });
 
@@ -312,6 +387,46 @@ function row(overrides: Partial<LegacyAudienceInputRow>): LegacyAudienceInputRow
     suppression_state: 'active',
     source_tags: [],
     ...overrides,
+  };
+}
+
+function sourceInventoryManifest(): LegacyAudienceSourceInventoryManifest {
+  return {
+    inventory_key: 'legacy_source_inventory_repo_test',
+    generated_at: '2026-07-17T09:00:00.000Z',
+    generated_by: 'repo-test',
+    source_roots: ['Downloads'],
+    files: [
+      {
+        file_ref: 'legacy_source_file_repo_test',
+        source_root_label: 'Downloads',
+        file_name: 'Rabbi Scheller Followers.xlsx',
+        extension: '.xlsx',
+        byte_size: 1234,
+        last_modified: '2026-07-17T09:00:00.000Z',
+        sha256: 'c'.repeat(64),
+        duplicate_of_sha256: null,
+        classification: 'proven_one_time',
+        classification_reasons: ['one_time_or_rabbi_filename_or_columns'],
+        sheet_names: ['Followers'],
+        column_names_by_sheet: { Followers: ['Name', 'Email'] },
+        row_counts_by_sheet: { Followers: 88 },
+        warnings: ['possible_pii_columns_detected'],
+        raw_values_included: false,
+      },
+    ],
+    summary: {
+      file_count: 1,
+      proven_one_time: 1,
+      mixed_needs_review: 0,
+      unrelated: 0,
+      duplicate: 0,
+      unsupported_files: 0,
+      possible_pii_files: 1,
+    },
+    manifest_sha256: 'd'.repeat(64),
+    raw_values_included: false,
+    production_side_effects: false,
   };
 }
 

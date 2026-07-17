@@ -104,6 +104,14 @@
   font-size: 1rem;
 }
 
+.content-panel-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ot-space-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
 .content-row-card p,
 .content-panel p {
   margin: 0;
@@ -188,6 +196,78 @@
   overflow-wrap: anywhere;
 }
 
+.content-vertical-slice {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.4fr) repeat(3, minmax(200px, 1fr));
+  gap: var(--ot-space-3);
+  min-width: 0;
+}
+
+.content-flow-panel {
+  grid-row: span 2;
+}
+
+.content-flow-list {
+  display: grid;
+  gap: var(--ot-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.content-flow-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--ot-space-3);
+  align-items: start;
+  border-left: 4px solid var(--ot-color-border);
+  padding: var(--ot-space-2) 0 var(--ot-space-2) var(--ot-space-3);
+}
+
+.content-flow-list li[data-state='done'] {
+  border-left-color: var(--ot-color-success);
+}
+
+.content-flow-list li[data-state='ready'] {
+  border-left-color: var(--ot-color-action-auth);
+}
+
+.content-flow-list li[data-state='blocked'],
+.content-flow-list li[data-state='failed'] {
+  border-left-color: var(--ot-color-danger);
+}
+
+.content-flow-list span,
+.content-flow-list small,
+.content-slice-card dl,
+.content-slice-card dl div {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+}
+
+.content-flow-list strong,
+.content-flow-list small,
+.content-slice-card dd {
+  overflow-wrap: anywhere;
+}
+
+.content-flow-list small,
+.content-slice-card dt {
+  color: var(--ot-color-text-muted);
+  font-size: 0.85rem;
+}
+
+.content-slice-card dl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.content-slice-card dt,
+.content-slice-card dd {
+  margin: 0;
+}
+
 .content-preview-card pre {
   margin: 0;
   max-height: 280px;
@@ -218,5 +298,15 @@
   .content-row-card,
   .content-detail-header {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .content-vertical-slice,
+  .content-flow-list li,
+  .content-slice-card dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .content-flow-panel {
+    grid-row: auto;
   }
 }
