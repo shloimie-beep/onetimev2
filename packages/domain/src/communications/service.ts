@@ -1,9 +1,12 @@
 import type {
   CommunicationsChannel,
+  CommunicationsDirection,
   CommunicationsFilters,
   CommunicationsIntentType,
   CommunicationsListResponse,
   CommunicationsLocalState,
+  CommunicationsProvenance,
+  CommunicationsSource,
 } from '../../../contracts/src/communications/index.ts';
 import { communicationsCapabilities } from '../../../contracts/src/communications/index.ts';
 import {
@@ -36,8 +39,10 @@ export type CommunicationsQuery = {
   from?: string | undefined;
   to?: string | undefined;
   channel?: string | undefined;
+  direction?: string | undefined;
   intent_type?: string | undefined;
   status?: string | undefined;
+  source?: string | undefined;
   limit?: string | number | undefined;
   cursor?: string | undefined;
 };
@@ -49,11 +54,26 @@ export type CommunicationIntentRow = {
   contactKey: string | null;
   eventType: string;
   channel: string;
+  direction?: string | null | undefined;
   status: string | null;
   createdAt: string | Date;
   deliveredAt: string | Date | null;
+  occurredAt?: string | Date | null | undefined;
   emailNormalized: string | null;
   phoneNormalized: string | null;
+  householdKey?: string | null | undefined;
+  threadId?: string | null | undefined;
+  threadLabel?: string | null | undefined;
+  source?: string | null | undefined;
+  provenance?: string | null | undefined;
+  previewRedacted?: string | null | undefined;
+  providerReferenceDigest?: string | null | undefined;
+  importBatchKey?: string | null | undefined;
+  idempotencyKey?: string | null | undefined;
+  participantKind?: string | null | undefined;
+  participantLabel?: string | null | undefined;
+  draftOnly?: boolean | null | undefined;
+  transportAvailable?: boolean | null | undefined;
 };
 
 export type CommunicationIntentListInput = {
@@ -159,7 +179,7 @@ export async function buildCommunicationsListResponse({
     return {
       success: true,
       availability: 'unavailable',
-      source_scope: 'local_communication_intents_only',
+      source_scope: 'canonical_communication_history',
       mailbox_complete: false,
       capabilities: communicationsCapabilities,
       applied_filters: filters,
@@ -174,23 +194,49 @@ export async function buildCommunicationsListResponse({
     const status = normalizeCommunicationsStatus({
       status: row.status,
       deliveredAt: row.deliveredAt,
+      eventType: row.eventType,
     });
+    const occurredAt = row.occurredAt ?? row.createdAt;
+    const source = normalizeSource(row.source);
+    const provenance = normalizeProvenance(row.provenance);
+    const direction = normalizeDirection(row.direction, event.channel);
+    const contactPath = row.contactKey
+      ? `/app/crm/contacts/${encodeURIComponent(row.contactKey)}`
+      : null;
+    const householdPath = row.householdKey
+      ? `/app/parent/households/${encodeURIComponent(row.householdKey)}`
+      : null;
     return {
+      event_id: row.id,
+      thread_id: row.threadId ?? defaultThreadId(row),
+      thread_label: row.threadLabel ?? defaultThreadLabel(row),
       channel: event.channel,
+      direction,
       intent_type: event.intentType,
       event_label: event.label,
       local_state: status.localState,
       state_label: status.stateLabel,
+      source,
+      source_label: sourceLabel(source),
+      provenance,
+      participant_kind: participantKind(row),
+      participant_label: row.participantLabel ?? participantLabel(row),
       recipient_masked: maskCommunicationsRecipient({
         channel: event.channel,
         email: row.emailNormalized,
         phone: row.phoneNormalized,
       }),
-      queued_at: toIso(row.createdAt),
+      queued_at: toIso(occurredAt),
+      occurred_at: toIso(occurredAt),
       state_at: status.stateAt,
-      contact_path: row.contactKey
-        ? `/app/crm/contacts/${encodeURIComponent(row.contactKey)}`
-        : null,
+      contact_path: contactPath,
+      household_path: householdPath,
+      preview_redacted: row.previewRedacted ?? previewFor(row, status.stateLabel),
+      provider_reference_digest: row.providerReferenceDigest ?? null,
+      import_batch_key: row.importBatchKey ?? null,
+      idempotency_key: row.idempotencyKey ?? null,
+      draft_only: Boolean(row.draftOnly ?? row.eventType === 'crm_single_recipient_reply_draft.v1'),
+      transport_available: false as const,
     };
   });
   const last = pageRows.at(-1);
@@ -212,7 +258,7 @@ export async function buildCommunicationsListResponse({
   return {
     success: true,
     availability: 'available',
-    source_scope: 'local_communication_intents_only',
+    source_scope: 'canonical_communication_history',
     mailbox_complete: false,
     capabilities: communicationsCapabilities,
     applied_filters: filters,
@@ -261,6 +307,11 @@ export function parseCommunicationsFilters(
       throw new CommunicationsValidationError('CHANNEL_INVALID', 'Channel is not supported.');
     filters.channel = query.channel;
   }
+  if (query.direction !== undefined && query.direction !== '') {
+    if (!isDirection(query.direction))
+      throw new CommunicationsValidationError('DIRECTION_INVALID', 'Direction is not supported.');
+    filters.direction = query.direction;
+  }
   if (query.intent_type !== undefined && query.intent_type !== '') {
     if (!isIntentType(query.intent_type)) {
       throw new CommunicationsValidationError('INTENT_INVALID', 'Intent type is not supported.');
@@ -272,6 +323,12 @@ export function parseCommunicationsFilters(
       throw new CommunicationsValidationError('STATUS_INVALID', 'Local status is not supported.');
     }
     filters.status = query.status;
+  }
+  if (query.source !== undefined && query.source !== '') {
+    if (!isSource(query.source)) {
+      throw new CommunicationsValidationError('SOURCE_INVALID', 'Source is not supported.');
+    }
+    filters.source = query.source;
   }
   return filters;
 }
@@ -337,7 +394,11 @@ function isIntentType(value: string): value is CommunicationsIntentType {
     value === 'family_signup_email_ack' ||
     value === 'family_signup_whatsapp_confirmation' ||
     value === 'internal_lead_alert' ||
-    value === 'single_recipient_reply'
+    value === 'single_recipient_reply' ||
+    value === 'whatsapp_inbound_message' ||
+    value === 'whatsapp_provider_event' ||
+    value === 'historical_import_event' ||
+    value === 'history_unavailable'
   );
 }
 
@@ -345,16 +406,115 @@ function isLocalState(value: string): value is CommunicationsLocalState {
   return (
     value === 'queued' ||
     value === 'provider_accepted' ||
+    value === 'provider_sent' ||
     value === 'delivered' ||
+    value === 'read' ||
+    value === 'received' ||
+    value === 'processed' ||
     value === 'failed' ||
     value === 'bounced' ||
     value === 'complained' ||
     value === 'suppressed' ||
     value === 'draft_saved' ||
-    value === 'unknown'
+    value === 'duplicate' ||
+    value === 'unknown' ||
+    value === 'history_unavailable'
   );
 }
 
 function toIso(value: string | Date) {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+}
+
+function isDirection(value: string): value is CommunicationsDirection {
+  return value === 'inbound' || value === 'outbound' || value === 'internal';
+}
+
+function isSource(value: string): value is CommunicationsSource {
+  return (
+    value === 'canonical_history_event' ||
+    value === 'local_outbox_intent' ||
+    value === 'crm_reply_draft' ||
+    value === 'stored_whatsapp_webhook' ||
+    value === 'stored_provider_delivery_event' ||
+    value === 'historical_import' ||
+    value === 'provider_history_unavailable'
+  );
+}
+
+function normalizeDirection(
+  value: string | null | undefined,
+  channel: CommunicationsChannel,
+): CommunicationsDirection {
+  if (value === 'inbound' || value === 'outbound' || value === 'internal') return value;
+  return channel === 'internal_email' ? 'internal' : 'outbound';
+}
+
+function normalizeSource(value: string | null | undefined): CommunicationsSource {
+  return isSource(String(value ?? '')) ? (value as CommunicationsSource) : 'local_outbox_intent';
+}
+
+function normalizeProvenance(value: string | null | undefined): CommunicationsProvenance {
+  if (
+    value === 'local_database' ||
+    value === 'stored_webhook' ||
+    value === 'stored_provider_event' ||
+    value === 'redacted_export' ||
+    value === 'capability_limitation'
+  ) {
+    return value;
+  }
+  return 'local_database';
+}
+
+function defaultThreadId(row: CommunicationIntentRow) {
+  if (row.threadId) return row.threadId;
+  if (row.contactKey) return `contact:${row.contactKey}:${row.channel}`;
+  if (row.householdKey) return `household:${row.householdKey}:${row.channel}`;
+  return `unlinked:${row.channel}:${row.id}`;
+}
+
+function defaultThreadLabel(row: CommunicationIntentRow) {
+  if (row.threadLabel) return row.threadLabel;
+  if (row.contactKey) return 'Contact communication history';
+  if (row.householdKey) return 'Household communication history';
+  return 'Unlinked communication history';
+}
+
+function participantKind(row: CommunicationIntentRow): 'contact' | 'household' | 'unknown' {
+  if (row.participantKind === 'contact' || row.contactKey) return 'contact';
+  if (row.participantKind === 'household' || row.householdKey) return 'household';
+  return 'unknown';
+}
+
+function participantLabel(row: CommunicationIntentRow) {
+  if (row.contactKey) return 'Linked contact';
+  if (row.householdKey) return 'Linked household';
+  return 'Unlinked participant';
+}
+
+function sourceLabel(source: CommunicationsSource) {
+  if (source === 'canonical_history_event') return 'Canonical history';
+  if (source === 'local_outbox_intent') return 'Local outbound intent';
+  if (source === 'crm_reply_draft') return 'Provider-off reply draft';
+  if (source === 'stored_whatsapp_webhook') return 'Stored WhatsApp webhook';
+  if (source === 'stored_provider_delivery_event') return 'Stored provider status';
+  if (source === 'historical_import') return 'Historical import';
+  return 'Provider history unavailable';
+}
+
+function previewFor(row: CommunicationIntentRow, stateLabel: string) {
+  if (row.eventType === 'crm_single_recipient_reply_draft.v1') {
+    return 'Provider-off reply draft saved locally. Message body is hidden.';
+  }
+  if (row.eventType === 'whatsapp_inbound_message.v1') {
+    return 'Inbound WhatsApp message was stored. Body is encrypted and hidden.';
+  }
+  if (row.eventType === 'whatsapp_provider_delivery_event.v1') {
+    return `Provider status recorded: ${stateLabel}.`;
+  }
+  if (row.source === 'provider_history_unavailable') {
+    return 'Provider history is not available from the configured source.';
+  }
+  return 'Redacted communication event.';
 }

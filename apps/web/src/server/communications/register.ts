@@ -99,8 +99,10 @@ async function handleList(input: {
       from: stringQuery(req.query.from),
       to: stringQuery(req.query.to),
       channel: stringQuery(req.query.channel),
+      direction: stringQuery(req.query.direction),
       intent_type: stringQuery(req.query.intent_type),
       status: stringQuery(req.query.status),
+      source: stringQuery(req.query.source),
       limit: stringQuery(req.query.limit),
       cursor: req.header('x-ot-communications-cursor') ?? undefined,
     };

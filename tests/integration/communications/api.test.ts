@@ -92,14 +92,18 @@ describe('Communications API registration hook', () => {
     expect(json).toMatchObject({
       success: true,
       availability: 'available',
-      source_scope: 'local_communication_intents_only',
+      source_scope: 'canonical_communication_history',
       mailbox_complete: false,
     });
     expect(json.items).toHaveLength(2);
     expect(json.items[0]).toMatchObject({
+      direction: 'outbound',
       local_state: 'queued',
       state_label: 'Queued',
+      source: 'local_outbox_intent',
+      provenance: 'local_database',
       recipient_masked: 'Email recipient',
+      transport_available: false,
     });
     expect(json.items[1]).toMatchObject({
       local_state: 'draft_saved',
@@ -112,6 +116,69 @@ describe('Communications API registration hook', () => {
     expect(serialized).not.toContain('+12125557890');
     expect(serialized).not.toContain('delivery_key');
     expect(serialized).not.toMatch(/\bSent\b|\bDelivered\b/);
+  });
+
+  it('returns stored webhook and provider status truth without pretending mailbox completeness', async () => {
+    repository.rows = [
+      {
+        id: 'whatsapp-inbox:event_1',
+        accountKey: ownerSession.accountKey,
+        productKey: ownerSession.productKey,
+        contactKey: 'contact_public_test',
+        eventType: 'whatsapp_inbound_message.v1',
+        channel: 'whatsapp',
+        direction: 'inbound',
+        status: 'received',
+        createdAt: '2026-07-14T10:00:00.000Z',
+        occurredAt: '2026-07-14T09:59:00.000Z',
+        deliveredAt: null,
+        emailNormalized: null,
+        phoneNormalized: null,
+        source: 'stored_whatsapp_webhook',
+        provenance: 'stored_webhook',
+        previewRedacted: 'Inbound WhatsApp message was stored. Body is encrypted and hidden.',
+        providerReferenceDigest: 'a'.repeat(64),
+      },
+      {
+        id: 'whatsapp-delivery:event_2',
+        accountKey: ownerSession.accountKey,
+        productKey: ownerSession.productKey,
+        contactKey: 'contact_public_test',
+        eventType: 'whatsapp_provider_delivery_event.v1',
+        channel: 'whatsapp',
+        direction: 'outbound',
+        status: 'delivered',
+        createdAt: '2026-07-14T11:00:00.000Z',
+        occurredAt: '2026-07-14T11:00:00.000Z',
+        deliveredAt: '2026-07-14T11:00:00.000Z',
+        emailNormalized: null,
+        phoneNormalized: null,
+        source: 'stored_provider_delivery_event',
+        provenance: 'stored_provider_event',
+        previewRedacted: 'Stored WhatsApp provider status. Message body is hidden.',
+        providerReferenceDigest: 'b'.repeat(64),
+      },
+    ];
+    const response = await api(
+      '/api/v1/communications?from=2026-07-01T00:00:00.000Z&to=2026-07-15T00:00:00.000Z&direction=inbound&source=stored_whatsapp_webhook',
+    );
+    expect(response.status).toBe(200);
+    const json = await response.json();
+    expect(repository.calls[0]).toMatchObject({
+      filters: {
+        direction: 'inbound',
+        source: 'stored_whatsapp_webhook',
+      },
+    });
+    expect(json.mailbox_complete).toBe(false);
+    expect(json.items[0]).toMatchObject({
+      intent_type: 'whatsapp_inbound_message',
+      direction: 'inbound',
+      source: 'stored_whatsapp_webhook',
+      provider_reference_digest: 'a'.repeat(64),
+      preview_redacted: 'Inbound WhatsApp message was stored. Body is encrypted and hidden.',
+    });
+    expect(JSON.stringify(json)).not.toContain('message body');
   });
 
   it('denies unauthenticated and unauthorized roles before repository access', async () => {
@@ -191,6 +258,7 @@ describe('Communications API registration hook', () => {
     expect(await unavailable.json()).toMatchObject({
       success: true,
       availability: 'unavailable',
+      source_scope: 'canonical_communication_history',
       items: [],
     });
     repository.sourceAvailable = true;
