@@ -1,0 +1,228 @@
+{
+  "schema_version": "onetime.w12_100.production_promotion_gate.state.v1",
+  "generated_at": "2026-07-17T21:13:56.1513221+03:00",
+  "status": "blocked_before_production_mutation",
+  "canonical_release_topology": {
+    "base_release_pr": {
+      "pr": 61,
+      "head_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "head_sha": "c7d46066517d7a458d189f2c782cc06200f7861c"
+    },
+    "w12_99_pr": {
+      "pr": 73,
+      "head_branch": "integration/w12-final-convergence-20260717T123715Z",
+      "head_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "base_branch": "release/ops10-full-staged-production-launch-20260717T050800Z"
+    },
+    "w12_100_convergence_pr": {
+      "pr": 89,
+      "head_branch": "integration/w12-100-launch-readiness-convergence-20260717",
+      "head_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+      "base_branch": "integration/w12-final-convergence-20260717T123715Z"
+    },
+    "evidence_only_pr": {
+      "pr": 90,
+      "head_branch": "codex/w12-100-isolated-staging-deployment-20260717",
+      "head_sha_before_this_report": "22f46619c3a9624fce0c9a6be67bd0a55ce65620",
+      "base_branch": "integration/w12-100-launch-readiness-convergence-20260717"
+    },
+    "decision": "Promote only PR #89 head after every gate and exact SHA authorization pass. Do not separately merge already-contained W12 lane PRs."
+  },
+  "candidate": {
+    "source_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+    "tree_sha": "4b5aad287514b6dd8814503518a05d3b31b36cb9",
+    "source_archive_sha256": "29b9acc9ab80171a09f0affceeed7e69ad6500516566a748bd7dc11e6f45db55",
+    "commit_time": "2026-07-17T20:20:16+03:00",
+    "commit_subject": "Integrate W12-100 launch readiness convergence",
+    "candidate_source_present_locally": true,
+    "deploy_build_digest_confirmed": false,
+    "deploy_build_digest": null
+  },
+  "operator_authorization": {
+    "required_exact_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+    "exact_sha_authorization_present": false,
+    "authorization_for_branch_pr_latest_or_older_sha_accepted": false,
+    "operator_authorization_fingerprint": null,
+    "blocker_code": "BLOCKED_EXACT_SHA_AUTHORIZATION_ABSENT"
+  },
+  "refreshed_prs": {
+    "w12_99_pr_73": {
+      "state": "OPEN",
+      "is_draft": true,
+      "head_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "merge_state_status": "CLEAN",
+      "mergeable": "MERGEABLE",
+      "checks_total": 5,
+      "checks_success": 5,
+      "checks_failure": 0,
+      "checks_pending": 0,
+      "unresolved_review_threads": 0
+    },
+    "w12_100_convergence_pr_89": {
+      "state": "OPEN",
+      "is_draft": true,
+      "head_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+      "merge_state_status": "CLEAN",
+      "mergeable": "MERGEABLE",
+      "checks_total": 4,
+      "checks_success": 4,
+      "checks_failure": 0,
+      "checks_pending": 0,
+      "unresolved_review_threads": 0
+    },
+    "evidence_pr_90": {
+      "state": "OPEN",
+      "is_draft": true,
+      "head_sha_before_this_report": "22f46619c3a9624fce0c9a6be67bd0a55ce65620",
+      "merge_state_status": "UNSTABLE",
+      "checks_total": 4,
+      "checks_success": 1,
+      "checks_failure": 3,
+      "checks_pending": 0,
+      "release_topology_member": false
+    }
+  },
+  "production_before_state": {
+    "url": "https://join.onetimeonetime.com",
+    "version": "ops11-1197673",
+    "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "target_app": "one-time",
+    "health_status": 200,
+    "ready_status": 200,
+    "ready_generated_at": "2026-07-17T18:13:10.747Z",
+    "latest_migration": "2190_ot109_rabbi_content_publisher",
+    "core_route_statuses": {
+      "/": 200,
+      "/signup": 200,
+      "/login": 200,
+      "/activate": 200,
+      "/reset-password": 200,
+      "/forgot-password": 200,
+      "/app": 301,
+      "/app/dashboard": 302
+    }
+  },
+  "production_identity": {
+    "project": {
+      "name": "one-time-production",
+      "id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+      "match": true
+    },
+    "environment": {
+      "name": "production",
+      "id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "match": true
+    },
+    "web_service": {
+      "name": "one-time-web",
+      "id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+      "deployment_id": "6f4fa4e4-0f49-4508-96fe-850a5430360e",
+      "digest": "sha256:eb6f723aa76ccf7eee8bf00b2b19f3c865873c2c2c7102f66fe775b303e26c71",
+      "status": "SUCCESS",
+      "match": true
+    },
+    "worker_service": {
+      "name": "one-time-delivery-cron",
+      "id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+      "deployment_id": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+      "digest": "sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43",
+      "status": "SUCCESS",
+      "match": true
+    },
+    "database_service": {
+      "name": "Postgres-j9Pi",
+      "id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+      "deployment_id": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+      "digest": "sha256:b75472d708b058ef15c5d1fb69db08e836cb7e1bad82e2ac6ac75d1198829366",
+      "status": "SUCCESS",
+      "match": true
+    },
+    "extra_postgres_services_present": true
+  },
+  "gate_results": [
+    {
+      "gate": "exact_sha_operator_authorization",
+      "status": "blocked",
+      "detail": "No explicit operator authorization for ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c was present."
+    },
+    {
+      "gate": "canonical_release_topology",
+      "status": "confirmed_read_only",
+      "detail": "Use PR #89 head on top of PR #73; PR #90 is evidence-only."
+    },
+    {
+      "gate": "required_checks_green",
+      "status": "partially_confirmed",
+      "detail": "PR #73 and PR #89 checks are green; evidence PR #90 has failing checks and is not the canonical release source."
+    },
+    {
+      "gate": "unresolved_review_threads",
+      "status": "passed",
+      "detail": "PR #73 and PR #89 both report zero review threads."
+    },
+    {
+      "gate": "exact_source_sha",
+      "status": "passed",
+      "detail": "Candidate SHA ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c was confirmed locally and on PR #89."
+    },
+    {
+      "gate": "build_digest",
+      "status": "blocked",
+      "detail": "No deploy/build digest for the W12-100 candidate was confirmed."
+    },
+    {
+      "gate": "production_version_before_state",
+      "status": "passed",
+      "detail": "Production reports ops11-1197673 / 1197673fa409bfc4c649c2683f782e86775caa5e."
+    },
+    {
+      "gate": "production_identity",
+      "status": "passed",
+      "detail": "Explicit Railway selectors confirmed production project, environment, web, worker, and Postgres-j9Pi database service."
+    },
+    {
+      "gate": "fresh_protected_backup_and_disposable_restore",
+      "status": "blocked",
+      "detail": "Only prior OPS-11 proof service was observed; no fresh W12-100 promotion backup/restore proof was created or verified."
+    },
+    {
+      "gate": "migration_rehearsal_through_2202",
+      "status": "blocked",
+      "detail": "W12-100 staging deployment stopped before migrations; production currently reports latest migration 2190."
+    },
+    {
+      "gate": "staging_deploy_rollback_rollforward",
+      "status": "blocked",
+      "detail": "W12-100 isolated staging deployment, rollback, and roll-forward proof were not performed."
+    },
+    {
+      "gate": "provider_transports_default_off",
+      "status": "blocked",
+      "detail": "Production /ready reports email_transport ok/enabled, while whatsapp_transport and support_bridge are disabled."
+    },
+    {
+      "gate": "real_import_apply_off",
+      "status": "passed",
+      "detail": "W12-100 counts-only run ended with IMPORT_APPLY_AUTHORIZED=false and no source rows processed."
+    },
+    {
+      "gate": "rollback_source_can_be_rebuilt",
+      "status": "partially_confirmed",
+      "detail": "Current production source SHA exists locally, but no fresh rebuild proof was produced in this gate."
+    }
+  ],
+  "production_mutations": {
+    "github_merges": 0,
+    "deployments": 0,
+    "database_migrations": 0,
+    "database_restores": 0,
+    "provider_sends": 0,
+    "provider_mutations": 0,
+    "import_batches": 0,
+    "canaries": 0
+  },
+  "next_required_authorization": {
+    "minimum_text": "I authorize production promotion of SHA ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+    "also_requires_all_blocked_gates_cleared": true
+  }
+}
