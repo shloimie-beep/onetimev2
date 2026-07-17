@@ -231,6 +231,7 @@ describe('OT-74 legacy audience PostgreSQL repository', () => {
         requested_count: 1,
         protected_canary_destination: 'canary@example.test',
       },
+      now: new Date('2026-07-16T09:03:00.000Z'),
       protectedCanaryDestination: 'canary@example.test',
     });
     expect(queue.status).toBe('queued');
