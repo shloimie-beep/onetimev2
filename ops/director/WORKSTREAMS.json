@@ -1,0 +1,111 @@
+{
+  "schema_version": "onetime.director.workstreams.v1",
+  "generated_at": "2026-07-17T13:32:48+03:00",
+  "base": {
+    "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "run_w12_99_last": true
+  },
+  "parallel_w12_lanes": [
+    {
+      "lane": "W12-00",
+      "title": "Canonical director handoff",
+      "owner_scope": "ops/director/** and ops/codex-runs/W12-00/**",
+      "branch": "codex/w12-00-canonical-director-handoff",
+      "status": "draft_pr_open",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/63",
+      "notes": "This branch owns durable director memory, not product implementation."
+    },
+    {
+      "lane": "W12-01",
+      "title": "CRM audience import",
+      "owner_scope": "import/reconciliation domain, scripts, tests",
+      "branch": "codex/w12-01-crm-audience-import",
+      "status": "local_branch_seen_not_pushed",
+      "notes": "Real bulk import remains unauthorized until exact counts/conflicts/rollback are approved."
+    },
+    {
+      "lane": "W12-02",
+      "title": "Communication history",
+      "owner_scope": "communications adapters/domain/UI",
+      "branch": "codex/w12-02-communication-history",
+      "status": "local_branch_seen_not_pushed",
+      "notes": "Must not record raw message bodies or broad-send evidence."
+    },
+    {
+      "lane": "W12-03",
+      "title": "Portal test lab",
+      "owner_scope": "portal routes/UI/fixtures/tests",
+      "branch": "codex/w12-03-portal-test-lab",
+      "status": "local_branch_seen_not_pushed",
+      "notes": "Must use separate synthetic parent/student identities, not admin impersonation."
+    },
+    {
+      "lane": "W12-04",
+      "title": "Content, Vimeo, classroom",
+      "owner_scope": "content/classroom/provider seams/UI",
+      "branch": "codex/w12-04-content-vimeo-classroom",
+      "status": "local_branch_seen_not_pushed",
+      "notes": "Protected Vimeo/Zoom canaries require explicit bounded approval."
+    },
+    {
+      "lane": "W12-05",
+      "title": "Telegram operations",
+      "owner_scope": "Telegram runtime, capabilities, audit",
+      "branch": "codex/w12-05-telegram-operations",
+      "status": "local_branch_seen_not_pushed",
+      "notes": "Do not expose bot tokens or operator private mappings."
+    },
+    {
+      "lane": "W12-06",
+      "title": "WhatsApp lead assistant",
+      "owner_scope": "WhatsApp runtime, lead persistence, handoff",
+      "branch": "codex/w12-06-whatsapp-lead-assistant",
+      "status": "local_branch_seen_not_pushed",
+      "notes": "No broad sends or public provider activation without explicit approval."
+    },
+    {
+      "lane": "W12-07",
+      "title": "Premium landing",
+      "owner_scope": "public landing/assets/styles/visual tests",
+      "branch": "codex/w12-07-premium-landing",
+      "status": "not_seen_locally_or_remotely",
+      "notes": "Must preserve One Time black/yellow brand and mobile CTA rules."
+    },
+    {
+      "lane": "W12-08",
+      "title": "Admin classroom productization",
+      "owner_scope": "admin dashboard/class detail UI and APIs",
+      "branch": "codex/w12-08-admin-classroom-productization",
+      "status": "local_branch_seen_not_pushed",
+      "notes": "Do not create BNA-coupled admin controls."
+    },
+    {
+      "lane": "W12-99",
+      "title": "Semantic convergence",
+      "owner_scope": "shared hotspots and release proof",
+      "branch": "not_started",
+      "status": "blocked_until_feature_prs_and_release_lane_complete",
+      "notes": "Run last; owns shared file reconciliation and staging verification."
+    }
+  ],
+  "convergence_order": [
+    "Establish exact accepted release source and rollback point.",
+    "Integrate premium landing changes.",
+    "Integrate admin/dashboard productization.",
+    "Integrate canonical contact/tag/import schema and dry-run tooling.",
+    "Integrate historical communications against canonical contact identifiers.",
+    "Integrate portal identities/household fixtures.",
+    "Integrate content, classes, Vimeo, transcript, knowledge, and portal display.",
+    "Integrate Telegram operations.",
+    "Integrate WhatsApp assistant and connect the landing launcher.",
+    "Reconcile root exports, server composition, navigation, design tokens, package/lockfiles, migration numbering, and CI.",
+    "Run full PostgreSQL, unit, integration, browser, accessibility, privacy, performance, bundle, secret, and visual gates.",
+    "Deploy one exact candidate SHA to isolated staging.",
+    "Run full owner/admin/parent/student journeys.",
+    "Produce counts-only real-audience import preview and conflict report.",
+    "Apply real audience data only after explicit approval of exact counts/conflicts/rollback.",
+    "Run one-recipient protected provider canaries only with explicit authorization and protected credentials.",
+    "Promote the exact verified build only after rollback/readiness proof."
+  ]
+}
