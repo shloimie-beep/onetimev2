@@ -1,6 +1,7 @@
 # W13-100 Resume
 
 Generated: 2026-07-17T18:38:52Z
+Updated: 2026-07-17T19:09:41Z
 
 Worktree:
 `C:\Users\User\OneTimeOneTime-w13-100-final-launch`
@@ -8,7 +9,7 @@ Worktree:
 Branch:
 `release/w13-100-controlled-day-one-20260717T182046Z`
 
-Current status: `phase_2_convergence_in_progress`
+Current status: `phase_2_convergence_checkpoint_ready`
 
 ## Resume Command
 
@@ -34,23 +35,38 @@ Then read:
 ## Current Recovery Direction
 
 The branch was created from W12-100 convergence
-`ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c`. W13-10
-`698570f2d6b2701d1345794d16b93affd1ff96ae` has been merged locally with
-semantic conflict resolution. The merge checkpoint is staged and pending commit.
+`ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c`.
 
-W12-09 gamification `fc075bb688c69d8a03681633df8e6ea32ff685a9` is still
-pending safety review. Do not mechanically merge it; the inspected branch
-removes W12-100/W13 records and migrations, so only safe gamification semantics
-should be ported.
+W13-10 `698570f2d6b2701d1345794d16b93affd1ff96ae` was merged locally with
+semantic conflict resolution and committed at
+`0a875bb75f57a16bd93dd36feba4658faf030aeb`.
 
-Focused W13-10 merge checks passed:
+W12-09 gamification `fc075bb688c69d8a03681633df8e6ea32ff685a9` was inspected
+and not mechanically merged because the source branch removes W12-100/W13
+records and migrations. Safe semantics were ported locally instead, including
+contracts, domain service, PostgreSQL repository, additive migration 2203,
+portal summaries, parent reward goals, owner `/app/rewards`, visible-action
+registry entries, unit tests, and browser harness.
 
-- `npm ci`
+Local validation passed after W12-09:
+
 - `npm run secret:scan`
-- `npm run typecheck`
-- `npm run build:pages`
+- `npm run brand:check`
 - `npm run lint`
-- focused Vitest provider/config/legal/deploy slice, 46 tests passed
+- `npm run typecheck`
+- `npm run unit` (46 files, 238 tests)
+- `npm run integration` (44 files, 204 tests)
+- `npm run build`
+- `npm run e2e` (50 tests)
+- `npm run accessibility` (23 tests)
+- `npm run performance` (10 tests plus bundle check)
+- duplicate migration-prefix check (39 migrations)
+- W12-09 gamification browser harness across 360, 390, tablet, and desktop
+
+Blocked:
+
+- `npm run db:verify` and PostgreSQL 16/18 assurance require an explicit non-production `DATABASE_URL`.
+- Staging/prod deploys, provider canaries, imports, and all external mutations remain blocked without exact identities and immutable-SHA operator authorization.
 
 No production, provider, import, Stripe live, DNS, or destructive action has
 been performed in W13-100.

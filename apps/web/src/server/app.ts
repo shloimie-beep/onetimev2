@@ -9,6 +9,7 @@ import { asBotKey } from '../../../../packages/contracts/src/telegram/types.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
+import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
@@ -61,6 +62,13 @@ import {
   contentAdminSocialWorkspaceResponseSchema,
   contentAdminSourceDetailResponseSchema,
   contentAdminWorkspaceQuerySchema,
+  accomplishmentEventSchema,
+  adminGamificationDashboardResponseSchema,
+  gamificationCorrectionAuditSchema,
+  gamificationCorrectionPayloadSchema,
+  gamificationLearningEventPayloadSchema,
+  parentRewardGoalPayloadSchema,
+  parentRewardGoalSchema,
   ot86bReadinessResponseSchema,
   ot86bSocialDraftListResponseSchema,
 } from '../../../../packages/contracts/src/index.ts';
@@ -100,11 +108,13 @@ import {
   createClassroomPortalAccessAdapter,
   createClassroomService,
   createContentPortalAccessAdapter,
+  createGamificationService,
   createLoginCsrf,
   createOt110aGeneratedArtifact,
   createOt110aIntegratedProviderPorts,
   createOt110aPromptPatch,
   createParentPortalService,
+  createPortalGamificationAdapter,
   createSession,
   consumeWhatsAppAccountLink,
   createStudentClassHelperAdapter,
@@ -746,7 +756,7 @@ export function createApp({
   );
 
   app.get(
-    /^\/app\/(?:dashboard|classes|content|billing|communications|support)(?:\/.*)?$/,
+    /^\/app\/(?:dashboard|classes|content|billing|communications|rewards|support)(?:\/.*)?$/,
     async (req: RequestWithTrace, res) => {
       const session = await sessionFromRequest(req, pool, config);
       if (!session) {
@@ -1175,6 +1185,11 @@ export function createApp({
     questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
     ...(clock ? { clock } : {}),
   });
+  const gamificationRepository = createGamificationRepository(pool);
+  const gamificationService = createGamificationService({
+    repository: gamificationRepository,
+    ...(clock ? { clock } : {}),
+  });
   const portalServiceDeps: PortalServiceDeps = {
     repository: portalRepository,
     classAccess: config.zoomClassroomEnabled
@@ -1183,6 +1198,7 @@ export function createApp({
     contentAccess: createContentPortalAccessAdapter({ pool, config }),
     credentialLifecycle: createAccountLifecycleCredentialAdapter({ pool, config }),
     progress: createPortalProgressAdapter(pool),
+    gamification: createPortalGamificationAdapter(gamificationService),
     helper: createStudentClassHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
     billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
   };
@@ -1308,6 +1324,91 @@ export function createApp({
         success: true,
         data: classroomQuestionListResponseSchema.parse({ questions }),
       });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/gamification/admin', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!canUseOwnerDashboard(session.user.role)) {
+      res.status(403).json(publicError('FORBIDDEN', 'Your role cannot view rewards.', req.traceId));
+      return;
+    }
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const dashboard = await gamificationService.adminDashboard(actor);
+      res.json(adminGamificationDashboardResponseSchema.parse({ success: true, dashboard }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/gamification/events', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = gamificationLearningEventPayloadSchema.parse(req.body);
+      const event = await gamificationService.recordLearningEvent(actor, payload);
+      res.status(201).json({ success: true, data: accomplishmentEventSchema.parse(event) });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/gamification/reversals', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = gamificationCorrectionPayloadSchema.parse(req.body);
+      const correction = await gamificationService.reverseEvent(actor, payload);
+      res
+        .status(201)
+        .json({ success: true, data: gamificationCorrectionAuditSchema.parse(correction) });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/gamification/parent-rewards', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    if (!(await verifyPortalCsrf(req, actor))) {
+      res
+        .status(403)
+        .json(publicError('CSRF_REQUIRED', 'Refresh the portal and try again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = parentRewardGoalPayloadSchema.parse(req.body);
+      const reward = await gamificationService.createParentRewardGoal(actor, payload);
+      res.status(201).json({ success: true, data: parentRewardGoalSchema.parse(reward) });
     } catch (error) {
       handleApiError(error, req, res);
     }
@@ -2936,6 +3037,8 @@ function capabilitiesForPortalRole(role: AuthenticatedSession['user']['role']): 
       'parent:content:open',
       'parent:support:preview',
       'rewards:read',
+      'gamification:read',
+      'gamification:write',
       'helper:query',
     ];
   }
@@ -2948,7 +3051,17 @@ function capabilitiesForPortalRole(role: AuthenticatedSession['user']['role']): 
       'student:class:question',
       'student:support:preview',
       'rewards:read',
+      'gamification:read',
       'helper:query',
+    ];
+  }
+  if (role === 'owner' || role === 'admin') {
+    return [
+      'rewards:read',
+      'rewards:write',
+      'gamification:read',
+      'gamification:write',
+      'gamification:admin',
     ];
   }
   return [];

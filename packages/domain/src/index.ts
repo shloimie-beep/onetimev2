@@ -268,6 +268,15 @@ export {
   type PortalServiceDeps,
 } from './portals/services.ts';
 export {
+  createGamificationService,
+  createPortalGamificationAdapter,
+  emptyGamificationSummary,
+  type GamificationEventRow,
+  type GamificationLearnerSnapshot,
+  type GamificationRepository,
+  type GamificationService,
+} from './gamification/service.ts';
+export {
   STUDENT_CLASS_HELPER_NO_SOURCE,
   STUDENT_CLASS_HELPER_OUTSIDE_SCOPE,
   STUDENT_CLASS_HELPER_POLICY,

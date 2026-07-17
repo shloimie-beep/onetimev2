@@ -420,6 +420,40 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
+      "action_id": "dashboard.open_rewards.button",
+      "label": "Open Learning Rewards",
+      "surface": "button",
+      "route": "/app/dashboard",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
       "action_id": "crm.contacts.view.route",
       "label": "CRM",
       "surface": "route",
@@ -885,6 +919,74 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
+      "action_id": "rewards.view.route",
+      "label": "Learning Rewards",
+      "surface": "route",
+      "route": "/app/rewards",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "action_id": "rewards.refresh.button",
+      "label": "Refresh rewards",
+      "surface": "button",
+      "route": "/app/rewards",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/dashboard/owner-dashboard.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
       "action_id": "auth.logout.button",
       "label": "Logout",
       "surface": "button",
@@ -1229,6 +1331,40 @@
       "test_evidence": [
         "tests/integration/classes/class-fulfillment.test.ts",
         "tests/integration/portals/portal-mount.test.ts"
+      ]
+    },
+    {
+      "action_id": "portal.parent.reward_goal.create.form",
+      "label": "Add parent reward",
+      "surface": "form",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "gamification:write",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/gamification/parent-rewards"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "parent_reward_goal_created"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/w12-09-gamification.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
       ]
     },
     {

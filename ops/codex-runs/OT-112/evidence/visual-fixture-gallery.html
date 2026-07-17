@@ -1,2146 +1,2242 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>OT-112 Visual Fixture Gallery</title>
-    <style>
-      @font-face {
-        font-family: 'DM Serif Display';
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: url('/assets/fonts/dm-serif-display-latin.woff2') format('woff2');
-      }
-
-      :root {
-        --ot-color-background: #050505;
-        --ot-color-surface: #0d1a20;
-        --ot-color-surface-raised: #071117;
-        --ot-color-surface-muted: #122229;
-        --ot-color-text: #ffffff;
-        --ot-color-text-warm: #f8faf7;
-        --ot-color-text-muted: #c8d6d9;
-        --ot-color-text-disabled: #a5aea9;
-        --ot-color-action: #ffd21f;
-        --ot-color-action-auth: #ede518;
-        --ot-color-action-soft: #ffe680;
-        --ot-color-accent: #7ed7e8;
-        --ot-color-accent-auth: #86e8ff;
-        --ot-color-border: #34464d;
-        --ot-color-border-strong: #66777d;
-        --ot-color-success: #65d6a6;
-        --ot-color-danger: #ff7474;
-        --ot-color-danger-text: #8a331c;
-        --ot-font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
-        --ot-font-body:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        --ot-space-1: 4px;
-        --ot-space-2: 8px;
-        --ot-space-3: 12px;
-        --ot-space-4: 16px;
-        --ot-space-5: 24px;
-        --ot-space-6: 32px;
-        --ot-space-7: 48px;
-        --ot-space-8: 76px;
-        --ot-radius-control: 8px;
-        --ot-radius-panel: 12px;
-        --ot-radius-pill: 999px;
-        --ot-shadow-panel: 0 18px 46px rgba(0, 0, 0, 0.38);
-        --ot-shadow-drawer: 0 24px 72px rgba(0, 0, 0, 0.52);
-        --ot-shadow-focus: 0 0 0 3px rgba(134, 232, 255, 0.24);
-        --ot-motion-standard: 120ms cubic-bezier(0.2, 0, 0, 1);
-        --ot-motion-emphasized: 180ms cubic-bezier(0.2, 0, 0, 1);
-        --ot-motion-ticker: 26s linear infinite;
-        --ot-focus-width: 3px;
-        --ot-focus-offset: 3px;
-        --ot-focus-color: var(--ot-color-accent-auth);
-        --ot-layer-header: 100;
-        --ot-layer-ticker: 19;
-        --ot-layer-drawer-overlay: 800;
-        --ot-layer-drawer: 810;
-        --ot-layer-dialog-overlay: 900;
-        --ot-layer-dialog: 910;
-        --ot-layer-toast: 960;
-        --ot-layer-skip-link: 1001;
-        --ot-breakpoint-mobile: 520px;
-        --ot-breakpoint-tablet: 820px;
-        --ot-breakpoint-desktop: 1200px;
-        --ot-safe-area-top: env(safe-area-inset-top);
-        --ot-safe-area-bottom: env(safe-area-inset-bottom);
-        --ot-safe-area-left: env(safe-area-inset-left);
-        --ot-safe-area-right: env(safe-area-inset-right);
-        --ot-density-compact: 8px;
-        --ot-density-default: 12px;
-        --ot-density-comfortable: 16px;
-        --ot-size-touch-target: 44px;
-        --ot-size-logo-public-mobile: 48px;
-        --ot-size-logo-public-desktop: 64px;
-        --ot-size-logo-app: 40px;
-
-        --color-black: var(--ot-color-background);
-        --color-panel: #111311;
-        --color-ink: var(--ot-color-text-warm);
-        --color-muted: #c7d2cc;
-        --color-yellow: var(--ot-color-action);
-        --color-yellow-soft: var(--ot-color-action-soft);
-        --color-cyan: var(--ot-color-accent);
-        --color-line: rgba(255, 210, 31, 0.28);
-        --shadow-panel: var(--ot-shadow-panel);
-        --font-display: var(--ot-font-display);
-        --font-body: var(--ot-font-body);
-      }
-
-      :root {
-        --ot-portal-bg: #050505;
-        --ot-portal-panel: #111111;
-        --ot-portal-ink: #fff9d8;
-        --ot-portal-muted: #d9d2a9;
-        --ot-portal-yellow: #ffd21f;
-        --ot-portal-yellow-strong: #ffc400;
-        --ot-portal-ice: #9ce7f0;
-        --ot-portal-danger: #ff6978;
-      }
-      .ot-portal {
-        color: var(--ot-portal-ink);
-        background: var(--ot-portal-bg);
-        min-height: 100%;
-        padding: 24px;
-      }
-      .ot-topline {
-        display: flex;
-        justify-content: space-between;
-        gap: 16px;
-        align-items: flex-start;
-        border-bottom: 1px solid rgba(255, 210, 31, 0.32);
-        padding-bottom: 18px;
-        margin-bottom: 18px;
-      }
-      .ot-kicker,
-      .ot-topline p,
-      .ot-muted,
-      .ot-item span,
-      .ot-panel p {
-        color: var(--ot-portal-muted);
-      }
-      .ot-kicker {
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.78rem;
-      }
-      .ot-topline h1,
-      .ot-panel h2,
-      .ot-panel h3 {
-        color: var(--ot-portal-yellow);
-        margin: 0 0 6px;
-      }
-      .ot-aside,
-      .ot-helper {
-        color: var(--ot-portal-ice);
-      }
-      .ot-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 16px;
-      }
-      .ot-grid-parent {
-        grid-template-columns: minmax(260px, 0.82fr) minmax(320px, 1.25fr) minmax(280px, 0.9fr);
-      }
-      .ot-panel,
-      .ot-empty {
-        background: var(--ot-portal-panel);
-        border: 1px solid rgba(255, 210, 31, 0.24);
-        border-radius: 8px;
-        padding: 18px;
-      }
-      .ot-panel-head,
-      .ot-item,
-      .ot-subsection,
-      .ot-action-row,
-      .ot-status,
-      .ot-helper {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-      }
-      .ot-panel-head,
-      .ot-item,
-      .ot-status {
-        justify-content: space-between;
-      }
-      .ot-learner-list,
-      .ot-stack,
-      .ot-question-form {
-        display: grid;
-        gap: 10px;
-      }
-      .ot-question-form {
-        display: grid;
-        gap: 10px;
-        margin-top: 14px;
-      }
-      .ot-question-form label {
-        color: var(--ot-portal-yellow);
-        font-weight: 700;
-      }
-      .ot-question-form textarea {
-        width: 100%;
-        min-height: 96px;
-        resize: vertical;
-        background: #191919;
-        color: var(--ot-portal-ink);
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 8px;
-        padding: 10px;
-        font: inherit;
-      }
-      .ot-learner-card,
-      .ot-item {
-        width: 100%;
-        text-align: left;
-        background: #191919;
-        color: var(--ot-portal-ink);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 8px;
-        padding: 12px;
-      }
-      .ot-learner-card {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-        align-items: flex-start;
-      }
-      .ot-learner-card strong,
-      .ot-learner-card span {
-        overflow-wrap: anywhere;
-      }
-      .ot-learner-card[aria-pressed='true'] {
-        border-color: var(--ot-portal-yellow);
-        box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.18);
-      }
-      .ot-learner-card strong,
-      .ot-item strong,
-      .ot-metrics dd {
-        color: #ffffff;
-      }
-      .ot-item > div {
-        display: grid;
-        gap: 4px;
-        min-width: 0;
-      }
-      .ot-item strong,
-      .ot-item span {
-        display: block;
-        overflow-wrap: anywhere;
-      }
-      .ot-button,
-      .ot-icon-button,
-      .ot-text-button {
-        min-height: 44px;
-        border: 1px solid rgba(255, 210, 31, 0.45);
-        color: var(--ot-portal-ink);
-        background: transparent;
-        border-radius: 8px;
-        padding: 0 14px;
-        font-weight: 700;
-      }
-      .ot-button-primary,
-      .ot-icon-button {
-        background: var(--ot-portal-yellow);
-        color: #111111;
-      }
-      .ot-button-danger {
-        border-color: var(--ot-portal-danger);
-        color: #ffffff;
-      }
-      .ot-button:disabled,
-      .ot-icon-button:disabled {
-        opacity: 0.52;
-      }
-      .ot-text-button {
-        min-height: 0;
-        border: 0;
-        color: var(--ot-portal-ice);
-        padding: 0;
-      }
-      .ot-subsection {
-        align-items: flex-start;
-        justify-content: space-between;
-        flex-wrap: wrap;
-      }
-      .ot-warning,
-      .ot-status {
-        background: rgba(255, 210, 31, 0.12);
-        border: 1px solid rgba(255, 210, 31, 0.4);
-        color: #fff6bf;
-        border-radius: 8px;
-        padding: 10px 12px;
-      }
-      .ot-metrics {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
-        margin: 0;
-      }
-      .ot-metrics div {
-        background: #191919;
-        border-radius: 8px;
-        padding: 12px;
-      }
-      .ot-metrics dt {
-        color: var(--ot-portal-muted);
-      }
-      .ot-metrics dd {
-        margin: 4px 0 0;
-        font-size: 1.35rem;
-        font-weight: 800;
-      }
-      .ot-field {
-        display: grid;
-        gap: 6px;
-      }
-      .ot-field span {
-        color: var(--ot-portal-muted);
-        font-weight: 700;
-      }
-      .ot-field select,
-      .ot-field input,
-      .ot-field textarea {
-        width: 100%;
-        min-height: 44px;
-        color: var(--ot-portal-ink);
-        background: #191919;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 8px;
-        padding: 10px 12px;
-        font: inherit;
-      }
-      .ot-field textarea {
-        resize: vertical;
-        overflow-wrap: anywhere;
-      }
-      .ot-dialog-backdrop {
-        position: fixed;
-        inset: 0;
-        z-index: 900;
-        display: grid;
-        align-items: center;
-        justify-items: center;
-        overflow-y: auto;
-        background: rgba(0, 0, 0, 0.74);
-        padding: 18px;
-      }
-      .ot-dialog {
-        width: min(560px, 100%);
-        border: 1px solid rgba(255, 210, 31, 0.42);
-        border-radius: 8px;
-        background: #111111;
-        color: var(--ot-portal-ink);
-        padding: 18px;
-        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.56);
-      }
-      .ot-dialog-head,
-      .ot-dialog-actions {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: flex-start;
-      }
-      .ot-dialog-head h2,
-      .ot-dialog-head p {
-        margin: 0 0 6px;
-      }
-      .ot-dialog-form {
-        display: grid;
-        gap: 12px;
-      }
-      .ot-dialog-actions {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-      }
-      .ot-mini-metrics {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-        margin: 0;
-        width: 100%;
-      }
-      .ot-mini-metrics div {
-        background: #191919;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 10px;
-      }
-      .ot-mini-metrics dt {
-        color: var(--ot-portal-muted);
-        font-size: 0.82rem;
-      }
-      .ot-mini-metrics dd {
-        margin: 4px 0 0;
-        color: #ffffff;
-        font-weight: 800;
-      }
-      @media (max-width: 760px) {
-        .ot-portal {
-          padding: 14px;
-        }
-        .ot-topline,
-        .ot-panel-head,
-        .ot-dialog-head,
-        .ot-subsection,
-        .ot-item {
-          align-items: stretch;
-          flex-direction: column;
-        }
-        .ot-grid-parent,
-        .ot-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-      @media (min-width: 761px) and (max-width: 980px) {
-        .ot-grid-parent {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      :root {
-        color: #ffffff;
-        background: #050505;
-        font-family:
-          Inter,
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          'Segoe UI',
-          sans-serif;
-        color-scheme: dark;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        min-width: 0;
-        max-width: 100%;
-        margin: 0;
-        overflow-x: hidden;
-        background: #050505;
-      }
-
-      button,
-      input,
-      select,
-      textarea {
-        font: inherit;
-      }
-
-      button,
-      a[href],
-      input,
-      select,
-      textarea,
-      [role='button'] {
-        min-width: 44px;
-        min-height: 44px;
-      }
-
-      button {
-        cursor: pointer;
-      }
-
-      .app-shell {
-        min-height: 100vh;
-        color: #ffffff;
-        background: linear-gradient(180deg, rgba(134, 232, 255, 0.08), transparent 280px), #050505;
-      }
-
-      .skip-link {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 1001;
-        transform: translateY(-140%);
-        border-radius: 8px;
-        background: #ede518;
-        color: #050505;
-        padding: 12px 14px;
-        font-weight: 800;
-      }
-
-      .skip-link:focus {
-        transform: translateY(0);
-      }
-
-      .mobile-current-link {
-        position: fixed;
-        top: 10px;
-        left: 70px;
-        z-index: 1001;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
-        height: 44px;
-        overflow: hidden;
-        border-radius: 8px;
-        background: #ede518;
-        color: #050505;
-        font-weight: 800;
-        opacity: 0;
-        pointer-events: none;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-
-      .mobile-current-link:focus {
-        width: auto;
-        height: 44px;
-        overflow: visible;
-        opacity: 1;
-        pointer-events: auto;
-        padding: 12px 14px;
-      }
-
-      .app-header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto auto;
-        align-items: center;
-        gap: 12px;
-        min-height: 60px;
-        padding: 8px 16px;
-        border-bottom: 1px solid #34464d;
-        background: rgba(5, 5, 5, 0.96);
-        backdrop-filter: blur(10px);
-      }
-
-      .app-brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
-        color: #ffffff;
-        text-decoration: none;
-      }
-
-      .app-brand img {
-        flex: 0 0 auto;
-        border-radius: 8px;
-      }
-
-      .app-brand strong,
-      .app-brand small {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .app-brand strong {
-        font-size: 1rem;
-        line-height: 1.1;
-      }
-
-      .app-brand small,
-      .app-context,
-      .app-user span,
-      .page-header p,
-      .contact-table small,
-      .contact-card-meta,
-      .app-footer {
-        color: #c8d6d9;
-      }
-
-      .app-context {
-        display: none;
-        border: 1px solid #34464d;
-        border-radius: 999px;
-        padding: 8px 12px;
-        font-size: 0.88rem;
-        font-weight: 700;
-      }
-
-      .app-user {
-        display: none;
-        min-width: 0;
-        text-align: right;
-      }
-
-      .app-user strong,
-      .app-user span {
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .app-user strong {
-        font-size: 0.92rem;
-      }
-
-      .app-user span {
-        font-size: 0.8rem;
-      }
-
-      .app-body {
-        min-width: 0;
-      }
-
-      .app-sidebar {
-        display: none;
-      }
-
-      .app-workspace {
-        min-width: 0;
-        padding: 16px;
-      }
-
-      .page-header {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 16px;
-        max-width: 1440px;
-        margin: 0 auto 12px;
-      }
-
-      .page-header h1,
-      .page-header p,
-      .contact-form-shell h2,
-      .state-panel h2,
-      .note-panel h2 {
-        margin: 0;
-      }
-
-      .page-header h1 {
-        margin-top: 4px;
-        color: #ffffff;
-        font-size: 1.5rem;
-        line-height: 1.2;
-        outline: none;
-      }
-
-      .page-header p:not(.breadcrumb) {
-        max-width: 760px;
-        margin-top: 6px;
-        line-height: 1.5;
-      }
-
-      .breadcrumb {
-        color: #ede518;
-        font-size: 0.78rem;
-        font-weight: 800;
-        letter-spacing: 0;
-        text-transform: uppercase;
-      }
-
-      .page-toolbar,
-      .notice-banner,
-      .app-main,
-      .app-footer {
-        max-width: 1440px;
-        margin-right: auto;
-        margin-left: auto;
-      }
-
-      .page-toolbar {
-        margin-bottom: 14px;
-        border: 1px solid #34464d;
-        border-radius: 12px;
-        background: #071117;
-        padding: 12px;
-      }
-
-      .app-main {
-        min-width: 0;
-      }
-
-      .app-footer {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 12px;
-        margin-top: 24px;
-        border-top: 1px solid #34464d;
-        padding: 16px 0 4px;
-        font-size: 0.88rem;
-      }
-
-      .app-footer a {
-        display: inline-flex;
-        align-items: center;
-        color: #dff8ff;
-        text-decoration: none;
-      }
-
-      .icon-button {
-        display: inline-flex;
-        position: relative;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
-        height: 44px;
-        border: 1px solid #66777d;
-        border-radius: 8px;
-        background: #122229;
-        color: #ffffff;
-      }
-
-      .shell-menu-button span,
-      .drawer-close span {
-        position: absolute;
-        width: 18px;
-        height: 2px;
-        border-radius: 999px;
-        background: currentColor;
-      }
-
-      .shell-menu-button span:nth-child(1) {
-        transform: translateY(-6px);
-      }
-
-      .shell-menu-button span:nth-child(3) {
-        transform: translateY(6px);
-      }
-
-      .drawer-close span:nth-child(1) {
-        transform: rotate(45deg);
-      }
-
-      .drawer-close span:nth-child(2) {
-        transform: rotate(-45deg);
-      }
-
-      .button-primary,
-      .button-secondary,
-      .text-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        padding: 11px 16px;
-        font-weight: 800;
-        line-height: 1.2;
-        text-decoration: none;
-      }
-
-      .button-primary {
-        border: 1px solid #ede518;
-        background: #ede518;
-        color: #050505;
-      }
-
-      .button-secondary {
-        border: 1px solid #66777d;
-        background: #122229;
-        color: #ffffff;
-      }
-
-      .text-button {
-        border: 1px solid transparent;
-        background: transparent;
-        color: #dff8ff;
-        padding-right: 12px;
-        padding-left: 12px;
-      }
-
-      .compact-action {
-        white-space: nowrap;
-      }
-
-      .button-primary:disabled,
-      .button-secondary:disabled {
-        cursor: not-allowed;
-        border-color: #2a2f2c;
-        background: #2a2f2c;
-        color: #a5aea9;
-      }
-
-      button:focus-visible,
-      a:focus-visible,
-      input:focus-visible,
-      select:focus-visible,
-      textarea:focus-visible,
-      [role='button']:focus-visible {
-        outline: 3px solid #86e8ff;
-        outline-offset: 2px;
-      }
-
-      .shell-nav {
-        display: grid;
-        gap: 8px;
-      }
-
-      .shell-nav a {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        border: 1px solid transparent;
-        border-radius: 8px;
-        color: #ffffff;
-        padding: 12px;
-        font-weight: 800;
-        text-decoration: none;
-      }
-
-      .shell-nav a[aria-current='page'] {
-        border-color: #ede518;
-        background: rgba(237, 229, 24, 0.12);
-      }
-
-      .shell-nav a:hover {
-        background: rgba(134, 232, 255, 0.08);
-      }
-
-      .nav-indicator {
-        width: 8px;
-        height: 24px;
-        border-radius: 999px;
-        background: #66777d;
-      }
-
-      .shell-nav a[aria-current='page'] .nav-indicator {
-        background: #ede518;
-      }
-
-      .drawer-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 800;
-        background: rgba(0, 0, 0, 0.72);
-      }
-
-      .navigation-drawer {
-        position: fixed;
-        inset-block: 0;
-        inset-inline-start: 0;
-        z-index: 810;
-        width: min(410px, 100vw);
-        height: 100dvh;
-        overflow-y: auto;
-        border-inline-end: 1px solid #34464d;
-        background: #071117;
-        padding: max(14px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
-        box-shadow: 0 24px 72px rgba(0, 0, 0, 0.52);
-      }
-
-      .drawer-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 16px;
-      }
-
-      .drawer-header h2 {
-        margin: 0;
-        font-size: 1.1rem;
-      }
-
-      .toolbar-grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 10px;
-      }
-
-      .toolbar-filters {
-        display: flex;
-        gap: 10px;
-        min-width: 0;
-        overflow-x: auto;
-        padding-bottom: 4px;
-        scrollbar-color: #66777d transparent;
-      }
-
-      .toolbar-filters label,
-      .contact-form label {
-        display: grid;
-        flex: 0 0 180px;
-        gap: 6px;
-        min-width: 180px;
-        color: #c8d6d9;
-        font-size: 0.88rem;
-        font-weight: 800;
-      }
-
-      .toolbar-filters label:first-child {
-        flex-basis: 240px;
-      }
-
-      .toolbar-filters label.is-selected {
-        color: #ede518;
-      }
-
-      .toolbar-filters input,
-      .toolbar-filters select,
-      .contact-form input,
-      .contact-form select,
-      .contact-form textarea {
-        width: 100%;
-        border: 1px solid #66777d;
-        border-radius: 8px;
-        background: #0d1a20;
-        color: #ffffff;
-        padding: 10px 12px;
-      }
-
-      .toolbar-filters input:disabled {
-        border-color: #34464d;
-        background: #11191d;
-        color: #a5aea9;
-      }
-
-      .filter-help {
-        display: block;
-        color: #c8d6d9;
-        font-size: 0.76rem;
-        font-weight: 700;
-        line-height: 1.35;
-      }
-
-      .toolbar-filters label.is-selected input,
-      .toolbar-filters label.is-selected select {
-        border-color: #ede518;
-      }
-
-      .toolbar-filters button {
-        align-self: end;
-        flex: 0 0 auto;
-      }
-
-      .active-filter-row,
-      .detail-toolbar,
-      .toolbar-summary,
-      .chip-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 0;
-      }
-
-      .active-filter-row {
-        overflow-x: auto;
-        padding-top: 2px;
-      }
-
-      .active-filter-row > span {
-        display: inline-flex;
-        align-items: center;
-        min-height: 44px;
-        white-space: nowrap;
-        border: 1px solid #66777d;
-        border-radius: 999px;
-        background: #122229;
-        color: #ffffff;
-        padding: 8px 12px;
-        font-size: 0.88rem;
-        font-weight: 800;
-      }
-
-      .toolbar-primary {
-        justify-self: start;
-      }
-
-      .detail-toolbar {
-        flex-wrap: wrap;
-        justify-content: space-between;
-      }
-
-      .toolbar-summary {
-        flex: 1 1 auto;
-        overflow-x: auto;
-      }
-
-      .notice-banner {
-        border: 1px solid #66777d;
-        border-radius: 12px;
-        background: #122229;
-        color: #ffffff;
-        padding: 12px 14px;
-        font-weight: 800;
-      }
-
-      .notice-banner.success {
-        border-color: #65d6a6;
-      }
-
-      .notice-banner.error {
-        border-color: #ff7474;
-      }
-
-      .crm-list,
-      .contact-detail,
-      .contact-form-shell,
-      .dashboard-surface,
-      .readonly-list,
-      .action-registry {
-        min-width: 0;
-      }
-
-      .dashboard-surface {
-        display: grid;
-        gap: 14px;
-      }
-
-      .dashboard-grid,
-      .action-registry-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-
-      .dashboard-card,
-      .readonly-row,
-      .action-registry article {
-        min-width: 0;
-        border: 1px solid #34464d;
-        border-radius: 12px;
-        background: #0d1a20;
-        padding: 14px;
-      }
-
-      .dashboard-card {
-        display: grid;
-        align-content: start;
-        gap: 10px;
-      }
-
-      .dashboard-card header,
-      .readonly-row,
-      .readonly-row dl,
-      .action-registry dl {
-        display: grid;
-        gap: 10px;
-        min-width: 0;
-      }
-
-      .dashboard-card header {
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: start;
-      }
-
-      .dashboard-card h2,
-      .readonly-row h2,
-      .action-registry h2,
-      .action-registry h3 {
-        margin: 0;
-        color: #ffffff;
-      }
-
-      .dashboard-card h2,
-      .readonly-row h2 {
-        font-size: 1rem;
-        line-height: 1.25;
-      }
-
-      .dashboard-card strong {
-        color: #ffffff;
-        font-size: 1.35rem;
-        line-height: 1.15;
-      }
-
-      .dashboard-card p,
-      .dashboard-card small,
-      .readonly-row p,
-      .action-registry p,
-      .readonly-row dt,
-      .action-registry dt {
-        color: #c8d6d9;
-      }
-
-      .dashboard-card p,
-      .readonly-row p,
-      .action-registry p {
-        margin: 0;
-        line-height: 1.45;
-      }
-
-      .dashboard-card small {
-        font-size: 0.82rem;
-      }
-
-      .state-action_required {
-        border-color: #ede518;
-      }
-
-      .state-needs_setup {
-        border-color: #86e8ff;
-      }
-
-      .state-unavailable {
-        border-color: #66777d;
-        background: #101719;
-      }
-
-      .readonly-list {
-        display: grid;
-        gap: 10px;
-      }
-
-      .readonly-row {
-        grid-template-columns: 1fr;
-      }
-
-      .readonly-row dl,
-      .action-registry dl {
-        margin: 0;
-      }
-
-      .readonly-row dl {
-        grid-template-columns: 1fr;
-      }
-
-      .readonly-row dt,
-      .action-registry dt {
-        font-size: 0.78rem;
-        font-weight: 800;
-      }
-
-      .readonly-row dd,
-      .action-registry dd {
-        margin: 4px 0 0;
-        color: #ffffff;
-        font-weight: 800;
-        overflow-wrap: anywhere;
-      }
-
-      .action-registry {
-        display: grid;
-        gap: 10px;
-      }
-
-      .action-registry h2 {
-        font-size: 1.1rem;
-      }
-
-      .action-registry h3 {
-        font-size: 0.95rem;
-      }
-
-      .contact-table-wrap {
-        display: none;
-        min-width: 0;
-      }
-
-      .contact-table {
-        width: 100%;
-        min-width: 760px;
-        border-collapse: separate;
-        border-spacing: 0 8px;
-      }
-
-      .contact-table th {
-        color: #c8d6d9;
-        padding: 0 12px 4px;
-        font-size: 0.8rem;
-        text-align: left;
-      }
-
-      .contact-table tr[role='button'] {
-        cursor: pointer;
-        background: #0d1a20;
-      }
-
-      .contact-table td {
-        border-block: 1px solid #34464d;
-        padding: 14px 12px;
-        color: #ffffff;
-        vertical-align: middle;
-      }
-
-      .contact-table td:first-child {
-        border-inline-start: 1px solid #34464d;
-        border-start-start-radius: 12px;
-        border-end-start-radius: 12px;
-      }
-
-      .contact-table td:last-child {
-        border-inline-end: 1px solid #34464d;
-        border-start-end-radius: 12px;
-        border-end-end-radius: 12px;
-      }
-
-      .contact-table tr[role='button']:hover td,
-      .contact-table tr[role='button']:focus-visible td,
-      .contact-card:hover,
-      .contact-card:focus-visible {
-        border-color: #86e8ff;
-        box-shadow: 0 0 0 3px rgba(134, 232, 255, 0.22);
-      }
-
-      .contact-table strong,
-      .contact-table small {
-        display: block;
-      }
-
-      .contact-table strong,
-      .contact-card strong,
-      .detail-grid dd {
-        color: #ffffff;
-      }
-
-      .contact-card-list {
-        display: grid;
-        gap: 10px;
-      }
-
-      .contact-card {
-        display: grid;
-        gap: 12px;
-        width: 100%;
-        border: 1px solid #34464d;
-        border-radius: 12px;
-        background: #0d1a20;
-        color: #ffffff;
-        padding: 14px;
-        text-align: left;
-      }
-
-      .contact-card-heading,
-      .contact-card-meta {
-        display: grid;
-        gap: 4px;
-      }
-
-      .contact-card-heading > span {
-        color: #c8d6d9;
-        font-size: 0.88rem;
-      }
-
-      .semantic-chip {
-        display: inline-flex;
-        align-items: center;
-        min-height: 30px;
-        border: 1px solid #66777d;
-        border-radius: 999px;
-        padding: 5px 9px;
-        color: #ffffff;
-        font-size: 0.8rem;
-        font-weight: 800;
-        line-height: 1.2;
-        white-space: nowrap;
-      }
-
-      .semantic-chip.classification {
-        border-color: #86e8ff;
-        background: rgba(134, 232, 255, 0.1);
-      }
-
-      .semantic-chip.status {
-        border-color: #ede518;
-        background: rgba(237, 229, 24, 0.12);
-      }
-
-      .semantic-chip.source {
-        background: #122229;
-      }
-
-      .ot-section-tabs {
-        display: flex;
-        gap: 8px;
-        min-width: 0;
-        overflow-x: auto;
-        padding: 4px 0;
-      }
-
-      .ot-section-tabs a,
-      .ot-section-tabs button {
-        display: inline-flex;
-        flex: 0 0 auto;
-        align-items: center;
-        justify-content: center;
-        min-height: 44px;
-        border: 1px solid #66777d;
-        border-radius: 8px;
-        background: #122229;
-        color: #ffffff;
-        padding: 10px 14px;
-        font-weight: 800;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-
-      .ot-section-tabs a[aria-current='page'],
-      .ot-section-tabs button[aria-pressed='true'] {
-        border-color: #ede518;
-        background: rgba(237, 229, 24, 0.14);
-        color: #ffffff;
-      }
-
-      .ot-metric-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-        gap: 10px;
-      }
-
-      .ot-metric-tile {
-        display: grid;
-        min-width: 0;
-        gap: 8px;
-        border: 1px solid #34464d;
-        border-radius: 8px;
-        background: #0d1a20;
-        padding: 14px;
-      }
-
-      .ot-metric-tile span,
-      .ot-metric-tile small,
-      .ot-mobile-card span,
-      .ot-activity-timeline small,
-      .ot-media-frame figcaption {
-        color: #c8d6d9;
-      }
-
-      .ot-metric-tile strong {
-        color: #ffffff;
-        font-size: 1.6rem;
-        line-height: 1;
-      }
-
-      .ot-status-chip {
-        display: inline-flex;
-        align-items: center;
-        min-height: 30px;
-        border: 1px solid #66777d;
-        border-radius: 999px;
-        padding: 5px 9px;
-        color: #ffffff;
-        font-size: 0.8rem;
-        font-weight: 800;
-        white-space: nowrap;
-      }
-
-      .ot-status-chip.tone-success {
-        border-color: #65d6a6;
-        background: rgba(101, 214, 166, 0.12);
-      }
-
-      .ot-status-chip.tone-warning {
-        border-color: #ede518;
-        background: rgba(237, 229, 24, 0.12);
-      }
-
-      .ot-status-chip.tone-danger {
-        border-color: #ff7474;
-        background: rgba(255, 116, 116, 0.12);
-      }
-
-      .ot-status-chip.tone-info {
-        border-color: #86e8ff;
-        background: rgba(134, 232, 255, 0.1);
-      }
-
-      .ot-mobile-card {
-        display: grid;
-        min-width: 0;
-        gap: 12px;
-        border: 1px solid #34464d;
-        border-radius: 8px;
-        background: #0d1a20;
-        color: #ffffff;
-        padding: 14px;
-      }
-
-      .ot-mobile-card header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        min-width: 0;
-      }
-
-      .ot-mobile-card header > div {
-        display: grid;
-        gap: 4px;
-        min-width: 0;
-      }
-
-      .ot-mobile-card strong,
-      .ot-mobile-card span {
-        overflow-wrap: anywhere;
-      }
-
-      .ot-state-loading {
-        border-color: #86e8ff;
-      }
-
-      .ot-state-error,
-      .ot-state-denied,
-      .ot-state-session-expired {
-        border-color: #ff7474;
-      }
-
-      .ot-state-offline {
-        border-color: #66777d;
-      }
-
-      .ot-toast-banner {
-        display: flex;
-        align-items: center;
-        min-height: 44px;
-        border: 1px solid #66777d;
-        border-radius: 8px;
-        background: #122229;
-        color: #ffffff;
-        padding: 10px 14px;
-        font-weight: 800;
-      }
-
-      .ot-toast-banner.tone-success {
-        border-color: #65d6a6;
-      }
-
-      .ot-toast-banner.tone-warning {
-        border-color: #ede518;
-      }
-
-      .ot-toast-banner.tone-error {
-        border-color: #ff7474;
-      }
-
-      .ot-media-frame {
-        display: grid;
-        gap: 10px;
-        margin: 0;
-      }
-
-      .ot-media-frame > div {
-        display: grid;
-        min-height: 180px;
-        place-items: center;
-        overflow: hidden;
-        border: 1px solid #34464d;
-        border-radius: 8px;
-        background:
-          linear-gradient(135deg, rgba(237, 229, 24, 0.12), rgba(134, 232, 255, 0.08)), #071117;
-      }
-
-      .ot-media-frame img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .ot-activity-timeline {
-        display: grid;
-        gap: 12px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .ot-activity-timeline li {
-        display: grid;
-        grid-template-columns: 14px minmax(0, 1fr);
-        gap: 10px;
-      }
-
-      .ot-activity-timeline li > span {
-        width: 10px;
-        height: 10px;
-        margin-top: 6px;
-        border-radius: 999px;
-        background: #ede518;
-        box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.12);
-      }
-
-      .ot-activity-timeline li > div {
-        display: grid;
-        min-width: 0;
-        gap: 4px;
-      }
-
-      .ot-activity-timeline p {
-        margin: 0;
-        color: #c8d6d9;
-        line-height: 1.45;
-      }
-
-      .ot-fixture-gallery {
-        display: grid;
-        gap: 24px;
-        width: min(1180px, calc(100vw - 28px));
-        margin: 0 auto;
-        padding: 24px 0 48px;
-      }
-
-      .ot-fixture-gallery > section {
-        display: grid;
-        gap: 12px;
-        min-width: 0;
-        border-top: 1px solid #34464d;
-        padding-top: 18px;
-      }
-
-      .ot-fixture-gallery h1,
-      .ot-fixture-gallery h2,
-      .ot-fixture-gallery h3 {
-        margin: 0;
-      }
-
-      .ot-fixture-surface {
-        display: grid;
-        gap: 12px;
-        min-width: 0;
-        border: 1px solid #34464d;
-        border-radius: 8px;
-        background: #071117;
-        padding: 14px;
-      }
-
-      .ot-fixture-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 12px;
-      }
-
-      .ot-long-content {
-        max-height: 260px;
-        overflow: auto;
-        border: 1px solid #34464d;
-        border-radius: 8px;
-        padding: 12px;
-      }
-
-      .load-more {
-        margin-top: 14px;
-      }
-
-      .detail-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin: 0;
-      }
-
-      .detail-grid div,
-      .note-panel,
-      .state-panel {
-        min-width: 0;
-        border: 1px solid #34464d;
-        border-radius: 12px;
-        background: #0d1a20;
-        padding: 14px;
-      }
-
-      .detail-grid dt {
-        color: #c8d6d9;
-        font-size: 0.84rem;
-        font-weight: 800;
-      }
-
-      .detail-grid dd {
-        margin: 6px 0 0;
-        overflow-wrap: anywhere;
-        font-weight: 800;
-      }
-
-      .note-panel {
-        margin-top: 12px;
-      }
-
-      .note-panel h2,
-      .contact-form-shell h2,
-      .state-panel h2 {
-        color: #ffffff;
-        font-size: 1.15rem;
-      }
-
-      .note-panel p,
-      .state-panel p {
-        color: #c8d6d9;
-        line-height: 1.5;
-      }
-
-      .state-panel {
-        display: grid;
-        gap: 10px;
-      }
-
-      .state-panel.error {
-        border-color: #ff7474;
-      }
-
-      .state-panel.empty {
-        border-color: #66777d;
-      }
-
-      .session-expired-state {
-        max-width: 620px;
-      }
-
-      .contact-form-shell {
-        display: grid;
-        gap: 12px;
-      }
-
-      .contact-form {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 12px;
-        border: 1px solid #34464d;
-        border-radius: 12px;
-        background: #0d1a20;
-        padding: 14px;
-      }
-
-      .contact-form label {
-        flex: unset;
-      }
-
-      .contact-form textarea {
-        min-height: 116px;
-        resize: vertical;
-      }
-
-      .wide-field,
-      .form-actions {
-        grid-column: 1 / -1;
-      }
-
-      .form-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .skeleton-list,
-      .skeleton-detail {
-        display: grid;
-        gap: 10px;
-      }
-
-      .skeleton-row {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr 1fr 0.9fr;
-        gap: 12px;
-        min-height: 64px;
-        border: 1px solid #34464d;
-        border-radius: 12px;
-        background: #0d1a20;
-        padding: 14px;
-      }
-
-      .skeleton-row span,
-      .skeleton-detail span,
-      .skeleton-detail strong {
-        display: block;
-        height: 14px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #122229, #18272d, #122229);
-      }
-
-      .skeleton-detail div {
-        min-height: 82px;
-      }
-
-      .skeleton-detail strong {
-        height: 18px;
-        margin-top: 10px;
-      }
-
-      @media (prefers-reduced-motion: no-preference) {
-        .contact-card,
-        .contact-table td,
-        .shell-nav a,
-        .button-primary,
-        .button-secondary {
-          transition:
-            border-color 120ms cubic-bezier(0.2, 0, 0, 1),
-            background 120ms cubic-bezier(0.2, 0, 0, 1),
-            box-shadow 120ms cubic-bezier(0.2, 0, 0, 1);
-        }
-      }
-
-      @media (min-width: 600px) {
-        .app-workspace {
-          padding: 24px;
-        }
-
-        .page-header h1 {
-          font-size: 1.875rem;
-        }
-
-        .detail-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .contact-form {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .dashboard-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .readonly-row {
-          grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
-          align-items: start;
-        }
-
-        .readonly-row dl {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
-        .action-registry-grid {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-      }
-
-      @media (min-width: 900px) {
-        .contact-card-list {
-          display: none;
-        }
-
-        .contact-table-wrap {
-          display: block;
-          overflow-x: auto;
-        }
-
-        .detail-grid {
-          grid-template-columns: repeat(4, minmax(0, 1fr));
-        }
-
-        .dashboard-grid {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-      }
-
-      @media (min-width: 1200px) {
-        .app-header {
-          grid-template-columns: minmax(0, 1fr) auto minmax(180px, 280px) auto;
-          min-height: 64px;
-          padding-right: 32px;
-          padding-left: 32px;
-        }
-
-        .shell-menu-button {
-          display: none;
-        }
-
-        .app-context,
-        .app-user {
-          display: block;
-        }
-
-        .app-body {
-          display: grid;
-          grid-template-columns: 248px minmax(0, 1fr);
-        }
-
-        .app-sidebar {
-          display: block;
-          position: sticky;
-          top: 64px;
-          align-self: start;
-          height: calc(100vh - 64px);
-          overflow-y: auto;
-          border-inline-end: 1px solid #34464d;
-          background: #071117;
-          padding: 20px 16px;
-        }
-
-        .app-workspace {
-          padding: 32px;
-        }
-
-        .toolbar-grid {
-          grid-template-columns: minmax(0, 1fr) auto;
-          align-items: start;
-        }
-
-        .active-filter-row {
-          grid-column: 1 / -1;
-        }
-
-        .toolbar-primary {
-          justify-self: end;
-        }
-      }
-
-      @media (max-width: 430px) {
-        .app-header {
-          padding: 8px 10px;
-        }
-
-        .app-brand {
-          gap: 8px;
-        }
-
-        .app-brand strong {
-          max-width: 104px;
-        }
-
-        .compact-action {
-          padding-right: 10px;
-          padding-left: 10px;
-        }
-
-        .skeleton-row {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <main class="app-shell">
-      <div class="ot-fixture-gallery" data-ot-visual-gallery="OT-112" data-ot-usable="true">
-        <header class="page-header" data-fixture="shell-header">
-          <div>
-            <p class="breadcrumb">One Time Product System</p>
-            <h1 id="fixture-title" tabindex="-1">Visual Fixture Gallery</h1>
-            <p>
-              Fictional component fixtures for route, role, state, density, and evidence capture
-              contracts.
-            </p>
-          </div>
-          <a class="button-primary compact-action" href="#states">Review States</a>
-        </header>
-        <section aria-labelledby="matrix-heading">
-          <h2 id="matrix-heading">Visual Matrix</h2>
-          <div class="ot-fixture-surface">
-            <p>Viewports: 360x800, 390x844, 768x1024, 1440x1000</p>
-            <p>
-              Modes: default, zoom-200, rtl, reduced-motion, keyboard-focus, long-content,
-              slow-state, error-state
-            </p>
-            <p>Budgets: LCP 2500ms, CLS 0.1, no horizontal overflow, 44px touch targets.</p>
-          </div>
-        </section>
-        <section aria-labelledby="tabs-heading">
-          <h2 id="tabs-heading">Tabs And Filters</h2>
-          <nav class="ot-section-tabs" aria-label="Fixture tabs" data-ot-primitive="SectionTabs">
-            <a href="#tabs-heading" aria-current="page">Overview</a>
-            <a href="#cards">Cards</a>
-            <a href="#states">States</a>
-            <button type="button" disabled>Deferred</button>
-          </nav>
-          <div class="page-toolbar">
-            <div class="toolbar-grid">
-              <div class="toolbar-filters" data-ot-primitive="FilterStrip">
-                <label class="is-selected"
-                  ><span>Search</span><input value="Sample family" aria-label="Search"
-                /></label>
-                <label
-                  ><span>Status</span
-                  ><select aria-label="Status">
-                    <option>Ready</option>
-                    <option>Needs review</option>
-                  </select></label
-                >
-                <label
-                  ><span>Long option label</span
-                  ><input value="A very long fictional neighborhood name"
-                /></label>
-              </div>
-              <button class="button-primary toolbar-primary" type="button">Apply</button>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OT-112 Visual Fixture Gallery</title>
+  <style>@font-face {
+  font-family: 'DM Serif Display';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/dm-serif-display-latin.woff2') format('woff2');
+}
+
+:root {
+  --ot-color-background: #050505;
+  --ot-color-surface: #0d1a20;
+  --ot-color-surface-raised: #071117;
+  --ot-color-surface-muted: #122229;
+  --ot-color-text: #ffffff;
+  --ot-color-text-warm: #f8faf7;
+  --ot-color-text-muted: #c8d6d9;
+  --ot-color-text-disabled: #a5aea9;
+  --ot-color-action: #ffd21f;
+  --ot-color-action-auth: #ede518;
+  --ot-color-action-soft: #ffe680;
+  --ot-color-accent: #7ed7e8;
+  --ot-color-accent-auth: #86e8ff;
+  --ot-color-border: #34464d;
+  --ot-color-border-strong: #66777d;
+  --ot-color-success: #65d6a6;
+  --ot-color-danger: #ff7474;
+  --ot-color-danger-text: #8a331c;
+  --ot-font-display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --ot-font-body:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ot-space-1: 4px;
+  --ot-space-2: 8px;
+  --ot-space-3: 12px;
+  --ot-space-4: 16px;
+  --ot-space-5: 24px;
+  --ot-space-6: 32px;
+  --ot-space-7: 48px;
+  --ot-space-8: 76px;
+  --ot-radius-control: 8px;
+  --ot-radius-panel: 12px;
+  --ot-radius-pill: 999px;
+  --ot-shadow-panel: 0 18px 46px rgba(0, 0, 0, 0.38);
+  --ot-shadow-drawer: 0 24px 72px rgba(0, 0, 0, 0.52);
+  --ot-shadow-focus: 0 0 0 3px rgba(134, 232, 255, 0.24);
+  --ot-motion-standard: 120ms cubic-bezier(0.2, 0, 0, 1);
+  --ot-motion-emphasized: 180ms cubic-bezier(0.2, 0, 0, 1);
+  --ot-motion-ticker: 26s linear infinite;
+  --ot-focus-width: 3px;
+  --ot-focus-offset: 3px;
+  --ot-focus-color: var(--ot-color-accent-auth);
+  --ot-layer-header: 100;
+  --ot-layer-ticker: 19;
+  --ot-layer-drawer-overlay: 800;
+  --ot-layer-drawer: 810;
+  --ot-layer-dialog-overlay: 900;
+  --ot-layer-dialog: 910;
+  --ot-layer-toast: 960;
+  --ot-layer-skip-link: 1001;
+  --ot-breakpoint-mobile: 520px;
+  --ot-breakpoint-tablet: 820px;
+  --ot-breakpoint-desktop: 1200px;
+  --ot-safe-area-top: env(safe-area-inset-top);
+  --ot-safe-area-bottom: env(safe-area-inset-bottom);
+  --ot-safe-area-left: env(safe-area-inset-left);
+  --ot-safe-area-right: env(safe-area-inset-right);
+  --ot-density-compact: 8px;
+  --ot-density-default: 12px;
+  --ot-density-comfortable: 16px;
+  --ot-size-touch-target: 44px;
+  --ot-size-logo-public-mobile: 48px;
+  --ot-size-logo-public-desktop: 64px;
+  --ot-size-logo-app: 40px;
+
+  --color-black: var(--ot-color-background);
+  --color-panel: #111311;
+  --color-ink: var(--ot-color-text-warm);
+  --color-muted: #c7d2cc;
+  --color-yellow: var(--ot-color-action);
+  --color-yellow-soft: var(--ot-color-action-soft);
+  --color-cyan: var(--ot-color-accent);
+  --color-line: rgba(255, 210, 31, 0.28);
+  --shadow-panel: var(--ot-shadow-panel);
+  --font-display: var(--ot-font-display);
+  --font-body: var(--ot-font-body);
+}
+
+:root {
+  --ot-portal-bg: #050505;
+  --ot-portal-panel: #111111;
+  --ot-portal-ink: #fff9d8;
+  --ot-portal-muted: #d9d2a9;
+  --ot-portal-yellow: #ffd21f;
+  --ot-portal-yellow-strong: #ffc400;
+  --ot-portal-ice: #9ce7f0;
+  --ot-portal-danger: #ff6978;
+}
+.ot-portal {
+  color: var(--ot-portal-ink);
+  background: var(--ot-portal-bg);
+  min-height: 100%;
+  padding: 24px;
+}
+.ot-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 210, 31, 0.32);
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+.ot-kicker,
+.ot-topline p,
+.ot-muted,
+.ot-item span,
+.ot-panel p {
+  color: var(--ot-portal-muted);
+}
+.ot-kicker {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+.ot-topline h1,
+.ot-panel h2,
+.ot-panel h3 {
+  color: var(--ot-portal-yellow);
+  margin: 0 0 6px;
+}
+.ot-aside,
+.ot-helper {
+  color: var(--ot-portal-ice);
+}
+.ot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+.ot-grid-parent {
+  grid-template-columns: minmax(260px, 0.82fr) minmax(320px, 1.25fr) minmax(280px, 0.9fr);
+}
+.ot-panel,
+.ot-empty {
+  background: var(--ot-portal-panel);
+  border: 1px solid rgba(255, 210, 31, 0.24);
+  border-radius: 8px;
+  padding: 18px;
+}
+.ot-panel-head,
+.ot-item,
+.ot-subsection,
+.ot-action-row,
+.ot-status,
+.ot-helper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.ot-panel-head,
+.ot-item,
+.ot-status {
+  justify-content: space-between;
+}
+.ot-learner-list,
+.ot-stack,
+.ot-question-form {
+  display: grid;
+  gap: 10px;
+}
+.ot-helper-panel {
+  align-content: start;
+}
+.ot-question-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+.ot-question-form label {
+  color: var(--ot-portal-yellow);
+  font-weight: 700;
+}
+.ot-question-form textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+}
+.ot-learner-card,
+.ot-item {
+  width: 100%;
+  text-align: left;
+  background: #191919;
+  color: var(--ot-portal-ink);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-learner-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+.ot-learner-card strong,
+.ot-learner-card span {
+  overflow-wrap: anywhere;
+}
+.ot-learner-card[aria-pressed='true'] {
+  border-color: var(--ot-portal-yellow);
+  box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.18);
+}
+.ot-learner-card strong,
+.ot-item strong,
+.ot-metrics dd {
+  color: #ffffff;
+}
+.ot-item > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.ot-item strong,
+.ot-item span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.ot-button,
+.ot-icon-button,
+.ot-text-button {
+  min-height: 44px;
+  border: 1px solid rgba(255, 210, 31, 0.45);
+  color: var(--ot-portal-ink);
+  background: transparent;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 700;
+}
+.ot-button-primary,
+.ot-icon-button {
+  background: var(--ot-portal-yellow);
+  color: #111111;
+}
+.ot-button-danger {
+  border-color: var(--ot-portal-danger);
+  color: #ffffff;
+}
+.ot-button:disabled,
+.ot-icon-button:disabled {
+  opacity: 0.52;
+}
+.ot-text-button {
+  min-height: 0;
+  border: 0;
+  color: var(--ot-portal-ice);
+  padding: 0;
+}
+.ot-subsection {
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.ot-warning,
+.ot-status {
+  background: rgba(255, 210, 31, 0.12);
+  border: 1px solid rgba(255, 210, 31, 0.4);
+  color: #fff6bf;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.ot-helper-answer,
+.ot-private-preview {
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-helper-answer p,
+.ot-private-preview p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.ot-citation-list {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+.ot-citation-list a {
+  color: var(--ot-portal-ice);
+  overflow-wrap: anywhere;
+}
+.ot-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+.ot-metrics div {
+  background: #191919;
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-metrics dt {
+  color: var(--ot-portal-muted);
+}
+.ot-metrics dd {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+.ot-field {
+  display: grid;
+  gap: 6px;
+}
+.ot-field span {
+  color: var(--ot-portal-muted);
+  font-weight: 700;
+}
+.ot-field select,
+.ot-field input,
+.ot-field textarea {
+  width: 100%;
+  min-height: 44px;
+  color: var(--ot-portal-ink);
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+}
+.ot-field textarea {
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+.ot-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.74);
+  padding: 18px;
+}
+.ot-dialog {
+  width: min(560px, 100%);
+  border: 1px solid rgba(255, 210, 31, 0.42);
+  border-radius: 8px;
+  background: #111111;
+  color: var(--ot-portal-ink);
+  padding: 18px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.56);
+}
+.ot-dialog-head,
+.ot-dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+.ot-dialog-head h2,
+.ot-dialog-head p {
+  margin: 0 0 6px;
+}
+.ot-dialog-form {
+  display: grid;
+  gap: 12px;
+}
+.ot-dialog-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.ot-mini-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  width: 100%;
+}
+.ot-mini-metrics div {
+  background: #191919;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+}
+.ot-mini-metrics dt {
+  color: var(--ot-portal-muted);
+  font-size: 0.82rem;
+}
+.ot-mini-metrics dd {
+  margin: 4px 0 0;
+  color: #ffffff;
+  font-weight: 800;
+}
+.ot-gamification {
+  gap: 14px;
+}
+.ot-celebration,
+.ot-level-card,
+.ot-streak-card,
+.ot-reward-form {
+  background: #191919;
+  border: 1px solid rgba(255, 210, 31, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-celebration {
+  display: grid;
+  gap: 4px;
+  color: #ffffff;
+}
+.ot-celebration span,
+.ot-guardrail-note {
+  color: var(--ot-portal-muted);
+  overflow-wrap: anywhere;
+}
+.ot-level-card {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+.ot-level-card h3,
+.ot-level-card p {
+  margin: 0;
+}
+.ot-progress-bars,
+.ot-reward-form {
+  display: grid;
+  gap: 10px;
+}
+.ot-progress-meter {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  color: var(--ot-portal-muted);
+}
+.ot-progress-meter > span {
+  grid-column: 1 / -1;
+}
+.ot-progress-meter > div {
+  min-width: 0;
+  height: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+.ot-progress-meter i {
+  display: block;
+  height: 100%;
+  background: var(--ot-portal-yellow);
+  border-radius: 999px;
+}
+.ot-progress-meter strong {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+.ot-streak-grid,
+.ot-badge-list {
+  display: grid;
+  gap: 10px;
+}
+.ot-streak-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ot-streak-card {
+  display: grid;
+  gap: 4px;
+}
+.ot-streak-card strong,
+.ot-badge {
+  color: #ffffff;
+}
+.ot-streak-card span,
+.ot-streak-card small {
+  color: var(--ot-portal-muted);
+}
+.ot-badge-list {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+.ot-badge {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 210, 31, 0.16);
+  border: 1px solid rgba(255, 210, 31, 0.34);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.ot-badge.tone-ice {
+  background: rgba(156, 231, 240, 0.14);
+  border-color: rgba(156, 231, 240, 0.36);
+}
+.ot-badge.tone-success {
+  background: rgba(99, 210, 149, 0.14);
+  border-color: rgba(99, 210, 149, 0.36);
+}
+.ot-milestone[data-status='earned'] {
+  border-color: rgba(99, 210, 149, 0.4);
+}
+.ot-item[data-reversal='true'] {
+  border-color: rgba(255, 105, 120, 0.46);
+}
+.ot-reward-form {
+  grid-template-columns: 1fr;
+  align-items: end;
+}
+@media (max-width: 760px) {
+  .ot-portal {
+    padding: 14px;
+  }
+  .ot-topline,
+  .ot-panel-head,
+  .ot-dialog-head,
+  .ot-subsection,
+  .ot-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .ot-grid-parent,
+  .ot-grid {
+    grid-template-columns: 1fr;
+  }
+  .ot-streak-grid,
+  .ot-progress-meter {
+    grid-template-columns: 1fr;
+  }
+}
+@media (min-width: 761px) and (max-width: 980px) {
+  .ot-grid-parent {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+:root {
+  color: #ffffff;
+  background: #050505;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  background: #050505;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a[href],
+input,
+select,
+textarea,
+[role='button'] {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  min-height: 100vh;
+  color: #ffffff;
+  background: linear-gradient(180deg, rgba(134, 232, 255, 0.08), transparent 280px), #050505;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+  transform: translateY(-140%);
+  border-radius: 8px;
+  background: #ede518;
+  color: #050505;
+  padding: 12px 14px;
+  font-weight: 800;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.mobile-current-link {
+  position: fixed;
+  top: 10px;
+  left: 70px;
+  z-index: 1001;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #ede518;
+  color: #050505;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.mobile-current-link:focus {
+  width: auto;
+  height: 44px;
+  overflow: visible;
+  opacity: 1;
+  pointer-events: auto;
+  padding: 12px 14px;
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #34464d;
+  background: rgba(5, 5, 5, 0.96);
+  backdrop-filter: blur(10px);
+}
+
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.app-brand img {
+  flex: 0 0 auto;
+  border-radius: 8px;
+}
+
+.app-brand strong,
+.app-brand small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-brand strong {
+  font-size: 1rem;
+  line-height: 1.1;
+}
+
+.app-brand small,
+.app-context,
+.app-user span,
+.page-header p,
+.contact-table small,
+.contact-card-meta,
+.app-footer {
+  color: #c8d6d9;
+}
+
+.app-context {
+  display: none;
+  border: 1px solid #34464d;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.app-user {
+  display: none;
+  min-width: 0;
+  text-align: right;
+}
+
+.app-user strong,
+.app-user span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-user strong {
+  font-size: 0.92rem;
+}
+
+.app-user span {
+  font-size: 0.8rem;
+}
+
+.app-body {
+  min-width: 0;
+}
+
+.app-sidebar {
+  display: none;
+}
+
+.app-workspace {
+  min-width: 0;
+  padding: 16px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1440px;
+  margin: 0 auto 12px;
+}
+
+.page-header h1,
+.page-header p,
+.contact-form-shell h2,
+.state-panel h2,
+.note-panel h2 {
+  margin: 0;
+}
+
+.page-header h1 {
+  margin-top: 4px;
+  color: #ffffff;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  outline: none;
+}
+
+.page-header p:not(.breadcrumb) {
+  max-width: 760px;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.breadcrumb {
+  color: #ede518;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.page-toolbar,
+.notice-banner,
+.app-main,
+.app-footer {
+  max-width: 1440px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.page-toolbar {
+  margin-bottom: 14px;
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #071117;
+  padding: 12px;
+}
+
+.app-main {
+  min-width: 0;
+}
+
+.app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  border-top: 1px solid #34464d;
+  padding: 16px 0 4px;
+  font-size: 0.88rem;
+}
+
+.app-footer a {
+  display: inline-flex;
+  align-items: center;
+  color: #dff8ff;
+  text-decoration: none;
+}
+
+.icon-button {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #66777d;
+  border-radius: 8px;
+  background: #122229;
+  color: #ffffff;
+}
+
+.shell-menu-button span,
+.drawer-close span {
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.shell-menu-button span:nth-child(1) {
+  transform: translateY(-6px);
+}
+
+.shell-menu-button span:nth-child(3) {
+  transform: translateY(6px);
+}
+
+.drawer-close span:nth-child(1) {
+  transform: rotate(45deg);
+}
+
+.drawer-close span:nth-child(2) {
+  transform: rotate(-45deg);
+}
+
+.button-primary,
+.button-secondary,
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.button-primary {
+  border: 1px solid #ede518;
+  background: #ede518;
+  color: #050505;
+}
+
+.button-secondary {
+  border: 1px solid #66777d;
+  background: #122229;
+  color: #ffffff;
+}
+
+.text-button {
+  border: 1px solid transparent;
+  background: transparent;
+  color: #dff8ff;
+  padding-right: 12px;
+  padding-left: 12px;
+}
+
+.compact-action {
+  white-space: nowrap;
+}
+
+.button-primary:disabled,
+.button-secondary:disabled {
+  cursor: not-allowed;
+  border-color: #2a2f2c;
+  background: #2a2f2c;
+  color: #a5aea9;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role='button']:focus-visible {
+  outline: 3px solid #86e8ff;
+  outline-offset: 2px;
+}
+
+.shell-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.shell-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.shell-nav a[aria-current='page'] {
+  border-color: #ede518;
+  background: rgba(237, 229, 24, 0.12);
+}
+
+.shell-nav a:hover {
+  background: rgba(134, 232, 255, 0.08);
+}
+
+.nav-indicator {
+  width: 8px;
+  height: 24px;
+  border-radius: 999px;
+  background: #66777d;
+}
+
+.shell-nav a[aria-current='page'] .nav-indicator {
+  background: #ede518;
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.navigation-drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 810;
+  width: min(410px, 100vw);
+  height: 100dvh;
+  overflow-y: auto;
+  border-inline-end: 1px solid #34464d;
+  background: #071117;
+  padding: max(14px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.52);
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.toolbar-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+
+.toolbar-filters {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-color: #66777d transparent;
+}
+
+.toolbar-filters label,
+.contact-form label {
+  display: grid;
+  flex: 0 0 180px;
+  gap: 6px;
+  min-width: 180px;
+  color: #c8d6d9;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.toolbar-filters label:first-child {
+  flex-basis: 240px;
+}
+
+.toolbar-filters label.is-selected {
+  color: #ede518;
+}
+
+.toolbar-filters input,
+.toolbar-filters select,
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+  width: 100%;
+  border: 1px solid #66777d;
+  border-radius: 8px;
+  background: #0d1a20;
+  color: #ffffff;
+  padding: 10px 12px;
+}
+
+.toolbar-filters input:disabled {
+  border-color: #34464d;
+  background: #11191d;
+  color: #a5aea9;
+}
+
+.filter-help {
+  display: block;
+  color: #c8d6d9;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.toolbar-filters label.is-selected input,
+.toolbar-filters label.is-selected select {
+  border-color: #ede518;
+}
+
+.toolbar-filters button {
+  align-self: end;
+  flex: 0 0 auto;
+}
+
+.active-filter-row,
+.detail-toolbar,
+.toolbar-summary,
+.chip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.active-filter-row {
+  overflow-x: auto;
+  padding-top: 2px;
+}
+
+.active-filter-row > span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  white-space: nowrap;
+  border: 1px solid #66777d;
+  border-radius: 999px;
+  background: #122229;
+  color: #ffffff;
+  padding: 8px 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.toolbar-primary {
+  justify-self: start;
+}
+
+.detail-toolbar {
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.toolbar-summary {
+  flex: 1 1 auto;
+  overflow-x: auto;
+}
+
+.notice-banner {
+  border: 1px solid #66777d;
+  border-radius: 12px;
+  background: #122229;
+  color: #ffffff;
+  padding: 12px 14px;
+  font-weight: 800;
+}
+
+.notice-banner.success {
+  border-color: #65d6a6;
+}
+
+.notice-banner.error {
+  border-color: #ff7474;
+}
+
+.crm-list,
+.contact-detail,
+.contact-form-shell,
+.dashboard-surface,
+.readonly-list,
+.class-detail,
+.action-registry {
+  min-width: 0;
+}
+
+.dashboard-surface,
+.class-detail {
+  display: grid;
+  gap: 14px;
+}
+
+.dashboard-grid,
+.class-detail-grid,
+.action-registry-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.dashboard-card,
+.readonly-row,
+.action-registry article {
+  min-width: 0;
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #0d1a20;
+  padding: 14px;
+}
+
+.dashboard-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.dashboard-card header,
+.readonly-row,
+.readonly-row dl,
+.action-registry dl {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dashboard-card header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.dashboard-card h2,
+.readonly-row h2,
+.action-registry h2,
+.action-registry h3 {
+  margin: 0;
+  color: #ffffff;
+}
+
+.dashboard-card h2,
+.readonly-row h2 {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.dashboard-card strong {
+  color: #ffffff;
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.dashboard-card p,
+.dashboard-card small,
+.readonly-row p,
+.action-registry p,
+.readonly-row dt,
+.action-registry dt {
+  color: #c8d6d9;
+}
+
+.dashboard-card p,
+.readonly-row p,
+.action-registry p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.dashboard-card small {
+  font-size: 0.82rem;
+}
+
+.state-action_required {
+  border-color: #ede518;
+}
+
+.state-action_needed {
+  border-color: #ede518;
+}
+
+.state-processing {
+  border-color: #86e8ff;
+}
+
+.state-not_connected,
+.state-needs_setup {
+  border-color: #86e8ff;
+}
+
+.state-no_data_yet,
+.state-unavailable {
+  border-color: #66777d;
+  background: #101719;
+}
+
+.state-temporarily_unavailable {
+  border-color: #66777d;
+  background: #101719;
+}
+
+.state-ready {
+  border-color: #65d6a6;
+}
+
+.readonly-list {
+  display: grid;
+  gap: 10px;
+}
+
+.readonly-row {
+  grid-template-columns: 1fr;
+}
+
+.readonly-row dl,
+.action-registry dl {
+  margin: 0;
+}
+
+.readonly-row dl {
+  grid-template-columns: 1fr;
+}
+
+.readonly-row dt,
+.action-registry dt {
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.readonly-row dd,
+.action-registry dd {
+  margin: 4px 0 0;
+  color: #ffffff;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.action-registry {
+  display: grid;
+  gap: 10px;
+}
+
+.diagnostics-disclosure {
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #0d1a20;
+  padding: 12px 14px;
+}
+
+.diagnostics-disclosure summary {
+  min-height: 44px;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 900;
+  line-height: 44px;
+}
+
+.diagnostics-disclosure[open] summary {
+  margin-bottom: 10px;
+}
+
+.action-registry h2 {
+  font-size: 1.1rem;
+}
+
+.action-registry h3 {
+  font-size: 0.95rem;
+}
+
+.contact-table-wrap {
+  display: none;
+  min-width: 0;
+}
+
+.contact-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+.contact-table th {
+  color: #c8d6d9;
+  padding: 0 12px 4px;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.contact-table tr[role='button'] {
+  cursor: pointer;
+  background: #0d1a20;
+}
+
+.contact-table td {
+  border-block: 1px solid #34464d;
+  padding: 14px 12px;
+  color: #ffffff;
+  vertical-align: middle;
+}
+
+.contact-table td:first-child {
+  border-inline-start: 1px solid #34464d;
+  border-start-start-radius: 12px;
+  border-end-start-radius: 12px;
+}
+
+.contact-table td:last-child {
+  border-inline-end: 1px solid #34464d;
+  border-start-end-radius: 12px;
+  border-end-end-radius: 12px;
+}
+
+.contact-table tr[role='button']:hover td,
+.contact-table tr[role='button']:focus-visible td,
+.contact-card:hover,
+.contact-card:focus-visible {
+  border-color: #86e8ff;
+  box-shadow: 0 0 0 3px rgba(134, 232, 255, 0.22);
+}
+
+.contact-table strong,
+.contact-table small {
+  display: block;
+}
+
+.contact-table strong,
+.contact-card strong,
+.detail-grid dd {
+  color: #ffffff;
+}
+
+.contact-card-list {
+  display: grid;
+  gap: 10px;
+}
+
+.contact-card {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #0d1a20;
+  color: #ffffff;
+  padding: 14px;
+  text-align: left;
+}
+
+.contact-card-heading,
+.contact-card-meta {
+  display: grid;
+  gap: 4px;
+}
+
+.contact-card-heading > span {
+  color: #c8d6d9;
+  font-size: 0.88rem;
+}
+
+.semantic-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border: 1px solid #66777d;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.semantic-chip.classification {
+  border-color: #86e8ff;
+  background: rgba(134, 232, 255, 0.1);
+}
+
+.semantic-chip.status {
+  border-color: #ede518;
+  background: rgba(237, 229, 24, 0.12);
+}
+
+.semantic-chip.source {
+  background: #122229;
+}
+
+.ot-section-tabs {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.ot-section-tabs a,
+.ot-section-tabs button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border: 1px solid #66777d;
+  border-radius: 8px;
+  background: #122229;
+  color: #ffffff;
+  padding: 10px 14px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ot-section-tabs a[aria-current='page'],
+.ot-section-tabs button[aria-pressed='true'] {
+  border-color: #ede518;
+  background: rgba(237, 229, 24, 0.14);
+  color: #ffffff;
+}
+
+.ot-metric-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+  gap: 10px;
+}
+
+.ot-metric-tile {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  border: 1px solid #34464d;
+  border-radius: 8px;
+  background: #0d1a20;
+  padding: 14px;
+}
+
+.ot-metric-tile span,
+.ot-metric-tile small,
+.ot-mobile-card span,
+.ot-activity-timeline small,
+.ot-media-frame figcaption {
+  color: #c8d6d9;
+}
+
+.ot-metric-tile strong {
+  color: #ffffff;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.ot-status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  border: 1px solid #66777d;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ot-status-chip.tone-success {
+  border-color: #65d6a6;
+  background: rgba(101, 214, 166, 0.12);
+}
+
+.ot-status-chip.tone-warning {
+  border-color: #ede518;
+  background: rgba(237, 229, 24, 0.12);
+}
+
+.ot-status-chip.tone-danger {
+  border-color: #ff7474;
+  background: rgba(255, 116, 116, 0.12);
+}
+
+.ot-status-chip.tone-info {
+  border-color: #86e8ff;
+  background: rgba(134, 232, 255, 0.1);
+}
+
+.ot-mobile-card {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  border: 1px solid #34464d;
+  border-radius: 8px;
+  background: #0d1a20;
+  color: #ffffff;
+  padding: 14px;
+}
+
+.ot-mobile-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ot-mobile-card header > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ot-mobile-card strong,
+.ot-mobile-card span {
+  overflow-wrap: anywhere;
+}
+
+.ot-state-loading {
+  border-color: #86e8ff;
+}
+
+.ot-state-error,
+.ot-state-denied,
+.ot-state-session-expired {
+  border-color: #ff7474;
+}
+
+.ot-state-offline {
+  border-color: #66777d;
+}
+
+.ot-toast-banner {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  border: 1px solid #66777d;
+  border-radius: 8px;
+  background: #122229;
+  color: #ffffff;
+  padding: 10px 14px;
+  font-weight: 800;
+}
+
+.ot-toast-banner.tone-success {
+  border-color: #65d6a6;
+}
+
+.ot-toast-banner.tone-warning {
+  border-color: #ede518;
+}
+
+.ot-toast-banner.tone-error {
+  border-color: #ff7474;
+}
+
+.ot-media-frame {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.ot-media-frame > div {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #34464d;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(237, 229, 24, 0.12), rgba(134, 232, 255, 0.08)), #071117;
+}
+
+.ot-media-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ot-activity-timeline {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ot-activity-timeline li {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.ot-activity-timeline li > span {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: #ede518;
+  box-shadow: 0 0 0 4px rgba(237, 229, 24, 0.12);
+}
+
+.ot-activity-timeline li > div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.ot-activity-timeline p {
+  margin: 0;
+  color: #c8d6d9;
+  line-height: 1.45;
+}
+
+.ot-fixture-gallery {
+  display: grid;
+  gap: 24px;
+  width: min(1180px, calc(100vw - 28px));
+  margin: 0 auto;
+  padding: 24px 0 48px;
+}
+
+.ot-fixture-gallery > section {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  border-top: 1px solid #34464d;
+  padding-top: 18px;
+}
+
+.ot-fixture-gallery h1,
+.ot-fixture-gallery h2,
+.ot-fixture-gallery h3 {
+  margin: 0;
+}
+
+.ot-fixture-surface {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid #34464d;
+  border-radius: 8px;
+  background: #071117;
+  padding: 14px;
+}
+
+.ot-fixture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.ot-long-content {
+  max-height: 260px;
+  overflow: auto;
+  border: 1px solid #34464d;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.load-more {
+  margin-top: 14px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0;
+}
+
+.detail-grid div,
+.note-panel,
+.state-panel {
+  min-width: 0;
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #0d1a20;
+  padding: 14px;
+}
+
+.detail-grid dt {
+  color: #c8d6d9;
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.detail-grid dd {
+  margin: 6px 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.note-panel {
+  margin-top: 12px;
+}
+
+.note-panel h2,
+.contact-form-shell h2,
+.state-panel h2 {
+  color: #ffffff;
+  font-size: 1.15rem;
+}
+
+.note-panel p,
+.state-panel p {
+  color: #c8d6d9;
+  line-height: 1.5;
+}
+
+.fact-list,
+.compact-list,
+.timeline-list,
+.support-ticket-list {
+  display: grid;
+  gap: 8px;
+}
+
+.fact-list {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-top: 10px;
+}
+
+.fact-list span,
+.compact-list li,
+.timeline-list li,
+.support-ticket-list a,
+.reply-preview {
+  min-width: 0;
+  border: 1px solid #34464d;
+  border-radius: 8px;
+  background: #071117;
+  padding: 10px;
+}
+
+.compact-list,
+.timeline-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compact-list li,
+.timeline-list li,
+.support-ticket-list a {
+  display: grid;
+  gap: 4px;
+  color: #f8fafb;
+  text-decoration: none;
+}
+
+.compact-list span,
+.timeline-list span,
+.support-ticket-list span,
+.support-ticket-list small {
+  color: #c8d6d9;
+}
+
+.detail-columns,
+.support-layout,
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.inline-editor,
+.support-form {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.inline-editor label,
+.support-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.inline-editor textarea,
+.support-form textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.support-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.support-ticket-list {
+  align-content: start;
+}
+
+.state-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.state-panel.error {
+  border-color: #ff7474;
+}
+
+.state-panel.empty {
+  border-color: #66777d;
+}
+
+.session-expired-state {
+  max-width: 620px;
+}
+
+.contact-form-shell {
+  display: grid;
+  gap: 12px;
+}
+
+.contact-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #0d1a20;
+  padding: 14px;
+}
+
+.contact-form label {
+  flex: unset;
+}
+
+.contact-form textarea {
+  min-height: 116px;
+  resize: vertical;
+}
+
+.wide-field,
+.form-actions {
+  grid-column: 1 / -1;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.skeleton-list,
+.skeleton-detail {
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1fr 0.9fr;
+  gap: 12px;
+  min-height: 64px;
+  border: 1px solid #34464d;
+  border-radius: 12px;
+  background: #0d1a20;
+  padding: 14px;
+}
+
+.skeleton-row span,
+.skeleton-detail span,
+.skeleton-detail strong {
+  display: block;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #122229, #18272d, #122229);
+}
+
+.skeleton-detail div {
+  min-height: 82px;
+}
+
+.skeleton-detail strong {
+  height: 18px;
+  margin-top: 10px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .contact-card,
+  .contact-table td,
+  .shell-nav a,
+  .button-primary,
+  .button-secondary {
+    transition:
+      border-color 120ms cubic-bezier(0.2, 0, 0, 1),
+      background 120ms cubic-bezier(0.2, 0, 0, 1),
+      box-shadow 120ms cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+@media (min-width: 600px) {
+  .app-workspace {
+    padding: 24px;
+  }
+
+  .page-header h1 {
+    font-size: 1.875rem;
+  }
+
+  .detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contact-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .readonly-row {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+    align-items: start;
+  }
+
+  .readonly-row dl {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .action-registry-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detail-columns,
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .contact-card-list {
+    display: none;
+  }
+
+  .contact-table-wrap {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .detail-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .dashboard-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .support-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.38fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1200px) {
+  .app-header {
+    grid-template-columns: minmax(0, 1fr) auto minmax(180px, 280px) auto;
+    min-height: 64px;
+    padding-right: 32px;
+    padding-left: 32px;
+  }
+
+  .shell-menu-button {
+    display: none;
+  }
+
+  .app-context,
+  .app-user {
+    display: block;
+  }
+
+  .app-body {
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+  }
+
+  .app-sidebar {
+    display: block;
+    position: sticky;
+    top: 64px;
+    align-self: start;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    border-inline-end: 1px solid #34464d;
+    background: #071117;
+    padding: 20px 16px;
+  }
+
+  .app-workspace {
+    padding: 32px;
+  }
+
+  .toolbar-grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .active-filter-row {
+    grid-column: 1 / -1;
+  }
+
+  .toolbar-primary {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-header {
+    padding: 8px 10px;
+  }
+
+  .app-brand {
+    gap: 8px;
+  }
+
+  .app-brand strong {
+    max-width: 104px;
+  }
+
+  .compact-action {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .skeleton-row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+  <main class="app-shell">
+    <div class="ot-fixture-gallery" data-ot-visual-gallery="OT-112" data-ot-usable="true">
+      <header class="page-header" data-fixture="shell-header">
+        <div>
+          <p class="breadcrumb">One Time Product System</p>
+          <h1 id="fixture-title" tabindex="-1">Visual Fixture Gallery</h1>
+          <p>Fictional component fixtures for route, role, state, density, and evidence capture contracts.</p>
+        </div>
+        <a class="button-primary compact-action" href="#states">Review States</a>
+      </header>
+      <section aria-labelledby="matrix-heading">
+        <h2 id="matrix-heading">Visual Matrix</h2>
+        <div class="ot-fixture-surface">
+          <p>Viewports: 360x800, 390x844, 768x1024, 1440x1000</p>
+          <p>Modes: default, zoom-200, rtl, reduced-motion, keyboard-focus, long-content, slow-state, error-state</p>
+          <p>Budgets: LCP 2500ms, CLS 0.1, no horizontal overflow, 44px touch targets.</p>
+        </div>
+      </section>
+      <section aria-labelledby="tabs-heading">
+        <h2 id="tabs-heading">Tabs And Filters</h2>
+        <nav class="ot-section-tabs" aria-label="Fixture tabs" data-ot-primitive="SectionTabs">
+          <a href="#tabs-heading" aria-current="page">Overview</a>
+          <a href="#cards">Cards</a>
+          <a href="#states">States</a>
+          <button type="button" disabled>Deferred</button>
+        </nav>
+        <div class="page-toolbar">
+          <div class="toolbar-grid">
+            <div class="toolbar-filters" data-ot-primitive="FilterStrip">
+              <label class="is-selected"><span>Search</span><input value="Sample family" aria-label="Search"></label>
+              <label><span>Status</span><select aria-label="Status"><option>Ready</option><option>Needs review</option></select></label>
+              <label><span>Long option label</span><input value="A very long fictional neighborhood name"></label>
             </div>
+            <button class="button-primary toolbar-primary" type="button">Apply</button>
           </div>
-        </section>
-        <section id="cards" aria-labelledby="cards-heading" data-fixture="cards">
-          <h2 id="cards-heading">Cards And Metrics</h2>
-          <div class="ot-metric-row">
-            <article class="ot-metric-tile" data-ot-primitive="MetricTile">
-              <span>Active learners</span><strong>3</strong><small>Household limit reached</small>
-            </article>
-            <article class="ot-metric-tile" data-ot-primitive="MetricTile">
-              <span>Classes attended</span><strong>18</strong><small>+4 this week</small>
-            </article>
-            <article class="ot-metric-tile" data-ot-primitive="MetricTile">
-              <span>Open items</span><strong>2</strong><small>Review before Shabbos</small>
-            </article>
+        </div>
+      </section>
+      <section id="cards" aria-labelledby="cards-heading" data-fixture="cards">
+        <h2 id="cards-heading">Cards And Metrics</h2>
+        <div class="ot-metric-row">
+          <article class="ot-metric-tile" data-ot-primitive="MetricTile"><span>Active learners</span><strong>3</strong><small>Household limit reached</small></article>
+          <article class="ot-metric-tile" data-ot-primitive="MetricTile"><span>Classes attended</span><strong>18</strong><small>+4 this week</small></article>
+          <article class="ot-metric-tile" data-ot-primitive="MetricTile"><span>Open items</span><strong>2</strong><small>Review before Shabbos</small></article>
+        </div>
+        <div class="ot-fixture-grid">
+          <article class="dashboard-card" data-ot-primitive="Card"><h3>Owner workspace</h3><p>Fictional owner/admin dashboard card using the shared panel rhythm.</p></article>
+          <article class="dashboard-card state-needs_setup" data-ot-primitive="Card"><h3>Parent setup</h3><p>Student access is ready for a parent confirmation.</p></article>
+          <article class="dashboard-card state-unavailable" data-ot-primitive="Card"><h3>Provider unavailable</h3><p>Provider-dependent action is held behind truthful state copy.</p></article>
+        </div>
+      </section>
+      <section aria-labelledby="table-heading" data-fixture="table-mobile">
+        <h2 id="table-heading">Tables And Mobile Cards</h2>
+        <div class="contact-table-wrap">
+          <table class="contact-table" data-ot-primitive="Table">
+            <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Last activity</th></tr></thead>
+            <tbody>
+              <tr role="button" tabindex="0"><td><strong>Sample Family</strong><small>Fictional record</small></td><td>Family</td><td><span class="semantic-chip status">Ready</span></td><td>Today</td></tr>
+              <tr role="button" tabindex="0"><td><strong>Sample School</strong><small>No production data</small></td><td>School</td><td><span class="semantic-chip source">Review</span></td><td>Yesterday</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="contact-card-list">
+          <article class="ot-mobile-card" data-ot-primitive="MobileCard">
+            <header><div><strong>Sample Family</strong><span>Family - Ready</span></div><button class="button-secondary" type="button">Open</button></header>
+            <p>Mobile row pattern with stable controls and wrap-safe text.</p>
+          </article>
+        </div>
+      </section>
+      <section aria-labelledby="forms-heading" data-fixture="forms">
+        <h2 id="forms-heading">Forms And Actions</h2>
+        <form class="contact-form">
+          <label><span>Display name</span><input value="Sample Learner"></label>
+          <label><span>Role</span><select><option>Parent</option><option>Student</option></select></label>
+          <label class="wide-field"><span>Message</span><textarea rows="3">This fictional long message wraps inside the form without resizing the layout.</textarea></label>
+          <label class="wide-field"><input type="checkbox" checked> Confirm fixture-only data</label>
+          <div class="form-actions" data-fixture="buttons">
+            <button class="button-primary" type="button" data-ot-primitive="Button">Primary</button>
+            <button class="button-secondary" type="button" data-ot-primitive="Button">Secondary</button>
+            <button class="text-button" type="button" data-ot-primitive="Button">Text</button>
+            <button class="button-secondary ot-button-danger" type="button" data-ot-primitive="Button">Danger</button>
+            <button class="button-secondary" type="button" disabled data-ot-primitive="Button">Disabled</button>
           </div>
-          <div class="ot-fixture-grid">
-            <article class="dashboard-card" data-ot-primitive="Card">
-              <h3>Owner workspace</h3>
-              <p>Fictional owner/admin dashboard card using the shared panel rhythm.</p>
-            </article>
-            <article class="dashboard-card state-needs_setup" data-ot-primitive="Card">
-              <h3>Parent setup</h3>
-              <p>Student access is ready for a parent confirmation.</p>
-            </article>
-            <article class="dashboard-card state-unavailable" data-ot-primitive="Card">
-              <h3>Provider unavailable</h3>
-              <p>Provider-dependent action is held behind truthful state copy.</p>
-            </article>
-          </div>
-        </section>
-        <section aria-labelledby="table-heading" data-fixture="table-mobile">
-          <h2 id="table-heading">Tables And Mobile Cards</h2>
-          <div class="contact-table-wrap">
-            <table class="contact-table" data-ot-primitive="Table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Status</th>
-                  <th>Last activity</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr role="button" tabindex="0">
-                  <td><strong>Sample Family</strong><small>Fictional record</small></td>
-                  <td>Family</td>
-                  <td><span class="semantic-chip status">Ready</span></td>
-                  <td>Today</td>
-                </tr>
-                <tr role="button" tabindex="0">
-                  <td><strong>Sample School</strong><small>No production data</small></td>
-                  <td>School</td>
-                  <td><span class="semantic-chip source">Review</span></td>
-                  <td>Yesterday</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="contact-card-list">
-            <article class="ot-mobile-card" data-ot-primitive="MobileCard">
-              <header>
-                <div><strong>Sample Family</strong><span>Family - Ready</span></div>
-                <button class="button-secondary" type="button">Open</button>
-              </header>
-              <p>Mobile row pattern with stable controls and wrap-safe text.</p>
-            </article>
-          </div>
-        </section>
-        <section aria-labelledby="forms-heading" data-fixture="forms">
-          <h2 id="forms-heading">Forms And Actions</h2>
-          <form class="contact-form">
-            <label><span>Display name</span><input value="Sample Learner" /></label>
-            <label
-              ><span>Role</span
-              ><select>
-                <option>Parent</option>
-                <option>Student</option>
-              </select></label
-            >
-            <label class="wide-field"
-              ><span>Message</span
-              ><textarea rows="3">
-This fictional long message wraps inside the form without resizing the layout.</textarea>
-            </label>
-            <label class="wide-field"
-              ><input type="checkbox" checked /> Confirm fixture-only data</label
-            >
-            <div class="form-actions" data-fixture="buttons">
-              <button class="button-primary" type="button" data-ot-primitive="Button">
-                Primary
-              </button>
-              <button class="button-secondary" type="button" data-ot-primitive="Button">
-                Secondary
-              </button>
-              <button class="text-button" type="button" data-ot-primitive="Button">Text</button>
-              <button
-                class="button-secondary ot-button-danger"
-                type="button"
-                data-ot-primitive="Button"
-              >
-                Danger
-              </button>
-              <button class="button-secondary" type="button" disabled data-ot-primitive="Button">
-                Disabled
-              </button>
-            </div>
-          </form>
-        </section>
-        <section aria-labelledby="chips-heading">
-          <h2 id="chips-heading">Status Chips And Banners</h2>
-          <div class="chip-row">
-            <span class="ot-status-chip tone-neutral" data-ot-primitive="StatusChip">Neutral</span>
-            <span class="ot-status-chip tone-success" data-ot-primitive="StatusChip">Success</span>
-            <span class="ot-status-chip tone-warning" data-ot-primitive="StatusChip">Warning</span>
-            <span class="ot-status-chip tone-danger" data-ot-primitive="StatusChip">Danger</span>
-            <span class="ot-status-chip tone-info" data-ot-primitive="StatusChip">Info</span>
-          </div>
-          <div class="ot-toast-banner tone-warning" data-ot-primitive="ToastBanner">
-            Provider-dependent action is paused until configuration is available.
-          </div>
-        </section>
-        <section id="states" aria-labelledby="states-heading" data-fixture="states">
-          <h2 id="states-heading">States</h2>
-          <div class="ot-fixture-grid">
-            <section
-              class="state-panel ot-state-empty"
-              data-visual-state="empty"
-              data-ot-primitive="StatePanel"
-            >
-              <h3>Nothing to show yet</h3>
-              <p>New records will appear after an authorized local action.</p>
-              <button class="button-secondary" type="button">Retry</button>
-            </section>
-            <section
-              class="state-panel ot-state-loading"
-              data-visual-state="loading"
-              data-ot-primitive="StatePanel"
-            >
-              <h3>Loading named state</h3>
-              <p>Use this only as an intentional loading-state fixture, never as final evidence.</p>
-              <button class="button-secondary" type="button">Retry</button>
-            </section>
-            <section
-              class="state-panel ot-state-error"
-              data-visual-state="error"
-              data-ot-primitive="StatePanel"
-            >
-              <h3>Action could not finish</h3>
-              <p>The user can retry without losing entered information.</p>
-              <button class="button-secondary" type="button">Retry</button>
-            </section>
-            <section
-              class="state-panel ot-state-denied"
-              data-visual-state="denied"
-              data-ot-primitive="StatePanel"
-            >
-              <h3>Access unavailable</h3>
-              <p>This account cannot open the requested view.</p>
-              <button class="button-secondary" type="button">Retry</button>
-            </section>
-            <section
-              class="state-panel ot-state-offline"
-              data-visual-state="offline"
-              data-ot-primitive="StatePanel"
-            >
-              <h3>Offline</h3>
-              <p>Reconnect and retry. Previously loaded details remain readable.</p>
-              <button class="button-secondary" type="button">Retry</button>
-            </section>
-            <section
-              class="state-panel ot-state-session-expired"
-              data-visual-state="session-expired"
-              data-ot-primitive="StatePanel"
-            >
-              <h3>Session expired</h3>
-              <p>Protected state was cleared. Sign in again to continue.</p>
-              <button class="button-secondary" type="button">Retry</button>
-            </section>
-          </div>
-        </section>
-        <section aria-labelledby="dialog-heading" data-fixture="drawers-dialogs">
-          <h2 id="dialog-heading">Drawers And Dialogs</h2>
-          <div class="ot-fixture-grid">
-            <aside
-              class="navigation-drawer"
-              style="position: static; height: auto; width: 100%"
-              data-ot-primitive="Drawer"
-            >
-              <div class="drawer-header">
-                <h3>Menu</h3>
-                <button class="icon-button drawer-close" type="button" aria-label="Close">
-                  <span></span><span></span>
-                </button>
-              </div>
-              <nav class="shell-nav">
-                <a href="#cards" aria-current="page"><span class="nav-indicator"></span>Cards</a
-                ><a href="#states"><span class="nav-indicator"></span>States</a>
-              </nav>
-            </aside>
-            <section
-              class="navigation-drawer"
-              style="position: static; height: auto; width: 100%"
-              role="dialog"
-              aria-modal="true"
-              data-ot-primitive="Dialog"
-            >
-              <div class="drawer-header">
-                <h3>Confirm reset</h3>
-                <button class="icon-button drawer-close" type="button" aria-label="Close">
-                  <span></span><span></span>
-                </button>
-              </div>
-              <p>Reset access for the fictional learner?</p>
-              <div class="form-actions">
-                <button class="button-secondary" type="button">Cancel</button
-                ><button class="button-primary" type="button">Reset</button>
-              </div>
-            </section>
-          </div>
-        </section>
-        <section aria-labelledby="media-heading">
-          <h2 id="media-heading">Media And Timeline</h2>
-          <div class="ot-fixture-grid">
-            <figure class="ot-media-frame" data-ot-primitive="MediaFrame">
-              <div>
-                <img
-                  src="file:///C:/Users/User/.overnight-20260717-worktrees/OT-112/apps/web/public/assets/outcomes/clarity-class.webp"
-                  alt="Fictional clarity class fixture"
-                />
-              </div>
-              <figcaption>Approved imagery with place-free product caption.</figcaption>
-            </figure>
-            <ol class="ot-activity-timeline" data-ot-primitive="ActivityTimeline">
-              <li>
-                <span aria-hidden="true"></span>
-                <div>
-                  <strong>Signup captured</strong><small>Today</small>
-                  <p>Fictional lead entered the intake queue.</p>
-                </div>
-              </li>
-              <li>
-                <span aria-hidden="true"></span>
-                <div>
-                  <strong>Parent reviewed</strong><small>Later today</small>
-                  <p>Long timeline text wraps without horizontal overflow in mobile evidence.</p>
-                </div>
-              </li>
-            </ol>
-          </div>
-          <div class="ot-long-content">
-            <p>
-              Long content row 1: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 2: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 3: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 4: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 5: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 6: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 7: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 8: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 9: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-            <p>
-              Long content row 10: fictional status text remains readable, scrollable, and does not
-              resize surrounding controls.
-            </p>
-          </div>
-        </section>
-        <footer class="app-footer" data-ot-primitive="Footer">
-          <span>One Time Mishnayos</span>
-          <a href="#fixture-title">Back to top</a>
-        </footer>
-        <script>
-          window.__OT112_VISUAL_FIXTURE_READY__ = true;
-          performance.mark('ot112-visual-fixture-usable');
-        </script>
-      </div>
-    </main>
-  </body>
+        </form>
+      </section>
+      <section aria-labelledby="chips-heading">
+        <h2 id="chips-heading">Status Chips And Banners</h2>
+        <div class="chip-row">
+          <span class="ot-status-chip tone-neutral" data-ot-primitive="StatusChip">Neutral</span>
+          <span class="ot-status-chip tone-success" data-ot-primitive="StatusChip">Success</span>
+          <span class="ot-status-chip tone-warning" data-ot-primitive="StatusChip">Warning</span>
+          <span class="ot-status-chip tone-danger" data-ot-primitive="StatusChip">Danger</span>
+          <span class="ot-status-chip tone-info" data-ot-primitive="StatusChip">Info</span>
+        </div>
+        <div class="ot-toast-banner tone-warning" data-ot-primitive="ToastBanner">Provider-dependent action is paused until configuration is available.</div>
+      </section>
+      <section id="states" aria-labelledby="states-heading" data-fixture="states">
+        <h2 id="states-heading">States</h2>
+        <div class="ot-fixture-grid">
+          <section class="state-panel ot-state-empty" data-visual-state="empty" data-ot-primitive="StatePanel">
+    <h3>Nothing to show yet</h3>
+    <p>New records will appear after an authorized local action.</p>
+    <button class="button-secondary" type="button">Retry</button>
+  </section>
+          <section class="state-panel ot-state-loading" data-visual-state="loading" data-ot-primitive="StatePanel">
+    <h3>Loading named state</h3>
+    <p>Use this only as an intentional loading-state fixture, never as final evidence.</p>
+    <button class="button-secondary" type="button">Retry</button>
+  </section>
+          <section class="state-panel ot-state-error" data-visual-state="error" data-ot-primitive="StatePanel">
+    <h3>Action could not finish</h3>
+    <p>The user can retry without losing entered information.</p>
+    <button class="button-secondary" type="button">Retry</button>
+  </section>
+          <section class="state-panel ot-state-denied" data-visual-state="denied" data-ot-primitive="StatePanel">
+    <h3>Access unavailable</h3>
+    <p>This account cannot open the requested view.</p>
+    <button class="button-secondary" type="button">Retry</button>
+  </section>
+          <section class="state-panel ot-state-offline" data-visual-state="offline" data-ot-primitive="StatePanel">
+    <h3>Offline</h3>
+    <p>Reconnect and retry. Previously loaded details remain readable.</p>
+    <button class="button-secondary" type="button">Retry</button>
+  </section>
+          <section class="state-panel ot-state-session-expired" data-visual-state="session-expired" data-ot-primitive="StatePanel">
+    <h3>Session expired</h3>
+    <p>Protected state was cleared. Sign in again to continue.</p>
+    <button class="button-secondary" type="button">Retry</button>
+  </section>
+        </div>
+      </section>
+      <section aria-labelledby="dialog-heading" data-fixture="drawers-dialogs">
+        <h2 id="dialog-heading">Drawers And Dialogs</h2>
+        <div class="ot-fixture-grid">
+          <aside class="navigation-drawer" style="position: static; height: auto; width: 100%;" data-ot-primitive="Drawer">
+            <div class="drawer-header"><h3>Menu</h3><button class="icon-button drawer-close" type="button" aria-label="Close"><span></span><span></span></button></div>
+            <nav class="shell-nav"><a href="#cards" aria-current="page"><span class="nav-indicator"></span>Cards</a><a href="#states"><span class="nav-indicator"></span>States</a></nav>
+          </aside>
+          <section class="navigation-drawer" style="position: static; height: auto; width: 100%;" role="dialog" aria-modal="true" data-ot-primitive="Dialog">
+            <div class="drawer-header"><h3>Confirm reset</h3><button class="icon-button drawer-close" type="button" aria-label="Close"><span></span><span></span></button></div>
+            <p>Reset access for the fictional learner?</p>
+            <div class="form-actions"><button class="button-secondary" type="button">Cancel</button><button class="button-primary" type="button">Reset</button></div>
+          </section>
+        </div>
+      </section>
+      <section aria-labelledby="media-heading">
+        <h2 id="media-heading">Media And Timeline</h2>
+        <div class="ot-fixture-grid">
+          <figure class="ot-media-frame" data-ot-primitive="MediaFrame">
+            <div><img src="file:///C:/Users/User/OneTimeOneTime-w13-100-final-launch/apps/web/public/assets/outcomes/clarity-class.webp" alt="Fictional clarity class fixture"></div>
+            <figcaption>Approved imagery with place-free product caption.</figcaption>
+          </figure>
+          <ol class="ot-activity-timeline" data-ot-primitive="ActivityTimeline">
+            <li><span aria-hidden="true"></span><div><strong>Signup captured</strong><small>Today</small><p>Fictional lead entered the intake queue.</p></div></li>
+            <li><span aria-hidden="true"></span><div><strong>Parent reviewed</strong><small>Later today</small><p>Long timeline text wraps without horizontal overflow in mobile evidence.</p></div></li>
+          </ol>
+        </div>
+        <div class="ot-long-content">
+          <p>Long content row 1: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 2: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 3: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 4: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 5: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 6: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 7: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 8: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 9: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p><p>Long content row 10: fictional status text remains readable, scrollable, and does not resize surrounding controls.</p>
+        </div>
+      </section>
+      <footer class="app-footer" data-ot-primitive="Footer">
+        <span>One Time Mishnayos</span>
+        <a href="#fixture-title">Back to top</a>
+      </footer>
+      <script>
+        window.__OT112_VISUAL_FIXTURE_READY__ = true;
+        performance.mark('ot112-visual-fixture-usable');
+      </script>
+    </div>
+  </main>
+</body>
 </html>

@@ -312,6 +312,124 @@
   color: #ffffff;
   font-weight: 800;
 }
+.ot-gamification {
+  gap: 14px;
+}
+.ot-celebration,
+.ot-level-card,
+.ot-streak-card,
+.ot-reward-form {
+  background: #191919;
+  border: 1px solid rgba(255, 210, 31, 0.2);
+  border-radius: 8px;
+  padding: 12px;
+}
+.ot-celebration {
+  display: grid;
+  gap: 4px;
+  color: #ffffff;
+}
+.ot-celebration span,
+.ot-guardrail-note {
+  color: var(--ot-portal-muted);
+  overflow-wrap: anywhere;
+}
+.ot-level-card {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+.ot-level-card h3,
+.ot-level-card p {
+  margin: 0;
+}
+.ot-progress-bars,
+.ot-reward-form {
+  display: grid;
+  gap: 10px;
+}
+.ot-progress-meter {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  color: var(--ot-portal-muted);
+}
+.ot-progress-meter > span {
+  grid-column: 1 / -1;
+}
+.ot-progress-meter > div {
+  min-width: 0;
+  height: 10px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+.ot-progress-meter i {
+  display: block;
+  height: 100%;
+  background: var(--ot-portal-yellow);
+  border-radius: 999px;
+}
+.ot-progress-meter strong {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+.ot-streak-grid,
+.ot-badge-list {
+  display: grid;
+  gap: 10px;
+}
+.ot-streak-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ot-streak-card {
+  display: grid;
+  gap: 4px;
+}
+.ot-streak-card strong,
+.ot-badge {
+  color: #ffffff;
+}
+.ot-streak-card span,
+.ot-streak-card small {
+  color: var(--ot-portal-muted);
+}
+.ot-badge-list {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+.ot-badge {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255, 210, 31, 0.16);
+  border: 1px solid rgba(255, 210, 31, 0.34);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.ot-badge.tone-ice {
+  background: rgba(156, 231, 240, 0.14);
+  border-color: rgba(156, 231, 240, 0.36);
+}
+.ot-badge.tone-success {
+  background: rgba(99, 210, 149, 0.14);
+  border-color: rgba(99, 210, 149, 0.36);
+}
+.ot-milestone[data-status='earned'] {
+  border-color: rgba(99, 210, 149, 0.4);
+}
+.ot-item[data-reversal='true'] {
+  border-color: rgba(255, 105, 120, 0.46);
+}
+.ot-reward-form {
+  grid-template-columns: 1fr;
+  align-items: end;
+}
 @media (max-width: 760px) {
   .ot-portal {
     padding: 14px;
@@ -326,6 +444,10 @@
   }
   .ot-grid-parent,
   .ot-grid {
+    grid-template-columns: 1fr;
+  }
+  .ot-streak-grid,
+  .ot-progress-meter {
     grid-template-columns: 1fr;
   }
 }

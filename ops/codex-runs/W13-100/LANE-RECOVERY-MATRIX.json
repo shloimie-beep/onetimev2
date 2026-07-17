@@ -1,7 +1,8 @@
 {
   "schema_version": "onetime.w13_100.lane_recovery_matrix.v1",
   "generated_at": "2026-07-17T18:20:46Z",
-  "status": "w13_10_integrated_w12_09_pending_review",
+  "updated_at": "2026-07-17T19:09:41Z",
+  "status": "w13_10_integrated_w12_09_semantically_ported_checkpoint_ready",
   "lanes": [
     {
       "lane": "W12-100 convergence",
@@ -15,14 +16,14 @@
       "ref": "origin/codex/w13-10-complete-launch-foundations",
       "head": "698570f2d6b2701d1345794d16b93affd1ff96ae",
       "classification": "accepted_integrated_locally",
-      "recovery_action": "merged into W12-100 convergence with semantic conflict resolution; checkpoint commit pending"
+      "recovery_action": "merged into W12-100 convergence with semantic conflict resolution; checkpoint commit 0a875bb75f57a16bd93dd36feba4658faf030aeb"
     },
     {
       "lane": "W12-09/W13 gamification",
       "ref": "origin/codex/w12-09-student-gamification",
       "head": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
-      "classification": "newly_authorized_subject_to_safety_review",
-      "recovery_action": "inspect for safe controlled Day-One inclusion; do not mechanically merge because branch removes W12-100/W13 records and migrations"
+      "classification": "accepted_semantically_ported_locally",
+      "recovery_action": "ported safe gamification contracts, service, repository, portal UI, owner/admin rewards view, registry entries, tests, and additive migration 2203; skipped mechanical merge because source branch removed W12-100/W13 records and migrations"
     }
   ]
 }

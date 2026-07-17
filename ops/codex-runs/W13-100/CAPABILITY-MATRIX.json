@@ -1,12 +1,23 @@
 {
   "schema_version": "onetime.w13_100.capability_matrix.v1",
   "generated_at": "2026-07-17T18:20:46Z",
-  "status": "initial",
+  "updated_at": "2026-07-17T19:09:41Z",
+  "status": "safe_core_local_validation_passed_external_gates_blocked",
   "capabilities": [
     {
       "id": "safe_core",
-      "status": "under_recovery",
-      "evidence": "W13-100 branch created from W12-100 convergence; W13-10 and gamification pending convergence."
+      "status": "local_validation_passed",
+      "evidence": "W13-10 and W12-09 gamification semantics are locally converged; unit, integration, build, e2e, accessibility, performance, secret scan, lint, typecheck, brand check, and duplicate migration-prefix checks passed."
+    },
+    {
+      "id": "student_gamification",
+      "status": "ready_for_staging_after_checkpoint",
+      "evidence": "Private student learning points, streaks, badges, milestones, parent reward goals, owner rewards dashboard, and guardrail copy are implemented with no public rankings, random rewards, or empty-click points."
+    },
+    {
+      "id": "portal_test_lab",
+      "status": "local_validation_passed",
+      "evidence": "Portal Test Lab integration and e2e journeys passed after filtering legacy reward reasons from strict gamification summaries."
     },
     {
       "id": "crm_import",

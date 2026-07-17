@@ -1,0 +1,72 @@
+{
+  "status": "passed",
+  "generated_at": "2026-07-17T18:59:28.576Z",
+  "viewports": [
+    {
+      "name": "phone-360x800",
+      "width": 360,
+      "height": 800
+    },
+    {
+      "name": "phone-390x844",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "tablet-768x1024",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop-1440x1000",
+      "width": 1440,
+      "height": 1000
+    }
+  ],
+  "scenarios": [
+    "student-celebration",
+    "parent-rewards",
+    "admin-reversal",
+    "student-loading",
+    "parent-empty",
+    "student-offline",
+    "admin-error"
+  ],
+  "screenshots": [
+    "student-celebration-phone-360x800.png",
+    "student-celebration-phone-390x844.png",
+    "student-celebration-tablet-768x1024.png",
+    "student-celebration-desktop-1440x1000.png",
+    "parent-rewards-phone-360x800.png",
+    "parent-rewards-phone-390x844.png",
+    "parent-rewards-tablet-768x1024.png",
+    "parent-rewards-desktop-1440x1000.png",
+    "admin-reversal-phone-360x800.png",
+    "admin-reversal-phone-390x844.png",
+    "admin-reversal-tablet-768x1024.png",
+    "admin-reversal-desktop-1440x1000.png",
+    "student-loading-phone-360x800.png",
+    "student-loading-phone-390x844.png",
+    "student-loading-tablet-768x1024.png",
+    "student-loading-desktop-1440x1000.png",
+    "parent-empty-phone-360x800.png",
+    "parent-empty-phone-390x844.png",
+    "parent-empty-tablet-768x1024.png",
+    "parent-empty-desktop-1440x1000.png",
+    "student-offline-phone-360x800.png",
+    "student-offline-phone-390x844.png",
+    "student-offline-tablet-768x1024.png",
+    "student-offline-desktop-1440x1000.png",
+    "admin-error-phone-360x800.png",
+    "admin-error-phone-390x844.png",
+    "admin-error-tablet-768x1024.png",
+    "admin-error-desktop-1440x1000.png"
+  ],
+  "accessibility": {
+    "critical_or_serious_violations": 0,
+    "violations": []
+  },
+  "layout": {
+    "horizontal_overflow": []
+  }
+}

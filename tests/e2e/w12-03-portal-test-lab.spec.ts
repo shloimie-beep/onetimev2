@@ -111,9 +111,9 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     await expect(studentPage.getByText('W12 Fictional Recording')).toBeVisible();
     await expect(studentPage.getByText('W12 Fictional Review Sheet')).toBeVisible();
     const progress = studentPage.getByRole('region', { name: 'Progress' });
-    await expect(progress.getByText('Classes')).toBeVisible();
-    await expect(progress.getByText('Points')).toBeVisible();
-    await expect(progress.getByText('5')).toBeVisible();
+    const metrics = progress.locator('.ot-metrics');
+    await expect(metrics.locator('div').nth(0)).toHaveText('Classes1');
+    await expect(metrics.locator('div').nth(3)).toHaveText('Points5');
     await expect(
       studentPage.getByText(/What should I review before the next fictional class/i),
     ).toBeVisible();

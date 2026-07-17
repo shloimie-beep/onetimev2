@@ -11,7 +11,7 @@ test('W13-10 legal pages render versioned launch truth without billing claims', 
   ] as const) {
     await page.goto(path);
     await expect(page.getByRole('heading', { name: heading })).toBeVisible();
-    await expect(page.getByText('counsel_review_required')).toBeVisible();
+    await expect(page.locator('main').getByText('counsel_review_required').first()).toBeVisible();
     await expect(page.locator('main')).not.toContainText(/\$67|three seats|live billing/i);
   }
 });

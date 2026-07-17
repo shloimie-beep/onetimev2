@@ -28,6 +28,7 @@ import type {
   UpdateLearnerPayload,
   UpcomingClassSummary,
 } from '../../../contracts/src/portals/index.ts';
+import type { GamificationSummary } from '../../../contracts/src/gamification/index.ts';
 import { hasPortalCapability } from '../../../contracts/src/portals/index.ts';
 
 export type { StudentAccessOperationType } from '../../../contracts/src/portals/index.ts';
@@ -250,11 +251,19 @@ export type BillingSummaryAdapter = {
   }): Promise<BillingSummary>;
 };
 
+export type LearnerGamificationAdapter = {
+  summaryForLearner(args: {
+    actor: PortalActorContext;
+    learner: LearnerProfile;
+  }): Promise<GamificationSummary>;
+};
+
 export type PortalServiceDeps = {
   repository: PortalRepository;
   classAccess: LearnerClassAccessAdapter;
   contentAccess: LearnerContentAccessAdapter;
   progress: LearnerProgressAdapter;
+  gamification?: LearnerGamificationAdapter;
   credentialLifecycle: StudentCredentialLifecycleAdapter;
   updates?: PortalUpdatesAdapter;
   helper?: ScopedPortalHelperAdapter;
@@ -273,6 +282,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
   const helper = deps.helper ?? unavailableHelper(PARENT_HELPER_PREPARING_MESSAGE);
   const support = deps.support ?? localSupportPreview(deps.idGenerator);
   const billing = deps.billing ?? disabledBilling();
+  const gamification = deps.gamification ?? localGamification();
 
   return {
     async dashboard(
@@ -304,6 +314,12 @@ export function createParentPortalService(deps: PortalServiceDeps) {
           await deps.repository.getRewardBalance({ actor, learner_key: learner.learner_key }),
         ]),
       );
+      const gamificationEntries = await Promise.all(
+        visibleLearners.map(async (learner) => [
+          learner.learner_key,
+          await gamification.summaryForLearner({ actor, learner }),
+        ]),
+      );
       const updateEntries = await Promise.all(
         visibleLearners.map(async (learner) => [
           learner.learner_key,
@@ -316,6 +332,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
         student_access: studentAccess,
         upcoming_classes: Object.fromEntries(upcomingEntries),
         rewards: Object.fromEntries(rewardEntries),
+        gamification: Object.fromEntries(gamificationEntries),
         updates: Object.fromEntries(updateEntries),
         helper: await helper.availability({ actor, household }),
         billing: await billing.summaryForHousehold({ actor, household }),
@@ -452,19 +469,22 @@ export function createParentPortalService(deps: PortalServiceDeps) {
     async learnerMaterials(actor: PortalActorContext, householdKey: string, learnerKey: string) {
       requireParentHousehold(actor, householdKey, 'parent:household:read');
       const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
-      const [library, reviewSheets, progress, rewards, updates] = await Promise.all([
-        deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
-        deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
-        deps.progress.progressForLearner({ actor, learner }),
-        deps.repository.getRewardBalance({ actor, learner_key: learnerKey }),
-        mergedUpdates(deps.repository, deps, actor, learner, 'parent'),
-      ]);
+      const [library, reviewSheets, progress, rewards, gamificationSummary, updates] =
+        await Promise.all([
+          deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
+          deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
+          deps.progress.progressForLearner({ actor, learner }),
+          deps.repository.getRewardBalance({ actor, learner_key: learnerKey }),
+          gamification.summaryForLearner({ actor, learner }),
+          mergedUpdates(deps.repository, deps, actor, learner, 'parent'),
+        ]);
       return {
         learner,
         library: safeLibraryItems(library),
         review_sheets: safeLibraryItems(reviewSheets),
         progress,
         rewards,
+        gamification: gamificationSummary,
         updates,
       };
     },
@@ -503,6 +523,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
 export function createStudentPortalService(deps: PortalServiceDeps) {
   const helper = deps.helper ?? unavailableHelper(STUDENT_HELPER_PREPARING_MESSAGE);
   const support = deps.support ?? localSupportPreview(deps.idGenerator);
+  const gamification = deps.gamification ?? localGamification();
 
   return {
     async dashboard(actor: PortalActorContext): Promise<StudentPortalDashboard> {
@@ -513,23 +534,34 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         subject.household_key,
         subject.learner_key,
       );
-      const [upcoming, library, reviewSheets, progress, rewards, updates, questions, helperState] =
-        await Promise.all([
-          deps.classAccess.upcomingForLearner({ actor, learner }),
-          deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
-          deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
-          deps.progress.progressForLearner({ actor, learner }),
-          deps.repository.getRewardBalance({ actor, learner_key: learner.learner_key }),
-          mergedUpdates(deps.repository, deps, actor, learner, 'student'),
-          deps.repository.listStudentQuestions({ actor, learner_key: learner.learner_key }),
-          helper.availability({ actor, learner }),
-        ]);
+      const [
+        upcoming,
+        library,
+        reviewSheets,
+        progress,
+        rewards,
+        gamificationSummary,
+        updates,
+        questions,
+        helperState,
+      ] = await Promise.all([
+        deps.classAccess.upcomingForLearner({ actor, learner }),
+        deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
+        deps.contentAccess.reviewSheetsForLearner({ actor, learner }),
+        deps.progress.progressForLearner({ actor, learner }),
+        deps.repository.getRewardBalance({ actor, learner_key: learner.learner_key }),
+        gamification.summaryForLearner({ actor, learner }),
+        mergedUpdates(deps.repository, deps, actor, learner, 'student'),
+        deps.repository.listStudentQuestions({ actor, learner_key: learner.learner_key }),
+        helper.availability({ actor, learner }),
+      ]);
       return {
         learner,
         upcoming_classes: safeClassSummaries(upcoming),
         library_items: safeLibraryItems([...library, ...reviewSheets]),
         progress,
         rewards,
+        gamification: gamificationSummary,
         updates,
         questions,
         helper: helperState,
@@ -861,5 +893,66 @@ function localSupportPreview(idGenerator?: () => string): SupportRequestAdapter 
 function disabledBilling(): BillingSummaryAdapter {
   return {
     summaryForHousehold: async () => ({ enabled: false, summary_label: null }),
+  };
+}
+
+function localGamification(): LearnerGamificationAdapter {
+  return {
+    summaryForLearner: async ({ actor, learner }) => ({
+      learner_key: learner.learner_key,
+      learning_points: 0,
+      level: {
+        level: 1,
+        title: 'Getting Started',
+        min_points: 0,
+        next_level_points: 50,
+        progress_percent: 0,
+      },
+      progress: {
+        mishnayos_completed: 0,
+        mishnayos_target: 24,
+        classes_attended: 0,
+        classes_total: 0,
+        review_items_completed: 0,
+        review_items_total: 0,
+        retention_reviews_completed: 0,
+        retention_percent: 0,
+      },
+      streaks: [
+        {
+          kind: 'attendance',
+          current_count: 0,
+          best_count: 0,
+          grace_remaining: 2,
+          last_earned_at: null,
+          status: 'empty',
+        },
+        {
+          kind: 'review',
+          current_count: 0,
+          best_count: 0,
+          grace_remaining: 2,
+          last_earned_at: null,
+          status: 'empty',
+        },
+      ],
+      badges: [],
+      milestones: [],
+      accomplishments: [],
+      parent_rewards: [],
+      class_milestones: [],
+      celebration: null,
+      guardrails: {
+        no_public_rankings: true,
+        no_random_rewards: true,
+        meaningful_learning_only: true,
+        student_scope:
+          actor.actor_role === 'student'
+            ? 'self_only'
+            : actor.actor_role === 'parent'
+              ? 'household'
+              : 'authorized_staff',
+      },
+    }),
   };
 }

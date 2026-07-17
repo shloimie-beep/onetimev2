@@ -4,6 +4,7 @@ import type {
   LearnerProfile,
   ParentLearnerMaterials,
   ParentPortalDashboard,
+  ParentRewardGoal,
   ProtectedActionDescriptor,
   SessionUser,
   StudentAccessState,
@@ -153,6 +154,30 @@ export async function runStudentAccessOperation(input: {
 export async function getStudentDashboard() {
   const json = await api<{ success: true; data: StudentPortalDashboard }>(
     '/api/v1/portals/student/dashboard',
+  );
+  return json.data;
+}
+
+export async function createParentRewardGoal(input: {
+  csrfToken: string;
+  learnerKey: string;
+  title: string;
+  description?: string | undefined;
+  pointsRequired: number;
+}) {
+  const json = await api<{ success: true; data: ParentRewardGoal }>(
+    '/api/v1/gamification/parent-rewards',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+      body: JSON.stringify({
+        learner_key: input.learnerKey,
+        title: input.title,
+        ...(input.description ? { description: input.description } : {}),
+        points_required: input.pointsRequired,
+        idempotency_key: createIdempotencyKey(),
+      }),
+    },
   );
   return json.data;
 }
