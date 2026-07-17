@@ -40,6 +40,13 @@
   Card, form-control, table, badge, alert, or state primitives when the
   canonical package can be composed instead.
 
+## Director Handoff
+
+- For fresh release-state context, start at `ops/director/START-HERE.md`. It
+  summarizes the current live/deployed source, capability classifications,
+  active branch fleet, and binding product invariants. It does not replace this
+  AGENTS file.
+
 ## Safety
 
 - No BNA session or cookie is shared.

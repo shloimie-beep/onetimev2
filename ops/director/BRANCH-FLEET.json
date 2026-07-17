@@ -1,0 +1,214 @@
+{
+  "schema_version": "onetime.director.branch_fleet.v1",
+  "generated_at": "2026-07-17T13:32:48+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "release_candidate": {
+    "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "pr": 61,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "base": "main",
+    "is_draft": true,
+    "check_summary": "all_listed_checks_success"
+  },
+  "local_w12_branches_seen": [
+    {
+      "branch": "codex/w12-00-canonical-director-handoff",
+      "base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": true,
+      "worktree": "C:/Users/User/.w12-20260717-worktrees/W12-00",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/63"
+    },
+    {
+      "branch": "codex/w12-01-crm-audience-import",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": false
+    },
+    {
+      "branch": "codex/w12-02-communication-history",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": false
+    },
+    {
+      "branch": "codex/w12-03-portal-test-lab",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": false
+    },
+    {
+      "branch": "codex/w12-04-content-vimeo-classroom",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": false
+    },
+    {
+      "branch": "codex/w12-05-telegram-operations",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": false
+    },
+    {
+      "branch": "codex/w12-06-whatsapp-lead-assistant",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": false
+    },
+    {
+      "branch": "codex/w12-08-admin-classroom-productization",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "remote_seen": false
+    }
+  ],
+  "not_seen_w12_lanes": ["codex/w12-07-premium-landing"],
+  "open_prs_relevant_to_current_release": [
+    {
+      "pr": 63,
+      "title": "W12-00 canonical director handoff",
+      "head": "codex/w12-00-canonical-director-handoff",
+      "base": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "status": "draft_director_handoff"
+    },
+    {
+      "pr": 61,
+      "title": "OPS-10 full staged production launch candidate",
+      "head": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "base": "main",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "status": "draft_green_release_candidate"
+    },
+    {
+      "pr": 60,
+      "title": "OPS-08 overnight integration partial checkpoint",
+      "head": "integration/ops08-overnight-final-20260716T230543Z",
+      "base": "codex/ops03b-email-step-up-login",
+      "sha": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+      "status": "superseded_by_pr_61_for_release_context"
+    },
+    {
+      "pr": 59,
+      "title": "OT-114 CRM communications support",
+      "head": "codex/ot114-crm-communications-support",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "096dd614c9493cec1c29851e14f56166863ad26b",
+      "status": "integrated_into_pr_61"
+    },
+    {
+      "pr": 57,
+      "title": "[OT-112] Premium product system contracts",
+      "head": "codex/ot112-premium-product-system",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "ae1c7cbc05e2ed6263c9943d64a6a738e5ffb6c7",
+      "status": "open_feature_branch"
+    },
+    {
+      "pr": 51,
+      "title": "OT-101R Telegram admin runtime",
+      "head": "codex/ot101r-telegram-admin-runtime",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "dbff29bbc2d5434f7eecab61e4f081481e1cccaa",
+      "status": "open_feature_branch"
+    },
+    {
+      "pr": 49,
+      "title": "Implement OT-104R Vimeo private runtime",
+      "head": "codex/ot104r-vimeo-private-runtime",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "ae01fe70e0cd8954b4d9f5175789cc4af442741a",
+      "status": "open_feature_branch"
+    },
+    {
+      "pr": 47,
+      "title": "OT108: Premium landing refresh",
+      "head": "codex/ot108-premium-landing-refresh",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "c64a58ae9a72515fc6135cc2be0f72340c30f49c",
+      "status": "open_feature_branch"
+    },
+    {
+      "pr": 45,
+      "title": "OT-105 Stripe TEST billing canary",
+      "head": "codex/ot105-stripe-test-billing-canary",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "10cee196dbb6628edd9bacb6e224646d7bf39e70",
+      "status": "open_feature_branch"
+    },
+    {
+      "pr": 44,
+      "title": "OT-107 student class helper",
+      "head": "codex/ot107-student-ai-class-helper",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "3871c38b75e7fc866f572ec80d3b2ec37cde6b6e",
+      "status": "accepted_as_already_satisfied_in_pr_61_context"
+    },
+    {
+      "pr": 43,
+      "title": "OT-100 WhatsApp public provider activation",
+      "head": "codex/ot100-whatsapp-public-provider-activation",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "dc05747d55413149743a4c4c6b0223912c29b8eb",
+      "status": "open_feature_branch"
+    },
+    {
+      "pr": 42,
+      "title": "OT-103 Zoom classroom fulfillment",
+      "head": "codex/ot103-zoom-classroom-fulfillment",
+      "base": "codex/ops03-staging-readiness-repair",
+      "sha": "34606d6aee7a2c6eac695d0826c4bd2ed82029d0",
+      "status": "open_feature_branch"
+    },
+    {
+      "pr": 39,
+      "title": "[OT-99] Final semantic convergence",
+      "head": "integration/ot-99-final-semantic-convergence-20260716T122407Z",
+      "base": "codex/ot83r-complete-portals",
+      "sha": "96b429053d13a139595ed3bd0ea3c854cc2500e8",
+      "status": "prior_convergence_branch_not_w12_99"
+    }
+  ],
+  "remote_branch_snapshot": [
+    {
+      "branch": "origin/release/ops10-full-staged-production-launch-20260717T050800Z",
+      "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "date": "2026-07-17 12:04:02 +0300",
+      "subject": "test: pin OT111 canary queue time"
+    },
+    {
+      "branch": "origin/integration/ops08-overnight-final-20260716T230543Z",
+      "sha": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+      "date": "2026-07-17 02:37:32 +0300",
+      "subject": "Record OPS-08 partial overnight integration checkpoint"
+    },
+    {
+      "branch": "origin/codex/ot103-zoom-classroom-fulfillment",
+      "sha": "34606d6aee7a2c6eac695d0826c4bd2ed82029d0",
+      "date": "2026-07-17 02:27:56 +0300",
+      "subject": "Format OPS-09A fleet report"
+    },
+    {
+      "branch": "origin/codex/ot107-student-ai-class-helper",
+      "sha": "3871c38b75e7fc866f572ec80d3b2ec37cde6b6e",
+      "date": "2026-07-17 02:19:10 +0300",
+      "subject": "Record OPS-09A PR-44 mergeability blocker"
+    },
+    {
+      "branch": "origin/codex/ot114-crm-communications-support",
+      "sha": "096dd614c9493cec1c29851e14f56166863ad26b",
+      "date": "2026-07-17 02:11:44 +0300",
+      "subject": "OT-114 CRM communications support"
+    },
+    {
+      "branch": "origin/codex/ops06-reliability-observability",
+      "sha": "aa17fed49b936ccc2fbfafad7826af39c1754b12",
+      "date": "2026-07-17 02:02:48 +0300",
+      "subject": "Record OPS-06 draft PR handoff"
+    },
+    {
+      "branch": "origin/codex/ot100-whatsapp-public-provider-activation",
+      "sha": "dc05747d55413149743a4c4c6b0223912c29b8eb",
+      "date": "2026-07-17 02:00:41 +0300",
+      "subject": "Merge canonical OPS-03A into OT-100 for OPS-09A"
+    },
+    {
+      "branch": "origin/codex/ot112-premium-product-system",
+      "sha": "ae1c7cbc05e2ed6263c9943d64a6a738e5ffb6c7",
+      "date": "2026-07-17 01:58:26 +0300",
+      "subject": "Record OT-112 PR handoff"
+    }
+  ]
+}

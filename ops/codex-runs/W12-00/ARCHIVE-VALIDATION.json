@@ -1,0 +1,36 @@
+{
+  "schema_version": "onetime.w12.archive_validation.v1",
+  "validated_at": "2026-07-17T13:27:25+03:00",
+  "source_zip": "C:/Users/User/Downloads/W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+  "exact_match_count_in_downloads": 1,
+  "zip_size_bytes": 33260,
+  "zip_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+  "entry_count": 23,
+  "total_uncompressed_bytes": 53281,
+  "total_compressed_bytes": 27254,
+  "archive_safety": {
+    "absolute_or_rooted_paths": 0,
+    "parent_traversal_paths": 0,
+    "drive_letter_paths": 0,
+    "duplicate_case_insensitive_paths": 0,
+    "control_character_paths": 0,
+    "windows_illegal_path_character_paths": 0,
+    "result": "passed"
+  },
+  "sha256sums_checked": 19,
+  "sha256sums_failures": [],
+  "key_entries": [
+    {
+      "archive_entry": "00-START-HERE.md",
+      "sha256": "fdd3a0e0a166476a6ad9a43ff0c223e025832bc006d1db0fa653037a55e41fa6"
+    },
+    {
+      "archive_entry": "MANIFEST.json",
+      "sha256": "80d9b17c5d94e88c27ccd4d9f36915aa2c635b1e5af6512ba00687718e4c6f87"
+    },
+    {
+      "archive_entry": "prompts/CODEX-W12-00-CANONICAL-DIRECTOR-HANDOFF.md",
+      "sha256": "0f400c654471044ab143efda784dc90e233c9758e4b89a298427f22e474cb059"
+    }
+  ]
+}
