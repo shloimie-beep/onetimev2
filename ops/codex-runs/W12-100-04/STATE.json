@@ -1,0 +1,185 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-04",
+  "title": "Real-source dry-run tooling",
+  "status": "implemented_validated_ready_for_draft_pr",
+  "generated_at": "2026-07-17T18:02:05+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-04",
+  "branch": "codex/w12-100-04-real-source-dry-run-tooling",
+  "base_pr_target": "integration/w12-final-convergence-20260717T123715Z",
+  "objectives": [
+    {
+      "id": "fetch_refs_and_verify_exact_start",
+      "status": "done",
+      "evidence": [
+        "git fetch --all --tags --prune",
+        "git cat-file -e 0d8d7168f066668f035176d777bdaaa4dcc5accd^{commit}"
+      ]
+    },
+    {
+      "id": "create_isolated_worktree_and_branch",
+      "status": "done",
+      "evidence": [
+        "Created C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-04",
+        "Branch codex/w12-100-04-real-source-dry-run-tooling starts at 0d8d7168f066668f035176d777bdaaa4dcc5accd"
+      ]
+    },
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": [
+        "AGENTS.md",
+        "ops/director/START-HERE.md",
+        "ops/director/PRODUCT-INVARIANTS.md",
+        "ops/codex-runs/W12-99/FINAL-REPORT.md",
+        "ops/codex-runs/W12-99/STATE.json",
+        "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
+        "ops/codex-runs/W12-99/CANARY-REPORT.json",
+        "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
+        "ops/codex-runs/W12-99/ROLLBACK.md"
+      ]
+    },
+    {
+      "id": "read_pr_72_and_ops_13a_current_head",
+      "status": "done",
+      "evidence": [
+        "PR #72 current head d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+        "Read OPS-13A artifacts using git show from that exact commit",
+        "Did not copy or edit ops/codex-runs/OPS-13A/**"
+      ]
+    },
+    {
+      "id": "build_counts_only_source_preflight_runner",
+      "status": "done",
+      "evidence": [
+        "scripts/w12-100/data/real-source-preflight.ts",
+        "Requires exact OPS-13A filenames and approved hashes before parsing",
+        "Reports counts and aggregate fingerprints only"
+      ]
+    },
+    {
+      "id": "add_synthetic_fixture_tests",
+      "status": "done",
+      "evidence": [
+        "tests/unit/w12-100-data/real-source-preflight.test.ts",
+        "tests/integration/w12-100-data/real-source-preflight-cli.test.ts"
+      ]
+    },
+    {
+      "id": "real_sanitized_source_packet_preflight",
+      "status": "blocked",
+      "blocker": "The exact approved sanitized source packet is unavailable locally; no substitute source was used.",
+      "evidence": [
+        "ops/codex-runs/W12-100-04/REAL-SOURCE-PREFLIGHT.json",
+        "status=blocked",
+        "blocked_reasons includes BLOCKED_SANITIZED_SOURCE_PACKET_NOT_PROVIDED"
+      ]
+    },
+    {
+      "id": "exclude_unowned_sources_and_message_exports",
+      "status": "done",
+      "evidence": [
+        "Unapproved supported files block before parsing",
+        "Communications exports, message bodies, external lead lists, and unknown spreadsheets remain excluded by policy"
+      ]
+    },
+    {
+      "id": "no_apply_mode_and_schema_proposal",
+      "status": "done",
+      "evidence": [
+        "CLI --apply returns BLOCKED_APPLY_MODE_NOT_IMPLEMENTED_IN_W12_100_04",
+        "ops/codex-runs/W12-100-04/APPLY-ROLLBACK-SCHEMA-PROPOSAL.md"
+      ]
+    },
+    {
+      "id": "validation",
+      "status": "done",
+      "evidence": [
+        "Focused unit and integration tests passed",
+        "secret scan, lint, typecheck, scoped Prettier, full unit, full integration, and build passed"
+      ]
+    },
+    {
+      "id": "safety_counts",
+      "status": "done",
+      "evidence": [
+        "external_actions_count=0",
+        "provider_mutation_count=0",
+        "production_mutation_count=0",
+        "production_database_connected=false",
+        "database_writes_performed=false"
+      ]
+    }
+  ],
+  "validation": [
+    {
+      "command": "npm ci",
+      "status": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/real-source-preflight.test.ts",
+      "status": "passed",
+      "details": "1 file, 3 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts",
+      "status": "passed",
+      "details": "1 file, 2 tests"
+    },
+    {
+      "command": "npx tsx scripts/w12-100/data/real-source-preflight.ts --out=ops/codex-runs/W12-100-04/REAL-SOURCE-PREFLIGHT.json",
+      "status": "blocked_expected",
+      "details": "Approved sanitized source packet unavailable; produced blocked report without row parsing."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1302 repo text files."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npx prettier --check --ignore-unknown <W12-100-04 touched files>",
+      "status": "passed"
+    },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "details": "39 files, 186 tests."
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "details": "Initial parallel run hit Vitest worker IPC channel closed while integration was running; rerun alone passed 39 files, 199 tests."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Vite font URL warning only; build completed."
+    },
+    {
+      "command": "final npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1302 repo text files after build."
+    }
+  ],
+  "safety": {
+    "deployments": 0,
+    "external_actions": 0,
+    "provider_mutations": 0,
+    "production_data_reads": 0,
+    "production_data_writes": 0,
+    "database_writes": 0,
+    "secrets_or_private_rows_committed": 0,
+    "raw_source_rows_committed": false,
+    "apply_mode_implemented": false
+  }
+}

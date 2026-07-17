@@ -1,0 +1,10 @@
+ops/codex-runs/W12-100-04/APPLY-ROLLBACK-SCHEMA-PROPOSAL.md
+ops/codex-runs/W12-100-04/CHANGED-FILES.txt
+ops/codex-runs/W12-100-04/FINAL-REPORT.md
+ops/codex-runs/W12-100-04/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-04/REAL-SOURCE-PREFLIGHT.json
+ops/codex-runs/W12-100-04/RESUME.md
+ops/codex-runs/W12-100-04/STATE.json
+scripts/w12-100/data/real-source-preflight.ts
+tests/integration/w12-100-data/real-source-preflight-cli.test.ts
+tests/unit/w12-100-data/real-source-preflight.test.ts
