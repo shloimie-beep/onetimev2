@@ -105,6 +105,16 @@
       "note": "2 tests passed after an initial parallel web-server port conflict"
     },
     {
+      "command": "npx playwright test tests/e2e/crm-core.spec.ts",
+      "result": "passed",
+      "note": "2 tests passed after replacing stale consent and ambiguous toolbar selectors"
+    },
+    {
+      "command": "npx playwright test tests/e2e --workers=1",
+      "result": "passed",
+      "note": "40 tests passed in the same one-worker profile used by GitHub Node 24 verify"
+    },
+    {
       "command": "npm run accessibility",
       "result": "passed",
       "note": "17 tests passed"
@@ -215,6 +225,7 @@
     "scripts/w13-10/generate-artifacts.ts",
     "scripts/w13-10/staging-deploy-guard.ts",
     "tests/accessibility/w13-10/legal-pages-a11y.spec.ts",
+    "tests/e2e/crm-core.spec.ts",
     "tests/e2e/landing-signup.spec.ts",
     "tests/e2e/w13-10/public-consent-legal.spec.ts",
     "tests/performance/ot81-day-one-performance.spec.ts",

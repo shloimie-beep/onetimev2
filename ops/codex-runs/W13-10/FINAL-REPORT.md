@@ -81,6 +81,7 @@ Changed files:
 - scripts/w13-10/generate-artifacts.ts
 - scripts/w13-10/staging-deploy-guard.ts
 - tests/accessibility/w13-10/legal-pages-a11y.spec.ts
+- tests/e2e/crm-core.spec.ts
 - tests/e2e/landing-signup.spec.ts
 - tests/e2e/w13-10/public-consent-legal.spec.ts
 - tests/performance/ot81-day-one-performance.spec.ts
@@ -104,6 +105,8 @@ Validation:
 - npm run integration: passed (38 files, 184 tests passed)
 - npx playwright test tests/e2e/landing-signup.spec.ts: passed (8 tests passed)
 - npx playwright test tests/e2e/w13-10/public-consent-legal.spec.ts: passed (2 tests passed after an initial parallel web-server port conflict)
+- npx playwright test tests/e2e/crm-core.spec.ts: passed (2 tests passed after replacing stale consent and ambiguous toolbar selectors)
+- npx playwright test tests/e2e --workers=1: passed (40 tests passed in the same one-worker profile used by GitHub Node 24 verify)
 - npm run accessibility: passed (17 tests passed)
 - npm run performance: passed (7 tests passed and bundle check completed after updating old consent helpers)
 - npm run ops06:migrations: passed (duplicate migration safety passed; generated OPS-06 evidence restored out of W13-10 diff)

@@ -59,6 +59,7 @@ scripts/build-public-pages.ts
 scripts/w13-10/generate-artifacts.ts
 scripts/w13-10/staging-deploy-guard.ts
 tests/accessibility/w13-10/legal-pages-a11y.spec.ts
+tests/e2e/crm-core.spec.ts
 tests/e2e/landing-signup.spec.ts
 tests/e2e/w13-10/public-consent-legal.spec.ts
 tests/performance/ot81-day-one-performance.spec.ts
