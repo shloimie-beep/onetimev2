@@ -1,0 +1,42 @@
+{
+  "run_id": "OPS-10-full-staged-production-launch-2026-07-17",
+  "phase": "phase_0_initial_checkpoint",
+  "status": "in_progress",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.ops10-20260717-worktrees\\20260717T050800Z",
+  "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "head_sha": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+  "source_packet": {
+    "raw_id": "RAW-20260717-002",
+    "zip_sha256": "D3E649C5D6F4782E96CDCA3AF4157D4A7D2311E279CF318DA4EB2E21908B3697",
+    "prompt_sha256": "B1F80C9C3E67B3B0EE60F19FA05B6437C99081247024218BC4ECF14888407B8F",
+    "manifest_sha256": "71040D245B560F74129B4FD01F985B5FE2BEF893E566B7AC8B3C2561258D6DB0"
+  },
+  "selected_inputs": {
+    "initial_base": {
+      "branch": "origin/integration/ops08-overnight-final-20260716T230543Z",
+      "sha": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+      "reason": "Newest known overnight integration checkpoint; Phase 1 discovery will refetch and freeze exact current inputs before convergence."
+    }
+  },
+  "candidate": null,
+  "completed_actions": [
+    "Validated OPS-10 ZIP and internal checksums before product work.",
+    "Created clean external worktree and release branch.",
+    "Copied original OPS-10 prompt into ops/codex-runs/OPS-10/ORIGINAL-PROMPT.md."
+  ],
+  "next_safe_action": "Commit and push the initial OPS-10 scaffold, then discover/freeze remote release graph, deployed identities, staging/production health, PR state, and candidate inputs.",
+  "blockers": [],
+  "staging_mutations": [],
+  "production_mutations": [],
+  "guardrails": {
+    "dns_changes_authorized": false,
+    "live_stripe_charges_authorized": false,
+    "broad_customer_sends_authorized": false,
+    "live_buffer_publication_authorized": false,
+    "production_contact_import_authorized": false,
+    "credential_disclosure_authorized": false,
+    "production_deploy_authorized_after_required_gates": true
+  },
+  "updated_at": "2026-07-17T08:08:00+03:00"
+}
