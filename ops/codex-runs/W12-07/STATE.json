@@ -1,0 +1,57 @@
+{
+  "task_id": "W12-07",
+  "title": "Premium landing correction",
+  "status": "verified_pending_commit_push_pr",
+  "branch": "codex/w12-07-premium-landing",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-w12-07-premium-landing",
+  "repository": "webcraft-media/onetimev2",
+  "base_selection": {
+    "selected_source": "origin/release/ops10-full-staged-production-launch-20260717T050800Z",
+    "selected_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "reason": "Current open OPS-10 release candidate PR #61 is the latest accepted release source for parallel W12 work."
+  },
+  "source_package": {
+    "zip_name": "W12-NEXT-PARALLEL-WAVE-2026-07-17.zip",
+    "zip_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+    "entry_count": 23,
+    "unsafe_entry_count": 0,
+    "sha256sums_verified": true,
+    "prompt_sha256": "8d3e82ea6d00a978759b71e7db2439b4db5820f92c59a87b70c50bcbd65c875f",
+    "start_here_sha256": "fdd3a0e0a166476a6ad9a43ff0c223e025832bc006d1db0fa653037a55e41fa6"
+  },
+  "approved_retention_image": {
+    "source_path": "C:\\Users\\User\\Downloads\\WhatsApp Image 2026-07-13 at 14.37.21.jpeg",
+    "sha256": "5e247db06a61aab902ced22ba4d52b924ec27ec7c34e32f61afea397bf892b4f",
+    "dimensions": "945x2048",
+    "inspected": true
+  },
+  "guardrails": {
+    "deploy_performed": false,
+    "provider_mutation_performed": false,
+    "production_database_mutation_performed": false,
+    "real_send_performed": false,
+    "payment_or_access_mutation_performed": false,
+    "credential_mutation_performed": false,
+    "bna_product_code_edited": false
+  },
+  "evidence": {
+    "visual_metrics": "ops/evidence/w12-07/visual-metrics.md",
+    "screenshots": "ops/evidence/w12-07/screenshots/",
+    "viewports": ["360x800", "390x844", "768x1024", "1440x1000"]
+  },
+  "validation": [
+    "npm run build",
+    "npm run brand:check",
+    "npm run secret:scan",
+    "npx vitest run --config vitest.unit.config.ts tests/unit/lead-validation.test.ts",
+    "npx tsx scripts/check-bundles.ts",
+    "npm run lint",
+    "npx prettier --check <scoped W12 files>",
+    "npx playwright test tests/e2e/landing-signup.spec.ts",
+    "npx playwright test tests/accessibility/public-a11y.spec.ts",
+    "npx playwright test tests/performance/public-performance.spec.ts",
+    "npx playwright test ops/codex-runs/W12-07/visual-evidence.spec.ts"
+  ],
+  "draft_pr": null,
+  "updated_at": "2026-07-17T13:58:22+03:00"
+}

@@ -17,10 +17,10 @@ export const landingContent = {
   hero: {
     kickerLines: ['WORLDWIDE MISHNAH LEARNING', 'LIVE FROM ERETZ YISRAEL'],
     heading: 'Give your son a love for learning Torah.',
-    schedule: 'Live every day at 7:00 p.m. Israel time.',
   },
   receive: {
     heading: 'Everything He Needs to Learn, Review, and Remember',
+    detailLine: 'Live every day at 7:00 p.m. Israel time.',
     eyebrow: 'A COMPLETE DIGITAL TORAH-LEARNING EXPERIENCE',
     iconLabel: 'Live class',
     title: 'Live Daily Mishnayos—plus the tools to make it stick.',
@@ -66,11 +66,13 @@ export const landingContent = {
       {
         title: 'Retention',
         body: 'Replays and review sheets help him remember the learning and return to the key ideas with confidence.',
-        image: null,
-        alt: '',
+        image: '/assets/outcomes/retention-review-class-720.webp',
+        srcset:
+          '/assets/outcomes/retention-review-class-480.webp 480w, /assets/outcomes/retention-review-class-720.webp 720w, /assets/outcomes/retention-review-class-945.webp 945w',
+        sizes: '(max-width: 820px) calc(100vw - 44px), 540px',
+        alt: 'Rabbi Scheller teaching beside a large classroom display with Mishnayos sefarim on the table',
         assetBlocker: null,
         provisionalCopy: null,
-        visualTreatment: 'memory-review',
       },
       {
         title: 'Progress',
@@ -155,6 +157,15 @@ export const landingContent = {
   ],
   finalCta: {
     heading: 'Ready to join the live class?',
+  },
+  whatsappAssistant: {
+    state: 'offline',
+    buttonLabel: 'WhatsApp help',
+    heading: 'Questions about joining?',
+    body: 'The WhatsApp assistant is being connected. Sign up now and the team will follow up with class information.',
+    ctaLabel: 'Sign Up Now',
+    ctaHref: '/signup',
+    dismissLabel: 'Dismiss WhatsApp helper',
   },
   footer: {
     line: 'One Time Mishnayos with Rabbi Eli Scheller.',
