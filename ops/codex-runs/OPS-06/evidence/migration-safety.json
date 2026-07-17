@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T23:29:40.832Z",
+  "generated_at": "2026-07-17T05:14:51.615Z",
   "status": "passed",
   "local_count": 34,
   "remote_sources_scanned": [
@@ -71,6 +71,7 @@
     "origin/codex/parallel-ot47-content-library-foundation",
     "origin/codex/recovery-blocked-ot61-ot70",
     "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z",
+    "origin/integration/ops08-overnight-final-20260716T230543Z",
     "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z",
     "origin/ops/OPS-03-canary-conductor-62ad1d39242f"
   ],
@@ -152,6 +153,7 @@
         "origin/codex/parallel-ot47-content-library-foundation:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/recovery-blocked-ot61-ot70:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0001_onetime_lead_slice.sql"
       ]
@@ -226,6 +228,7 @@
         "origin/codex/parallel-ot47-content-library-foundation:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/recovery-blocked-ot61-ot70:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0002_crm_auth_core.sql"
       ]
@@ -283,6 +286,7 @@
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/recovery-blocked-ot61-ot70:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0003_ot27_security_crm_repair.sql"
       ]
@@ -344,6 +348,7 @@
         "origin/codex/parallel-base-ot40-571b18f:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/parallel-ot44-communications-v1a:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0004_delivery_worker_claim_index.sql"
       ]
@@ -400,6 +405,7 @@
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/parallel-ot42-crm-module-v1:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1000_ot42_crm_module_v1.sql"
       ]
@@ -449,6 +455,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql"
       ]
     },
@@ -497,6 +504,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql"
       ]
     },
@@ -552,6 +560,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1300_ot46_billing_foundation.sql"
       ]
@@ -601,6 +610,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1400_ot71_content_library.sql"
       ]
     },
@@ -656,6 +666,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1500_ot52_portal_households_learners.sql"
       ]
@@ -712,6 +723,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql"
       ]
@@ -761,6 +773,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1700_ot71_account_lifecycle.sql"
       ]
     },
@@ -808,6 +821,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1800_ot72_provider_truth.sql"
       ]
     },
@@ -851,6 +865,7 @@
         "origin/codex/ot88-zoom-learner-classroom:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/ot89a-subscriber-support-producer:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1900_ot83_household_portal_foundation.sql"
       ]
     },
@@ -883,6 +898,7 @@
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/ot83r-complete-portals:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2000_ot83r_student_question_seam.sql"
       ]
     },
@@ -914,6 +930,7 @@
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql"
       ]
     },
@@ -945,6 +962,7 @@
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql"
       ]
     },
@@ -976,6 +994,7 @@
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql"
       ]
     },
@@ -1007,6 +1026,7 @@
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql"
       ]
     },
@@ -1038,6 +1058,7 @@
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2005_ot86_content_pipeline.sql"
       ]
     },
@@ -1069,6 +1090,7 @@
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2006_ot86b_social_publishing.sql"
       ]
     },
@@ -1100,6 +1122,7 @@
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql"
       ]
     },
@@ -1127,7 +1150,8 @@
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql"
       ]
     },
     {
@@ -1154,7 +1178,8 @@
         "origin/codex/ot111-legacy-activation-campaign:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ot112-premium-product-system:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/ot114-crm-communications-support:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql"
       ]
     },
     {
@@ -1166,7 +1191,8 @@
       "paths": [
         "worktree:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/codex/ops03b-email-step-up-login:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2010_ops03b_email_step_up_login.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2010_ops03b_email_step_up_login.sql"
       ]
     },
     {
@@ -1177,7 +1203,8 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql"
       ]
     },
     {
@@ -1188,7 +1215,8 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql"
       ]
     },
     {
@@ -1199,7 +1227,8 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2013_ot110a_admin_content_workspace.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2013_ot110a_admin_content_workspace.sql"
       ]
     },
     {
@@ -1210,7 +1239,19 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql"
+      ]
+    },
+    {
+      "id": "2015_ops06_reliability_observability",
+      "checksums": [
+        "d4d4f8d35da6721a9bf190b26befd8e45627efc64f5e81a98a86819038cc9364",
+        "2daf0a1ff02edb2f2f0ed148066c58698c9a6315c7ec03b6a93710a08a79ae39"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2015_ops06_reliability_observability.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2015_ops06_reliability_observability.sql"
       ]
     },
     {
@@ -1221,7 +1262,8 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
-        "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql"
+        "origin/codex/ot100-whatsapp-public-provider-activation:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql"
       ]
     },
     {
@@ -1232,7 +1274,8 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2130_ot103_zoom_provider.sql",
-        "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2130_ot103_zoom_provider.sql"
+        "origin/codex/ot103-zoom-classroom-fulfillment:packages/db/migrations/2130_ot103_zoom_provider.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2130_ot103_zoom_provider.sql"
       ]
     },
     {
@@ -1244,7 +1287,8 @@
       "paths": [
         "worktree:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/codex/ot106-buffer-social-publishing-runtime:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2160_ot106_buffer_social_publishing.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2160_ot106_buffer_social_publishing.sql"
       ]
     },
     {
@@ -1256,7 +1300,8 @@
       "paths": [
         "worktree:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/codex/ot109-rabbi-content-publisher:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
-        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql"
+        "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
+        "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql"
       ]
     }
   ],

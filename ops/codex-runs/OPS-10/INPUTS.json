@@ -1,0 +1,93 @@
+{
+  "run_id": "OPS-10-full-staged-production-launch-2026-07-17",
+  "generated_at": "2026-07-17T05:20:00Z",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.ops10-20260717-worktrees\\20260717T050800Z",
+  "release_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "scaffold_commit": "04f0a6d2e974c8ac6e8feabd700becad7e4c2099",
+  "source_packet": {
+    "raw_id": "RAW-20260717-002",
+    "zip_path": "C:\\Users\\User\\Downloads\\OPS-10-FULL-STAGED-PRODUCTION-LAUNCH-2026-07-17.zip",
+    "zip_sha256": "D3E649C5D6F4782E96CDCA3AF4157D4A7D2311E279CF318DA4EB2E21908B3697",
+    "prompt_sha256": "B1F80C9C3E67B3B0EE60F19FA05B6437C99081247024218BC4ECF14888407B8F",
+    "manifest_sha256": "71040D245B560F74129B4FD01F985B5FE2BEF893E566B7AC8B3C2561258D6DB0",
+    "zip_validation": "passed"
+  },
+  "frozen_remote_heads": {
+    "main": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
+    "codex/ops03b-email-step-up-login": "25b2a95aa4e3ae82aad20537dc300e9978c15b56",
+    "integration/ops08-overnight-final-20260716T230543Z": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+    "codex/ot107-student-ai-class-helper": "3871c38b75e7fc866f572ec80d3b2ec37cde6b6e",
+    "codex/ot114-crm-communications-support": "096dd614c9493cec1c29851e14f56166863ad26b"
+  },
+  "open_prs_reviewed": [
+    {
+      "number": 60,
+      "title": "OPS-08 overnight integration partial checkpoint",
+      "url": "https://github.com/webcraft-media/onetimev2/pull/60",
+      "head": "4e907992d8c7312a02e75dc879a5b5030f2b5942",
+      "base": "codex/ops03b-email-step-up-login",
+      "draft": true,
+      "merge_state": "UNSTABLE",
+      "checks": {
+        "Node 24 verify": "failed_before_ops10_prettier_repair",
+        "OPS-06 deterministic checks": "failed_before_ops10_pool_cleanup_repair",
+        "PostgreSQL 16 assurance harness": "passed",
+        "PostgreSQL 16 learner-seat proof": "passed"
+      }
+    },
+    {
+      "number": 59,
+      "title": "OT-114 CRM communications support",
+      "url": "https://github.com/webcraft-media/onetimev2/pull/59",
+      "head": "096dd614c9493cec1c29851e14f56166863ad26b",
+      "base": "codex/ops03-staging-readiness-repair",
+      "draft": true,
+      "merge_state": "UNSTABLE",
+      "checks": {
+        "Node 24 verify": "failed_before_ops10_semantic_integration",
+        "PostgreSQL 16 assurance harness": "passed",
+        "PostgreSQL 16 learner-seat proof": "passed"
+      }
+    }
+  ],
+  "deployed_identity": {
+    "production": {
+      "url": "https://join.onetimeonetime.com",
+      "deploy_info_status": 200,
+      "commit_sha": "050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5",
+      "source_branch": "codex/onetime-final-integration-launch",
+      "target_project": "one-time-production",
+      "target_service": "one-time-web",
+      "observed_login_status": 404,
+      "observed_login_body": "Cannot GET /login",
+      "observed_version_status": 404,
+      "evidence_time": "2026-07-17T05:16:10Z"
+    },
+    "staging": {
+      "url": "https://ot99-web-staging.up.railway.app",
+      "version_status": 200,
+      "version": "ops03a-fb5f5ee",
+      "commit_sha": "fb5f5eebc539afc9e93833e9417ee67524d62c36",
+      "target_app": "one-time",
+      "evidence_time": "2026-07-17T05:16:07Z"
+    }
+  },
+  "local_environment": {
+    "node": "v24.13.0",
+    "npm_ci": "passed",
+    "docker": "not_installed",
+    "postgres_client": "not_installed",
+    "railway_cli": "5.26.2",
+    "railway_link_status": "not_linked_in_release_worktree"
+  },
+  "candidate_policy": {
+    "initial_base": "integration/ops08-overnight-final-20260716T230543Z",
+    "required_repairs_before_candidate": [
+      "Prettier repair for PR #60 Node 24 verify failure",
+      "OPS-06 load/backpressure cleanup race repair",
+      "Semantic confirmation or integration of OT-107 student helper and OT-114 CRM/support work"
+    ],
+    "production_deploy": "authorized only after local gates, GitHub checks, immutable staging deploy, staging acceptance, backup/restore, rollback proof, and production acceptance are green"
+  }
+}

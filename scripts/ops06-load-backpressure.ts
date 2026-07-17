@@ -94,7 +94,12 @@ async function runLoadProof(): Promise<Report> {
       ...adminConfig,
       database: databaseName,
       max: 24,
-    }) as unknown as DbPool;
+    }) as unknown as DbPool & pg.Pool;
+    const unexpectedPoolErrors: string[] = [];
+    pool.on('error', (error: unknown) => {
+      if (isExpectedPgShutdownError(error)) return;
+      unexpectedPoolErrors.push(safeError(error));
+    });
     const config = loadConfig({
       NODE_ENV: 'test',
       DATABASE_URL: connectionStringFor(databaseName),
@@ -112,6 +117,13 @@ async function runLoadProof(): Promise<Report> {
       scenarios.push(await loginRateLimitRace(pool, config, timings.rate_limit_ms));
       scenarios.push(await multiWorkerClaimRace(pool, config, timings.worker_claim_ms));
       scenarios.push(await retryDeadLetterBackpressure(pool, config));
+      if (unexpectedPoolErrors.length > 0) {
+        scenarios.push({
+          id: 'postgres_pool_unexpected_errors',
+          status: 'failed',
+          observations: { errors: unexpectedPoolErrors.slice(0, 3) },
+        });
+      }
       const heapEnd = process.memoryUsage().heapUsed;
       const failed = scenarios.filter((scenario) => scenario.status === 'failed');
       return {
@@ -137,7 +149,7 @@ async function runLoadProof(): Promise<Report> {
         external_mutations: noExternalMutations(),
       };
     } finally {
-      await pool.end();
+      await endPool(pool);
     }
   } finally {
     await adminPool
@@ -357,7 +369,7 @@ async function multiWorkerClaimRace(
         samples.push(Math.round(performance.now() - started));
         return keys;
       } catch (error) {
-        await client.query('ROLLBACK');
+        await rollbackQuietly(client);
         throw error;
       } finally {
         client.release();
@@ -536,6 +548,27 @@ function noExternalMutations() {
     sends: false,
     deployment: false,
   } as const;
+}
+
+async function rollbackQuietly(client: pg.PoolClient) {
+  await client.query('ROLLBACK').catch((error: unknown) => {
+    if (!isExpectedPgShutdownError(error)) throw error;
+  });
+}
+
+async function endPool(pool: pg.Pool) {
+  await pool.end().catch((error: unknown) => {
+    if (!isExpectedPgShutdownError(error)) throw error;
+  });
+}
+
+function isExpectedPgShutdownError(error: unknown) {
+  const code =
+    typeof error === 'object' && error !== null ? (error as { code?: unknown }).code : '';
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    code === '57P01' || message.includes('terminating connection due to administrator command')
+  );
 }
 
 function safeError(error: unknown) {
