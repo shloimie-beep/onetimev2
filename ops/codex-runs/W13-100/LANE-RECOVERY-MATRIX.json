@@ -1,8 +1,8 @@
 {
   "schema_version": "onetime.w13_100.lane_recovery_matrix.v1",
   "generated_at": "2026-07-17T18:20:46Z",
-  "updated_at": "2026-07-17T19:09:41Z",
-  "status": "w13_10_integrated_w12_09_semantically_ported_checkpoint_ready",
+  "updated_at": "2026-07-17T19:12:48Z",
+  "status": "w13_10_integrated_w12_09_semantically_ported_checkpoint_committed",
   "lanes": [
     {
       "lane": "W12-100 convergence",
@@ -23,7 +23,7 @@
       "ref": "origin/codex/w12-09-student-gamification",
       "head": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
       "classification": "accepted_semantically_ported_locally",
-      "recovery_action": "ported safe gamification contracts, service, repository, portal UI, owner/admin rewards view, registry entries, tests, and additive migration 2203; skipped mechanical merge because source branch removed W12-100/W13 records and migrations"
+      "recovery_action": "ported safe gamification contracts, service, repository, portal UI, owner/admin rewards view, registry entries, tests, and additive migration 2203; skipped mechanical merge because source branch removed W12-100/W13 records and migrations; checkpoint commit 5a2802c611db755992a2f1596b6cb21fbac1f84f"
     }
   ]
 }

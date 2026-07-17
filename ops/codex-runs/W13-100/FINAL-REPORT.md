@@ -1,7 +1,7 @@
 # W13-100 Final Report
 
 Generated: 2026-07-17T18:20:46Z
-Updated: 2026-07-17T19:09:41Z
+Updated: 2026-07-17T19:12:48Z
 
 Status: local semantic convergence checkpoint ready.
 
@@ -13,7 +13,8 @@ W13-10 was semantically merged and checkpointed at
 
 W12-09 gamification was not mechanically merged because its source branch would
 remove W12-100/W13 records and migrations. Safe gamification semantics were
-ported locally instead:
+ported locally and checkpointed at
+`5a2802c611db755992a2f1596b6cb21fbac1f84f`:
 
 - private student learning points, levels, streaks, badges, milestones, and accomplishments;
 - parent household-scoped reward goals;

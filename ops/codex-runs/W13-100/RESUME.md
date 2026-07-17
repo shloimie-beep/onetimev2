@@ -1,7 +1,7 @@
 # W13-100 Resume
 
 Generated: 2026-07-17T18:38:52Z
-Updated: 2026-07-17T19:09:41Z
+Updated: 2026-07-17T19:12:48Z
 
 Worktree:
 `C:\Users\User\OneTimeOneTime-w13-100-final-launch`
@@ -9,7 +9,7 @@ Worktree:
 Branch:
 `release/w13-100-controlled-day-one-20260717T182046Z`
 
-Current status: `phase_2_convergence_checkpoint_ready`
+Current status: `phase_2_convergence_checkpoint_committed`
 
 ## Resume Command
 
@@ -46,7 +46,8 @@ and not mechanically merged because the source branch removes W12-100/W13
 records and migrations. Safe semantics were ported locally instead, including
 contracts, domain service, PostgreSQL repository, additive migration 2203,
 portal summaries, parent reward goals, owner `/app/rewards`, visible-action
-registry entries, unit tests, and browser harness.
+registry entries, unit tests, and browser harness. The local W12-09 checkpoint
+commit is `5a2802c611db755992a2f1596b6cb21fbac1f84f`.
 
 Local validation passed after W12-09:
 
