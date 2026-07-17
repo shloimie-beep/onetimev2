@@ -19,6 +19,18 @@ Generated: 2026-07-17T08:50:00+03:00
 These gates cover support, CRM shell, communications descriptor, parent/student
 portal layouts, and accessibility checks in the local test runtime.
 
+## Local Screenshot Evidence
+
+- `ops/evidence/ot-83r/REAL-APP-JOURNEYS.json`
+- `ops/evidence/ot-83r/real-app-screenshots/*`
+
+The refreshed OT-83R evidence includes parent portal screenshots at 360x800,
+390x844, 768x1024, and 1440x1000 with zero critical/serious a11y findings,
+horizontal overflow, or provider URL leakage. The student after-journey
+screenshots intentionally land on the session-expiry/login state after the
+student journey's expiry check, so they prove expiry/login behavior rather than
+serving as full student-portal staging screenshots.
+
 ## Still Required Before Production
 
 - Staging screenshots after immutable OPS-10 deployment.
@@ -29,5 +41,5 @@ portal layouts, and accessibility checks in the local test runtime.
 
 ## Evidence Policy
 
-Generated local screenshots from the OT-83R test run are left unstaged unless a
-later evidence refresh explicitly adopts them.
+No private data, provider URL, credential, activation link, reset link, token, or
+raw destination is recorded in the adopted screenshots.
