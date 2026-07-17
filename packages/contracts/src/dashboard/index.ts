@@ -11,11 +11,23 @@ export const ownerDashboardRoleSchema = z.enum([
 
 export const ownerDashboardSectionStateSchema = z.enum([
   'ready',
-  'needs_setup',
-  'action_required',
-  'unavailable',
+  'processing',
+  'action_needed',
+  'not_connected',
+  'no_data_yet',
+  'temporarily_unavailable',
 ]);
 export type OwnerDashboardSectionState = z.infer<typeof ownerDashboardSectionStateSchema>;
+
+export const ownerDashboardSectionDiagnosticsSchema = z.object({
+  source: z.string().min(1).max(120),
+  state_code: z.string().min(1).max(120),
+  detail: z.string().min(1).max(220),
+  checked_at: z.string().nullable(),
+});
+export type OwnerDashboardSectionDiagnostics = z.infer<
+  typeof ownerDashboardSectionDiagnosticsSchema
+>;
 
 export const ownerDashboardSectionSchema = z.object({
   id: z.enum([
@@ -32,9 +44,12 @@ export const ownerDashboardSectionSchema = z.object({
   value: z.number().int().min(0).nullable(),
   value_label: z.string().min(1).max(120),
   detail: z.string().min(1).max(260),
+  next_action: z.string().min(1).max(160).nullable(),
+  trend_label: z.string().min(1).max(120).nullable(),
   href: z.string().min(1).nullable(),
   capability: z.string().min(1).max(80),
   updated_at: z.string().nullable(),
+  diagnostics: ownerDashboardSectionDiagnosticsSchema,
 });
 export type OwnerDashboardSection = z.infer<typeof ownerDashboardSectionSchema>;
 

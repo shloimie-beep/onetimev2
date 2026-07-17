@@ -26,6 +26,23 @@ export const classStateSchema = z.enum([
   'failed',
 ]);
 
+export const productStateLabelSchema = z.enum([
+  'Ready',
+  'Processing',
+  'Action needed',
+  'Not connected',
+  'No data yet',
+  'Temporarily unavailable',
+]);
+export type ProductStateLabel = z.infer<typeof productStateLabelSchema>;
+
+export const classProductStateSchema = z.object({
+  label: productStateLabelSchema,
+  explanation: z.string().min(1).max(220),
+  action_label: z.string().min(1).max(120).nullable(),
+});
+export type ClassProductState = z.infer<typeof classProductStateSchema>;
+
 export const classReadinessSchema = z.object({
   occurrence_key: z.string().min(1),
   provider_status: z.enum(['provider_unavailable', 'ready', 'needs_setup']),
@@ -58,11 +75,34 @@ export const classOccurrenceSummarySchema = z.object({
   attendance_state: classStateSchema,
   delivery_state: classStateSchema,
   recording_state: classStateSchema,
+  product_state: classProductStateSchema,
+  protected_access_state: classProductStateSchema,
+  next_action: z.string().min(1).max(160).nullable(),
 });
 export type ClassOccurrenceSummary = z.infer<typeof classOccurrenceSummarySchema>;
 
 export const classOccurrenceDetailSchema = classOccurrenceSummarySchema.extend({
   readiness: classReadinessSchema,
+  enrollment_counts: z.object({
+    households: z.number().int().min(0),
+    learners: z.number().int().min(0),
+  }),
+  attendance_summary: z.object({
+    manual_marks: z.number().int().min(0),
+    launch_attempts: z.number().int().min(0),
+    joined_attempts: z.number().int().min(0),
+  }),
+  content_summary: z.object({
+    videos: z.number().int().min(0),
+    review_sheets: z.number().int().min(0),
+    processing: z.number().int().min(0),
+    needs_review: z.number().int().min(0),
+  }),
+  question_summary: z.object({
+    new_questions: z.number().int().min(0),
+    featured_questions: z.number().int().min(0),
+    answered_questions: z.number().int().min(0),
+  }),
   fulfillment_counts: z.object({
     queued: z.number().int().min(0),
     satisfied: z.number().int().min(0),

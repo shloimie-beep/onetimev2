@@ -203,7 +203,15 @@ describe('OT-71 class fulfillment for signup leads', () => {
       title: 'Daily One Time Mishnayos',
       access_state: 'provider_unavailable',
       reminder_state: 'pending',
+      product_state: {
+        label: 'Not connected',
+      },
+      protected_access_state: {
+        label: 'Not connected',
+      },
+      next_action: 'Review classroom setup',
     });
+    await seedClassDetailEvidence(occurrence.occurrence_key);
 
     const detail = await getClassOccurrenceDetail({
       pool,
@@ -216,6 +224,16 @@ describe('OT-71 class fulfillment for signup leads', () => {
       raw_provider_target_present: false,
     });
     expect(detail?.fulfillment_counts.queued).toBe(1);
+    expect(detail?.enrollment_counts).toEqual({ households: 1, learners: 1 });
+    expect(detail?.attendance_summary).toEqual({
+      manual_marks: 1,
+      launch_attempts: 0,
+      joined_attempts: 0,
+    });
+    expect(detail?.content_summary.videos).toBeGreaterThanOrEqual(1);
+    expect(detail?.content_summary.review_sheets).toBeGreaterThanOrEqual(1);
+    expect(detail?.content_summary.needs_review).toBeGreaterThanOrEqual(1);
+    expect(detail?.question_summary.new_questions).toBeGreaterThanOrEqual(1);
 
     const portalAdapter = createClassPortalAccessAdapter({ pool, config });
     const upcoming = await portalAdapter.upcomingForLearner({
@@ -274,11 +292,13 @@ describe('OT-71 class fulfillment for signup leads', () => {
     if (!firstUpcoming) throw new Error('Expected an upcoming class.');
     expect(firstUpcoming.launch_action).toMatchObject({
       kind: 'class_launch',
+      label: 'Class access not connected',
       href: null,
       launch_token_ref: 'provider_unavailable',
     });
     expect(launch).toMatchObject({
       kind: 'class_launch',
+      label: 'Class access not connected',
       href: null,
       launch_token_ref: 'provider_unavailable',
     });
@@ -324,12 +344,19 @@ describe('OT-71 class fulfillment for signup leads', () => {
       expect(list.headers.get('cache-control')).toContain('no-store');
       const listJson = JSON.parse(listText) as {
         success: true;
-        occurrences: { occurrence_key: string; access_state: string }[];
+        occurrences: {
+          occurrence_key: string;
+          access_state: string;
+          product_state: { label: string };
+          protected_access_state: { label: string };
+        }[];
       };
       expect(listJson.occurrences).toHaveLength(1);
       const occurrence = listJson.occurrences[0];
       if (!occurrence) throw new Error('Expected API occurrence.');
       expect(occurrence.access_state).toBe('provider_unavailable');
+      expect(occurrence.product_state.label).toBe('Not connected');
+      expect(occurrence.protected_access_state.label).toBe('Not connected');
 
       const detail = await fetch(
         `${server.baseUrl}/api/v1/classes/${encodeURIComponent(occurrence.occurrence_key)}`,
@@ -339,6 +366,7 @@ describe('OT-71 class fulfillment for signup leads', () => {
       const detailJson = (await detail.json()) as {
         success: true;
         occurrence: {
+          enrollment_counts: { households: number; learners: number };
           readiness: { provider_status: string; raw_provider_target_present: boolean };
         };
       };
@@ -346,6 +374,7 @@ describe('OT-71 class fulfillment for signup leads', () => {
         provider_status: 'provider_unavailable',
         raw_provider_target_present: false,
       });
+      expect(detailJson.occurrence.enrollment_counts).toEqual({ households: 0, learners: 0 });
       expect(JSON.stringify(detailJson)).not.toMatch(/https?:\/\/|zoom|vimeo|drive/i);
 
       const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');
@@ -387,6 +416,56 @@ async function grantHouseholdBillingAccess(householdKey: string) {
        true
      )`,
     [config.accountKey, config.productKey, householdKey],
+  );
+}
+
+async function seedClassDetailEvidence(occurrenceKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name)
+     VALUES ('household_alpha', $1, $2, 'Alpha Family')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_learners
+       (learner_key, account_key, product_key, household_key, display_name)
+     VALUES ('learner_alpha', $1, $2, 'household_alpha', 'Alpha Learner')`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.class_attendance_marks
+       (attendance_key, account_key, product_key, occurrence_key, learner_key, attendance_state, source)
+     VALUES ('attendance_alpha', $1, $2, $3, 'learner_alpha', 'present', 'owner_admin')`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.content_items
+       (content_item_key, account_key, product_key, occurrence_key, title, item_type, lifecycle_state)
+     VALUES
+       ('content_video_alpha', $1, $2, $3, 'Alpha Recording', 'video', 'published'),
+       ('content_review_alpha', $1, $2, $3, 'Alpha Review Sheet', 'review', 'review_needed')`,
+    [config.accountKey, config.productKey, occurrenceKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.classroom_student_questions
+       (question_key, account_key, product_key, household_key, learner_key, occurrence_key,
+        body_ciphertext, body_digest, excerpt_redacted, idempotency_key, request_hash,
+        submitted_by_user_ref)
+     VALUES (
+       'question_alpha',
+       $1,
+       $2,
+       'household_alpha',
+       'learner_alpha',
+       $3,
+       'ciphertext-for-test',
+       'digest-for-test',
+       'What did the Mishnah mean?',
+       'question-idem-alpha',
+       'question-request-alpha',
+       'student_user_alpha'
+     )`,
+    [config.accountKey, config.productKey, occurrenceKey],
   );
 }
 

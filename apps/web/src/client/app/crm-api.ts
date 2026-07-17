@@ -1,4 +1,5 @@
 import type {
+  ClassOccurrenceDetail,
   ClassOccurrenceSummary,
   ContactDetail,
   ContactListItem,
@@ -114,6 +115,11 @@ export type ClassListResponse = {
   success: true;
   occurrences: ClassOccurrenceSummary[];
   next_cursor: null;
+};
+
+export type ClassDetailResponse = {
+  success: true;
+  occurrence: ClassOccurrenceDetail;
 };
 
 export type ContentListResponse = {
@@ -417,6 +423,12 @@ export async function getOwnerDashboard() {
 
 export async function getClasses() {
   return authenticatedJson<ClassListResponse>('/api/v1/classes?limit=10');
+}
+
+export async function getClassDetail(occurrenceKey: string) {
+  return authenticatedJson<ClassDetailResponse>(
+    `/api/v1/classes/${encodeURIComponent(occurrenceKey)}`,
+  );
 }
 
 export async function getContentLibrary() {
