@@ -87,13 +87,14 @@ export async function runMigrations(
       const id = file.replace(/\.sql$/, '');
       const rawSql = await readFile(path.join(migrationsDir, file), 'utf8');
       const sql = isMemoryPool(pool) ? stripPostgresOnlyBlocks(rawSql) : rawSql;
-      const checksum = createHash('sha256').update(sql).digest('hex');
+      const checksum = migrationChecksum(sql);
+      const compatibleChecksums = migrationCompatibleChecksums(sql);
       const existing = await client.query(
         'SELECT checksum FROM onetime.schema_migrations WHERE id = $1',
         [id],
       );
       if (existing.rowCount) {
-        if (existing.rows[0].checksum !== checksum) {
+        if (!compatibleChecksums.has(String(existing.rows[0].checksum))) {
           throw new Error(`Migration checksum mismatch for ${id}`);
         }
         results.push({ id, checksum, status: 'already_applied' });
@@ -119,6 +120,24 @@ export async function runMigrations(
 
 function defaultMigrationsDir() {
   return path.resolve(process.cwd(), 'packages/db/migrations');
+}
+
+function migrationChecksum(sql: string) {
+  return createHash('sha256').update(normalizeMigrationLineEndings(sql)).digest('hex');
+}
+
+function migrationCompatibleChecksums(sql: string) {
+  const normalized = normalizeMigrationLineEndings(sql);
+  // Some pre-canonicalization environments recorded raw CRLF or LF hashes.
+  return new Set([
+    migrationChecksum(sql),
+    createHash('sha256').update(sql).digest('hex'),
+    createHash('sha256').update(normalized.replace(/\n/g, '\r\n')).digest('hex'),
+  ]);
+}
+
+function normalizeMigrationLineEndings(sql: string) {
+  return sql.replace(/\r\n/g, '\n');
 }
 
 function isMemoryPool(pool: DbPool) {

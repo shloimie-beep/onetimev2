@@ -1,6 +1,6 @@
 # OPS-06 Migration Safety
 
-Generated: 2026-07-17T05:52:44.985Z
+Generated: 2026-07-17T06:33:07.001Z
 
 Status: passed
 
