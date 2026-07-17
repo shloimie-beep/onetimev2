@@ -1,6 +1,6 @@
 # W12-07 Final Report
 
-Status: `verified_pending_commit_push_pr`
+Status: `draft_pr_opened`
 
 ## Source Intake
 
@@ -50,4 +50,9 @@ Status: `verified_pending_commit_push_pr`
 - Credential mutation performed: no.
 - BNA product code edited: no.
 
-Commit, push, and draft PR details will be appended after those steps complete.
+## GitHub
+
+- Branch: `codex/w12-07-premium-landing`
+- Implementation commit: `2ef21f24c62d61f021fb72c2bdf9921443ad47a6`
+- Draft PR: https://github.com/webcraft-media/onetimev2/pull/69
+- PR base: `release/ops10-full-staged-production-launch-20260717T050800Z`
