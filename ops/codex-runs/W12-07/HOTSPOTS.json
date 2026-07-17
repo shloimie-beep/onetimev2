@@ -1,0 +1,19 @@
+{
+  "task_id": "W12-07",
+  "shared_hotspots_touched": [
+    {
+      "path": "packages/brand-system/src/styles/public.css",
+      "reason": "Public landing visual system, hero composition, gallery geometry, bottom ticker, and floating WhatsApp control styles."
+    },
+    {
+      "path": "scripts/build-public-pages.ts",
+      "reason": "Static public landing generator for asset dimensions, responsive Retention image markup, moved gallery section, bottom ticker placement, and offline WhatsApp assistant markup."
+    }
+  ],
+  "root_package_files_touched": false,
+  "lockfiles_touched": false,
+  "migrations_touched": false,
+  "server_or_worker_shared_composition_touched": false,
+  "ci_workflows_touched": false,
+  "notes": "W12-99 remains responsible for final semantic convergence if this branch is combined with other W12 lanes."
+}

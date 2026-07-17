@@ -1,0 +1,78 @@
+[
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.009,
+    "ctaAboveFold": true,
+    "galleryOverflowX": "hidden",
+    "heroHeadingLeftRatio": 0.175,
+    "horizontalOverflow": false,
+    "lcp": 152,
+    "name": "mobile-360",
+    "retentionImageCount": 1,
+    "studentImageCount": 1,
+    "tickerBottomLocked": true,
+    "usableMs": 630,
+    "viewport": {
+      "height": 800,
+      "width": 360
+    }
+  },
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.0075,
+    "ctaAboveFold": true,
+    "galleryOverflowX": "hidden",
+    "heroHeadingLeftRatio": 0.2,
+    "horizontalOverflow": false,
+    "lcp": 144,
+    "name": "mobile-390",
+    "retentionImageCount": 1,
+    "studentImageCount": 1,
+    "tickerBottomLocked": true,
+    "usableMs": 631,
+    "viewport": {
+      "height": 844,
+      "width": 390
+    }
+  },
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.0079,
+    "ctaAboveFold": true,
+    "galleryOverflowX": "hidden",
+    "heroHeadingLeftRatio": 0.279,
+    "horizontalOverflow": false,
+    "lcp": 176,
+    "name": "tablet",
+    "retentionImageCount": 1,
+    "studentImageCount": 1,
+    "tickerBottomLocked": true,
+    "usableMs": 647,
+    "viewport": {
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "activeGalleryCaption": "Atlanta, Georgia",
+    "appBundleRequests": [],
+    "cls": 0.0064,
+    "ctaAboveFold": true,
+    "galleryOverflowX": "hidden",
+    "heroHeadingLeftRatio": 0.465,
+    "horizontalOverflow": false,
+    "lcp": 192,
+    "name": "desktop",
+    "retentionImageCount": 1,
+    "studentImageCount": 1,
+    "tickerBottomLocked": true,
+    "usableMs": 636,
+    "viewport": {
+      "height": 1000,
+      "width": 1440
+    }
+  }
+]
