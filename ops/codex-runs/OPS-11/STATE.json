@@ -1,0 +1,118 @@
+{
+  "run_id": "OPS-11-production-gate-closure-2026-07-17",
+  "phase": "phase_1_candidate_freeze",
+  "status": "in_progress",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.ops10-20260717-worktrees\\20260717T050800Z",
+  "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
+  "source_packet": {
+    "raw_id": "RAW-20260717-003",
+    "packet_id": "OPS-11-production-gate-closure-2026-07-17",
+    "zip_sha256": "A44D6AA7F2C58EDB691BD4F0E2966154CD2B8F9EB8575AA4D6B0061392ABF5A4",
+    "prompt_sha256": "93C36322DD1E85411E29BCF4AB24EC6A9F7A83FD926C32756592F428824BD1D5",
+    "manifest_sha256": "A511F58F065177689DEE776EF370CBA10FEB210C26175056F6BC3AB9FC540BF9"
+  },
+  "candidate": {
+    "pr_head_sha": "05529dcf96e00982a4a25ec69492b080f9f4da05",
+    "staged_application_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+    "post_staged_app_diff": [
+      "ops/codex-runs/OPS-10/FINAL-REPORT.md",
+      "ops/codex-runs/OPS-10/LOCAL-GATES.md",
+      "ops/codex-runs/OPS-10/MUTATION-LEDGER.json",
+      "ops/codex-runs/OPS-10/STATE.json"
+    ],
+    "post_staged_app_diff_classification": "evidence_only",
+    "requires_restage_before_production": false
+  },
+  "phase_1_evidence": {
+    "pr_state": {
+      "state": "OPEN",
+      "draft": true,
+      "merge_state_status": "CLEAN",
+      "head_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "base_ref": "main"
+    },
+    "checks": {
+      "status": "green",
+      "head_sha": "05529dcf96e00982a4a25ec69492b080f9f4da05",
+      "required": [
+        "Node 24 verify",
+        "OPS-06 deterministic checks",
+        "PostgreSQL 16 assurance harness",
+        "PostgreSQL 16 learner-seat proof",
+        "Static release readiness gates"
+      ]
+    },
+    "staging_routes": {
+      "/health": 200,
+      "/ready": 200,
+      "/version": {
+        "status": 200,
+        "commit_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+        "version": "ops10-d13e9cd"
+      },
+      "/login": 200,
+      "/forgot-password": 200,
+      "/activate": 200,
+      "/reset-password": 200
+    },
+    "staging_totp_probes": {
+      "/totp": 404,
+      "/mfa": 404,
+      "/2fa": 404,
+      "/authenticator": 404,
+      "/api/auth/totp": 404,
+      "/api/auth/mfa": 404
+    }
+  },
+  "railway": {
+    "staging": {
+      "project": "one-time-ot99-staging-96b42905",
+      "environment": "staging",
+      "web_service": "ot99-web",
+      "worker_service": "ot99-worker",
+      "database_service": "ot99-pg16"
+    },
+    "production": {
+      "project": "one-time-production",
+      "environment": "production",
+      "web_service": "one-time-web",
+      "worker_or_cron_service": "one-time-delivery-cron",
+      "database_service": "Postgres-j9Pi"
+    },
+    "secrets_policy": "Only redacted metadata, variable names, value fingerprints, hashes, versions, sizes, counts, and deployment IDs may be recorded."
+  },
+  "completed_actions": [
+    "Validated and preserved OPS-11 ZIP, manifest, checksums, and prompt packet.",
+    "Refetched PR #61 and confirmed current head remains 05529dcf96e00982a4a25ec69492b080f9f4da05.",
+    "Confirmed staged app SHA d13e9cd3117091e97ef973408d8742a13d1a9479 is an ancestor of the PR head and the only later files are OPS-10 evidence files.",
+    "Confirmed PR #61 required checks are green on the current PR head.",
+    "Confirmed staging /health, /ready, /version, /login, /forgot-password, /activate, and /reset-password return 200.",
+    "Confirmed staging TOTP/authenticator probe routes return 404."
+  ],
+  "next_safe_action": "Phase 2: certify production PostgreSQL 18 path with redacted Railway metadata, native PG18 dump/restore proof, disposable restore clone verification, PG16 portability retained, and a durable PG18 assurance job.",
+  "blockers": [],
+  "external_mutations": {
+    "production_deployments": 0,
+    "production_database_writes": 0,
+    "production_database_backups": 0,
+    "staging_rollbacks": 0,
+    "emails_sent": 0,
+    "dns_changes": 0,
+    "live_stripe_actions": 0,
+    "broad_customer_sends": 0,
+    "credential_disclosures": 0
+  },
+  "guardrails": {
+    "production_deploy_authorized_after_required_gates": true,
+    "single_operator_activation_or_reset_email_authorized_after_required_gates": true,
+    "dns_changes_authorized": false,
+    "destructive_migrations_authorized": false,
+    "existing_production_db_deletion_authorized": false,
+    "live_stripe_charges_authorized": false,
+    "broad_customer_sends_authorized": false,
+    "credential_disclosure_authorized": false
+  },
+  "updated_at": "2026-07-17T10:40:00+03:00"
+}

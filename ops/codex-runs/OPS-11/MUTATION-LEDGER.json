@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-07-17T10:40:00+03:00",
+  "source_mutations": [
+    {
+      "kind": "git_worktree_update",
+      "description": "OPS-11 original prompt and initial durable state scaffold created on the existing PR #61 release branch"
+    }
+  ],
+  "external_mutations": {
+    "railway_readbacks": 0,
+    "production_database_backups": 0,
+    "production_database_restores": 0,
+    "production_database_writes": 0,
+    "staging_database_backups": 0,
+    "staging_rollbacks": 0,
+    "staging_rollforwards": 0,
+    "production_deployments": 0,
+    "operator_activation_or_reset_emails": 0,
+    "dns_changes": 0,
+    "live_stripe_actions": 0,
+    "live_buffer_publications": 0,
+    "broad_customer_sends": 0,
+    "credential_disclosures": 0
+  },
+  "read_only_external_observations": [
+    "GitHub PR #61 metadata and required check status",
+    "Public staging HTTP route probes"
+  ],
+  "secrets_policy": "No raw database URLs, tokens, passwords, private destinations, row contents, or activation/reset links may be recorded."
+}
