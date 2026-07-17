@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import {
   leadPayloadSchema,
   type LeadPayload,
@@ -54,6 +54,9 @@ export async function captureLead({
   const reqHash = requestHash(parsed);
 
   const response = await inTransaction(pool, async (client) => {
+    await client.query('SELECT pg_advisory_xact_lock($1)', [
+      idempotencyLockKey(config.accountKey, config.productKey, parsed.idempotency_key),
+    ]);
     const duplicate = await client.query(
       `SELECT request_hash, response_json
          FROM onetime.idempotency_records
@@ -131,6 +134,15 @@ async function scheduleClassFulfillmentAfterCommit(input: {
 
 function uniqueIntentKeys(keys: string[]) {
   return [...new Set(keys)];
+}
+
+function idempotencyLockKey(accountKey: string, productKey: string, idempotencyKey: string) {
+  const raw = createHash('sha256')
+    .update(`${accountKey}\0${productKey}\0${idempotencyKey}`)
+    .digest('hex')
+    .slice(0, 8);
+  const value = Number.parseInt(raw, 16);
+  return value > 0x7fffffff ? value - 0x100000000 : value;
 }
 
 async function upsertContact(

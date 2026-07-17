@@ -29,10 +29,14 @@ at `4e907992d8c7312a02e75dc879a5b5030f2b5942`.
 - PR #60 Prettier failures repaired in the exact three files named by CI.
 - OPS-06 load/backpressure cleanup race repaired with guarded rollback, expected shutdown classification, pool error capture, and safe pool shutdown.
 - Local gates recorded in `LOCAL-GATES.md`.
+- Draft PR #61 opened against `main` to trigger pull-request CI and Postgres gates.
+- PR #61 first OPS-06 run failed only `concurrent_signup_idempotency`: 12 participants, 8 fulfilled, 4 rejected, 1 persisted contact.
+- Public lead capture now takes a transaction-scoped advisory lock on `(account_key, product_key, idempotency_key)` before checking/storing idempotency state, so concurrent duplicate submissions replay the stored response instead of racing the final insert.
 
 ## Local Gate Snapshot
 
 - Passed: `npm ci`, targeted Prettier check, `git diff --check`, `npm run typecheck`, `npm run lint`, `npm run secret:scan`, OPS-06 focused vitest, `npm run ops06:alerts`, and `npm run ops06:migrations`.
+- After the idempotency repair, also passed focused lead tests, OPS-06 focused tests, lint, typecheck, secret scan, and `npm run build`.
 - Blocked locally: Postgres 16 load/restore because Docker, `pg_isready`, and `psql` are unavailable on this machine.
 - Noisy but not authoritative locally: full `npm run format` reports Windows line-ending normalization across hundreds of unchanged files. The known Linux CI offenders were fixed and targeted-clean.
 
@@ -43,7 +47,7 @@ at `4e907992d8c7312a02e75dc879a5b5030f2b5942`.
 
 ## Next Safe Action
 
-Commit and push the Phase 1 repair/discovery checkpoint, then continue semantic convergence:
+Commit and push the lead idempotency repair checkpoint, then continue semantic convergence after PR #61 reruns:
 
 - inspect OT-107 student helper delta against the frozen candidate;
 - inspect and integrate or explicitly block OT-114 CRM communications/support;

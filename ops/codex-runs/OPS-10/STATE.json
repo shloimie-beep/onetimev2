@@ -23,7 +23,8 @@
     "status": "not_live_ready",
     "current_working_tree_repairs": [
       "Targeted Prettier repair for known PR #60 Node 24 verify failures.",
-      "OPS-06 load/backpressure guarded cleanup repair."
+      "OPS-06 load/backpressure guarded cleanup repair.",
+      "Concurrent public lead idempotency advisory-lock repair after PR #61 OPS-06 artifact showed 8/12 fulfilled under contention."
     ],
     "frozen_inputs_recorded": true,
     "local_gates_recorded": true,
@@ -37,9 +38,12 @@
     "Froze remote heads, PR #60/#59 status, production identity, and staging identity.",
     "Repaired known PR #60 Prettier files.",
     "Repaired OPS-06 expected Postgres forced-shutdown cleanup handling.",
-    "Ran local typecheck, lint, secret scan, targeted format, OPS-06 focused tests, alerts, and migration safety."
+    "Ran local typecheck, lint, secret scan, targeted format, OPS-06 focused tests, alerts, and migration safety.",
+    "Opened draft PR #61 for pull-request CI gates.",
+    "Downloaded PR #61 failed OPS-06 artifact and identified concurrent signup idempotency as the remaining failure.",
+    "Added a transaction-scoped advisory lock for public lead idempotency keys and re-ran focused lead tests, OPS-06 focused tests, lint, typecheck, secret scan, and build locally."
   ],
-  "next_safe_action": "Commit and push the Phase 1 repair/discovery checkpoint, then inspect semantic integration for OT-107 and OT-114 before staging deployment.",
+  "next_safe_action": "Commit and push the lead idempotency repair, then wait for PR #61 CI/OPS-06 rerun before staging deployment or semantic convergence claims.",
   "blockers": [
     {
       "id": "OPS10-BLOCKER-LOCAL-PG",
@@ -60,5 +64,5 @@
     "credential_disclosure_authorized": false,
     "production_deploy_authorized_after_required_gates": true
   },
-  "updated_at": "2026-07-17T08:20:00+03:00"
+  "updated_at": "2026-07-17T08:24:00+03:00"
 }

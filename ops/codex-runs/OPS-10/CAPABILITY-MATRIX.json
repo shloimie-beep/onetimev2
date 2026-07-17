@@ -31,6 +31,7 @@
       "production_status": "old_deploy",
       "evidence": [
         "Lead capture contracts and server routes are present in candidate code.",
+        "OPS-10 added transaction-scoped advisory locking for public lead idempotency keys after PR #61 OPS-06 artifact exposed concurrent duplicate rejection.",
         "Premium landing corrections require Playwright visual/user-flow acceptance before promotion."
       ],
       "next_gate": "local build, e2e public route checks, staging signup smoke"
