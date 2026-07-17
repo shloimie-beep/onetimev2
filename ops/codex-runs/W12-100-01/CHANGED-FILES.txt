@@ -1,0 +1,8 @@
+ops/codex-runs/W12-100-01/CHANGED-FILES.txt
+ops/codex-runs/W12-100-01/FINAL-REPORT.md
+ops/codex-runs/W12-100-01/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-01/RESUME.md
+ops/codex-runs/W12-100-01/STATE.json
+tests/integration/security/auth-browser-boundaries.test.ts
+tests/integration/security/portal-isolation-boundaries.test.ts
+tests/integration/security/provider-boundaries.test.ts
