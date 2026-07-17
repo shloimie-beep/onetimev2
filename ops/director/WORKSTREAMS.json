@@ -85,7 +85,7 @@
       "title": "Semantic convergence",
       "owner_scope": "shared hotspots and release proof",
       "branch": "integration/w12-final-convergence-20260717T123715Z",
-      "status": "validated_pending_commit_push_pr",
+      "status": "pushed_draft_pr_open",
       "notes": "Includes W12-00 through W12-08. Excludes W12-09, OPS-13A, and BNA P1/P2/P3. Staging deploy, real import, and provider canaries remain W12-100 work."
     }
   ],

@@ -4,6 +4,7 @@
   "repository": "webcraft-media/onetimev2",
   "candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
   "candidate_head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+  "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
   "release_pr": {
     "number": 61,
     "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",

@@ -119,7 +119,8 @@
   "w12_99_candidate": {
     "branch": "integration/w12-final-convergence-20260717T123715Z",
     "head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
-    "status": "validated_pending_commit_push_pr",
+    "status": "pushed_draft_pr_open",
+    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
     "included_lanes": [
       "W12-00",
       "W12-01",

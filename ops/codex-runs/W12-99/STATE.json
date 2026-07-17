@@ -2,7 +2,7 @@
   "schema_version": "onetime.codex_run.state.v1",
   "run_id": "W12-99",
   "title": "Final semantic convergence",
-  "status": "validated_pending_commit_push_pr",
+  "status": "pushed_draft_pr_open",
   "generated_at": "2026-07-17T15:56:23+03:00",
   "repository": "webcraft-media/onetimev2",
   "worktree": "C:\\Users\\User\\OneTimeOneTime-w12-99-semantic-convergence",
@@ -27,8 +27,8 @@
   "integration_heads": {
     "pre_closeout_merge_head": "f4d3ea9d150633067b7618b50e81deb16aa47292",
     "final_commit_sha": "recorded_by_git_branch_and_draft_pr_head_after_commit",
-    "pushed_branch": null,
-    "draft_pr": null
+    "pushed_branch": "integration/w12-final-convergence-20260717T123715Z",
+    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73"
   },
   "included_lanes": [
     {

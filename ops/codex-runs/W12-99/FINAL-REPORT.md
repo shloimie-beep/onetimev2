@@ -17,6 +17,7 @@ No production deploy, production data mutation, real CRM import, real provider c
 - Production `/version`: `ops11-1197673`
 - Production source SHA: `1197673fa409bfc4c649c2683f782e86775caa5e`
 - W12-99 branch: `integration/w12-final-convergence-20260717T123715Z`
+- W12-99 draft PR: `https://github.com/webcraft-media/onetimev2/pull/73`
 - W12-99 integration head: recorded by the final Git branch/PR head after commit.
 
 ## Included Branches

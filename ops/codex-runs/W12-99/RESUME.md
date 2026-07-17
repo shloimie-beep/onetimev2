@@ -7,6 +7,7 @@ Generated: 2026-07-17T15:56:23+03:00
 - Repository: `webcraft-media/onetimev2`
 - Worktree: `C:\Users\User\OneTimeOneTime-w12-99-semantic-convergence`
 - Branch: `integration/w12-final-convergence-20260717T123715Z`
+- Draft PR: `https://github.com/webcraft-media/onetimev2/pull/73`
 - Base release PR: #61, head `c7d46066517d7a458d189f2c782cc06200f7861c`
 - Production readback: `ops11-1197673`, commit `1197673fa409bfc4c649c2683f782e86775caa5e`
 - Included lanes: W12-00, W12-07, W12-08, W12-01, W12-02, W12-03, W12-04, W12-05, W12-06
