@@ -1,0 +1,25 @@
+{
+  "schema_version": "onetime.w13_10.migration_assurance.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "base_transition": "2190_ot109_rabbi_content_publisher through 2200, 2201, 2202",
+  "production_database_access": false,
+  "migrations_changed": false,
+  "target_migrations": [
+    {
+      "file": "2200_w12_02_communication_history.sql",
+      "sha256": "072d946d4e6b3f6e0d6f2f2b6d1d6343b56a587fe6b9e3271428585a670269a5"
+    },
+    {
+      "file": "2201_w12_01_crm_audience_import.sql",
+      "sha256": "e0dc91a46d7ef1b1fc55f78ae5e0fc234c4f68f2f8f3ab1063395c22e121cdd5"
+    },
+    {
+      "file": "2202_w12_05_telegram_operations.sql",
+      "sha256": "e187d8528b1cd4ffe736b4fd1b61e80284b070a0862afaa297a8b36d51e5bcac"
+    }
+  ],
+  "duplicate_prefixes": [],
+  "postgres_16_disposable_status": "blocked_tool_unavailable",
+  "postgres_18_disposable_status": "blocked_tool_unavailable",
+  "forward_migration_requirement": null
+}

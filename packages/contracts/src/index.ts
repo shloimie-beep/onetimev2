@@ -19,6 +19,15 @@ export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;
 export const audienceTypeSchema = z.enum(['family', 'school']);
 export type AudienceType = z.infer<typeof audienceTypeSchema>;
 
+export const leadConsentChannelSchema = z.enum(['email', 'whatsapp']);
+export type LeadConsentChannel = z.infer<typeof leadConsentChannelSchema>;
+
+export const leadConsentPurposeSchema = z.enum([
+  'required_service_communication',
+  'optional_class_reminders',
+]);
+export type LeadConsentPurpose = z.infer<typeof leadConsentPurposeSchema>;
+
 function isIanaTimeZone(value: string) {
   try {
     new Intl.DateTimeFormat('en-US', { timeZone: value }).format(new Date());
@@ -40,6 +49,17 @@ export const leadPayloadSchema = z
     phone: z.string().trim().max(40).optional().default(''),
     reminder_preference: reminderPreferenceSchema,
     reminder_consent: z.boolean().optional().default(false),
+    consent_context: z
+      .object({
+        policy_version: z.string().trim().min(1).max(120),
+        purpose: leadConsentPurposeSchema.default('optional_class_reminders'),
+        source: z.literal('public_signup').default('public_signup'),
+        channels: z.array(leadConsentChannelSchema).max(2).default([]),
+        captured_at: z.iso.datetime().optional(),
+        withdrawal_state: z.enum(['not_withdrawn', 'withdrawn']).default('not_withdrawn'),
+        suppression_state: z.string().trim().min(1).max(40).default('active'),
+      })
+      .optional(),
     idempotency_key: z.string().trim().min(8).max(120),
     attribution: z
       .object({
@@ -68,7 +88,7 @@ export const leadPayloadSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['reminder_consent'],
-        message: 'Confirm that we may send the selected class information and reminders.',
+        message: 'Choose and confirm each optional reminder channel you want to receive.',
       });
     }
     if (!isIanaTimeZone(payload.timezone)) {

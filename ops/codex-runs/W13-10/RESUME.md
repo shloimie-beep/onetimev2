@@ -1,0 +1,85 @@
+# W13-10 Resume
+
+Branch: codex/w13-10-complete-launch-foundations
+Base: 0d8d7168f066668f035176d777bdaaa4dcc5accd
+Worktree: C:/Users/User/OneTimeOneTime-w13-10-launch-foundations
+
+Implemented:
+
+- Shared delivery activation policy and provider router gate.
+- Versioned public legal notices and channel-specific signup consent.
+- Migration/security/SRE/supply-chain artifacts and dry-run deploy guard.
+
+Changed files:
+
+- .env.example
+- apps/web/src/client/public/public-entry.ts
+- apps/web/src/server/app.ts
+- apps/worker/src/delivery/provider-config.ts
+- apps/worker/src/delivery/provider-router.ts
+- ops/codex-runs/W13-10/BACKUP-RESTORE-PROOF.md
+- ops/codex-runs/W13-10/CHANGED-FILES.txt
+- ops/codex-runs/W13-10/CI-THREAT-MODEL.md
+- ops/codex-runs/W13-10/COLLISIONS.json
+- ops/codex-runs/W13-10/CONSENT-CONTRACT.md
+- ops/codex-runs/W13-10/COUNSEL-DECISIONS.md
+- ops/codex-runs/W13-10/DATA-LIFECYCLE-MATRIX.json
+- ops/codex-runs/W13-10/DELIVERY-INTEGRATION-INSTRUCTIONS.md
+- ops/codex-runs/W13-10/DELIVERY-PLATFORM-CONTRACT.md
+- ops/codex-runs/W13-10/DEPENDENCY-INVENTORY.json
+- ops/codex-runs/W13-10/ENV-CONTRACT-DRIFT.json
+- ops/codex-runs/W13-10/FINAL-REPORT.md
+- ops/codex-runs/W13-10/LANE-OWNERSHIP-MATRIX.json
+- ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json
+- ops/codex-runs/W13-10/LOCK-REPORT.json
+- ops/codex-runs/W13-10/MIGRATION-ASSURANCE.json
+- ops/codex-runs/W13-10/OPS-13B-R-REPLACEMENT-PROMPT.md
+- ops/codex-runs/W13-10/ORIGINAL-PROMPT.md
+- ops/codex-runs/W13-10/PRODUCT-DECISION-GATES.json
+- ops/codex-runs/W13-10/PROVIDER-ACTIVATION-MATRIX.json
+- ops/codex-runs/W13-10/RELEASE-AUTHORIZATION-MODEL.md
+- ops/codex-runs/W13-10/RELEASE-BLOCKERS.json
+- ops/codex-runs/W13-10/RESUME.md
+- ops/codex-runs/W13-10/ROLLING-COMPATIBILITY.md
+- ops/codex-runs/W13-10/SBOM-RECORD.json
+- ops/codex-runs/W13-10/SECURITY-PRIVACY-FINDINGS.json
+- ops/codex-runs/W13-10/SRE-READINESS.json
+- ops/codex-runs/W13-10/STAGING-MIGRATION-RUNBOOK.md
+- ops/codex-runs/W13-10/STATE.json
+- ops/codex-runs/W13-10/SUPPLY-CHAIN-REPORT.json
+- ops/codex-runs/W13-10/THREAT-MODEL.md
+- ops/codex-runs/W13-10/UPGRADE-PLAN.md
+- ops/codex-runs/W13-10/W13-90-REPLACEMENT-PROMPT.md
+- ops/codex-runs/W13-10/W13-99-REPLACEMENT-PROMPT.md
+- ops/director/BRANCH-FLEET.json
+- ops/director/CAPABILITY-MATRIX.json
+- ops/director/CURRENT-STATE.json
+- ops/director/DECISION-REGISTER.md
+- ops/director/DEPLOYMENTS.json
+- ops/director/WORKSTREAMS.json
+- ops/runbooks/w13-10/INCIDENT-RESPONSE.md
+- ops/runbooks/w13-10/PRODUCTION-PROMOTION.md
+- ops/runbooks/w13-10/PROVIDER-KILL-SWITCHES.md
+- ops/runbooks/w13-10/SLOS-AND-ALERTS.md
+- ops/runbooks/w13-10/STAGING-DEPLOY.md
+- ops/runbooks/w13-10/STAGING-ROLLBACK-ROLLFORWARD.md
+- packages/config/src/index.ts
+- packages/contracts/src/index.ts
+- packages/domain/src/delivery/activation-policy.ts
+- packages/domain/src/delivery/retry.ts
+- packages/domain/src/lead/service.ts
+- packages/domain/src/legal/policies.ts
+- scripts/build-public-pages.ts
+- scripts/w13-10/generate-artifacts.ts
+- scripts/w13-10/staging-deploy-guard.ts
+- tests/accessibility/w13-10/legal-pages-a11y.spec.ts
+- tests/e2e/landing-signup.spec.ts
+- tests/e2e/w13-10/public-consent-legal.spec.ts
+- tests/performance/ot81-day-one-performance.spec.ts
+- tests/performance/public-performance.spec.ts
+- tests/unit/ot72-provider-adapters.test.ts
+- tests/unit/w13-10/delivery-activation-policy.test.ts
+- tests/unit/w13-10/deploy-guard.test.ts
+- tests/unit/w13-10/legal-consent.test.ts
+
+Resume by running validation from package.json, refreshing PR #73/#72/#71 and W13 branch snapshots, then commit/push/open a draft PR. Do not deploy, import real data, enable providers, send, charge, upload, post, create meetings, mutate DNS, or read production private rows.

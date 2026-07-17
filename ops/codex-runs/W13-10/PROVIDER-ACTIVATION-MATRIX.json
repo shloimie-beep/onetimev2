@@ -1,0 +1,134 @@
+{
+  "schema_version": "onetime.w13_10.provider_activation_matrix.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "default_mode": "provider_off",
+  "readiness_output_allowed_fields": ["presence", "mode", "blocker_codes", "budgets"],
+  "providers": [
+    {
+      "provider": "email",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "whatsapp",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "telegram",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "zoom",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "vimeo",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "helper_openai",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "buffer",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "stripe_live",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    },
+    {
+      "provider": "bna_support_bridge",
+      "production_status": "needs_operator_decision",
+      "staging_canary_status": "requires_exact_authorization_and_allowlist",
+      "safe_default": "disabled",
+      "blocker_codes": [
+        "provider_transport_disabled",
+        "provider_mode_not_enabled",
+        "environment_not_authorized",
+        "provider_authorization_missing",
+        "allowlisted_destination_missing",
+        "budget_exhausted"
+      ]
+    }
+  ]
+}

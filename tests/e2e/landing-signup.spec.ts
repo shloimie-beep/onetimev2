@@ -321,9 +321,8 @@ test('family and school signup submit through canonical lead endpoint', async ({
   await page.getByLabel('Family or School').fill('Playwright Family');
   await page.getByLabel('Location').fill('Jerusalem');
   await page.getByRole('textbox', { name: 'Email' }).fill(`family-${Date.now()}@example.test`);
-  await page
-    .getByLabel('Confirm that we may send the selected class information and reminders.')
-    .check();
+  await expect(page.getByLabel('Email reminders')).not.toBeChecked();
+  await expect(page.getByLabel('WhatsApp reminders')).not.toBeChecked();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
   await expect(
     page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
@@ -335,9 +334,8 @@ test('family and school signup submit through canonical lead endpoint', async ({
   await page.getByRole('radio', { name: 'School' }).check();
   await page.getByLabel('Location').fill('London');
   await page.getByRole('textbox', { name: 'Email' }).fill(`school-${Date.now()}@example.test`);
-  await page
-    .getByLabel('Confirm that we may send the selected class information and reminders.')
-    .check();
+  await expect(page.getByLabel('Email reminders')).not.toBeChecked();
+  await expect(page.getByLabel('WhatsApp reminders')).not.toBeChecked();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
   await expect(
     page.getByRole('heading', { name: 'Thank you - we received your school inquiry.' }),

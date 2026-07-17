@@ -1,0 +1,87 @@
+{
+  "schema_version": "onetime.w13_10.product_decision_gates.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "task_id": "W13-10",
+  "gates": [
+    {
+      "id": "include_w12_09_gamification",
+      "status": "needs_operator_decision",
+      "decision": "Include or defer W12-09 gamification.",
+      "accepted_value": null,
+      "decision_owner": "operator_and_counsel_or_release_owner",
+      "dependent_lanes": ["W13-90", "W13-99"],
+      "safe_default": "defer",
+      "evidence": ["ops/codex-runs/W12-99/FINAL-REPORT.md", "ops/codex-runs/W13-10/FINAL-REPORT.md"]
+    },
+    {
+      "id": "family_subscription_price",
+      "status": "needs_operator_decision",
+      "decision": "Accept, supersede, or reject $67/month.",
+      "accepted_value": null,
+      "decision_owner": "operator_and_counsel_or_release_owner",
+      "dependent_lanes": ["W13-90", "W13-99"],
+      "safe_default": "do_not_publish_price",
+      "evidence": ["ops/codex-runs/W12-99/FINAL-REPORT.md", "ops/codex-runs/W13-10/FINAL-REPORT.md"]
+    },
+    {
+      "id": "family_learner_seat_limit",
+      "status": "needs_operator_decision",
+      "decision": "Accept exact learner-seat limit.",
+      "accepted_value": null,
+      "decision_owner": "operator_and_counsel_or_release_owner",
+      "dependent_lanes": ["W13-90", "W13-99"],
+      "safe_default": "do_not_publish_seat_limit",
+      "evidence": ["ops/codex-runs/W12-99/FINAL-REPORT.md", "ops/codex-runs/W13-10/FINAL-REPORT.md"]
+    },
+    {
+      "id": "production_deployment_authorization",
+      "status": "needs_operator_decision",
+      "decision": "Authorize one exact production build.",
+      "accepted_value": null,
+      "decision_owner": "operator_and_counsel_or_release_owner",
+      "dependent_lanes": ["W13-90", "W13-99"],
+      "safe_default": "no_production_deploy",
+      "evidence": ["ops/codex-runs/W12-99/FINAL-REPORT.md", "ops/codex-runs/W13-10/FINAL-REPORT.md"]
+    },
+    {
+      "id": "real_audience_import_authorization",
+      "status": "needs_operator_decision",
+      "decision": "Authorize one exact real import manifest hash and counts.",
+      "accepted_value": null,
+      "decision_owner": "operator_and_counsel_or_release_owner",
+      "dependent_lanes": ["W13-90", "W13-99"],
+      "safe_default": "no_real_import",
+      "evidence": ["ops/codex-runs/W12-99/FINAL-REPORT.md", "ops/codex-runs/W13-10/FINAL-REPORT.md"]
+    },
+    {
+      "id": "production_provider_activation_authorization",
+      "status": "needs_operator_decision",
+      "decision": "Authorize each production provider separately: email, WhatsApp, Telegram, Zoom, Vimeo, helper/OpenAI, Buffer, Stripe live mode, and BNA support bridge.",
+      "accepted_value": null,
+      "decision_owner": "operator_release_owner",
+      "dependent_lanes": ["W13-06", "W13-90", "W13-99"],
+      "safe_default": "all_providers_off",
+      "evidence": ["ops/codex-runs/W13-10/PROVIDER-ACTIVATION-MATRIX.json"]
+    },
+    {
+      "id": "public_legal_approval",
+      "status": "needs_operator_decision",
+      "decision": "Approve public privacy, terms, consent, and student-data notices.",
+      "accepted_value": null,
+      "decision_owner": "operator_and_counsel_or_release_owner",
+      "dependent_lanes": ["W13-90", "W13-99"],
+      "safe_default": "counsel_review_required",
+      "evidence": ["ops/codex-runs/W12-99/FINAL-REPORT.md", "ops/codex-runs/W13-10/FINAL-REPORT.md"]
+    },
+    {
+      "id": "retention_deletion_export_guardian_policy",
+      "status": "needs_operator_decision",
+      "decision": "Approve retention, deletion/export, and guardian/minor policy.",
+      "accepted_value": null,
+      "decision_owner": "operator_and_counsel_or_release_owner",
+      "dependent_lanes": ["W13-90", "W13-99"],
+      "safe_default": "do_not_invent_policy",
+      "evidence": ["ops/codex-runs/W12-99/FINAL-REPORT.md", "ops/codex-runs/W13-10/FINAL-REPORT.md"]
+    }
+  ]
+}

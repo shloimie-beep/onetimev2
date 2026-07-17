@@ -14,6 +14,13 @@ import {
   sharedNav,
   successCopy,
 } from '../packages/domain/src/index.ts';
+import {
+  communicationConsentNotice,
+  parentStudentDataNotice,
+  privacyNotice,
+  termsNotice,
+  type LegalNotice,
+} from '../packages/domain/src/legal/policies.ts';
 import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
@@ -258,9 +265,12 @@ function signupPage() {
       <input id="timezone" name="timezone" type="hidden">
       <div class="field"><label for="timezone_fallback">Time zone</label><input id="timezone_fallback" name="timezone_fallback" placeholder="America/New_York" hidden disabled><small>Use an IANA time zone such as America/New_York.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
       <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
-      <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><small>Required for WhatsApp reminders.</small><p tabindex="-1" class="error" data-error-for="phone"></p></div>
-      <fieldset><legend>Reminder choice</legend><label><input type="radio" name="reminder_preference" value="email" checked> Email</label><label><input type="radio" name="reminder_preference" value="whatsapp"> WhatsApp</label><label><input type="radio" name="reminder_preference" value="both"> Both</label><label><input type="radio" name="reminder_preference" value="none"> No daily reminders</label></fieldset>
-      <div class="consent" data-consent-wrap><label><input id="reminder_consent" name="reminder_consent" type="checkbox" required> Confirm that we may send the selected class information and reminders.</label><p tabindex="-1" class="error" data-error-for="reminder_consent"></p></div>
+      <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><small>Required only if you choose WhatsApp reminders.</small><p tabindex="-1" class="error" data-error-for="phone"></p></div>
+      <input type="hidden" name="reminder_preference" value="none" data-reminder-preference>
+      <input type="hidden" name="reminder_consent" value="false" data-reminder-consent>
+      <div class="consent"><p>We may email you required service follow-up about this signup. Optional class reminders are separate choices below.</p><p><a href="/communications-consent">Communication consent</a> and <a href="/privacy">privacy notice</a>.</p></div>
+      <fieldset data-reminder-channels><legend>Optional class reminders</legend><label><input id="reminder_email" type="checkbox" name="reminder_channel_email" value="email"> Email reminders</label><label><input id="reminder_whatsapp" type="checkbox" name="reminder_channel_whatsapp" value="whatsapp"> WhatsApp reminders</label><p tabindex="-1" class="error" data-error-for="reminder_consent"></p></fieldset>
+      <p class="consent"><a href="/student-data">Parent, guardian, and student data notice</a>. Please do not put student-sensitive details in this public form.</p>
       <button class="button button-primary" type="submit">Sign Up Now</button>
       <p class="form-status" role="status" data-form-status></p>
     </form>
@@ -272,6 +282,22 @@ function signupPage() {
 </main>${footer()}`,
     { canonicalPath: '/signup' },
   );
+}
+
+function noticePage(notice: LegalNotice, canonicalPath: string) {
+  const sections = notice.sections
+    .map(
+      (section) =>
+        `<section><h2>${escapeHtml(section.heading)}</h2>${section.body
+          .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+          .join('')}</section>`,
+    )
+    .join('');
+  return pageShell(
+    notice.title,
+    `${header()}<main class="simple-page"><h1>${escapeHtml(notice.heading)}</h1><p><strong>Version:</strong> ${escapeHtml(notice.version)}. <strong>Effective:</strong> ${escapeHtml(notice.effectiveDate)}. <strong>Review:</strong> ${escapeHtml(notice.reviewStatus)}. <strong>Contact:</strong> ${escapeHtml(notice.contactLabel)}.</p>${sections}</main>${footer()}`,
+    { canonicalPath },
+  ).replace('index, follow', 'noindex, nofollow');
 }
 
 function simplePage(
@@ -303,25 +329,15 @@ await writeFile(
     '/login',
   ),
 );
+await writeFile(path.join(outDir, 'privacy.html'), noticePage(privacyNotice, '/privacy'));
+await writeFile(path.join(outDir, 'terms.html'), noticePage(termsNotice, '/terms'));
 await writeFile(
-  path.join(outDir, 'privacy.html'),
-  simplePage(
-    'Privacy | One Time Mishnayos',
-    'Privacy',
-    'We collect only the signup information needed to respond to your One Time Mishnayos interest request.',
-    'noindex, nofollow',
-    '/privacy',
-  ),
+  path.join(outDir, 'communications-consent.html'),
+  noticePage(communicationConsentNotice, '/communications-consent'),
 );
 await writeFile(
-  path.join(outDir, 'terms.html'),
-  simplePage(
-    'Terms | One Time Mishnayos',
-    'Terms',
-    'This foundation slice does not sell access, process payments, or grant member accounts.',
-    'noindex, nofollow',
-    '/terms',
-  ),
+  path.join(outDir, 'student-data.html'),
+  noticePage(parentStudentDataNotice, '/student-data'),
 );
 await writeFile(
   path.join(outDir, '404.html'),
