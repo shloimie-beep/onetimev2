@@ -1,0 +1,214 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-12",
+  "title": "Supply chain launch-readiness audit",
+  "status": "ready_for_commit_and_draft_pr",
+  "generated_at": "2026-07-17",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-12",
+  "branch": "codex/w12-100-12-supply-chain-audit",
+  "canonical_start_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "pr_base_branch": "integration/w12-final-convergence-20260717T123715Z",
+  "objectives": [
+    {
+      "id": "fetch_and_verify_canonical_start",
+      "status": "done",
+      "evidence": "Fetched all refs and verified 0d8d7168f066668f035176d777bdaaa4dcc5accd exists before worktree creation."
+    },
+    {
+      "id": "create_isolated_worktree_and_branch",
+      "status": "done",
+      "evidence": "Created C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-12 on codex/w12-100-12-supply-chain-audit from the canonical commit."
+    },
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": "Read AGENTS.md, director start/invariants, and W12-99 final/state/capability/canary/import/rollback artifacts before implementation."
+    },
+    {
+      "id": "dependency_workflow_inventory_script",
+      "status": "done",
+      "evidence": "Added scripts/w12-100/supply-chain/inventory.ts as a read-only deterministic inventory generator."
+    },
+    {
+      "id": "focused_automated_tests",
+      "status": "done",
+      "evidence": "Added tests/unit/w12-100-supply-chain-inventory.test.ts and ran the focused suite first."
+    },
+    {
+      "id": "npm_lockfile_integrity",
+      "status": "done",
+      "evidence": "DEPENDENCY-WORKFLOW-INVENTORY.json reports lockfileVersion 3, 434 package entries, and 0 missing registry tarball integrity hashes."
+    },
+    {
+      "id": "node_24_compatibility",
+      "status": "done",
+      "evidence": "Root package requires >=24 <25. Inventory found one optional platform package engine mismatch: @img/sharp-win32-ia32@0.35.3 declares ^20.9.0."
+    },
+    {
+      "id": "production_and_development_vulnerability_reports",
+      "status": "done",
+      "evidence": "npm-audit-production.json and npm-audit-development.json both report 0 total vulnerabilities."
+    },
+    {
+      "id": "licenses",
+      "status": "done",
+      "evidence": "Inventory summarizes license counts and flags LGPL Sharp/libvips entries plus unspecified local workspace package licenses for review."
+    },
+    {
+      "id": "abandoned_or_duplicate_dependencies",
+      "status": "done",
+      "evidence": "No deprecated lockfile packages were detected. Inventory flags 12 duplicate transitive dependency names."
+    },
+    {
+      "id": "direct_versus_transitive_dependency_exposure",
+      "status": "done",
+      "evidence": "Inventory records 12 runtime direct dependencies, 17 development direct dependencies, and 434 locked package entries."
+    },
+    {
+      "id": "install_and_build_script_behavior",
+      "status": "done",
+      "evidence": "Inventory flags install-script packages esbuild and fsevents and Docker npm ci build behavior."
+    },
+    {
+      "id": "github_actions_permissions_and_fork_safety",
+      "status": "done",
+      "evidence": "All workflow files were inventoried. No pull_request_target trigger or direct secret-output line was found; top-level permissions are read-only."
+    },
+    {
+      "id": "action_version_pinning",
+      "status": "done",
+      "evidence": "Inventory flags 17 action uses pinned to mutable tags instead of full-length SHAs."
+    },
+    {
+      "id": "artifact_retention",
+      "status": "done",
+      "evidence": "Upload-artifact steps with retention were inventoried; no missing-retention finding remains."
+    },
+    {
+      "id": "branch_protection_assumptions",
+      "status": "needs_operator_decision",
+      "evidence": "Repo files cannot prove GitHub branch protection, required checks, review rules, or bypass policy; verify in GitHub settings before launch."
+    },
+    {
+      "id": "generated_evidence_and_binary_repository_growth",
+      "status": "done",
+      "evidence": "Inventory reports 210 tracked binary/evidence/media files totaling 53922979 bytes."
+    },
+    {
+      "id": "docker_railway_build_reproducibility",
+      "status": "done",
+      "evidence": "Inventory flags Docker/Railway base images pinned by tags instead of sha256 digests."
+    },
+    {
+      "id": "sbom_generation",
+      "status": "needs_operator_decision",
+      "evidence": "npm sbom --sbom-format cyclonedx and package-lock-only mode both failed with EINVALIDPURLTYPE for versionless workspace package entries."
+    },
+    {
+      "id": "committed_test_credentials_and_known_local_secret_handling",
+      "status": "done",
+      "evidence": "Existing secret scanner passed; inventory records secret-like env names only, not values."
+    },
+    {
+      "id": "env_example_names_versus_config_schema_names",
+      "status": "done",
+      "evidence": "Inventory reports 106 .env.example names, 17 OT75 schema names, 106 code-referenced env names, 17 schema names not in .env.example, and 73 code names not in .env.example."
+    },
+    {
+      "id": "runtime_dependency_minimization",
+      "status": "done",
+      "evidence": "Inventory flags @vitejs/plugin-react as a runtime dependency build-tool candidate and tsx as a runtime start dependency declared in devDependencies."
+    },
+    {
+      "id": "external_actions_and_production_mutations",
+      "status": "done",
+      "evidence": "No provider sends, external helper requests, provider mutations, production database reads, or production database writes were performed."
+    }
+  ],
+  "finding_counts": {
+    "total": 12,
+    "critical": 0,
+    "high": 0,
+    "medium": 6,
+    "low": 5,
+    "info": 1
+  },
+  "recommended_upgrade_count": 4,
+  "blockers_or_operator_decisions": [
+    {
+      "id": "branch_protection_assumptions",
+      "status": "needs_operator_decision",
+      "next_action": "Verify required checks, review rules, and bypass policy in GitHub settings."
+    },
+    {
+      "id": "sbom_generation",
+      "status": "needs_operator_decision",
+      "next_action": "Choose workspace package version metadata or a pinned CycloneDX/SPDX generator in a separate branch."
+    }
+  ],
+  "safety_counters": {
+    "external_actions_sent": 0,
+    "provider_resource_mutations": 0,
+    "production_database_reads": 0,
+    "production_database_writes": 0,
+    "production_mutations": 0
+  },
+  "validation": [
+    {
+      "command": "npm ci",
+      "status": "done",
+      "details": "359 packages installed; npm reported 0 vulnerabilities during install."
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-supply-chain-inventory.test.ts",
+      "status": "done",
+      "details": "1 file, 2 tests passed."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "done",
+      "details": "Passed across 1307 repo text files after closeout docs."
+    },
+    {
+      "command": "npm run lint",
+      "status": "done",
+      "details": "Passed."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "done",
+      "details": "Passed."
+    },
+    {
+      "command": "npm run unit",
+      "status": "done",
+      "details": "39 files, 198 tests passed."
+    },
+    {
+      "command": "npm run integration",
+      "status": "done",
+      "details": "38 files, 184 tests passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "done",
+      "details": "Passed with existing Vite font URL warning."
+    },
+    {
+      "command": "npm audit --omit=dev --json",
+      "status": "done",
+      "details": "Exit 0; 0 production vulnerabilities."
+    },
+    {
+      "command": "npm audit --json",
+      "status": "done",
+      "details": "Exit 0; 0 development vulnerabilities."
+    },
+    {
+      "command": "npm sbom --sbom-format cyclonedx",
+      "status": "needs_operator_decision",
+      "details": "Exit 1; EINVALIDPURLTYPE for versionless workspace package entries."
+    }
+  ]
+}

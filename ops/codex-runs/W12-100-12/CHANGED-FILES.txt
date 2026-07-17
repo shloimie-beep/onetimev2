@@ -1,0 +1,11 @@
+ops/codex-runs/W12-100-12/CHANGED-FILES.txt
+ops/codex-runs/W12-100-12/DEPENDENCY-WORKFLOW-INVENTORY.json
+ops/codex-runs/W12-100-12/FINAL-REPORT.md
+ops/codex-runs/W12-100-12/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-12/RESUME.md
+ops/codex-runs/W12-100-12/SBOM-GENERATION-RESULT.json
+ops/codex-runs/W12-100-12/STATE.json
+ops/codex-runs/W12-100-12/npm-audit-development.json
+ops/codex-runs/W12-100-12/npm-audit-production.json
+scripts/w12-100/supply-chain/inventory.ts
+tests/unit/w12-100-supply-chain-inventory.test.ts
