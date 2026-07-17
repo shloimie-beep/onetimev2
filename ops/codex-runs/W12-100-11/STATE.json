@@ -3,7 +3,7 @@
   "run_id": "W12-100-11",
   "title": "UX accessibility performance SEO launch-readiness lane",
   "status": "completed_with_blocked_dependencies",
-  "generated_at": "2026-07-17T15:41:34.407Z",
+  "generated_at": "2026-07-17T15:52:00.000Z",
   "repository": "webcraft-media/onetimev2",
   "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
   "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-11",
@@ -155,7 +155,9 @@
       "description": "Commit, push branch, and open draft PR against integration/w12-final-convergence-20260717T123715Z.",
       "status": "done",
       "evidence": [
-        "Final closeout will push branch codex/w12-100-11-ux-accessibility-performance-seo and open a draft PR with external actions count 0 and production mutations count 0."
+        "Committed W12-100-11 lane artifacts and evidence.",
+        "Pushed branch codex/w12-100-11-ux-accessibility-performance-seo.",
+        "Opened draft PR https://github.com/webcraft-media/onetimev2/pull/87 against integration/w12-final-convergence-20260717T123715Z with external actions count 0 and production mutations count 0."
       ]
     }
   ],

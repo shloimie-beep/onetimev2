@@ -5,6 +5,7 @@ Status: completed with blocked dependencies.
 Branch: `codex/w12-100-11-ux-accessibility-performance-seo`
 Starting commit: `0d8d7168f066668f035176d777bdaaa4dcc5accd`
 Target base: `integration/w12-final-convergence-20260717T123715Z`
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/87
 
 ## Scope
 
