@@ -17,6 +17,7 @@ import {
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
 import {
   PortalApiError,
+  createParentRewardGoal,
   createParentLearner,
   getParentDashboard,
   getParentMaterials,
@@ -323,6 +324,29 @@ function PortalApp() {
     }
   }
 
+  async function handleCreateRewardGoal(
+    learnerKey: string,
+    goal: { title: string; description: string; pointsRequired: number },
+  ) {
+    if (!session || !parentDashboard) return;
+    try {
+      await createParentRewardGoal({
+        csrfToken: session.csrf_token,
+        learnerKey,
+        title: goal.title,
+        description: goal.description || undefined,
+        pointsRequired: goal.pointsRequired,
+      });
+      await reloadParentAfterMutation(learnerKey);
+      setNotice({ kind: 'success', message: 'Parent reward added.' });
+      setViewState('success');
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Reward was not saved.') });
+      setViewState(stateForError(error));
+    }
+  }
+
   async function handleProtectedAction(action: ProtectedActionDescriptor) {
     if (!session) return;
     try {
@@ -476,6 +500,7 @@ function PortalApp() {
           onStudentAccessAction={openStudentAccessDialog}
           onBillingCheckout={() => void handleBillingAction('checkout')}
           onBillingPortal={() => void handleBillingAction('portal')}
+          onCreateRewardGoal={(learnerKey, goal) => void handleCreateRewardGoal(learnerKey, goal)}
           onLaunchClass={(_learnerKey, action) => void handleProtectedAction(action)}
           onOpenContent={(_learnerKey, action) => void handleProtectedAction(action)}
           onPreviewSupport={() => window.location.assign('/app/support')}

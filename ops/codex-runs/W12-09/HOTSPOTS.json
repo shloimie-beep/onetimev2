@@ -1,0 +1,73 @@
+{
+  "run_id": "W12-09",
+  "hotspots": [
+    {
+      "path": "packages/domain/src/gamification/service.ts",
+      "reason": "Core policy for point reasons, levels, streak grace, badges, milestones, guardrails, summaries, and reversals.",
+      "review_focus": [
+        "No meaningless click rewards",
+        "No random rewards or public ranking",
+        "Student and household scope isolation",
+        "Deterministic point totals and reversal math"
+      ],
+      "tests": ["tests/unit/w12-09-gamification.test.ts"]
+    },
+    {
+      "path": "packages/db/src/gamification/repository.ts",
+      "reason": "SQL-backed scope, idempotency, parent reward, event recording, reversal, and audit persistence.",
+      "review_focus": [
+        "Parameterized SQL",
+        "Idempotency replay and conflict behavior",
+        "Audit rows for corrections",
+        "Account/product/household/student scoping"
+      ],
+      "tests": ["tests/unit/w12-09-gamification.test.ts"]
+    },
+    {
+      "path": "apps/web/src/server/app.ts",
+      "reason": "API wiring and authenticated route exposure for gamification reads and writes.",
+      "review_focus": [
+        "Role authorization",
+        "Capability checks",
+        "Request schema parsing",
+        "No browser-controlled account/product scope"
+      ],
+      "tests": ["tests/unit/w12-09-gamification.test.ts", "npm run integration"]
+    },
+    {
+      "path": "apps/web/src/client/features/portals/PortalFeatures.tsx",
+      "reason": "Student and parent portal rendering for progress, rewards, states, and forms.",
+      "review_focus": [
+        "Self-only student display",
+        "Household-only parent display",
+        "Empty/loading/offline/celebration states",
+        "Accessible labels and responsive layout"
+      ],
+      "tests": [
+        "tests/ot-52/portal-ui.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "path": "apps/web/src/client/app/gamification-admin/GamificationAdminPanel.tsx",
+      "reason": "Owner/admin Learning Rewards dashboard, class aggregate, student detail, and reversal UI.",
+      "review_focus": [
+        "Authorized aggregate and individual views",
+        "Correction/reversal state clarity",
+        "No public ranking or shame language",
+        "Responsive desktop/mobile shell fit"
+      ],
+      "tests": ["tests/w12-09/portal-gamification-browser-harness.ts"]
+    },
+    {
+      "path": "packages/db/migrations/2200_w12_09_student_gamification.sql",
+      "reason": "Forward-only schema additions for rewards, class milestones, and correction history.",
+      "review_focus": [
+        "No runtime schema creation",
+        "Foreign keys and audit-friendly columns",
+        "No production-data mutation"
+      ],
+      "tests": ["tests/unit/w12-09-gamification.test.ts"]
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import type {
   ClassOccurrenceSummary,
   ContactDetail,
   ContactListItem,
+  AdminGamificationDashboardResponse,
   ContentLibraryItemSummary,
   OwnerDashboardResponse,
   SessionUser,
@@ -413,6 +414,10 @@ export async function submitSupportTicket(csrfToken: string, payload: Record<str
 
 export async function getOwnerDashboard() {
   return authenticatedJson<OwnerDashboardResponse>('/api/v1/dashboard/owner');
+}
+
+export async function getGamificationAdminDashboard() {
+  return authenticatedJson<AdminGamificationDashboardResponse>('/api/v1/gamification/admin');
 }
 
 export async function getClasses() {

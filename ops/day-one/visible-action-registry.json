@@ -420,6 +420,40 @@
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
+      "action_id": "dashboard.open_rewards.button",
+      "label": "Open Learning Rewards",
+      "surface": "button",
+      "route": "/app/dashboard",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/w12-09-gamification.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
       "action_id": "crm.contacts.view.route",
       "label": "CRM",
       "surface": "route",
@@ -821,6 +855,176 @@
       "provider_mode": "test_or_projection_only",
       "external_mutation": false,
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
+    },
+    {
+      "action_id": "gamification.rewards.view.route",
+      "label": "Learning Rewards",
+      "surface": "route",
+      "route": "/app/rewards",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/w12-09-gamification.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "action_id": "gamification.rewards.refresh.button",
+      "label": "Refresh learning rewards",
+      "surface": "button",
+      "route": "/app/rewards",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "GET",
+        "path": "/api/v1/gamification/admin"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "gamification_admin_read"
+      },
+      "states": {
+        "loading": "Loading bounded data.",
+        "success": "Data loaded.",
+        "error": "The source could not be loaded.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; no cached protected data is used."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/w12-09-gamification.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "action_id": "gamification.event.record.form",
+      "label": "Record learning event",
+      "surface": "form",
+      "route": "/app/rewards",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:write",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/gamification/events"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "gamification_event_recorded"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Request completed.",
+        "error": "The request could not be completed.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/w12-09-gamification.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "action_id": "gamification.event.reverse.form",
+      "label": "Reverse point event",
+      "surface": "form",
+      "route": "/app/rewards",
+      "roles": ["owner", "admin"],
+      "capability": "gamification:admin",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/gamification/reversals"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "gamification_event_reversed"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Request completed.",
+        "error": "The request could not be completed.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/w12-09-gamification.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
+    },
+    {
+      "action_id": "parent.rewards.create.form",
+      "label": "Create parent reward",
+      "surface": "form",
+      "route": "/app/parent",
+      "roles": ["parent"],
+      "capability": "gamification:write",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/gamification/parent-rewards"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "parent_reward_goal_created"
+      },
+      "states": {
+        "loading": "Saving request.",
+        "success": "Request completed.",
+        "error": "The request could not be completed.",
+        "permission": "The signed-in role cannot use this action.",
+        "offline": "Network unavailable; retry before changing data."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/w12-09-gamification.test.ts",
+        "tests/w12-09/portal-gamification-browser-harness.ts"
+      ]
     },
     {
       "action_id": "auth.logout.button",

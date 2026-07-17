@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { gamificationSummarySchema } from '../gamification/index.ts';
 
 export const portalActorRoleSchema = z.enum([
   'parent',
@@ -28,6 +29,9 @@ export const portalCapabilitySchema = z.enum([
   'student:support:preview',
   'rewards:read',
   'rewards:write',
+  'gamification:read',
+  'gamification:write',
+  'gamification:admin',
   'helper:query',
 ]);
 export type PortalCapability = z.infer<typeof portalCapabilitySchema>;
@@ -298,6 +302,7 @@ export const parentPortalDashboardSchema = z.object({
   student_access: z.array(studentAccessStateSchema),
   upcoming_classes: z.record(z.string(), z.array(upcomingClassSummarySchema)),
   rewards: z.record(z.string(), rewardBalanceSchema),
+  gamification: z.record(z.string(), gamificationSummarySchema),
   updates: z.record(z.string(), z.array(administrativeUpdateSchema)),
   helper: helperAvailabilitySchema,
   billing: billingSummarySchema,
@@ -310,6 +315,7 @@ export const parentLearnerMaterialsSchema = z.object({
   review_sheets: z.array(libraryItemSchema),
   progress: progressSummarySchema,
   rewards: rewardBalanceSchema,
+  gamification: gamificationSummarySchema,
   updates: z.array(administrativeUpdateSchema),
 });
 export type ParentLearnerMaterials = z.infer<typeof parentLearnerMaterialsSchema>;
@@ -320,6 +326,7 @@ export const studentPortalDashboardSchema = z.object({
   library_items: z.array(libraryItemSchema),
   progress: progressSummarySchema,
   rewards: rewardBalanceSchema,
+  gamification: gamificationSummarySchema,
   updates: z.array(administrativeUpdateSchema),
   questions: z.array(studentQuestionSchema),
   helper: helperAvailabilitySchema,
