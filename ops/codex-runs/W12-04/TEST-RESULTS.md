@@ -8,14 +8,14 @@ Final passing checks:
   - Tests: `3 passed`
 - `npm run typecheck`
   - Result: passed
-- `npx prettier --check apps/web/src/client/app/content-workspace/ContentWorkspace.tsx apps/web/src/client/app/content-workspace/content-workspace.css packages/contracts/src/content/admin-workspace.ts packages/domain/src/content/admin-workspace.ts tests/integration/content/ot110a-admin-content-workspace.test.ts`
+- `npx prettier --check apps/web/src/client/app/content-workspace/ContentWorkspace.tsx apps/web/src/client/app/content-workspace/content-workspace.css packages/contracts/src/content/admin-workspace.ts packages/domain/src/content/admin-workspace.ts tests/integration/content/ot110a-admin-content-workspace.test.ts ops/codex-runs/W12-04/*.md ops/codex-runs/W12-04/*.json`
   - Result: passed
 - `npm run brand:check`
   - Result: passed
   - Note: dist public bundle not present, build budgets skipped by script
 - `npm run secret:scan`
   - Result: passed
-  - Scope: `1180` repo text files
+  - Scope: `1181` repo text files
 - `npm run lint`
   - Result: passed
 

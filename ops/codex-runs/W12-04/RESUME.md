@@ -4,6 +4,7 @@ Current state:
 
 - Implementation complete in `codex/w12-04-content-vimeo-classroom`.
 - Provider-off vertical slice is implemented and tested.
+- Draft PR open: `https://github.com/webcraft-media/onetimev2/pull/64`.
 - No production publication, production deploy, Vimeo mutation, Buffer live publish, broad provider read, or secret commit was performed.
 
 Implemented files:
@@ -19,9 +20,8 @@ Verification:
 
 - See `TEST-RESULTS.md`.
 
-Remaining closeout:
+Closeout:
 
-- Stage scoped W12-04 files.
-- Commit.
-- Push branch.
-- Open a draft PR against `release/ops10-full-staged-production-launch-20260717T050800Z`.
+- Implementation commit pushed.
+- Draft PR opened against `release/ops10-full-staged-production-launch-20260717T050800Z`.
+- Final evidence state update pending push.
