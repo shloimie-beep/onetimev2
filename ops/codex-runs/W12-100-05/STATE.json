@@ -1,0 +1,122 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-05",
+  "title": "PostgreSQL migration rehearsal",
+  "status": "blocked_environment_or_rehearsal",
+  "generated_at": "2026-07-17T15:01:14.404Z",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/w12-100-05-postgres-migration-rehearsal",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "safety": {
+    "production_database_connected": false,
+    "production_mutations": 0,
+    "external_actions": 0,
+    "provider_mutations": 0,
+    "private_rows_read": false,
+    "evidence_mode": "hashes_counts_statuses_timings_only"
+  },
+  "objectives": [
+    {
+      "id": "transition_static_plan",
+      "status": "done",
+      "evidence": ["migration inventory", "target path/order checksum inputs"],
+      "notes": "The required 2200, 2201, and 2202 files are present and contiguous after 2190."
+    },
+    {
+      "id": "postgres16_disposable_rehearsal",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL 16 target was configured in this environment."
+    },
+    {
+      "id": "postgres18_disposable_rehearsal",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL 18 target was configured in this environment."
+    },
+    {
+      "id": "clean_database_migration",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "upgrade_from_2190",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "checksum_verification",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "repeat_idempotence",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "transactional_failure",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "constraint_compatibility",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "telegram_existing_row_compatibility",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "foreign_key_ordering",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "index_creation_behavior",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "lock_acquisition_blocking",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "app_startup_before_after",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "rolling_web_worker_compatibility",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "backup_restore_clone",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "forward_corrective_migration_procedure",
+      "status": "done",
+      "evidence": ["FORWARD-ROLLBACK-PLAN.md", "STAGING-MIGRATION-RUNBOOK.md"],
+      "notes": "Forward-only corrective procedure and exact stop conditions are defined; no down migration or destructive rollback is proposed."
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+{
+  "schema_version": "onetime.w12_100_05.migration_rehearsal.v1",
+  "lane_id": "W12-100-05",
+  "generated_at": "2026-07-17T15:01:14.404Z",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/w12-100-05-postgres-migration-rehearsal",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "safety": {
+    "production_database_connected": false,
+    "production_mutations": 0,
+    "external_actions": 0,
+    "provider_mutations": 0,
+    "private_rows_read": false,
+    "evidence_mode": "hashes_counts_statuses_timings_only"
+  },
+  "environment": {
+    "node_version": "v24.13.0",
+    "docker_available": false,
+    "native_postgres_tools_available": false,
+    "configured_targets": [],
+    "environment_blockers": [
+      "No disposable PostgreSQL targets configured. Set W12_PG16_ADMIN_DATABASE_URL and W12_PG18_ADMIN_DATABASE_URL, or W12_POSTGRES_TARGETS_JSON, to run live PG16/PG18 rehearsal.",
+      "Docker CLI is unavailable in this environment; local PostgreSQL containers cannot be started here.",
+      "Native pg_dump/pg_restore tools are unavailable; backup/restore clone can only run when PostgreSQL client tools are installed."
+    ]
+  },
+  "transition_plan": {
+    "baseline_migration_id": "2190_ot109_rabbi_content_publisher",
+    "target_migration_ids": [
+      "2200_w12_02_communication_history",
+      "2201_w12_01_crm_audience_import",
+      "2202_w12_05_telegram_operations"
+    ],
+    "target_migration_paths": [
+      "packages/db/migrations/2200_w12_02_communication_history.sql",
+      "packages/db/migrations/2201_w12_01_crm_audience_import.sql",
+      "packages/db/migrations/2202_w12_05_telegram_operations.sql"
+    ],
+    "target_order_verified": true,
+    "target_files_are_contiguous_after_baseline": true,
+    "checksum_inputs": [
+      {
+        "id": "2200_w12_02_communication_history",
+        "repo_path": "packages/db/migrations/2200_w12_02_communication_history.sql",
+        "sha256": "c445d0d8a3b7c60a3f79f3ace124b68f4a511efd7cb1c8a5a194879cc97ab764"
+      },
+      {
+        "id": "2201_w12_01_crm_audience_import",
+        "repo_path": "packages/db/migrations/2201_w12_01_crm_audience_import.sql",
+        "sha256": "86abd31f07465735766e675181a7a8aaceec32c096fffbfeda3587fbd46a55dc"
+      },
+      {
+        "id": "2202_w12_05_telegram_operations",
+        "repo_path": "packages/db/migrations/2202_w12_05_telegram_operations.sql",
+        "sha256": "5f57b22d0a7143d8b81dbd4ff9f2e77546373355a8b6cc7c45e458f0c155df38"
+      }
+    ],
+    "foreign_key_ordering_expectation": "Apply 2200 before 2201 before 2202. Communication history depends on contacts/outbox/WhatsApp tables that exist before 2190; audience import extensions depend on 1201 audience tables; Telegram constraint replacement depends on 1600/2001/2011 Telegram tables.",
+    "index_creation_expectation": "Index creation is ordinary transactional CREATE INDEX / CREATE INDEX IF NOT EXISTS inside the migration transaction; no CONCURRENTLY operations are expected in 2200-2202.",
+    "stop_conditions": [
+      {
+        "id": "lock_timeout_or_blocking_risk",
+        "condition": "Any rehearsal observes advisory lock acquisition exceeding the configured lock timeout, a pending blocker beyond the timeout, or a relation lock that would block normal web/worker reads.",
+        "required_action": "Stop the staging migration, keep the database online, capture sanitized lock counts/timings, and prepare a forward corrective migration or schedule an operator-approved maintenance window."
+      },
+      {
+        "id": "data_incompatibility",
+        "condition": "Any existing synthetic row valid at migration 2190 becomes invalid after 2200-2202, or any required W12 capability cannot be inserted after 2202.",
+        "required_action": "Stop before staging apply and produce a forward corrective migration with a synthetic fixture proving compatibility."
+      },
+      {
+        "id": "checksum_mismatch",
+        "condition": "Any onetime.schema_migrations checksum differs from the repository-normalized SHA-256 for the same migration id.",
+        "required_action": "Stop immediately; do not modify checked migrations in place. Investigate ledger provenance and use only an explicit forward correction if needed."
+      },
+      {
+        "id": "non_idempotent_result",
+        "condition": "A repeat migration verification applies a new migration unexpectedly, changes a schema hash, changes table counts outside the rehearsal fixture, or reports a different ledger.",
+        "required_action": "Stop release rehearsal and fix the migration runner or forward migration until repeat verification is stable."
+      },
+      {
+        "id": "startup_or_rolling_incompatibility",
+        "condition": "The web app, sink worker, or rolling pre/post migration process fails against the disposable migrated schema while provider flags remain off.",
+        "required_action": "Stop staging apply and repair application compatibility before any deploy lane consumes the migration."
+      }
+    ]
+  },
+  "migration_inventory_summary": {
+    "migration_count": 38,
+    "latest_migration_id": "2202_w12_05_telegram_operations",
+    "latest_migration_path": "packages/db/migrations/2202_w12_05_telegram_operations.sql",
+    "inventory_hash": "5977eff0fc130c0dc9e262364470df9ad8db2c355595214a63a5d96e25353d71"
+  },
+  "target_results": [],
+  "objectives": [
+    {
+      "id": "transition_static_plan",
+      "status": "done",
+      "evidence": ["migration inventory", "target path/order checksum inputs"],
+      "notes": "The required 2200, 2201, and 2202 files are present and contiguous after 2190."
+    },
+    {
+      "id": "postgres16_disposable_rehearsal",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL 16 target was configured in this environment."
+    },
+    {
+      "id": "postgres18_disposable_rehearsal",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL 18 target was configured in this environment."
+    },
+    {
+      "id": "clean_database_migration",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "upgrade_from_2190",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "checksum_verification",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "repeat_idempotence",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "transactional_failure",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "constraint_compatibility",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "telegram_existing_row_compatibility",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "foreign_key_ordering",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "index_creation_behavior",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "lock_acquisition_blocking",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "app_startup_before_after",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "rolling_web_worker_compatibility",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "backup_restore_clone",
+      "status": "blocked",
+      "evidence": [],
+      "notes": "No disposable PostgreSQL target evidence was available in this environment."
+    },
+    {
+      "id": "forward_corrective_migration_procedure",
+      "status": "done",
+      "evidence": ["FORWARD-ROLLBACK-PLAN.md", "STAGING-MIGRATION-RUNBOOK.md"],
+      "notes": "Forward-only corrective procedure and exact stop conditions are defined; no down migration or destructive rollback is proposed."
+    }
+  ]
+}
