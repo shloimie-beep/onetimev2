@@ -57,6 +57,7 @@ describe('OT-51P durable PostgreSQL contract through pg-mem', () => {
       '2013_ot110a_admin_content_workspace',
       '2014_ot111_legacy_activation_campaign',
       '2015_ops06_reliability_observability',
+      '2016_ot114_crm_communications_support',
       '2100_ot100_whatsapp_provider_activation',
       '2130_ot103_zoom_provider',
       '2160_ot106_buffer_social_publishing',

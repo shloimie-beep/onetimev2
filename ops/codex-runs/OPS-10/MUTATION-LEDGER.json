@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-07-17T08:50:00+03:00",
+  "source_mutations": [
+    {
+      "kind": "git_commit",
+      "sha": "04f0a6d2e974c8ac6e8feabd700becad7e4c2099",
+      "description": "OPS-10 scaffold"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "b3c184642c4985c64e01af4c70dd9c58ecdfdd6b",
+      "description": "OPS-10 discovery and PR #60/OPS-06 repairs"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "a158c555835815d1d16d953624dc1ddb9995aee3",
+      "description": "Public lead idempotency serialization"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "a058455705a91308ff2311aa1809540c83163abd",
+      "description": "OT-114 CRM communications semantic merge"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "see git HEAD for the commit containing this ledger",
+      "description": "OPS-10 predeploy handoff artifacts and OT-114 migration namespace repair"
+    }
+  ],
+  "external_mutations": {
+    "railway_deployments": 0,
+    "production_database_writes": 0,
+    "staging_database_writes": 0,
+    "dns_changes": 0,
+    "live_stripe_charges": 0,
+    "stripe_live_webhook_changes": 0,
+    "stripe_test_webhook_changes": 0,
+    "email_sends": 0,
+    "whatsapp_sends": 0,
+    "telegram_sends": 0,
+    "buffer_publications": 0,
+    "zoom_customer_mutations": 0,
+    "production_contact_imports": 0
+  },
+  "read_only_external_observations": [
+    "GitHub PR/check metadata",
+    "Railway project/service/deployment/domain-variable hash metadata",
+    "production and staging HTTP route/version probes"
+  ],
+  "secrets_policy": "No credentials, passwords, tokens, raw DB URLs, private destinations, activation/reset links, or provider signing secrets were stored."
+}

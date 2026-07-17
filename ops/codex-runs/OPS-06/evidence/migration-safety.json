@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-07-17T05:14:51.615Z",
+  "generated_at": "2026-07-17T05:52:44.985Z",
   "status": "passed",
-  "local_count": 34,
+  "local_count": 35,
   "remote_sources_scanned": [
     "origin/codex/crm-core-v1",
     "origin/codex/foundation-landing-lead-v1",

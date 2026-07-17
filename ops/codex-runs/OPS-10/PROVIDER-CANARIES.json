@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-07-17T08:50:00+03:00",
+  "status": "not_run",
+  "secrets_policy": "No provider secrets, private destinations, tokens, raw message bodies, signing secrets, activation links, or reset links are stored here.",
+  "providers": {
+    "email": {
+      "code_runtime": "account lifecycle and email step-up code integrated; local auth tests passed",
+      "staging_canary": "not_run_until_staging_deploy",
+      "production_canary": "not_run_until_production_auth_routes_pass",
+      "bounded_limit": "at most one owner activation/reset and one separate parent-test activation when protected destinations exist"
+    },
+    "whatsapp": {
+      "code_runtime": "WhatsApp provider code present from integrated candidate",
+      "staging_canary": "blocked_until_allowlisted_destination_and_protected_config",
+      "production_canary": "not_authorized_for_broad_send",
+      "bounded_limit": "one consented allowlisted test destination only"
+    },
+    "telegram": {
+      "code_runtime": "Telegram admin runtime present from integrated candidate",
+      "staging_canary": "blocked_until_protected_bot_config_and_operator_mapping",
+      "production_canary": "not_run",
+      "bounded_limit": "one mapped operator status, one fictional lookup, one reversible task"
+    },
+    "zoom": {
+      "code_runtime": "Zoom provider code present from integrated candidate",
+      "staging_canary": "blocked_until_sink_or_test_fixture",
+      "production_canary": "no_customer_class_mutation_authorized",
+      "bounded_limit": "sink/test fixture and protected reminder proof only"
+    },
+    "vimeo": {
+      "code_runtime": "Vimeo private runtime present from integrated candidate",
+      "staging_canary": "blocked_until_private_read_only_or_approved_fixture",
+      "production_canary": "not_run",
+      "bounded_limit": "private/read-only or minimal approved fixture ingest"
+    },
+    "buffer": {
+      "code_runtime": "Buffer/social draft capability present from integrated candidate",
+      "staging_canary": "blocked_until_protected_profile_discovery_config",
+      "production_canary": "live_publication_not_authorized",
+      "bounded_limit": "profile discovery and draft/schedule validation only"
+    },
+    "student_helper": {
+      "code_runtime": "student class helper present; OT-107 focused tests passed",
+      "staging_canary": "not_run_until_staging_deploy",
+      "production_canary": "not_run",
+      "bounded_limit": "one fictional knowledge query"
+    },
+    "bna_support": {
+      "code_runtime": "support contract documented; BNA receiver not proven ready",
+      "staging_canary": "blocked_until_separate_receiver_ready",
+      "production_canary": "not_run",
+      "bounded_limit": "one fictional signed round-trip only if receiver is ready"
+    },
+    "stripe_test": {
+      "code_runtime": "mounted code route is /api/v1/billing/webhooks/provider",
+      "staging_canary": "blocked_until_staging_deploy_and_test_secret_config",
+      "production_canary": "test_mode_only_after_core_production_auth_routes_pass",
+      "old_endpoint_disposition": "not_changed",
+      "live_mode": "not_authorized"
+    }
+  },
+  "external_mutations": {
+    "provider_calls": 0,
+    "email_sends": 0,
+    "whatsapp_sends": 0,
+    "telegram_sends": 0,
+    "stripe_test_objects": 0,
+    "stripe_live_objects": 0,
+    "buffer_publications": 0,
+    "zoom_customer_mutations": 0
+  }
+}

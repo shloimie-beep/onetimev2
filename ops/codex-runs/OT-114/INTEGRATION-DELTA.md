@@ -15,7 +15,7 @@
 
 ## Data And Contracts
 
-- Added migration `packages/db/migrations/2010_ot114_crm_communications_support.sql`.
+- Added migration `packages/db/migrations/2016_ot114_crm_communications_support.sql` after OPS-10 renumbered the branch-local `2010_*` filename to avoid the OPS-03B migration namespace collision.
 - Support categories are now `access_login`, `class_zoom`, `billing`, `content`, `technical_bug`, `account_family`, and `other`.
 - Added `onetime.crm_reply_drafts` for provider-off reply confirmations.
 - Contact contracts now include tags, system facts, relationships, notes, tasks, support tickets, enrollment summary, and timeline.

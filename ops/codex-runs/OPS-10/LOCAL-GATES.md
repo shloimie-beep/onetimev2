@@ -41,6 +41,8 @@ Generated: 2026-07-17T05:20:00Z
 | OT-114 post-merge type/lint  | `npm run typecheck`; `npm run lint`                                                                                                                                                                                                                                                    | Passed                                                                                                         |
 | OT-114 post-merge formatting | Targeted `npx prettier --check --ignore-unknown -- <changed files>`                                                                                                                                                                                                                    | Passed                                                                                                         |
 
+| Migration renumber focus | `npx vitest run --config vitest.integration.config.ts tests/integration/telegram-db-foundation.test.ts tests/integration/auth-crm.test.ts` | Passed after OT-114 migration was renamed to `2016_ot114_crm_communications_support` |
+
 ## Blocked Or Not Authoritative Locally
 
 | Gate                  | Local Result                                                                                                                                                                    | Required Next Evidence                                                                                             |
@@ -60,6 +62,24 @@ Generated: 2026-07-17T05:20:00Z
 | #61 | OT-37 PostgreSQL assurance  | Passed on commit `a158c555835815d1d16d953624dc1ddb9995aee3`                                            | GitHub Actions                                                               |
 | #61 | OT-75 static readiness      | Passed on commit `a158c555835815d1d16d953624dc1ddb9995aee3`                                            | GitHub Actions                                                               |
 | #61 | OT-83 learner-seat proof    | Passed on commit `a158c555835815d1d16d953624dc1ddb9995aee3`                                            | GitHub Actions                                                               |
+
+| #61 | OPS-06 deterministic checks | Passed on commit `a058455705a91308ff2311aa1809540c83163abd` | GitHub Actions after OT-114 merge |
+| #61 | OT-37 PostgreSQL assurance | Passed on commit `a058455705a91308ff2311aa1809540c83163abd` | GitHub Actions after OT-114 merge |
+| #61 | OT-75 static readiness | Passed on commit `a058455705a91308ff2311aa1809540c83163abd` | GitHub Actions after OT-114 merge |
+| #61 | OT-83 learner-seat proof | Passed on commit `a058455705a91308ff2311aa1809540c83163abd` | GitHub Actions after OT-114 merge |
+| #61 | Node 24 verify | In progress on commit `a058455705a91308ff2311aa1809540c83163abd` | GitHub Actions |
+
+## Railway Readback
+
+No raw Railway variables, database URLs, credentials, passwords, tokens, private
+destinations, activation links, or reset links were printed or stored.
+
+| Target     | Project                          | Environment  | Service                  | Current deployment ID                  | Current image digest                                                      | DB binding proof                            |
+| ---------- | -------------------------------- | ------------ | ------------------------ | -------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------- |
+| Staging    | `one-time-ot99-staging-96b42905` | `staging`    | `ot99-web`               | `9efd2fc9-75c5-4455-b5bc-0bb16b85d3a2` | `sha256:8eabe8216c5e46c39b5ebfad75fe17ab167be74b1a9acada081f9226eefeec09` | `DATABASE_URL` hash matched `ot99-pg16`     |
+| Staging    | `one-time-ot99-staging-96b42905` | `staging`    | `ot99-worker`            | `0df0b354-6453-457b-b65b-43394601a6c7` | `sha256:56f7b3e5dbdf7d0df80f4b9a84ddb67d96790d1ddf89254c95a38db428598869` | `DATABASE_URL` hash matched `ot99-pg16`     |
+| Production | `one-time-production`            | `production` | `one-time-web`           | `15280d13-3e12-4c72-8460-10e0c6e99b3e` | `sha256:3390fcfe443897c8da1a698c98428cc85458f6a5bef789492a53ddf4a0003553` | `DATABASE_URL` hash matched `Postgres-j9Pi` |
+| Production | `one-time-production`            | `production` | `one-time-delivery-cron` | `387e2e49-2055-43c8-86f4-de11f0e60b59` | `sha256:cca6c9720caf97d780c455e403c9228756c97da56ef722c31f124a4376b1bc31` | stopped build-only cron runner              |
 
 ## Live Observation
 
