@@ -1,6 +1,7 @@
 .communications-surface {
   display: grid;
   gap: 1rem;
+  color: #101214;
 }
 
 .communications-header p,
@@ -9,26 +10,88 @@
   max-width: 68ch;
 }
 
+.communications-header {
+  border-bottom: 3px solid #ffd32a;
+  padding-bottom: 0.75rem;
+}
+
+.communications-truth {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.communications-truth span,
+.communications-draft-note {
+  border: 1px solid #83d9ee;
+  background: #eefbff;
+  color: #101214;
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .communications-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  display: flex;
   gap: 0.75rem;
   align-items: end;
+  overflow-x: auto;
+  padding: 0.85rem;
+  border: 1px solid #101214;
+  border-radius: 8px;
+  background: #fff8d6;
+  scroll-snap-type: x proximity;
 }
 
 .communications-filters label {
   display: grid;
   gap: 0.25rem;
+  min-width: 11rem;
+  scroll-snap-align: start;
+}
+
+.communications-filters span {
+  font-weight: 800;
+}
+
+.communications-filters input,
+.communications-filters select {
+  min-height: 2.5rem;
+  border: 1px solid #101214;
+  border-radius: 6px;
+  background: #fff;
+  color: #101214;
+  padding: 0.45rem 0.55rem;
 }
 
 .communications-filter-actions {
   display: flex;
   gap: 0.5rem;
+  min-width: max-content;
+}
+
+.communications-filter-actions button,
+.communications-load-more,
+.communications-error button {
+  min-height: 2.5rem;
+  border: 1px solid #101214;
+  border-radius: 6px;
+  background: #101214;
+  color: #ffd32a;
+  padding: 0.45rem 0.8rem;
+  font-weight: 800;
+}
+
+.communications-filter-actions button[type='button'] {
+  background: #fff;
+  color: #101214;
 }
 
 .communications-table {
   width: 100%;
   border-collapse: collapse;
+  border: 1px solid #101214;
 }
 
 .communications-table th,
@@ -39,14 +102,27 @@
   vertical-align: top;
 }
 
+.communications-table th {
+  background: #101214;
+  color: #ffd32a;
+}
+
+.communications-table td span {
+  display: block;
+  margin-top: 0.25rem;
+  max-width: 34ch;
+}
+
 .communications-cards {
   display: none;
 }
 
 .communications-card {
-  border: 1px solid #d7dde8;
+  border: 1px solid #101214;
   border-radius: 8px;
   padding: 1rem;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 211, 42, 0.25);
 }
 
 .communications-card h2 {
@@ -70,9 +146,10 @@
 .communications-loading,
 .communications-state,
 .communications-error {
-  border: 1px solid #d7dde8;
+  border: 1px solid #101214;
   border-radius: 8px;
   padding: 1rem;
+  background: #fff;
 }
 
 .communications-load-more {
@@ -80,6 +157,10 @@
 }
 
 @media (max-width: 700px) {
+  .communications-filters {
+    margin-inline: -0.25rem;
+  }
+
   .communications-table {
     display: none;
   }

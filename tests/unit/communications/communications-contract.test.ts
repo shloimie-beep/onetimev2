@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  communicationsCapabilities,
   communicationsListResponseSchema,
   type CommunicationsListResponse,
 } from '../../../packages/contracts/src/communications/index.ts';
+import {
+  communicationHistorySourceTruthMatrix,
+  dryRunCommunicationHistoryBackfill,
+  unavailableProviderHistoryReport,
+} from '../../../packages/domain/src/communications/history-ingestion.ts';
 import {
   CommunicationsCursorError,
   decodeCommunicationsCursor,
@@ -36,9 +42,24 @@ describe('Communications V1A contract', () => {
       stateLabel: 'Processed in test mode, not delivery',
       stateAt: '2026-07-14T12:01:00.000Z',
     });
+    expect(
+      normalizeCommunicationsStatus({
+        status: 'pending',
+        eventType: 'crm_single_recipient_reply_draft.v1',
+      }),
+    ).toEqual({
+      localState: 'draft_saved',
+      stateLabel: 'Draft saved, provider off',
+      stateAt: null,
+    });
     expect(normalizeCommunicationsStatus({ status: 'delivered' })).toEqual({
       localState: 'delivered',
       stateLabel: 'Delivered',
+      stateAt: null,
+    });
+    expect(normalizeCommunicationsStatus({ status: 'suppressed' })).toEqual({
+      localState: 'suppressed',
+      stateLabel: 'Suppressed',
       stateAt: null,
     });
   });
@@ -61,6 +82,11 @@ describe('Communications V1A contract', () => {
       intentType: 'internal_lead_alert',
       label: 'Communication intent unavailable',
       channel: 'email',
+    });
+    expect(normalizeCommunicationsEvent('whatsapp_inbound_message.v1', 'whatsapp')).toMatchObject({
+      intentType: 'whatsapp_inbound_message',
+      label: 'Stored WhatsApp inbound message',
+      channel: 'whatsapp',
     });
   });
 
@@ -99,6 +125,10 @@ describe('Communications V1A contract', () => {
       ),
     ).toThrow(/90 days/);
     expect(() => parseCommunicationsFilters({ channel: 'sms' }, fixedNow)).toThrow(/Channel/);
+    expect(() => parseCommunicationsFilters({ direction: 'sideways' }, fixedNow)).toThrow(
+      /Direction/,
+    );
+    expect(() => parseCommunicationsFilters({ source: 'mailbox' }, fixedNow)).toThrow(/Source/);
   });
 
   it('seals cursors and rejects tampering, expiration, and binding mismatch', () => {
@@ -135,27 +165,9 @@ describe('Communications V1A contract', () => {
     const response: CommunicationsListResponse = {
       success: true,
       availability: 'available',
-      source_scope: 'local_communication_intents_only',
+      source_scope: 'canonical_communication_history',
       mailbox_complete: false,
-      capabilities: {
-        read: true,
-        provider_acceptance: false,
-        provider_delivery: false,
-        inbound_import: false,
-        replies: true,
-        threads: false,
-        subject_body_access: false,
-        attachments: false,
-        reminder_execution: false,
-        compose: true,
-        resend: false,
-        campaigns: false,
-        templates: false,
-        integration_settings: false,
-        channels: ['email'],
-        intent_types: ['family_signup_email_ack'],
-        local_states: ['queued', 'draft_saved', 'unknown'],
-      },
+      capabilities: communicationsCapabilities,
       applied_filters: {
         from: '2026-07-01T00:00:00.000Z',
         to: '2026-07-14T00:00:00.000Z',
@@ -163,15 +175,32 @@ describe('Communications V1A contract', () => {
       },
       items: [
         {
+          event_id: 'outbox:test',
+          thread_id: 'contact:contact_public_test:email',
+          thread_label: 'Contact outbound history',
           channel: 'email',
+          direction: 'outbound',
           intent_type: 'family_signup_email_ack',
           event_label: 'Family signup email acknowledgement',
           local_state: 'queued',
           state_label: 'Queued',
+          source: 'local_outbox_intent',
+          source_label: 'Local outbound intent',
+          provenance: 'local_database',
+          participant_kind: 'contact',
+          participant_label: 'Linked contact',
           recipient_masked: 'Email recipient',
           queued_at: '2026-07-10T00:00:00.000Z',
+          occurred_at: '2026-07-10T00:00:00.000Z',
           state_at: null,
           contact_path: '/app/crm/contacts/contact_public_test',
+          household_path: null,
+          preview_redacted: 'Outbound intent stored locally. Provider delivery is not implied.',
+          provider_reference_digest: null,
+          import_batch_key: null,
+          idempotency_key: 'delivery_test',
+          draft_only: false,
+          transport_available: false,
         },
       ],
       next_cursor: null,
@@ -180,5 +209,87 @@ describe('Communications V1A contract', () => {
     expect(JSON.stringify(response)).not.toContain('payload');
     expect(Object.keys(response.items[0] ?? {})).not.toContain('subject');
     expect(Object.keys(response.items[0] ?? {})).not.toContain('body');
+  });
+
+  it('dry-runs historical imports without exposing raw private bodies', () => {
+    const report = dryRunCommunicationHistoryBackfill({
+      account_key: 'one_time',
+      product_key: 'one_time_mishnah_class',
+      source: 'manual_redacted_fixture',
+      known_contact_keys: ['contact_a'],
+      rows: [
+        {
+          source_row_id: 'row-1',
+          channel: 'email',
+          direction: 'outbound',
+          occurred_at: '2026-07-14T10:00:00.000Z',
+          contact_key: 'contact_a',
+          provider_reference: 'provider-secret-ish-reference',
+          idempotency_key: 'message-1',
+          redacted_preview: 'Redacted email event',
+        },
+        {
+          source_row_id: 'row-2',
+          channel: 'whatsapp',
+          direction: 'inbound',
+          occurred_at: '2026-07-14T11:00:00.000Z',
+          contact_key: 'missing_contact',
+          body: 'raw private message body must not survive',
+        },
+      ],
+    });
+    expect(report.totals).toMatchObject({
+      rows_seen: 2,
+      importable_events: 1,
+      conflicts: 2,
+      unknown_contacts: 1,
+      unsafe_raw_body_rows: 1,
+    });
+    expect(JSON.stringify(report)).not.toContain('raw private message body');
+    expect(JSON.stringify(report)).not.toContain('provider-secret-ish-reference');
+  });
+
+  it('records provider-history limitations as a truth source, not an empty inbox', () => {
+    const report = unavailableProviderHistoryReport({
+      account_key: 'one_time',
+      product_key: 'one_time_mishnah_class',
+      provider: 'resend',
+      reason: 'No historical Resend export was supplied.',
+    });
+    expect(report.totals.missing_history_rows).toBe(1);
+    expect(communicationHistorySourceTruthMatrix.map((row) => row.kind)).toContain(
+      'unavailable_unprovable_history',
+    );
+    expect(JSON.stringify(report)).toContain('not evidence of provider delivery');
+  });
+
+  it('flags out-of-order stored webhook dry-run rows without importing them', () => {
+    const report = dryRunCommunicationHistoryBackfill({
+      account_key: 'one_time',
+      product_key: 'one_time_mishnah_class',
+      source: 'stored_webhook_projection',
+      known_contact_keys: ['contact_a'],
+      rows: [
+        {
+          source_row_id: 'later',
+          channel: 'whatsapp',
+          direction: 'inbound',
+          occurred_at: '2026-07-14T12:00:00.000Z',
+          contact_key: 'contact_a',
+        },
+        {
+          source_row_id: 'earlier',
+          channel: 'whatsapp',
+          direction: 'inbound',
+          occurred_at: '2026-07-14T11:00:00.000Z',
+          contact_key: 'contact_a',
+        },
+      ],
+    });
+    expect(report.totals.out_of_order_rows).toBe(1);
+    expect(report.totals.importable_events).toBe(1);
+    expect(report.conflicts.map((conflict) => conflict.reason)).toContain(
+      'out_of_order_webhook_row',
+    );
   });
 });

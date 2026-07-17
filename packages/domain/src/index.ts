@@ -10,6 +10,14 @@ export {
 } from './lead/normalize.ts';
 export { processOutboxSink } from './outbox/sink.ts';
 export {
+  communicationHistorySourceTruthMatrix,
+  dryRunCommunicationHistoryBackfill,
+  unavailableProviderHistoryReport,
+  type CommunicationHistoryDryRunInput,
+  type CommunicationHistoryDryRunReport,
+  type CommunicationHistorySourceTruthRow,
+} from './communications/history-ingestion.ts';
+export {
   ONE_TIME_CLASS_SERIES_KEY,
   ONE_TIME_CLASS_TITLE,
   createClassPortalAccessAdapter,
