@@ -1,0 +1,27 @@
+{
+  "schema_version": "onetime.codex_run.scope.v1",
+  "run_id": "W12-03",
+  "in_scope": [
+    "test-only Portal Test Lab fixture provisioning",
+    "owner/admin-only lab status and reset/reseed surface",
+    "separate fictional parent and learner login identities",
+    "parent and student portal journey tests with synthetic data",
+    "route/action registry coverage",
+    "W12-03 evidence and closeout artifacts"
+  ],
+  "out_of_scope": [
+    "production user creation or mutation",
+    "production database access",
+    "production deployment",
+    "real email, WhatsApp, Telegram, Stripe, Zoom, or external provider mutation",
+    "BNA runtime, assets, secrets, or workspace sharing"
+  ],
+  "completion_criteria": [
+    "admin/owner can view the lab without seeing passwords or secrets",
+    "parent session manages household and learner access without entering a student session",
+    "each learner signs in through its own fictional student identity",
+    "student session sees exactly one learner and no sibling data",
+    "fixtures include schedule, protected join state, recording, review sheet, progress, reward, private question, helper, and synthetic billing state",
+    "responsive screenshots and accessibility evidence are captured using fictional data"
+  ]
+}

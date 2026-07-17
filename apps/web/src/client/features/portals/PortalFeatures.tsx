@@ -270,7 +270,23 @@ function BillingSummaryPanel({
   onCheckout?: (() => void) | undefined;
   onPortal?: (() => void) | undefined;
 }) {
-  if (!billing.enabled) return null;
+  if (!billing.enabled) {
+    return (
+      <section className="ot-subsection" aria-labelledby="billing-heading">
+        <div className="ot-section-title">
+          <h3 id="billing-heading">Billing</h3>
+          <span>Unavailable</span>
+        </div>
+        <p>Billing is unavailable in this environment.</p>
+        <dl className="ot-stats">
+          <div>
+            <dt>Access</dt>
+            <dd>{billing.grants_access ? 'Active' : 'Not active'}</dd>
+          </div>
+        </dl>
+      </section>
+    );
+  }
   const status = billing.entitlement_status ?? 'pending';
   const showCheckout =
     billing.checkout_available && status !== 'active' && status !== 'scheduled_end';

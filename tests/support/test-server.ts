@@ -1,7 +1,13 @@
+import { createHash } from 'node:crypto';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
 import { createAccountUser } from '../../packages/domain/src/index.ts';
+import {
+  W12_PORTAL_TEST_LAB,
+  seedPortalTestLab,
+} from '../../apps/web/src/server/features/portal-test-lab/router.ts';
+import { W12_E2E_ADMIN_SESSION_TOKEN } from './w12-portal-test-lab-session.ts';
 
 const config = loadConfig({
   ...process.env,
@@ -77,6 +83,8 @@ await createAccountUser({
   mfaCapable: false,
 });
 await seedDayOneBrowserRecords();
+await seedPortalTestLab({ pool, config });
+await seedW12AdminSession();
 const testClock = process.env.OT_TEST_CLOCK
   ? () => new Date(String(process.env.OT_TEST_CLOCK))
   : undefined;
@@ -272,4 +280,47 @@ async function seedActiveSupportEntitlement(userKey: string) {
       `evt_support_${userKey.slice(0, 12)}`,
     ],
   );
+}
+
+async function seedW12AdminSession() {
+  const user = await pool.query(
+    `SELECT user_key, security_version
+       FROM onetime.account_users
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_normalized = $3
+      LIMIT 1`,
+    [config.accountKey, config.productKey, W12_PORTAL_TEST_LAB.admin.email],
+  );
+  const row = user.rows[0];
+  if (!row) throw new Error('missing W12 admin test user');
+  await pool.query(
+    `INSERT INTO onetime.user_sessions
+       (session_key, account_key, product_key, user_key, token_hash, csrf_token_hash,
+        user_agent_hash, ip_hash, expires_at, rotated_from_session_key, security_version,
+        assurance_method, assurance_at)
+     VALUES ($1,$2,$3,$4,$5,$6,NULL,NULL,$7,NULL,$8,'email_challenge',now())
+     ON CONFLICT (session_key)
+     DO UPDATE SET token_hash = EXCLUDED.token_hash,
+                   csrf_token_hash = EXCLUDED.csrf_token_hash,
+                   expires_at = EXCLUDED.expires_at,
+                   revoked_at = NULL,
+                   security_version = EXCLUDED.security_version,
+                   assurance_method = 'email_challenge',
+                   assurance_at = now()`,
+    [
+      'sess_w12_portal_test_lab_admin',
+      config.accountKey,
+      config.productKey,
+      String(row.user_key),
+      sha256(W12_E2E_ADMIN_SESSION_TOKEN),
+      sha256('w12-admin-csrf-local-only'),
+      new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      Number(row.security_version ?? 1),
+    ],
+  );
+}
+
+function sha256(value: string) {
+  return createHash('sha256').update(value).digest('hex');
 }

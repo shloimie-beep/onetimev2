@@ -1,0 +1,60 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-03",
+  "title": "Portal Test Lab",
+  "status": "validated_pending_pr",
+  "created_at": "2026-07-17T13:31:00+03:00",
+  "source_package": {
+    "archive_sha256": "d26bf78fb3887f1b7d705cede101acb0ae3f611c2c86f73c850fcc9ab213fd3b",
+    "prompt_sha256": "8f1c356a38a5ca56ff1a44d7e3a4ff0505cad55d9b4521b86b7330ddc86e290d",
+    "start_here_sha256": "fdd3a0e0a166476a6ad9a43ff0c223e025832bc006d1db0fa653037a55e41fa6"
+  },
+  "repository": {
+    "owner_repo": "webcraft-media/onetimev2",
+    "worktree": "C:\\Users\\User\\OneTimeOneTime-w12-03-portal-test-lab",
+    "branch": "codex/w12-03-portal-test-lab",
+    "base_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "base_pr": 61,
+    "base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c"
+  },
+  "permissions": {
+    "production_user_mutation_allowed": false,
+    "production_database_access_allowed": false,
+    "deployment_allowed": false,
+    "external_send_allowed": false,
+    "product_code_change_allowed": true,
+    "test_fixture_mutation_allowed": true
+  },
+  "identity_policy": {
+    "admin_identity_is_test_only": true,
+    "parent_identity_is_separate": true,
+    "student_identities_are_separate_per_learner": true,
+    "impersonation_allowed": false,
+    "visible_current_passwords_allowed": false
+  },
+  "expected_artifacts": [
+    "ops/codex-runs/W12-03/ZIP-VALIDATION.json",
+    "ops/codex-runs/W12-03/SCOPE.json",
+    "ops/codex-runs/W12-03/HOTSPOTS.json",
+    "ops/codex-runs/W12-03/FINAL-REPORT.md",
+    "ops/codex-runs/W12-03/ROUTE-ACTION-REGISTRY.json",
+    "ops/codex-runs/W12-03/PR-BODY.md",
+    "ops/evidence/W12-03/PORTAL-TEST-LAB-JOURNEYS.json"
+  ],
+  "validation": {
+    "zip_safety": "passed",
+    "internal_sha256sums": "passed",
+    "secret_scan": "passed",
+    "brand_check": "passed",
+    "lint": "passed",
+    "scoped_prettier": "passed",
+    "repo_prettier": "baseline_failed_on_inherited_files",
+    "build": "passed",
+    "integration": "passed",
+    "e2e": "passed"
+  },
+  "pull_request": {
+    "status": "pending_after_push",
+    "draft": true
+  }
+}
