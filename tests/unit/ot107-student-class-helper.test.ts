@@ -1,6 +1,7 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import type { GamificationSummary } from '../../packages/contracts/src/gamification/index.ts';
 import type {
   HelperAnswer,
   LearnerProfile,
@@ -278,6 +279,7 @@ function studentDashboard(): StudentPortalDashboard {
       last_activity_at: null,
     },
     rewards: { learner_key: 'learner_student_001', balance: 0, event_count: 0 },
+    gamification: emptyGamificationSummary('learner_student_001'),
     updates: [],
     questions: [],
     helper: { available: true, reason: null, scope_label: 'Class Helper' },
@@ -292,5 +294,59 @@ function citation() {
     section_title: 'Opening idea',
     deep_link: '/library/classes/content_001#section-section_001',
     section_sha256: 'a'.repeat(64),
+  };
+}
+
+function emptyGamificationSummary(learnerKey: string): GamificationSummary {
+  return {
+    learner_key: learnerKey,
+    learning_points: 0,
+    level: {
+      level: 1,
+      title: 'Getting Started',
+      min_points: 0,
+      next_level_points: 50,
+      progress_percent: 0,
+    },
+    progress: {
+      mishnayos_completed: 0,
+      mishnayos_target: 24,
+      classes_attended: 0,
+      classes_total: 0,
+      review_items_completed: 0,
+      review_items_total: 0,
+      retention_reviews_completed: 0,
+      retention_percent: 0,
+    },
+    streaks: [
+      {
+        kind: 'attendance',
+        current_count: 0,
+        best_count: 0,
+        grace_remaining: 2,
+        last_earned_at: null,
+        status: 'empty',
+      },
+      {
+        kind: 'review',
+        current_count: 0,
+        best_count: 0,
+        grace_remaining: 2,
+        last_earned_at: null,
+        status: 'empty',
+      },
+    ],
+    badges: [],
+    milestones: [],
+    accomplishments: [],
+    parent_rewards: [],
+    class_milestones: [],
+    celebration: null,
+    guardrails: {
+      no_public_rankings: true,
+      no_random_rewards: true,
+      meaningful_learning_only: true,
+      student_scope: 'self_only',
+    },
   };
 }

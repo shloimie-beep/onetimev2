@@ -24,6 +24,7 @@ export const ownerDashboardSectionSchema = z.object({
     'communications_delivery',
     'content_review',
     'portal_account_setup',
+    'learning_rewards',
     'billing_readiness',
     'support',
   ]),

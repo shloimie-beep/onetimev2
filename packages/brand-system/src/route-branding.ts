@@ -236,6 +236,17 @@ export const routeBranding: RouteBranding[] = [
     evidenceSelector: '#crm-root',
   },
   {
+    route: '/app/rewards',
+    shell: 'owner-admin',
+    role: 'owner-admin',
+    bundle: 'app-crm',
+    ticker: false,
+    states: appStates,
+    navigationLabel: 'Learning Rewards',
+    navigationGroup: 'owner-admin',
+    evidenceSelector: '#crm-root, [data-gamification-admin]',
+  },
+  {
     route: '/app/billing/checkout/redirect/:redirectKey',
     shell: 'owner-admin',
     role: 'owner-admin',

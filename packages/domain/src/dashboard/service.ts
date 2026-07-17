@@ -118,6 +118,20 @@ export function ownerAdminVisibleActions(): VisibleAction[] {
       },
     ),
     action(
+      'dashboard.open_rewards.button',
+      'Open Learning Rewards',
+      'button',
+      '/app/dashboard',
+      ['owner', 'admin'],
+      {
+        capability: 'gamification:admin',
+        handler: ['GET', '/api/v1/gamification/admin'],
+        idempotency: [false, null],
+        audit: ['local_read', 'gamification_admin_read'],
+        states: readStates,
+      },
+    ),
+    action(
       'crm.contacts.view.route',
       'CRM',
       'route',
@@ -293,6 +307,76 @@ export function ownerAdminVisibleActions(): VisibleAction[] {
       },
     ),
     action(
+      'gamification.rewards.view.route',
+      'Learning Rewards',
+      'route',
+      '/app/rewards',
+      ['owner', 'admin'],
+      {
+        capability: 'gamification:admin',
+        handler: ['GET', '/api/v1/gamification/admin'],
+        idempotency: [false, null],
+        audit: ['local_read', 'gamification_admin_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'gamification.rewards.refresh.button',
+      'Refresh learning rewards',
+      'button',
+      '/app/rewards',
+      ['owner', 'admin'],
+      {
+        capability: 'gamification:admin',
+        handler: ['GET', '/api/v1/gamification/admin'],
+        idempotency: [false, null],
+        audit: ['local_read', 'gamification_admin_read'],
+        states: readStates,
+      },
+    ),
+    action(
+      'gamification.event.record.form',
+      'Record learning event',
+      'form',
+      '/app/rewards',
+      ['owner', 'admin'],
+      {
+        capability: 'gamification:write',
+        handler: ['POST', '/api/v1/gamification/events'],
+        idempotency: [true, 'client-generated idempotency_key'],
+        audit: ['domain_audit', 'gamification_event_recorded'],
+        states: writeStates,
+      },
+    ),
+    action(
+      'gamification.event.reverse.form',
+      'Reverse point event',
+      'form',
+      '/app/rewards',
+      ['owner', 'admin'],
+      {
+        capability: 'gamification:admin',
+        handler: ['POST', '/api/v1/gamification/reversals'],
+        idempotency: [true, 'client-generated idempotency_key'],
+        audit: ['domain_audit', 'gamification_event_reversed'],
+        states: writeStates,
+      },
+    ),
+    action(
+      'parent.rewards.create.form',
+      'Create parent reward',
+      'form',
+      '/app/parent',
+      ['parent'],
+      {
+        capability: 'gamification:write',
+        handler: ['POST', '/api/v1/gamification/parent-rewards'],
+        idempotency: [true, 'client-generated idempotency_key'],
+        audit: ['domain_audit', 'parent_reward_goal_created'],
+        states: writeStates,
+      },
+    ),
+    action(
       'auth.logout.button',
       'Logout',
       'button',
@@ -316,15 +400,23 @@ export async function buildOwnerDashboard(input: {
   now?: Date;
 }): Promise<OwnerDashboard> {
   const now = input.now ?? new Date();
-  const [newLeads, nextClass, communications, content, portalAccounts, billingReadiness] =
-    await Promise.all([
-      newLeadsSection(input.pool, input.config),
-      nextClassSection(input.pool, input.config, now),
-      communicationsSection(input.pool, input.config),
-      contentReviewSection(input.pool, input.config),
-      portalAccountSection(input.pool, input.config),
-      billingSection(input.pool, input.config),
-    ]);
+  const [
+    newLeads,
+    nextClass,
+    communications,
+    content,
+    portalAccounts,
+    learningRewards,
+    billingReadiness,
+  ] = await Promise.all([
+    newLeadsSection(input.pool, input.config),
+    nextClassSection(input.pool, input.config, now),
+    communicationsSection(input.pool, input.config),
+    contentReviewSection(input.pool, input.config),
+    portalAccountSection(input.pool, input.config),
+    gamificationSection(input.pool, input.config),
+    billingSection(input.pool, input.config),
+  ]);
   return {
     generated_at: now.toISOString(),
     account_key: input.config.accountKey,
@@ -340,6 +432,7 @@ export async function buildOwnerDashboard(input: {
       communications,
       content,
       portalAccounts,
+      learningRewards,
       billingReadiness,
       supportSection(),
     ],
@@ -554,6 +647,49 @@ async function portalAccountSection(
     href: null,
     capability: 'accounts:lifecycle:read',
     updatedAt: null,
+  });
+}
+
+async function gamificationSection(
+  pool: DbPool,
+  config: AppConfig,
+): Promise<OwnerDashboardSection> {
+  const row = await optionalCountRow(
+    pool,
+    `SELECT
+        (SELECT count(*)::int FROM onetime.portal_learners
+          WHERE account_key = $1 AND product_key = $2 AND learner_status = 'active') AS learner_count,
+        (SELECT COALESCE(sum(points_delta), 0)::int FROM onetime.portal_reward_events
+          WHERE account_key = $1 AND product_key = $2) AS total_points,
+        (SELECT count(*)::int FROM onetime.portal_gamification_corrections
+          WHERE account_key = $1 AND product_key = $2) AS correction_count,
+        (SELECT max(occurred_at) FROM onetime.portal_reward_events
+          WHERE account_key = $1 AND product_key = $2) AS updated_at`,
+    [config.accountKey, config.productKey],
+  );
+  if (!row) {
+    return unavailable(
+      'learning_rewards',
+      'Learning rewards',
+      'Gamification source is unavailable.',
+    );
+  }
+  const learners = numberValue(row.learner_count);
+  const points = numberValue(row.total_points);
+  const corrections = numberValue(row.correction_count);
+  return section({
+    id: 'learning_rewards',
+    label: 'Learning rewards',
+    state: learners === 0 ? 'needs_setup' : 'ready',
+    value: points,
+    valueLabel: `${points} learning points`,
+    detail:
+      learners === 0
+        ? 'No active learners are available for rewards yet.'
+        : `${learners} learners have private progress; ${corrections} correction records are auditable.`,
+    href: '/app/rewards',
+    capability: 'gamification:admin',
+    updatedAt: isoOrNull(row.updated_at),
   });
 }
 

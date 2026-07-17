@@ -3,6 +3,7 @@ import path from 'node:path';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
+import type { GamificationSummary } from '../../packages/contracts/src/gamification/index.ts';
 import type {
   ParentPortalDashboard,
   RewardEvent,
@@ -169,6 +170,10 @@ export function parentDashboard(): ParentPortalDashboard {
       learner_alpha: { learner_key: 'learner_alpha', balance: 8, event_count: 2 },
       learner_beta: { learner_key: 'learner_beta', balance: 0, event_count: 0 },
     },
+    gamification: {
+      learner_alpha: gamificationSummary('learner_alpha', 8),
+      learner_beta: gamificationSummary('learner_beta', 0),
+    },
     updates: {
       learner_alpha: [update('update_parent_alpha', 'parent')],
       learner_beta: [],
@@ -203,6 +208,7 @@ export function studentDashboard(): StudentPortalDashboard {
       last_activity_at: '2026-07-14T08:00:00.000Z',
     },
     rewards: { learner_key: 'learner_student_self', balance: 6, event_count: 2 },
+    gamification: gamificationSummary('learner_student_self', 6),
     updates: [update('update_student_self', 'student')],
     questions: [],
     helper: {
@@ -273,6 +279,74 @@ function rewardEvent(): RewardEvent {
     source_type: 'parent_capability',
     correction_of_event_key: null,
     occurred_at: '2026-07-14T08:00:00.000Z',
+  };
+}
+
+function gamificationSummary(learnerKey: string, points: number): GamificationSummary {
+  return {
+    learner_key: learnerKey,
+    learning_points: points,
+    level: {
+      level: points >= 50 ? 2 : 1,
+      title: points >= 50 ? 'Steady Learner' : 'Getting Started',
+      min_points: points >= 50 ? 50 : 0,
+      next_level_points: points >= 50 ? 125 : 50,
+      progress_percent: Math.min(100, Math.round((points / 50) * 100)),
+    },
+    progress: {
+      mishnayos_completed: points > 0 ? 1 : 0,
+      mishnayos_target: 24,
+      classes_attended: points > 0 ? 1 : 0,
+      classes_total: 4,
+      review_items_completed: points > 0 ? 1 : 0,
+      review_items_total: 4,
+      retention_reviews_completed: 0,
+      retention_percent: 0,
+    },
+    streaks: [
+      {
+        kind: 'attendance',
+        current_count: points > 0 ? 1 : 0,
+        best_count: points > 0 ? 1 : 0,
+        grace_remaining: 2,
+        last_earned_at: points > 0 ? '2026-07-14T08:00:00.000Z' : null,
+        status: points > 0 ? 'active' : 'empty',
+      },
+      {
+        kind: 'review',
+        current_count: points > 0 ? 1 : 0,
+        best_count: points > 0 ? 1 : 0,
+        grace_remaining: 2,
+        last_earned_at: points > 0 ? '2026-07-14T08:00:00.000Z' : null,
+        status: points > 0 ? 'active' : 'empty',
+      },
+    ],
+    badges: [],
+    milestones: [],
+    accomplishments: points
+      ? [
+          {
+            event_key: `event_${learnerKey}`,
+            title: 'Class attended',
+            detail: '5 learning points recorded.',
+            reason_code: 'attendance_present',
+            points_delta: points,
+            source_type: 'admin',
+            correction_of_event_key: null,
+            occurred_at: '2026-07-14T08:00:00.000Z',
+            reversed: false,
+          },
+        ]
+      : [],
+    parent_rewards: [],
+    class_milestones: [],
+    celebration: null,
+    guardrails: {
+      no_public_rankings: true,
+      no_random_rewards: true,
+      meaningful_learning_only: true,
+      student_scope: learnerKey === 'learner_student_self' ? 'self_only' : 'household',
+    },
   };
 }
 

@@ -312,6 +312,133 @@
   color: #ffffff;
   font-weight: 800;
 }
+.ot-celebration,
+.ot-level-card,
+.ot-streak-card,
+.ot-reward-form {
+  background: #151515;
+  border: 1px solid rgba(255, 210, 31, 0.3);
+  border-radius: 8px;
+  padding: 14px;
+}
+.ot-celebration {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #111111;
+  background: var(--ot-portal-yellow);
+}
+.ot-celebration span {
+  color: #221d05;
+}
+.ot-gamification {
+  align-content: start;
+}
+.ot-level-card {
+  display: grid;
+  gap: 12px;
+}
+.ot-level-card h3,
+.ot-level-card p {
+  margin: 0;
+}
+.ot-progress-bars,
+.ot-streak-grid,
+.ot-badge-list {
+  display: grid;
+  gap: 10px;
+}
+.ot-streak-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ot-progress-meter {
+  display: grid;
+  grid-template-columns: minmax(88px, 0.8fr) minmax(120px, 2fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.ot-progress-meter span,
+.ot-streak-card span,
+.ot-streak-card small,
+.ot-guardrail-note {
+  color: var(--ot-portal-muted);
+}
+.ot-progress-meter > div {
+  height: 10px;
+  overflow: hidden;
+  background: #242424;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+.ot-progress-meter i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--ot-portal-yellow), var(--ot-portal-ice));
+}
+.ot-progress-meter strong {
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+.ot-streak-card {
+  display: grid;
+  gap: 4px;
+}
+.ot-streak-card[data-streak-state='active'] {
+  border-color: rgba(156, 231, 240, 0.52);
+}
+.ot-badge-list {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+.ot-badge {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  color: #111111;
+  background: var(--ot-portal-yellow);
+  border-radius: 8px;
+  font-weight: 800;
+  text-align: center;
+}
+.ot-badge.tone-ice {
+  background: var(--ot-portal-ice);
+}
+.ot-badge.tone-success {
+  background: #9cf0ba;
+}
+.ot-milestone[data-status='earned'] {
+  border-color: rgba(156, 240, 186, 0.6);
+}
+.ot-item[data-reversal='true'] {
+  border-color: rgba(255, 105, 120, 0.5);
+}
+.ot-reward-form {
+  display: grid;
+  gap: 10px;
+}
+.ot-guardrail-note {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.gamification-admin {
+  display: grid;
+  gap: 18px;
+}
+.rewards-summary {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+.gamification-admin .readonly-row h3,
+.gamification-admin .readonly-row p {
+  margin: 0;
+}
+.reward-learner-row dl {
+  grid-template-columns: repeat(4, minmax(92px, 1fr));
+}
+.reversal-row {
+  border-color: rgba(255, 105, 120, 0.36);
+}
 @media (max-width: 760px) {
   .ot-portal {
     padding: 14px;
@@ -327,6 +454,15 @@
   .ot-grid-parent,
   .ot-grid {
     grid-template-columns: 1fr;
+  }
+  .ot-celebration,
+  .ot-streak-grid,
+  .ot-progress-meter,
+  .reward-learner-row dl {
+    grid-template-columns: 1fr;
+  }
+  .ot-celebration {
+    flex-direction: column;
   }
 }
 @media (min-width: 761px) and (max-width: 980px) {

@@ -4,6 +4,7 @@ import { AxeBuilder } from '@axe-core/playwright';
 import { chromium, type Browser } from 'playwright';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import type { GamificationSummary } from '../../packages/contracts/src/gamification/index.ts';
 import type {
   ParentPortalDashboard,
   StudentPortalDashboard,
@@ -182,6 +183,10 @@ function parentDashboard(): ParentPortalDashboard {
       learner_alpha: { learner_key: 'learner_alpha', balance: 8, event_count: 2 },
       learner_beta: { learner_key: 'learner_beta', balance: 0, event_count: 0 },
     },
+    gamification: {
+      learner_alpha: gamificationSummary('learner_alpha', 8, 'household'),
+      learner_beta: gamificationSummary('learner_beta', 0, 'household'),
+    },
     updates: { learner_alpha: [], learner_beta: [] },
     helper: {
       available: false,
@@ -213,6 +218,7 @@ function studentDashboard(): StudentPortalDashboard {
       last_activity_at: '2026-07-14T08:00:00.000Z',
     },
     rewards: { learner_key: 'learner_student_self', balance: 6, event_count: 2 },
+    gamification: gamificationSummary('learner_student_self', 6, 'self_only'),
     updates: [],
     questions: [],
     helper: {
@@ -257,6 +263,64 @@ function action(kind: 'class_launch' | 'content_open', label: string) {
     href: `/api/v1/portals/actions/${kind}`,
     launch_token_ref: `${kind}_ref`,
     expires_at: '2026-07-14T09:00:00.000Z',
+  };
+}
+
+function gamificationSummary(
+  learnerKey: string,
+  points: number,
+  scope: GamificationSummary['guardrails']['student_scope'],
+): GamificationSummary {
+  return {
+    learner_key: learnerKey,
+    learning_points: points,
+    level: {
+      level: points >= 50 ? 2 : 1,
+      title: points >= 50 ? 'Steady Learner' : 'Getting Started',
+      min_points: points >= 50 ? 50 : 0,
+      next_level_points: points >= 50 ? 125 : 50,
+      progress_percent: Math.min(100, Math.round((points / 50) * 100)),
+    },
+    progress: {
+      mishnayos_completed: points > 0 ? 1 : 0,
+      mishnayos_target: 24,
+      classes_attended: points > 0 ? 1 : 0,
+      classes_total: 4,
+      review_items_completed: points > 0 ? 1 : 0,
+      review_items_total: 4,
+      retention_reviews_completed: 0,
+      retention_percent: 0,
+    },
+    streaks: [
+      {
+        kind: 'attendance',
+        current_count: points > 0 ? 1 : 0,
+        best_count: points > 0 ? 1 : 0,
+        grace_remaining: 2,
+        last_earned_at: points > 0 ? '2026-07-14T08:00:00.000Z' : null,
+        status: points > 0 ? 'active' : 'empty',
+      },
+      {
+        kind: 'review',
+        current_count: points > 0 ? 1 : 0,
+        best_count: points > 0 ? 1 : 0,
+        grace_remaining: 2,
+        last_earned_at: points > 0 ? '2026-07-14T08:00:00.000Z' : null,
+        status: points > 0 ? 'active' : 'empty',
+      },
+    ],
+    badges: [],
+    milestones: [],
+    accomplishments: [],
+    parent_rewards: [],
+    class_milestones: [],
+    celebration: null,
+    guardrails: {
+      no_public_rankings: true,
+      no_random_rewards: true,
+      meaningful_learning_only: true,
+      student_scope: scope,
+    },
   };
 }
 

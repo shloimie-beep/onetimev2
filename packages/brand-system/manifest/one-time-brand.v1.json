@@ -213,6 +213,7 @@
     "/app/billing": "owner-admin",
     "/app/billing/checkout/redirect/:redirectKey": "owner-admin",
     "/app/billing/portal/redirect/:redirectKey": "owner-admin",
+    "/app/rewards": "owner-admin",
     "/app/communications": "owner-admin",
     "/app/support": "authenticated-support",
     "/app/support/receipts/:receiptId": "authenticated-support",
