@@ -1,0 +1,51 @@
+{
+  "schema_version": "onetime.w12_100.email_lifecycle_canary_state.v1",
+  "generated_at": "2026-07-17T20:44:27.7605545+03:00",
+  "status": "blocked_before_provider_invocation",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "observed_staging_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "observed_staging_version": "ops11-1197673",
+  "blocked_reasons": [
+    "Staging /version does not report the exact W12-100 candidate SHA.",
+    "Protected canary destination is not present in the local shell.",
+    "Protected Resend credential is not present in the local shell.",
+    "Canary authorization is not present in the local shell."
+  ],
+  "budget": {
+    "activation_email_allowed": 1,
+    "password_reset_email_allowed": 1,
+    "allowlisted_operator_destinations_allowed": 1,
+    "campaign_or_broad_sends_allowed": 0,
+    "activation_email_sent": 0,
+    "password_reset_email_sent": 0,
+    "campaign_or_broad_sends": 0
+  },
+  "checks": {
+    "exact_staging_sha": "blocked",
+    "staging_isolation": "not_evaluated_after_sha_block",
+    "protected_canary_destination": "blocked_missing_local_env",
+    "protected_resend_credential": "blocked_missing_local_env",
+    "verified_sender_readiness": "not_evaluated",
+    "delivery_transport_gates": "not_evaluated",
+    "unique_idempotency_keys": "not_generated",
+    "webhook_secret_for_webhook_readback": "not_evaluated",
+    "no_queued_non_canary_destinations": "not_evaluated",
+    "disable_canary_authorization_after_run": "not_applicable_no_authorization_enabled"
+  },
+  "safety": {
+    "destination_printed": false,
+    "token_printed": false,
+    "activation_or_reset_url_printed": false,
+    "api_key_printed": false,
+    "raw_webhook_printed": false,
+    "provider_invocations": 0,
+    "provider_mutations": 0,
+    "production_mutations": 0,
+    "lifecycle_mutations": 0
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-EMAIL-CANARY/live-evidence/staging-version-ready.json",
+    "ops/codex-runs/W12-100-EMAIL-CANARY/EXTERNAL-ACTION-LEDGER.md",
+    "ops/codex-runs/W12-100-EMAIL-CANARY/FINAL-REPORT.md"
+  ]
+}
