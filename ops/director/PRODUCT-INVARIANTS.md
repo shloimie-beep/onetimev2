@@ -56,5 +56,14 @@ decision supersedes them.
   navigation, shared design-token entrypoints, migration numbering/ledger, and
   CI workflows are shared hotspots. Feature branches may make provisional edits
   only when they record them for convergence.
-- W12-99 owns final semantic convergence, staging verification, shared hotspot
-  reconciliation, and launch proof after feature branches have draft PRs.
+- W12-99 owns final semantic convergence and shared hotspot reconciliation.
+  Its current candidate head is
+  `0d8d7168f066668f035176d777bdaaa4dcc5accd`.
+- W12-00 through W12-08 are integrated by W12-99. W12-09 remains excluded
+  pending an explicit decision.
+- W12-100 owns isolated staging verification, real-source dry-run proof,
+  provider acceptance gates, and launch proof.
+- OPS-13A artifacts are a sanitized preflight input only. They do not prove a
+  real import, provider acceptance, or deduplicated people counts.
+- BNA remains a separate convergence train unless a later One Time prompt
+  explicitly scopes a bridge contract.

@@ -1,0 +1,216 @@
+{
+  "task_id": "OPS-13A",
+  "title": "One Time real-data and provider acceptance preflight",
+  "status": "prepared_no_external_mutations",
+  "generated_at": "2026-07-17T12:47:11.1107723Z",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "codex/ops13a-real-data-provider-preflight",
+  "base_ref": "origin/release/ops10-full-staged-production-launch-20260717T050800Z",
+  "base_head_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+  "guardrails": {
+    "deployments": 0,
+    "imports": 0,
+    "production_private_data_reads": 0,
+    "production_data_writes": 0,
+    "sends": 0,
+    "provider_mutations": 0,
+    "meetings_created": 0,
+    "videos_uploaded": 0,
+    "payments_or_charges": 0,
+    "secrets_or_private_rows_committed": 0
+  },
+  "current_deployed_source": {
+    "checked_at": "2026-07-17T12:44:56Z",
+    "base_url": "https://join.onetimeonetime.com",
+    "version": {
+      "status": 200,
+      "version": "ops11-1197673",
+      "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "target_app": "one-time"
+    },
+    "health": {
+      "status": 200,
+      "ok": true,
+      "service": "onetime-web"
+    },
+    "ready": {
+      "status": 200,
+      "ok": true,
+      "database": "ok",
+      "schema_migrations": "latest=2190_ot109_rabbi_content_publisher",
+      "email_transport": "ok; resend transport flag enabled",
+      "whatsapp_transport": "disabled by runtime flag",
+      "support_bridge": "disabled by runtime flag",
+      "blockers": []
+    },
+    "deploy_info": {
+      "status": 404,
+      "interpretation": "/api/deploy-info absent; /version is current deploy source proof"
+    }
+  },
+  "github_state": {
+    "releases": "none from gh release list",
+    "pr_61": {
+      "url": "https://github.com/webcraft-media/onetimev2/pull/61",
+      "title": "OPS-10 full staged production launch candidate",
+      "state": "OPEN",
+      "draft": true,
+      "base": "main",
+      "head": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "head_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "merge_state": "CLEAN",
+      "checks_success": 6,
+      "checks_failure": 0,
+      "checks_pending": 0,
+      "updated_at": "2026-07-17T09:04:08Z"
+    },
+    "active_w12_prs": [
+      {
+        "pr": 62,
+        "title": "W12-06 public WhatsApp lead assistant",
+        "head": "codex/w12-06-whatsapp-lead-assistant",
+        "sha": "fbc5c2f7304fec23d41e44e3f141f9b6abbade9f",
+        "merge_state": "CLEAN",
+        "checks": "4 success, 0 failure"
+      },
+      {
+        "pr": 63,
+        "title": "W12-00 canonical director handoff",
+        "head": "codex/w12-00-canonical-director-handoff",
+        "sha": "d22b68381f53686efb0badcce159f966e3167fe2",
+        "merge_state": "CLEAN",
+        "checks": "4 success, 0 failure"
+      },
+      {
+        "pr": 64,
+        "title": "W12-04 content Vimeo classroom vertical slice",
+        "head": "codex/w12-04-content-vimeo-classroom",
+        "sha": "373f6d55f6a636922d08b994b5dee28ff7bf6aa9",
+        "merge_state": "CLEAN",
+        "checks": "4 success, 0 failure"
+      },
+      {
+        "pr": 65,
+        "title": "W12-05 Telegram operations",
+        "head": "codex/w12-05-telegram-operations",
+        "sha": "fcdfcd3a93b2174d62298099ebefa39ac2e7c34d",
+        "merge_state": "CLEAN",
+        "checks": "5 success, 0 failure"
+      },
+      {
+        "pr": 66,
+        "title": "W12-02 communication history workspace",
+        "head": "codex/w12-02-communication-history",
+        "sha": "5c412373b3a317f1197ab50dffcf5352c2f97a2e",
+        "merge_state": "CLEAN",
+        "checks": "5 success, 0 failure"
+      },
+      {
+        "pr": 67,
+        "title": "W12-08 admin classroom productization",
+        "head": "codex/w12-08-admin-classroom-productization",
+        "sha": "4c29c6c665f9094f1d83f332c40316e0d2bce18f",
+        "merge_state": "CLEAN",
+        "checks": "4 success, 0 failure"
+      },
+      {
+        "pr": 68,
+        "title": "W12-01 CRM audience import safety tooling",
+        "head": "codex/w12-01-crm-audience-import",
+        "sha": "f31316dcb55a53b3ab4f77e7dc79988f2c988dfe",
+        "merge_state": "CLEAN",
+        "checks": "5 success, 0 failure"
+      },
+      {
+        "pr": 69,
+        "title": "W12-07 premium landing correction",
+        "head": "codex/w12-07-premium-landing",
+        "sha": "7d1196b03cfdb6828b376486c196a43b7ab9df32",
+        "merge_state": "UNSTABLE",
+        "checks": "3 success, 1 failure"
+      },
+      {
+        "pr": 70,
+        "title": "W12-03 portal test lab",
+        "head": "codex/w12-03-portal-test-lab",
+        "sha": "5bed730705f92a07647bd6eb3672952a47a4a075",
+        "merge_state": "UNSTABLE",
+        "checks": "3 success, 1 failure"
+      },
+      {
+        "pr": 71,
+        "title": "W12-09 student gamification vertical slice",
+        "head": "codex/w12-09-student-gamification",
+        "sha": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+        "merge_state": "CLEAN",
+        "checks": "5 success, 0 failure"
+      }
+    ]
+  },
+  "railway_identities": {
+    "staging": {
+      "project_name": "one-time-ot99-staging-96b42905",
+      "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "environment": "staging",
+      "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+      "ops11_final_source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "ops11_final_web_deployment": "6e3b45dc-761c-4f4b-a844-f8e4c7aabe6a",
+      "ops11_final_worker_deployment": "914c18f8-4f59-4234-930a-932dd89790c4"
+    },
+    "production": {
+      "project_name": "one-time-production",
+      "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+      "environment": "production",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "public_url": "https://join.onetimeonetime.com",
+      "web_service": "one-time-web",
+      "web_deployment": "6f4fa4e4-0f49-4508-96fe-850a5430360e",
+      "worker_service": "one-time-delivery-cron",
+      "worker_deployment": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+      "worker_mode": "sink, provider default off"
+    },
+    "local_link_status": "target checkout not linked; no railway link, deploy, env read, or mutation was run"
+  },
+  "migration_and_backup_state": {
+    "migration_directory": "packages/db/migrations",
+    "migration_file_count": 35,
+    "latest_migration": "2190_ot109_rabbi_content_publisher",
+    "production_database": {
+      "service_name": "Postgres-j9Pi",
+      "service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+      "server_version": "PostgreSQL 18.4",
+      "applied_migrations": 35,
+      "idempotent_verify_already_applied": 35,
+      "private_connection_endpoint_redacted": true
+    },
+    "backup_restore": {
+      "status": "passed",
+      "runner_service": "ops11-pg18-proof-20260717",
+      "runner_service_id": "52db1072-b4eb-450c-bec7-5151cb9a8461",
+      "dump_size_bytes": 2515557,
+      "dump_sha256": "6f35f3a116e3b095ad8244f1d6d6cbc2668292f2adb4741753ce24e4ba750698",
+      "archive_entries": 3764,
+      "stored_outside_git": true,
+      "private_path_redacted": true,
+      "restore_verdict": "passed"
+    }
+  },
+  "sanitized_source_inventory": {
+    "inventory_label": "Downloads sanitized spreadsheet inventory from BNA W12-01 CRM audience import workspace",
+    "inventory_sha256": "EB3879DCFE361EBD65331214EF44D6F6F644CEAC1A130ED7080B80FD784E0296",
+    "inventory_generated_at": "2026-06-21T13:46:05.453Z",
+    "total_files": 203,
+    "total_import_candidates": 56,
+    "privacy": "metadata, file hashes, header signals, counts, and classifications only"
+  },
+  "created_artifacts": [
+    "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/OPS-13A/STATE.json",
+    "ops/codex-runs/OPS-13A/RESUME.md",
+    "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
+    "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+    "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+    "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+    "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md"
+  ]
+}

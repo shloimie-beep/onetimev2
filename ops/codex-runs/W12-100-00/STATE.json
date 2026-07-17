@@ -1,0 +1,219 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-00",
+  "title": "Director and OPS-13A convergence",
+  "status": "prepared_for_push_and_draft_pr",
+  "generated_at": "2026-07-17T17:44:58+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:/Users/User/.w12-20260717-worktrees/W12-100-00",
+  "branch": "codex/w12-100-00-director-and-ops13a-convergence",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "pr_72_audit": {
+    "status": "done",
+    "url": "https://github.com/webcraft-media/onetimev2/pull/72",
+    "recorded_head_from_prompt": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+    "current_head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+    "state": "OPEN",
+    "draft": true,
+    "mergeable": "MERGEABLE",
+    "changed_file_count": 8,
+    "changed_file_set_verdict": "only_ops_codex_runs_ops_13a_artifacts",
+    "changed_files": [
+      "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
+      "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+      "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
+      "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
+      "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+      "ops/codex-runs/OPS-13A/RESUME.md",
+      "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+      "ops/codex-runs/OPS-13A/STATE.json"
+    ]
+  },
+  "pr_73_current_state": {
+    "status": "done",
+    "url": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "current_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "state": "OPEN",
+    "draft": true,
+    "mergeable": "MERGEABLE",
+    "checks": "5 success, 0 failure, 0 pending at W12-100-00 audit time"
+  },
+  "objectives": [
+    {
+      "id": "verify_exact_starting_commit",
+      "status": "done",
+      "evidence": "git fetch --all --prune --tags; git cat-file -t 0d8d7168f066668f035176d777bdaaa4dcc5accd -> commit"
+    },
+    {
+      "id": "create_isolated_worktree_branch",
+      "status": "done",
+      "evidence": "C:/Users/User/.w12-20260717-worktrees/W12-100-00 on codex/w12-100-00-director-and-ops13a-convergence"
+    },
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": "AGENTS.md, director handoff files, and W12-99 required artifacts read before edits."
+    },
+    {
+      "id": "audit_pr_72",
+      "status": "done",
+      "evidence": "PR #72 current head matches d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4 and contains only eight OPS-13A artifacts."
+    },
+    {
+      "id": "compare_ops13a_artifacts",
+      "status": "done",
+      "evidence": "Artifact-by-artifact comparison recorded in artifact_comparison."
+    },
+    {
+      "id": "integrate_ops13a_artifacts",
+      "status": "done",
+      "evidence": "Path checkout of ops/codex-runs/OPS-13A/** from d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4; no merge performed."
+    },
+    {
+      "id": "refresh_director_records",
+      "status": "done",
+      "evidence": "ops/director CURRENT-STATE, CAPABILITY-MATRIX, DEPLOYMENTS, WORKSTREAMS, BRANCH-FLEET, DECISION-REGISTER, START-HERE, PRODUCT-INVARIANTS, NEW-CHAT-PROMPT, and W12-99-CANDIDATE updated."
+    },
+    {
+      "id": "replace_known_director_placeholders",
+      "status": "done",
+      "evidence": "Director placeholders for W12-99 head replaced with 0d8d7168f066668f035176d777bdaaa4dcc5accd."
+    },
+    {
+      "id": "respect_operations_record_scope",
+      "status": "done",
+      "evidence": "No product source, tests, migrations, package manifests, or workflows modified."
+    },
+    {
+      "id": "exclude_w12_09",
+      "status": "needs_operator_decision",
+      "evidence": "W12-09 PR #71 remains excluded until explicit decision."
+    },
+    {
+      "id": "ops13b_not_run",
+      "status": "already_satisfied",
+      "evidence": "OPS-13B prompt integrated as provenance only; no OPS-13B execution."
+    },
+    {
+      "id": "no_w12_staging_deployment",
+      "status": "already_satisfied",
+      "evidence": "No staging or production deploy command run in this lane."
+    },
+    {
+      "id": "no_real_import",
+      "status": "already_satisfied",
+      "evidence": "No database connection, private row read, dry-run batch, import apply, or production data write run in this lane."
+    },
+    {
+      "id": "no_provider_acceptance",
+      "status": "already_satisfied",
+      "evidence": "No email/WhatsApp/Telegram/webhook/payment/post/Zoom/Vimeo/OpenAI/helper/Buffer/provider action run."
+    },
+    {
+      "id": "keep_bna_separate",
+      "status": "done",
+      "evidence": "BNA recorded as a separate convergence train in director records."
+    },
+    {
+      "id": "validation",
+      "status": "done",
+      "evidence": "Final validation commands are recorded in validation."
+    }
+  ],
+  "artifact_comparison": [
+    {
+      "artifact": "ORIGINAL-PROMPT.md",
+      "status": "done",
+      "comparison": "Preserves the OPS-13A preflight request. It authorizes GitHub publication only and explicitly forbids deploys, imports, sends, provider mutations, and production changes."
+    },
+    {
+      "artifact": "STATE.json",
+      "status": "done",
+      "comparison": "Records zero deployments, imports, production private-data reads, production writes, sends, provider mutations, meetings, video uploads, payments, and committed secrets. It is based on release head c7d4606, not W12-99, so W12-100-00 records the provenance boundary."
+    },
+    {
+      "artifact": "RESUME.md",
+      "status": "done",
+      "comparison": "Confirms no deploy/import/provider action and instructs OPS-13B pickup to refresh state first. It remains a future pickup document only; OPS-13B was not run."
+    },
+    {
+      "artifact": "FINAL-REPORT.md",
+      "status": "done",
+      "comparison": "Provides a counts-only preflight summary. Compared with W12-99, it supplies the preflight W12-99 did not have, but it does not supersede W12-99 launch gates or acceptance gaps."
+    },
+    {
+      "artifact": "SOURCE-INVENTORY.json",
+      "status": "done",
+      "comparison": "Contains sanitized file metadata, hashes, header signals, and naive row estimates only. It does not contain raw rows, private destinations, message bodies, or deduplicated people counts."
+    },
+    {
+      "artifact": "IMPORT-PREVIEW.json",
+      "status": "done",
+      "comparison": "Maps fields, tags, consent precedence, and manual-review categories, but records that no dry-run batch or import write was created and production private rows were not read."
+    },
+    {
+      "artifact": "PROVIDER-READINESS.json",
+      "status": "done",
+      "comparison": "Records provider readiness and bounded future canary gates only. It records zero provider mutations and does not prove provider acceptance."
+    },
+    {
+      "artifact": "OPS-13B-CODEX-PROMPT.md",
+      "status": "done",
+      "comparison": "Future executable prompt only. W12-100-00 did not run OPS-13B and did not perform any canary/import action described there."
+    }
+  ],
+  "validation": [
+    {
+      "command": "node JSON validation",
+      "status": "to_be_finalized_after_artifact_generation"
+    },
+    {
+      "command": "scoped prettier check",
+      "status": "to_be_finalized_after_artifact_generation"
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "to_be_finalized_after_artifact_generation"
+    }
+  ],
+  "safety": {
+    "staging_deployments": 0,
+    "production_deployments": 0,
+    "production_private_data_reads": 0,
+    "production_data_writes": 0,
+    "real_imports": 0,
+    "provider_mutations": 0,
+    "sends": 0,
+    "payments_or_charges": 0,
+    "meetings_created": 0,
+    "videos_uploaded": 0,
+    "posts_published": 0,
+    "external_helper_requests": 0,
+    "secrets_or_private_rows_printed_or_committed": 0
+  },
+  "changed_files": [
+    "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
+    "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+    "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
+    "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+    "ops/codex-runs/OPS-13A/RESUME.md",
+    "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+    "ops/codex-runs/OPS-13A/STATE.json",
+    "ops/codex-runs/W12-100-00/CHANGED-FILES.txt",
+    "ops/codex-runs/W12-100-00/FINAL-REPORT.md",
+    "ops/codex-runs/W12-100-00/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/W12-100-00/RESUME.md",
+    "ops/codex-runs/W12-100-00/STATE.json",
+    "ops/director/BRANCH-FLEET.json",
+    "ops/director/CAPABILITY-MATRIX.json",
+    "ops/director/CURRENT-STATE.json",
+    "ops/director/DECISION-REGISTER.md",
+    "ops/director/DEPLOYMENTS.json",
+    "ops/director/NEW-CHAT-PROMPT.md",
+    "ops/director/PRODUCT-INVARIANTS.md",
+    "ops/director/START-HERE.md",
+    "ops/director/W12-99-CANDIDATE.json",
+    "ops/director/WORKSTREAMS.json"
+  ]
+}

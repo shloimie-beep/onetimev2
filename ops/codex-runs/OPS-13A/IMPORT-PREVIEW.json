@@ -1,0 +1,241 @@
+{
+  "task_id": "OPS-13A",
+  "generated_at": "2026-07-17T12:47:11.1107723Z",
+  "status": "counts_only_preview_no_import_performed",
+  "execution": {
+    "production_import_performed": false,
+    "staging_import_performed": false,
+    "dry_run_batch_created": false,
+    "production_rows_read": false,
+    "raw_source_rows_committed": false,
+    "preview_basis": "sanitized metadata inventory plus release-branch schema/migration review"
+  },
+  "crm_field_map": [
+    {
+      "source_signal": "name or display-name column signal",
+      "target": "onetime.contacts.display_name",
+      "rule": "trim and collapse whitespace; ambiguous or empty names go to manual review"
+    },
+    {
+      "source_signal": "family, school, household, organization, or audience-type signal",
+      "target": "onetime.contacts.family_school_classification and onetime.signup_leads.classification",
+      "rule": "family for parent/guardian/household/follower audience; school for school/organization leads; ambiguous goes to manual review"
+    },
+    {
+      "source_signal": "email signal",
+      "target": "onetime.contacts.email_normalized",
+      "rule": "lowercase and trim for private matching; never print value"
+    },
+    {
+      "source_signal": "phone signal",
+      "target": "onetime.contacts.phone_normalized",
+      "rule": "normalize privately to E.164 for matching; never print value"
+    },
+    {
+      "source_signal": "subscription_status, unsubscribe export, STOP, bounce, complaint, or suppression",
+      "target": "onetime.contacts.suppression_state and legacy audience consent/suppression fields",
+      "rule": "opt-out and suppression override active/subscribed signals until resolved"
+    },
+    {
+      "source_signal": "campaign_source, import file, or list provenance",
+      "target": "onetime.contacts.source and onetime.crm_contact_facts.dimension=provenance_import_source",
+      "rule": "use stable source codes and file digest references"
+    },
+    {
+      "source_signal": "pipeline/stage/opportunity signals",
+      "target": "onetime.crm_contact_facts.dimension=legacy_activity and onetime.crm_tags",
+      "rule": "candidate-only until canonical legacy export is selected"
+    },
+    {
+      "source_signal": "member, active legacy user, paid member, learner, guardian, or household signal",
+      "target": "onetime.crm_contact_facts, onetime.portal_households, onetime.portal_guardian_relationships, onetime.portal_learners, onetime.portal_guardian_consents",
+      "rule": "portal/learner creation is manual-review gated"
+    },
+    {
+      "source_signal": "communication log or event export",
+      "target": "reference only",
+      "rule": "do not import message bodies; use counts, status signals, and hashed references only after approval"
+    }
+  ],
+  "tagging_map": [
+    {
+      "tag_key": "source:rabbi-scheller-followers",
+      "applies_to": "Rabbi Scheller Followers.xlsx rows after dry-run identity validation"
+    },
+    {
+      "tag_key": "source:email-audience-export",
+      "applies_to": "subscribed/cleaned/subscribers email audience sources"
+    },
+    {
+      "tag_key": "source:legacy-crm-export",
+      "applies_to": "operator-selected canonical legacy CRM or pipeline export only"
+    },
+    {
+      "tag_key": "consent:subscribed",
+      "applies_to": "source rows with subscribed signal and no stronger suppression"
+    },
+    {
+      "tag_key": "consent:unsubscribed",
+      "applies_to": "unsubscribe/suppression source rows; blocks sends"
+    },
+    {
+      "tag_key": "suppression:do-not-contact",
+      "applies_to": "explicit opt-out, unsubscribe, STOP, bounce/complaint, or manual suppression"
+    },
+    {
+      "tag_key": "review:identity-conflict",
+      "applies_to": "email/phone/name/household disagreements requiring operator decision"
+    },
+    {
+      "tag_key": "review:household-reconciliation",
+      "applies_to": "candidate parent/guardian/learner groupings that are not deterministic"
+    },
+    {
+      "tag_key": "migration:dry-run-only",
+      "applies_to": "all OPS-13B preview rows until explicit import approval exists"
+    }
+  ],
+  "counts_only_preview": {
+    "primary_one_time_and_email_sources": {
+      "source_files": 6,
+      "naive_source_rows": 2509,
+      "deduplicated_unique_people": "not_computed_in_ops13a_to_avoid_private_identifier_processing",
+      "components": [
+        {
+          "classification": "one_time_rabbi_scheller_followers",
+          "files": 1,
+          "rows": 812
+        },
+        {
+          "classification": "email_audience_export",
+          "files": 5,
+          "rows": 1697
+        }
+      ]
+    },
+    "legacy_crm_pipeline_candidates": {
+      "files": 29,
+      "naive_source_rows": 125914,
+      "default_ops13b_action": "exclude_from_canary_import_until_operator_selects_canonical_export"
+    },
+    "contact_list_candidates": {
+      "files": 21,
+      "naive_source_rows_known": 183707,
+      "rows_unknown": 1,
+      "default_ops13b_action": "manual_source_ownership_and_consent_review_only"
+    },
+    "communications_reference_exports": {
+      "files": 13,
+      "naive_event_rows": 3551,
+      "default_ops13b_action": "reference_only_no_contact_import"
+    },
+    "external_lead_lists": {
+      "files": 48,
+      "naive_rows": 4352,
+      "default_ops13b_action": "blocked_unless_operator_supplies_explicit_ownership_and_consent_basis"
+    },
+    "unknown_spreadsheets": {
+      "files": 78,
+      "naive_rows_known": 7745033,
+      "rows_unknown": 2,
+      "default_ops13b_action": "excluded_until_classified"
+    },
+    "existing_production_counts": {
+      "contacts": "blocked_not_read",
+      "leads": "blocked_not_read",
+      "households": "blocked_not_read",
+      "members": "blocked_not_read",
+      "learners": "blocked_not_read",
+      "consent_events": "blocked_not_read",
+      "suppression_records": "blocked_not_read",
+      "signup_records": "blocked_not_read",
+      "reason": "OPS-13A did not connect to the production database or print private records"
+    }
+  },
+  "deduplication_rules": [
+    "Normalize email by trimming/lowercasing and use only private dry-run comparisons or hashes in reports.",
+    "Normalize phone with an E.164 parser and do not print normalized values.",
+    "Within one file, identical identity fingerprints are duplicate_input unless consent/suppression differs.",
+    "Across files, unsubscribe/suppression records attach to the identity first and block later subscribed/import-eligible rows.",
+    "Existing scoped contacts by email or phone win over new contacts; preview disposition is matched_existing_contact.",
+    "If one email maps to multiple phones or one phone maps to multiple emails, disposition is manual_review.",
+    "Never merge across BNA, One Time, provider, family legacy, or public content boundaries without an explicit cross-workspace link."
+  ],
+  "household_reconciliation_rules": [
+    "Create a household candidate only when a guardian identity and learner/member signal can be grouped deterministically.",
+    "If the source only has a follower/contact row with no learner grouping, keep it as CRM contact/lead.",
+    "Guardian authority defaults to manual_review unless source explicitly identifies authority.",
+    "Learner rows require student-safe visibility, guardian consent status, and active/suspended/archive status before access operations.",
+    "Household conflicts block only dependent portal activation or learner-access tasks."
+  ],
+  "conflict_manual_review_categories": [
+    "missing_email_and_missing_phone",
+    "duplicate_input_same_identity",
+    "email_match_phone_conflict",
+    "phone_match_email_conflict",
+    "same_name_different_identity",
+    "conflicting_consent_or_suppression",
+    "legacy_member_without_current_consent",
+    "pipeline_stage_ambiguous",
+    "school_vs_family_classification_ambiguous",
+    "household_guardian_role_ambiguous",
+    "learner_without_guardian",
+    "minor_or_student_safety_unclear",
+    "source_ownership_unclear",
+    "external_lead_source_requires_operator_approval",
+    "existing_production_record_conflict",
+    "private_message_or_note_requires_exclusion"
+  ],
+  "consent_suppression_precedence": [
+    {
+      "rank": 1,
+      "signal": "legal/manual do-not-contact, abuse suppression, complaint, hard bounce, or provider-level suppression",
+      "result": "suppressed; no activation, marketing, reminder, WhatsApp, Telegram, or helper outreach"
+    },
+    {
+      "rank": 2,
+      "signal": "explicit unsubscribe, STOP, opt-out, or unsubscribed export",
+      "result": "suppressed until a later explicit opt-in is recorded"
+    },
+    {
+      "rank": 3,
+      "signal": "channel-specific consent absent",
+      "result": "no send on that channel; contact may remain in CRM as non-contactable"
+    },
+    {
+      "rank": 4,
+      "signal": "subscribed or opted-in source with no stronger suppression",
+      "result": "eligible for preview only; actual send still requires bounded canary approval"
+    },
+    {
+      "rank": 5,
+      "signal": "unknown consent",
+      "result": "manual review or non-send CRM only"
+    }
+  ],
+  "backup_rollback_reconciliation_plan": {
+    "before_ops13b_any_write": [
+      "Refresh live source, PR state, Railway identities, migration ledger, and backup state.",
+      "Confirm production backup freshness or create a new protected backup outside Git before any write.",
+      "Run legacy audience preview in dry_run mode first."
+    ],
+    "rollback_records": [
+      "Use onetime.legacy_audience_rollback_records for approved import batches.",
+      "Record affected_record_counts only, never private row values.",
+      "Rollback must be forward-only after merge."
+    ],
+    "hard_stops": [
+      "Unexpected source SHA, missing backup, schema not latest, unreviewed suppression conflicts, or any request to print private rows.",
+      "Any Buffer canary before an account is connected.",
+      "Any broad customer send, live Stripe charge, DNS/account change, or provider mutation outside exact canary budgets."
+    ]
+  },
+  "dry_run_tables_available": [
+    "onetime.legacy_audience_import_batches",
+    "onetime.legacy_audience_import_rows",
+    "onetime.legacy_audience_match_candidates",
+    "onetime.legacy_audience_segment_snapshots",
+    "onetime.legacy_audience_rollback_records",
+    "onetime.legacy_audience_audit_events"
+  ]
+}

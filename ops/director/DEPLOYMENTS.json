@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.deployments.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T17:44:58+03:00",
   "production": {
     "url": "https://join.onetimeonetime.com",
     "environment": "production",
@@ -33,7 +33,11 @@
       "ops/codex-runs/OPS-11/FINAL-REPORT.md",
       "ops/codex-runs/OPS-11/STATE.json",
       "ops/codex-runs/OPS-11/MUTATION-LEDGER.json"
-    ]
+    ],
+    "runtime_is_w12_candidate": false,
+    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "w12_candidate_deployed_here": false,
+    "notes": "Production remains OPS-11 source/version and is distinct from the W12-99/W12-100 candidate. W12-100 has not promoted or deployed production."
   },
   "staging": {
     "environment": "staging",
@@ -49,7 +53,9 @@
     "evidence_paths": [
       "ops/codex-runs/OPS-11/STAGING-ROLLBACK.md",
       "ops/codex-runs/OPS-11/ARTIFACT-PROMOTION.md"
-    ]
+    ],
+    "scope": "OPS-11 rollback/staging proof from prior release work, not a W12-99 or W12-100 staging deployment.",
+    "w12_candidate_deployed": false
   },
   "rollback": {
     "status": "degraded_source_rebuild_available",
@@ -75,6 +81,22 @@
       "HEAD/status https://join.onetimeonetime.com/login",
       "HEAD/status https://join.onetimeonetime.com/",
       "HEAD/status https://join.onetimeonetime.com/signup"
+    ]
+  },
+  "w12_launch_readiness": {
+    "owner": "W12-100",
+    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "w12_100_00_branch": "codex/w12-100-00-director-and-ops13a-convergence",
+    "staging_deployment_performed": false,
+    "production_deployment_performed": false,
+    "real_import_performed": false,
+    "provider_acceptance_performed": false,
+    "production_runtime_distinct_from_candidate": true,
+    "required_before_launch": [
+      "Deploy the exact candidate SHA to isolated staging.",
+      "Smoke /health, /ready, /version, worker, rollback, and customer journeys.",
+      "Produce approved real-source dry-run counts before any import apply.",
+      "Run bounded provider canaries only after explicit protected approvals."
     ]
   }
 }
