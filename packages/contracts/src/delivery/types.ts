@@ -1,6 +1,12 @@
 export const DELIVERY_CHANNELS = ['email', 'whatsapp', 'internal_email'] as const;
 export type DeliveryChannel = (typeof DELIVERY_CHANNELS)[number];
 
+export const DELIVERY_ENVIRONMENTS = ['local', 'test', 'isolated_staging', 'production'] as const;
+export type DeliveryEnvironment = (typeof DELIVERY_ENVIRONMENTS)[number];
+
+export const DELIVERY_TRANSPORT_MODES = ['sink', 'provider'] as const;
+export type DeliveryTransportMode = (typeof DELIVERY_TRANSPORT_MODES)[number];
+
 export const DELIVERY_EVENT_TYPES = {
   familySignupEmailAck: 'family_signup_email_ack.v1',
   familySignupWhatsAppConfirmation: 'family_signup_whatsapp_confirmation.v1',
@@ -22,7 +28,6 @@ export const SUPPORTED_DELIVERY_EVENT_CHANNEL_PAIRS = [
 export type SupportedDeliveryEventType =
   (typeof SUPPORTED_DELIVERY_EVENT_CHANNEL_PAIRS)[number]['eventType'];
 
-export type DeliveryTransportMode = 'sink';
 export type ReminderPreference = 'email' | 'whatsapp' | 'both' | 'none';
 export type RecipientClass = 'public' | 'internal_owner';
 export type DeliveryLeadStatus =
@@ -119,6 +124,7 @@ export type ProviderReceipt = {
 export type ProviderSendContext = {
   deliveryKey: string;
   attempt: number;
+  transportMode: DeliveryTransportMode;
   signal: AbortSignal;
 };
 

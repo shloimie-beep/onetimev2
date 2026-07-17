@@ -174,9 +174,15 @@ describe('OT-72 Stripe test adapter', () => {
 describe('OT-72 Resend/WAPI provider truth', () => {
   it('requires exact canary destinations before provider sends', async () => {
     const config = parseDeliveryProviderFeatureConfig({
+      DELIVERY_TRANSPORT_MODE: 'provider',
+      DELIVERY_ENVIRONMENT: 'test',
+      ONE_TIME_DELIVERY_PROVIDER_ENVIRONMENT_GATE: 'test',
+      ONE_TIME_DELIVERY_STAGING_ISOLATED: 'true',
       ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
       ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_CANARY_AUTHORIZED: 'true',
       ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'owner@example.test',
+      ONE_TIME_DELIVERY_CANARY_BUDGET: '1',
     });
     const router = new OneTimeProviderDeliveryRouter(config, {
       resend: {
@@ -198,9 +204,14 @@ describe('OT-72 Resend/WAPI provider truth', () => {
           html: '<p>Hello</p>',
           tags: [],
         },
-        { deliveryKey: 'delivery_1', attempt: 1, signal: new AbortController().signal },
+        {
+          deliveryKey: 'delivery_1',
+          attempt: 1,
+          transportMode: 'provider',
+          signal: new AbortController().signal,
+        },
       ),
-    ).rejects.toThrow(/canary/);
+    ).rejects.toThrow(/provider_destination_not_authorized/);
   });
 
   it('normalizes signed webhook evidence without raw provider IDs', () => {

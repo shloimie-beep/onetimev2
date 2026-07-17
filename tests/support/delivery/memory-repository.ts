@@ -53,7 +53,7 @@ export class MemoryDeliveryRepository implements DeliveryRepository {
       row.status !== 'processing' ||
       row.accountKey !== claim.accountKey ||
       row.productKey !== claim.productKey ||
-      row.transportMode !== 'sink' ||
+      row.transportMode !== claim.transportMode ||
       !row.claimLeaseExpiresAt ||
       row.claimLeaseExpiresAt.getTime() !== claim.claimLeaseExpiresAt.getTime() ||
       row.claimLeaseExpiresAt.getTime() <= outcome.at.getTime()

@@ -161,7 +161,8 @@ describe('PostgreSQL delivery repository', () => {
     const update = client.calls.find((call) => call.text.includes('RETURNING delivery_key'));
     expect(update?.text).toContain('account_key = $7');
     expect(update?.text).toContain('product_key = $8');
-    expect(update?.text).toContain("transport_mode = 'sink'");
+    expect(update?.text).toContain('transport_mode = $9');
+    expect(update?.values?.[8]).toBe('sink');
     expect(update?.text).toContain("status = 'processing'");
     expect(update?.text).toContain('next_attempt_at = $5::timestamptz');
     expect(update?.text).toContain('next_attempt_at > $6::timestamptz');

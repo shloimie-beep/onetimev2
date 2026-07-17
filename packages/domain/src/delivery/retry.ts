@@ -7,15 +7,29 @@ export const MAX_RETRY_DELAY_MS = 6 * 60 * 60 * 1000;
 
 const ALLOWED_FAILURE_CODES = new Set([
   'provider_activation_disabled',
+  'provider_authorization_missing',
+  'provider_canary_budget_exhausted',
+  'provider_destination_not_authorized',
+  'provider_environment_gate_mismatch',
+  'provider_idempotency_key_mismatch',
+  'provider_idempotency_key_missing',
+  'provider_mode_not_enabled',
   'provider_network_failure',
+  'provider_production_disabled',
+  'provider_request_aborted',
+  'provider_staging_isolation_missing',
   'provider_timeout',
   'provider_unavailable',
+  'provider_transport_disabled',
   'provider_unclassified_failure',
   'resend_internal_server_error',
   'resend_rate_limit_exceeded',
   'resend_validation_error',
+  'resend_disabled',
   'one_time_wapi_rate_limited',
   'one_time_wapi_validation_error',
+  'unsupported_provider_channel',
+  'wapi_disabled',
 ]);
 
 export function sanitizeFailureCode(code: string | undefined): string {
