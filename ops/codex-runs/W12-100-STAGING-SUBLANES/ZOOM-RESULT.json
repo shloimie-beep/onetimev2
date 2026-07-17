@@ -1,0 +1,59 @@
+{
+  "schema_version": "onetime.w12_100.staging_sublane_result.v1",
+  "generated_at": "2026-07-17T20:57:21.2455616+03:00",
+  "provider": "zoom",
+  "sequence_order": 1,
+  "status": "blocked_gate_absent",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "observed_staging_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "observed_staging_version": "ops11-1197673",
+  "observed_latest_migration": "2190_ot109_rabbi_content_publisher",
+  "budget": {
+    "controlled_test_meetings_allowed": 1,
+    "occurrences_allowed": 1,
+    "controlled_registrants_allowed": 2,
+    "learner_role_checks_allowed": 1,
+    "webhook_validation": "counts_only",
+    "controlled_test_meetings_created": 0,
+    "occurrences_created": 0,
+    "controlled_registrants_created": 0,
+    "learner_role_checks_run": 0,
+    "webhook_events_validated": 0
+  },
+  "gates": {
+    "exact_w12_100_staging_sha": "failed",
+    "fresh_explicit_zoom_canary_approval": "absent",
+    "protected_zoom_account_api_sdk_webhook_config": "absent",
+    "controlled_registrant_allowlist": "absent",
+    "cleanup_contract": "not_evaluated_after_gate_failure"
+  },
+  "missing_local_variable_names": [
+    "ZOOM_CLASSROOM_ENABLED",
+    "ZOOM_CLASSROOM_PROVIDER_MODE",
+    "ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED",
+    "ZOOM_CLASSROOM_CANARY_ENABLED",
+    "ZOOM_MEETING_SDK_KEY",
+    "ZOOM_MEETING_SDK_SECRET",
+    "ZOOM_ACCOUNT_ID",
+    "ONETIME_ZOOM_CANARY_AUTHORIZED",
+    "ONETIME_CANARY_ZOOM_REGISTRANT_1_EMAIL",
+    "ONETIME_CANARY_ZOOM_REGISTRANT_2_EMAIL"
+  ],
+  "safety": {
+    "provider_calls": 0,
+    "provider_mutations": 0,
+    "production_mutations": 0,
+    "host_urls_printed": false,
+    "join_urls_printed": false,
+    "passcodes_printed": false,
+    "zak_printed": false,
+    "access_tokens_printed": false,
+    "sdk_secrets_printed": false,
+    "cleanup_actions": 0
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-STAGING-SUBLANES/live-evidence/staging-version-health-ready.json",
+    "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+    "ops/director/CAPABILITY-MATRIX.json"
+  ]
+}

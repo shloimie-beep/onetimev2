@@ -1,0 +1,14 @@
+{
+  "proxies": [
+    {
+      "id": "e7d6f00a-68b3-4210-98d5-d755c553c98e",
+      "domain": "tokaido.proxy.rlwy.net",
+      "proxyPort": 55404,
+      "applicationPort": 5432,
+      "endpoint": "tokaido.proxy.rlwy.net:55404",
+      "syncStatus": "ACTIVE",
+      "createdAt": "2026-07-16T16:38:33.489+00:00",
+      "updatedAt": "2026-07-16T16:38:34.135+00:00"
+    }
+  ]
+}

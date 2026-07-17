@@ -1,0 +1,78 @@
+{
+  "schema_version": "onetime.w12_100.staging_identity_check.v1",
+  "generated_at": "2026-07-17T17:34:09.460Z",
+  "candidate_commit_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "railway_cli_version": "railway 5.26.2",
+  "expected": {
+    "project": {
+      "id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "name": "one-time-ot99-staging-96b42905"
+    },
+    "environment": {
+      "id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+      "name": "staging"
+    },
+    "web": {
+      "id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "name": "ot99-web"
+    },
+    "worker": {
+      "id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+      "name": "ot99-worker"
+    },
+    "database": {
+      "id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+      "name": "ot99-pg16"
+    }
+  },
+  "found": {
+    "project": {
+      "id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "name": "one-time-ot99-staging-96b42905"
+    },
+    "environment": {
+      "id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+      "name": "staging"
+    },
+    "web": {
+      "id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "name": "ot99-web",
+      "latest_deployment": "6e3b45dc-761c-4f4b-a844-f8e4c7aabe6a",
+      "latest_digest": "sha256:30285f6adce25a03c2305d6bede808e95e97e96f057fdedd592f338958250d4f"
+    },
+    "worker": {
+      "id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+      "name": "ot99-worker",
+      "latest_deployment": "914c18f8-4f59-4234-930a-932dd89790c4",
+      "latest_digest": "sha256:cbd8a55e41bab2229ec5603efcba2262a91c8be773ffb176520db3a43b220a72"
+    },
+    "database": {
+      "id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+      "name": "ot99-pg16",
+      "latest_deployment": "5a336d70-61a4-484a-92c9-3285ad596b4a",
+      "latest_digest": "sha256:132cf319ef59dcf45054e8f45855f9c63422a5d0a640abdcb66a3fb7cb3398a6"
+    },
+    "extra_database_services": [
+      {
+        "id": "e6671cb7-178a-4821-b977-7b6e24c0c052",
+        "name": "Postgres"
+      }
+    ]
+  },
+  "exact_matches": {
+    "project": true,
+    "environment": true,
+    "web": true,
+    "worker": true,
+    "database": true,
+    "tcp_proxy": true
+  },
+  "local_link": {
+    "status": "unlinked",
+    "evidence": "railway status without explicit project/environment failed: No linked project found."
+  },
+  "result": "blocked",
+  "blocker": "RAILWAY_WORKTREE_UNLINKED_STOP_CONDITION",
+  "private_values_recorded": false,
+  "secrets_recorded": false
+}

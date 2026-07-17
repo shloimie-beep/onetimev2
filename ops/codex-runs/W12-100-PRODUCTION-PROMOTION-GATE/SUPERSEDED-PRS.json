@@ -1,0 +1,90 @@
+{
+  "schema_version": "onetime.w12_100.production_gate.superseded_prs.v1",
+  "generated_at": "2026-07-17T21:13:56.1513221+03:00",
+  "can_be_closed_now_without_merging": [],
+  "reason_can_be_closed_now_empty": "Production promotion was blocked before mutation, so no PR closure action is authorized by this gate.",
+  "topology_superseded_inputs_pending_successful_canonical_promotion": [
+    {
+      "pr": 62,
+      "title": "WhatsApp lead assistant",
+      "head": "codex/w12-06-whatsapp-lead-assistant",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 63,
+      "title": "Canonical director handoff",
+      "head": "codex/w12-00-canonical-director-handoff",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 64,
+      "title": "Content, Vimeo, classroom",
+      "head": "codex/w12-04-content-vimeo-classroom",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 65,
+      "title": "Telegram operations",
+      "head": "codex/w12-05-telegram-operations",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 66,
+      "title": "Communication history",
+      "head": "codex/w12-02-communication-history",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 67,
+      "title": "Admin classroom productization",
+      "head": "codex/w12-08-admin-classroom-productization",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 68,
+      "title": "CRM audience import",
+      "head": "codex/w12-01-crm-audience-import",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 69,
+      "title": "Premium landing",
+      "head": "codex/w12-07-premium-landing",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 70,
+      "title": "Portal test lab",
+      "head": "codex/w12-03-portal-test-lab",
+      "reason": "Integrated into W12-99 and then contained by W12-100 convergence."
+    },
+    {
+      "pr": 72,
+      "title": "OPS-13A real-data provider preflight",
+      "head": "codex/ops13a-real-data-provider-preflight",
+      "reason": "The eight OPS-13A files were integrated through W12-100-00; PR #72 must not be separately merged."
+    }
+  ],
+  "not_closable_from_this_gate": [
+    {
+      "pr": 61,
+      "reason": "Prior release base; do not close as part of this blocked production gate."
+    },
+    {
+      "pr": 71,
+      "reason": "W12-09 product code remains excluded pending explicit operator decision."
+    },
+    {
+      "pr": 73,
+      "reason": "W12-99 canonical base PR remains part of release topology."
+    },
+    {
+      "pr": 89,
+      "reason": "Canonical W12-100 convergence PR remains the candidate source."
+    },
+    {
+      "pr": 90,
+      "reason": "Evidence-only PR remains open for gate artifacts."
+    }
+  ]
+}

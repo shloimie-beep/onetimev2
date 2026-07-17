@@ -1,0 +1,44 @@
+{
+  "schema_version": "onetime.w12_100.buffer_bna_readiness.buffer_canaries.v1",
+  "generated_at": "2026-07-17T21:04:21.7491571+03:00",
+  "environment_variable_presence": {
+    "BUFFER_ACCESS_TOKEN": "missing",
+    "BUFFER_ORGANIZATION_ID": "missing",
+    "BUFFER_DESTINATION_IDS": "missing",
+    "OT106_BUFFER_CHANNEL_ALIASES": "missing",
+    "OT106_BUFFER_PROVIDER_MODE": "missing",
+    "OT106_BUFFER_DRAFT_CANARY_AUTHORIZED": "missing"
+  },
+  "ot86b_read_only_canary": {
+    "command": "node bin/ot86-buffer-canary --mode read-only --json",
+    "exit_code": 2,
+    "packet_id": "OT-86B",
+    "provider": "buffer",
+    "mode": "read-only",
+    "status": "unconfigured",
+    "writes_performed": false,
+    "missing_capability_classes": ["access_token", "organization_id", "destination_ids"],
+    "destinations": []
+  },
+  "ot106_read_only_canary": {
+    "command": "node bin/ot106-buffer-canary --mode read-only --json",
+    "exit_code": 2,
+    "packet_id": "OT-106",
+    "provider": "buffer",
+    "mode": "read-only",
+    "status": "unconfigured",
+    "writes_performed": false,
+    "missing_capability_classes": ["access_token", "organization_id", "channel_aliases"],
+    "channels": []
+  },
+  "result_code": "BLOCKED_BUFFER_ACCOUNT_NOT_CONNECTED",
+  "safety": {
+    "provider_drafts_created": 0,
+    "posts_scheduled": 0,
+    "posts_published": 0,
+    "provider_network_call_performed": false,
+    "external_mutations": 0,
+    "tokens_printed": false,
+    "destination_ids_printed": false
+  }
+}

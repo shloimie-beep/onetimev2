@@ -1,0 +1,72 @@
+{
+  "schema_version": "onetime.w12_100.staging_sublanes_state.v1",
+  "generated_at": "2026-07-17T20:57:21.2455616+03:00",
+  "status": "completed_with_blocked_staging_gates",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "observed_staging_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "observed_staging_version": "ops11-1197673",
+  "observed_latest_migration": "2190_ot109_rabbi_content_publisher",
+  "sequence": [
+    {
+      "provider": "zoom",
+      "status": "blocked_gate_absent",
+      "result": "ops/codex-runs/W12-100-STAGING-SUBLANES/ZOOM-RESULT.json"
+    },
+    {
+      "provider": "vimeo",
+      "status": "blocked_gate_absent",
+      "result": "ops/codex-runs/W12-100-STAGING-SUBLANES/VIMEO-RESULT.json"
+    },
+    {
+      "provider": "helper",
+      "status": "blocked_staging_gate_absent_with_local_fixture_passed",
+      "result": "ops/codex-runs/W12-100-STAGING-SUBLANES/HELPER-RESULT.json"
+    }
+  ],
+  "commands": [
+    {
+      "command": "npm run bna:run:status",
+      "status": "blocked_missing_script"
+    },
+    {
+      "command": "npm run bna:run:next",
+      "status": "blocked_missing_script"
+    },
+    {
+      "command": "npm run chatgpt:dropoff:tower",
+      "status": "blocked_missing_script"
+    },
+    {
+      "command": "node bin/ot104r-vimeo-canary --mode read-only --json",
+      "status": "unconfigured_no_writes"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/portals/portal-test-lab.test.ts",
+      "status": "passed"
+    },
+    {
+      "command": "inline tsx helper fixture citation/abstention probe",
+      "status": "passed"
+    }
+  ],
+  "safety": {
+    "deployments": 0,
+    "database_mutations": 0,
+    "provider_calls": 0,
+    "provider_mutations": 0,
+    "production_mutations": 0,
+    "zoom_meetings_created": 0,
+    "zoom_registrants_created": 0,
+    "vimeo_uploads": 0,
+    "external_helper_provider_calls": 0,
+    "secrets_or_private_urls_printed": false
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-STAGING-SUBLANES/live-evidence/staging-version-health-ready.json",
+    "ops/codex-runs/W12-100-STAGING-SUBLANES/ZOOM-REPORT.md",
+    "ops/codex-runs/W12-100-STAGING-SUBLANES/VIMEO-REPORT.md",
+    "ops/codex-runs/W12-100-STAGING-SUBLANES/HELPER-REPORT.md",
+    "ops/codex-runs/W12-100-STAGING-SUBLANES/local-evidence/vimeo-read-only-canary.json",
+    "ops/codex-runs/W12-100-STAGING-SUBLANES/local-evidence/helper-fixture-probe.json"
+  ]
+}

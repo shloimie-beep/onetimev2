@@ -1,0 +1,91 @@
+{
+  "schema_version": "onetime.w12_100.production_gate.post_deploy_capability_matrix.v1",
+  "generated_at": "2026-07-17T21:13:56.1513221+03:00",
+  "status": "not_run_no_deploy",
+  "candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "production_sha_before": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "production_sha_after": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "capabilities": [
+    {
+      "id": "health",
+      "status": "pre_state_pass",
+      "evidence": "/health returned 200 before mutation.",
+      "next_action": "Reverify after an authorized candidate deployment."
+    },
+    {
+      "id": "readiness",
+      "status": "pre_state_pass",
+      "evidence": "/ready returned 200 before mutation.",
+      "next_action": "Reverify after migrations and deploy."
+    },
+    {
+      "id": "version_exact_candidate",
+      "status": "blocked",
+      "evidence": "Production reports 1197673fa409bfc4c649c2683f782e86775caa5e, not candidate ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c.",
+      "next_action": "Deploy only after exact SHA authorization and gates pass."
+    },
+    {
+      "id": "database_migration_2202",
+      "status": "blocked",
+      "evidence": "Production /ready reports latest migration 2190_ot109_rabbi_content_publisher.",
+      "next_action": "Run production migrations separately only after authorization, fresh backup, and staging proof."
+    },
+    {
+      "id": "worker_heartbeat",
+      "status": "not_evaluated",
+      "evidence": "No production database/runtime metadata read was performed in this blocked gate.",
+      "next_action": "Verify with approved protected read-only query after gate clearance."
+    },
+    {
+      "id": "queue_age",
+      "status": "not_evaluated",
+      "evidence": "No production database/runtime metadata read was performed in this blocked gate.",
+      "next_action": "Verify with approved protected read-only query after gate clearance."
+    },
+    {
+      "id": "public_routes",
+      "status": "pre_state_pass",
+      "evidence": "Root, signup, login, activation, reset, and forgot-password returned 200 before mutation.",
+      "next_action": "Reverify after deployment."
+    },
+    {
+      "id": "protected_owner_admin_route",
+      "status": "pre_state_pass",
+      "evidence": "/app/dashboard redirected to login before mutation.",
+      "next_action": "Reverify after deployment."
+    },
+    {
+      "id": "portal_test_lab_absent_in_production",
+      "status": "not_evaluated",
+      "evidence": "No candidate deployment occurred; production remains OPS-11.",
+      "next_action": "Verify explicitly after candidate deployment."
+    },
+    {
+      "id": "provider_defaults",
+      "status": "blocked",
+      "evidence": "Production /ready reports email_transport ok/enabled; WhatsApp and support bridge disabled.",
+      "next_action": "Confirm intended provider default state before promotion."
+    },
+    {
+      "id": "unexpected_sends",
+      "status": "not_evaluated",
+      "evidence": "No provider logs or private queues were read in this blocked gate.",
+      "next_action": "Verify via protected counts-only evidence after authorization."
+    },
+    {
+      "id": "unexpected_import_batch",
+      "status": "pre_state_pass",
+      "evidence": "W12-100 real-source run recorded IMPORT_APPLY_AUTHORIZED=false and zero writes.",
+      "next_action": "Keep apply authorization off unless separately approved."
+    },
+    {
+      "id": "elevated_errors",
+      "status": "not_evaluated",
+      "evidence": "No production logs were read to avoid leaking private data.",
+      "next_action": "Use approved sanitized metrics/log counters after authorization."
+    }
+  ],
+  "provider_canaries_run": 0,
+  "broad_delivery_run": false,
+  "real_audience_import_run": false
+}

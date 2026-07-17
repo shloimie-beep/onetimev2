@@ -1,0 +1,73 @@
+{
+  "schema_version": "onetime.w12_100.production_gate.identity.v1",
+  "generated_at": "2026-07-17T21:13:56.1513221+03:00",
+  "selector_used": {
+    "project": "one-time-production",
+    "environment": "production"
+  },
+  "project": {
+    "name": "one-time-production",
+    "id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+    "match": true
+  },
+  "environment": {
+    "name": "production",
+    "id": "f911acfc-e206-44df-a569-9d69d709b94b",
+    "match": true
+  },
+  "services": {
+    "web": {
+      "name": "one-time-web",
+      "id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+      "latest_deployment_id": "6f4fa4e4-0f49-4508-96fe-850a5430360e",
+      "latest_deployment_status": "SUCCESS",
+      "instance_statuses": ["RUNNING"],
+      "created_at": "2026-07-17T08:20:50.530Z",
+      "image_digest": "sha256:eb6f723aa76ccf7eee8bf00b2b19f3c865873c2c2c7102f66fe775b303e26c71",
+      "custom_domains": ["join.onetimeonetime.com"],
+      "match": true
+    },
+    "worker": {
+      "name": "one-time-delivery-cron",
+      "id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+      "latest_deployment_id": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+      "latest_deployment_status": "SUCCESS",
+      "instance_statuses": ["RUNNING"],
+      "created_at": "2026-07-17T08:33:58.821Z",
+      "image_digest": "sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43",
+      "match": true
+    },
+    "database": {
+      "name": "Postgres-j9Pi",
+      "id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+      "latest_deployment_id": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+      "latest_deployment_status": "SUCCESS",
+      "instance_statuses": ["RUNNING"],
+      "created_at": "2026-07-02T12:56:35.572Z",
+      "image_digest": "sha256:b75472d708b058ef15c5d1fb69db08e836cb7e1bad82e2ac6ac75d1198829366",
+      "source_image": "ghcr.io/railwayapp-templates/postgres-ssl:18",
+      "match": true
+    },
+    "prior_restore_proof": {
+      "name": "ops11-pg18-proof-20260717",
+      "id": "52db1072-b4eb-450c-bec7-5151cb9a8461",
+      "latest_deployment_id": "7b338893-641c-4c14-af99-2f9b2cc61125",
+      "latest_deployment_status": "SUCCESS",
+      "deployment_stopped": true,
+      "instance_statuses": ["EXITED"],
+      "created_at": "2026-07-17T07:58:21.531Z",
+      "image_digest": "sha256:4afa0888030043e3e7f5b3ebca4bf5efcc5980b54eebfa11423fd195608aef5b",
+      "fresh_for_this_gate": false
+    }
+  },
+  "extra_postgres_services_seen": [
+    {
+      "name": "Postgres",
+      "id": "7d6541d3-a138-40b6-9a42-81c536529022",
+      "latest_deployment_id": "6e3cfc7e-f795-448a-91e6-8fa9403b1c8a",
+      "status": "SUCCESS"
+    }
+  ],
+  "private_values_recorded": false,
+  "secret_values_recorded": false
+}

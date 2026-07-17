@@ -1,0 +1,15 @@
+{
+  "schema_version": "onetime.w12_100.migration_status.v1",
+  "generated_at": "2026-07-17T17:28:08.952Z",
+  "status": "blocked",
+  "environment_kind": "staging",
+  "local_migration_count": 38,
+  "applied_migration_count": 35,
+  "pending_migrations": 3,
+  "latest_local_migration": "2202_w12_05_telegram_operations",
+  "latest_applied_migration": "2190_ot109_rabbi_content_publisher",
+  "pending_ids_hash": "074bdc2e7eba1ab8bc4651b5b70e1babee705baa87bae35de2127d1079b58afa",
+  "database_mutation_performed": false,
+  "raw_source_rows_included": false,
+  "private_values_recorded": false
+}

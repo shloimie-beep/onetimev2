@@ -1,0 +1,21 @@
+{
+  "schema_version": "onetime.w12_100.buffer_bna_readiness.bna_contract_tests.v1",
+  "generated_at": "2026-07-17T21:04:21.7491571+03:00",
+  "command": "npx vitest run --config vitest.unit.config.ts tests/unit/support/ot89a-contract.test.ts tests/unit/support/ot89a-config.test.ts tests/unit/providers/ops05-provider-control-center.test.ts",
+  "status": "passed",
+  "test_files": 3,
+  "tests": 11,
+  "coverage": {
+    "frozen_support_event_contract": "passed",
+    "hmac_interop_vector": "passed",
+    "support_outbox_claims_scoped_atomic_skip_locked": "passed",
+    "production_support_config_fail_closed": "passed",
+    "production_mock_bna_forbidden": "passed",
+    "test_hmac_defaults_forbidden_in_production": "passed",
+    "provider_control_center_no_secret_values": "passed",
+    "provider_specific_bna_hmac_scheme": "passed",
+    "buffer_endpoint_not_mounted_as_webhook": "passed"
+  },
+  "external_mutations": 0,
+  "live_bna_calls": 0
+}

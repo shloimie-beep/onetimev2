@@ -1,0 +1,77 @@
+{
+  "schema_version": "onetime.w12_100.real_source_counts_staging_probe.v1",
+  "generated_at": "2026-07-17T17:41:45.217Z",
+  "base_url_hash": "eb60266bde81f4511b34212436d6c8d3914cf7e49be14683da35fdc97ca631e1",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "required_migration": "2201_w12_01_crm_audience_import",
+  "routes": {
+    "/version": {
+      "status": 200,
+      "ok": true,
+      "body": {
+        "version": "ops11-1197673",
+        "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+        "target_app": "one-time"
+      }
+    },
+    "/ready": {
+      "status": 200,
+      "ok": true,
+      "body": {
+        "ok": true,
+        "service": "onetime-web",
+        "generated_at": "2026-07-17T17:41:45.764Z",
+        "dependencies": [
+          {
+            "name": "database",
+            "ok": true,
+            "essential": true,
+            "status": "ok",
+            "latency_ms": 42,
+            "blocker_code": null,
+            "detail": "query ok"
+          },
+          {
+            "name": "schema_migrations",
+            "ok": true,
+            "essential": true,
+            "status": "ok",
+            "latency_ms": 3,
+            "blocker_code": null,
+            "detail": "latest=2190_ot109_rabbi_content_publisher"
+          }
+        ],
+        "optional_dependencies": [
+          {
+            "name": "email_transport",
+            "ok": true,
+            "essential": false,
+            "status": "ok",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "resend transport flag enabled"
+          },
+          {
+            "name": "whatsapp_transport",
+            "ok": true,
+            "essential": false,
+            "status": "ok",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "provider transport flag enabled"
+          },
+          {
+            "name": "support_bridge",
+            "ok": true,
+            "essential": false,
+            "status": "disabled",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "disabled by runtime flag"
+          }
+        ],
+        "blockers": []
+      }
+    }
+  }
+}

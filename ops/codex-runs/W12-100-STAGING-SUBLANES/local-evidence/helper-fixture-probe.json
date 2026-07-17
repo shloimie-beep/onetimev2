@@ -1,0 +1,40 @@
+{
+  "schema_version": "onetime.w12_100.staging_sublanes.helper_local_fixture_probe.v1",
+  "generated_at": "2026-07-17T20:57:21+03:00",
+  "status": "passed",
+  "scope": "local_fixture_only_not_staging_acceptance",
+  "fixture_count": 1,
+  "questions": 3,
+  "private_data_questions": 0,
+  "provider_calls": 0,
+  "audit_prompt_bodies_recorded": false,
+  "results": [
+    {
+      "kind": "supported",
+      "abstained": false,
+      "safe_reason_code": "supported_by_approved_section",
+      "citation_count": 1,
+      "source_ref_count": 1,
+      "policy": "ot107-student-class-helper-v1",
+      "external_url_removed": true
+    },
+    {
+      "kind": "unsupported",
+      "abstained": true,
+      "safe_reason_code": "unsupported",
+      "citation_count": 0,
+      "source_ref_count": 0,
+      "policy": "ot107-student-class-helper-v1",
+      "external_url_removed": true
+    },
+    {
+      "kind": "outside_scope",
+      "abstained": true,
+      "safe_reason_code": "outside_class_scope",
+      "citation_count": 0,
+      "source_ref_count": 0,
+      "policy": "ot107-student-class-helper-v1",
+      "external_url_removed": true
+    }
+  ]
+}

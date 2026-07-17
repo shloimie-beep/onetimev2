@@ -1,0 +1,40 @@
+{
+  "schema_version": "onetime.w12_100.real_source_counts_state.v1",
+  "generated_at": "2026-07-17T20:41:35.3579462+03:00",
+  "status": "blocked_before_source_processing",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "observed_staging_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "observed_staging_version": "ops11-1197673",
+  "required_migration": "2201_w12_01_crm_audience_import",
+  "observed_latest_migration": "2190_ot109_rabbi_content_publisher",
+  "local_required_migration_present": true,
+  "local_required_migration_sha256": "E0DC91A46D7EF1B1FC55F78AE5E0FC234C4F68F2F8F3AB1063395C22E121CDD5",
+  "blocked_reason": "Exact W12-100 code and migration 2201 are not present in isolated staging, so approved source files were not inspected or processed.",
+  "local_environment": {
+    "database_url_present": false,
+    "import_apply_authorized_present": false
+  },
+  "safety": {
+    "production_database_connection_used": false,
+    "apply_authorization_present": false,
+    "source_files_opened": false,
+    "source_rows_printed_or_committed": false,
+    "contacts_written": 0,
+    "leads_written": 0,
+    "households_written": 0,
+    "learners_written": 0,
+    "consent_records_written": 0,
+    "tags_written": 0,
+    "campaigns_written": 0,
+    "outbox_messages_written": 0,
+    "provider_events_written": 0,
+    "provider_calls": 0,
+    "IMPORT_APPLY_AUTHORIZED": false
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-REAL-SOURCE-COUNTS/live-evidence/staging-version-ready.json",
+    "ops/codex-runs/W12-100-REAL-SOURCE-COUNTS/MANIFEST.json",
+    "ops/codex-runs/W12-100-REAL-SOURCE-COUNTS/COUNTS.json",
+    "ops/codex-runs/W12-100-REAL-SOURCE-COUNTS/FINAL-REPORT.md"
+  ]
+}

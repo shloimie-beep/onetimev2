@@ -1,0 +1,77 @@
+{
+  "schema_version": "onetime.w12_100.production_gate.before_state.v1",
+  "generated_at": "2026-07-17T21:13:56.1513221+03:00",
+  "url": "https://join.onetimeonetime.com",
+  "http": {
+    "health": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "service": "onetime-web"
+      }
+    },
+    "ready": {
+      "status": 200,
+      "ok": true,
+      "generated_at": "2026-07-17T18:13:10.747Z",
+      "latest_migration": "2190_ot109_rabbi_content_publisher",
+      "database_status": "ok",
+      "schema_migrations_status": "ok",
+      "optional_dependencies": {
+        "email_transport": "ok_enabled",
+        "whatsapp_transport": "disabled",
+        "support_bridge": "disabled"
+      },
+      "blockers": 0
+    },
+    "version": {
+      "status": 200,
+      "body": {
+        "version": "ops11-1197673",
+        "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+        "target_app": "one-time"
+      }
+    },
+    "routes": [
+      {
+        "route": "/",
+        "status": 200
+      },
+      {
+        "route": "/signup",
+        "status": 200
+      },
+      {
+        "route": "/login",
+        "status": 200
+      },
+      {
+        "route": "/activate",
+        "status": 200
+      },
+      {
+        "route": "/reset-password",
+        "status": 200
+      },
+      {
+        "route": "/forgot-password",
+        "status": 200
+      },
+      {
+        "route": "/app",
+        "status": 301,
+        "safe_redirect": true
+      },
+      {
+        "route": "/app/dashboard",
+        "status": 302,
+        "safe_redirect": true
+      }
+    ]
+  },
+  "production_is_candidate": false,
+  "production_matches_candidate_sha": false,
+  "candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "private_values_recorded": false,
+  "secret_values_recorded": false
+}

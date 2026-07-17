@@ -1,0 +1,16 @@
+{
+  "schema_version": "onetime.w12_100.migration_status.v1",
+  "generated_at": "2026-07-17T17:26:05.084Z",
+  "status": "blocked",
+  "environment_kind": "staging",
+  "local_migration_count": 38,
+  "applied_migration_count": 0,
+  "pending_migrations": 38,
+  "latest_local_migration": "2202_w12_05_telegram_operations",
+  "latest_applied_migration": null,
+  "pending_ids_hash": "13ebcc4d9ee902dbd3c2fcc96f47b8a54e02a86fedb8ea41c7f30bf2c77d2822",
+  "database_mutation_performed": false,
+  "raw_source_rows_included": false,
+  "private_values_recorded": false,
+  "error_summary": "getaddrinfo ENOTFOUND ot99-pg16.railway.internal"
+}

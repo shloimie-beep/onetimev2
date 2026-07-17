@@ -1,0 +1,34 @@
+{
+  "schema_version": "onetime.w12_100.readiness_sublane_result.v1",
+  "generated_at": "2026-07-17T21:04:21.7491571+03:00",
+  "provider": "buffer",
+  "status": "blocked",
+  "result_code": "BLOCKED_BUFFER_ACCOUNT_NOT_CONNECTED",
+  "checks": {
+    "protected_account_present": false,
+    "destination_mapping_present": false,
+    "read_only_canary_ran": true,
+    "provider_draft_creation": "not_attempted",
+    "schedule_post": "not_attempted",
+    "publish_post": "not_attempted"
+  },
+  "budget": {
+    "provider_drafts_allowed": 0,
+    "scheduled_posts_allowed": 0,
+    "published_posts_allowed": 0,
+    "provider_drafts_created": 0,
+    "posts_scheduled": 0,
+    "posts_published": 0
+  },
+  "safety": {
+    "provider_network_calls": 0,
+    "external_mutations": 0,
+    "tokens_printed": false,
+    "destination_ids_printed": false
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/local-evidence/buffer-readiness-canaries.json",
+    "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
+    "ops/director/CAPABILITY-MATRIX.json"
+  ]
+}

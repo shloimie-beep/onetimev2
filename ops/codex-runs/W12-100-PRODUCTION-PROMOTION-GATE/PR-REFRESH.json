@@ -1,0 +1,53 @@
+{
+  "schema_version": "onetime.w12_100.production_gate.pr_refresh.v1",
+  "generated_at": "2026-07-17T21:13:56.1513221+03:00",
+  "prs": [
+    {
+      "number": 73,
+      "title": "W12-99 final semantic convergence",
+      "url": "https://github.com/webcraft-media/onetimev2/pull/73",
+      "state": "OPEN",
+      "is_draft": true,
+      "base_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
+      "base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+      "head_ref": "integration/w12-final-convergence-20260717T123715Z",
+      "head_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "mergeable": "MERGEABLE",
+      "merge_state_status": "CLEAN",
+      "review_decision": "",
+      "review_threads_total": 0,
+      "unresolved_review_threads": 0,
+      "checks": [
+        "Node 24 verify: SUCCESS",
+        "OPS-06 deterministic checks: SUCCESS",
+        "PostgreSQL 18 assurance and restore clone: SUCCESS",
+        "PostgreSQL 16 assurance harness: SUCCESS",
+        "PostgreSQL 16 learner-seat proof: SUCCESS"
+      ]
+    },
+    {
+      "number": 89,
+      "title": "W12-100 launch readiness convergence",
+      "url": "https://github.com/webcraft-media/onetimev2/pull/89",
+      "state": "OPEN",
+      "is_draft": true,
+      "base_ref": "integration/w12-final-convergence-20260717T123715Z",
+      "base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "head_ref": "integration/w12-100-launch-readiness-convergence-20260717",
+      "head_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+      "mergeable": "MERGEABLE",
+      "merge_state_status": "CLEAN",
+      "review_decision": "",
+      "review_threads_total": 0,
+      "unresolved_review_threads": 0,
+      "checks": [
+        "Node 24 verify: SUCCESS",
+        "OPS-06 deterministic checks: SUCCESS",
+        "PostgreSQL 18 assurance and restore clone: SUCCESS",
+        "PostgreSQL 16 assurance harness: SUCCESS"
+      ]
+    }
+  ],
+  "canonical_topology": "PR #89 head ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c on PR #73 head 0d8d7168f066668f035176d777bdaaa4dcc5accd on release base c7d46066517d7a458d189f2c782cc06200f7861c.",
+  "do_not_merge_individual_feature_prs": true
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "onetime.w12_100.buffer_bna_readiness_state.v1",
+  "generated_at": "2026-07-17T21:04:21.7491571+03:00",
+  "status": "completed_readiness_only",
+  "results": [
+    {
+      "provider": "buffer",
+      "status": "blocked",
+      "result_code": "BLOCKED_BUFFER_ACCOUNT_NOT_CONNECTED",
+      "result_path": "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/BUFFER-RESULT.json"
+    },
+    {
+      "provider": "bna_support_bridge",
+      "status": "blocked_real_receiver_not_accepted_with_local_contract_passed",
+      "result_code": "BLOCKED_BNA_RECEIVER_NOT_ACCEPTED",
+      "result_path": "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/BNA-RESULT.json"
+    }
+  ],
+  "commands": [
+    {
+      "command": "node bin/ot86-buffer-canary --mode read-only --json",
+      "status": "unconfigured_no_writes"
+    },
+    {
+      "command": "node bin/ot106-buffer-canary --mode read-only --json",
+      "status": "unconfigured_no_writes"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/support/ot89a-contract.test.ts tests/unit/support/ot89a-config.test.ts tests/unit/providers/ops05-provider-control-center.test.ts",
+      "status": "passed"
+    },
+    {
+      "command": "inline tsx single local mock BNA event",
+      "status": "passed"
+    },
+    {
+      "command": "inline tsx scoped BNA payload validation",
+      "status": "passed"
+    }
+  ],
+  "safety": {
+    "external_mutations": 0,
+    "provider_mutations": 0,
+    "buffer_provider_drafts": 0,
+    "buffer_scheduled_posts": 0,
+    "buffer_published_posts": 0,
+    "live_bna_endpoint_calls": 0,
+    "local_mock_bna_events": 1,
+    "attachments": 0,
+    "secrets_or_private_values_printed": false
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/BUFFER-REPORT.md",
+    "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/BNA-REPORT.md",
+    "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/local-evidence/buffer-readiness-canaries.json",
+    "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/local-evidence/bna-contract-tests.json",
+    "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/local-evidence/bna-single-mock-event.json",
+    "ops/codex-runs/W12-100-BUFFER-BNA-READINESS/local-evidence/bna-scoped-payload-validation.json"
+  ]
+}

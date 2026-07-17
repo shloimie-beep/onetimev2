@@ -1,0 +1,70 @@
+{
+  "schema_version": "onetime.w12_100.staging_runtime_metadata.v1",
+  "generated_at": "2026-07-17T17:30:15.563Z",
+  "worker_count": 5,
+  "workers": [
+    {
+      "worker_type": "delivery_outbox",
+      "state": "ready",
+      "version": "ops11-1197673",
+      "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "heartbeat_age_ms": 11975,
+      "lease_remaining_ms": 78025
+    },
+    {
+      "worker_type": "delivery_outbox",
+      "state": "ready",
+      "version": "ops10-d13e9cd",
+      "commit_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+      "heartbeat_age_ms": 33641503,
+      "lease_remaining_ms": -33551503
+    },
+    {
+      "worker_type": "delivery_outbox",
+      "state": "ready",
+      "version": "ops11-1197673",
+      "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "heartbeat_age_ms": 33755686,
+      "lease_remaining_ms": -33665686
+    },
+    {
+      "worker_type": "delivery_outbox",
+      "state": "ready",
+      "version": "ops11-1197673",
+      "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+      "heartbeat_age_ms": 34029503,
+      "lease_remaining_ms": -33939503
+    },
+    {
+      "worker_type": "delivery_outbox",
+      "state": "ready",
+      "version": "ops10-d13e9cd",
+      "commit_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
+      "heartbeat_age_ms": 34117995,
+      "lease_remaining_ms": -34027995
+    }
+  ],
+  "queues": [
+    {
+      "queue": "delivery_outbox",
+      "ready_count": 0,
+      "dead_letter_count": 0,
+      "retry_count": 0
+    },
+    {
+      "queue": "support_outbox",
+      "ready_count": null,
+      "dead_letter_count": null,
+      "retry_count": null
+    },
+    {
+      "queue": "account_lifecycle_outbox",
+      "ready_count": 0,
+      "dead_letter_count": 0,
+      "retry_count": 0
+    }
+  ],
+  "database_mutation_performed": false,
+  "raw_source_rows_included": false,
+  "private_values_recorded": false
+}
