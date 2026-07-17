@@ -4,8 +4,8 @@
   "base_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
   "base_branch": "integration/w12-final-convergence-20260717T123715Z",
   "worktree": "C:/Users/User/.w12-100-20260717-worktrees/W12-100-01",
-  "status": "local_audit_complete_pending_commit_push_pr",
-  "draft_pr_url": null,
+  "status": "pushed_draft_pr_open",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/81",
   "safety_counts": {
     "external_actions": 0,
     "production_mutations": 0,
@@ -137,8 +137,8 @@
     },
     {
       "id": "push_branch_and_open_draft_pr",
-      "status": "needs_operator_decision",
-      "evidence": "Local lane packet prepared. Draft PR URL will be recorded after final gates, commit, and push."
+      "status": "done",
+      "evidence": "Branch pushed to origin and draft PR opened: https://github.com/webcraft-media/onetimev2/pull/81."
     }
   ],
   "changed_files": [

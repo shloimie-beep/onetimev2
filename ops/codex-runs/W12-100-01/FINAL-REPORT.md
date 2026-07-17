@@ -75,4 +75,4 @@ See `ops/codex-runs/W12-100-01/CHANGED-FILES.txt`.
 
 ## Draft PR
 
-Pending commit, push, and draft PR creation.
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/81

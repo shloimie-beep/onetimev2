@@ -19,6 +19,8 @@ Validation already completed:
 
 Remaining before closeout:
 
-- Stage only owned files, commit, confirm clean status, push branch, and open a draft PR against `integration/w12-final-convergence-20260717T123715Z`.
+- Confirm final clean status after recording the draft PR URL.
+
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/81
 
 Safety counts remain: external actions 0, production mutations 0, provider resource mutations 0, deployments 0, production database reads 0.
