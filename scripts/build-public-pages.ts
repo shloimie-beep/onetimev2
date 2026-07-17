@@ -23,6 +23,9 @@ const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
   ['/assets/students/smiley-kid.png', [337, 600]],
   ['/assets/outcomes/clarity-class.webp', [945, 2048]],
+  ['/assets/outcomes/retention-review-class-480.webp', [480, 1040]],
+  ['/assets/outcomes/retention-review-class-720.webp', [720, 1560]],
+  ['/assets/outcomes/retention-review-class-945.webp', [945, 2048]],
   ['/assets/outcomes/excitement-learning-torah.webp', [945, 2048]],
   ['/assets/outcomes/accomplishment-toronto-class.jpg', [1200, 745]],
   ['/assets/rabbi/rabbi-eli-holding-book.jpg', [1600, 1067]],
@@ -40,6 +43,15 @@ function mediaSizeAttributes(src: string) {
   const dimensions = imageDimensions.get(src);
   if (!dimensions) return '';
   return ` width="${dimensions[0]}" height="${dimensions[1]}"`;
+}
+
+function srcSetAttributes(srcset?: string, sizes?: string) {
+  if (!srcset) return '';
+  return ` srcset="${escapeHtml(srcset)}"${sizes ? ` sizes="${escapeHtml(sizes)}"` : ''}`;
+}
+
+function fallbackImageSpan(label = 'Image unavailable') {
+  return `<span class="image-fallback" aria-hidden="true">${escapeHtml(label)}</span>`;
 }
 
 function pageShell(
@@ -88,6 +100,8 @@ function landingPage() {
     .map((card) => {
       const visualCard: {
         image: string | null;
+        srcset?: string;
+        sizes?: string;
         alt: string;
         assetBlocker: string | null;
         visualTreatment?: string;
@@ -100,7 +114,7 @@ function landingPage() {
               <span class="review-card review-card-three"><b>3</b><em>Remember</em></span>
             </div>`
           : visualCard.image
-            ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}"${mediaSizeAttributes(visualCard.image)} loading="lazy" decoding="async">`
+            ? `<img src="${visualCard.image}" alt="${escapeHtml(visualCard.alt)}"${mediaSizeAttributes(visualCard.image)}${srcSetAttributes(visualCard.srcset, visualCard.sizes)} loading="lazy" decoding="async" data-image-watch>${fallbackImageSpan()}`
             : `<div class="asset-blocker" role="img" aria-label="${escapeHtml(visualCard.assetBlocker ?? 'Missing assigned asset')}">Missing approved asset</div>`;
       return `<article class="benefit-card" data-benefit="${escapeHtml(card.title)}">
         <div class="benefit-visual">${visual}</div>
@@ -125,7 +139,8 @@ function landingPage() {
         [title, src],
         index,
       ) => `<figure class="gallery-slide" data-gallery-slide data-gallery-index="${index}" ${index === 0 ? 'data-active="true"' : 'aria-hidden="true"'} tabindex="${index === 0 ? '0' : '-1'}">
-        <img src="${src}" alt="${escapeHtml(title)}"${mediaSizeAttributes(src)} loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async">
+        <img src="${src}" alt="${escapeHtml(title)}"${mediaSizeAttributes(src)} loading="${index === 0 ? 'eager' : 'lazy'}" decoding="async" data-image-watch>
+        ${fallbackImageSpan('Photo unavailable')}
         <figcaption>${escapeHtml(title)}</figcaption>
       </figure>`,
     )
@@ -142,21 +157,49 @@ function landingPage() {
         `<span><img src="${src}" alt="${escapeHtml(label)}" loading="lazy" decoding="async"></span>`,
     )
     .join('');
+  const gallerySection = `<section class="section gallery-section" id="world">
+    <div class="gallery" data-gallery role="region" aria-roledescription="carousel" aria-label="${escapeHtml(landingContent.gallery.heading)}">
+      <h2 id="gallery-heading">${escapeHtml(landingContent.gallery.heading)}</h2>
+      <div class="gallery-viewport" data-gallery-viewport aria-labelledby="gallery-heading">
+        <div class="gallery-track" data-gallery-track>${slides}</div>
+      </div>
+      <p class="sr-only" aria-live="polite" data-gallery-status>Showing ${escapeHtml(landingContent.gallery.slides[0][0])}</p>
+      <div class="gallery-controls">
+        <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
+        <div>${dots}</div>
+        <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
+      </div>
+    </div>
+    <div class="press-strip" aria-label="Torah media and publication logos"><p>Torah media and publication mentions</p><div>${press}</div></div>
+  </section>`;
+  const assistant = landingContent.whatsappAssistant;
+  const whatsappAssistant = `<aside class="whatsapp-assistant" data-whatsapp-assistant data-state="${escapeHtml(assistant.state)}">
+    <button class="whatsapp-assistant-button" type="button" data-whatsapp-toggle aria-expanded="false" aria-controls="whatsapp-assistant-panel">
+      <span aria-hidden="true">WA</span><span class="sr-only">${escapeHtml(assistant.buttonLabel)}</span>
+    </button>
+    <div class="whatsapp-assistant-panel" id="whatsapp-assistant-panel" data-whatsapp-panel hidden>
+      <button class="whatsapp-assistant-close" type="button" data-whatsapp-close aria-label="${escapeHtml(assistant.dismissLabel)}">x</button>
+      <p class="whatsapp-assistant-state">${escapeHtml(assistant.state === 'offline' ? 'Offline readiness' : 'Available')}</p>
+      <h2>${escapeHtml(assistant.heading)}</h2>
+      <p>${escapeHtml(assistant.body)}</p>
+      <a class="button button-primary" href="${escapeHtml(assistant.ctaHref)}">${escapeHtml(assistant.ctaLabel)}</a>
+    </div>
+  </aside>`;
 
   return pageShell(
     landingContent.seo.title,
-    `${ticker()}${header()}
+    `${header()}
 <main>
   <section class="hero">
     <div class="hero-inner">
       <p class="kicker">${landingContent.hero.kickerLines.map((line) => `<span>${escapeHtml(line)}</span>`).join('')}</p>
       <h1>${escapeHtml(landingContent.hero.heading)}</h1>
-      <p class="schedule">${escapeHtml(landingContent.hero.schedule)}</p>
       <a class="button button-primary hero-cta" href="/signup">Sign Up Now</a>
     </div>
   </section>
   <section class="section receive" id="receive">
     <h2 class="receive-heading">${escapeHtml(landingContent.receive.heading)}</h2>
+    <p class="receive-detail">${escapeHtml(landingContent.receive.detailLine)}</p>
     <div class="receive-image"><img src="/assets/students/smiley-kid.png" alt="Smiling One Time Mishnayos student" width="337" height="600"></div>
     <div class="feature-panel">
       <div class="feature-icon" aria-hidden="true">7</div>
@@ -175,6 +218,7 @@ function landingPage() {
     <p>${escapeHtml(landingContent.how.body)}</p>
     <ol>${steps}</ol>
   </section>
+  ${gallerySection}
   <section class="section who" id="who">
     <div>
       <h2>${escapeHtml(landingContent.who.heading)}</h2>
@@ -190,22 +234,9 @@ function landingPage() {
       </div>
       <img src="/assets/rabbi/rabbi-eli-holding-book.jpg" alt="Rabbi Eli Scheller holding the One Time book"${mediaSizeAttributes('/assets/rabbi/rabbi-eli-holding-book.jpg')} loading="lazy" decoding="async">
     </div>
-    <div class="gallery" data-gallery role="region" aria-roledescription="carousel" aria-label="${escapeHtml(landingContent.gallery.heading)}">
-      <h3 id="gallery-heading">${escapeHtml(landingContent.gallery.heading)}</h3>
-      <div class="gallery-viewport" data-gallery-viewport aria-labelledby="gallery-heading">
-        <div class="gallery-track" data-gallery-track>${slides}</div>
-      </div>
-      <p class="sr-only" aria-live="polite" data-gallery-status>Showing ${escapeHtml(landingContent.gallery.slides[0][0])}</p>
-      <div class="gallery-controls">
-        <button type="button" data-gallery-prev aria-label="Previous teaching photo">&lt;</button>
-        <div>${dots}</div>
-        <button type="button" data-gallery-next aria-label="Next teaching photo">&gt;</button>
-      </div>
-    </div>
-    <div class="press-strip" aria-label="Torah media and publication logos"><p>Torah media and publication mentions</p><div>${press}</div></div>
   </section>
   <section class="final-cta"><h2>${escapeHtml(landingContent.finalCta.heading)}</h2><a class="button button-primary" href="/signup">Sign Up Now</a></section>
-</main>${footer()}`,
+</main>${whatsappAssistant}${ticker()}${footer()}`,
   );
 }
 
