@@ -1,0 +1,7 @@
+ops/codex-runs/W12-100-07/CHANGED-FILES.txt
+ops/codex-runs/W12-100-07/FINAL-REPORT.md
+ops/codex-runs/W12-100-07/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-07/RESUME.md
+ops/codex-runs/W12-100-07/STATE.json
+packages/domain/src/content/vimeo-private-runtime.ts
+tests/unit/providers/w12-100-provider-protocol-fakes.test.ts
