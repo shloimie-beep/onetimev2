@@ -1,0 +1,16 @@
+{
+  "run_id": "W12-04",
+  "shared_hotspots_touched": [],
+  "notes": [
+    "No root package, lockfile, server composition, root exports, shared nav, shared design tokens, migration numbering, or CI workflow edits were made.",
+    "Touched files are scoped to Content workspace contracts, domain projection, UI, focused integration tests, and this W12-04 evidence folder."
+  ],
+  "files": [
+    "apps/web/src/client/app/content-workspace/ContentWorkspace.tsx",
+    "apps/web/src/client/app/content-workspace/content-workspace.css",
+    "packages/contracts/src/content/admin-workspace.ts",
+    "packages/domain/src/content/admin-workspace.ts",
+    "tests/integration/content/ot110a-admin-content-workspace.test.ts",
+    "ops/codex-runs/W12-04/*"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "run_id": "W12-04",
+  "status": "draft_pr_open",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.w12-20260717-worktrees\\W12-04",
+  "branch": "codex/w12-04-content-vimeo-classroom",
+  "base_branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+  "base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
+  "implementation_commit": "2d2877a4047443d2f5fcd6d9f89e1678a36164f4",
+  "provider_credentials_available": false,
+  "provider_off_path_completed": true,
+  "production_publication": false,
+  "production_deploy": false,
+  "real_vimeo_mutation": false,
+  "buffer_live_publish": false,
+  "broad_provider_read": false,
+  "secrets_committed": false,
+  "checks": {
+    "focused_integration": "passed",
+    "typecheck": "passed",
+    "touched_file_prettier": "passed",
+    "brand_check": "passed",
+    "secret_scan": "passed",
+    "lint": "passed",
+    "repo_format": "baseline_failed_preexisting"
+  },
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/64"
+}
