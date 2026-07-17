@@ -3,6 +3,7 @@
 Branch: codex/w13-10-complete-launch-foundations
 Base: 0d8d7168f066668f035176d777bdaaa4dcc5accd
 Worktree: C:/Users/User/OneTimeOneTime-w13-10-launch-foundations
+Draft PR: https://github.com/webcraft-media/onetimev2/pull/88
 
 Implemented:
 
@@ -82,4 +83,4 @@ Changed files:
 - tests/unit/w13-10/deploy-guard.test.ts
 - tests/unit/w13-10/legal-consent.test.ts
 
-Resume by running validation from package.json, refreshing PR #73/#72/#71 and W13 branch snapshots, then commit/push/open a draft PR. Do not deploy, import real data, enable providers, send, charge, upload, post, create meetings, mutate DNS, or read production private rows.
+Resume by monitoring draft PR checks and reviewing the W13-10 records. Do not deploy, import real data, enable providers, send, charge, upload, post, create meetings, mutate DNS, or read production private rows without explicit release authorization.
