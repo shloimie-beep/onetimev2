@@ -201,6 +201,30 @@
       "path": "/api/v1/portals/student/classes/:classKey/launch",
       "source_files": ["apps/web/src/server/features/portals/routers.ts"],
       "source_patterns": ["'/classes/:classKey/launch'"]
+    },
+    {
+      "id": "portal_test_lab_shell",
+      "method": "GET",
+      "path": "/app/portal-test-lab",
+      "source_files": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/server/features/portal-test-lab/router.ts"
+      ],
+      "source_patterns": ["registerPortalTestLabRoutes", "W12_PORTAL_TEST_LAB_ROUTE"]
+    },
+    {
+      "id": "portal_test_lab_reseed",
+      "method": "POST",
+      "path": "/app/portal-test-lab/reseed",
+      "source_files": ["apps/web/src/server/features/portal-test-lab/router.ts"],
+      "source_patterns": ["W12_PORTAL_TEST_LAB_ROUTE}/reseed", "seedPortalTestLab"]
+    },
+    {
+      "id": "portal_test_lab_reset",
+      "method": "POST",
+      "path": "/app/portal-test-lab/reset",
+      "source_files": ["apps/web/src/server/features/portal-test-lab/router.ts"],
+      "source_patterns": ["W12_PORTAL_TEST_LAB_ROUTE}/reset", "resetPortalTestLab"]
     }
   ],
   "commands": {

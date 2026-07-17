@@ -1549,6 +1549,136 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+    },
+    {
+      "action_id": "portal_test_lab.view.route",
+      "label": "Portal Test Lab",
+      "surface": "route",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/portal-test-lab"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "portal_test_lab_read"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "test_only",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/portals/portal-test-lab.test.ts",
+        "tests/e2e/w12-03-portal-test-lab.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal_test_lab.reseed.form",
+      "label": "Re-seed test lab",
+      "surface": "form",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:seed",
+      "handler": {
+        "method": "POST",
+        "path": "/app/portal-test-lab/reseed"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_fixture_write",
+        "event": "portal_test_lab_reseeded"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "memory_test_fixture",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/portals/portal-test-lab.test.ts"]
+    },
+    {
+      "action_id": "portal_test_lab.reset.form",
+      "label": "Reset lab state",
+      "surface": "form",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:reset",
+      "handler": {
+        "method": "POST",
+        "path": "/app/portal-test-lab/reset"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_fixture_write",
+        "event": "portal_test_lab_reset"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "memory_test_fixture",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/portals/portal-test-lab.test.ts",
+        "tests/e2e/w12-03-portal-test-lab.spec.ts"
+      ]
+    },
+    {
+      "action_id": "portal_test_lab.login_link.button",
+      "label": "Login page",
+      "surface": "button",
+      "route": "/app/portal-test-lab",
+      "roles": ["owner", "admin"],
+      "capability": "portal-test-lab:read",
+      "handler": {
+        "method": "GET",
+        "path": "/login?return_to=:portalRoute"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "portal_test_lab_login_link_open"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/w12-03-portal-test-lab.spec.ts"]
     }
   ]
 }
