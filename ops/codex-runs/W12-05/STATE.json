@@ -12,7 +12,7 @@
     "Backed delivery status and delivery retry by scoped SQL application data with redacted output.",
     "Required delivery.retry to use preview/confirm, idempotency, actor/capability authorization, command execution audit, lifecycle audit, and approved metadata.",
     "Moved Telegram readiness to protected boolean config flags instead of raw token inspection.",
-    "Added migration 2200_w12_05_telegram_operations.sql for Telegram capability constraints.",
+    "Added migration 2202_w12_05_telegram_operations.sql for Telegram capability constraints.",
     "Added focused unit and SQL-backed integration tests."
   ],
   "activation_pending": [

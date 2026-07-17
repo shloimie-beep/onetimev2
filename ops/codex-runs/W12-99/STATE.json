@@ -1,0 +1,182 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-99",
+  "title": "Final semantic convergence",
+  "status": "validated_pending_commit_push_pr",
+  "generated_at": "2026-07-17T15:56:23+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\OneTimeOneTime-w12-99-semantic-convergence",
+  "branch": "integration/w12-final-convergence-20260717T123715Z",
+  "base_release": {
+    "pr": 61,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
+    "head": "c7d46066517d7a458d189f2c782cc06200f7861c",
+    "state": "OPEN",
+    "draft": true,
+    "mergeable": "MERGEABLE",
+    "checks": "green"
+  },
+  "production_runtime_readback": {
+    "url": "https://join.onetimeonetime.com/version",
+    "version": "ops11-1197673",
+    "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+    "target_app": "one-time",
+    "read_at": "2026-07-17T15:56:23+03:00"
+  },
+  "integration_heads": {
+    "pre_closeout_merge_head": "f4d3ea9d150633067b7618b50e81deb16aa47292",
+    "final_commit_sha": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+    "pushed_branch": null,
+    "draft_pr": null
+  },
+  "included_lanes": [
+    {
+      "lane": "W12-00",
+      "branch": "codex/w12-00-canonical-director-handoff",
+      "head": "d22b68381f53686efb0badcce159f966e3167fe2",
+      "pr": 63,
+      "status": "included",
+      "notes": "Canonical director handoff."
+    },
+    {
+      "lane": "W12-07",
+      "branch": "codex/w12-07-premium-landing",
+      "head": "7d1196b03cfdb6828b376486c196a43b7ab9df32",
+      "pr": 69,
+      "status": "included_with_integrated_green_proof",
+      "notes": "Branch-local Node 24 verify was failing, but W12-99 integrated candidate passed full local gates."
+    },
+    {
+      "lane": "W12-08",
+      "branch": "codex/w12-08-admin-classroom-productization",
+      "head": "4c29c6c665f9094f1d83f332c40316e0d2bce18f",
+      "pr": 67,
+      "status": "included",
+      "notes": "Admin classroom productization."
+    },
+    {
+      "lane": "W12-01",
+      "branch": "codex/w12-01-crm-audience-import",
+      "head": "f31316dcb55a53b3ab4f77e7dc79988f2c988dfe",
+      "pr": 68,
+      "status": "included",
+      "notes": "Counts-only/synthetic import tooling; no real import applied."
+    },
+    {
+      "lane": "W12-02",
+      "branch": "codex/w12-02-communication-history",
+      "head": "5c412373b3a317f1197ab50dffcf5352c2f97a2e",
+      "pr": 66,
+      "status": "included",
+      "notes": "Communication history."
+    },
+    {
+      "lane": "W12-03",
+      "branch": "codex/w12-03-portal-test-lab",
+      "head": "5bed730705f92a07647bd6eb3672952a47a4a075",
+      "pr": 70,
+      "status": "included_with_integrated_green_proof",
+      "notes": "Branch-local Node 24 verify was failing, but W12-99 integrated candidate passed full local gates."
+    },
+    {
+      "lane": "W12-04",
+      "branch": "codex/w12-04-content-vimeo-classroom",
+      "head": "373f6d55f6a636922d08b994b5dee28ff7bf6aa9",
+      "pr": 64,
+      "status": "included",
+      "notes": "Content/Vimeo/classroom vertical slice with provider-off defaults."
+    },
+    {
+      "lane": "W12-05",
+      "branch": "codex/w12-05-telegram-operations",
+      "head": "fcdfcd3a93b2174d62298099ebefa39ac2e7c34d",
+      "pr": 65,
+      "status": "included_with_migration_renumber",
+      "notes": "Telegram migration was renumbered from 2200 to 2202 to resolve duplicate prefix."
+    },
+    {
+      "lane": "W12-06",
+      "branch": "codex/w12-06-whatsapp-lead-assistant",
+      "head": "fbc5c2f7304fec23d41e44e3f141f9b6abbade9f",
+      "pr": 62,
+      "status": "included",
+      "notes": "WhatsApp public lead assistant; no real sends or provider mutation."
+    }
+  ],
+  "excluded_or_not_integrated": [
+    {
+      "lane": "W12-09",
+      "branch": "codex/w12-09-student-gamification",
+      "head": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+      "pr": 71,
+      "reason": "Explicitly excluded by W12-99 scope clarification; created after original W12 package."
+    },
+    {
+      "lane": "BNA P1/P2/P3",
+      "reason": "Explicitly excluded; belongs to separate BNA convergence train and was not merged into One Time."
+    },
+    {
+      "lane": "OPS-13A",
+      "reason": "Wrong prompt for this thread; no usable preflight artifact was produced and no OPS-13A work was integrated."
+    }
+  ],
+  "reconciliations": [
+    "Renamed W12-05 migration 2200_w12_05_telegram_operations.sql to 2202_w12_05_telegram_operations.sql and updated W12-05 run artifacts.",
+    "Removed public-bundle sessionStorage usage from the WhatsApp assistant launcher and kept dismissal state in memory.",
+    "Aligned support E2E/accessibility login helpers with existing waitForURL pattern to remove a login redirect race."
+  ],
+  "validation": [
+    { "command": "npm ci", "status": "passed" },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1296 repo text files after W12-99 artifacts."
+    },
+    { "command": "npm run brand:check", "status": "passed" },
+    { "command": "npm run lint", "status": "passed" },
+    { "command": "npm run typecheck", "status": "passed" },
+    { "command": "npm run unit", "status": "passed", "details": "38 files, 196 tests." },
+    { "command": "npm run integration", "status": "passed", "details": "38 files, 184 tests." },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Vite font URL warning only; build completed."
+    },
+    { "command": "npm run e2e", "status": "passed", "details": "38 tests." },
+    { "command": "npm run accessibility", "status": "passed", "details": "13 tests." },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "details": "7 tests plus bundle budget output."
+    },
+    {
+      "command": "duplicate migration prefix check",
+      "status": "passed",
+      "details": "No duplicate numeric migration prefixes."
+    },
+    {
+      "command": "scoped prettier",
+      "status": "passed",
+      "details": "All W12-99 touched files use Prettier style."
+    },
+    {
+      "command": "npm run format",
+      "status": "not_green",
+      "details": "Repo-wide Prettier remains blocked by inherited baseline/Windows materialization; no mass-formatting performed."
+    }
+  ],
+  "staging": {
+    "deploy_performed": false,
+    "reason": "Railway CLI was not linked in this worktree. No isolated staging IDs were guessed or mutated during W12-99.",
+    "railway_status": "No linked project found."
+  },
+  "safety": {
+    "production_deploy_performed": false,
+    "production_data_mutation_performed": false,
+    "provider_mutation_performed": false,
+    "real_customer_import_performed": false,
+    "broad_send_performed": false,
+    "credentials_or_private_rows_printed": false
+  }
+}

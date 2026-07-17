@@ -14,7 +14,10 @@
   "source_ref": {
     "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
     "deployed_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61"
+    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "w12_99_candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
+    "w12_99_candidate_head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+    "w12_99_evidence": "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json"
   },
   "capabilities": [
     {

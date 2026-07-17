@@ -84,9 +84,9 @@
       "lane": "W12-99",
       "title": "Semantic convergence",
       "owner_scope": "shared hotspots and release proof",
-      "branch": "not_started",
-      "status": "blocked_until_feature_prs_and_release_lane_complete",
-      "notes": "Run last; owns shared file reconciliation and staging verification."
+      "branch": "integration/w12-final-convergence-20260717T123715Z",
+      "status": "validated_pending_commit_push_pr",
+      "notes": "Includes W12-00 through W12-08. Excludes W12-09, OPS-13A, and BNA P1/P2/P3. Staging deploy, real import, and provider canaries remain W12-100 work."
     }
   ],
   "convergence_order": [

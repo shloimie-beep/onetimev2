@@ -1,0 +1,101 @@
+{
+  "schema_version": "onetime.w12_99.import_preview.v1",
+  "generated_at": "2026-07-17T15:56:23+03:00",
+  "real_import_preview_status": "not_produced",
+  "ops_13a_preflight_usable": false,
+  "ops_13a_note": "OPS-13A was supplied to this thread by mistake and was explicitly withdrawn. No usable real-data/provider preflight was produced in this W12-99 run.",
+  "real_customer_import_applied": false,
+  "production_database_read": false,
+  "production_database_write": false,
+  "raw_contact_rows_included": false,
+  "synthetic_w12_01_preview": {
+    "source": "ops/codex-runs/W12-01/SYNTHETIC-DRY-RUN-REPORT.json",
+    "batch_key": "legacy_batch_c7e56cd889e1c8afb40412cd",
+    "source_digest": "9f9a71346fa6cf8a4d1176fb3f68e0643f43e138b92cb1b1a998e47fb68034c5",
+    "total_rows": 3,
+    "unique_rows": 3,
+    "duplicate_rows": 0,
+    "matched_existing_contacts": 1,
+    "staged_new_contacts": 1,
+    "manual_review_rows": 1,
+    "do_not_contact_rows": 1,
+    "migration_invite_eligible_rows": 1,
+    "raw_row_contents_included": false,
+    "production_side_effects": false
+  },
+  "w12_01_sanitized_inventory": {
+    "source": "ops/codex-runs/W12-01/FINAL-REPORT.md",
+    "files_inventoried": 33,
+    "proven_one_time": 1,
+    "mixed_needs_review": 26,
+    "unrelated": 1,
+    "duplicate": 5,
+    "possible_pii_columns_detected": 31,
+    "raw_row_values_included": false,
+    "production_side_effects": false
+  },
+  "crm_field_map": [
+    {
+      "source_concept": "contact person",
+      "target": "contact_person taxonomy fact and CRM contact identity"
+    },
+    {
+      "source_concept": "family/school classification",
+      "target": "family_lead or school follow-up segment"
+    },
+    {
+      "source_concept": "household",
+      "target": "household taxonomy fact and household reconciliation candidate"
+    },
+    {
+      "source_concept": "guardian/learner",
+      "target": "guardian/learner taxonomy facts when source supports it"
+    },
+    { "source_concept": "legacy active user", "target": "active_legacy_user segment" },
+    {
+      "source_concept": "new-system activation",
+      "target": "already_activated exclusion or migration invite eligibility"
+    },
+    {
+      "source_concept": "consent",
+      "target": "consent_opted_in, consent_opted_out, or consent_unknown fact"
+    },
+    {
+      "source_concept": "suppression",
+      "target": "do_not_send/suppressed fact and do_not_contact segment"
+    },
+    { "source_concept": "provenance", "target": "import_source_batch and source_provenance facts" }
+  ],
+  "tagging_map": [
+    "active_legacy_user",
+    "campaign_candidate",
+    "migration_invite_eligible",
+    "manual_review",
+    "do_not_contact",
+    "do_not_send",
+    "suppressed",
+    "source_provenance",
+    "import_source_batch"
+  ],
+  "manual_review_categories": [
+    "missing_identity",
+    "no_name_only_match",
+    "conflicting household evidence",
+    "ambiguous duplicate identity",
+    "mixed or unproven source ownership",
+    "consent/suppression conflict"
+  ],
+  "consent_suppression_precedence": [
+    "Suppression blocks outreach even when a row otherwise matches an active legacy user.",
+    "Explicit opt-out blocks campaign eligibility.",
+    "Unknown consent is not treated as opted in.",
+    "Do-not-contact/manual-review rows are counts-only until operator approval."
+  ],
+  "w12_100_required_for_real_import": [
+    "Run the real-source inventory/preflight against explicitly selected One Time/Rabbi sources.",
+    "Record sanitized filenames, hashes, columns, counts, source ownership, and readiness without row values.",
+    "Produce exact real counts for create/update/no-op/conflict/suppression/tag buckets.",
+    "Approve an exact manifest hash/count set before any apply mode.",
+    "Run idempotent bounded apply only after separate explicit authorization and then reconcile counts."
+  ]
+}

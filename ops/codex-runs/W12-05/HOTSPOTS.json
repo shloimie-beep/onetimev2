@@ -2,7 +2,7 @@
   "lane": "W12-05",
   "hotspots": [
     {
-      "path": "packages/db/migrations/2200_w12_05_telegram_operations.sql",
+      "path": "packages/db/migrations/2202_w12_05_telegram_operations.sql",
       "reason": "New forward-only migration number is provisional in the parallel W12 wave and must be reconciled by W12-99 if another lane claims the same slot.",
       "owner": "W12-99 convergence"
     },

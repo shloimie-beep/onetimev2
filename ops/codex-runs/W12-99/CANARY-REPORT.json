@@ -1,0 +1,65 @@
+{
+  "schema_version": "onetime.w12_99.canary_report.v1",
+  "generated_at": "2026-07-17T15:56:23+03:00",
+  "bounded_provider_canaries_run": false,
+  "production_provider_mutation_performed": false,
+  "staging_provider_mutation_performed": false,
+  "broad_send_performed": false,
+  "credentials_printed": false,
+  "canaries": [
+    {
+      "provider": "Zoom",
+      "status": "not_run_real_provider",
+      "local_proof": "Mocked Zoom classroom E2E/performance/a11y passed.",
+      "w12_100_requirement": "Run one real staging Zoom meeting with controlled registrants only after exact meeting/account approval."
+    },
+    {
+      "provider": "Vimeo",
+      "status": "not_run_real_provider",
+      "local_proof": "Content/Vimeo provider seams integrated provider-off.",
+      "w12_100_requirement": "Use one owned Vimeo test video and verify protected playback/readiness without exposing private links."
+    },
+    {
+      "provider": "Stripe test mode",
+      "status": "not_run_live_provider",
+      "local_proof": "Stripe test billing integration canary tests passed locally.",
+      "w12_100_requirement": "Run controlled test-mode checkout/webhooks against approved test product/price only."
+    },
+    {
+      "provider": "Email activation/reset",
+      "status": "not_sent_by_w12_99",
+      "local_proof": "Account lifecycle unit/integration/E2E passed; OPS-11 previously sent one protected production admin activation email.",
+      "w12_100_requirement": "Run controlled activation/reset sends only to allowlisted operator-owned destinations."
+    },
+    {
+      "provider": "Telegram",
+      "status": "not_run_real_provider",
+      "local_proof": "Telegram operations branch integrated; provider remains default-off/not configured.",
+      "w12_100_requirement": "Run allowlisted private Telegram recipient canary after bot/operator mapping readiness."
+    },
+    {
+      "provider": "WhatsApp",
+      "status": "not_run_real_provider",
+      "local_proof": "Public assistant contract integrated; no live Meta send or webhook registration mutation.",
+      "w12_100_requirement": "Run allowlisted WhatsApp recipient canary only after provider readiness and consent proof."
+    },
+    {
+      "provider": "OpenAI/helper",
+      "status": "not_run_external_provider",
+      "local_proof": "Student/helper-related tests passed where present; approved class-content helper remains provider-off.",
+      "w12_100_requirement": "Use approved class content only and record abstention/citation behavior without private data."
+    },
+    {
+      "provider": "Buffer",
+      "status": "blocked_account_not_connected",
+      "local_proof": "Social publishing remains provider-off.",
+      "w12_100_requirement": "Keep blocked until a Buffer account is connected and exact destination IDs are approved."
+    },
+    {
+      "provider": "BNA bridge",
+      "status": "excluded_from_w12_99",
+      "local_proof": "No BNA P1/P2/P3 work was merged into One Time.",
+      "w12_100_requirement": "Coordinate through the separate BNA convergence train before claiming provider acceptance."
+    }
+  ]
+}

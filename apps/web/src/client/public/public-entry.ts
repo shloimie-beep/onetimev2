@@ -153,7 +153,7 @@ if (whatsappAssistant) {
   const toggle = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-toggle]');
   const panel = whatsappAssistant.querySelector<HTMLElement>('[data-whatsapp-panel]');
   const close = whatsappAssistant.querySelector<HTMLButtonElement>('[data-whatsapp-close]');
-  const storageKey = 'one-time-whatsapp-assistant-dismissed';
+  let assistantDismissed = false;
   const setPanel = (open: boolean) => {
     if (!toggle || !panel) return;
     panel.hidden = !open;
@@ -161,12 +161,12 @@ if (whatsappAssistant) {
   };
   toggle?.addEventListener('click', () => setPanel(Boolean(panel?.hidden)));
   close?.addEventListener('click', () => {
-    sessionStorage.setItem(storageKey, 'true');
+    assistantDismissed = true;
     setPanel(false);
     toggle?.focus();
   });
   window.setTimeout(() => {
-    if (sessionStorage.getItem(storageKey) !== 'true') setPanel(true);
+    if (!assistantDismissed) setPanel(true);
   }, 6500);
 }
 

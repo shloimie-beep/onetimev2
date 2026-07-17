@@ -15,7 +15,7 @@ The branch extends the existing Telegram runtime instead of creating a second bo
 - `packages/domain/src/telegram/runtime.ts`
 - `packages/domain/src/content/admin-workspace.ts`
 - `packages/config/src/index.ts`
-- `packages/db/migrations/2200_w12_05_telegram_operations.sql`
+- `packages/db/migrations/2202_w12_05_telegram_operations.sql`
 - `tests/unit/telegram/telegram-foundation.test.ts`
 - `tests/integration/telegram-admin-runtime.test.ts`
 - `ops/codex-runs/W12-05/*`

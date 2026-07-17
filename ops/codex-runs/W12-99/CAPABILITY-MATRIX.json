@@ -1,0 +1,94 @@
+{
+  "schema_version": "onetime.w12_99.capability_matrix.v1",
+  "generated_at": "2026-07-17T15:56:23+03:00",
+  "candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
+  "candidate_head": "recorded_by_git_branch_and_draft_pr_head_after_commit",
+  "included_lanes": [
+    "W12-00",
+    "W12-01",
+    "W12-02",
+    "W12-03",
+    "W12-04",
+    "W12-05",
+    "W12-06",
+    "W12-07",
+    "W12-08"
+  ],
+  "excluded_lanes": ["W12-09", "OPS-13A", "BNA P1/P2/P3"],
+  "capabilities": [
+    {
+      "id": "public_landing_signup_whatsapp_launcher",
+      "status": "integrated_provider_off",
+      "lanes": ["W12-06", "W12-07"],
+      "evidence": ["npm run e2e", "npm run accessibility", "npm run performance"],
+      "notes": "Public assistant launcher uses in-memory dismissal only; no localStorage/sessionStorage in public bundle."
+    },
+    {
+      "id": "crm_audience_import_tooling",
+      "status": "integrated_counts_only",
+      "lanes": ["W12-01"],
+      "evidence": [
+        "npm run unit",
+        "npm run integration",
+        "ops/codex-runs/W12-99/IMPORT-PREVIEW.json"
+      ],
+      "notes": "Synthetic dry-run and sanitized inventory integrated; no real CRM import."
+    },
+    {
+      "id": "communications_history",
+      "status": "integrated_provider_off",
+      "lanes": ["W12-02"],
+      "evidence": ["tests/integration/communications/repository.test.ts", "npm run e2e"],
+      "notes": "Stored communication projections remain redacted/scoped."
+    },
+    {
+      "id": "portal_test_lab_identities",
+      "status": "integrated_test_only",
+      "lanes": ["W12-03"],
+      "evidence": ["tests/e2e/w12-03-portal-test-lab.spec.ts"],
+      "notes": "Separate synthetic identities verified; no admin impersonation claim."
+    },
+    {
+      "id": "content_vimeo_classroom",
+      "status": "integrated_provider_off",
+      "lanes": ["W12-04", "W12-08"],
+      "evidence": ["npm run unit", "npm run e2e"],
+      "notes": "Content/classroom/admin surfaces integrated; no real Vimeo/Zoom canary."
+    },
+    {
+      "id": "telegram_operations",
+      "status": "integrated_not_configured",
+      "lanes": ["W12-05"],
+      "evidence": ["npm run unit", "npm run integration"],
+      "notes": "Migration renumbered to 2202; no bot token or live send."
+    },
+    {
+      "id": "admin_dashboard_classroom_productization",
+      "status": "integrated",
+      "lanes": ["W12-08"],
+      "evidence": ["npm run e2e", "npm run accessibility"],
+      "notes": "One Time admin/classroom surfaces only; no BNA controls."
+    },
+    {
+      "id": "student_gamification",
+      "status": "excluded",
+      "lanes": ["W12-09"],
+      "evidence": [],
+      "notes": "Excluded by W12-99 scope clarification."
+    },
+    {
+      "id": "real_crm_import",
+      "status": "not_integrated",
+      "lanes": [],
+      "evidence": ["ops/codex-runs/W12-99/IMPORT-PREVIEW.json"],
+      "notes": "Requires W12-100 real-source preflight and explicit apply approval."
+    },
+    {
+      "id": "provider_acceptance",
+      "status": "not_integrated",
+      "lanes": [],
+      "evidence": ["ops/codex-runs/W12-99/CANARY-REPORT.json"],
+      "notes": "No real provider canaries were run by W12-99."
+    }
+  ]
+}
