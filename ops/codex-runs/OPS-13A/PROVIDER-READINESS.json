@@ -1,0 +1,270 @@
+{
+  "task_id": "OPS-13A",
+  "generated_at": "2026-07-17T12:47:11.1107723Z",
+  "status": "readiness_matrix_no_provider_mutations",
+  "privacy": {
+    "secret_values_included": false,
+    "credential_values_included": false,
+    "recipient_values_included": false,
+    "private_links_included": false,
+    "provider_payloads_included": false
+  },
+  "global_guardrails": [
+    "No deploy, import, send, meeting creation, video upload, provider mutation, production data mutation, live Stripe charge, DNS change, or account change was performed in OPS-13A.",
+    "All canaries require fresh dynamic state refresh before execution.",
+    "All real recipients must come from protected allowlists or protected runtime config and must never be printed.",
+    "All canaries must record only counts, digests, statuses, and redacted proof."
+  ],
+  "matrix": [
+    {
+      "provider": "Railway production",
+      "readiness_status": "live_login_ready_from_ops11",
+      "evidence": [
+        "/version returned ops11-1197673",
+        "/health and /ready returned 200",
+        "worker sink mode with provider default off"
+      ],
+      "required_before_ops13b": [
+        "refresh /version and /ready",
+        "confirm target source SHA",
+        "do not deploy without a separate deployment prompt"
+      ],
+      "mutations_performed_in_ops13a": 0
+    },
+    {
+      "provider": "PostgreSQL production database",
+      "readiness_status": "migration_and_backup_verified_read_only_for_ops13a",
+      "evidence": [
+        "PostgreSQL 18.4 retained",
+        "35 migrations applied and verified idempotent",
+        "OPS-11 native backup/restore proof passed"
+      ],
+      "required_before_ops13b": [
+        "confirm backup freshness or create new protected backup before any write",
+        "read only counts if authorized",
+        "never print database URLs or private rows"
+      ],
+      "mutations_performed_in_ops13a": 0
+    },
+    {
+      "provider": "Resend / controlled email",
+      "readiness_status": "controlled_activation_reset_ready_with_strict_gate",
+      "evidence": [
+        "/ready email_transport ok",
+        "OPS-11 recorded one controlled provider activation delivery with raw token and private destination omitted"
+      ],
+      "blocked_or_required_before_canary": [
+        "exact activation/reset purpose selected",
+        "recipient loaded only from protected owner/admin test config",
+        "provider mode approved for one canary",
+        "no bulk or customer segment send"
+      ],
+      "canary_budget": {
+        "activation_emails": 1,
+        "reset_emails": 1,
+        "broad_sends": 0,
+        "raw_tokens_or_links_logged": false
+      }
+    },
+    {
+      "provider": "WhatsApp / WAPI or Meta Cloud",
+      "readiness_status": "code_ready_provider_runtime_disabled_until_protected_canary_config",
+      "evidence": [
+        "OT-85 sink default",
+        "OT-100 Meta Graph v25.0 implementation verified locally",
+        "/ready whatsapp_transport disabled by runtime flag"
+      ],
+      "blocked_or_required_before_canary": [
+        "protected staging provider config",
+        "staging or approved canary environment",
+        "staging isolated flag true",
+        "exact allowlisted recipient",
+        "canary authorization true",
+        "canary budget row"
+      ],
+      "canary_budget": {
+        "allowlisted_recipients": 1,
+        "outbound_messages": 1,
+        "webhook_status_readbacks": "counts_only",
+        "message_body_logged": false
+      }
+    },
+    {
+      "provider": "Telegram",
+      "readiness_status": "implementation_verified_live_canary_blocked_missing_protected_config",
+      "evidence": [
+        "OT-101R implemented SQL-backed Telegram admin runtime",
+        "all writes require confirmation",
+        "live canary blocked by missing protected bot/identity mapping"
+      ],
+      "blocked_or_required_before_canary": [
+        "protected bot token",
+        "webhook secret",
+        "active bot registry row",
+        "active allowlisted operator identity/chat mapping"
+      ],
+      "canary_budget": {
+        "allowlisted_chats": 1,
+        "read_commands": 3,
+        "confirmed_local_writes": 1,
+        "provider_publish_or_payment_commands": 0
+      }
+    },
+    {
+      "provider": "Zoom",
+      "readiness_status": "implementation_verified_real_meeting_canary_blocked_until_fresh_approval_and_credentials",
+      "evidence": [
+        "OT-103 implemented Zoom provider, registrants, SDK signatures, webhook validation, attendance projection",
+        "real canary was not run",
+        "prior isolated operator canary was consumed on 2026-07-13, so fresh approval is required"
+      ],
+      "blocked_or_required_before_canary": [
+        "fresh explicit approval",
+        "protected Zoom account/API/SDK/webhook config",
+        "controlled registrants from protected allowlist",
+        "no host URL, passcode, token, ZAK, or join URL printed"
+      ],
+      "canary_budget": {
+        "real_meetings_created": 1,
+        "occurrences": 1,
+        "registrants": 2,
+        "learner_sdk_signature_checks": 1,
+        "webhook_validation_events": "counts_only"
+      }
+    },
+    {
+      "provider": "Vimeo",
+      "readiness_status": "implementation_verified_real_owned_video_canary_blocked_until_upload_or_owned_video_config",
+      "evidence": [
+        "OT-104R implemented private Vimeo runtime",
+        "real canary blocked by missing protected Vimeo variables and canary video id",
+        "runtime scoped to rabbi_sheller_provider / one_time_mishnah_class"
+      ],
+      "blocked_or_required_before_canary": [
+        "protected Vimeo access token or owned private test video config",
+        "owned test video selected or upload-capable token authorized",
+        "private project/folder confirmed without printing private links"
+      ],
+      "canary_budget": {
+        "owned_test_videos": 1,
+        "uploads": 0,
+        "upload_allowed_only_if_explicitly_enabled": true,
+        "metadata_inspections": 1,
+        "playback_projection_checks": 1
+      }
+    },
+    {
+      "provider": "Stripe test mode",
+      "readiness_status": "implementation_verified_external_test_canary_blocked_until_protected_test_config_and_authorization",
+      "evidence": [
+        "OT-105 implemented TEST-only canary and webhook guardrails",
+        "external canary blocked by missing protected TEST config and explicit authorization"
+      ],
+      "blocked_or_required_before_canary": [
+        "protected TEST config",
+        "TEST canary authorization true",
+        "live charges forbidden",
+        "record only ids/digests/counts"
+      ],
+      "canary_budget": {
+        "test_checkout_sessions": 1,
+        "test_webhook_event_types_minimum": [
+          "checkout.session.completed",
+          "invoice.payment_succeeded",
+          "customer.subscription.updated"
+        ],
+        "live_mode_actions": 0
+      }
+    },
+    {
+      "provider": "OpenAI/helper",
+      "readiness_status": "approval_required_for_approved_class_content_only",
+      "evidence": [
+        "OPS-13A did not read or verify helper secret values",
+        "helper usage must use approved class content only and preserve workspace isolation"
+      ],
+      "blocked_or_required_before_canary": [
+        "approved One Time class content fixture",
+        "protected helper config verified without printing keys",
+        "no private student/household/contact/payment/provider credential data"
+      ],
+      "canary_budget": {
+        "approved_content_items": 1,
+        "helper_queries": 3,
+        "private_data_queries": 0
+      }
+    },
+    {
+      "provider": "Buffer",
+      "readiness_status": "blocked_until_account_connected",
+      "evidence": [
+        "OT-106 Buffer runtime verified locally with sink queue proof",
+        "read-only canary returned unconfigured",
+        "operator required Buffer blocked until account connected"
+      ],
+      "blocked_or_required_before_canary": [
+        "connected Buffer account",
+        "protected organization/destination alias mapping",
+        "approved manifest and runtime authorization"
+      ],
+      "canary_budget": {
+        "provider_drafts": 0,
+        "scheduled_posts": 0,
+        "status": "blocked_until_account_connected"
+      }
+    },
+    {
+      "provider": "BNA bridge / support producer",
+      "readiness_status": "ready_for_later_launch_gate_but_disabled_on_live_ready",
+      "evidence": [
+        "OT-89A status READY_FOR_OT99",
+        "/ready support_bridge disabled by runtime flag",
+        "OPS-13A did not mutate BNA runtime or send bridge events"
+      ],
+      "blocked_or_required_before_canary": [
+        "support bridge enabled in protected config",
+        "HMAC keys present without printing values",
+        "exact bridge contract authorizes the event"
+      ],
+      "canary_budget": { "mock_bridge_events": 1, "live_bna_events": 0, "attachments": 0 }
+    }
+  ],
+  "exact_bounded_canary_plan": {
+    "order": [
+      "refresh dynamic state",
+      "run read-only readiness checks",
+      "run dry-run audience preview only",
+      "run independent provider canaries one at a time",
+      "record sanitized proof after each canary"
+    ],
+    "zoom": {
+      "budget": "one real meeting, one occurrence, at most two controlled registrants",
+      "hard_stop": "fresh approval or protected config absent"
+    },
+    "vimeo": {
+      "budget": "one owned private test video inspection; upload count zero unless explicitly enabled",
+      "hard_stop": "owned test video or upload-capable protected config absent"
+    },
+    "stripe_test": {
+      "budget": "one test-mode checkout and bounded webhook projection",
+      "hard_stop": "any live-mode object or missing protected test config"
+    },
+    "controlled_email": {
+      "budget": "one activation and one reset email maximum",
+      "hard_stop": "raw token/link would be logged"
+    },
+    "telegram": {
+      "budget": "one allowlisted chat, three reads, one confirmed local staging write",
+      "hard_stop": "mapping or confirmation digest missing"
+    },
+    "whatsapp": {
+      "budget": "one allowlisted recipient, one outbound canary message, counts-only webhook/status readback",
+      "hard_stop": "runtime flag disabled or protected recipient/authorization absent"
+    },
+    "openai_helper": {
+      "budget": "one approved class content fixture, three helper queries, zero private data queries",
+      "hard_stop": "helper config or content approval absent"
+    },
+    "buffer": { "budget": "zero", "hard_stop": "blocked until a Buffer account is connected" }
+  }
+}
