@@ -11,5 +11,6 @@
   "production_mutations_authorized": false,
   "provider_mutations_authorized": false,
   "deployment_authorized": false,
-  "status": "local_verified_pending_draft_pr"
+  "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/67",
+  "status": "draft_pr_open"
 }

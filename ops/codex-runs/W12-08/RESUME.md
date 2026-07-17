@@ -8,9 +8,7 @@ Base: `origin/release/ops10-full-staged-production-launch-20260717T050800Z` at `
 
 Next action:
 
-1. Commit the locally verified W12-08 changes.
-2. Push branch `codex/w12-08-admin-classroom-productization`.
-3. Open a draft PR into `release/ops10-full-staged-production-launch-20260717T050800Z`.
+1. Await review on draft PR `https://github.com/webcraft-media/onetimev2/pull/67`.
 
 Hard stops:
 
