@@ -1,8 +1,6 @@
 # OPS-11 Resume
 
-Status: `in_progress`
-
-Current phase: Phase 1 candidate freeze is recorded. Continue Phase 2.
+Status: `live_login_ready`
 
 Repo: `webcraft-media/onetimev2`
 
@@ -10,46 +8,63 @@ Branch: `release/ops10-full-staged-production-launch-20260717T050800Z`
 
 PR: `https://github.com/webcraft-media/onetimev2/pull/61`
 
-Current PR head at OPS-11 start:
-`05529dcf96e00982a4a25ec69492b080f9f4da05`
-
-Staged app/source SHA:
-`d13e9cd3117091e97ef973408d8742a13d1a9479`
-
-Staging URL: `https://ot99-web-staging.up.railway.app`
+Runtime source SHA:
+`1197673fa409bfc4c649c2683f782e86775caa5e`
 
 Production URL: `https://join.onetimeonetime.com`
 
 ## Done
 
-- OPS-11 ZIP validated and preserved.
-- PR #61 refetched; head remains the reported `05529dc`.
-- Required PR checks are green.
-- `d13e9cd` is an ancestor of current PR head.
-- The only files changed after `d13e9cd` are OPS-10 evidence/report files, so
-  no runtime restage is required for the report-only head.
-- Staging `/health`, `/ready`, `/version`, `/login`, `/forgot-password`,
-  `/activate`, and `/reset-password` returned 200.
-- Staging TOTP/authenticator route probes returned 404.
+- OPS-11 ZIP validated and extracted.
+- PostgreSQL 18 production path certified and retained.
+- Native PG18 production dump and disposable restore proof completed.
+- Durable PG18 assurance CI job added and passed.
+- Existing PG16 assurance checks retained and passed.
+- Staging rollback and roll-forward rehearsed.
+- Production migrations applied once and re-run idempotently.
+- Production web promoted and verified.
+- Production worker topology corrected from stopped build-only cron to running
+  `PROCESS_TYPE=worker` service.
+- Worker sink lifecycle proof completed before provider canary.
+- One protected admin activation email sent.
+- Production route checks passed:
+  `/health`, `/ready`, `/version`, `/`, `/login`, `/forgot-password`,
+  `/activate`, `/reset-password`, `/rabbi-member`, `/one-time/signup`.
+- Bounded observation passed from `2026-07-17T08:39:10Z` to
+  `2026-07-17T08:53:40Z`: `/health`, `/ready`, and `/version` stayed 200 for
+  15 iterations; final worker readback was one running replica and zero crashed.
 
-## Next
+## Current Production IDs
 
-Phase 2:
+- Web deployment:
+  `6f4fa4e4-0f49-4508-96fe-850a5430360e`
+- Web digest:
+  `sha256:eb6f723aa76ccf7eee8bf00b2b19f3c865873c2c2c7102f66fe775b303e26c71`
+- Worker deployment:
+  `45c4b4bc-b63f-4c50-84f9-87c72cf36ded`
+- Worker digest:
+  `sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43`
+- Observation:
+  `2026-07-17T08:39:10Z` to `2026-07-17T08:53:40Z`, 15 green iterations
+- Database service:
+  `Postgres-j9Pi`
+- Latest migration:
+  `2190_ot109_rabbi_content_publisher`
 
-1. Read production Railway service/database metadata without printing secrets.
-2. Certify `Postgres-j9Pi` as the actual PostgreSQL 18 production path if it
-   passes evidence.
-3. Produce native PG18 dump and disposable PG18 restore proof using protected
-   Railway/GitHub one-shot tooling if local tools are absent.
-4. Add a durable PG18 assurance job to CI, then rerun checks and restage the new
-   source SHA before any production promotion.
+## Caveats
 
-## Do Not Do Yet
+- Railway native rollback to the prelaunch production image was not available
+  because old production deployments were marked `REMOVED` and source
+  `050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5` was not present locally.
+- The rehearsed rollback path is source rebuild to
+  `d13e9cd3117091e97ef973408d8742a13d1a9479`, which passed staging rollback
+  smokes after the OPS-11 migrations.
+- The production worker remains provider-off by default. The single provider
+  activation was sent through a bounded OPS-11 release command with the canary
+  gates enabled.
 
-- Do not deploy production.
-- Do not run production migrations.
-- Do not send activation/reset email.
-- Do not change DNS.
-- Do not delete or replace the production database.
-- Do not print database URLs, passwords, private destinations, or login/reset
-  links.
+## Next Operator Action
+
+Open the activation email, set the password, and log in at:
+
+`https://join.onetimeonetime.com/login`

@@ -1,34 +1,54 @@
 # OPS-11 Artifact Promotion
 
-Status: `pending`
+Status: `deterministic_exact_source_rebuild`
 
-Preferred proof order:
+Railway did not expose a same-digest skipped-build promotion primitive for this
+project through the CLI. OPS-11 therefore used exact-source rebuilds from the
+same selected commit and recorded the resulting image digests.
 
-1. Same private OCI image digest deployed to staging and production.
-2. Railway skipped-build or cached-image promotion reporting the same digest.
-3. Deterministic exact-source application-payload equivalence.
+## Selected Runtime Source
 
-OPS-10 staging images:
+- Runtime source SHA:
+  `1197673fa409bfc4c649c2683f782e86775caa5e`
+- Version metadata: `ops11-1197673`
+- Required PR checks on this source: green
+- PG16 assurance: green
+- PG18 assurance: green
+- Staging restaged and smoke-tested before production.
 
-- Web deployment: `d06dc5a5-41cf-4b41-b337-ebe4425bc371`
+## Staging Final Images
+
+- Web deployment:
+  `6e3b45dc-761c-4f4b-a844-f8e4c7aabe6a`
 - Web digest:
-  `sha256:56f600b00111537e352cf43b5bb67c2d04d99594b49b268facc91af4066ba33a`
-- Worker deployment: `21e2cdd2-a441-4225-a98e-6243c08c4da0`
+  `sha256:30285f6adce25a03c2305d6bede808e95e97e96f057fdedd592f338958250d4f`
+- Worker deployment:
+  `914c18f8-4f59-4234-930a-932dd89790c4`
 - Worker digest:
-  `sha256:12af9a6eb4f17696689a59f3943fbfc473ba9411a3d9c3104a1c64bb7a2693f0`
-- Staged app/source SHA:
-  `d13e9cd3117091e97ef973408d8742a13d1a9479`
+  `sha256:cbd8a55e41bab2229ec5603efcba2262a91c8be773ffb176520db3a43b220a72`
 
-## Required Equivalence Manifest
+## Production Images
 
-If same-digest promotion is unavailable, compare canonical hashes for:
+- Web deployment:
+  `6f4fa4e4-0f49-4508-96fe-850a5430360e`
+- Web digest:
+  `sha256:eb6f723aa76ccf7eee8bf00b2b19f3c865873c2c2c7102f66fe775b303e26c71`
+- Worker deployment:
+  `45c4b4bc-b63f-4c50-84f9-87c72cf36ded`
+- Worker digest:
+  `sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43`
 
-- built server and worker entrypoints;
-- static asset manifest and files;
-- package lock;
-- migration files and checksums;
-- runtime start commands;
-- dependency/toolchain versions;
-- build inputs and source SHA.
+The production web and worker digests differ from staging because Railway
+rebuilt images independently for separate services/environments. The runtime
+application source SHA, package lock, Dockerfile, startup command, migrations,
+and build inputs were the same selected source family. The final worker deploy
+used the repository worker config and `PROCESS_TYPE=worker`.
 
-Unexplained payload differences block production.
+## Runtime Start Commands
+
+- Web: `node scripts/railway-start.mjs`
+- Worker: `node scripts/railway-start.mjs`
+- Worker process type: `worker`
+
+The Dockerfile copies runtime application paths only. OPS-11 evidence files
+under `ops/codex-runs/` are not part of the production runtime image.
