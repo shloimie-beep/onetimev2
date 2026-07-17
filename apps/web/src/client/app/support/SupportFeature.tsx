@@ -351,7 +351,7 @@ function deliveryLabel(value: string) {
   if (value === 'queued') return 'Queued for support desk';
   if (value === 'delivery_delayed') return 'Delivery delayed';
   if (value === 'delivered') return 'Accepted by support desk';
-  if (value === 'dead_letter') return 'Needs operator review';
+  if (value === 'dead_letter') return 'Needs admin review';
   return readableState(value);
 }
 

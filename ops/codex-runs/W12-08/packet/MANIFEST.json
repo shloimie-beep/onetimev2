@@ -1,0 +1,22 @@
+{
+  "package_id": "W12-NEXT-PARALLEL-WAVE-2026-07-17",
+  "created_on": "2026-07-17",
+  "purpose": "Canonical new-chat handoff and parallel One Time/BNA execution wave",
+  "run_now": [
+    "W12-00",
+    "W12-01",
+    "W12-02",
+    "W12-03",
+    "W12-04",
+    "W12-05",
+    "W12-06",
+    "W12-07",
+    "W12-08"
+  ],
+  "optional_parallel_gpt_pro": ["BNA-SEP-P1", "BNA-SEP-P2", "BNA-SEP-P3"],
+  "run_last": ["W12-99"],
+  "production_mutations_authorized": false,
+  "real_bulk_import_authorized": false,
+  "broad_sends_authorized": false,
+  "secrets_allowed_in_artifacts": false
+}

@@ -1,0 +1,51 @@
+{
+  "lane": "W12-08",
+  "branch": "codex/w12-08-admin-classroom-productization",
+  "provisional_shared_hotspots": [
+    {
+      "path": "apps/web/src/client/app/crm-entry.tsx",
+      "reason": "Shared authenticated owner/admin shell renders dashboard, classes, billing, CRM entry, and diagnostics disclosure."
+    },
+    {
+      "path": "packages/contracts/src/dashboard/index.ts",
+      "reason": "Dashboard DTO needs product-state labels, actions, and diagnostics fields."
+    },
+    {
+      "path": "packages/domain/src/dashboard/service.ts",
+      "reason": "Owner dashboard sections map raw runtime state to truthful product states."
+    },
+    {
+      "path": "packages/contracts/src/classes/index.ts",
+      "reason": "Class detail DTO needs admin-facing productized fields while preserving no raw provider targets."
+    },
+    {
+      "path": "packages/domain/src/classes/service.ts",
+      "reason": "Class list/detail service must provide usable classroom summaries and detail state."
+    },
+    {
+      "path": "apps/web/src/client/app/crm-api.ts",
+      "reason": "Client API must fetch the class detail endpoint for the new detail flow."
+    },
+    {
+      "path": "apps/web/src/client/app/support/SupportFeature.tsx",
+      "reason": "Shared support copy had one visible operator-jargon label normalized to admin-facing language."
+    },
+    {
+      "path": "packages/brand-system/src/styles/react.css",
+      "reason": "Shared authenticated shell/card styles gained product-state borders, diagnostics disclosure, and class detail grid support."
+    },
+    {
+      "path": "ops/day-one/visible-action-registry.json",
+      "reason": "Static day-one visible action registry needed class detail/back control coverage to match runtime actions."
+    },
+    {
+      "path": "tests/integration/dashboard/owner-dashboard.test.ts",
+      "reason": "Focused coverage for product-state dashboard and diagnostics hiding."
+    },
+    {
+      "path": "tests/integration/classes/class-fulfillment.test.ts",
+      "reason": "Focused coverage for class detail contract and raw provider URL redaction."
+    }
+  ],
+  "must_reconcile_in_w12_99": true
+}
