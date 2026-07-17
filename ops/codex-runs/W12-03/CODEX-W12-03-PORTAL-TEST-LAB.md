@@ -36,4 +36,3 @@ Use the canonical product shell/brand on 360, 390, 768, and 1440 widths. Add com
 ## Continuity/safety
 
 Maintain task artifacts under `ops/codex-runs/W12-03/`. Finish fixtures/tests if staging access is absent. No production users, email send, database mutation, deploy, or raw credential evidence. Document shared server/navigation/migration hotspots. Commit, push, open draft PR.
-

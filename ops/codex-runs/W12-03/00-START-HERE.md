@@ -31,20 +31,19 @@ Do **not** run `W12-99` until every desired W12 feature branch has pushed a draf
 
 ## Branch ownership summary
 
-| Lane | Outcome | Primary ownership |
-|---|---|---|
-| W12-00 | Canonical director handoff | `ops/director/**`, supervisor guidance |
-| W12-01 | Real-audience inventory and safe CRM import tooling | import/reconciliation domain, scripts, tests |
-| W12-02 | Historical communications ingestion and premium communications UI | communications adapters/domain/UI |
-| W12-03 | Parent/student test lab and complete journeys | portal routes/UI/fixtures/tests |
-| W12-04 | Content, Vimeo, knowledge, and classroom vertical slice | content/classroom/provider seams/UI |
-| W12-05 | One Time Rabbi/admin Telegram operations bot | Telegram runtime, capabilities, audit |
-| W12-06 | Public WhatsApp lead assistant | WhatsApp runtime, lead persistence, handoff |
-| W12-07 | Premium landing correction | public landing/assets/styles/visual tests |
-| W12-08 | Admin dashboard and classroom productization | admin dashboard/class detail UI and APIs |
-| W12-99 | Final semantic convergence and staging verification | all shared hotspots and release proof |
+| Lane   | Outcome                                                           | Primary ownership                            |
+| ------ | ----------------------------------------------------------------- | -------------------------------------------- |
+| W12-00 | Canonical director handoff                                        | `ops/director/**`, supervisor guidance       |
+| W12-01 | Real-audience inventory and safe CRM import tooling               | import/reconciliation domain, scripts, tests |
+| W12-02 | Historical communications ingestion and premium communications UI | communications adapters/domain/UI            |
+| W12-03 | Parent/student test lab and complete journeys                     | portal routes/UI/fixtures/tests              |
+| W12-04 | Content, Vimeo, knowledge, and classroom vertical slice           | content/classroom/provider seams/UI          |
+| W12-05 | One Time Rabbi/admin Telegram operations bot                      | Telegram runtime, capabilities, audit        |
+| W12-06 | Public WhatsApp lead assistant                                    | WhatsApp runtime, lead persistence, handoff  |
+| W12-07 | Premium landing correction                                        | public landing/assets/styles/visual tests    |
+| W12-08 | Admin dashboard and classroom productization                      | admin dashboard/class detail UI and APIs     |
+| W12-99 | Final semantic convergence and staging verification               | all shared hotspots and release proof        |
 
 ## Shared hotspots
 
 Feature agents do not own these files as final authority: root package files, lockfiles, shared server composition, root exports, shared navigation, shared design-token entrypoints, migration numbering/ledger, and CI workflows. If a lane needs a provisional edit there, it must list it in `HOTSPOTS.json`. `W12-99` reconciles them manually.
-
