@@ -34,6 +34,7 @@ import {
   runMockPollingAdapter,
   validateTelegramRuntimeTopology,
 } from '../../../packages/domain/src/telegram/worker.ts';
+import { telegramTransportReadiness } from '../../../packages/domain/src/telegram/transport.ts';
 
 const botKey = asBotKey('one_time_internal_ops');
 const providerUserRef = asProviderUserRef('telegram_user_fixture');
@@ -180,6 +181,48 @@ describe('OT-51P identity and commands', () => {
     await adminContext.mappings.upsertProtectedMapping(mappingFixture());
     const auditDenied = await adminContext.engine.handle(updateFixture({ text: '/gateway-audit' }));
     expect(auditDenied[0]?.text).toContain('authorized owner/admin private chats');
+  });
+
+  it('covers W12-05 operator reads, approved retry preview, and webhook/token refusals', async () => {
+    const context = await buildContext(actor);
+    await context.mappings.upsertProtectedMapping(mappingFixture());
+
+    const today = await context.engine.handle(updateFixture({ text: "today's class" }));
+    const contact = await context.engine.handle(
+      updateFixture({ updateId: 'w12-read-2', text: 'find contact contact_public_fixture' }),
+    );
+    const link = await context.engine.handle(
+      updateFixture({ updateId: 'w12-read-3', text: '/link contact contact_public_fixture' }),
+    );
+    const delivery = await context.engine.handle(
+      updateFixture({ updateId: 'w12-read-4', text: '/delivery' }),
+    );
+    const vimeo = await context.engine.handle(
+      updateFixture({ updateId: 'w12-read-5', text: 'vimeo status' }),
+    );
+    const forbidden = await context.engine.handle(
+      updateFixture({ updateId: 'w12-read-6', text: 'register production webhook' }),
+    );
+
+    expect(today[0]?.text).toContain('Upcoming classes');
+    expect(contact[0]?.text).toContain('Redacted contact contact_public_fixture');
+    expect(link[0]?.text).toContain('/app/contact/contact_public_fixture');
+    expect(delivery[0]?.text).toContain('Delivery status');
+    expect(vimeo[0]?.text).toContain('Content pipeline');
+    expect(forbidden[0]?.text).toContain('not available');
+
+    const retryPreview = await context.engine.handle(
+      updateFixture({ updateId: 'w12-write-1', text: '/delivery-retry delivery_fixture_1' }),
+    );
+    expect(retryPreview[0]?.text).toContain('Preview delivery.retry');
+    const retryConfirmed = await context.engine.handle(
+      updateFixture({
+        updateId: 'w12-write-2',
+        kind: 'callback_query',
+        callbackData: requireString(retryPreview[0]?.buttons?.[0]?.callbackData),
+      }),
+    );
+    expect(retryConfirmed[0]?.text).toContain('Completed delivery.retry');
   });
 
   it('previews, confirms, cancels, expires, and replays every write', async () => {
@@ -375,6 +418,31 @@ describe('OT-51P worker and topology', () => {
     });
     expect(stopped).toMatchObject({ stopped: true, reason: 'telegram_409_conflict' });
     expect(shutdowns).toEqual(['telegram_409_conflict']);
+  });
+
+  it('reports Telegram readiness only after protected config, mapping, lease, and canary are present', () => {
+    expect(
+      telegramTransportReadiness({
+        enabled: true,
+        botKey: 'one_time_internal_ops',
+        environment: 'staging',
+        tokenConfigured: true,
+        ownerMappingConfigured: true,
+        singleConsumerGate: true,
+        canaryChatConfigured: true,
+      }),
+    ).toMatchObject({ readiness_state: 'configured' });
+    expect(
+      telegramTransportReadiness({
+        enabled: true,
+        botKey: 'one_time_internal_ops',
+        environment: 'staging',
+        tokenConfigured: false,
+        ownerMappingConfigured: true,
+        singleConsumerGate: true,
+        canaryChatConfigured: true,
+      }),
+    ).toMatchObject({ readiness_state: 'not_configured' });
   });
 });
 

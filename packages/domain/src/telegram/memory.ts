@@ -273,6 +273,8 @@ export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicatio
     switch (request.capability) {
       case 'gateway.status.read':
         return 'One Time Telegram runtime: sink/mock safe. Writes require confirmation.';
+      case 'app.link.open':
+        return `One Time app link for ${String(request.args.kind ?? 'app')}: /app/${String(request.args.kind ?? 'dashboard')}/${String(request.args.ref ?? '')}. Use authenticated web access for private details.`;
       case 'crm.lead.list':
         return 'Leads: 2 scoped leads. Raw phone and email are not shown in Telegram.';
       case 'crm.signup.recent':
@@ -312,6 +314,8 @@ export class FixtureOneTimeBotApplicationAdapter implements OneTimeBotApplicatio
         return `Social draft ${String(request.args.ref ?? 'ref')}: review_needed, no Buffer publish from Telegram.`;
       case 'social.draft.approval_link':
         return `Approval link for ${String(request.args.ref ?? 'ref')}: /app/social-publishing?intent=approve.`;
+      case 'delivery.status.read':
+        return `Delivery status ${String(request.args.ref ?? 'summary')}: scoped sink/provider state only; destinations and payloads are redacted.`;
       case 'telegram.audit.read_recent':
         return `Recent gateway audit: ${Number(request.args.count ?? 10)} sanitized entries available.`;
       default:
@@ -377,6 +381,9 @@ function previewSummary(request: BotActionRequest) {
   if (request.capability === 'class.question.resolve') {
     return `${String(request.args.question_ref ?? 'question')} -> ${String(request.args.status ?? 'answered')}`;
   }
+  if (request.capability === 'delivery.retry') {
+    return `approved retry for ${String(request.args.delivery_ref ?? 'delivery')}`;
+  }
   if (request.capability === 'support.ticket.assign_self') {
     return `${String(request.args.ticket_ref ?? 'ticket')} assigned to self`;
   }
@@ -401,6 +408,9 @@ function eventIdsFor(request: BotActionRequest, idempotencyKey: string) {
   }
   if (request.capability === 'class.question.resolve') {
     return [`evt_question_resolved_${stableDigest([idempotencyKey]).slice(0, 16)}`];
+  }
+  if (request.capability === 'delivery.retry') {
+    return [`evt_delivery_retry_${stableDigest([idempotencyKey]).slice(0, 16)}`];
   }
   return [];
 }
