@@ -1,0 +1,16 @@
+{
+  "schema_version": "onetime.w12_100.buffer_bna_readiness.bna_scoped_payload_validation.v1",
+  "generated_at": "2026-07-17T21:04:21.7491571+03:00",
+  "status": "passed",
+  "scoped_payload_schema_valid": true,
+  "scope_account_key_present": true,
+  "scope_product_key_present": true,
+  "contains_session": false,
+  "contains_cookie": false,
+  "contains_provider_data": false,
+  "contains_workspace_key": false,
+  "contains_direct_contact_details": false,
+  "contains_raw_secrets": false,
+  "ingested": false,
+  "mock_events_used": 0
+}

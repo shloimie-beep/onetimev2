@@ -1,0 +1,40 @@
+{
+  "schema_version": "onetime.w12_100.buffer_bna_readiness.bna_mock_event.v1",
+  "generated_at": "2026-07-17T21:04:21.7491571+03:00",
+  "scope": "local_mock_only",
+  "test_values_only": true,
+  "mock_events_attempted": 1,
+  "mock_events_accepted": 1,
+  "ingest_status": 202,
+  "hmac_verified": true,
+  "body_sha256": "b5eaf7d9980db595e8a185cea2c840f8bb137e85e8b0db985537b227bf8b0428",
+  "response_category": "accepted",
+  "accepted_duplicate": false,
+  "asynchronous_decoupling_check": {
+    "disabled_delivery_summary": {
+      "claimed": 0,
+      "delivered": 0,
+      "retried": 0,
+      "deadLettered": 0,
+      "skipped": 1,
+      "leaseLost": 0,
+      "statusRefreshed": 0
+    },
+    "fetch_calls_when_disabled": 0
+  },
+  "contract_privacy_check": {
+    "contains_session": false,
+    "contains_cookie": false,
+    "contains_provider_data": false,
+    "contains_workspace_key": false,
+    "attachment_count": 0,
+    "contains_direct_contact_details": false,
+    "contains_raw_secrets": false
+  },
+  "local_db_counts": {
+    "support_mock_bna_events": 1,
+    "mock_bna_event_accepted_audit_events": 1
+  },
+  "live_bna_calls": 0,
+  "external_mutations": 0
+}
