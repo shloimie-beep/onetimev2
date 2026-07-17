@@ -1,0 +1,229 @@
+{
+  "lane_id": "W12-100-03",
+  "branch": "codex/w12-100-03-public-launch-truth",
+  "base_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "generated_at": "2026-07-17T18:21:00.9142898+03:00",
+  "external_actions_count": 0,
+  "production_mutations_count": 0,
+  "provider_mutations_count": 0,
+  "deployments_count": 0,
+  "objectives": [
+    {
+      "id": "W12-100-03-001",
+      "objective": "Fetch refs, verify canonical starting commit, and create an isolated worktree/branch for the lane.",
+      "status": "done",
+      "evidence": "git fetch --all --prune --tags completed; git cat-file -t 0d8d7168f066668f035176d777bdaaa4dcc5accd returned commit; branch codex/w12-100-03-public-launch-truth was created in a new worktree."
+    },
+    {
+      "id": "W12-100-03-002",
+      "objective": "Read all required director and W12-99 context before editing.",
+      "status": "done",
+      "evidence": "Read AGENTS.md, ops/director/START-HERE.md, ops/director/PRODUCT-INVARIANTS.md, and W12-99 final report/state/capability/canary/import/rollback files."
+    },
+    {
+      "id": "W12-100-03-003",
+      "objective": "Create required W12-100-03 run artifacts.",
+      "status": "done",
+      "evidence": "Created ORIGINAL-PROMPT.md, STATE.json, FINAL-REPORT.md, RESUME.md, CHANGED-FILES.txt, and PR-BODY.md under ops/codex-runs/W12-100-03/."
+    },
+    {
+      "id": "W12-100-03-004",
+      "objective": "Replace placeholder Privacy and Terms pages with structured, versioned, counsel-review-ready public legal content without inventing compliance claims.",
+      "status": "done",
+      "evidence": "Added packages/domain/src/legal content and rendered /privacy and /terms from scripts/build-public-pages.ts."
+    },
+    {
+      "id": "W12-100-03-005",
+      "objective": "Enumerate current-system privacy data categories: signup, account, household, learner, class, progress, communications, support, provider event, payment/test-payment, security, and operational records.",
+      "status": "done",
+      "evidence": "privacyDataCategories in packages/domain/src/legal/content.ts contains all required categories and unit tests assert the required titles."
+    },
+    {
+      "id": "W12-100-03-006",
+      "objective": "Update Terms so they do not say accounts are never granted and do not claim live paid checkout without evidence.",
+      "status": "done",
+      "evidence": "Terms acknowledge owner, parent/guardian, and student accounts; payment language is limited to fixture/test-payment and non-live checkout truth."
+    },
+    {
+      "id": "W12-100-03-007",
+      "objective": "Add structured Communication and Reminder Consent content.",
+      "status": "done",
+      "evidence": "communicationConsentNotice is rendered on /privacy and /terms and linked from signup consent copy."
+    },
+    {
+      "id": "W12-100-03-008",
+      "objective": "Add structured Parent/Guardian and Student Data Notice content.",
+      "status": "done",
+      "evidence": "parentGuardianStudentDataNotice is rendered on /privacy and covered by public legal E2E checks."
+    },
+    {
+      "id": "W12-100-03-009",
+      "objective": "Improve signup consent to be channel-specific, non-preselected, and separated between required service communications and optional reminders.",
+      "status": "done",
+      "evidence": "Signup now uses explicit email and WhatsApp reminder checkboxes, no optional reminder is selected by default, required service communications are described separately, and client payload mapping derives reminder_preference from explicit selections."
+    },
+    {
+      "id": "W12-100-03-010",
+      "objective": "Make suppression, STOP, unsubscribe, policy version, and consent timestamp handling clear.",
+      "status": "done",
+      "evidence": "Signup and legal copy describe unsubscribe/STOP/contact handling; form carries data-consent-policy-version and existing lead capture tests confirm consent version and consent timestamp recording for opted-in submissions."
+    },
+    {
+      "id": "W12-100-03-011",
+      "objective": "Ensure the public form does not ask for student-sensitive data.",
+      "status": "done",
+      "evidence": "Signup page asks for guardian/contact and class-fit information only and warns not to submit student names, ages, medical information, private learner notes, or other student-sensitive details."
+    },
+    {
+      "id": "W12-100-03-012",
+      "objective": "Add keyboard, screen-reader, mobile, validation, and no-JavaScript checks.",
+      "status": "done",
+      "evidence": "Added/updated Playwright E2E and accessibility tests for public legal pages, signup keyboard consent toggling, WhatsApp phone validation, mobile overflow, no-JS fallback, and axe coverage."
+    },
+    {
+      "id": "W12-100-03-013",
+      "objective": "Preserve public/authenticated bundle separation and current brand constraints.",
+      "status": "done",
+      "evidence": "Changes are limited to legal domain content, public page generation, public-only client consent mapping, public styles, and public tests. npm run brand:check and bundle checks passed."
+    },
+    {
+      "id": "W12-100-03-014",
+      "objective": "Run focused tests, affected suites, and broader practical gates without weakening safety checks.",
+      "status": "done",
+      "evidence": "Focused unit, page build, client build, public E2E, public accessibility, affected integration/E2E/accessibility/performance, secret scan, lint, typecheck, unit, integration, build, brand, and bundle gates passed."
+    },
+    {
+      "id": "W12-100-03-015",
+      "objective": "Run the full unfiltered E2E/performance suites on an isolated non-default port.",
+      "status": "blocked",
+      "evidence": "Full isolated-port suites reached an OT-88 dependency: Zoom leakage checks hardcode http://127.0.0.1:3100 as the allowed local origin, so the same mocked requests on ports 3118/3124 were classified as external. The OT-88-specific fix belongs outside this lane."
+    },
+    {
+      "id": "W12-100-03-016",
+      "objective": "Define cancellation, refund, and live payment terms beyond test-payment/fixture truth.",
+      "status": "needs_operator_decision",
+      "evidence": "Current capability evidence does not prove live paid checkout. Business/legal approval is needed before stronger cancellation, refund, payment authorization, or billing-policy language is published."
+    },
+    {
+      "id": "W12-100-03-017",
+      "objective": "Define jurisdiction-specific privacy rights, retention periods, deletion windows, and legal compliance claims.",
+      "status": "needs_operator_decision",
+      "evidence": "The lane intentionally avoids unsupported legal compliance and retention claims. Counsel/business approval is required before jurisdiction-specific rights or retention promises are added."
+    },
+    {
+      "id": "W12-100-03-018",
+      "objective": "Avoid deployments, production database access, external sends, provider mutations, and production configuration changes.",
+      "status": "done",
+      "evidence": "No deploy commands were run, no production database was accessed, no external messages/webhooks/payments/posts/invitations/helper requests were sent, no provider resources were mutated, and no production configuration was changed."
+    }
+  ],
+  "validation": [
+    {
+      "command": "npm ci",
+      "status": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/lead-validation.test.ts",
+      "status": "passed",
+      "tests": "8 tests"
+    },
+    {
+      "command": "npm run build:pages",
+      "status": "passed"
+    },
+    {
+      "command": "npm run build:client",
+      "status": "passed"
+    },
+    {
+      "command": "PORT=3116 npx playwright test tests/e2e/public-legal.spec.ts tests/e2e/landing-signup.spec.ts --project=chromium",
+      "status": "passed",
+      "tests": "14 tests"
+    },
+    {
+      "command": "PORT=3117 npx playwright test tests/accessibility/public-a11y.spec.ts --project=chromium",
+      "status": "passed",
+      "tests": "5 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts",
+      "status": "passed",
+      "tests": "7 tests"
+    },
+    {
+      "command": "PORT=3119 npx playwright test tests/e2e/crm-core.spec.ts --project=chromium",
+      "status": "passed",
+      "tests": "2 tests"
+    },
+    {
+      "command": "PORT=3122 npx playwright test tests/accessibility/ot81-day-one-matrix.spec.ts --project=chromium",
+      "status": "passed",
+      "tests": "1 test"
+    },
+    {
+      "command": "PORT=3125 npx playwright test tests/performance/public-performance.spec.ts tests/performance/ot81-day-one-performance.spec.ts --project=chromium",
+      "status": "passed",
+      "tests": "4 tests"
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed"
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "tests": "197 tests"
+    },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "tests": "184 tests"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed"
+    },
+    {
+      "command": "PORT=3120 npx playwright test tests/e2e --project=chromium --grep-invert \"OT-88 mocked Zoom classroom launch\"",
+      "status": "passed",
+      "tests": "41 tests"
+    },
+    {
+      "command": "PORT=3123 npx playwright test tests/accessibility --project=chromium",
+      "status": "passed",
+      "tests": "15 tests"
+    },
+    {
+      "command": "PORT=3126 npx playwright test tests/performance --project=chromium --grep-invert \"OT-88 classroom launch\"",
+      "status": "passed",
+      "tests": "6 tests"
+    },
+    {
+      "command": "npx tsx scripts/check-bundles.ts",
+      "status": "passed"
+    }
+  ],
+  "blocked": [
+    {
+      "scope": "Full unfiltered isolated-port E2E/performance OT-88 cases",
+      "reason": "The OT-88 mocked Zoom leakage assertion hardcodes http://127.0.0.1:3100 as the allowed local origin, so runs on isolated ports classify local mocked requests as external.",
+      "owner": "OT-88/test-infrastructure lane"
+    }
+  ],
+  "needs_operator_decision": [
+    "Business/legal approval for cancellation, refund, live-payment, payment authorization, and billing policy language beyond the current fixture/test-payment truth.",
+    "Counsel/business approval for jurisdiction-specific privacy rights, retention/deletion windows, or stronger compliance claims."
+  ]
+}

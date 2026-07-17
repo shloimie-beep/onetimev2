@@ -10,10 +10,17 @@ import {
 import {
   campaign,
   campaignTicker,
+  communicationConsentNotice,
   landingContent,
+  legalPolicyMetadata,
+  parentGuardianStudentDataNotice,
+  privacyDataCategories,
+  privacyNotice,
   sharedNav,
   successCopy,
+  termsOfUse,
 } from '../packages/domain/src/index.ts';
+import type { LegalDocument, LegalSection } from '../packages/domain/src/legal/index.ts';
 import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
@@ -250,18 +257,20 @@ function signupPage() {
     <p>Join the live daily Mishnayos class and choose how you want to receive class information.</p>
   </section>
   <section class="signup-shell">
-    <form class="signup-form" data-signup-form novalidate>
+    <div class="noscript-panel" role="status" data-noscript-fallback><strong>JavaScript is required for secure signup submission.</strong><span>Please use a browser with JavaScript enabled or use the contact method supplied by the One Time team. Do not send student-sensitive information through this public form.</span></div>
+    <form class="signup-form" action="/api/v1/leads" method="post" data-signup-form data-consent-policy-version="${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}" novalidate>
       <div class="field"><label for="contact_name">Parent or contact name</label><input id="contact_name" name="contact_name" autocomplete="name" required><p tabindex="-1" class="error" data-error-for="contact_name"></p></div>
-      <div class="field"><label for="family_or_school">Family or School</label><input id="family_or_school" name="family_or_school" required><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
+      <div class="field"><label for="family_or_school">Family or School</label><input id="family_or_school" name="family_or_school" required><small>Do not include student names, ages, medical details, or private learner notes here.</small><p tabindex="-1" class="error" data-error-for="family_or_school"></p></div>
       <fieldset><legend>Signing up as</legend><label><input type="radio" name="audience_type" value="family" checked> Family</label><label><input type="radio" name="audience_type" value="school"> School</label></fieldset>
       <div class="field"><label for="location">Location</label><input id="location" name="location" autocomplete="address-level2" placeholder="City, country, ZIP/postal code, or area" required><small>Type a city, ZIP/postal code, area code, or neighborhood.</small><p tabindex="-1" class="error" data-error-for="location"></p></div>
       <input id="timezone" name="timezone" type="hidden">
       <div class="field"><label for="timezone_fallback">Time zone</label><input id="timezone_fallback" name="timezone_fallback" placeholder="America/New_York" hidden disabled><small>Use an IANA time zone such as America/New_York.</small><p tabindex="-1" class="error" data-error-for="timezone"></p></div>
       <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" inputmode="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
-      <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><small>Required for WhatsApp reminders.</small><p tabindex="-1" class="error" data-error-for="phone"></p></div>
-      <fieldset><legend>Reminder choice</legend><label><input type="radio" name="reminder_preference" value="email" checked> Email</label><label><input type="radio" name="reminder_preference" value="whatsapp"> WhatsApp</label><label><input type="radio" name="reminder_preference" value="both"> Both</label><label><input type="radio" name="reminder_preference" value="none"> No daily reminders</label></fieldset>
-      <div class="consent" data-consent-wrap><label><input id="reminder_consent" name="reminder_consent" type="checkbox" required> Confirm that we may send the selected class information and reminders.</label><p tabindex="-1" class="error" data-error-for="reminder_consent"></p></div>
-      <button class="button button-primary" type="submit">Sign Up Now</button>
+      <div class="field"><label for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel"><small>Required only if you choose WhatsApp reminders.</small><p tabindex="-1" class="error" data-error-for="phone"></p></div>
+      <fieldset class="service-communications" aria-describedby="service_communications_note"><legend>Required service communications</legend><p id="service_communications_note">By submitting, you ask One Time Mishnayos to respond to this signup. Service messages about signup receipt, account/security, class access, or support may be sent when needed. Optional daily reminders are separate.</p></fieldset>
+      <fieldset class="optional-reminders" aria-describedby="optional_reminders_note"><legend>Optional class reminders</legend><p id="optional_reminders_note">Choose each reminder channel separately. No optional reminders are selected by default.</p><label><input id="email_reminder_consent" name="email_reminder_consent" type="checkbox" value="yes"> Email class reminders</label><label><input id="whatsapp_reminder_consent" name="whatsapp_reminder_consent" type="checkbox" value="yes"> WhatsApp class reminders</label><p class="policy-note">Reminder consent policy version: ${escapeHtml(legalPolicyMetadata.consentPolicyVersion)}. You can stop optional messages by using unsubscribe instructions, replying STOP where supported, or contacting the One Time team.</p></fieldset>
+      <p class="signup-policy-note">By submitting, you agree to the <a href="/terms">Terms</a> and acknowledge the <a href="/privacy">Privacy Notice</a>, including the Communication and Reminder Consent and Parent/Guardian and Student Data Notice.</p>
+      <button class="button button-primary" type="submit" data-enhanced-submit hidden>Sign Up Now</button>
       <p class="form-status" role="status" data-form-status></p>
     </form>
     <div class="success-panel" data-success-panel hidden tabindex="-1">
@@ -289,6 +298,91 @@ function simplePage(
   return html.replace('index, follow', robots);
 }
 
+function renderParagraphs(paragraphs: readonly string[] | undefined) {
+  return (paragraphs ?? []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('');
+}
+
+function renderBullets(bullets: readonly string[] | undefined) {
+  if (!bullets?.length) return '';
+  return `<ul>${bullets.map((bullet) => `<li>${escapeHtml(bullet)}</li>`).join('')}</ul>`;
+}
+
+function renderLegalSections(sections: readonly LegalSection[]) {
+  return sections
+    .map(
+      (section) => `<section class="legal-section">
+        <h2>${escapeHtml(section.heading)}</h2>
+        ${renderParagraphs(section.paragraphs)}
+        ${renderBullets(section.bullets)}
+      </section>`,
+    )
+    .join('');
+}
+
+function renderLegalDocument(document: LegalDocument, headingLevel: 'h1' | 'h2' = 'h1') {
+  const Heading = headingLevel;
+  return `<article class="legal-document" id="${escapeHtml(document.id)}" data-policy-version="${escapeHtml(document.version)}">
+    <div class="legal-document-header">
+      <p class="eyebrow">Policy version ${escapeHtml(document.version)}</p>
+      <${Heading}>${escapeHtml(document.title)}</${Heading}>
+      <p>${escapeHtml(document.summary)}</p>
+      <dl class="legal-meta">
+        <div><dt>Effective date</dt><dd>${escapeHtml(document.effectiveDate)}</dd></div>
+        <div><dt>Last updated</dt><dd>${escapeHtml(legalPolicyMetadata.lastUpdated)}</dd></div>
+      </dl>
+    </div>
+    ${renderLegalSections(document.sections)}
+  </article>`;
+}
+
+function renderPrivacyDataCategories() {
+  const items = privacyDataCategories
+    .map(
+      (category) => `<article class="legal-category">
+        <h3>${escapeHtml(category.label)}</h3>
+        <p><strong>Examples:</strong> ${escapeHtml(category.examples.join('; '))}.</p>
+        <p><strong>Purpose:</strong> ${escapeHtml(category.purpose)}</p>
+        <p><strong>Handling:</strong> ${escapeHtml(category.handling)}</p>
+      </article>`,
+    )
+    .join('');
+  return `<section class="legal-section" id="data-categories">
+    <h2>Data We May Process</h2>
+    <p>These categories reflect records visible in the current system. They are listed at a high level and do not expose private rows, secrets, credentials, private links, or internal database details.</p>
+    <div class="legal-category-grid">${items}</div>
+  </section>`;
+}
+
+function legalPage(
+  title: string,
+  document: LegalDocument,
+  canonicalPath: string,
+  extraDocuments: readonly LegalDocument[] = [],
+  includePrivacyCategories = false,
+) {
+  const extra = extraDocuments
+    .map((extraDocument) => renderLegalDocument(extraDocument, 'h2'))
+    .join('');
+  const body = `${header()}<main class="legal-page">
+    ${renderLegalDocument(document)}
+    ${includePrivacyCategories ? renderPrivacyDataCategories() : ''}
+    ${extra}
+    <section class="legal-section legal-contact" aria-labelledby="policy-contact">
+      <h2 id="policy-contact">Policy Contact Metadata</h2>
+      <dl class="legal-meta">
+        <div><dt>Organization</dt><dd>${escapeHtml(legalPolicyMetadata.contact.organization)}</dd></div>
+        <div><dt>Contact role</dt><dd>${escapeHtml(legalPolicyMetadata.contact.role)}</dd></div>
+        <div><dt>Public contact path</dt><dd><a href="${escapeHtml(legalPolicyMetadata.contact.publicPath)}">${escapeHtml(legalPolicyMetadata.contact.publicPath)}</a></dd></div>
+        <div><dt>Policy set version</dt><dd>${escapeHtml(legalPolicyMetadata.policySetVersion)}</dd></div>
+      </dl>
+    </section>
+  </main>${footer()}`;
+  return pageShell(title, body, {
+    canonicalPath,
+    description: document.summary,
+  }).replace('index, follow', 'index, follow');
+}
+
 await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
 await writeFile(path.join(outDir, 'index.html'), landingPage());
@@ -305,23 +399,19 @@ await writeFile(
 );
 await writeFile(
   path.join(outDir, 'privacy.html'),
-  simplePage(
-    'Privacy | One Time Mishnayos',
-    'Privacy',
-    'We collect only the signup information needed to respond to your One Time Mishnayos interest request.',
-    'noindex, nofollow',
+  legalPage(
+    'Privacy Notice | One Time Mishnayos',
+    privacyNotice,
     '/privacy',
+    [communicationConsentNotice, parentGuardianStudentDataNotice],
+    true,
   ),
 );
 await writeFile(
   path.join(outDir, 'terms.html'),
-  simplePage(
-    'Terms | One Time Mishnayos',
-    'Terms',
-    'This foundation slice does not sell access, process payments, or grant member accounts.',
-    'noindex, nofollow',
-    '/terms',
-  ),
+  legalPage('Terms of Use | One Time Mishnayos', termsOfUse, '/terms', [
+    communicationConsentNotice,
+  ]),
 );
 await writeFile(
   path.join(outDir, '404.html'),
