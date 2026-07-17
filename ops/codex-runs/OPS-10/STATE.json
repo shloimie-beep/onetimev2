@@ -20,12 +20,13 @@
     }
   },
   "candidate": {
-    "status": "integrated_pending_final_ci_and_predeploy_gates",
+    "status": "integrated_pending_ci_after_node24_drawer_e2e_repair",
     "current_working_tree_repairs": [
       "Targeted Prettier repair for known PR #60 Node 24 verify failures.",
       "OPS-06 load/backpressure guarded cleanup repair.",
       "Concurrent public lead idempotency advisory-lock repair after PR #61 OPS-06 artifact showed 8/12 fulfilled under contention.",
-      "OT-114 migration namespace renumber from 2010_ot114_crm_communications_support to 2016_ot114_crm_communications_support."
+      "OT-114 migration namespace renumber from 2010_ot114_crm_communications_support to 2016_ot114_crm_communications_support.",
+      "OT-39 drawer focus-loop e2e now covers every visible drawer link before wrapping to Close navigation after owner/support nav items were merged."
     ],
     "frozen_inputs_recorded": true,
     "local_gates_recorded": true,
@@ -33,7 +34,9 @@
       "ot107_student_helper": "satisfied_in_candidate; branch tail not applied because candidate already contains implementation and newer migration assertions",
       "ot114_crm_communications_support": "merged_committed_pushed"
     },
-    "requires_ci": ["PR #61 checks on the pushed checkpoint commit containing this state file"]
+    "requires_ci": [
+      "PR #61 checks on the pushed checkpoint commit containing the Node 24 drawer e2e repair"
+    ]
   },
   "railway_readback": {
     "staging": {
@@ -81,9 +84,13 @@
     "Read back Railway staging and production project/service/deployment/database identities without printing secrets or raw database URLs.",
     "Renumbered OT-114 migration to 2016_ot114_crm_communications_support and reran focused migration/auth CRM integration tests successfully.",
     "Created OPS-10 handoff draft artifacts for decisions, migration plan, backup/restore, rollback, provider canaries, visual acceptance, performance, mutation ledger, and final report.",
-    "Committed the migration-renumber and OPS-10 handoff checkpoint; use git HEAD for the exact commit containing this state file."
+    "Committed the migration-renumber and OPS-10 handoff checkpoint as b10e1eb891e562754e62f532f737d3bd51526429.",
+    "Committed the refreshed OPS-10 portal visual evidence checkpoint as b5592fbfdaf3aad902c9f2237ea340c93d457480.",
+    "Investigated PR #61 Node 24 verify failure on commit b5592fbfdaf3aad902c9f2237ea340c93d457480 and confirmed the only failing case was the OT-39 mobile drawer focus-loop e2e after owner/support nav items existed.",
+    "Repaired the OT-39 drawer focus-loop test to assert all visible drawer links in tab order and final wrap to Close navigation.",
+    "Ran local focused drawer e2e, targeted Prettier check, lint, secret scan, and full browser e2e successfully after the Node 24 repair."
   ],
-  "next_safe_action": "Push the current branch head, then wait for PR #61 checks on the new head before any staging deployment.",
+  "next_safe_action": "Commit and push the Node 24 drawer e2e repair, then wait for PR #61 checks on the new head before any staging deployment.",
   "blockers": [
     {
       "id": "OPS10-BLOCKER-LOCAL-PG",
@@ -111,5 +118,5 @@
     "credential_disclosure_authorized": false,
     "production_deploy_authorized_after_required_gates": true
   },
-  "updated_at": "2026-07-17T08:50:00+03:00"
+  "updated_at": "2026-07-17T09:10:06+03:00"
 }

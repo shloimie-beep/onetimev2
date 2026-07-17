@@ -56,3 +56,14 @@ available. Do not block core login, CRM, Content, and portals on optional
 provider canaries.
 
 Evidence: OPS-10 authorization boundary and provider-canary matrix.
+
+## DEC-OPS10-007 - Drawer Focus E2E Repair
+
+Decision: Keep the merged owner/support navigation behavior and repair the
+OT-39 drawer focus-loop e2e so it asserts every visible drawer link in tab order
+before the final wrap back to Close navigation.
+
+Evidence: PR #61 Node 24 verify failed on commit
+`b5592fbfdaf3aad902c9f2237ea340c93d457480` because the stale test expected the
+second Tab to wrap immediately from CRM to Close. Local focused drawer e2e,
+formatting, lint, secret scan, and full `npm run e2e` passed after the repair.

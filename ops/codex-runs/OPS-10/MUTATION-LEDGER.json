@@ -25,6 +25,11 @@
       "kind": "git_commit",
       "sha": "see git HEAD for the commit containing this ledger",
       "description": "OPS-10 predeploy handoff artifacts and OT-114 migration namespace repair"
+    },
+    {
+      "kind": "git_commit",
+      "sha": "see git HEAD for the commit containing the Node 24 drawer e2e repair",
+      "description": "Align OT-39 mobile drawer focus-loop coverage with the merged owner/support navigation shell"
     }
   ],
   "external_mutations": {

@@ -136,16 +136,21 @@ test('mobile drawer traps focus, closes by every shell action, and restores focu
   const menu = page.getByRole('button', { name: 'Open navigation' });
 
   await menu.click();
-  await expect(page.getByRole('dialog', { name: 'One Time navigation' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Close navigation' })).toBeFocused();
+  const drawer = page.getByRole('dialog', { name: 'One Time navigation' });
+  const drawerClose = drawer.getByRole('button', { name: 'Close navigation' });
+  await expect(drawer).toBeVisible();
+  await expect(drawerClose).toBeFocused();
+  const drawerLinks = drawer.getByRole('link');
+  const drawerLinkCount = await drawerLinks.count();
+  expect(drawerLinkCount).toBeGreaterThan(0);
+  for (let index = 0; index < drawerLinkCount; index += 1) {
+    await page.keyboard.press('Tab');
+    await expect(drawerLinks.nth(index)).toBeFocused();
+  }
   await page.keyboard.press('Tab');
-  await expect(
-    page.getByRole('dialog', { name: 'One Time navigation' }).getByRole('link', { name: 'CRM' }),
-  ).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: 'Close navigation' })).toBeFocused();
+  await expect(drawerClose).toBeFocused();
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog', { name: 'One Time navigation' })).toBeHidden();
+  await expect(drawer).toBeHidden();
   await expect(menu).toBeFocused();
 
   await menu.click();

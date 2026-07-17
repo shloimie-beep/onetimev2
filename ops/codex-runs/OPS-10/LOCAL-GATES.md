@@ -69,6 +69,22 @@ Generated: 2026-07-17T05:20:00Z
 | #61 | OT-83 learner-seat proof | Passed on commit `a058455705a91308ff2311aa1809540c83163abd` | GitHub Actions after OT-114 merge |
 | #61 | Node 24 verify | In progress on commit `a058455705a91308ff2311aa1809540c83163abd` | GitHub Actions |
 
+| #61 | OPS-06 deterministic checks | Passed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` | GitHub Actions after OPS-10 handoff/evidence checkpoint |
+| #61 | OT-37 PostgreSQL assurance | Passed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` | GitHub Actions after OPS-10 handoff/evidence checkpoint |
+| #61 | OT-75 static readiness | Passed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` | GitHub Actions after OPS-10 handoff/evidence checkpoint |
+| #61 | OT-83 learner-seat proof | Passed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` | GitHub Actions after OPS-10 handoff/evidence checkpoint |
+| #61 | Node 24 verify | Failed on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480` in `tests/e2e/ot-39/crm-privacy-usability.spec.ts` drawer focus loop | GitHub Actions job `87816272085`; failure artifact confirmed focus moved past CRM after owner/support nav items existed |
+
+## Node 24 E2E Repair Gates
+
+| Gate               | Command                                                                                                               | Result                             |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| Focused drawer e2e | `npx playwright test tests/e2e/ot-39/crm-privacy-usability.spec.ts -g "mobile drawer traps focus" --project=chromium` | Passed, 1 test                     |
+| Test formatting    | `npx prettier --check tests/e2e/ot-39/crm-privacy-usability.spec.ts`                                                  | Passed                             |
+| Lint               | `npm run lint`                                                                                                        | Passed                             |
+| Secret scan        | `npm run secret:scan`                                                                                                 | Passed across 1154 repo text files |
+| Full browser e2e   | `npm run e2e`                                                                                                         | Passed, 35 tests                   |
+
 ## Railway Readback
 
 No raw Railway variables, database URLs, credentials, passwords, tokens, private

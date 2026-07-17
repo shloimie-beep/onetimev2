@@ -26,8 +26,15 @@ This is a draft closeout artifact while OPS-10 remains in progress.
 - Local focused auth, CRM, portal, support, communications, a11y/perf, build,
   brand, typecheck, lint, secret scan, and OPS-06 gates have passed as recorded
   in `LOCAL-GATES.md`.
-- PR #61 must complete again on the pushed checkpoint commit after the
-  migration-renumber follow-up is pushed.
+- PR #61 passed OPS-06 deterministic, PostgreSQL assurance, static readiness,
+  and learner-seat proof on commit `b5592fbfdaf3aad902c9f2237ea340c93d457480`.
+- Node 24 verify on that commit failed only in the OT-39 drawer focus-loop e2e
+  after owner/support navigation added extra drawer links; the test now asserts
+  the full visible drawer-link tab order and final wrap to Close navigation.
+- Local focused drawer e2e, formatting, lint, secret scan, and full `npm run e2e`
+  passed after the Node 24 repair.
+- PR #61 must complete again on the pushed checkpoint commit containing the
+  Node 24 drawer e2e repair before any staging deployment.
 
 ## Not Live Ready
 
