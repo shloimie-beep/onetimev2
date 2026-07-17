@@ -1,0 +1,8 @@
+ops/codex-runs/W12-100-06/CHANGED-FILES.txt
+ops/codex-runs/W12-100-06/FINAL-REPORT.md
+ops/codex-runs/W12-100-06/ORIGINAL-PROMPT.md
+ops/codex-runs/W12-100-06/RESUME.md
+ops/codex-runs/W12-100-06/STAGING-OPERATOR-RUNBOOK.md
+ops/codex-runs/W12-100-06/STATE.json
+scripts/w12-100/identity/provision-first-identity-set.ts
+tests/integration/accounts/w12-100-identity-provisioning.test.ts
