@@ -1,0 +1,83 @@
+{
+  "schema_version": "onetime.w12_100.whatsapp_canary_state.v1",
+  "generated_at": "2026-07-17T20:51:34.0493628+03:00",
+  "status": "blocked_before_whatsapp_invocation",
+  "expected_candidate_sha": "ac02ce9cd4f690d3b305b30ec1eef4e18d48cd5c",
+  "observed_staging_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
+  "observed_staging_version": "ops11-1197673",
+  "observed_latest_migration": "2190_ot109_rabbi_content_publisher",
+  "blocked_reasons": [
+    "Staging /version does not report the exact W12-100 candidate SHA.",
+    "Exact staging WhatsApp provider account could not be verified from protected configuration.",
+    "Staging isolation true could not be verified from protected configuration.",
+    "Protected WhatsApp credential and webhook secret are not present in the local shell.",
+    "Protected allowlisted canary recipient is not present in the local shell.",
+    "Explicit WhatsApp canary authorization is not present in the local shell.",
+    "Verified consent and no-suppression state cannot be evaluated without the protected recipient and exact staging runtime.",
+    "Fixed approved canary copy and one-message budget were not provisioned for this live run.",
+    "W12-100-08 readiness matrix records protected WhatsApp values as absent."
+  ],
+  "budget": {
+    "allowlisted_consented_operator_owned_recipients": 1,
+    "controlled_outbound_messages_allowed": 1,
+    "webhook_status_readbacks_allowed": 1,
+    "broad_sends_allowed": 0,
+    "recipients_used": 0,
+    "controlled_outbound_messages_sent": 0,
+    "webhook_status_readbacks_processed": 0,
+    "broad_sends_performed": 0
+  },
+  "required_live_steps": {
+    "provider_account_exact_match": "blocked_missing_protected_configuration",
+    "staging_isolation_true": "blocked_missing_protected_configuration",
+    "protected_credential_and_webhook_secret": "blocked_missing_local_env",
+    "protected_recipient": "blocked_missing_local_env",
+    "explicit_canary_authorization": "blocked_missing_local_env",
+    "verified_consent_no_suppression": "not_evaluated_after_runtime_and_recipient_block",
+    "fixed_approved_canary_copy": "blocked_not_provisioned_for_live_run",
+    "budget_exactly_one": "blocked_not_provisioned_for_live_run",
+    "send_controlled_message": "not_executed",
+    "status_webhook_readback": "not_executed",
+    "signature_dedupe_replay_verification": "not_executed"
+  },
+  "provider_invocation_negative_cases": {
+    "different_recipient": "not_executed_provider_invocation_blocked",
+    "unknown_consent": "not_executed_provider_invocation_blocked",
+    "suppression": "not_executed_provider_invocation_blocked",
+    "production_environment": "not_executed_provider_invocation_blocked",
+    "exhausted_budget": "not_executed_provider_invocation_blocked",
+    "missing_isolation_proof": "not_executed_provider_invocation_blocked"
+  },
+  "local_evidence": {
+    "readiness_matrix": "ops/codex-runs/W12-100-08/WHATSAPP-STAGING-READINESS-MATRIX.json",
+    "readiness_matrix_protected_values": "absent",
+    "runtime_controls": [
+      "challenge_and_signature_validation",
+      "replay_duplicate_malformed_oversized_handling",
+      "sender_account_rate_limits",
+      "opt_out_and_suppression_precedence",
+      "consent_before_outbound_eligibility",
+      "account_product_scope",
+      "one_recipient_canary_budget_enforcement"
+    ],
+    "live_provider_verification": "blocked"
+  },
+  "safety": {
+    "phone_number_printed": false,
+    "token_printed": false,
+    "message_body_printed": false,
+    "provider_payload_printed": false,
+    "raw_provider_id_printed": false,
+    "whatsapp_provider_invocations": 0,
+    "whatsapp_provider_mutations": 0,
+    "production_mutations": 0,
+    "request_ids_recorded": [],
+    "canary_authorization_disabled_or_expired": "not_applicable_no_authorization_enabled"
+  },
+  "evidence": [
+    "ops/codex-runs/W12-100-WHATSAPP-CANARY/live-evidence/staging-version-ready.json",
+    "ops/codex-runs/W12-100-08/WHATSAPP-STAGING-READINESS-MATRIX.json",
+    "ops/codex-runs/W12-100-WHATSAPP-CANARY/EXTERNAL-ACTION-LEDGER.md",
+    "ops/codex-runs/W12-100-WHATSAPP-CANARY/FINAL-REPORT.md"
+  ]
+}
