@@ -60,6 +60,7 @@ type SchemaSummary = {
 type DatabaseContext = {
   name: string;
   pool: pg.Pool;
+  markTeardownStarted: () => void;
 };
 
 const OUTPUT_DIR = path.resolve(process.env.OPS11_PG18_OUTPUT_DIR ?? 'ops/evidence/ops-11/pg18');
@@ -144,6 +145,7 @@ async function main() {
     process.stdout.write('OPS-11 PostgreSQL 18 restore-clone smoke passed.\n');
   } finally {
     for (const context of contexts.reverse()) {
+      context.markTeardownStarted();
       await context.pool.end();
       await dropDatabase(adminPool, context.name);
     }
@@ -206,16 +208,27 @@ async function createDatabase(
   } finally {
     await adminPool.end();
   }
+  let teardownStarted = false;
+  const pool = new pg.Pool({
+    ...adminConfig,
+    database: name,
+    max: 10,
+    connectionTimeoutMillis: 5_000,
+    idleTimeoutMillis: 5_000,
+    statement_timeout: 30_000,
+  });
+  pool.on('error', (error: unknown) => {
+    if (teardownStarted && pgCode(error) === '57P01') return;
+    process.stderr.write(`OPS-11 PostgreSQL 18 pool error (${name}): ${errorMessage(error)}\n`);
+    process.exitCode = 1;
+  });
+
   return {
     name,
-    pool: new pg.Pool({
-      ...adminConfig,
-      database: name,
-      max: 10,
-      connectionTimeoutMillis: 5_000,
-      idleTimeoutMillis: 5_000,
-      statement_timeout: 30_000,
-    }),
+    pool,
+    markTeardownStarted: () => {
+      teardownStarted = true;
+    },
   };
 }
 
@@ -447,11 +460,19 @@ function sha256Json(value: JsonValue) {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
+function pgCode(error: unknown) {
+  return isRecord(error) && typeof error.code === 'string' ? error.code : null;
+}
+
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 main().catch((error: unknown) => {
-  process.stderr.write(
-    `OPS-11 PostgreSQL 18 restore-clone smoke failed: ${
-      error instanceof Error ? error.message : String(error)
-    }\n`,
-  );
+  process.stderr.write(`OPS-11 PostgreSQL 18 restore-clone smoke failed: ${errorMessage(error)}\n`);
   process.exitCode = 1;
 });
