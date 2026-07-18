@@ -1,6 +1,6 @@
 {
   "schema": "onetime.w13_102.external_effects.v1",
-  "updated_at": "2026-07-19T00:45:00+03:00",
+  "updated_at": "2026-07-19T00:49:00+03:00",
   "status": "tracking",
   "production_database_writes": 0,
   "external_email_sends": 0,
@@ -13,12 +13,12 @@
   "vimeo_uploads": 0,
   "buffer_drafts": 0,
   "crm_contacts_imported": 0,
-  "railway_backup_proof_deployments": 1,
+  "railway_backup_proof_deployments": 2,
   "staging_runtime_deployments": 6,
   "production_runtime_deployments": 0,
   "notes": [
     "No W13-102 production database writes, provider sends, CRM imports, tickets, payments, meetings, uploads, drafts, or provider canaries have been performed.",
-    "A W13-102 Railway proof deployment created a fresh native production PG18 backup/restore report without printing secrets or PII.",
+    "W13-102 Railway proof deployments created native production PG18 backup/restore reports without printing secrets or PII. The current fresh proof is deployment 02abfb5a-e115-49fb-b159-3f8c3e5ab211.",
     "Provider and CRM discovery produced sanitized committed evidence only; private CRM source paths were written outside Git.",
     "W13-102 continuation added and tested a disabled-by-default Resend webhook route locally; it performed no external sends and no production writes.",
     "Staging deployment, rollback, and roll-forward were executed with sink/disabled transports. No production runtime deployment was performed in this evidence checkpoint."

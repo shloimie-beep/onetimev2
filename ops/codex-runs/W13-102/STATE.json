@@ -1,7 +1,7 @@
 {
   "schema": "onetime.codex_run_state.v1",
   "run_id": "W13-102",
-  "updated_at": "2026-07-19T00:45:00+03:00",
+  "updated_at": "2026-07-19T00:49:00+03:00",
   "terminal_status": "CORE_LIVE_IDENTITY_HANDOFF_BLOCKED",
   "current_phase": "phase_9_production_backup_and_deployment_gate",
   "overall_status": "runtime_change_candidate_staging_passed_production_preserved",
@@ -64,7 +64,7 @@
     "external_sends": 0,
     "crm_contacts_imported": 0,
     "provider_canaries": 0,
-    "railway_backup_proof_deployments": 1,
+    "railway_backup_proof_deployments": 2,
     "staging_runtime_deployments": 6
   },
   "notes": [
@@ -72,7 +72,7 @@
     "Healthy deployed runtime 466d8489bb8c7a3a57f7590929b58e7857420e86 is preserved until replacement passes staging and rollback gates.",
     "No secrets, PII, raw activation links, tokens, or source rows may be written to committed evidence.",
     "Phase 1 live read-only baseline passed with production runtime source preserved.",
-    "Fresh W13-102 production PG18 backup/restore proof passed on Railway proof deployment 14adb936-e81f-47a2-9fc9-aa8248444250.",
+    "Fresh W13-102 production PG18 backup/restore proof passed on Railway proof deployment 02abfb5a-e115-49fb-b159-3f8c3e5ab211.",
     "PR #91 follow-up CI repair completed: W13-101 Prettier normalization was committed, then the Node 24 integration failure was traced to a date-dependent W12-100 identity provisioning test and fixed with deterministic lifecycle acceptance clocks.",
     "W13-102 production identity command is implemented and tested; real production apply remains blocked on private manifest values.",
     "Transactional email webhook endpoint is now implemented and tested with signed raw-body Svix fixtures and durable redacted provider-event ledger storage; real send remains blocked by missing protected Resend/sender runtime material.",

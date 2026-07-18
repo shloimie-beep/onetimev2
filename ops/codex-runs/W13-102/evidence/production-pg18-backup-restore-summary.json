@@ -1,9 +1,10 @@
-﻿{
-  "deployment_id": "14adb936-e81f-47a2-9fc9-aa8248444250",
-  "run_id": "w13-102-prod-pg18-20260718T200730Z",
+{
+  "deployment_id": "02abfb5a-e115-49fb-b159-3f8c3e5ab211",
+  "run_id": "w13-102-prod-pg18-20260718T214715Z",
   "status": "passed",
-  "dump_size_bytes": 3217617,
-  "dump_sha256": "95bd41a4f58b3bd29af3ee8cc3f6846be7508ce95f858007e7276a0accab0de8",
+  "generated_at": "2026-07-18T21:48:05Z",
+  "dump_size_bytes": 3217619,
+  "dump_sha256": "b8fcab2299dbe0f8f18eabfefdb8808c8beeaddcd8e745ca5ef4cca1d17e7cb4",
   "archive_list_entries": 4956,
   "private_backup_path_recorded_in_private_service": true,
   "latest_migration_source": "2203_w13_100_student_gamification",

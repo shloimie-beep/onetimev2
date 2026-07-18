@@ -26,7 +26,7 @@ Deploy IDs preserved: web `243b614a-bd51-49fe-9aae-b17b99a6fe22`, worker `52226a
 
 Live health/readiness/version: passed. Latest production migration remained `2203_w13_100_student_gamification`. Final public smoke after local closeout also passed `/version`, `/health`, `/ready`, `/login`, `/activate`, and `/reset-password`.
 
-Backup/restore: fresh W13-102 PG18 backup/restore proof passed on Railway proof deployment `14adb936-e81f-47a2-9fc9-aa8248444250`.
+Backup/restore: fresh W13-102 PG18 backup/restore proof passed on Railway proof deployment `02abfb5a-e115-49fb-b159-3f8c3e5ab211`.
 
 Activation/reset delivery: not delivered. The task-scoped identity command is implemented, tested, dry-run by default, and blocked before production apply because the private authorization manifest is incomplete and transactional email is not configured.
 
@@ -36,7 +36,7 @@ CRM: all six expected OPS-13A source hashes were found exactly once in Downloads
 
 Provider canaries: no provider canaries were executed. Transactional email now has a mounted raw-body Resend webhook candidate at `/api/v1/delivery/resend/webhook`; it remains blocked before real send by missing Resend API key, webhook secret, sender, reply-to evidence, and protected webhook enablement. WhatsApp, BNA support, Stripe TEST, Zoom, Vimeo, Telegram, OpenAI helper, and Buffer are blocked by lane-specific missing protected config or provider-off state.
 
-External effects: production database writes `0`, external email sends `0`, CRM contacts imported `0`, provider canaries `0`, live Stripe charges `0`, meetings `0`, uploads `0`, drafts `0`, BNA tickets `0`, backup proof deployments `1`.
+External effects: production database writes `0`, external email sends `0`, CRM contacts imported `0`, provider canaries `0`, live Stripe charges `0`, meetings `0`, uploads `0`, drafts `0`, BNA tickets `0`, backup proof deployments `2`.
 
 Evidence:
 

@@ -1,6 +1,6 @@
 {
   "schema": "onetime.w13_102.live_baseline.v1",
-  "updated_at": "2026-07-18T23:10:00+03:00",
+  "updated_at": "2026-07-19T00:49:00+03:00",
   "status": "passed_readonly_baseline",
   "production_url": "https://join.onetimeonetime.com",
   "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
@@ -71,10 +71,10 @@
   },
   "backup_restore": {
     "status": "passed",
-    "deployment_id": "14adb936-e81f-47a2-9fc9-aa8248444250",
-    "run_id": "w13-102-prod-pg18-20260718T200730Z",
-    "dump_sha256": "95bd41a4f58b3bd29af3ee8cc3f6846be7508ce95f858007e7276a0accab0de8",
-    "dump_size_bytes": 3217617,
+    "deployment_id": "02abfb5a-e115-49fb-b159-3f8c3e5ab211",
+    "run_id": "w13-102-prod-pg18-20260718T214715Z",
+    "dump_sha256": "b8fcab2299dbe0f8f18eabfefdb8808c8beeaddcd8e745ca5ef4cca1d17e7cb4",
+    "dump_size_bytes": 3217619,
     "archive_list_entries": 4956,
     "latest_migration_source": "2203_w13_100_student_gamification",
     "latest_migration_restored": "2203_w13_100_student_gamification",
@@ -94,7 +94,7 @@
   "external_effects": {
     "writes": 0,
     "sends": 0,
-    "railway_backup_proof_deployments": 1
+    "railway_backup_proof_deployments": 2
   },
   "evidence_paths": [
     "ops/codex-runs/W13-102/evidence/http-smoke.json",

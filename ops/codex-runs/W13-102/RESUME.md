@@ -1,6 +1,6 @@
 # W13-102 Resume
 
-Last updated: 2026-07-19T00:45:00+03:00
+Last updated: 2026-07-19T00:49:00+03:00
 
 Worktree:
 
@@ -48,6 +48,12 @@ Phase 1 evidence:
 - CRM source discovery: `ops/codex-runs/W13-102/evidence/crm-source-discovery.json`
 - Final public HTTP smoke: `ops/codex-runs/W13-102/evidence/final-http-smoke.json`
 - Staging rollback/roll-forward summary: `ops/codex-runs/W13-102/evidence/staging-rollback-rollforward-summary.json`
+
+Fresh production backup/restore:
+
+- Deployment: `02abfb5a-e115-49fb-b159-3f8c3e5ab211`
+- Run ID: `w13-102-prod-pg18-20260718T214715Z`
+- Status: passed; row-count hash and migration-ledger hash matched after restore.
 
 Phase 2 notes:
 

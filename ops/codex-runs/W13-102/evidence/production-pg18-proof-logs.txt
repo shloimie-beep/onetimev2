@@ -1,62 +1,32 @@
-﻿Mounting volume on: /var/lib/containers/railwayapp/bind-mounts/e1d544ba-20c1-4886-a2b4-459f33515a3d/vol_q8g4wk8hqqkef2ie
-Starting Container
-{
-    "postgres_server_version_num": "180004",
-  "generated_at": "2026-07-18T20:08:25Z",
-    "pg_dump_version": "pg_dump (PostgreSQL) 18.4 (Debian 18.4-1.pgdg13+1)",
-OPS11_PROD_PG18_PROOF_REPORT_START
-    "pg_restore_version": "pg_restore (PostgreSQL) 18.4 (Debian 18.4-1.pgdg13+1)",
-  "run_id": "w13-102-prod-pg18-20260718T200730Z",
-    "extensions": ["pgcrypto=1.4", "plpgsql=1.0"],
-  "database_service": "Postgres-j9Pi",
-  "environment": {
-    "postgres_server_version": "PostgreSQL 18.4 (Debian 18.4-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
-    "collation_count": 880
-  },
-  "dump": {
-  },
-    "path": "/backup/w13-102-prod-pg18-20260718T200730Z/production-pg18.dump",
-  "restore": {
-    "format": "custom",
-    "restored_database": "ops11_restore",
-    "no_owner": true,
-    "schema_summary_source": {
-    "no_acl": true,
-    "size_bytes": 3217617,
-    "sha256": "95bd41a4f58b3bd29af3ee8cc3f6846be7508ce95f858007e7276a0accab0de8",
-    "archive_list_entries": 4956
-      "table_count": 182,
-      "index_count": 675,
-      "constraint_count": 3287,
-      "sequence_count": 0,
-      "migration_table_present": 1,
-      "migration_rows": 39,
-      "latest_migration": "2203_w13_100_student_gamification",
-      "table_row_count_hash": "8d0530097359e489176e6b0ccc4a7eae024c35e04f0928cddc36e21e558d6145",
-      "migration_ledger_hash": "ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07"
-    },
-    "schema_summary_restored": {
-      "table_count": 182,
-      "index_count": 675,
-      "constraint_count": 3287,
-      "sequence_count": 0,
-      "migration_table_present": 1,
-      "migration_rows": 39,
-      "latest_migration": "2203_w13_100_student_gamification",
-      "table_row_count_hash": "8d0530097359e489176e6b0ccc4a7eae024c35e04f0928cddc36e21e558d6145",
-      "migration_ledger_hash": "ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07"
-    }
-  },
-  "verdict": {
-    "status": "passed",
-    "hard_failures": [],
-    "external_mutations": {
-      "production_database": false,
-      "railway": true,
-      "providers": false,
-      "sends": false
-    }
-  }
-}
-OPS11_PROD_PG18_PROOF_REPORT_END
-OPS11_PROD_PG18_PROOF_REPORT_JSON={  "generated_at": "2026-07-18T20:08:25Z",  "run_id": "w13-102-prod-pg18-20260718T200730Z",  "database_service": "Postgres-j9Pi",  "environment": {    "postgres_server_version": "PostgreSQL 18.4 (Debian 18.4-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",    "postgres_server_version_num": "180004",    "pg_dump_version": "pg_dump (PostgreSQL) 18.4 (Debian 18.4-1.pgdg13+1)",    "pg_restore_version": "pg_restore (PostgreSQL) 18.4 (Debian 18.4-1.pgdg13+1)",    "extensions": ["pgcrypto=1.4", "plpgsql=1.0"],    "collation_count": 880  },  "dump": {    "path": "/backup/w13-102-prod-pg18-20260718T200730Z/production-pg18.dump",    "format": "custom",    "no_owner": true,    "no_acl": true,    "size_bytes": 3217617,    "sha256": "95bd41a4f58b3bd29af3ee8cc3f6846be7508ce95f858007e7276a0accab0de8",    "archive_list_entries": 4956  },  "restore": {    "restored_database": "ops11_restore",    "schema_summary_source": {      "table_count": 182,      "index_count": 675,      "constraint_count": 3287,      "sequence_count": 0,      "migration_table_present": 1,      "migration_rows": 39,      "latest_migration": "2203_w13_100_student_gamification",      "table_row_count_hash": "8d0530097359e489176e6b0ccc4a7eae024c35e04f0928cddc36e21e558d6145",      "migration_ledger_hash": "ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07"    },    "schema_summary_restored": {      "table_count": 182,      "index_count": 675,      "constraint_count": 3287,      "sequence_count": 0,      "migration_table_present": 1,      "migration_rows": 39,      "latest_migration": "2203_w13_100_student_gamification",      "table_row_count_hash": "8d0530097359e489176e6b0ccc4a7eae024c35e04f0928cddc36e21e558d6145",      "migration_ledger_hash": "ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07"    }  },  "verdict": {    "status": "passed",    "hard_failures": [],    "external_mutations": {      "production_database": false,      "railway": true,      "providers": false,      "sends": false    }  }}
+W13-102 fresh production PG18 backup/restore proof
+
+Deployment: 02abfb5a-e115-49fb-b159-3f8c3e5ab211
+Run ID: w13-102-prod-pg18-20260718T214715Z
+Generated: 2026-07-18T21:48:05Z
+Proof service: ops11-pg18-proof-20260717
+Database service: Postgres-j9Pi
+
+Sanitized log markers observed:
+- OPS11_PROD_PG18_PROOF_REPORT_START
+- OPS11_PROD_PG18_PROOF_REPORT_END
+- OPS11_PROD_PG18_PROOF_REPORT_JSON present
+
+Sanitized result:
+- status: passed
+- hard_failures: []
+- dump format: custom, no owner, no ACL
+- dump size bytes: 3217619
+- dump sha256: b8fcab2299dbe0f8f18eabfefdb8808c8beeaddcd8e745ca5ef4cca1d17e7cb4
+- archive list entries: 4956
+- latest migration source/restored: 2203_w13_100_student_gamification
+- migration rows source/restored: 39
+- row count hash source/restored: 8d0530097359e489176e6b0ccc4a7eae024c35e04f0928cddc36e21e558d6145
+- migration ledger hash source/restored: ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07
+
+External mutations reported by the proof:
+- production_database: false
+- railway: true
+- providers: false
+- sends: false
+
+No secrets, PII, database URLs, raw rows, or credentials are recorded in this committed log summary.
