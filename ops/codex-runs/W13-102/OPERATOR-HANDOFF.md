@@ -20,4 +20,5 @@ Current private handoff status:
 - Provider setup locations: recorded by missing variable name in `ops/codex-runs/W13-102/evidence/provider-readiness-snapshot.json`.
 - GitHub PR #91 closeout comment: `5012809630`.
 - Direct PR body edit was blocked by local `gh` token scope `read:project`; the existing body was left intact.
+- PR CI follow-up: W13-101 formatting repair was committed; the subsequent W12-100 identity integration failure was fixed by using deterministic lifecycle acceptance clocks. Local full integration passed after the repair.
 - No passwords, raw activation/reset links, tokens, TOTP seeds, credentials, private provider URLs, private contact rows, or PII were committed or printed.

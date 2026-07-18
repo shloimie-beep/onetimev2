@@ -38,6 +38,13 @@ const safety = {
   confirmIsolatedEnvironment: true,
 };
 
+const identityProvisionedAt = new Date('2026-07-17T12:00:00.000Z');
+const identityReplayAt = new Date('2026-07-17T12:05:00.000Z');
+const identityConflictAt = new Date('2026-07-17T12:10:00.000Z');
+const lifecycleAcceptanceAt = new Date('2026-07-17T12:15:00.000Z');
+const studentSetupProvisionedAt = new Date('2026-07-17T12:20:00.000Z');
+const studentSetupAcceptedAt = new Date('2026-07-17T12:25:00.000Z');
+
 beforeEach(async () => {
   config = loadConfig({
     NODE_ENV: 'test',
@@ -127,7 +134,7 @@ describe('W12-100 account and portal identity provisioning', () => {
       requestedProductKey: config.productKey,
       manifest,
       safety,
-      now: new Date('2026-07-17T12:00:00.000Z'),
+      now: identityProvisionedAt,
     });
 
     const serialized = serializeIdentityProvisioningReport(first);
@@ -153,7 +160,7 @@ describe('W12-100 account and portal identity provisioning', () => {
       requestedProductKey: config.productKey,
       manifest,
       safety,
-      now: new Date('2026-07-17T12:05:00.000Z'),
+      now: identityReplayAt,
     });
     expect(replay.counts.already_exists).toBeGreaterThan(0);
     expect(replay.counts.update_blocked).toBe(3);
@@ -170,7 +177,7 @@ describe('W12-100 account and portal identity provisioning', () => {
       requestedProductKey: config.productKey,
       manifest: changedOwner,
       safety,
-      now: new Date('2026-07-17T12:10:00.000Z'),
+      now: identityConflictAt,
     });
     expect(conflict.counts.conflict).toBeGreaterThan(0);
 
@@ -194,7 +201,7 @@ describe('W12-100 account and portal identity provisioning', () => {
       requestedProductKey: config.productKey,
       manifest,
       safety,
-      now: new Date('2026-07-17T12:00:00.000Z'),
+      now: identityProvisionedAt,
     });
 
     await activateOwnerAdminAndExerciseAssurance();
@@ -204,6 +211,7 @@ describe('W12-100 account and portal identity provisioning', () => {
       pool,
       config,
       payload: { token: parentToken, password: 'W12ParentPass!234' },
+      now: lifecycleAcceptanceAt,
     });
     expect(parent).toMatchObject({ role: 'parent', status: 'active' });
 
@@ -215,7 +223,7 @@ describe('W12-100 account and portal identity provisioning', () => {
       requestedProductKey: config.productKey,
       manifest,
       safety,
-      now: new Date('2026-07-17T12:20:00.000Z'),
+      now: studentSetupProvisionedAt,
     });
     const studentSetupOutcomes = second.outcomes.filter(
       (entry) => entry.resource === 'student_setup',
@@ -230,6 +238,7 @@ describe('W12-100 account and portal identity provisioning', () => {
         pool,
         config,
         payload: { token, password: `W12Student${index + 1}!234` },
+        now: studentSetupAcceptedAt,
       });
       expect(student).toMatchObject({ role: 'student', status: 'active' });
     }
@@ -245,6 +254,7 @@ async function activateOwnerAdminAndExerciseAssurance() {
     pool,
     config,
     payload: { token: ownerToken, password: 'W12OwnerPass!234' },
+    now: lifecycleAcceptanceAt,
   });
   expect(owner).toMatchObject({ role: 'owner', status: 'active' });
 
@@ -253,6 +263,7 @@ async function activateOwnerAdminAndExerciseAssurance() {
     pool,
     config,
     payload: { token: adminToken, password: 'W12AdminPass!234' },
+    now: lifecycleAcceptanceAt,
   });
   expect(admin).toMatchObject({ role: 'admin', status: 'active' });
 
@@ -347,12 +358,14 @@ async function activateOwnerAdminAndExerciseAssurance() {
       idempotency_key: 'w12-100-admin-recovery',
       email: manifest.admin.email,
     },
+    now: lifecycleAcceptanceAt,
   });
   const resetToken = await lifecycleProof('password_reset', 'w12-100-admin-recovery');
   const reset = await completePasswordReset({
     pool,
     config,
     payload: { token: resetToken, password: 'W12AdminPass!999' },
+    now: lifecycleAcceptanceAt,
   });
   expect(reset).toMatchObject({ role: 'admin' });
 

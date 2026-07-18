@@ -10,6 +10,8 @@ PR/branch: PR #91, `release/w13-100-controlled-day-one-20260717T182046Z`.
 
 GitHub governance: W13-102 closeout was posted to PR #91 as top-level comment `5012809630`. Direct PR body edit through local `gh` was blocked by a missing `read:project` token scope, so the body was preserved and the closeout was recorded as a PR conversation update.
 
+PR CI follow-up: W13-101 evidence/tool formatting was repaired and pushed. A later Node 24 integration failure was traced to a date-dependent W12-100 identity provisioning test; the test now uses deterministic lifecycle acceptance clocks, and local full integration passes.
+
 Runtime source SHA: `466d8489bb8c7a3a57f7590929b58e7857420e86`.
 
 Evidence head at pickup: `36c20fb62c7097b896a31c57e50860eb9f2339ef`.
@@ -51,6 +53,11 @@ Checks run:
 - `npm run secret:scan`
 - `npx vitest run --config vitest.integration.config.ts tests/integration/accounts/w13-102-production-identity-activation.test.ts`
 - `npx vitest run --config vitest.unit.config.ts tests/unit/providers/ops05-provider-control-center.test.ts tests/unit/delivery/config.test.ts tests/unit/delivery/provider-transport.test.ts`
+- `npx prettier --check tests/integration/accounts/w12-100-identity-provisioning.test.ts`
+- `npx vitest run --config vitest.integration.config.ts tests/integration/accounts/w12-100-identity-provisioning.test.ts`
+- `npm run integration`
+
+Known local formatting note: full-repo `npm run format` still reports broad pre-existing formatting differences unrelated to W13-102; the touched W12-100 test file passes targeted Prettier.
 
 Private handoff directory: `C:\Users\User\.onetime-w13-102-private\`.
 

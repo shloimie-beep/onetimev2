@@ -1,7 +1,7 @@
 {
   "schema": "onetime.codex_run_state.v1",
   "run_id": "W13-102",
-  "updated_at": "2026-07-18T23:31:00+03:00",
+  "updated_at": "2026-07-18T23:39:00+03:00",
   "terminal_status": "CORE_LIVE_IDENTITY_HANDOFF_BLOCKED",
   "current_phase": "phase_10_governance_and_handoff",
   "overall_status": "terminal_blocked_with_core_live",
@@ -71,12 +71,13 @@
     "No secrets, PII, raw activation links, tokens, or source rows may be written to committed evidence.",
     "Phase 1 live read-only baseline passed with production runtime source preserved.",
     "Fresh W13-102 production PG18 backup/restore proof passed on Railway proof deployment 14adb936-e81f-47a2-9fc9-aa8248444250.",
-    "PR #91 remained at evidence head 36c20fb62c7097b896a31c57e50860eb9f2339ef; Node 24 verify failure was formatting-only on W13-101 evidence/tool files and local Prettier normalization is in progress.",
+    "PR #91 follow-up CI repair completed: W13-101 Prettier normalization was committed, then the Node 24 integration failure was traced to a date-dependent W12-100 identity provisioning test and fixed with deterministic lifecycle acceptance clocks.",
     "W13-102 production identity command is implemented and tested; real production apply remains blocked on private manifest values.",
     "Transactional email is blocked before send by missing Resend runtime material and missing mounted webhook; no emails were sent.",
     "CRM source discovery verified all six expected source hashes in Downloads without reading or printing source rows, but apply remains blocked on the private acceptance manifest and tag-map approval.",
     "Provider readiness discovery completed without provider mutation; missing optional credentials block only their respective lanes.",
-    "W13-102 PR #91 closeout was posted as top-level GitHub comment 5012809630 because direct PR body edit through local gh was blocked by missing read:project scope."
+    "W13-102 PR #91 closeout was posted as top-level GitHub comment 5012809630 because direct PR body edit through local gh was blocked by missing read:project scope.",
+    "Local follow-up verification passed for npm run integration after the W12-100 test clock repair."
   ],
   "resume_command": "cd C:/Users/User/OneTimeOneTime-w13-100-final-launch && git status --short --branch && git rev-parse HEAD && Get-ChildItem ops/codex-runs/W13-102"
 }
