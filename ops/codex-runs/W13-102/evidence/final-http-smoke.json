@@ -1,0 +1,39 @@
+{
+  "schema": "onetime.w13_102.final_http_smoke.v1",
+  "generated_at": "2026-07-18T20:27:15.569Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "checks": [
+    {
+      "path": "/version",
+      "status": 200,
+      "ok": true,
+      "version": "w13-101-safe-core-466d848",
+      "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86"
+    },
+    {
+      "path": "/health",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/ready",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/activate",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/reset-password",
+      "status": 200,
+      "ok": true
+    }
+  ]
+}

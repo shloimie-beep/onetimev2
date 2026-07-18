@@ -1,0 +1,148 @@
+{
+  "schema": "onetime.w13_102.crm_source_discovery.v1",
+  "generated_at": "2026-07-18T20:24:37.130Z",
+  "discovery_scope": {
+    "source_inventory": "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+    "downloads_root_scanned": "Downloads",
+    "source_rows_read": false,
+    "source_rows_printed": false,
+    "private_paths_printed": false,
+    "exact_hash_matching_only": true
+  },
+  "expected_source_count": 6,
+  "scanned_spreadsheet_file_count": 205,
+  "source_results": [
+    {
+      "id": "DL-SHEET-f93f34d98e",
+      "file_name": "Rabbi Scheller Followers.xlsx",
+      "classification": "one_time_rabbi_scheller_followers",
+      "sha256": "e17bbb32c8b2e642b8a6c5041ee36e720467fc4e666b0b5d59de1bb7f688a405",
+      "row_count_estimate": 812,
+      "column_count": 2,
+      "header_signal_names": [],
+      "readiness": "dry_run_candidate_only",
+      "found_count": 1,
+      "hash_verified": true,
+      "ambiguous_duplicate_matches": false,
+      "matched_file_names": ["Rabbi Scheller Followers.xlsx"],
+      "private_paths_included": false
+    },
+    {
+      "id": "DL-SHEET-3d4dceeb1b",
+      "file_name": "subscribed_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "sha256": "b1e7bb30e6464d4c3239590cba97e65842cc2736c77eb95d323e05d4b38ce319",
+      "row_count_estimate": 1311,
+      "column_count": 31,
+      "header_signal_names": ["address", "email", "name", "phone", "subscription_status"],
+      "readiness": "dry_run_candidate_only",
+      "found_count": 1,
+      "hash_verified": true,
+      "ambiguous_duplicate_matches": false,
+      "matched_file_names": ["subscribed_email_audience_export_b12dfa345d.csv"],
+      "private_paths_included": false
+    },
+    {
+      "id": "DL-SHEET-8c69f34fcd",
+      "file_name": "unsubscribed_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "sha256": "4a5f84834b4e4f806775b945df09a03c73bd86e82afb15be84c0405ec38a2089",
+      "row_count_estimate": 152,
+      "column_count": 35,
+      "header_signal_names": [
+        "address",
+        "campaign_source",
+        "email",
+        "name",
+        "phone",
+        "subscription_status"
+      ],
+      "readiness": "suppression_precedence_source",
+      "found_count": 1,
+      "hash_verified": true,
+      "ambiguous_duplicate_matches": false,
+      "matched_file_names": ["unsubscribed_email_audience_export_b12dfa345d.csv"],
+      "private_paths_included": false
+    },
+    {
+      "id": "DL-SHEET-ead777c4b0",
+      "file_name": "cleaned_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "sha256": "b3093f6d3a7b4e9e9745740a734213d366c83d7c079c7b13c8f79089e63c94ca",
+      "row_count_estimate": 60,
+      "column_count": 33,
+      "header_signal_names": [
+        "address",
+        "campaign_source",
+        "email",
+        "name",
+        "phone",
+        "subscription_status"
+      ],
+      "readiness": "dry_run_candidate_only",
+      "found_count": 1,
+      "hash_verified": true,
+      "ambiguous_duplicate_matches": false,
+      "matched_file_names": ["cleaned_email_audience_export_b12dfa345d.csv"],
+      "private_paths_included": false
+    },
+    {
+      "id": "DL-SHEET-25eb3cb2d6",
+      "file_name": "subscribers_detailed.csv",
+      "classification": "email_audience_export",
+      "sha256": "0e05cd969c15e73240f4c2d681ca5208d9ada1ff95d908b2f14d337c67cdf6ca",
+      "row_count_estimate": 86,
+      "column_count": 8,
+      "header_signal_names": ["email", "name"],
+      "readiness": "dry_run_candidate_only",
+      "found_count": 1,
+      "hash_verified": true,
+      "ambiguous_duplicate_matches": false,
+      "matched_file_names": ["subscribers_detailed.csv"],
+      "private_paths_included": false
+    },
+    {
+      "id": "DL-SHEET-2900326013",
+      "file_name": "subscribers.csv",
+      "classification": "email_audience_export",
+      "sha256": "3732cb909f796920ed3e418b94a3c89b98ce63fffc1741c2edd6d07d59d30437",
+      "row_count_estimate": 88,
+      "column_count": 5,
+      "header_signal_names": ["email", "name"],
+      "readiness": "dry_run_candidate_only",
+      "found_count": 1,
+      "hash_verified": true,
+      "ambiguous_duplicate_matches": false,
+      "matched_file_names": ["subscribers.csv"],
+      "private_paths_included": false
+    }
+  ],
+  "hash_verification": {
+    "all_expected_sources_found": true,
+    "duplicate_hash_matches_present": false,
+    "verified_sources": 6,
+    "missing_sources": []
+  },
+  "acceptance_manifest": {
+    "private_manifest_written": true,
+    "committed_private_path": false,
+    "approval_status": "operator_approval_required",
+    "required_private_fields": [
+      "accepted_for_production_apply",
+      "tag_map_approved",
+      "operator_accepts_source for each source"
+    ]
+  },
+  "crm_apply": {
+    "status": "blocked_before_apply",
+    "blockers": [
+      "operator_approval_required_for_private_acceptance_manifest",
+      "tag_map_approval_required",
+      "dry_run_rehearsal_not_yet_performed_for_W13_102",
+      "production_apply_not_started"
+    ],
+    "contacts_imported": 0,
+    "external_sends": 0,
+    "outbox_rows_created": 0
+  }
+}

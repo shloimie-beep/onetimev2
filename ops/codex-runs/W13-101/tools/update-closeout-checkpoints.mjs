@@ -57,8 +57,7 @@ Object.assign(productionDeployment, {
     status: 'used',
     reason:
       'Railway CLI local upload applies the root railway.json. Worker retry used a disposable detached worktree at the same commit with the tracked worker manifest copied to railway.json.',
-    disposable_worktree:
-      'C:/Users/User/OneTimeOneTime-w13-101-worker-deploy-20260718T191641Z',
+    disposable_worktree: 'C:/Users/User/OneTimeOneTime-w13-101-worker-deploy-20260718T191641Z',
     app_code_head: runtimeSha,
     manifest_only_diff: true,
   },
@@ -75,7 +74,8 @@ Object.assign(productionAcceptance, {
     {
       id: 'production_health_ready_version',
       status: 'passed',
-      evidence: 'live /health 200, /ready 200 latest=2203_w13_100_student_gamification, /version exact runtime SHA',
+      evidence:
+        'live /health 200, /ready 200 latest=2203_w13_100_student_gamification, /version exact runtime SHA',
     },
     {
       id: 'production_public_landing',
@@ -108,7 +108,8 @@ Object.assign(productionAcceptance, {
     {
       id: 'production_pwa_manifests',
       status: 'not_applicable',
-      evidence: 'No One Time app route/test coverage exists for /manifest.json, /parent-manifest.json, or /operations-manifest.json',
+      evidence:
+        'No One Time app route/test coverage exists for /manifest.json, /parent-manifest.json, or /operations-manifest.json',
     },
   ],
   role_journeys: {
@@ -138,7 +139,8 @@ providerCanaries.providers = providerCanaries.providers.map((provider) => ({
   status: 'disabled_by_runtime_kill_switch',
   effects: 0,
   kill_switch_verified: true,
-  evidence: '/ready optional dependencies disabled; production safe-core env readback flags false/sink',
+  evidence:
+    '/ready optional dependencies disabled; production safe-core env readback flags false/sink',
 }));
 await writeJson('PROVIDER-CANARIES.json', providerCanaries);
 
@@ -219,7 +221,9 @@ state.phase_7_evidence = {
   production_live_role_login: 'not_completed_by_codex',
 };
 state.blockers = [
-  ...(state.blockers ?? []).filter((blocker) => blocker.id !== 'W13-101-PRODUCTION-LIVE-ROLE-LOGIN'),
+  ...(state.blockers ?? []).filter(
+    (blocker) => blocker.id !== 'W13-101-PRODUCTION-LIVE-ROLE-LOGIN',
+  ),
   {
     id: 'W13-101-PRODUCTION-LIVE-ROLE-LOGIN',
     status: 'operator_action_or_accepted_production_identity_path_needed',
@@ -333,7 +337,11 @@ Updated: ${now}
 - The first worker upload failed because root railway.json applied the web healthcheck to the worker; the active worker retry used the tracked worker manifest in a disposable detached worktree.
 - Staging showed native \`railway down\` is not a safe routine rollback path for this topology. Preferred runtime recovery remains exact-source rebuild/roll-forward. Database restore remains last resort and requires operator approval.
 `;
-await writeFile(path.join(runDir, 'ROLLBACK-ROLLFORWARD.md'), `${rollback.trimEnd()}\n${rollbackAppend}`, 'utf8');
+await writeFile(
+  path.join(runDir, 'ROLLBACK-ROLLFORWARD.md'),
+  `${rollback.trimEnd()}\n${rollbackAppend}`,
+  'utf8',
+);
 
 const changedFiles = [];
 async function walk(dir) {

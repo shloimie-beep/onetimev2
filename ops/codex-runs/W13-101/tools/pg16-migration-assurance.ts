@@ -175,9 +175,7 @@ async function main() {
     report.disposable_databases.remaining_w13_101_databases =
       await remainingW13Databases(adminPool);
     await writeReport(report);
-    process.stdout.write(
-      `W13-101 PG16 migration assurance ${report.status}: ${outputPath}\n`,
-    );
+    process.stdout.write(`W13-101 PG16 migration assurance ${report.status}: ${outputPath}\n`);
     if (report.status !== 'passed') process.exitCode = 1;
   } finally {
     if (droppedCount < createdDatabases.length) {

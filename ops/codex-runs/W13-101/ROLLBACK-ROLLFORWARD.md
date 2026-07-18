@@ -38,7 +38,6 @@ Exact-source roll-forward from clean runtime worktree
 
 Production rollback recommendation: prefer exact-source rebuild/roll-forward fallback from the tagged `RUNTIME_SOURCE_SHA` and retained config records. Do not run `railway down` in production as a routine rollback until the unexpected staging behavior is explained and re-tested.
 
-
 ## Production W13-101 Roll-forward State
 
 Updated: 2026-07-18T19:25:46.855Z

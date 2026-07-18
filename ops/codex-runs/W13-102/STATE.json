@@ -1,0 +1,81 @@
+{
+  "schema": "onetime.codex_run_state.v1",
+  "run_id": "W13-102",
+  "updated_at": "2026-07-18T23:31:00+03:00",
+  "terminal_status": "CORE_LIVE_IDENTITY_HANDOFF_BLOCKED",
+  "current_phase": "phase_10_governance_and_handoff",
+  "overall_status": "terminal_blocked_with_core_live",
+  "repository": "webcraft-media/onetimev2",
+  "pr": 91,
+  "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+  "worktree": "C:/Users/User/OneTimeOneTime-w13-100-final-launch",
+  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "evidence_head_sha": "36c20fb62c7097b896a31c57e50860eb9f2339ef",
+  "release_tag": "w13-101-production-safe-core-20260718",
+  "production_url": "https://join.onetimeonetime.com",
+  "staging_url": null,
+  "production_deployments": {
+    "web": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
+    "worker": "52226afb-5b5c-4e79-8982-8b26115dfaba"
+  },
+  "latest_production_migration": "2203_w13_100_student_gamification",
+  "phase_status": {
+    "phase_1_preserve_and_inventory": "live_baseline_passed",
+    "phase_2_identity_activation_mechanism": "mechanism_implemented_production_apply_blocked_on_private_manifest",
+    "phase_5_transactional_email_activation": "blocked_before_send_missing_resend_config_and_webhook",
+    "phase_3_role_acceptance_and_product_ux": "blocked_waiting_for_identity_handoff",
+    "phase_4_real_crm_import_zero_sends": "source_hashes_verified_apply_blocked_private_acceptance",
+    "phase_6_whatsapp_lead_assistant": "blocked_missing_protected_provider_config",
+    "phase_7_bna_subscriber_support": "blocked_missing_protected_bridge_config",
+    "phase_8_remaining_provider_canaries": "blocked_by_provider_specific_missing_config",
+    "phase_9_deployment": "not_run_existing_runtime_preserved",
+    "phase_10_governance_and_handoff": "records_updated_terminal_blocker_recorded"
+  },
+  "global_stops": [],
+  "scoped_blockers": [
+    {
+      "lane": "production_identity_handoff",
+      "status": "blocked_before_apply",
+      "reason": "private identity authorization manifest is incomplete and has an invalid expiry placeholder",
+      "blocks_global_run": false
+    },
+    {
+      "lane": "transactional_email",
+      "status": "blocked_before_send",
+      "reason": "Resend API key, webhook secret, sender, reply-to evidence, and mounted webhook are missing",
+      "blocks_global_run": false
+    },
+    {
+      "lane": "crm_apply",
+      "status": "blocked_before_apply",
+      "reason": "source hashes verified but private acceptance manifest and tag-map approval are not approved",
+      "blocks_global_run": false
+    },
+    {
+      "lane": "optional_provider_canaries",
+      "status": "blocked_by_provider",
+      "reason": "protected provider credentials/config are missing or provider remains off per lane",
+      "blocks_global_run": false
+    }
+  ],
+  "external_effects": {
+    "production_writes": 0,
+    "external_sends": 0,
+    "crm_contacts_imported": 0,
+    "provider_canaries": 0,
+    "railway_backup_proof_deployments": 1
+  },
+  "notes": [
+    "W13-102 run started from PR #91 checkpoint 36c20fb62c7097b896a31c57e50860eb9f2339ef.",
+    "Healthy deployed runtime 466d8489bb8c7a3a57f7590929b58e7857420e86 is preserved until replacement passes staging and rollback gates.",
+    "No secrets, PII, raw activation links, tokens, or source rows may be written to committed evidence.",
+    "Phase 1 live read-only baseline passed with production runtime source preserved.",
+    "Fresh W13-102 production PG18 backup/restore proof passed on Railway proof deployment 14adb936-e81f-47a2-9fc9-aa8248444250.",
+    "PR #91 remained at evidence head 36c20fb62c7097b896a31c57e50860eb9f2339ef; Node 24 verify failure was formatting-only on W13-101 evidence/tool files and local Prettier normalization is in progress.",
+    "W13-102 production identity command is implemented and tested; real production apply remains blocked on private manifest values.",
+    "Transactional email is blocked before send by missing Resend runtime material and missing mounted webhook; no emails were sent.",
+    "CRM source discovery verified all six expected source hashes in Downloads without reading or printing source rows, but apply remains blocked on the private acceptance manifest and tag-map approval.",
+    "Provider readiness discovery completed without provider mutation; missing optional credentials block only their respective lanes."
+  ],
+  "resume_command": "cd C:/Users/User/OneTimeOneTime-w13-100-final-launch && git status --short --branch && git rev-parse HEAD && Get-ChildItem ops/codex-runs/W13-102"
+}

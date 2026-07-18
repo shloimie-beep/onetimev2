@@ -1,0 +1,85 @@
+{
+  "schema": "onetime.w13_102.provider_canaries.v1",
+  "updated_at": "2026-07-18T23:31:00+03:00",
+  "status": "discovery_complete_no_canaries_executed",
+  "evidence": {
+    "provider_readiness_snapshot": "ops/codex-runs/W13-102/evidence/provider-readiness-snapshot.json",
+    "raw_values_printed": false,
+    "provider_mutations": 0
+  },
+  "providers": {
+    "transactional_email": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED / ONE_TIME_RESEND_TRANSPORT_ENABLED",
+      "blockers": [
+        "RESEND_API_KEY missing",
+        "RESEND_WEBHOOK_SECRET missing",
+        "ONE_TIME_EMAIL_FROM missing",
+        "ONE_TIME_EMAIL_REPLY_TO missing",
+        "Resend webhook endpoint is not mounted in this runtime"
+      ]
+    },
+    "whatsapp": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED / ONE_TIME_WAPI_TRANSPORT_ENABLED / ONETIME_WHATSAPP_CANARY_AUTHORIZED",
+      "blockers": ["protected WhatsApp provider/account/webhook/canary config missing"]
+    },
+    "bna_support": {
+      "mode": "configured_provider_off",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "OT89_SUPPORT_ENABLED / OT89_SUPPORT_DELIVERY_MODE",
+      "blockers": ["protected BNA support URL and HMAC config missing; bridge remains off"]
+    },
+    "stripe_test": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ENABLE_PAYMENT_TRANSPORT / LIVE_STRIPE_CHARGES_AUTHORIZED",
+      "blockers": ["Stripe TEST protected config and live-charge guard missing"]
+    },
+    "zoom": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ZOOM_CLASSROOM_ENABLED / ZOOM_CLASSROOM_PROVIDER_MODE",
+      "blockers": ["Zoom protected credentials/config missing; webhook endpoint not mounted"]
+    },
+    "vimeo": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "VIMEO_PRIVATE_PROVIDER_ENABLED / OT86_ALLOW_VIMEO_CANARY_UPLOAD",
+      "blockers": ["Vimeo protected config missing; webhook endpoint not mounted"]
+    },
+    "telegram": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+      "blockers": ["Telegram protected webhook/bot/environment config missing"]
+    },
+    "openai_student_helper": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_HELPER_RUNTIME_ENABLED",
+      "blockers": ["OpenAI helper key/runtime/content approval missing"]
+    },
+    "buffer": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "OT106_BUFFER_PROVIDER_MODE / BUFFER_DESTINATION_IDS",
+      "blockers": ["Buffer account/token/destination config missing"]
+    }
+  },
+  "external_effects": {
+    "external_sends": 0,
+    "provider_writes": 0
+  }
+}

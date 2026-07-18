@@ -1,0 +1,51 @@
+{
+  "schema": "onetime.w13_102.crm_import.v1",
+  "updated_at": "2026-07-18T23:31:00+03:00",
+  "status": "source_hashes_verified_apply_blocked_private_acceptance",
+  "accepted_manifest": {
+    "status": "private_acceptance_manifest_written_operator_approval_required",
+    "committed_private_path": false,
+    "source_rows_included": false,
+    "required_fields": [
+      "accepted_for_production_apply",
+      "tag_map_approved",
+      "operator_accepts_source for each source"
+    ]
+  },
+  "source_inventory": [
+    {
+      "classification": "one_time_rabbi_scheller_followers",
+      "files": 1,
+      "rows_estimate": 812,
+      "hash_verified": true
+    },
+    {
+      "classification": "email_audience_export",
+      "files": 5,
+      "rows_estimate": 1697,
+      "hash_verified": true
+    }
+  ],
+  "source_discovery_evidence": "ops/codex-runs/W13-102/evidence/crm-source-discovery.json",
+  "dry_run": null,
+  "restore_rehearsal": null,
+  "production_apply": "blocked_before_apply",
+  "sanitized_totals": {
+    "created": 0,
+    "updated": 0,
+    "duplicates": 0,
+    "quarantined": 0,
+    "tags": 0
+  },
+  "external_effects": {
+    "contacts_imported": 0,
+    "outbox_rows_created": 0,
+    "external_sends": 0
+  },
+  "blockers": [
+    "operator approval required in private CRM acceptance manifest",
+    "tag-map approval required",
+    "W13-102 dry-run/rehearsal not performed",
+    "production apply not started"
+  ]
+}

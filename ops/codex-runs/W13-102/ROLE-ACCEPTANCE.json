@@ -1,0 +1,21 @@
+{
+  "schema": "onetime.w13_102.role_acceptance.v1",
+  "updated_at": "2026-07-18T23:31:00+03:00",
+  "status": "blocked_waiting_for_identity_handoff",
+  "staging": {},
+  "production": {
+    "administrator": "blocked_no_safe_activation_or_reset_delivered",
+    "owner": "blocked_no_safe_activation_or_reset_delivered",
+    "parent": "blocked_no_safe_activation_or_reset_delivered",
+    "student": "blocked_no_safe_parent_managed_access"
+  },
+  "browser_contexts": {
+    "separate_contexts_required": true,
+    "evidence": [],
+    "blocker": "production role browser acceptance cannot begin until identity apply creates an authorized login path"
+  },
+  "external_effects": {
+    "writes": 0,
+    "sends": 0
+  }
+}

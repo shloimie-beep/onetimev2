@@ -43,13 +43,7 @@
     {
       "name": "public_pages",
       "status": "passed",
-      "paths": [
-        "/",
-        "/signup",
-        "/login",
-        "/activate",
-        "/forgot-password"
-      ],
+      "paths": ["/", "/signup", "/login", "/activate", "/forgot-password"],
       "http_statuses": [200, 200, 200, 200, 200]
     },
     {

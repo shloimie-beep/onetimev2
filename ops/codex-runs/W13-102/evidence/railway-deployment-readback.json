@@ -1,0 +1,96 @@
+﻿{
+  "schema": "onetime.w13_102.railway_deployment_readback.v1",
+  "generated_at": "2026-07-18T20:06:49.2190372Z",
+  "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+  "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+  "environment_name": "production",
+  "services": [
+    {
+      "service_name": "one-time-web",
+      "service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "latest_deployment_id": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
+      "latest_status": "SUCCESS",
+      "deployment_stopped": false,
+      "created_at": "2026-07-18T19:10:43.634Z",
+      "image_digest": "sha256:b8a17ddb5e588dbaf13aaa9b086d3ffb66dbdc70984d0e3deb6b24ada68a6718",
+      "instances": [
+        {
+          "id": "7f2245da-0a39-47fb-abf4-0b40848aa838",
+          "status": "RUNNING"
+        }
+      ],
+      "custom_domains": ["join.onetimeonetime.com"]
+    },
+    {
+      "service_name": "Postgres-j9Pi",
+      "service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "latest_deployment_id": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+      "latest_status": "SUCCESS",
+      "deployment_stopped": false,
+      "created_at": "2026-07-02T12:56:35.572Z",
+      "image_digest": "sha256:b75472d708b058ef15c5d1fb69db08e836cb7e1bad82e2ac6ac75d1198829366",
+      "instances": [
+        {
+          "id": "ec12080f-3424-4362-b259-5d3c7a980c7f",
+          "status": "RUNNING"
+        }
+      ],
+      "custom_domains": []
+    },
+    {
+      "service_name": "Postgres",
+      "service_id": "7d6541d3-a138-40b6-9a42-81c536529022",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "latest_deployment_id": "6e3cfc7e-f795-448a-91e6-8fa9403b1c8a",
+      "latest_status": "SUCCESS",
+      "deployment_stopped": false,
+      "created_at": "2026-06-22T10:50:41.485Z",
+      "image_digest": "sha256:1fe96504c87bb0b36e09f41ee99de34da77fff5cb21a390105855dc8d02706cc",
+      "instances": [
+        {
+          "id": "9eea63ec-36c4-4f69-bcf8-89ae730f3184",
+          "status": "RUNNING"
+        }
+      ],
+      "custom_domains": []
+    },
+    {
+      "service_name": "ops11-pg18-proof-20260717",
+      "service_id": "52db1072-b4eb-450c-bec7-5151cb9a8461",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "latest_deployment_id": "217563a6-abe7-4a79-a093-b5129b528618",
+      "latest_status": "SUCCESS",
+      "deployment_stopped": true,
+      "created_at": "2026-07-18T19:03:42.967Z",
+      "image_digest": "sha256:900538df59a181307ba29c10c965b0ee3b169b2990fd9e385fab86cd569d7bca",
+      "instances": [
+        {
+          "id": "638bba29-55ad-45c6-ac3a-e3ee23822ba7",
+          "status": "EXITED"
+        }
+      ],
+      "custom_domains": []
+    },
+    {
+      "service_name": "one-time-delivery-cron",
+      "service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "latest_deployment_id": "52226afb-5b5c-4e79-8982-8b26115dfaba",
+      "latest_status": "SUCCESS",
+      "deployment_stopped": false,
+      "created_at": "2026-07-18T19:17:00.720Z",
+      "image_digest": "sha256:8ce30ebc73e6937ff25c175b5aa795aba3c6beeabceea527c4f273b39c3c56b8",
+      "instances": [
+        {
+          "id": "780f2e79-cd74-4223-976c-0d9baff0d714",
+          "status": "RUNNING"
+        }
+      ],
+      "custom_domains": []
+    }
+  ],
+  "secrets_printed": false,
+  "variables_printed": false
+}

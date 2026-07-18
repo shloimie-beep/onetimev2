@@ -100,8 +100,11 @@ function buildManifest(identitySetKey: string, config: AppConfig): OneTimeIdenti
   const ownerEmail = config.ownerTestEmail ?? base.owner.email;
   const adminEmail = aliasEmail(ownerEmail, `w13${aliasScope}-admin`) ?? base.admin.email;
   const parentEmail =
-    config.parentTestEmail ?? aliasEmail(ownerEmail, `w13${aliasScope}-parent`) ?? base.parent.email;
-  const studentEmail = aliasEmail(ownerEmail, `w13${aliasScope}-student`) ?? base.learners[0]?.email;
+    config.parentTestEmail ??
+    aliasEmail(ownerEmail, `w13${aliasScope}-parent`) ??
+    base.parent.email;
+  const studentEmail =
+    aliasEmail(ownerEmail, `w13${aliasScope}-student`) ?? base.learners[0]?.email;
   if (!studentEmail) throw new Error('Unable to derive a student email.');
   return {
     ...base,
@@ -267,12 +270,7 @@ async function postJson(
   };
 }
 
-async function activate(
-  baseUrl: string,
-  token: string,
-  password: string,
-  expectedRole: string,
-) {
+async function activate(baseUrl: string, token: string, password: string, expectedRole: string) {
   const page = await getCsrf(baseUrl, '/activate');
   const result = await postJson(
     baseUrl,
@@ -356,7 +354,10 @@ async function verifyAdminChallenge(
     login.cookies,
   );
   expectStatus(verified.response.status, 200, 'admin_email_challenge_verify');
-  const trustedCookie = cookieValue(cookieHeader(verified.response.headers), 'otcrm_trusted_device');
+  const trustedCookie = cookieValue(
+    cookieHeader(verified.response.headers),
+    'otcrm_trusted_device',
+  );
   return {
     cookies: verified.cookies,
     csrf: String(verified.json.csrf_token ?? ''),
@@ -366,13 +367,7 @@ async function verifyAdminChallenge(
 }
 
 async function logout(baseUrl: string, session: SessionProof) {
-  const result = await postJson(
-    baseUrl,
-    '/api/v1/auth/logout',
-    {},
-    session.cookies,
-    session.csrf,
-  );
+  const result = await postJson(baseUrl, '/api/v1/auth/logout', {}, session.cookies, session.csrf);
   expectStatus(result.response.status, 200, 'logout');
   const after = await fetch(`${baseUrl}/api/v1/auth/session`, {
     headers: { cookie: result.cookies },
@@ -385,7 +380,11 @@ async function logout(baseUrl: string, session: SessionProof) {
   };
 }
 
-async function getProtected(baseUrl: string, route: string, session: SessionProof): Promise<HttpResult> {
+async function getProtected(
+  baseUrl: string,
+  route: string,
+  session: SessionProof,
+): Promise<HttpResult> {
   const response = await fetch(`${baseUrl}${route}`, { headers: { cookie: session.cookies } });
   return { status: response.status, cache_control: response.headers.get('cache-control') };
 }
@@ -399,7 +398,11 @@ async function postProtected(
   return postJson(baseUrl, route, body, session.cookies, session.csrf);
 }
 
-async function seedPortalFixtures(pool: DbPool, config: AppConfig, manifest: OneTimeIdentitySetManifest) {
+async function seedPortalFixtures(
+  pool: DbPool,
+  config: AppConfig,
+  manifest: OneTimeIdentitySetManifest,
+) {
   const learner = manifest.learners[0];
   if (!learner) throw new Error('Expected W13 learner.');
   const now = new Date();
@@ -514,7 +517,11 @@ async function seedPortalFixtures(pool: DbPool, config: AppConfig, manifest: One
   );
 }
 
-async function identityCounts(pool: DbPool, config: AppConfig, manifest: OneTimeIdentitySetManifest) {
+async function identityCounts(
+  pool: DbPool,
+  config: AppConfig,
+  manifest: OneTimeIdentitySetManifest,
+) {
   const users = await pool.query(
     `SELECT role, count(*)::int AS count
        FROM onetime.account_users
@@ -543,7 +550,9 @@ async function identityCounts(pool: DbPool, config: AppConfig, manifest: OneTime
     [config.accountKey, config.productKey],
   );
   return {
-    users_by_role: Object.fromEntries(users.rows.map((row) => [String(row.role), Number(row.count)])),
+    users_by_role: Object.fromEntries(
+      users.rows.map((row) => [String(row.role), Number(row.count)]),
+    ),
     recent_session_rows: Number(sessions.rows[0]?.count ?? 0),
   };
 }
@@ -882,8 +891,8 @@ async function main() {
         student_activation: 'passed',
         admin_password_requires_email_challenge_not_totp: true,
         admin_email_challenge_verify: 'passed',
-          trusted_device_login_attempt_status: trustedDeviceAttemptStatus,
-          trusted_device_login_logout: adminTrustedLogout,
+        trusted_device_login_attempt_status: trustedDeviceAttemptStatus,
+        trusted_device_login_logout: adminTrustedLogout,
         trusted_device_revoke: 'passed',
         parent_login_without_owner_admin_step_up: 'passed',
         student_login_without_owner_admin_step_up: 'passed',
@@ -984,7 +993,12 @@ function cookieHeader(headers: Headers) {
   const setCookies = withSetCookie.getSetCookie?.() ?? [];
   if (setCookies.length > 0) return setCookies.map((cookie) => cookie.split(';')[0]).join('; ');
   const single = headers.get('set-cookie');
-  return single ? single.split(/,(?=[^;,]+=)/).map((cookie) => cookie.split(';')[0]).join('; ') : '';
+  return single
+    ? single
+        .split(/,(?=[^;,]+=)/)
+        .map((cookie) => cookie.split(';')[0])
+        .join('; ')
+    : '';
 }
 
 function cookieValue(header: string, key: string) {
@@ -1016,7 +1030,11 @@ function redactedRef(value: string) {
 
 function assertSanitized(text: string) {
   if (/@/.test(text)) throw new Error('Sanitized report contains an email address.');
-  if (/token=|activate#|reset-password#|email_challenge_token|temporary_proof_passwords|W13[A-Za-z]+!/i.test(text)) {
+  if (
+    /token=|activate#|reset-password#|email_challenge_token|temporary_proof_passwords|W13[A-Za-z]+!/i.test(
+      text,
+    )
+  ) {
     throw new Error('Sanitized report contains private token or password material.');
   }
   if (/postgres:\/\/|DATABASE_URL|AUTH_CSRF_SECRET|LIFECYCLE_DELIVERY_KEY/i.test(text)) {

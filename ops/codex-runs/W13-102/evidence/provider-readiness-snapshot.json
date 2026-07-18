@@ -1,0 +1,969 @@
+{
+  "schema": "onetime.w13_102.provider_readiness_snapshot.v1",
+  "generated_at": "2026-07-18T20:23:30.235Z",
+  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "production_url": "https://join.onetimeonetime.com",
+  "source": {
+    "runtime_env_json_loaded": true,
+    "private_values_printed": false,
+    "env_key_count": 23
+  },
+  "config_load": {
+    "status": "passed"
+  },
+  "provider_control_center": {
+    "guardrail_proof": {
+      "no_provider_mutation": true,
+      "no_real_send": true,
+      "no_live_charge": true,
+      "no_dns_action": true,
+      "no_bna_edit": true,
+      "no_secret_values_included": true
+    },
+    "email_readiness": [
+      {
+        "check": "verified_sender_or_domain",
+        "required_variable_names": ["ONE_TIME_EMAIL_FROM", "RESEND_DOMAIN_VERIFIED"],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      },
+      {
+        "check": "spf_readiness",
+        "required_variable_names": ["RESEND_DOMAIN_SPF_READY"],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      },
+      {
+        "check": "dkim_readiness",
+        "required_variable_names": ["RESEND_DOMAIN_DKIM_READY"],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      },
+      {
+        "check": "dmarc_policy",
+        "required_variable_names": ["RESEND_DOMAIN_DMARC_POLICY"],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      },
+      {
+        "check": "return_path_bounce_handling",
+        "required_variable_names": ["RESEND_BOUNCE_WEBHOOK_ENABLED"],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      },
+      {
+        "check": "reply_to_support_mailbox",
+        "required_variable_names": ["ONE_TIME_EMAIL_REPLY_TO"],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      },
+      {
+        "check": "suppression_bounce_complaint_state",
+        "required_variable_names": ["RESEND_SUPPRESSION_READBACK_READY"],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      },
+      {
+        "check": "lifecycle_encryption_key",
+        "required_variable_names": ["ONE_TIME_LIFECYCLE_DELIVERY_KEY"],
+        "status": "ready",
+        "evidence_value_included": false
+      },
+      {
+        "check": "exact_canary_allowlist",
+        "required_variable_names": ["ONE_TIME_DELIVERY_TEST_CANARY_EMAIL"],
+        "status": "ready",
+        "evidence_value_included": false
+      },
+      {
+        "check": "guarded_provider_flags",
+        "required_variable_names": [
+          "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+          "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+          "ONE_TIME_RESEND_WEBHOOK_ENABLED"
+        ],
+        "status": "evidence_missing",
+        "evidence_value_included": false
+      }
+    ],
+    "webhook_endpoints": [
+      {
+        "provider": "resend_email",
+        "path": null,
+        "method": null,
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 131072,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "svix_headers_raw_body",
+        "replay_or_dedupe": [
+          "svix_timestamp_window",
+          "svix_message_id_replay",
+          "provider_event_id_dedupe"
+        ],
+        "handler_mounted": false,
+        "acknowledged_after_durable_enqueue": false,
+        "business_processing_async": true,
+        "secret_logging_forbidden": true,
+        "registration_note": "No Resend route is mounted in base; final conductor must mount a raw-body POST route before express.json."
+      },
+      {
+        "provider": "whatsapp_meta",
+        "path": "/api/v1/whatsapp/meta/webhook",
+        "method": "POST",
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 131072,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "meta_x_hub_signature_256_raw_body",
+        "replay_or_dedupe": ["provider_message_id_dedupe", "account_product_scope"],
+        "handler_mounted": true,
+        "acknowledged_after_durable_enqueue": true,
+        "business_processing_async": false,
+        "secret_logging_forbidden": true,
+        "registration_note": "GET challenge exists only for Meta subscription verification; event intake is POST."
+      },
+      {
+        "provider": "telegram_one_time",
+        "path": "/api/v1/telegram/one-time/webhook",
+        "method": "POST",
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 32768,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "telegram_secret_token_header",
+        "replay_or_dedupe": ["telegram_update_id_inbox_dedupe", "single_consumer_gate"],
+        "handler_mounted": true,
+        "acknowledged_after_durable_enqueue": true,
+        "business_processing_async": true,
+        "secret_logging_forbidden": true,
+        "registration_note": "Mounted only when ONE_TIME_TELEGRAM_WEBHOOK_ENABLED is true."
+      },
+      {
+        "provider": "zoom_classroom",
+        "path": null,
+        "method": null,
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 131072,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "zoom_webhook_signature_required_before_enablement",
+        "replay_or_dedupe": ["provider_event_id_dedupe", "meeting_scope"],
+        "handler_mounted": false,
+        "acknowledged_after_durable_enqueue": false,
+        "business_processing_async": true,
+        "secret_logging_forbidden": true,
+        "registration_note": "Zoom webhook route is not in this base; PR #42 introduced adjacent Zoom provider work for later integration."
+      },
+      {
+        "provider": "vimeo_private_content",
+        "path": null,
+        "method": null,
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 131072,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "vimeo_callback_verifier_required_before_enablement",
+        "replay_or_dedupe": ["provider_event_id_dedupe", "content_scope"],
+        "handler_mounted": false,
+        "acknowledged_after_durable_enqueue": false,
+        "business_processing_async": true,
+        "secret_logging_forbidden": true,
+        "registration_note": "No Vimeo callback endpoint is mounted in this base."
+      },
+      {
+        "provider": "buffer_social",
+        "path": null,
+        "method": null,
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 131072,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "buffer_callback_verifier_required_before_enablement",
+        "replay_or_dedupe": ["provider_event_id_dedupe", "draft_revision_scope"],
+        "handler_mounted": false,
+        "acknowledged_after_durable_enqueue": false,
+        "business_processing_async": true,
+        "secret_logging_forbidden": true,
+        "registration_note": "No Buffer external callback endpoint is mounted; internal social events use OT86 signing."
+      },
+      {
+        "provider": "stripe_test",
+        "path": "/api/v1/billing/webhooks/provider",
+        "method": "POST",
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 65536,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "stripe_construct_event_raw_body_test_mode",
+        "replay_or_dedupe": ["provider_event_id_dedupe", "raw_body_digest_mismatch_guard"],
+        "handler_mounted": true,
+        "acknowledged_after_durable_enqueue": true,
+        "business_processing_async": true,
+        "secret_logging_forbidden": true,
+        "registration_note": "Canonical staging Stripe endpoint in this base."
+      },
+      {
+        "provider": "openai_helper",
+        "path": null,
+        "method": null,
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": null,
+        "content_type": null,
+        "raw_body_required": false,
+        "signature_scheme": "no_webhook_supported",
+        "replay_or_dedupe": ["no_external_callback_supported"],
+        "handler_mounted": false,
+        "acknowledged_after_durable_enqueue": false,
+        "business_processing_async": false,
+        "secret_logging_forbidden": true,
+        "registration_note": "Helper runtime has no provider webhook endpoint in this base."
+      },
+      {
+        "provider": "bna_support_bridge",
+        "path": "/api/internal/integrations/onetime/support-events/v1",
+        "method": "POST",
+        "https_required": true,
+        "post_only": true,
+        "max_bytes": 131072,
+        "content_type": "application/json",
+        "raw_body_required": true,
+        "signature_scheme": "ot89_hmac_canonical_request",
+        "replay_or_dedupe": ["timestamp_window", "nonce_event_id_dedupe", "account_product_scope"],
+        "handler_mounted": true,
+        "acknowledged_after_durable_enqueue": true,
+        "business_processing_async": true,
+        "secret_logging_forbidden": true,
+        "registration_note": "Support status uses /api/internal/integrations/onetime/support-ticket-status/v1 with the same signer."
+      }
+    ],
+    "providers": [
+      {
+        "provider": "resend_email",
+        "status": "not_configured",
+        "required_variable_names": [
+          "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+          "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+          "RESEND_API_KEY",
+          "RESEND_WEBHOOK_SECRET",
+          "ONE_TIME_EMAIL_FROM",
+          "ONE_TIME_EMAIL_REPLY_TO",
+          "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL"
+        ],
+        "configured_variable_names": [
+          "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+          "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+          "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL"
+        ],
+        "missing_variable_names": [
+          "RESEND_API_KEY",
+          "RESEND_WEBHOOK_SECRET",
+          "ONE_TIME_EMAIL_FROM",
+          "ONE_TIME_EMAIL_REPLY_TO"
+        ],
+        "webhook_endpoint": {
+          "provider": "resend_email",
+          "path": null,
+          "method": null,
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 131072,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "svix_headers_raw_body",
+          "replay_or_dedupe": [
+            "svix_timestamp_window",
+            "svix_message_id_replay",
+            "provider_event_id_dedupe"
+          ],
+          "handler_mounted": false,
+          "acknowledged_after_durable_enqueue": false,
+          "business_processing_async": true,
+          "secret_logging_forbidden": true,
+          "registration_note": "No Resend route is mounted in base; final conductor must mount a raw-body POST route before express.json."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "missing",
+          "dependency_names": ["outbox_events", "delivery_worker"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "resend_email:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "whatsapp_meta",
+        "status": "not_configured",
+        "required_variable_names": [
+          "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+          "ONE_TIME_WHATSAPP_PROVIDER_ENV",
+          "ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+          "ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+          "ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+          "ONETIME_CANARY_WHATSAPP_RECIPIENT_E164",
+          "ONETIME_WHATSAPP_CANARY_AUTHORIZED"
+        ],
+        "configured_variable_names": [],
+        "missing_variable_names": [
+          "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+          "ONE_TIME_WHATSAPP_PROVIDER_ENV",
+          "ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+          "ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+          "ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+          "ONETIME_CANARY_WHATSAPP_RECIPIENT_E164",
+          "ONETIME_WHATSAPP_CANARY_AUTHORIZED"
+        ],
+        "webhook_endpoint": {
+          "provider": "whatsapp_meta",
+          "path": "/api/v1/whatsapp/meta/webhook",
+          "method": "POST",
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 131072,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "meta_x_hub_signature_256_raw_body",
+          "replay_or_dedupe": ["provider_message_id_dedupe", "account_product_scope"],
+          "handler_mounted": true,
+          "acknowledged_after_durable_enqueue": true,
+          "business_processing_async": false,
+          "secret_logging_forbidden": true,
+          "registration_note": "GET challenge exists only for Meta subscription verification; event intake is POST."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "configured",
+          "dependency_names": ["whatsapp_inbox_events", "whatsapp_outbox_messages"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "whatsapp_meta:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "telegram_one_time",
+        "status": "not_configured",
+        "required_variable_names": [
+          "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+          "ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+          "ONE_TIME_TELEGRAM_BOT_KEY",
+          "ONE_TIME_TELEGRAM_ENVIRONMENT"
+        ],
+        "configured_variable_names": [],
+        "missing_variable_names": [
+          "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+          "ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+          "ONE_TIME_TELEGRAM_BOT_KEY",
+          "ONE_TIME_TELEGRAM_ENVIRONMENT"
+        ],
+        "webhook_endpoint": {
+          "provider": "telegram_one_time",
+          "path": "/api/v1/telegram/one-time/webhook",
+          "method": "POST",
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 32768,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "telegram_secret_token_header",
+          "replay_or_dedupe": ["telegram_update_id_inbox_dedupe", "single_consumer_gate"],
+          "handler_mounted": true,
+          "acknowledged_after_durable_enqueue": true,
+          "business_processing_async": true,
+          "secret_logging_forbidden": true,
+          "registration_note": "Mounted only when ONE_TIME_TELEGRAM_WEBHOOK_ENABLED is true."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "configured",
+          "dependency_names": ["telegram_inbox"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "telegram_one_time:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "zoom_classroom",
+        "status": "not_configured",
+        "required_variable_names": [
+          "ZOOM_CLASSROOM_ENABLED",
+          "ZOOM_CLASSROOM_PROVIDER_MODE",
+          "ZOOM_MEETING_SDK_KEY",
+          "ZOOM_MEETING_SDK_SECRET",
+          "ZOOM_ACCOUNT_ID"
+        ],
+        "configured_variable_names": [],
+        "missing_variable_names": [
+          "ZOOM_CLASSROOM_ENABLED",
+          "ZOOM_CLASSROOM_PROVIDER_MODE",
+          "ZOOM_MEETING_SDK_KEY",
+          "ZOOM_MEETING_SDK_SECRET",
+          "ZOOM_ACCOUNT_ID"
+        ],
+        "webhook_endpoint": {
+          "provider": "zoom_classroom",
+          "path": null,
+          "method": null,
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 131072,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "zoom_webhook_signature_required_before_enablement",
+          "replay_or_dedupe": ["provider_event_id_dedupe", "meeting_scope"],
+          "handler_mounted": false,
+          "acknowledged_after_durable_enqueue": false,
+          "business_processing_async": true,
+          "secret_logging_forbidden": true,
+          "registration_note": "Zoom webhook route is not in this base; PR #42 introduced adjacent Zoom provider work for later integration."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "missing",
+          "dependency_names": ["class_occurrences", "classroom_join_grants"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "zoom_classroom:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "vimeo_private_content",
+        "status": "not_configured",
+        "required_variable_names": [
+          "VIMEO_ACCESS_TOKEN",
+          "VIMEO_ACCOUNT_ID",
+          "VIMEO_WEBHOOK_SECRET"
+        ],
+        "configured_variable_names": [],
+        "missing_variable_names": [
+          "VIMEO_ACCESS_TOKEN",
+          "VIMEO_ACCOUNT_ID",
+          "VIMEO_WEBHOOK_SECRET"
+        ],
+        "webhook_endpoint": {
+          "provider": "vimeo_private_content",
+          "path": null,
+          "method": null,
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 131072,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "vimeo_callback_verifier_required_before_enablement",
+          "replay_or_dedupe": ["provider_event_id_dedupe", "content_scope"],
+          "handler_mounted": false,
+          "acknowledged_after_durable_enqueue": false,
+          "business_processing_async": true,
+          "secret_logging_forbidden": true,
+          "registration_note": "No Vimeo callback endpoint is mounted in this base."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "missing",
+          "dependency_names": ["content_items", "content_revisions"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "vimeo_private_content:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "buffer_social",
+        "status": "not_configured",
+        "required_variable_names": [
+          "BUFFER_ACCESS_TOKEN",
+          "BUFFER_ORGANIZATION_ID",
+          "BUFFER_DESTINATION_IDS"
+        ],
+        "configured_variable_names": [],
+        "missing_variable_names": [
+          "BUFFER_ACCESS_TOKEN",
+          "BUFFER_ORGANIZATION_ID",
+          "BUFFER_DESTINATION_IDS"
+        ],
+        "webhook_endpoint": {
+          "provider": "buffer_social",
+          "path": null,
+          "method": null,
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 131072,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "buffer_callback_verifier_required_before_enablement",
+          "replay_or_dedupe": ["provider_event_id_dedupe", "draft_revision_scope"],
+          "handler_mounted": false,
+          "acknowledged_after_durable_enqueue": false,
+          "business_processing_async": true,
+          "secret_logging_forbidden": true,
+          "registration_note": "No Buffer external callback endpoint is mounted; internal social events use OT86 signing."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "missing",
+          "dependency_names": ["social_drafts", "social_event_intake"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "buffer_social:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "stripe_test",
+        "status": "not_configured",
+        "required_variable_names": [
+          "ENABLE_PAYMENT_TRANSPORT",
+          "LIVE_STRIPE_CHARGES_AUTHORIZED",
+          "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+          "ONE_TIME_STRIPE_TEST_ACCOUNT_REF"
+        ],
+        "configured_variable_names": ["ENABLE_PAYMENT_TRANSPORT"],
+        "missing_variable_names": [
+          "LIVE_STRIPE_CHARGES_AUTHORIZED",
+          "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+          "ONE_TIME_STRIPE_TEST_ACCOUNT_REF"
+        ],
+        "webhook_endpoint": {
+          "provider": "stripe_test",
+          "path": "/api/v1/billing/webhooks/provider",
+          "method": "POST",
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 65536,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "stripe_construct_event_raw_body_test_mode",
+          "replay_or_dedupe": ["provider_event_id_dedupe", "raw_body_digest_mismatch_guard"],
+          "handler_mounted": true,
+          "acknowledged_after_durable_enqueue": true,
+          "business_processing_async": true,
+          "secret_logging_forbidden": true,
+          "registration_note": "Canonical staging Stripe endpoint in this base."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "configured",
+          "dependency_names": ["billing_provider_events", "billing_event_processing_attempts"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "stripe_test:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "openai_helper",
+        "status": "not_configured",
+        "required_variable_names": ["OPENAI_API_KEY", "ONE_TIME_HELPER_RUNTIME_ENABLED"],
+        "configured_variable_names": [],
+        "missing_variable_names": ["OPENAI_API_KEY", "ONE_TIME_HELPER_RUNTIME_ENABLED"],
+        "webhook_endpoint": {
+          "provider": "openai_helper",
+          "path": null,
+          "method": null,
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": null,
+          "content_type": null,
+          "raw_body_required": false,
+          "signature_scheme": "no_webhook_supported",
+          "replay_or_dedupe": ["no_external_callback_supported"],
+          "handler_mounted": false,
+          "acknowledged_after_durable_enqueue": false,
+          "business_processing_async": false,
+          "secret_logging_forbidden": true,
+          "registration_note": "Helper runtime has no provider webhook endpoint in this base."
+        },
+        "queue_worker_dependency": {
+          "required": false,
+          "readiness": "not_required",
+          "dependency_names": []
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "openai_helper:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      },
+      {
+        "provider": "bna_support_bridge",
+        "status": "configured_provider_off",
+        "required_variable_names": [
+          "OT89_SUPPORT_ENABLED",
+          "OT89_SUPPORT_DELIVERY_MODE",
+          "OT89_SUPPORT_BNA_BASE_URL",
+          "OT89_SUPPORT_HMAC_KEY_ID",
+          "OT89_SUPPORT_HMAC_SECRET",
+          "OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+          "OT89_BNA_TO_ONETIME_HMAC_SECRET"
+        ],
+        "configured_variable_names": [],
+        "missing_variable_names": [
+          "OT89_SUPPORT_ENABLED",
+          "OT89_SUPPORT_DELIVERY_MODE",
+          "OT89_SUPPORT_BNA_BASE_URL",
+          "OT89_SUPPORT_HMAC_KEY_ID",
+          "OT89_SUPPORT_HMAC_SECRET",
+          "OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+          "OT89_BNA_TO_ONETIME_HMAC_SECRET"
+        ],
+        "webhook_endpoint": {
+          "provider": "bna_support_bridge",
+          "path": "/api/internal/integrations/onetime/support-events/v1",
+          "method": "POST",
+          "https_required": true,
+          "post_only": true,
+          "max_bytes": 131072,
+          "content_type": "application/json",
+          "raw_body_required": true,
+          "signature_scheme": "ot89_hmac_canonical_request",
+          "replay_or_dedupe": [
+            "timestamp_window",
+            "nonce_event_id_dedupe",
+            "account_product_scope"
+          ],
+          "handler_mounted": true,
+          "acknowledged_after_durable_enqueue": true,
+          "business_processing_async": true,
+          "secret_logging_forbidden": true,
+          "registration_note": "Support status uses /api/internal/integrations/onetime/support-ticket-status/v1 with the same signer."
+        },
+        "queue_worker_dependency": {
+          "required": true,
+          "readiness": "configured",
+          "dependency_names": ["support_ticket_receipts", "support_delivery_outbox"]
+        },
+        "last_allowlisted_canary": {
+          "status": "not_run",
+          "summary": "No real canary was run by OPS-05.",
+          "external_mutation_performed": false
+        },
+        "rollback_disable_action": {
+          "available": true,
+          "action_id": "bna_support_bridge:disable-provider-flag",
+          "mutates_provider_configuration": false
+        }
+      }
+    ]
+  },
+  "w13_provider_lanes": {
+    "transactional_email": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED / ONE_TIME_RESEND_TRANSPORT_ENABLED",
+      "required_variable_names": [
+        "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+        "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "ONE_TIME_EMAIL_FROM",
+        "ONE_TIME_EMAIL_REPLY_TO",
+        "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL"
+      ],
+      "missing_variable_names": [
+        "RESEND_API_KEY",
+        "RESEND_WEBHOOK_SECRET",
+        "ONE_TIME_EMAIL_FROM",
+        "ONE_TIME_EMAIL_REPLY_TO"
+      ],
+      "configured_variable_names": [
+        "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+        "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+        "ONE_TIME_DELIVERY_TEST_CANARY_EMAIL"
+      ],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:RESEND_API_KEY",
+        "missing:RESEND_WEBHOOK_SECRET",
+        "missing:ONE_TIME_EMAIL_FROM",
+        "missing:ONE_TIME_EMAIL_REPLY_TO",
+        "webhook_not_mounted:resend_email",
+        "status:not_configured"
+      ]
+    },
+    "whatsapp": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED / ONE_TIME_WAPI_TRANSPORT_ENABLED / ONETIME_WHATSAPP_CANARY_AUTHORIZED",
+      "required_variable_names": [
+        "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+        "ONE_TIME_WHATSAPP_PROVIDER_ENV",
+        "ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+        "ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+        "ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+        "ONETIME_CANARY_WHATSAPP_RECIPIENT_E164",
+        "ONETIME_WHATSAPP_CANARY_AUTHORIZED"
+      ],
+      "missing_variable_names": [
+        "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+        "ONE_TIME_WHATSAPP_PROVIDER_ENV",
+        "ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+        "ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+        "ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+        "ONETIME_CANARY_WHATSAPP_RECIPIENT_E164",
+        "ONETIME_WHATSAPP_CANARY_AUTHORIZED"
+      ],
+      "configured_variable_names": [],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+        "missing:ONE_TIME_WHATSAPP_PROVIDER_ENV",
+        "missing:ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+        "missing:ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+        "missing:ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+        "missing:ONETIME_CANARY_WHATSAPP_RECIPIENT_E164",
+        "missing:ONETIME_WHATSAPP_CANARY_AUTHORIZED",
+        "status:not_configured"
+      ]
+    },
+    "bna_support": {
+      "mode": "configured_provider_off",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "OT89_SUPPORT_ENABLED / OT89_SUPPORT_DELIVERY_MODE",
+      "required_variable_names": [
+        "OT89_SUPPORT_ENABLED",
+        "OT89_SUPPORT_DELIVERY_MODE",
+        "OT89_SUPPORT_BNA_BASE_URL",
+        "OT89_SUPPORT_HMAC_KEY_ID",
+        "OT89_SUPPORT_HMAC_SECRET",
+        "OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+        "OT89_BNA_TO_ONETIME_HMAC_SECRET"
+      ],
+      "missing_variable_names": [
+        "OT89_SUPPORT_ENABLED",
+        "OT89_SUPPORT_DELIVERY_MODE",
+        "OT89_SUPPORT_BNA_BASE_URL",
+        "OT89_SUPPORT_HMAC_KEY_ID",
+        "OT89_SUPPORT_HMAC_SECRET",
+        "OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+        "OT89_BNA_TO_ONETIME_HMAC_SECRET"
+      ],
+      "configured_variable_names": [],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:OT89_SUPPORT_ENABLED",
+        "missing:OT89_SUPPORT_DELIVERY_MODE",
+        "missing:OT89_SUPPORT_BNA_BASE_URL",
+        "missing:OT89_SUPPORT_HMAC_KEY_ID",
+        "missing:OT89_SUPPORT_HMAC_SECRET",
+        "missing:OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+        "missing:OT89_BNA_TO_ONETIME_HMAC_SECRET",
+        "status:configured_provider_off"
+      ]
+    },
+    "stripe_test": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ENABLE_PAYMENT_TRANSPORT / LIVE_STRIPE_CHARGES_AUTHORIZED",
+      "required_variable_names": [
+        "ENABLE_PAYMENT_TRANSPORT",
+        "LIVE_STRIPE_CHARGES_AUTHORIZED",
+        "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+        "ONE_TIME_STRIPE_TEST_ACCOUNT_REF"
+      ],
+      "missing_variable_names": [
+        "LIVE_STRIPE_CHARGES_AUTHORIZED",
+        "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+        "ONE_TIME_STRIPE_TEST_ACCOUNT_REF"
+      ],
+      "configured_variable_names": ["ENABLE_PAYMENT_TRANSPORT"],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:LIVE_STRIPE_CHARGES_AUTHORIZED",
+        "missing:ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+        "missing:ONE_TIME_STRIPE_TEST_ACCOUNT_REF",
+        "status:not_configured"
+      ]
+    },
+    "zoom": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ZOOM_CLASSROOM_ENABLED / ZOOM_CLASSROOM_PROVIDER_MODE",
+      "required_variable_names": [
+        "ZOOM_CLASSROOM_ENABLED",
+        "ZOOM_CLASSROOM_PROVIDER_MODE",
+        "ZOOM_MEETING_SDK_KEY",
+        "ZOOM_MEETING_SDK_SECRET",
+        "ZOOM_ACCOUNT_ID"
+      ],
+      "missing_variable_names": [
+        "ZOOM_CLASSROOM_ENABLED",
+        "ZOOM_CLASSROOM_PROVIDER_MODE",
+        "ZOOM_MEETING_SDK_KEY",
+        "ZOOM_MEETING_SDK_SECRET",
+        "ZOOM_ACCOUNT_ID"
+      ],
+      "configured_variable_names": [],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:ZOOM_CLASSROOM_ENABLED",
+        "missing:ZOOM_CLASSROOM_PROVIDER_MODE",
+        "missing:ZOOM_MEETING_SDK_KEY",
+        "missing:ZOOM_MEETING_SDK_SECRET",
+        "missing:ZOOM_ACCOUNT_ID",
+        "webhook_not_mounted:zoom_classroom",
+        "status:not_configured"
+      ]
+    },
+    "vimeo": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "VIMEO_PRIVATE_PROVIDER_ENABLED / OT86_ALLOW_VIMEO_CANARY_UPLOAD",
+      "required_variable_names": ["VIMEO_ACCESS_TOKEN", "VIMEO_ACCOUNT_ID", "VIMEO_WEBHOOK_SECRET"],
+      "missing_variable_names": ["VIMEO_ACCESS_TOKEN", "VIMEO_ACCOUNT_ID", "VIMEO_WEBHOOK_SECRET"],
+      "configured_variable_names": [],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:VIMEO_ACCESS_TOKEN",
+        "missing:VIMEO_ACCOUNT_ID",
+        "missing:VIMEO_WEBHOOK_SECRET",
+        "webhook_not_mounted:vimeo_private_content",
+        "status:not_configured"
+      ]
+    },
+    "telegram": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+      "required_variable_names": [
+        "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+        "ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+        "ONE_TIME_TELEGRAM_BOT_KEY",
+        "ONE_TIME_TELEGRAM_ENVIRONMENT"
+      ],
+      "missing_variable_names": [
+        "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+        "ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+        "ONE_TIME_TELEGRAM_BOT_KEY",
+        "ONE_TIME_TELEGRAM_ENVIRONMENT"
+      ],
+      "configured_variable_names": [],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+        "missing:ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+        "missing:ONE_TIME_TELEGRAM_BOT_KEY",
+        "missing:ONE_TIME_TELEGRAM_ENVIRONMENT",
+        "status:not_configured"
+      ]
+    },
+    "openai_student_helper": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "ONE_TIME_HELPER_RUNTIME_ENABLED",
+      "required_variable_names": ["OPENAI_API_KEY", "ONE_TIME_HELPER_RUNTIME_ENABLED"],
+      "missing_variable_names": ["OPENAI_API_KEY", "ONE_TIME_HELPER_RUNTIME_ENABLED"],
+      "configured_variable_names": [],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:OPENAI_API_KEY",
+        "missing:ONE_TIME_HELPER_RUNTIME_ENABLED",
+        "webhook_not_mounted:openai_helper",
+        "status:not_configured"
+      ]
+    },
+    "buffer": {
+      "mode": "not_configured",
+      "canary_result": "blocked_before_send",
+      "budget_consumed": 0,
+      "kill_switch": "OT106_BUFFER_PROVIDER_MODE / BUFFER_DESTINATION_IDS",
+      "required_variable_names": [
+        "BUFFER_ACCESS_TOKEN",
+        "BUFFER_ORGANIZATION_ID",
+        "BUFFER_DESTINATION_IDS"
+      ],
+      "missing_variable_names": [
+        "BUFFER_ACCESS_TOKEN",
+        "BUFFER_ORGANIZATION_ID",
+        "BUFFER_DESTINATION_IDS"
+      ],
+      "configured_variable_names": [],
+      "raw_values_printed": false,
+      "blockers": [
+        "missing:BUFFER_ACCESS_TOKEN",
+        "missing:BUFFER_ORGANIZATION_ID",
+        "missing:BUFFER_DESTINATION_IDS",
+        "webhook_not_mounted:buffer_social",
+        "status:not_configured"
+      ]
+    }
+  },
+  "external_effects": {
+    "external_sends": 0,
+    "provider_writes": 0,
+    "live_charges": 0,
+    "source_rows_printed": false
+  },
+  "safety": {
+    "no_secret_values_included": true,
+    "no_pii_included": true,
+    "no_provider_mutation": true,
+    "no_real_send": true,
+    "no_live_charge": true
+  }
+}

@@ -20,10 +20,10 @@ Status: passed
 - Disposable databases dropped: 1
 - Remaining W13-101 disposable databases: 0
 
-| Gamification table | Present |
-|---|---:|
-| portal_parent_reward_goals | true |
-| portal_class_milestones | true |
-| portal_gamification_corrections | true |
+| Gamification table              | Present |
+| ------------------------------- | ------: |
+| portal_parent_reward_goals      |    true |
+| portal_class_milestones         |    true |
+| portal_gamification_corrections |    true |
 
 External effects: production_database=false, providers=false, sends=false, railway_deployment_or_config=false, nonproduction_disposable_database=true.

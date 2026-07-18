@@ -40,10 +40,9 @@ async function scalar(sql, params = []) {
 }
 
 async function tableExists(tableName) {
-  const row = await scalar(
-    `SELECT to_regclass($1) IS NOT NULL AS present`,
-    [`onetime.${tableName}`],
-  );
+  const row = await scalar(`SELECT to_regclass($1) IS NOT NULL AS present`, [
+    `onetime.${tableName}`,
+  ]);
   return Boolean(row?.present);
 }
 

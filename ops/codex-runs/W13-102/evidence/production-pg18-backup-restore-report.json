@@ -1,0 +1,57 @@
+﻿{
+  "generated_at": "2026-07-18T20:08:25Z",
+  "run_id": "w13-102-prod-pg18-20260718T200730Z",
+  "database_service": "Postgres-j9Pi",
+  "environment": {
+    "postgres_server_version": "PostgreSQL 18.4 (Debian 18.4-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit",
+    "postgres_server_version_num": "180004",
+    "pg_dump_version": "pg_dump (PostgreSQL) 18.4 (Debian 18.4-1.pgdg13+1)",
+    "pg_restore_version": "pg_restore (PostgreSQL) 18.4 (Debian 18.4-1.pgdg13+1)",
+    "extensions": ["pgcrypto=1.4", "plpgsql=1.0"],
+    "collation_count": 880
+  },
+  "dump": {
+    "path": "/backup/w13-102-prod-pg18-20260718T200730Z/production-pg18.dump",
+    "format": "custom",
+    "no_owner": true,
+    "no_acl": true,
+    "size_bytes": 3217617,
+    "sha256": "95bd41a4f58b3bd29af3ee8cc3f6846be7508ce95f858007e7276a0accab0de8",
+    "archive_list_entries": 4956
+  },
+  "restore": {
+    "restored_database": "ops11_restore",
+    "schema_summary_source": {
+      "table_count": 182,
+      "index_count": 675,
+      "constraint_count": 3287,
+      "sequence_count": 0,
+      "migration_table_present": 1,
+      "migration_rows": 39,
+      "latest_migration": "2203_w13_100_student_gamification",
+      "table_row_count_hash": "8d0530097359e489176e6b0ccc4a7eae024c35e04f0928cddc36e21e558d6145",
+      "migration_ledger_hash": "ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07"
+    },
+    "schema_summary_restored": {
+      "table_count": 182,
+      "index_count": 675,
+      "constraint_count": 3287,
+      "sequence_count": 0,
+      "migration_table_present": 1,
+      "migration_rows": 39,
+      "latest_migration": "2203_w13_100_student_gamification",
+      "table_row_count_hash": "8d0530097359e489176e6b0ccc4a7eae024c35e04f0928cddc36e21e558d6145",
+      "migration_ledger_hash": "ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07"
+    }
+  },
+  "verdict": {
+    "status": "passed",
+    "hard_failures": [],
+    "external_mutations": {
+      "production_database": false,
+      "railway": true,
+      "providers": false,
+      "sends": false
+    }
+  }
+}
