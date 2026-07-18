@@ -1,0 +1,79 @@
+{
+  "schema_version": "onetime.w13_101.staging_acceptance.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T18:36:00Z",
+  "status": "passed",
+  "url": "https://ot99-web-staging.up.railway.app",
+  "checks": [
+    {
+      "name": "railway_web_status",
+      "status": "passed",
+      "deployment_id": "7fa7c45b-21a8-45eb-b92d-3750fca06362"
+    },
+    {
+      "name": "railway_worker_status",
+      "status": "passed",
+      "deployment_id": "6e18ddfa-c4fd-4aab-ac30-164bf18bbab4"
+    },
+    {
+      "name": "GET /health",
+      "status": "passed",
+      "http_status": 200,
+      "ok": true
+    },
+    {
+      "name": "GET /ready",
+      "status": "passed",
+      "http_status": 200,
+      "ok": true,
+      "latest_migration": "2203_w13_100_student_gamification",
+      "optional_modes": {
+        "email_transport": "disabled",
+        "whatsapp_transport": "disabled",
+        "support_bridge": "disabled"
+      }
+    },
+    {
+      "name": "GET /version",
+      "status": "passed",
+      "http_status": 200,
+      "version": "w13-101-safe-core-466d848",
+      "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86"
+    },
+    {
+      "name": "public_pages",
+      "status": "passed",
+      "paths": [
+        "/",
+        "/signup",
+        "/login",
+        "/activate",
+        "/forgot-password"
+      ],
+      "http_statuses": [200, 200, 200, 200, 200]
+    },
+    {
+      "name": "worker_sink_runtime",
+      "status": "passed",
+      "evidence": "Final worker logs show delivery_batch_completed with claimed=0, delivered=0, sink_delivered=0, dead_lettered=0."
+    },
+    {
+      "name": "worker_heartbeat_db_readback",
+      "status": "passed",
+      "worker_type": "delivery_outbox",
+      "state": "ready",
+      "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+      "heartbeat_age_ms_at_readback": 9766
+    },
+    {
+      "name": "ops_probe_token",
+      "status": "not_configured_non_blocking",
+      "detail": "OPERATIONS_PROBE_TOKEN was not configured in staging; DB heartbeat readback used instead."
+    }
+  ],
+  "screenshots": [],
+  "private_values_in_evidence": false,
+  "external_sends": 0,
+  "provider_modes_truthful": true,
+  "remaining_staging_blockers": []
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": "w13-101.pg16-migration-assurance.v1",
+  "generated_at": "2026-07-18T18:12:07.031Z",
+  "status": "passed",
+  "environment": {
+    "node_version": "v24.13.0",
+    "postgres_server_version_num": "160014",
+    "railway_project_id_present": true,
+    "railway_environment_name": "staging",
+    "railway_service_name": "ot99-pg16",
+    "used_tcp_proxy": true
+  },
+  "migrations": {
+    "local_count": 39,
+    "latest_local_migration": "2203_w13_100_student_gamification",
+    "contains_w13_100_gamification_2203": true,
+    "duplicate_numeric_prefixes": [],
+    "first_run_applied_count": 39,
+    "second_run_already_applied_count": 39,
+    "ledger_count": 39,
+    "latest_ledger_migration": "2203_w13_100_student_gamification",
+    "ledger_matches_normalized_checksums": true,
+    "ledger_mismatch_ids": []
+  },
+  "schema_checks": {
+    "gamification_tables_present": {
+      "portal_parent_reward_goals": true,
+      "portal_class_milestones": true,
+      "portal_gamification_corrections": true
+    }
+  },
+  "disposable_databases": {
+    "created_count": 1,
+    "dropped_count": 1,
+    "remaining_w13_101_databases": 0
+  },
+  "external_effects": {
+    "production_database": false,
+    "providers": false,
+    "sends": false,
+    "railway_deployment_or_config": false,
+    "nonproduction_disposable_database": true
+  }
+}

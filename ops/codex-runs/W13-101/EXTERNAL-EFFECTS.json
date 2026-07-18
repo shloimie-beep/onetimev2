@@ -1,0 +1,32 @@
+{
+  "schema_version": "onetime.w13_101.external_effects.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T19:25:46.855Z",
+  "effects": {
+    "emails_sent": 0,
+    "whatsapp_messages": 0,
+    "telegram_actions": 0,
+    "zoom_meetings": 0,
+    "zoom_registrants": 0,
+    "vimeo_operations": 0,
+    "helper_queries": 0,
+    "buffer_drafts": 0,
+    "buffer_posts": 0,
+    "stripe_test_objects": 0,
+    "stripe_live_objects": 0,
+    "bna_events": 0,
+    "railway_deployments": 15,
+    "database_migrations": 47,
+    "database_backups": 1,
+    "database_restores": 2,
+    "crm_import_rows": 0,
+    "production_database_writes": 4,
+    "dns_changes": 0,
+    "railway_deployment_removals": 2,
+    "railway_variable_updates": 97,
+    "staging_identity_proof_runs": 4,
+    "staging_identity_external_sends": 0
+  },
+  "secrets_printed_or_committed": false,
+  "private_destinations_printed_or_committed": false
+}

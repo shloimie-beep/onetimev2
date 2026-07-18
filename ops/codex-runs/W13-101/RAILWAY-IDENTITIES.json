@@ -1,0 +1,116 @@
+{
+  "schema_version": "onetime.w13_101.railway_identities.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T18:03:00Z",
+  "status": "verified_read_only_discovery",
+  "authenticated_account": {
+    "status": "verified_cli_login",
+    "identifier_redacted": true
+  },
+  "staging": {
+    "expected_project_name": "one-time-ot99-staging-96b42905",
+    "expected_project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+    "expected_environment": "staging",
+    "expected_environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+    "public_url": "https://ot99-web-staging.up.railway.app",
+    "verified": true,
+    "services": [
+      {
+        "name": "ot99-web",
+        "service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+        "status": "SUCCESS",
+        "deployment_id": "6e3b45dc-761c-4f4b-a844-f8e4c7aabe6a",
+        "image_digest": "sha256:30285f6adce25a03c2305d6bede808e95e97e96f057fdedd592f338958250d4f",
+        "url": "https://ot99-web-staging.up.railway.app",
+        "replicas_running": 1,
+        "region": "us-west2"
+      },
+      {
+        "name": "ot99-worker",
+        "service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+        "status": "SUCCESS",
+        "deployment_id": "914c18f8-4f59-4234-930a-932dd89790c4",
+        "image_digest": "sha256:cbd8a55e41bab2229ec5603efcba2262a91c8be773ffb176520db3a43b220a72",
+        "replicas_running": 1,
+        "region": "us-west2"
+      },
+      {
+        "name": "ot99-pg16",
+        "service_id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+        "status": "SUCCESS",
+        "deployment_id": "5a336d70-61a4-484a-92c9-3285ad596b4a",
+        "image_digest": "sha256:132cf319ef59dcf45054e8f45855f9c63422a5d0a640abdcb66a3fb7cb3398a6",
+        "replicas_running": 1,
+        "region": "us-west2",
+        "volume_state": "READY"
+      },
+      {
+        "name": "Postgres",
+        "service_id": "e6671cb7-178a-4821-b977-7b6e24c0c052",
+        "status": "SUCCESS",
+        "deployment_id": "738803fe-935b-4e02-b2b7-c71c3df10972",
+        "image_digest": "sha256:764fabc5fceb7166414c425a57bed8722a08cfb7fff508efb21a86eb31e172a6",
+        "replicas_running": 1,
+        "region": "us-west2",
+        "volume_state": "READY"
+      }
+    ]
+  },
+  "production": {
+    "expected_project_name": "one-time-production",
+    "expected_project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+    "expected_environment": "production",
+    "expected_environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+    "public_url": "https://join.onetimeonetime.com",
+    "verified": true,
+    "services": [
+      {
+        "name": "one-time-web",
+        "service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+        "status": "SUCCESS",
+        "deployment_id": "6f4fa4e4-0f49-4508-96fe-850a5430360e",
+        "image_digest": "sha256:eb6f723aa76ccf7eee8bf00b2b19f3c865873c2c2c7102f66fe775b303e26c71",
+        "url": "https://join.onetimeonetime.com",
+        "replicas_running": 1,
+        "region": "us-west2"
+      },
+      {
+        "name": "one-time-delivery-cron",
+        "service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+        "status": "SUCCESS",
+        "deployment_id": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+        "image_digest": "sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43",
+        "replicas_running": 1,
+        "region": "us-west2"
+      },
+      {
+        "name": "Postgres-j9Pi",
+        "service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+        "status": "SUCCESS",
+        "deployment_id": "62583cef-572b-40ae-b1d3-0194a2ccbf27",
+        "image_digest": "sha256:b75472d708b058ef15c5d1fb69db08e836cb7e1bad82e2ac6ac75d1198829366",
+        "replicas_running": 1,
+        "region": "us-west2",
+        "volume_state": "READY"
+      },
+      {
+        "name": "Postgres",
+        "service_id": "7d6541d3-a138-40b6-9a42-81c536529022",
+        "status": "SUCCESS",
+        "deployment_id": "6e3cfc7e-f795-448a-91e6-8fa9403b1c8a",
+        "replicas_running": 1,
+        "region": "us-west2",
+        "volume_state": "READY"
+      },
+      {
+        "name": "ops11-pg18-proof-20260717",
+        "service_id": "52db1072-b4eb-450c-bec7-5151cb9a8461",
+        "status": "SUCCESS",
+        "deployment_id": "7b338893-641c-4c14-af99-2f9b2cc61125",
+        "deployment_stopped": true,
+        "volume_state": "READY"
+      }
+    ]
+  },
+  "notes": "Names, IDs, statuses, deployment fingerprints, and service identity only. Environment values are not printed or stored."
+}

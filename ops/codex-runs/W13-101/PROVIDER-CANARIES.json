@@ -1,0 +1,81 @@
+{
+  "schema_version": "onetime.w13_101.provider_canaries.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T19:25:46.855Z",
+  "status": "all_optional_providers_off_after_core_deploy",
+  "default_mode": "provider_off",
+  "providers": [
+    {
+      "provider": "email",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "stripe_test",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "zoom",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "vimeo",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "openai_helper",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "telegram",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "whatsapp",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "buffer",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    },
+    {
+      "provider": "bna_support",
+      "mode": "off",
+      "status": "disabled_by_runtime_kill_switch",
+      "effects": 0,
+      "kill_switch_verified": true,
+      "evidence": "/ready optional dependencies disabled; production safe-core env readback flags false/sink"
+    }
+  ]
+}

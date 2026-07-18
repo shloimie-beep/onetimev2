@@ -1,0 +1,121 @@
+{
+  "schema_version": "onetime.w13_101.production_safe_core_audit.v1",
+  "generated_at": "2026-07-18T19:07:21.911Z",
+  "scope": "production-predeploy",
+  "migration": {
+    "rows": 35,
+    "latest": "2190_ot109_rabbi_content_publisher"
+  },
+  "outboxes": [
+    {
+      "table": "account_lifecycle_delivery_outbox",
+      "total_rows": 2,
+      "state_column": "state",
+      "states": [
+        {
+          "state": "provider_delivered",
+          "count": 1
+        },
+        {
+          "state": "sink_delivered",
+          "count": 1
+        }
+      ],
+      "oldest_created_at": "2026-07-17 08:33:30.627+00",
+      "newest_created_at": "2026-07-17 08:36:35.17+00",
+      "next_scheduled_for": null
+    },
+    {
+      "table": "action_gateway_event_outbox",
+      "total_rows": 0,
+      "state_column": "status",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    },
+    {
+      "table": "auth_email_challenge_delivery_outbox",
+      "total_rows": 0,
+      "state_column": "state",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    },
+    {
+      "table": "ot86_publication_outbox",
+      "total_rows": 0,
+      "state_column": "status",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    },
+    {
+      "table": "outbox_events",
+      "total_rows": 0,
+      "state_column": "status",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    },
+    {
+      "table": "oversight_outbox_events",
+      "total_rows": 0,
+      "state_column": "status",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    },
+    {
+      "table": "support_outbox",
+      "total_rows": 0,
+      "state_column": "status",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    },
+    {
+      "table": "telegram_response_outbox",
+      "total_rows": 0,
+      "state_column": "status",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    },
+    {
+      "table": "whatsapp_outbox_messages",
+      "total_rows": 0,
+      "state_column": "status",
+      "states": [],
+      "oldest_created_at": null,
+      "newest_created_at": null,
+      "next_scheduled_for": null
+    }
+  ],
+  "worker_heartbeats": {
+    "present": true,
+    "worker_column": "worker_type",
+    "heartbeat_column": "last_seen_at",
+    "rows": [
+      {
+        "worker": "delivery_outbox",
+        "rows": 1,
+        "latest_heartbeat_at": "2026-07-18 19:07:26.688+00"
+      }
+    ]
+  },
+  "aggregate": {
+    "outbox_table_count": 9,
+    "outbox_total_rows": 2,
+    "ready_like_rows": 0,
+    "dead_letter_like_rows": 0
+  },
+  "secrets_printed": false,
+  "raw_payloads_printed": false
+}

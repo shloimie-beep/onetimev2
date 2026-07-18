@@ -1,0 +1,84 @@
+{
+  "schema_version": "onetime.w13_101.staging_deployment.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T18:36:00Z",
+  "status": "deployed_and_roll_forward_recovered",
+  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "runtime_worktree": "C:/Users/User/OneTimeOneTime-w13-101-runtime-candidate",
+  "clean_worktree_verified": true,
+  "pre_deploy_version": {
+    "version": "ops11-1197673",
+    "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e"
+  },
+  "post_deploy_version": {
+    "version": "w13-101-safe-core-466d848",
+    "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "target_app": "one-time"
+  },
+  "final_web_deployment": {
+    "service_name": "ot99-web",
+    "service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+    "deployment_id": "7fa7c45b-21a8-45eb-b92d-3750fca06362",
+    "status": "SUCCESS",
+    "image_digest": "sha256:58e5f7625d2d90d591f99b9193a2b8f829b0fb2fba7dfeea1fc343ba2719065e",
+    "config_file": "/railway.web.staging.json"
+  },
+  "final_worker_deployment": {
+    "service_name": "ot99-worker",
+    "service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+    "deployment_id": "6e18ddfa-c4fd-4aab-ac30-164bf18bbab4",
+    "status": "SUCCESS",
+    "image_digest": "sha256:a05951d0240fa976bc313d86616505052df03080c34a6653aa1b1a74b1f3cf16",
+    "config_file": "/railway.worker.staging.json"
+  },
+  "deployment_history": [
+    {
+      "kind": "initial_upload",
+      "web_deployment_id": "b27690be-a9d2-4e84-8fa3-5f017e3417dc",
+      "worker_deployment_id": "773ae238-dd36-4d07-acf1-644724a694e7",
+      "result": "built_successfully_but_version_env_and_staging_db_ledger_needed_update"
+    },
+    {
+      "kind": "metadata_redeploy",
+      "web_deployment_id": "75a62e94-8bb2-42a8-87f6-3759af4a9f13",
+      "worker_deployment_id": "8d6e64ba-286f-4537-8af0-ab6eee7963bb",
+      "result": "web_success_worker_provider_flag_guard_failed_until safe_core_flags_off"
+    },
+    {
+      "kind": "safe_core_flags_redeploy",
+      "web_deployment_id": "b46859f5-8662-4675-a0ef-354a7d042ca0",
+      "worker_deployment_id": "cc51706f-da28-4da5-ac83-02d9aada7f8a",
+      "result": "success"
+    },
+    {
+      "kind": "rollback_rehearsal_noop_redeploy",
+      "web_deployment_id": "ee817c75-bc1e-4e17-82c0-a9af19532a7b",
+      "worker_deployment_id": "fa899003-2159-4aeb-bd36-800467c9add7",
+      "result": "success_before_removal"
+    },
+    {
+      "kind": "final_roll_forward_exact_source_upload",
+      "web_deployment_id": "7fa7c45b-21a8-45eb-b92d-3750fca06362",
+      "worker_deployment_id": "6e18ddfa-c4fd-4aab-ac30-164bf18bbab4",
+      "result": "success"
+    }
+  ],
+  "staging_database_migration": {
+    "service_name": "ot99-pg16",
+    "service_id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+    "pre_migration_latest": "2190_ot109_rabbi_content_publisher",
+    "post_migration_latest": "2203_w13_100_student_gamification",
+    "applied_ids": [
+      "2200_w12_02_communication_history",
+      "2201_w12_01_crm_audience_import",
+      "2202_w12_05_telegram_operations",
+      "2203_w13_100_student_gamification"
+    ],
+    "database_url_printed": false
+  },
+  "image_digest_or_rebuild_fingerprint": "web=sha256:58e5f7625d2d90d591f99b9193a2b8f829b0fb2fba7dfeea1fc343ba2719065e; worker=sha256:a05951d0240fa976bc313d86616505052df03080c34a6653aa1b1a74b1f3cf16",
+  "providers_off": true,
+  "real_import_off": true,
+  "live_billing_off": true,
+  "private_values_in_evidence": false
+}
