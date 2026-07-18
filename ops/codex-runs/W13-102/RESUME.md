@@ -1,6 +1,6 @@
 # W13-102 Resume
 
-Last updated: 2026-07-18T23:31:00+03:00
+Last updated: 2026-07-19T00:00:00+03:00
 
 Worktree:
 
@@ -17,7 +17,7 @@ Current state:
 - Evidence head: `36c20fb62c7097b896a31c57e50860eb9f2339ef`
 - Preserved production runtime source: `466d8489bb8c7a3a57f7590929b58e7857420e86`
 - Production URL: `https://join.onetimeonetime.com`
-- Current phase: terminal handoff blocker recorded with healthy core preserved
+- Current phase: runtime-change candidate validation for Phase 5/Phase 9
 
 Safety notes:
 
@@ -28,10 +28,11 @@ Safety notes:
 
 Next actions:
 
-1. Fill the private identity authorization manifest with exact current recipient authorization, valid expiry, and the ephemeral apply phrase hash before any production identity apply.
-2. Fill/approve the private CRM source acceptance manifest before any dry-run/rehearsal/import apply.
-3. Add protected provider credentials/config per lane before any canary.
-4. Do not apply production identity, email, CRM, or provider operations until their gate files are complete and sanitized.
+1. Continue validation/deployment gates for the Resend webhook runtime candidate; keep production on W13-101 runtime until staging and rollback pass.
+2. Fill the private identity authorization manifest with exact current recipient authorization, valid expiry, and the ephemeral apply phrase hash before any production identity apply.
+3. Fill/approve the private CRM source acceptance manifest before any dry-run/rehearsal/import apply.
+4. Add protected provider credentials/config per lane before any canary.
+5. Do not apply production identity, email, CRM, or provider operations until their gate files are complete and sanitized.
 
 Phase 1 evidence:
 
@@ -52,11 +53,19 @@ Phase 2 notes:
 - Dry-run status: `dry_run_blocked`
 - Apply blocker scope: production identity handoff only; missing private recipient fields and valid expiry are required before any production identity mutation.
 
-Terminal status:
+Phase 5 continuation:
+
+- Resend webhook runtime candidate: `apps/web/src/server/features/delivery/resend-webhook-router.ts`
+- Route: `/api/v1/delivery/resend/webhook`
+- Safety: mounted before `express.json`, raw-body only, Svix signature/timestamp required, durable redacted `provider_event_ledger` write before ACK, digest mismatch guarded, disabled unless `ONE_TIME_RESEND_WEBHOOK_ENABLED` and `RESEND_WEBHOOK_SECRET` are configured.
+- Focused route test: `tests/integration/delivery/resend-webhook-route.test.ts`
+- Real-send blocker scope: transactional email only; missing protected Resend API key, webhook secret, sender, reply-to evidence, and enablement remain required before any real send/canary.
+
+Current terminal classification if stopped now:
 
 - `CORE_LIVE_IDENTITY_HANDOFF_BLOCKED`
 - Core remains live and healthy on runtime source `466d8489bb8c7a3a57f7590929b58e7857420e86`.
-- Production login/role acceptance could not safely complete because identity apply is blocked on the private manifest and transactional email is blocked on missing Resend configuration/webhook readiness.
+- Production login/role acceptance could not safely complete because identity apply is blocked on the private manifest and transactional email is blocked on missing protected Resend/sender runtime material.
 - CRM source hashes are verified, but production import is blocked until the private acceptance manifest and tag-map approval are completed.
 - Optional providers remain safely off or not configured; no canaries were executed.
 
@@ -68,3 +77,4 @@ Last local checks:
 - `npm run secret:scan` passed.
 - Focused W13-102 identity integration test passed.
 - Provider control-center and delivery provider unit tests passed.
+- Resend webhook route integration test passed.

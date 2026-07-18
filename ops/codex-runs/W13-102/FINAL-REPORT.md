@@ -10,6 +10,8 @@ PR/branch: PR #91, `release/w13-100-controlled-day-one-20260717T182046Z`.
 
 GitHub governance: W13-102 closeout was posted to PR #91 as top-level comment `5012809630`. Direct PR body edit through local `gh` was blocked by a missing `read:project` token scope, so the body was preserved and the closeout was recorded as a PR conversation update.
 
+Continuation note: the run was reopened on 2026-07-19 after operator correction. Executable Phase 5 work continued: the Resend webhook route is now implemented as a runtime-change candidate behind protected enablement gates.
+
 PR CI follow-up: W13-101 evidence/tool formatting was repaired and pushed. A later Node 24 integration failure was traced to a date-dependent W12-100 identity provisioning test; the test now uses deterministic lifecycle acceptance clocks, and local full integration passes.
 
 Runtime source SHA: `466d8489bb8c7a3a57f7590929b58e7857420e86`.
@@ -30,7 +32,7 @@ Role acceptance: administrator, owner, parent, and student acceptance remain blo
 
 CRM: all six expected OPS-13A source hashes were found exactly once in Downloads without reading or committing source rows. Production import remains blocked until the private CRM acceptance manifest and tag-map approval are completed.
 
-Provider canaries: no provider canaries were executed. Transactional email is blocked by missing Resend API key, webhook secret, sender, reply-to evidence, and missing mounted Resend webhook. WhatsApp, BNA support, Stripe TEST, Zoom, Vimeo, Telegram, OpenAI helper, and Buffer are blocked by lane-specific missing protected config or provider-off state.
+Provider canaries: no provider canaries were executed. Transactional email now has a mounted raw-body Resend webhook candidate at `/api/v1/delivery/resend/webhook`; it remains blocked before real send by missing Resend API key, webhook secret, sender, reply-to evidence, and protected webhook enablement. WhatsApp, BNA support, Stripe TEST, Zoom, Vimeo, Telegram, OpenAI helper, and Buffer are blocked by lane-specific missing protected config or provider-off state.
 
 External effects: production database writes `0`, external email sends `0`, CRM contacts imported `0`, provider canaries `0`, live Stripe charges `0`, meetings `0`, uploads `0`, drafts `0`, BNA tickets `0`, backup proof deployments `1`.
 
@@ -56,8 +58,10 @@ Checks run:
 - `npx prettier --check tests/integration/accounts/w12-100-identity-provisioning.test.ts`
 - `npx vitest run --config vitest.integration.config.ts tests/integration/accounts/w12-100-identity-provisioning.test.ts`
 - `npm run integration`
+- `npx vitest run --config vitest.integration.config.ts tests/integration/delivery/resend-webhook-route.test.ts tests/integration/ops05-provider-control-center.test.ts`
+- `npx vitest run --config vitest.unit.config.ts tests/unit/delivery/ops05-resend-webhook-conformance.test.ts tests/unit/providers/ops05-provider-control-center.test.ts`
 
-Known local formatting note: full-repo `npm run format` still reports broad pre-existing formatting differences unrelated to W13-102; the touched W12-100 test file passes targeted Prettier.
+Known local formatting note: full-repo `npm run format` previously reported broad pre-existing formatting differences unrelated to W13-102; touched W13-102 files are checked with targeted Prettier.
 
 Private handoff directory: `C:\Users\User\.onetime-w13-102-private\`.
 

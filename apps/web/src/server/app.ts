@@ -201,6 +201,7 @@ import {
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
 import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
+import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { leadRateLimit } from './rate-limit.ts';
@@ -311,6 +312,11 @@ export function createApp({
     }),
   );
   app.use(traceMiddleware);
+  app.use(
+    '/api/v1/delivery/resend',
+    createResendWebhookRouter({ config, pool, ...(clock ? { clock } : {}) }),
+  );
+
   if (config.oneTimeTelegramWebhookEnabled) {
     const telegramWebhook = createTelegramWebhookHandler({
       botKey: asBotKey(config.oneTimeTelegramBotKey),

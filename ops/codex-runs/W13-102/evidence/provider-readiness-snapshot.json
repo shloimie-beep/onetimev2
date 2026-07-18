@@ -1,6 +1,6 @@
 {
   "schema": "onetime.w13_102.provider_readiness_snapshot.v1",
-  "generated_at": "2026-07-18T20:23:30.235Z",
+  "generated_at": "2026-07-18T21:00:00.000Z",
   "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
   "production_url": "https://join.onetimeonetime.com",
   "source": {
@@ -89,8 +89,8 @@
     "webhook_endpoints": [
       {
         "provider": "resend_email",
-        "path": null,
-        "method": null,
+        "path": "/api/v1/delivery/resend/webhook",
+        "method": "POST",
         "https_required": true,
         "post_only": true,
         "max_bytes": 131072,
@@ -102,11 +102,11 @@
           "svix_message_id_replay",
           "provider_event_id_dedupe"
         ],
-        "handler_mounted": false,
-        "acknowledged_after_durable_enqueue": false,
+        "handler_mounted": true,
+        "acknowledged_after_durable_enqueue": true,
         "business_processing_async": true,
         "secret_logging_forbidden": true,
-        "registration_note": "No Resend route is mounted in base; final conductor must mount a raw-body POST route before express.json."
+        "registration_note": "Mounted before express.json and safely returns disabled until ONE_TIME_RESEND_WEBHOOK_ENABLED and RESEND_WEBHOOK_SECRET are configured."
       },
       {
         "provider": "whatsapp_meta",
@@ -271,8 +271,8 @@
         ],
         "webhook_endpoint": {
           "provider": "resend_email",
-          "path": null,
-          "method": null,
+          "path": "/api/v1/delivery/resend/webhook",
+          "method": "POST",
           "https_required": true,
           "post_only": true,
           "max_bytes": 131072,
@@ -284,15 +284,15 @@
             "svix_message_id_replay",
             "provider_event_id_dedupe"
           ],
-          "handler_mounted": false,
-          "acknowledged_after_durable_enqueue": false,
+          "handler_mounted": true,
+          "acknowledged_after_durable_enqueue": true,
           "business_processing_async": true,
           "secret_logging_forbidden": true,
-          "registration_note": "No Resend route is mounted in base; final conductor must mount a raw-body POST route before express.json."
+          "registration_note": "Mounted before express.json and safely returns disabled until ONE_TIME_RESEND_WEBHOOK_ENABLED and RESEND_WEBHOOK_SECRET are configured."
         },
         "queue_worker_dependency": {
           "required": true,
-          "readiness": "missing",
+          "readiness": "configured",
           "dependency_names": ["outbox_events", "delivery_worker"]
         },
         "last_allowlisted_canary": {
@@ -735,7 +735,6 @@
         "missing:RESEND_WEBHOOK_SECRET",
         "missing:ONE_TIME_EMAIL_FROM",
         "missing:ONE_TIME_EMAIL_REPLY_TO",
-        "webhook_not_mounted:resend_email",
         "status:not_configured"
       ]
     },

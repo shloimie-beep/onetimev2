@@ -36,3 +36,9 @@ ops/codex-runs/W13-101/tools/staging-identity-proof.ts
 ops/codex-runs/W13-101/tools/update-closeout-checkpoints.mjs
 scripts/w13-102/identity/production-identity-activation.ts
 tests/integration/accounts/w13-102-production-identity-activation.test.ts
+apps/web/src/server/features/delivery/resend-webhook-router.ts
+apps/web/src/server/app.ts
+apps/worker/src/delivery/provider-webhooks.ts
+packages/config/src/index.ts
+packages/domain/src/providers/control-center.ts
+tests/integration/delivery/resend-webhook-route.test.ts

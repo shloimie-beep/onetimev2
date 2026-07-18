@@ -1,6 +1,6 @@
 {
   "schema": "onetime.w13_102.external_effects.v1",
-  "updated_at": "2026-07-18T23:31:00+03:00",
+  "updated_at": "2026-07-19T00:00:00+03:00",
   "status": "tracking",
   "production_database_writes": 0,
   "external_email_sends": 0,
@@ -17,6 +17,7 @@
   "notes": [
     "No W13-102 production database writes, provider sends, CRM imports, tickets, payments, meetings, uploads, drafts, or provider canaries have been performed.",
     "A W13-102 Railway proof deployment created a fresh native production PG18 backup/restore report without printing secrets or PII.",
-    "Provider and CRM discovery produced sanitized committed evidence only; private CRM source paths were written outside Git."
+    "Provider and CRM discovery produced sanitized committed evidence only; private CRM source paths were written outside Git.",
+    "W13-102 continuation added and tested a disabled-by-default Resend webhook route locally; it performed no external sends and no production writes."
   ]
 }

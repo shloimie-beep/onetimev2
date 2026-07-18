@@ -355,6 +355,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     deliveryProviderTransportEnabled: parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED,
     resendTransportEnabled: parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED,
     resendWebhookEnabled: parsed.ONE_TIME_RESEND_WEBHOOK_ENABLED,
+    resendWebhookSecret: parsed.RESEND_WEBHOOK_SECRET,
     resendWebhookSecretConfigured: Boolean(parsed.RESEND_WEBHOOK_SECRET),
     deliveryTestCanaryEmail: parsed.ONE_TIME_DELIVERY_TEST_CANARY_EMAIL?.trim().toLowerCase(),
     resendApiKey: parsed.RESEND_API_KEY,

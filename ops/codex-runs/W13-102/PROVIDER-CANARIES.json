@@ -1,7 +1,7 @@
 {
   "schema": "onetime.w13_102.provider_canaries.v1",
-  "updated_at": "2026-07-18T23:31:00+03:00",
-  "status": "discovery_complete_no_canaries_executed",
+  "updated_at": "2026-07-19T00:00:00+03:00",
+  "status": "transactional_email_webhook_implemented_no_real_canaries_executed",
   "evidence": {
     "provider_readiness_snapshot": "ops/codex-runs/W13-102/evidence/provider-readiness-snapshot.json",
     "raw_values_printed": false,
@@ -18,7 +18,7 @@
         "RESEND_WEBHOOK_SECRET missing",
         "ONE_TIME_EMAIL_FROM missing",
         "ONE_TIME_EMAIL_REPLY_TO missing",
-        "Resend webhook endpoint is not mounted in this runtime"
+        "ONE_TIME_RESEND_WEBHOOK_ENABLED not enabled in protected runtime"
       ]
     },
     "whatsapp": {

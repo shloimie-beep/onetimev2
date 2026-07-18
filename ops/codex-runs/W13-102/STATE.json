@@ -1,10 +1,10 @@
 {
   "schema": "onetime.codex_run_state.v1",
   "run_id": "W13-102",
-  "updated_at": "2026-07-18T23:39:00+03:00",
+  "updated_at": "2026-07-19T00:00:00+03:00",
   "terminal_status": "CORE_LIVE_IDENTITY_HANDOFF_BLOCKED",
-  "current_phase": "phase_10_governance_and_handoff",
-  "overall_status": "terminal_blocked_with_core_live",
+  "current_phase": "phase_9_staging_and_deployment",
+  "overall_status": "runtime_change_candidate_under_validation_core_live",
   "repository": "webcraft-media/onetimev2",
   "pr": 91,
   "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
@@ -22,14 +22,14 @@
   "phase_status": {
     "phase_1_preserve_and_inventory": "live_baseline_passed",
     "phase_2_identity_activation_mechanism": "mechanism_implemented_production_apply_blocked_on_private_manifest",
-    "phase_5_transactional_email_activation": "blocked_before_send_missing_resend_config_and_webhook",
+    "phase_5_transactional_email_activation": "webhook_implemented_tested_blocked_before_send_missing_resend_runtime_config",
     "phase_3_role_acceptance_and_product_ux": "blocked_waiting_for_identity_handoff",
     "phase_4_real_crm_import_zero_sends": "source_hashes_verified_apply_blocked_private_acceptance",
     "phase_6_whatsapp_lead_assistant": "blocked_missing_protected_provider_config",
     "phase_7_bna_subscriber_support": "blocked_missing_protected_bridge_config",
     "phase_8_remaining_provider_canaries": "blocked_by_provider_specific_missing_config",
-    "phase_9_deployment": "not_run_existing_runtime_preserved",
-    "phase_10_governance_and_handoff": "records_updated_terminal_blocker_recorded"
+    "phase_9_deployment": "runtime_change_candidate_pending_staging_and_rollback_gates",
+    "phase_10_governance_and_handoff": "records_update_in_progress"
   },
   "global_stops": [],
   "scoped_blockers": [
@@ -42,7 +42,7 @@
     {
       "lane": "transactional_email",
       "status": "blocked_before_send",
-      "reason": "Resend API key, webhook secret, sender, reply-to evidence, and mounted webhook are missing",
+      "reason": "Resend webhook route is implemented and tested, but protected runtime is missing API key, webhook secret, sender, reply-to evidence, and webhook enablement",
       "blocks_global_run": false
     },
     {
@@ -73,11 +73,12 @@
     "Fresh W13-102 production PG18 backup/restore proof passed on Railway proof deployment 14adb936-e81f-47a2-9fc9-aa8248444250.",
     "PR #91 follow-up CI repair completed: W13-101 Prettier normalization was committed, then the Node 24 integration failure was traced to a date-dependent W12-100 identity provisioning test and fixed with deterministic lifecycle acceptance clocks.",
     "W13-102 production identity command is implemented and tested; real production apply remains blocked on private manifest values.",
-    "Transactional email is blocked before send by missing Resend runtime material and missing mounted webhook; no emails were sent.",
+    "Transactional email webhook endpoint is now implemented and tested with signed raw-body Svix fixtures and durable redacted provider-event ledger storage; real send remains blocked by missing protected Resend/sender runtime material.",
     "CRM source discovery verified all six expected source hashes in Downloads without reading or printing source rows, but apply remains blocked on the private acceptance manifest and tag-map approval.",
     "Provider readiness discovery completed without provider mutation; missing optional credentials block only their respective lanes.",
     "W13-102 PR #91 closeout was posted as top-level GitHub comment 5012809630 because direct PR body edit through local gh was blocked by missing read:project scope.",
-    "Local follow-up verification passed for npm run integration after the W12-100 test clock repair."
+    "Local follow-up verification passed for npm run integration after the W12-100 test clock repair.",
+    "W13-102 continuation implemented the Resend webhook route before express.json at /api/v1/delivery/resend/webhook; it stays disabled without ONE_TIME_RESEND_WEBHOOK_ENABLED and RESEND_WEBHOOK_SECRET."
   ],
   "resume_command": "cd C:/Users/User/OneTimeOneTime-w13-100-final-launch && git status --short --branch && git rev-parse HEAD && Get-ChildItem ops/codex-runs/W13-102"
 }

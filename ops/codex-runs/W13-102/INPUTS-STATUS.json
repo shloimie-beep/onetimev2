@@ -1,6 +1,6 @@
 {
   "schema": "onetime.w13_102.inputs_status.v1",
-  "updated_at": "2026-07-18T23:31:00+03:00",
+  "updated_at": "2026-07-19T00:00:00+03:00",
   "private_directory": "C:/Users/User/.onetime-w13-102-private",
   "private_files": {
     "identity_authorization_manifest": {
@@ -56,7 +56,8 @@
     "provider.transactional_email.RESEND_API_KEY",
     "provider.transactional_email.RESEND_WEBHOOK_SECRET",
     "provider.transactional_email.ONE_TIME_EMAIL_FROM",
-    "provider.transactional_email.ONE_TIME_EMAIL_REPLY_TO"
+    "provider.transactional_email.ONE_TIME_EMAIL_REPLY_TO",
+    "provider.transactional_email.ONE_TIME_RESEND_WEBHOOK_ENABLED"
   ],
   "lane_blockers": [
     {
@@ -74,7 +75,7 @@
     {
       "lane": "transactional_email",
       "status": "blocked_before_send",
-      "reason": "Resend API key, webhook secret, sender, reply-to evidence, and mounted Resend webhook are absent",
+      "reason": "Resend webhook route is implemented and tested, but protected runtime is missing API key, webhook secret, sender, reply-to evidence, and webhook enablement",
       "blocks_global_run": false
     },
     {

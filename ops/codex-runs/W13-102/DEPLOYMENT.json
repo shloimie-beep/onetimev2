@@ -1,7 +1,7 @@
 {
   "schema": "onetime.w13_102.deployment.v1",
-  "updated_at": "2026-07-18T23:10:00+03:00",
-  "status": "existing_runtime_preserved_no_w13_102_runtime_change_yet",
+  "updated_at": "2026-07-19T00:00:00+03:00",
+  "status": "runtime_change_candidate_pending_commit_staging_and_rollback_gates",
   "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
   "evidence_head_sha": "36c20fb62c7097b896a31c57e50860eb9f2339ef",
   "production_url": "https://join.onetimeonetime.com",
@@ -11,7 +11,8 @@
     "worker": "52226afb-5b5c-4e79-8982-8b26115dfaba"
   },
   "staging_deployments": {},
-  "rollback_proof": "pending",
+  "runtime_change_summary": "Resend webhook route implemented behind ONE_TIME_RESEND_WEBHOOK_ENABLED; no migration required; production remains on preserved W13-101 runtime until staging and rollback gates pass.",
+  "rollback_proof": "pending_for_new_candidate",
   "production_deploy_status": "not_started",
   "backup_restore_proof": {
     "status": "passed",
