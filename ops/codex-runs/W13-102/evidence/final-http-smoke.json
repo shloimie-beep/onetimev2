@@ -1,14 +1,14 @@
 {
   "schema": "onetime.w13_102.final_http_smoke.v1",
-  "generated_at": "2026-07-18T20:27:15.569Z",
+  "generated_at": "2026-07-18T22:23:37.603Z",
   "base_url": "https://join.onetimeonetime.com",
   "checks": [
     {
       "path": "/version",
       "status": 200,
       "ok": true,
-      "version": "w13-101-safe-core-466d848",
-      "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86"
+      "version": "w13-102-resend-webhook-007e021",
+      "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860"
     },
     {
       "path": "/health",
@@ -17,6 +17,19 @@
     },
     {
       "path": "/ready",
+      "status": 200,
+      "ok": true,
+      "database_ok": true,
+      "latest_migration": "2203_w13_100_student_gamification",
+      "optional_transports": "disabled"
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "ok": true
+    },
+    {
+      "path": "/signup",
       "status": 200,
       "ok": true
     },
@@ -31,9 +44,17 @@
       "ok": true
     },
     {
-      "path": "/reset-password",
+      "path": "/forgot-password",
       "status": 200,
       "ok": true
+    },
+    {
+      "path": "/api/v1/delivery/resend/webhook",
+      "status": 503,
+      "ok": false,
+      "expected_code": "RESEND_WEBHOOK_DISABLED"
     }
-  ]
+  ],
+  "secrets_printed": false,
+  "pii_printed": false
 }

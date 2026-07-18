@@ -1,13 +1,18 @@
 {
   "schema": "onetime.w13_102.deployment.v1",
-  "updated_at": "2026-07-19T00:49:00+03:00",
-  "status": "staging_rollback_rollforward_passed_production_preserved",
-  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "updated_at": "2026-07-19T01:24:00+03:00",
+  "status": "production_deployed_smoke_passed_remaining_lanes_blocked",
+  "runtime_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "previous_runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
   "candidate_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
-  "evidence_head_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "evidence_head_sha": "b5956ec",
   "production_url": "https://join.onetimeonetime.com",
   "staging_url": "https://ot99-web-staging.up.railway.app",
   "production_deployments": {
+    "web": "9334b362-f00d-4170-9713-ecee0d22b85c",
+    "worker": "f81e56ba-cf4d-4f92-99e5-f5f6be360494"
+  },
+  "previous_production_deployments": {
     "web": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
     "worker": "52226afb-5b5c-4e79-8982-8b26115dfaba"
   },
@@ -27,7 +32,7 @@
   },
   "runtime_change_summary": "Resend webhook route implemented behind ONE_TIME_RESEND_WEBHOOK_ENABLED; no migration required; staging rollback to W13-101 and roll-forward to W13-102 passed with transports disabled.",
   "rollback_proof": "passed",
-  "production_deploy_status": "not_started",
+  "production_deploy_status": "deployed_smoke_passed",
   "backup_restore_proof": {
     "status": "passed",
     "deployment_id": "02abfb5a-e115-49fb-b159-3f8c3e5ab211",

@@ -1,23 +1,24 @@
 {
   "schema": "onetime.codex_run_state.v1",
   "run_id": "W13-102",
-  "updated_at": "2026-07-19T00:49:00+03:00",
+  "updated_at": "2026-07-19T01:24:00+03:00",
   "terminal_status": "CORE_LIVE_IDENTITY_HANDOFF_BLOCKED",
-  "current_phase": "phase_9_production_backup_and_deployment_gate",
-  "overall_status": "runtime_change_candidate_staging_passed_production_preserved",
+  "current_phase": "phase_10_governance_and_remaining_blockers",
+  "overall_status": "production_runtime_deployed_core_live_remaining_lanes_blocked",
   "repository": "webcraft-media/onetimev2",
   "pr": 91,
   "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
   "worktree": "C:/Users/User/OneTimeOneTime-w13-100-final-launch",
-  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "runtime_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "previous_runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
   "candidate_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
-  "evidence_head_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "evidence_head_sha": "b5956ec",
   "release_tag": "w13-101-production-safe-core-20260718",
   "production_url": "https://join.onetimeonetime.com",
   "staging_url": "https://ot99-web-staging.up.railway.app",
   "production_deployments": {
-    "web": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
-    "worker": "52226afb-5b5c-4e79-8982-8b26115dfaba"
+    "web": "9334b362-f00d-4170-9713-ecee0d22b85c",
+    "worker": "f81e56ba-cf4d-4f92-99e5-f5f6be360494"
   },
   "latest_production_migration": "2203_w13_100_student_gamification",
   "phase_status": {
@@ -29,8 +30,8 @@
     "phase_6_whatsapp_lead_assistant": "blocked_missing_protected_provider_config",
     "phase_7_bna_subscriber_support": "blocked_missing_protected_bridge_config",
     "phase_8_remaining_provider_canaries": "blocked_by_provider_specific_missing_config",
-    "phase_9_deployment": "staging_rollback_rollforward_passed_production_not_deployed",
-    "phase_10_governance_and_handoff": "records_update_in_progress"
+    "phase_9_deployment": "production_deployed_and_smoked",
+    "phase_10_governance_and_handoff": "records_update_in_progress_remaining_lanes_scoped_blocked"
   },
   "global_stops": [],
   "scoped_blockers": [
@@ -57,6 +58,12 @@
       "status": "blocked_by_provider",
       "reason": "protected provider credentials/config are missing or provider remains off per lane",
       "blocks_global_run": false
+    },
+    {
+      "lane": "predeploy_direct_db_audit_from_local_shell",
+      "status": "blocked_by_private_dns",
+      "reason": "Railway CLI run injected production private database host into a local process; local DNS cannot resolve postgres-j9pi.railway.internal. /ready and worker log evidence passed.",
+      "blocks_global_run": false
     }
   ],
   "external_effects": {
@@ -65,7 +72,8 @@
     "crm_contacts_imported": 0,
     "provider_canaries": 0,
     "railway_backup_proof_deployments": 2,
-    "staging_runtime_deployments": 6
+    "staging_runtime_deployments": 6,
+    "production_runtime_deployments": 2
   },
   "notes": [
     "W13-102 run started from PR #91 checkpoint 36c20fb62c7097b896a31c57e50860eb9f2339ef.",
@@ -82,7 +90,8 @@
     "Local follow-up verification passed for npm run integration after the W12-100 test clock repair.",
     "W13-102 continuation implemented the Resend webhook route before express.json at /api/v1/delivery/resend/webhook; it stays disabled without ONE_TIME_RESEND_WEBHOOK_ENABLED and RESEND_WEBHOOK_SECRET.",
     "Staging deployed W13-102 candidate 007e0215d1186ca51163dea3b1c15303bf52a860 with transports off, passed HTTP/readiness acceptance, rolled back to W13-101 source 466d8489bb8c7a3a57f7590929b58e7857420e86, then rolled forward to W13-102 with matching final candidate image digests.",
-    "Production remains on preserved W13-101 deployments while production backup/deployment gates are evaluated."
+    "Production W13-102 web deployment 9334b362-f00d-4170-9713-ecee0d22b85c and worker deployment f81e56ba-cf4d-4f92-99e5-f5f6be360494 passed Railway status and live smoke with transports disabled.",
+    "W13-101 source 466d8489bb8c7a3a57f7590929b58e7857420e86 remains the source rollback fallback."
   ],
   "resume_command": "cd C:/Users/User/OneTimeOneTime-w13-100-final-launch && git status --short --branch && git rev-parse HEAD && Get-ChildItem ops/codex-runs/W13-102"
 }

@@ -1,6 +1,6 @@
 # W13-102 Resume
 
-Last updated: 2026-07-19T00:49:00+03:00
+Last updated: 2026-07-19T01:24:00+03:00
 
 Worktree:
 
@@ -16,10 +16,11 @@ Current state:
 - Branch: `release/w13-100-controlled-day-one-20260717T182046Z`
 - Evidence head: `36c20fb62c7097b896a31c57e50860eb9f2339ef`
 - Candidate head: `007e0215d1186ca51163dea3b1c15303bf52a860`
-- Preserved production runtime source: `466d8489bb8c7a3a57f7590929b58e7857420e86`
+- Previous production runtime source: `466d8489bb8c7a3a57f7590929b58e7857420e86`
+- Current production runtime source: `007e0215d1186ca51163dea3b1c15303bf52a860`
 - Production URL: `https://join.onetimeonetime.com`
 - Staging URL: `https://ot99-web-staging.up.railway.app`
-- Current phase: Phase 9 production backup/deployment gate after staging rollback/roll-forward pass
+- Current phase: Phase 10 governance and remaining scoped blockers after production runtime deploy
 
 Safety notes:
 
@@ -30,7 +31,7 @@ Safety notes:
 
 Next actions:
 
-1. Evaluate production backup/deployment gates for the staging-proven Resend webhook runtime candidate; keep production on W13-101 runtime unless the replacement passes the remaining gates.
+1. Keep production W13-102 runtime live; W13-101 source/deploy IDs remain the rollback reference.
 2. Fill the private identity authorization manifest with exact current recipient authorization, valid expiry, and the ephemeral apply phrase hash before any production identity apply.
 3. Fill/approve the private CRM source acceptance manifest before any dry-run/rehearsal/import apply.
 4. Add protected provider credentials/config per lane before any canary.
@@ -48,12 +49,19 @@ Phase 1 evidence:
 - CRM source discovery: `ops/codex-runs/W13-102/evidence/crm-source-discovery.json`
 - Final public HTTP smoke: `ops/codex-runs/W13-102/evidence/final-http-smoke.json`
 - Staging rollback/roll-forward summary: `ops/codex-runs/W13-102/evidence/staging-rollback-rollforward-summary.json`
+- Production deployment summary: `ops/codex-runs/W13-102/evidence/production-deployment-summary.json`
 
 Fresh production backup/restore:
 
 - Deployment: `02abfb5a-e115-49fb-b159-3f8c3e5ab211`
 - Run ID: `w13-102-prod-pg18-20260718T214715Z`
 - Status: passed; row-count hash and migration-ledger hash matched after restore.
+
+Production deployment:
+
+- Web: `9334b362-f00d-4170-9713-ecee0d22b85c`
+- Worker: `f81e56ba-cf4d-4f92-99e5-f5f6be360494`
+- Final smoke: `/version`, `/health`, `/ready`, `/`, `/signup`, `/login`, `/activate`, `/forgot-password` passed; Resend webhook returned expected `RESEND_WEBHOOK_DISABLED`.
 
 Phase 2 notes:
 
@@ -93,6 +101,7 @@ Last local checks:
 - `npm run secret:scan` passed.
 - `npm run build` passed.
 - `npm run performance` passed locally; generated evidence churn was restored.
+- PR #91 Node 24 verify rerun job `88128187552` passed after first-attempt CLS flake.
 - Focused W13-102 identity integration test passed.
 - Provider control-center and delivery provider unit tests passed.
 - Resend webhook route integration test passed.

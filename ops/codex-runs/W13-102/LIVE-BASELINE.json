@@ -1,17 +1,18 @@
 {
   "schema": "onetime.w13_102.live_baseline.v1",
-  "updated_at": "2026-07-19T00:49:00+03:00",
-  "status": "passed_readonly_baseline",
+  "updated_at": "2026-07-19T01:24:00+03:00",
+  "status": "passed_postdeploy_runtime_smoke",
   "production_url": "https://join.onetimeonetime.com",
-  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
-  "release_tag": "w13-101-production-safe-core-20260718",
+  "runtime_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "previous_runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "app_version": "w13-102-resend-webhook-007e021",
   "http_smokes": [
     {
       "path": "/version",
       "status": 200,
       "ok": true,
-      "version": "w13-101-safe-core-466d848",
-      "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86"
+      "version": "w13-102-resend-webhook-007e021",
+      "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860"
     },
     {
       "path": "/health",
@@ -56,10 +57,10 @@
     "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
     "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
     "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
-    "web_deployment_id": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
+    "web_deployment_id": "9334b362-f00d-4170-9713-ecee0d22b85c",
     "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
-    "worker_deployment_id": "52226afb-5b5c-4e79-8982-8b26115dfaba",
-    "evidence_path": "ops/codex-runs/W13-102/evidence/railway-deployment-readback.json"
+    "worker_deployment_id": "f81e56ba-cf4d-4f92-99e5-f5f6be360494",
+    "evidence_path": "ops/codex-runs/W13-102/evidence/production-deployment-summary.json"
   },
   "database_baseline": {
     "status": "passed_readonly",
@@ -94,7 +95,8 @@
   "external_effects": {
     "writes": 0,
     "sends": 0,
-    "railway_backup_proof_deployments": 2
+    "railway_backup_proof_deployments": 2,
+    "production_runtime_deployments": 2
   },
   "evidence_paths": [
     "ops/codex-runs/W13-102/evidence/http-smoke.json",
@@ -102,6 +104,7 @@
     "ops/codex-runs/W13-102/evidence/production-counts-only.json",
     "ops/codex-runs/W13-102/evidence/railway-deployment-readback.json",
     "ops/codex-runs/W13-102/evidence/production-pg18-backup-restore-summary.json",
-    "ops/codex-runs/W13-102/evidence/final-http-smoke.json"
+    "ops/codex-runs/W13-102/evidence/final-http-smoke.json",
+    "ops/codex-runs/W13-102/evidence/production-deployment-summary.json"
   ]
 }
