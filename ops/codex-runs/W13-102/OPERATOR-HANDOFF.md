@@ -22,4 +22,5 @@ Current private handoff status:
 - Direct PR body edit was blocked by local `gh` token scope `read:project`; the existing body was left intact.
 - PR CI follow-up: W13-101 formatting repair was committed; the subsequent W12-100 identity integration failure was fixed by using deterministic lifecycle acceptance clocks. Local full integration passed after the repair.
 - W13-102 continuation: Resend webhook route is implemented/tested as a runtime-change candidate and remains disabled until protected runtime variables are configured.
+- Staging deployment gate: W13-102 deployed to staging, rollback to W13-101 passed, and roll-forward to W13-102 passed with transports disabled. Production remains on the preserved W13-101 runtime pending remaining production gates.
 - No passwords, raw activation/reset links, tokens, TOTP seeds, credentials, private provider URLs, private contact rows, or PII were committed or printed.

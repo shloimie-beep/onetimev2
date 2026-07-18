@@ -24,6 +24,7 @@ ops/codex-runs/W13-102/evidence/identity-activation-dry-run.json
 ops/codex-runs/W13-102/evidence/provider-readiness-snapshot.json
 ops/codex-runs/W13-102/evidence/crm-source-discovery.json
 ops/codex-runs/W13-102/evidence/final-http-smoke.json
+ops/codex-runs/W13-102/evidence/staging-rollback-rollforward-summary.json
 ops/codex-runs/W13-102/tools/provider-readiness-snapshot.ts
 ops/codex-runs/W13-102/tools/crm-source-discovery.mjs
 ops/codex-runs/W13-101/evidence/pg16-migration-assurance.md

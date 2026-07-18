@@ -4,13 +4,15 @@ Terminal status: `CORE_LIVE_IDENTITY_HANDOFF_BLOCKED`
 
 Production URL: `https://join.onetimeonetime.com`
 
-Staging URL: not changed by W13-102.
+Staging URL: `https://ot99-web-staging.up.railway.app`.
 
 PR/branch: PR #91, `release/w13-100-controlled-day-one-20260717T182046Z`.
 
 GitHub governance: W13-102 closeout was posted to PR #91 as top-level comment `5012809630`. Direct PR body edit through local `gh` was blocked by a missing `read:project` token scope, so the body was preserved and the closeout was recorded as a PR conversation update.
 
 Continuation note: the run was reopened on 2026-07-19 after operator correction. Executable Phase 5 work continued: the Resend webhook route is now implemented as a runtime-change candidate behind protected enablement gates.
+
+Staging deployment gate: W13-102 candidate `007e0215d1186ca51163dea3b1c15303bf52a860` deployed to staging with transports disabled, passed `/version`, `/health`, `/ready`, public/account page checks, and disabled-webhook behavior. Staging rollback to preserved W13-101 source `466d8489bb8c7a3a57f7590929b58e7857420e86` passed, then roll-forward to W13-102 passed with final candidate image digests matching the first candidate deploy.
 
 PR CI follow-up: W13-101 evidence/tool formatting was repaired and pushed. A later Node 24 integration failure was traced to a date-dependent W12-100 identity provisioning test; the test now uses deterministic lifecycle acceptance clocks, and local full integration passes.
 
@@ -46,6 +48,7 @@ Evidence:
 - `ops/codex-runs/W13-102/evidence/provider-readiness-snapshot.json`
 - `ops/codex-runs/W13-102/evidence/crm-source-discovery.json`
 - `ops/codex-runs/W13-102/evidence/final-http-smoke.json`
+- `ops/codex-runs/W13-102/evidence/staging-rollback-rollforward-summary.json`
 
 Checks run:
 

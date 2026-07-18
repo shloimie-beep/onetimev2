@@ -1,18 +1,32 @@
 {
   "schema": "onetime.w13_102.deployment.v1",
-  "updated_at": "2026-07-19T00:00:00+03:00",
-  "status": "runtime_change_candidate_pending_commit_staging_and_rollback_gates",
+  "updated_at": "2026-07-19T00:45:00+03:00",
+  "status": "staging_rollback_rollforward_passed_production_preserved",
   "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
-  "evidence_head_sha": "36c20fb62c7097b896a31c57e50860eb9f2339ef",
+  "candidate_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "evidence_head_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
   "production_url": "https://join.onetimeonetime.com",
-  "staging_url": null,
+  "staging_url": "https://ot99-web-staging.up.railway.app",
   "production_deployments": {
     "web": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
     "worker": "52226afb-5b5c-4e79-8982-8b26115dfaba"
   },
-  "staging_deployments": {},
-  "runtime_change_summary": "Resend webhook route implemented behind ONE_TIME_RESEND_WEBHOOK_ENABLED; no migration required; production remains on preserved W13-101 runtime until staging and rollback gates pass.",
-  "rollback_proof": "pending_for_new_candidate",
+  "staging_deployments": {
+    "candidate_before_rollback": {
+      "web": "7b493142-1c10-460d-a168-c5e48165e0b5",
+      "worker": "cfccbe3a-0952-4f99-89a0-99ff6a412ebe"
+    },
+    "rollback_to_w13_101": {
+      "web": "a152e000-5637-4efd-aeb2-4a1d1740d8f1",
+      "worker": "bc94375d-3c6b-4b62-8abf-c3b0956aa65f"
+    },
+    "roll_forward_to_w13_102": {
+      "web": "43d67064-9588-4cab-9b8c-4e46da097bdc",
+      "worker": "1bf14299-17e0-4f54-944e-8cf5feea8c9b"
+    }
+  },
+  "runtime_change_summary": "Resend webhook route implemented behind ONE_TIME_RESEND_WEBHOOK_ENABLED; no migration required; staging rollback to W13-101 and roll-forward to W13-102 passed with transports disabled.",
+  "rollback_proof": "passed",
   "production_deploy_status": "not_started",
   "backup_restore_proof": {
     "status": "passed",
