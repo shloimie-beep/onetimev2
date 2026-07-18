@@ -18,4 +18,6 @@ Current private handoff status:
 - Delivery IDs: none produced.
 - Recovery instructions: complete the private identity manifest, prove transactional email or permitted fallback, then run the W13-102 identity command from a tested candidate.
 - Provider setup locations: recorded by missing variable name in `ops/codex-runs/W13-102/evidence/provider-readiness-snapshot.json`.
+- GitHub PR #91 closeout comment: `5012809630`.
+- Direct PR body edit was blocked by local `gh` token scope `read:project`; the existing body was left intact.
 - No passwords, raw activation/reset links, tokens, TOTP seeds, credentials, private provider URLs, private contact rows, or PII were committed or printed.

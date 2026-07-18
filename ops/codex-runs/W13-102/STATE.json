@@ -75,7 +75,8 @@
     "W13-102 production identity command is implemented and tested; real production apply remains blocked on private manifest values.",
     "Transactional email is blocked before send by missing Resend runtime material and missing mounted webhook; no emails were sent.",
     "CRM source discovery verified all six expected source hashes in Downloads without reading or printing source rows, but apply remains blocked on the private acceptance manifest and tag-map approval.",
-    "Provider readiness discovery completed without provider mutation; missing optional credentials block only their respective lanes."
+    "Provider readiness discovery completed without provider mutation; missing optional credentials block only their respective lanes.",
+    "W13-102 PR #91 closeout was posted as top-level GitHub comment 5012809630 because direct PR body edit through local gh was blocked by missing read:project scope."
   ],
   "resume_command": "cd C:/Users/User/OneTimeOneTime-w13-100-final-launch && git status --short --branch && git rev-parse HEAD && Get-ChildItem ops/codex-runs/W13-102"
 }

@@ -8,6 +8,8 @@ Staging URL: not changed by W13-102.
 
 PR/branch: PR #91, `release/w13-100-controlled-day-one-20260717T182046Z`.
 
+GitHub governance: W13-102 closeout was posted to PR #91 as top-level comment `5012809630`. Direct PR body edit through local `gh` was blocked by a missing `read:project` token scope, so the body was preserved and the closeout was recorded as a PR conversation update.
+
 Runtime source SHA: `466d8489bb8c7a3a57f7590929b58e7857420e86`.
 
 Evidence head at pickup: `36c20fb62c7097b896a31c57e50860eb9f2339ef`.
