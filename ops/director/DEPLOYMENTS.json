@@ -1,149 +1,82 @@
 {
-  "schema_version": "onetime.director.deployments.v1",
-  "generated_at": "2026-07-17T17:17:56.257Z",
+  "schema_version": "onetime.director.deployments.v2",
+  "generated_at": "2026-07-19T13:40:35.8894527+03:00",
   "production": {
     "url": "https://join.onetimeonetime.com",
-    "environment": "production",
     "project": "one-time-production",
+    "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+    "environment": "production",
+    "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+    "version": "w13-104-public-cls-688fc70",
+    "runtime_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
     "web_service": "one-time-web",
-    "web_deployment": "6f4fa4e4-0f49-4508-96fe-850a5430360e",
-    "web_digest": "sha256:eb6f723aa76ccf7eee8bf00b2b19f3c865873c2c2c7102f66fe775b303e26c71",
+    "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+    "web_deployment": "74a6b736-dd67-4966-bdf6-b7dd80280d1a",
+    "web_deployment_status": "SUCCESS",
+    "web_digest": "sha256:739f56f3fb93c93002602005150a254af3b6303585673d6401cf51275a3421d3",
     "worker_service": "one-time-delivery-cron",
-    "worker_deployment": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
-    "worker_digest": "sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43",
-    "runtime_source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-    "version": "ops11-1197673",
+    "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+    "worker_deployment": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+    "worker_deployment_status": "SUCCESS",
+    "worker_digest": "sha256:da68b66c5b4b3c3b8d02267891248f51a2a5e8621430362bd0382680552682d4",
     "database_service": "Postgres-j9Pi",
-    "database_server_version": "PostgreSQL 18.4",
-    "latest_migration": "2190_ot109_rabbi_content_publisher",
+    "database_service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
+    "latest_migration": "2203_w13_100_student_gamification",
     "route_readback": {
-      "/health": 200,
-      "/ready": 200,
       "/version": 200,
-      "/": 200,
-      "/login": 200,
-      "/signup": 200,
-      "/forgot-password": 200,
-      "/activate": 200,
-      "/reset-password": 200,
-      "/rabbi-member": 301,
-      "/one-time/signup": 301
+      "/health": 200,
+      "/ready": 200
     },
     "evidence_paths": [
-      "ops/codex-runs/OPS-11/FINAL-REPORT.md",
-      "ops/codex-runs/OPS-11/STATE.json",
-      "ops/codex-runs/OPS-11/MUTATION-LEDGER.json"
-    ],
-    "runtime_is_w12_candidate": false,
-    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "w12_candidate_deployed_here": false,
-    "notes": "Production remains OPS-11 source/version and is distinct from the W12-99/W12-100 candidate. W12-100 has not promoted or deployed production."
+      "ops/codex-runs/W13-104/DEPLOYMENT.json",
+      "ops/codex-runs/W13-104/evidence/live-smoke.json",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
+    ]
   },
   "staging": {
-    "environment": "staging",
+    "url": "https://ot99-web-staging.up.railway.app",
     "project": "one-time-ot99-staging-96b42905",
-    "final_source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-    "final_web_deployment": "6e3b45dc-761c-4f4b-a844-f8e4c7aabe6a",
-    "final_web_digest": "sha256:30285f6adce25a03c2305d6bede808e95e97e96f057fdedd592f338958250d4f",
-    "final_worker_deployment": "914c18f8-4f59-4234-930a-932dd89790c4",
-    "final_worker_digest": "sha256:cbd8a55e41bab2229ec5603efcba2262a91c8be773ffb176520db3a43b220a72",
-    "rollback_source_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
-    "rollback_web_deployment": "536e4a57-b1ea-42b8-9a97-44f08a735606",
-    "rollback_worker_deployment": "08dc4a1f-5c3a-4f26-9886-4ca2764b569f",
+    "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+    "environment": "staging",
+    "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+    "version": "w13-104-public-cls-688fc70",
+    "runtime_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "web_service": "ot99-web",
+    "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+    "web_deployment": "b4d5fe88-da36-4f24-9a32-a6f8f666804b",
+    "web_deployment_status": "SUCCESS",
+    "web_digest": "sha256:4f8a8ec73bb7a7c8b5804075903b6534558098c40bb4cf92fa81bef80be0c4e3",
+    "worker_service": "ot99-worker",
+    "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+    "worker_deployment": "d0e2153c-8288-4d19-ab7a-bc348f9cdd0b",
+    "worker_deployment_status": "SUCCESS",
+    "worker_digest": "sha256:da623939c57e81784421e30674c245aaf7621fbfcc2f09af2e812a49270cd1f4",
+    "database_service": "Postgres",
+    "database_service_id": "e6671cb7-178a-4821-b977-7b6e24c0c052",
+    "latest_migration": "2203_w13_100_student_gamification",
+    "route_readback": {
+      "/version": 200,
+      "/health": 200,
+      "/ready": 200
+    },
     "evidence_paths": [
-      "ops/codex-runs/OPS-11/STAGING-ROLLBACK.md",
-      "ops/codex-runs/OPS-11/ARTIFACT-PROMOTION.md"
-    ],
-    "scope": "OPS-11 rollback/staging proof from prior release work, not a W12-99 or W12-100 staging deployment.",
-    "w12_candidate_deployed": false
+      "ops/codex-runs/W13-104/DEPLOYMENT.json",
+      "ops/codex-runs/W13-104/evidence/live-smoke.json",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
+    ]
   },
   "rollback": {
-    "status": "degraded_source_rebuild_available",
-    "native_railway_prelaunch_rollback_available": false,
-    "reason": "Old production deployments were REMOVED and old source 050170d3ce5e9d0ea8e0db5ca0fa96b369bff0b5 was not present locally.",
-    "preserved_source_rebuild_sha": "d13e9cd3117091e97ef973408d8742a13d1a9479",
-    "database_restore": "last_resort_only",
-    "evidence_paths": [
-      "ops/codex-runs/OPS-11/PRODUCTION-ROLLBACK.md",
-      "ops/codex-runs/OPS-11/STAGING-ROLLBACK.md"
-    ]
+    "status": "BLOCKED",
+    "reason": "Staging rollback/roll-forward was not rerun after the W13-104 staging deployment.",
+    "last_known_passed": "W13-102 staging rollback/roll-forward",
+    "database_restore_rule": "Do not restore production DB unless corruption is proven and operator-approved."
   },
-  "w12_00_external_actions": {
-    "deployments": 0,
-    "database_mutations": 0,
-    "provider_sends": 0,
-    "stripe_actions": 0,
-    "dns_changes": 0,
-    "secret_read_or_print": false,
-    "read_only_live_http_checks": [
-      "GET https://join.onetimeonetime.com/version",
-      "HEAD/status https://join.onetimeonetime.com/ready",
-      "HEAD/status https://join.onetimeonetime.com/login",
-      "HEAD/status https://join.onetimeonetime.com/",
-      "HEAD/status https://join.onetimeonetime.com/signup"
-    ]
-  },
-  "w12_launch_readiness": {
-    "owner": "W12-100",
-    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "w12_100_00_branch": "codex/w12-100-00-director-and-ops13a-convergence",
-    "staging_deployment_performed": false,
-    "production_deployment_performed": false,
-    "real_import_performed": false,
-    "provider_acceptance_performed": false,
-    "production_runtime_distinct_from_candidate": true,
-    "required_before_launch": [
-      "Deploy the exact candidate SHA to isolated staging.",
-      "Smoke /health, /ready, /version, worker, rollback, and customer journeys.",
-      "Produce approved real-source dry-run counts before any import apply.",
-      "Run bounded provider canaries only after explicit protected approvals."
-    ]
-  },
-  "w12_100_convergence": {
-    "schema_version": "onetime.director.w12_100_convergence_ref.v1",
-    "generated_at": "2026-07-17T17:17:56.257Z",
-    "branch": "integration/w12-100-launch-readiness-convergence-20260717",
-    "base_w12_99_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "integrated_head_before_closeout": "4112930380fc9ae5bcdac9f316246e285cc93b35",
-    "accepted_lanes": [
-      "W12-100-00",
-      "W12-100-01",
-      "W12-100-02",
-      "W12-100-03",
-      "W12-100-04",
-      "W12-100-06",
-      "W12-100-07",
-      "W12-100-08",
-      "W12-100-09",
-      "W12-100-10",
-      "W12-100-11",
-      "W12-100-12",
-      "W12-100-13-assessment-only"
-    ],
-    "skipped_lanes": [
-      {
-        "lane": "W12-100-05",
-        "reason": "Skipped because lane STATE/FINAL-REPORT classify it blocked_environment_or_rehearsal."
-      },
-      {
-        "lane": "PR-71 / W12-09 gamification product code",
-        "reason": "Skipped because W12-100-13 recommends deferral and the operator did not explicitly approve PR #71 integration."
-      },
-      {
-        "lane": "PR-72 direct merge",
-        "reason": "Not merged directly; the exact eight OPS-13A files entered through W12-100-00 as requested."
-      }
-    ],
-    "draft_pr_target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
-    "deploy_performed": false,
-    "marked_ready": false,
-    "artifacts_dir": "ops/codex-runs/W12-100-CONVERGENCE",
-    "validation_summary": {
-      "local_non_database_gates": "passed",
-      "db_verify": "blocked_missing_database_url",
-      "postgres_16": "blocked_missing_local_postgres_docker_psql",
-      "postgres_18": "blocked_missing_local_postgres_docker_psql"
-    }
-  },
-  "w12_100_convergence_deployment_status": "no_deployment_performed"
+  "external_effects_this_run": {
+    "production_deployments": 0,
+    "staging_deployments": 0,
+    "database_writes": 0,
+    "provider_mutations": 0,
+    "sends": 0,
+    "dns_changes": 0
+  }
 }

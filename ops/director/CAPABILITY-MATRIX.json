@@ -1,330 +1,44 @@
 {
-  "schema_version": "onetime.director.capability_matrix.v1",
-  "generated_at": "2026-07-17T17:17:56.257Z",
+  "schema_version": "onetime.director.capability_matrix.v2",
+  "generated_at": "2026-07-19T13:40:35.8894527+03:00",
+  "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
-    "working_live",
-    "working_staging",
-    "implemented_provider_off",
-    "fixture_only",
-    "degraded",
-    "not_configured",
-    "blocked",
-    "not_built"
+    "ABSENT",
+    "SPECIFIED",
+    "IMPLEMENTED",
+    "INTEGRATED",
+    "DEPLOYED",
+    "CONFIGURED",
+    "ACCEPTED",
+    "BLOCKED",
+    "EXCLUDED"
   ],
-  "source_ref": {
-    "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
-    "deployed_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
-    "w12_99_candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
-    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "w12_99_evidence": "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
-    "w12_99_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
-    "ops_13a_preflight_head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
-    "ops_13a_preflight": "ops/codex-runs/OPS-13A"
-  },
+  "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+  "production_version": "w13-104-public-cls-688fc70",
+  "canonical_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
   "capabilities": [
-    {
-      "id": "public_landing_signup",
-      "title": "Public landing and signup",
-      "status": "working_live",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/app.ts",
-        "scripts/build-public-pages.ts",
-        "tests/e2e/landing-signup.spec.ts",
-        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
-      ],
-      "notes": "Live root and /signup returned 200 in W12-00 readback; lead submission is implemented and tested, but W12-00 did not submit a production lead."
-    },
-    {
-      "id": "auth_activation_recovery",
-      "title": "Auth, activation, reset, and recovery",
-      "status": "working_live",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/app.ts",
-        "packages/domain/src/auth/service.ts",
-        "ops/codex-runs/OPS-11/LOGIN-DELIVERY.md",
-        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
-      ],
-      "notes": "OPS-11 reports live /login, /activate, /forgot-password, /reset-password and one protected admin activation email delivered without storing private destination or token."
-    },
-    {
-      "id": "owner_admin_dashboard",
-      "title": "Owner/Admin dashboard",
-      "status": "degraded",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/app.ts",
-        "apps/web/src/client/app/crm-entry.tsx",
-        "tests/integration/dashboard/owner-dashboard.test.ts",
-        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json"
-      ],
-      "notes": "Dashboard code is deployed in the live source family, but OPS-11 leaves the human admin login/password setup as the next operator action."
-    },
-    {
-      "id": "crm_import_tags",
-      "title": "CRM, audience import, tags, notes, and archive",
-      "status": "degraded",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/crm/register.ts",
-        "apps/web/src/server/features/audience-reconciliation/router.ts",
-        "packages/domain/src/crm/service.ts",
-        "ops/codex-runs/OT-114/STATE.json",
-        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json",
-        "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
-        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
-        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json"
-      ],
-      "notes": "CRM CRUD/tags/notes are implemented in the live runtime family; W12-99 integrates counts-only/synthetic import tooling. OPS-13A adds sanitized source metadata as a preflight input only: its row totals are naive source rows, not deduplicated people counts, and no real import is accepted or applied."
-    },
-    {
-      "id": "communications_history_replies",
-      "title": "Communications, history, and replies",
-      "status": "implemented_provider_off",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/communications/register.ts",
-        "apps/web/src/client/app/communications/CommunicationsFeature.tsx",
-        "packages/domain/src/communications/service.ts",
-        "ops/codex-runs/OT-114/STATE.json"
-      ],
-      "notes": "Provider-off drafts and communications views exist. Complete mailbox, inbound provider history, and broad sends remain unproven/not authorized."
-    },
-    {
-      "id": "billing_stripe",
-      "title": "Billing and Stripe",
-      "status": "fixture_only",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/features/billing/router.ts",
-        "packages/domain/src/billing/fixture-adapter.ts",
-        "packages/domain/src/billing/stripe-test-adapter.ts",
-        "tests/integration/ot105-stripe-test-billing-canary.test.ts"
-      ],
-      "notes": "Billing foundation and test-mode adapters exist. OPS-13A records a Stripe test-mode canary plan only; no live Stripe action and no accepted test canary has been run."
-    },
-    {
-      "id": "parent_student_portals",
-      "title": "Parent and student portals",
-      "status": "degraded",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/features/portals/routers.ts",
-        "apps/web/src/client/features/portals/PortalFeatures.tsx",
-        "ops/evidence/ot-83r/REAL-APP-JOURNEYS.json",
-        "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json"
-      ],
-      "notes": "Routes and synthetic journeys exist, but W12 packet identifies the missing operator-facing test lab with separate synthetic identities."
-    },
-    {
-      "id": "classes_zoom",
-      "title": "Classes, classroom, and Zoom",
-      "status": "implemented_provider_off",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "packages/domain/src/classes/service.ts",
-        "packages/domain/src/classroom/service.ts",
-        "packages/domain/src/providers/zoom.ts",
-        "apps/web/src/server/features/classroom/zoom-webhook-router.ts",
-        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
-      ],
-      "notes": "Classroom and Zoom provider seams are implemented. W12-99 integrates provider-off classroom work, and OPS-13A records a bounded canary plan only. No real Zoom meeting canary or provider acceptance is accepted yet."
-    },
-    {
-      "id": "content_vimeo_knowledge",
-      "title": "Content, Vimeo, knowledge, and classroom vertical slice",
-      "status": "implemented_provider_off",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/client/app/content-workspace/ContentWorkspace.tsx",
-        "packages/domain/src/content/service.ts",
-        "packages/domain/src/content/vimeo-private-runtime.ts",
-        "packages/contracts/src/content"
-      ],
-      "notes": "Content workspace and Vimeo runtime seams exist. W12-99 integrates the content/classroom slice, and OPS-13A records a protected-video canary plan only. No protected Vimeo canary or provider acceptance is accepted yet."
-    },
-    {
-      "id": "buffer_social",
-      "title": "Buffer and social publishing",
-      "status": "implemented_provider_off",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "packages/domain/src/social/buffer-runtime.ts",
-        "packages/contracts/src/social/buffer-runtime.ts",
-        "apps/web/src/server/app.ts",
-        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
-      ],
-      "notes": "Draft/readiness capability exists. Live Buffer publication is not authorized."
-    },
-    {
-      "id": "telegram",
-      "title": "Telegram operations",
-      "status": "not_configured",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/telegram-bot/src/index.ts",
-        "apps/telegram-bot/src/ingress.ts",
-        "packages/domain/src/telegram",
-        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
-      ],
-      "notes": "Runtime code exists, and W12-99 integrated the Telegram operations lane provider-off. Protected bot config/operator mapping and bounded live canaries are not proven or accepted."
-    },
-    {
-      "id": "whatsapp",
-      "title": "WhatsApp lead assistant",
-      "status": "not_configured",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "packages/domain/src/whatsapp",
-        "packages/contracts/src/whatsapp/index.ts",
-        "apps/web/src/server/app.ts",
-        "ops/codex-runs/OPS-10/PROVIDER-CANARIES.json"
-      ],
-      "notes": "WhatsApp runtime and webhook surfaces exist, and W12-99 integrated the public assistant with provider-off behavior. Live public number/provider configuration and consented canaries are not proven or accepted."
-    },
-    {
-      "id": "support_bna_bridge",
-      "title": "Support and BNA bridge",
-      "status": "blocked",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/features/support/router.ts",
-        "packages/domain/src/support",
-        "ops/codex-runs/OT-114/BNA-SUPPORT-EVENT-CONSUMER-CONTRACT.md",
-        "ops/codex-runs/OT-114/STATE.json"
-      ],
-      "notes": "One Time support producer exists. BNA remains a separate convergence train; real BNA receiver/canary work is not accepted in this One Time lane."
-    },
-    {
-      "id": "workers_queues",
-      "title": "Workers, queues, and transactional outbox",
-      "status": "working_live",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/worker/src/main/index.ts",
-        "apps/worker/src/delivery",
-        "packages/domain/src/outbox/sink.ts",
-        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
-      ],
-      "notes": "OPS-11 reports production worker service running with sink mode, batch size 1, and lifecycle proof. Provider default remains off."
-    },
-    {
-      "id": "observability",
-      "title": "Observability, health, readiness, metrics, and version",
-      "status": "working_live",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "apps/web/src/server/app.ts",
-        "apps/web/src/server/ops-routes.ts",
-        "packages/observability/src/ops.ts",
-        "ops/codex-runs/OPS-11/FINAL-REPORT.md"
-      ],
-      "notes": "Live /health, /ready, and /version were reported by OPS-11 and read back during W12-00."
-    },
-    {
-      "id": "backups",
-      "title": "Backups and restore proof",
-      "status": "working_live",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "ops/codex-runs/OPS-11/BACKUP-RESTORE.md",
-        "ops/codex-runs/OPS-11/DATABASE-PATH.md",
-        "scripts/postgres-assurance/ops11-pg18-restore-clone.ts",
-        "ops/codex-runs/OPS-11/STATE.json"
-      ],
-      "notes": "OPS-11 reports native PG18 production dump and disposable restore proof passed; dump stayed outside git."
-    },
-    {
-      "id": "rollback",
-      "title": "Rollback",
-      "status": "degraded",
-      "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-      "evidence_paths": [
-        "ops/codex-runs/OPS-11/PRODUCTION-ROLLBACK.md",
-        "ops/codex-runs/OPS-11/STAGING-ROLLBACK.md",
-        "ops/codex-runs/OPS-11/STATE.json"
-      ],
-      "notes": "Staging rollback/roll-forward was rehearsed, but native Railway rollback to old production was unavailable because old deployments were REMOVED."
-    }
+    { "id": "public_landing_signup", "status": "DEPLOYED" },
+    { "id": "auth_recovery", "status": "DEPLOYED" },
+    { "id": "administrator", "status": "ACCEPTED" },
+    { "id": "crm", "status": "DEPLOYED" },
+    { "id": "real_data", "status": "BLOCKED", "runtime_mode": "PREVIEW_READY" },
+    { "id": "communications", "status": "DEPLOYED" },
+    { "id": "owner_dashboard", "status": "DEPLOYED" },
+    { "id": "parent_portal", "status": "ACCEPTED" },
+    { "id": "student_portal", "status": "ACCEPTED" },
+    { "id": "classes_zoom", "status": "BLOCKED" },
+    { "id": "content_vimeo", "status": "BLOCKED" },
+    { "id": "knowledge_helpers", "status": "BLOCKED" },
+    { "id": "gamification", "status": "DEPLOYED" },
+    { "id": "email", "status": "BLOCKED" },
+    { "id": "whatsapp", "status": "BLOCKED" },
+    { "id": "telegram", "status": "BLOCKED" },
+    { "id": "stripe", "status": "BLOCKED" },
+    { "id": "buffer", "status": "BLOCKED" },
+    { "id": "bna_support", "status": "BLOCKED" },
+    { "id": "diagnostics", "status": "DEPLOYED" },
+    { "id": "backup_restore", "status": "ACCEPTED" },
+    { "id": "rollback", "status": "BLOCKED" }
   ],
-  "release_status": {
-    "production_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "production_runtime_is_distinct_from_w12_candidate": true,
-    "w12_candidate_staging_deployed": false,
-    "real_import_accepted": false,
-    "provider_acceptance_accepted": false,
-    "w12_100_owns_staging_and_launch_proof": true
-  },
-  "preflight_inputs": [
-    {
-      "id": "ops_13a_real_data_provider_preflight",
-      "status": "available_preflight_input_not_acceptance_proof",
-      "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
-      "pr": 72,
-      "evidence_paths": [
-        "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
-        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
-        "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
-        "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
-        "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
-        "ops/codex-runs/OPS-13A/RESUME.md",
-        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
-        "ops/codex-runs/OPS-13A/STATE.json"
-      ],
-      "caveats": [
-        "Counts are metadata/source-row estimates only and are not deduplicated people counts.",
-        "No production private rows were read.",
-        "No real import or provider canary was run."
-      ]
-    }
-  ],
-  "w12_100_convergence": {
-    "schema_version": "onetime.director.w12_100_convergence_ref.v1",
-    "generated_at": "2026-07-17T17:17:56.257Z",
-    "branch": "integration/w12-100-launch-readiness-convergence-20260717",
-    "base_w12_99_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "integrated_head_before_closeout": "4112930380fc9ae5bcdac9f316246e285cc93b35",
-    "accepted_lanes": [
-      "W12-100-00",
-      "W12-100-01",
-      "W12-100-02",
-      "W12-100-03",
-      "W12-100-04",
-      "W12-100-06",
-      "W12-100-07",
-      "W12-100-08",
-      "W12-100-09",
-      "W12-100-10",
-      "W12-100-11",
-      "W12-100-12",
-      "W12-100-13-assessment-only"
-    ],
-    "skipped_lanes": [
-      {
-        "lane": "W12-100-05",
-        "reason": "Skipped because lane STATE/FINAL-REPORT classify it blocked_environment_or_rehearsal."
-      },
-      {
-        "lane": "PR-71 / W12-09 gamification product code",
-        "reason": "Skipped because W12-100-13 recommends deferral and the operator did not explicitly approve PR #71 integration."
-      },
-      {
-        "lane": "PR-72 direct merge",
-        "reason": "Not merged directly; the exact eight OPS-13A files entered through W12-100-00 as requested."
-      }
-    ],
-    "draft_pr_target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
-    "deploy_performed": false,
-    "marked_ready": false,
-    "artifacts_dir": "ops/codex-runs/W12-100-CONVERGENCE",
-    "validation_summary": {
-      "local_non_database_gates": "passed",
-      "db_verify": "blocked_missing_database_url",
-      "postgres_16": "blocked_missing_local_postgres_docker_psql",
-      "postgres_18": "blocked_missing_local_postgres_docker_psql"
-    }
-  }
+  "notes": "Expanded evidence and blocker text live in ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json."
 }

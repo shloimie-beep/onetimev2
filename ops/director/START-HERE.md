@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-17T17:44:58+03:00
+Generated: 2026-07-19T13:40:35.8894527+03:00
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -13,72 +13,62 @@ state without depending on local chat memory.
 3. `ops/director/CURRENT-STATE.json`
 4. `ops/director/CAPABILITY-MATRIX.json`
 5. `ops/director/DEPLOYMENTS.json`
-6. `ops/director/WORKSTREAMS.json`
-7. `ops/director/BRANCH-FLEET.json`
+6. `ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md`
+7. `ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md`
 8. `ops/director/PRODUCT-INVARIANTS.md`
 9. `ops/director/DECISION-REGISTER.md`
-10. `ops/director/NEW-CHAT-PROMPT.md`
-
-The W12-00 execution artifacts live in `ops/codex-runs/W12-00/`.
 
 ## Current Truth
 
 - Repository: `webcraft-media/onetimev2`
-- Default branch: `main`
 - Production URL: `https://join.onetimeonetime.com`
-- Production `/version` readback remains:
-  `ops11-1197673` /
-  `1197673fa409bfc4c649c2683f782e86775caa5e`
-- Production runtime is distinct from the W12 candidate. Do not describe a W12
-  branch as deployed production.
-- Selected release/director base:
-  `c7d46066517d7a458d189f2c782cc06200f7861c`
-- Selected base rationale:
-  `ops/codex-runs/W12-00/BASE-SELECTION.md`
-- Release PR:
-  `https://github.com/webcraft-media/onetimev2/pull/61`
-- W12-99 candidate branch:
-  `integration/w12-final-convergence-20260717T123715Z`
-- W12-99 candidate head:
-  `0d8d7168f066668f035176d777bdaaa4dcc5accd`
-- W12-99 draft PR:
-  `https://github.com/webcraft-media/onetimev2/pull/73`
-- PR #73 state when inspected by W12-100-00: open draft, clean/mergeable,
-  five listed checks successful.
-- W12-00 through W12-08 are integrated by W12-99.
-- W12-09 remains excluded pending an explicit decision.
-- OPS-13A is now available as a sanitized preflight input from PR #72 at
-  `d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4`. It is not import acceptance,
-  provider acceptance, or launch proof.
-- No W12 staging deployment, real import, provider acceptance, or production
-  promotion has been performed.
-- W12-100 owns isolated staging and launch proof.
-- BNA remains a separate convergence train.
+- Staging URL: `https://ot99-web-staging.up.railway.app`
+- Production and staging `/version` read back:
+  `w13-104-public-cls-688fc70`
+- Production and staging runtime SHA:
+  `688fc70cf64b72bc52f4ea7511d8593750d7ab45`
+- Canonical draft PR:
+  `https://github.com/webcraft-media/onetimev2/pull/91`
+- PR #91 head:
+  `e3d3736546f48b3834d6698838befe20884005f1`
+- PR #91 required checks were green when inspected on 2026-07-19.
+- Production `/health` and `/ready` were ok.
+- Staging `/health` and `/ready` were ok.
+- Latest migration from `/ready`:
+  `2203_w13_100_student_gamification`
+- Current release run:
+  `ops/codex-runs/ONE-TIME-FINISH-NOW/`
+
+## Current Verdict
+
+CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
+ADMIN_ACCESS: ACCEPTED
+PARENT_ACCESS: ACCEPTED
+STUDENT_ACCESS: ACCEPTED
+CRM_REAL_DATA: PREVIEW_READY
+
+The safe core is live, but the full release gate remains blocked by exact
+private-input/current-proof blockers: email inputs, CRM import authorization,
+provider canary authorization, protected diagnostics token, W13-104 rollback
+proof, and current W13-104 launch-spine proof.
 
 ## What Not To Do From This Handoff
 
-- Do not deploy.
-- Do not read, print, or commit secrets.
-- Do not perform provider sends, WhatsApp/Telegram mutations, Stripe live
-  actions, Buffer publication, DNS changes, customer Zoom mutations, production
-  imports, or destructive database operations.
-- Do not merge W12 feature lanes manually here. W12-99 owns final semantic
-  convergence after feature branches have draft PRs.
-- Do not run OPS-13B unless a later prompt explicitly scopes it.
-- Do not treat OPS-13A source metadata row counts as deduplicated people
-  counts.
+- Do not print or commit secrets, private manifests, setup/reset links,
+  passwords, private email addresses, phone numbers, contact rows, or raw
+  message bodies.
+- Do not perform broad email, WhatsApp, Telegram, or social sends.
+- Do not create live Stripe charges.
+- Do not change DNS.
+- Do not perform production CRM import apply without the protected manifest.
+- Do not run Zoom, Vimeo, Stripe TEST, WhatsApp, Telegram, Buffer, OpenAI
+  helper, or BNA support canaries without the protected manifest.
+- Do not use the dirty BNA checkout for One Time product edits.
 
 ## Fast Orientation
 
-- Use `CURRENT-STATE.json` for release refs, live readback, PR checks, and
+- Use `CURRENT-STATE.json` for release refs, live readback, blockers, and
   safety notes.
-- Use `CAPABILITY-MATRIX.json` for exact Day-One status classifications.
-- Use `DEPLOYMENTS.json` for production/staging/rollback evidence.
-- Use `WORKSTREAMS.json` for W12 lane ownership and convergence order.
-- Use `BRANCH-FLEET.json` to avoid duplicate branch/PR work.
-- Use `PRODUCT-INVARIANTS.md` and `DECISION-REGISTER.md` before changing
-  product behavior.
-
-## W12-100 Convergence Refresh
-
-Branch `integration/w12-100-launch-readiness-convergence-20260717` integrates accepted W12-100 lane heads on top of W12-99 head `0d8d7168f066668f035176d777bdaaa4dcc5accd`. Read `ops/codex-runs/W12-100-CONVERGENCE/FINAL-REPORT.md`, `TEST-REPORT.md`, and `MIGRATION-REPORT.md` before follow-up work. No deployment, provider mutation, production database action, PR ready transition, or GitHub UI merge was performed.
+- Use `CAPABILITY-MATRIX.json` for the required capability status list.
+- Use `DEPLOYMENTS.json` for Railway production/staging deployment IDs.
+- Use `ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md` for the next exact work.

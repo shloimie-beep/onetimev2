@@ -1,0 +1,185 @@
+{
+  "schema_version": "onetime.codex_run_capability_matrix.v1",
+  "run_id": "ONE-TIME-FINISH-NOW",
+  "generated_at": "2026-07-19T13:40:35.8894527+03:00",
+  "allowed_statuses": [
+    "ABSENT",
+    "SPECIFIED",
+    "IMPLEMENTED",
+    "INTEGRATED",
+    "DEPLOYED",
+    "CONFIGURED",
+    "ACCEPTED",
+    "BLOCKED",
+    "EXCLUDED"
+  ],
+  "source_ref": {
+    "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "production_version": "w13-104-public-cls-688fc70",
+    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
+    "evidence_head": "e3d3736546f48b3834d6698838befe20884005f1",
+    "run_state": "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
+  },
+  "capabilities": [
+    {
+      "id": "public_landing_signup",
+      "status": "DEPLOYED",
+      "evidence": [
+        "ops/codex-runs/W13-104/SIGNUP-JOURNEY.json",
+        "ops/codex-runs/W13-104/evidence/live-smoke.json"
+      ],
+      "notes": "Public landing/signup routes are live. Production submit was intentionally skipped without email/provider authorization; local submit coverage exists."
+    },
+    {
+      "id": "auth_recovery",
+      "status": "DEPLOYED",
+      "evidence": [
+        "ops/codex-runs/W13-104/evidence/live-smoke.json",
+        "ops/codex-runs/W13-103/FINAL-REPORT.md"
+      ],
+      "notes": "Login, forgot-password, activate, and reset routes are live. Normal transactional email remains blocked separately."
+    },
+    {
+      "id": "administrator",
+      "status": "ACCEPTED",
+      "evidence": [
+        "ops/codex-runs/W13-103/FINAL-REPORT.md",
+        "ops/codex-runs/W13-103/PORTAL-ACCEPTANCE.json"
+      ],
+      "notes": "Protected production browser acceptance passed in W13-103. W13-104 did not consume final handoff links again."
+    },
+    {
+      "id": "crm",
+      "status": "DEPLOYED",
+      "evidence": [
+        "ops/codex-runs/W13-104/FINAL-REPORT.md",
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json"
+      ],
+      "notes": "CRM surfaces and domain services are deployed; real import apply is blocked by private authorization."
+    },
+    {
+      "id": "real_data",
+      "status": "BLOCKED",
+      "runtime_mode": "PREVIEW_READY",
+      "evidence": [
+        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json"
+      ],
+      "blocker": "Missing protected CRM-IMPORT-AUTHORIZATION.private.json with accepted source hashes and apply authorization."
+    },
+    {
+      "id": "communications",
+      "status": "DEPLOYED",
+      "evidence": ["ops/codex-runs/W13-104/FINAL-REPORT.md"],
+      "notes": "Communications UI/outbox foundation is deployed. External sends are provider-off."
+    },
+    {
+      "id": "owner_dashboard",
+      "status": "DEPLOYED",
+      "evidence": [
+        "ops/codex-runs/W13-104/FINAL-REPORT.md",
+        "ops/codex-runs/W13-103/FINAL-REPORT.md"
+      ],
+      "notes": "Owner/admin routes are deployed and role access was accepted through W13-103 protected handoff."
+    },
+    {
+      "id": "parent_portal",
+      "status": "ACCEPTED",
+      "evidence": [
+        "ops/codex-runs/W13-103/FINAL-REPORT.md",
+        "ops/codex-runs/W13-103/PORTAL-ACCEPTANCE.json"
+      ],
+      "notes": "Parent activation/login and controls passed W13-103 protected production acceptance."
+    },
+    {
+      "id": "student_portal",
+      "status": "ACCEPTED",
+      "evidence": [
+        "ops/codex-runs/W13-103/FINAL-REPORT.md",
+        "ops/codex-runs/W13-103/PORTAL-ACCEPTANCE.json"
+      ],
+      "notes": "Student activation/login, dashboard access, and negative CRM/parent checks passed W13-103 protected production acceptance."
+    },
+    {
+      "id": "classes_zoom",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "notes": "Classes/classroom core is integrated; live Zoom canary is blocked by missing protected canary manifest and provider configuration."
+    },
+    {
+      "id": "content_vimeo",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "notes": "Content workspace/Vimeo seams are implemented; protected Vimeo/content canary is blocked by missing manifest and provider configuration."
+    },
+    {
+      "id": "knowledge_helpers",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "notes": "Helper runtime remains disabled without OPENAI_API_KEY and ONE_TIME_HELPER_RUNTIME_ENABLED."
+    },
+    {
+      "id": "gamification",
+      "status": "DEPLOYED",
+      "evidence": ["ops/codex-runs/W13-104/STATE.json"],
+      "notes": "Production ready endpoint reports latest migration 2203_w13_100_student_gamification."
+    },
+    {
+      "id": "email",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/EMAIL.json"],
+      "blocker": "Missing EMAIL-INPUTS.private.json plus Resend/sender/reply-to runtime variables."
+    },
+    {
+      "id": "whatsapp",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "blocker": "Missing protected WhatsApp provider/account/recipient authorization."
+    },
+    {
+      "id": "telegram",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "blocker": "Missing protected Telegram runtime and bot/chat authorization."
+    },
+    {
+      "id": "stripe",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "blocker": "Stripe TEST canary is blocked by missing protected test account/webhook authorization. Live charges remain excluded."
+    },
+    {
+      "id": "buffer",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "blocker": "Missing protected Buffer account/channel and bounded draft/publish authorization."
+    },
+    {
+      "id": "bna_support",
+      "status": "BLOCKED",
+      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
+      "blocker": "Support bridge is disabled until both endpoints, HMAC config, and a synthetic/operator-owned identity are configured."
+    },
+    {
+      "id": "diagnostics",
+      "status": "DEPLOYED",
+      "evidence": ["ops/codex-runs/W13-104/evidence/live-smoke.json"],
+      "notes": "Public /health, /ready, and /version are live. Protected internal diagnostics remain blocked by missing OPERATIONS_PROBE_TOKEN."
+    },
+    {
+      "id": "backup_restore",
+      "status": "ACCEPTED",
+      "evidence": ["ops/codex-runs/W13-104/STATE.json", "ops/codex-runs/W13-104/FINAL-REPORT.md"],
+      "notes": "Fresh PG18 backup/restore proof passed before W13-104 production deployment."
+    },
+    {
+      "id": "rollback",
+      "status": "BLOCKED",
+      "evidence": [
+        "ops/codex-runs/W13-104/DEPLOYMENT.json",
+        "ops/codex-runs/W13-102/FINAL-REPORT.md"
+      ],
+      "blocker": "Staging rollback/roll-forward passed in W13-102 but was not rerun after W13-104."
+    }
+  ]
+}
