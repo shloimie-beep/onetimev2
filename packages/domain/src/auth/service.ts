@@ -30,6 +30,7 @@ const EMAIL_ASSURANCE_MAX_AGE_MS = 10 * 60 * 1000;
 const EMAIL_CHALLENGE_DELIVERY_KEY_VERSION = 1;
 const EMAIL_CHALLENGE_DELIVERY_BATCH_SIZE = 10;
 const EMAIL_CHALLENGE_DELIVERY_LEASE_MS = 120_000;
+const TRANSACTIONAL_AUTH_EMAIL_SENDER = 'info@onetimeonetime.com';
 
 type AssuranceMethod =
   'password' | 'totp' | 'recovery_code' | 'email_challenge' | 'email_link' | 'trusted_device';
@@ -1993,10 +1994,16 @@ async function deliverAuthEmailChallengePayload(
   }
   if (!config.resendApiKey) throw new Error('auth_email_resend_api_key_missing');
   if (!config.emailFrom) throw new Error('auth_email_from_missing');
-  const canary = config.deliveryTestCanaryEmail;
-  if (!canary) throw new Error('auth_email_canary_email_missing');
-  if (claim.destination_email.toLowerCase() !== canary) {
-    throw new Error('auth_email_canary_destination_not_authorized');
+  if (config.lifecycleEmailMode === 'canary') {
+    const canary = config.deliveryTestCanaryEmail;
+    if (!canary) throw new Error('auth_email_canary_email_missing');
+    if (claim.destination_email.toLowerCase() !== canary) {
+      throw new Error('auth_email_canary_destination_not_authorized');
+    }
+  } else if (config.lifecycleEmailMode === 'transactional') {
+    assertTransactionalAuthEmailReady(config);
+  } else {
+    return null;
   }
   const code = requiredPayloadString(payload, 'code');
   const loginUrl = requiredPayloadString(payload, 'login_url');
@@ -2026,6 +2033,28 @@ async function deliverAuthEmailChallengePayload(
   return destinationReference(`resend:${messageId}`);
 }
 
+function assertTransactionalAuthEmailReady(config: AppConfig) {
+  if (config.oneTimeRuntimeEnvironment !== 'production') {
+    throw new Error('auth_email_transactional_requires_production_runtime');
+  }
+  if (!config.deliveryProviderAuthorizationId) {
+    throw new Error('auth_email_transactional_authorization_missing');
+  }
+  if (!config.lifecycleDeliveryKeyConfigured) {
+    throw new Error('auth_email_transactional_key_missing');
+  }
+  if (!config.resendWebhookEnabled || !config.resendWebhookSecretConfigured) {
+    throw new Error('auth_email_transactional_webhook_missing');
+  }
+  if (!config.emailReplyTo) throw new Error('auth_email_transactional_reply_to_missing');
+  if (normalizedAddress(config.emailFrom) !== TRANSACTIONAL_AUTH_EMAIL_SENDER) {
+    throw new Error('auth_email_transactional_sender_mismatch');
+  }
+  if (config.deliveryProviderPerRunBudget <= 0 || config.deliveryProviderPerProviderBudget <= 0) {
+    throw new Error('auth_email_transactional_budget_missing');
+  }
+}
+
 function authEmailChallengeText(code: string, loginUrl: string) {
   return [
     'Hello,',
@@ -2050,6 +2079,11 @@ function authEmailChallengeHtml(code: string, loginUrl: string) {
     '<p>This code expires in 10 minutes. If you did not request it, ignore this email.</p>',
     '<p>- One Time Mishnayos</p>',
   ].join('');
+}
+
+function normalizedAddress(value?: string) {
+  const trimmed = value?.trim().toLowerCase() ?? '';
+  return trimmed.match(/<([^<>]+)>/)?.[1]?.trim() ?? trimmed;
 }
 
 async function expireAuthEmailChallengeDeliveries(pool: DbPool, config: AppConfig, now: Date) {

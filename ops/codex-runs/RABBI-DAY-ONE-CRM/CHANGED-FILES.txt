@@ -2,6 +2,7 @@
 apps/worker/src/delivery/config.ts
 packages/db/migrations/2204_w12_100_real_source_crm_apply.sql
 packages/config/src/index.ts
+packages/domain/src/auth/service.ts
 packages/domain/src/accounts/lifecycle-delivery.ts
 scripts/w12-100/data/real-source-preflight.ts
 scripts/w12-100/data/crm-apply-readiness-preflight.ts

@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T15:00:51.804Z",
+  "generated_at": "2026-07-19T15:09:36.702Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -106,11 +106,18 @@
     "mode_variable": "ONE_TIME_LIFECYCLE_EMAIL_MODE",
     "modes": ["disabled", "canary", "transactional"],
     "production_external_send_performed": false,
-    "production_blocker": "Protected transactional email private manifest is ready and the worker lifecycle gate now supports production transactional Resend in sink-worker mode; deploy the exact candidate with staging/production Railway variables from that protected manifest, then run one controlled operator-inbox transactional test before any Rabbi/Admin access message.",
+    "production_blocker": "Protected transactional email private manifest is ready, the worker lifecycle gate now supports production transactional Resend in sink-worker mode, and admin email challenge delivery now supports production transactional mode without a canary-only recipient gate; deploy the exact candidate with staging/production Railway variables from that protected manifest, then run one controlled operator-inbox transactional test before any Rabbi/Admin access message.",
     "worker_lifecycle_gate": {
       "status": "fixed",
       "code": "apps/worker/src/delivery/config.ts",
       "test": "tests/unit/delivery/config.test.ts",
+      "generic_provider_campaign_sends_enabled": false
+    },
+    "admin_email_challenge_gate": {
+      "status": "fixed",
+      "code": "packages/domain/src/auth/service.ts",
+      "test": "tests/integration/accounts/account-lifecycle.test.ts",
+      "canary_required_for_transactional_mode": false,
       "generic_provider_campaign_sends_enabled": false
     },
     "email_inputs_preflight": {
@@ -138,7 +145,7 @@
     "code_status": "accepted",
     "latest_existing_proof_path": "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
     "production_external_send_performed": false,
-    "production_blocker": "Send final administrator access message only after production transactional email is configured and controlled send passes."
+    "production_blocker": "Admin email challenge code now supports transactional production delivery, but send final administrator access message only after production transactional email is configured and controlled send passes."
   },
   "signup_to_crm": {
     "code_status": "accepted",
@@ -185,6 +192,9 @@
     "node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
     "node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --canary-email-file=C:/Users/User/BNA-Keyholder/zoom-account-owner.txt --create-private-manifest --private-manifest-out=C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
     "node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+    "npx vitest run --config vitest.unit.config.ts tests/unit/delivery/config.test.ts",
+    "npx prettier --write packages/domain/src/auth/service.ts tests/integration/accounts/account-lifecycle.test.ts",
+    "npx vitest run --config vitest.integration.config.ts tests/integration/accounts/account-lifecycle.test.ts",
     "npx vitest run --config vitest.unit.config.ts tests/unit/delivery/config.test.ts",
     "npm run typecheck",
     "npm run lint",
