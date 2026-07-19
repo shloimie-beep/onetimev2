@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T13:25:50.525Z",
+  "generated_at": "2026-07-19T14:12:49.678Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -25,7 +25,7 @@
     {
       "id": "auth_recovery",
       "status": "DEPLOYED",
-      "reason": "Current production read-only route proof passed for login, activate, forgot-password, and reset-password; transactional email remains blocked."
+      "reason": "Current production read-only route proof passed for login, activate, forgot-password, and reset-password; transactional email inputs are partially preflighted but still blocked before canary."
     },
     {
       "id": "administrator",
@@ -39,7 +39,7 @@
       "id": "real_data",
       "status": "BLOCKED",
       "runtime_mode": "PREVIEW_READY",
-      "reason": "CRM approval raw and counts-only preflight are recorded; runtime mode remains PREVIEW_READY because production apply is still blocked by 2,418 manual-review rows, exact apply=true hash/count acceptance, fresh backup/rollback proof, and missing apply implementation."
+      "reason": "Corrected CRM-first dry-run and guarded local apply writer are recorded; runtime mode remains PREVIEW_READY because production apply is still blocked by protected backup, exact authorization, DATABASE_URL, idempotency, created-by user, production confirmation, and manual-review exclusion gates."
     },
     {
       "id": "communications",
@@ -75,7 +75,8 @@
     },
     {
       "id": "email",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Protected Resend/domain/sender/reply-to inputs are present and policy-matching; blocked by missing operator canary destination file, private EMAIL-INPUTS manifest, production variable configuration, and canary send proof."
     },
     {
       "id": "whatsapp",

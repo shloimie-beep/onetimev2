@@ -4,6 +4,13 @@ Generated: 2026-07-19T15:57:22.8286523+03:00
 
 Status: `done`
 
+Current status: superseded by the CRM-first pivot evidence in
+`ops/codex-runs/RABBI-DAY-ONE-CRM/`. The report below is retained as historical
+counts-only evidence from the earlier broad launch-spine pass. Current corrected
+CRM counts, guarded apply-writer status, and production apply blockers live in
+`ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json` and
+`ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json`.
+
 Report JSON:
 `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`
 
@@ -60,7 +67,7 @@ The preflight report records:
 - No external actions, provider mutations, or production mutations.
 - Temporary cleanup completed.
 
-The W12-100 preflight compatibility section also records
+The historical W12-100 preflight compatibility section also records
 `production_side_effects=false`, `database_writes_performed=false`, and
 `apply_mode_implemented=false`.
 
@@ -68,13 +75,14 @@ The W12-100 preflight compatibility section also records
 
 `CRM_REAL_DATA` remains `PREVIEW_READY`, not `ACCEPTED`.
 
-Production CRM import apply remains blocked by:
+The newer CRM-first pivot implements the guarded local apply writer. Production
+CRM import apply still remains blocked by:
 
-- 2,418 manual-review rows requiring terminal operator decisions.
-- Missing exact acceptance of this dry-run hash/count set with protected
-  `apply=true`.
-- Fresh backup/rollback proof that must be verified immediately before apply.
-- W12-100 preflight reporting `apply_mode_implemented=false` and blocking
-  `--apply`.
+- Fresh backup/rollback proof JSON verified immediately before apply.
+- Exact acceptance of the corrected dry-run hash/count set:
+  `APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production`.
+- `DATABASE_URL`, idempotency key, created-by user key, and
+  `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
+- Exclusion/terminal handling for 848 current manual-review rows.
 
 No production CRM apply was performed.

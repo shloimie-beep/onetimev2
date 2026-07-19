@@ -1,6 +1,6 @@
 # ONE-TIME-FINISH-NOW Final Report
 
-Generated: 2026-07-19T16:25:01.2183177+03:00
+Generated: 2026-07-19T17:12:49.678+03:00
 
 CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
 ADMIN_ACCESS: ACCEPTED
@@ -11,23 +11,25 @@ CRM_REAL_DATA: PREVIEW_READY
 ## Verdict
 
 The One Time core runtime is already live and healthy on production at W13-104.
-The PR #92 staging candidate has now passed runtime deployment proof plus
-rollback/roll-forward proof. CRM approval raw, counts-only real-source
-preflight, and current production read-only launch-spine route proof are now
-recorded, but the full release definition in the attached prompt cannot be
-truthfully closed yet. The remaining gaps are exact safety-gate blockers: normal
-transactional email configuration, CRM production apply gates, provider canary
+The PR #92 staging candidate has passed runtime deployment proof plus
+rollback/roll-forward proof. CRM approval raw, corrected counts-only real-source
+preflight, guarded local CRM apply code, sanitized email-inputs preflight, and
+current production read-only launch-spine route proof are now recorded, but the
+full release definition in the attached prompt cannot be truthfully closed yet.
+The remaining gaps are exact safety-gate blockers: transactional email
+canary/manifest configuration, CRM production apply gates, provider canary
 authorization, protected diagnostics token, and the consuming parts of
 production launch-spine proof.
 
 This is not a product-code failure. The app is fail-closed in the right places.
 Missing provider/private inputs block only their lanes.
 
-PR #92 contains runtime deployment proof code and was deployed to staging from
-source commit `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`. The final staging
-roll-forward exposed non-secret Railway deployment identity at
-`/version.deployment`, bound to deployment
-`c464ea23-649b-4c8d-b4af-0d10c5ce3022`, with all smoke routes passing.
+PR #92 current head is `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`. The accepted
+staging runtime proof deployed an earlier PR #92 source commit,
+`ee9929008fc0068b3dcf9b86d11e7c21d1331c93`, and the final staging roll-forward
+exposed non-secret Railway deployment identity at `/version.deployment`, bound
+to deployment `c464ea23-649b-4c8d-b4af-0d10c5ce3022`, with all smoke routes
+passing. The later CRM/email commits have not been deployed.
 
 ## Current Live Truth
 
@@ -76,41 +78,52 @@ parent, and student access. That protected handoff remains the accepted access
 baseline; W13-104 did not rerun consuming setup/reset links to avoid invalidating
 the operator handoff.
 
-Transactional email is still blocked. Missing input:
-`EMAIL-INPUTS.private.json`, plus protected Resend/sender/reply-to runtime
-values.
+Transactional email is still blocked, but the blocker is narrower now.
+`ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json` verifies
+protected Resend key, webhook secret, approved domain, approved sender, and
+approved reply-to are present and policy-matching without printing raw values.
+The remaining missing input is the protected operator canary destination file,
+followed by private `EMAIL-INPUTS.private.json` generation, production variable
+configuration, and one controlled operator-inbox canary send.
 
 CRM real data is preview-ready only. The operator chat approval was preserved
 exactly in `CRM-IMPORT-APPROVAL-RAW.md`, a protected private checkpoint manifest
-was created outside git with `dry_run_authorized=true` and
-`production_apply_authorized=false`, and the counts-only real-source preflight
-completed with status `done`.
+was created outside git, the corrected CRM-first counts-only real-source
+preflight completed with status `done`, and the guarded apply writer is
+implemented locally with synthetic integration evidence. No production CRM apply
+was performed.
 
 CRM preflight summary:
 
 - Report JSON:
-  `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`
+  `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json`
 - Report SHA-256:
-  `0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`
-- Approved source files: 6
+  `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`
 - Total rows processed counts-only: 2,505
 - Unique identity count: 1,596
-- Communication-eligible staged rows: 3
-- Do-not-contact rows: 152
-- Manual-review rows: 2,418
+- CRM-importable contacts: 1,559
+- Email-campaign-eligible contacts: 1,357
+- WhatsApp-campaign-eligible contacts: 0
+- Suppressed rows: 152
+- Manual-review rows: 848
 
-No real import may be applied until the protected manifest explicitly accepts
-the dry-run hash/count set with `apply=true`, manual-review rows have terminal
-decisions, fresh backup/rollback proof is recorded, and the apply path is
-implemented.
+No real import may be applied until fresh backup proof JSON, exact dry-run
+SHA/count authorization, DATABASE_URL, idempotency key, created-by user key,
+`RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and exclusion/terminal handling for
+manual-review rows are all present.
 
 ## Blockers
 
-- Email: missing protected email inputs and runtime variables.
-- CRM apply: operator approval and dry-run preflight are recorded, but
-  production apply remains blocked by 2,418 manual-review rows, missing exact
-  `apply=true` hash/count acceptance, fresh backup/rollback proof, and
-  `apply_mode_implemented=false` in the W12-100 preflight.
+- Email: protected Resend/domain/sender/reply-to inputs are present and
+  policy-matching; missing protected operator canary destination file, private
+  email inputs manifest, production variable configuration, and canary send
+  proof.
+- CRM apply: operator approval, corrected dry-run preflight, and guarded local
+  apply code are recorded, but production apply remains blocked until fresh
+  backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL,
+  idempotency key, created-by user key,
+  `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and exclusion/terminal handling for
+  848 manual-review rows are present.
 - Provider canaries: missing protected canary authorization manifest.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
 - Launch spine: current read-only production route proof passed, but consuming
@@ -125,9 +138,9 @@ for the initial W13-104 rollback rehearsal and six for the accepted PR #92
 runtime proof, rollback, and roll-forward sequence. It performed no production
 deployment, production database write, CRM import apply, email send, WhatsApp
 or Telegram send, Stripe charge, DNS change, provider mutation, or secret
-print. The CRM work in this refresh was counts-only local preflight and private
-checkpoint recording; production database and external systems were not
-mutated.
+print. The latest CRM/email refresh added corrected counts, guarded local apply
+code, and sanitized email-inputs preflight; production database and external
+systems were not mutated.
 
 The W13-104 evidence inspected during this run records the prior successful
 staging and production deployments.
@@ -163,19 +176,24 @@ digests remained unchanged.
   passed.
 - `npm run unit` passed.
 - `npm run build` passed.
-- PR #92 checks passed at
-  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`: Node 24 verify, OPS-06,
-  PostgreSQL 18 assurance/restore, and PostgreSQL 16 assurance. Rerun is
-  pending after this launch-spine read-only evidence refresh commit.
+- PR #92 checks passed at earlier head
+  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`. At current head
+  `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`, GitHub checks failed before
+  workflow steps/logs; local focused gates passed.
 - `node --check scripts/check-director-truth.mjs` passed.
 - Staging smoke routes passed for the PR #92 deploy, W13-104 rollback, and PR
   #92 roll-forward: `/version`, `/health`, `/ready`, `/`, `/signup`, `/login`,
   `/activate`, and `/forgot-password`.
 - PR #92 staging runtime proof and rollback/roll-forward are recorded as
   `accepted_for_pr92_staging_candidate`.
-- CRM real-data preflight passed counts-only with status `done`, no production
-  side effects, and report SHA-256
-  `0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`.
+- Corrected CRM-first real-data preflight passed counts-only with status
+  `done`, no production side effects, and report SHA-256
+  `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`.
+- Guarded real-source CRM apply writer passed synthetic integration evidence;
+  production apply performed zero writes.
+- Email-inputs preflight passed focused unit coverage and generated a sanitized
+  report: protected Resend/sender/reply-to inputs present, canary destination
+  missing, no raw values included.
 - CRM private checkpoint manifest was created outside git with
   `dry_run_authorized=true` and `production_apply_authorized=false`; contents
   were not printed or committed.
@@ -205,6 +223,10 @@ digests remained unchanged.
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md`
+- `ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json`
+- `ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md`
+- `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json`
+- `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/*`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`

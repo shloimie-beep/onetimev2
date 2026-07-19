@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T13:25:50.525Z",
+  "generated_at": "2026-07-19T14:12:49.678Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -17,7 +17,7 @@
     "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
     "production_version": "w13-104-public-cls-688fc70",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
-    "evidence_head": "3e9b286c51d71530cccf192f4ce01b905c73c2e1",
+    "evidence_head": "0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c",
     "run_state": "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
   },
   "capabilities": [
@@ -59,9 +59,11 @@
         "ops/codex-runs/W13-104/FINAL-REPORT.md",
         "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
-        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json"
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json"
       ],
-      "notes": "CRM surfaces and domain services are deployed; operator approval and counts-only real-source dry-run are recorded. Production import apply remains blocked by manual-review and explicit apply gates."
+      "notes": "CRM surfaces and domain services are deployed; operator approval, corrected counts-only dry-run, and guarded local apply writer are recorded. Production import apply remains blocked by protected production apply gates."
     },
     {
       "id": "real_data",
@@ -72,15 +74,20 @@
         "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
-        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md"
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json"
       ],
-      "blocker": "Operator approval was recorded and the protected checkpoint manifest authorizes only the six-source dry-run. Counts-only real-source preflight passed, but production apply remains blocked by 2,418 manual-review rows, missing exact apply=true acceptance of the dry-run hash/count set, fresh backup/rollback proof, and W12-100 preflight apply mode not implemented."
+      "blocker": "Corrected counts-only dry-run passed and guarded apply writer is implemented locally; production apply remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK are all present. The 848 manual-review rows remain excluded pending terminal decisions."
     },
     {
       "id": "communications",
       "status": "DEPLOYED",
-      "evidence": ["ops/codex-runs/W13-104/FINAL-REPORT.md"],
-      "notes": "Communications UI/outbox foundation is deployed. External sends are provider-off."
+      "evidence": [
+        "ops/codex-runs/W13-104/FINAL-REPORT.md",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json"
+      ],
+      "notes": "Communications UI/outbox foundation is deployed. Transactional email configuration is preflighted but blocked before canary; external sends are provider-off."
     },
     {
       "id": "owner_dashboard",
@@ -136,8 +143,11 @@
     {
       "id": "email",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/EMAIL.json"],
-      "blocker": "Missing EMAIL-INPUTS.private.json plus Resend/sender/reply-to runtime variables."
+      "evidence": [
+        "ops/codex-runs/W13-104/EMAIL.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json"
+      ],
+      "blocker": "Protected Resend/domain/sender/reply-to inputs are present and policy-matching; email remains blocked by missing protected operator canary destination file, missing EMAIL-INPUTS.private.json, missing production variable configuration, and no controlled operator-inbox send proof."
     },
     {
       "id": "whatsapp",

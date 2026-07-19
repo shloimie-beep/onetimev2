@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T16:25:01.2183177+03:00
+Generated: 2026-07-19T17:12:49.678+03:00
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -40,10 +40,10 @@ state without depending on local chat memory.
   `ops/codex-runs/ONE-TIME-FINISH-NOW/`
 - ONE-TIME-FINISH-NOW remediation PR:
   `https://github.com/webcraft-media/onetimev2/pull/92`
-- PR #92 latest green evidence head before this launch-spine read-only refresh:
-  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`
-- PR #92 checks were green at `3e9b286c51d71530cccf192f4ce01b905c73c2e1`
-  after the CRM dry-run evidence refresh commit.
+- PR #92 current head:
+  `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`
+- PR #92 checks at the current head failed before workflow steps/logs; local
+  focused gates passed.
 
 ## Current Verdict
 
@@ -54,15 +54,16 @@ STUDENT_ACCESS: ACCEPTED
 CRM_REAL_DATA: PREVIEW_READY
 
 The safe core is live, and PR #92 staging rollback/roll-forward is accepted for
-the staging candidate. CRM approval raw and counts-only real-source preflight
-are recorded, and current production read-only launch-spine route proof is now
-recorded. `CRM_REAL_DATA` remains `PREVIEW_READY` because production apply still
-requires manual-review decisions, exact dry-run hash/count acceptance with
-protected `apply=true`, fresh backup/rollback proof, and an implemented
-fail-closed apply path. The full release gate remains blocked by exact
-private-input/current-proof blockers: email inputs, CRM apply gates, provider
-canary authorization, protected diagnostics token, and the consuming parts of
-production launch-spine proof.
+the staging candidate. CRM approval raw, corrected counts-only real-source
+preflight, a guarded local CRM apply writer, sanitized email-inputs preflight,
+and current production read-only launch-spine route proof are recorded.
+`CRM_REAL_DATA` remains `PREVIEW_READY` because production apply still requires
+fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL,
+idempotency key, created-by user key, `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`,
+and exclusion/terminal handling for manual-review rows. The full release gate
+remains blocked by exact private-input/current-proof blockers: transactional
+email canary/manifest, CRM apply gates, provider canary authorization, protected
+diagnostics token, and the consuming parts of production launch-spine proof.
 
 The accepted staging runtime proof lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md` and
@@ -79,12 +80,22 @@ IDs, image digests, and `/version.deployment` readback.
 
 CRM real-data dry-run evidence lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`,
-`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`, and
-`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md`. The
-preflight status is `done`; report SHA-256 is
-`0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`; it found
-3 communication-eligible staged rows, 152 do-not-contact rows, and 2,418
-manual-review rows. No production CRM apply was performed.
+`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`,
+`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md`, and the
+current compact pivot files under `ops/codex-runs/RABBI-DAY-ONE-CRM/`. The
+corrected pivot dry-run status is `done`; report SHA-256 is
+`93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`; it found
+2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357
+email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, and
+848 manual-review rows. The guarded apply writer is implemented locally and
+accepted with synthetic integration evidence. No production CRM apply was
+performed.
+
+Transactional email preflight evidence lives at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`. Protected Resend
+key, webhook secret, domain, sender, and reply-to inputs are present and
+policy-matching; the lane remains blocked by missing protected operator canary
+destination file and private email inputs manifest. No email was sent.
 
 Production launch-spine read-only evidence lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
@@ -104,10 +115,10 @@ setup/reset-link consumption was performed.
 - Do not perform broad email, WhatsApp, Telegram, or social sends.
 - Do not create live Stripe charges.
 - Do not change DNS.
-- Do not perform production CRM import apply until the protected manifest
-  explicitly accepts the dry-run hash/count set with `apply=true`, manual-review
-  rows have terminal decisions, fresh backup/rollback proof is recorded, and the
-  apply path is implemented.
+- Do not perform production CRM import apply until fresh backup proof JSON,
+  exact dry-run SHA/count authorization, DATABASE_URL, idempotency key,
+  created-by user key, `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and
+  exclusion/terminal handling for manual-review rows are all present.
 - Do not run Zoom, Vimeo, Stripe TEST, WhatsApp, Telegram, Buffer, OpenAI
   helper, or BNA support canaries without the protected manifest.
 - Do not use the dirty BNA checkout for One Time product edits.

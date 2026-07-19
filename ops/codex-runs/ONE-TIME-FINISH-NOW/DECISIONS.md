@@ -1,6 +1,6 @@
 # ONE-TIME-FINISH-NOW Decisions
 
-Generated: 2026-07-19T13:40:35.8894527+03:00
+Generated: 2026-07-19T17:12:49.678+03:00
 
 ## DEC-OT-FINISH-001 - Use the standalone One Time repo
 
@@ -65,10 +65,12 @@ wording is preserved exactly in
 
 Decision: treat the statement as authorization to create the protected CRM
 checkpoint manifest and run the OPS-13A six-source counts-only dry-run. Do not
-treat it as production import apply approval, because the dry-run produced 2,418
-manual-review rows and production apply still requires exact dry-run hash/count
-acceptance with protected `apply=true`, terminal review decisions, fresh
-backup/rollback proof, and an implemented fail-closed apply path.
+treat it as production import apply approval. Later CRM-first pivot work
+corrected the CRM counts and implemented a guarded local apply writer, but
+production apply still requires the exact dry-run SHA/count authorization,
+fresh backup proof JSON, DATABASE_URL, idempotency key, created-by user key,
+`RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and exclusion/terminal handling for
+manual-review rows.
 
 ## DEC-OT-FINISH-008 - Treat read-only launch-spine proof as partial evidence
 
@@ -82,3 +84,16 @@ launch-spine evidence. Do not treat it as full launch-spine acceptance because
 administrator, parent, and student consuming browser journeys and production
 signup submit still require exact protected authorization and cleanup
 instructions.
+
+## DEC-OT-FINISH-009 - Accept the CRM-first pivot as current release evidence
+
+The same-window CRM-first pivot delivered corrected CRM counts, a guarded local
+real-source CRM apply writer, transactional lifecycle email gating, signup/CRM
+and WhatsApp lead-capture proof, and a sanitized email-inputs preflight. The
+current compact source of truth is `ops/codex-runs/RABBI-DAY-ONE-CRM/`.
+
+Decision: keep `CRM_REAL_DATA` as `PREVIEW_READY`, but treat the corrected
+counts and guarded apply writer as newer evidence than the older broad
+counts-only report. Treat transactional email as blocked only by the protected
+operator canary destination/private manifest/configuration/canary-send chain,
+not by missing Resend/domain/sender/reply-to keyholder inputs.

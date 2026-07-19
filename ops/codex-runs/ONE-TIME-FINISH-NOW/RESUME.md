@@ -2,11 +2,12 @@
 
 Current state: safe core runtime is live on production, and the PR #92 staging
 candidate has accepted runtime deployment proof plus rollback/roll-forward
-proof. CRM approval raw, counts-only real-source preflight, and current
-production read-only launch-spine route proof are recorded, but `CRM_REAL_DATA`
-remains `PREVIEW_READY`. The full release claim remains blocked by
-protected-input gates, CRM production apply gates, and the consuming parts of
-production launch-spine proof.
+proof. CRM approval raw, corrected counts-only real-source preflight, guarded
+local CRM apply code, sanitized email-inputs preflight, and current production
+read-only launch-spine route proof are recorded, but `CRM_REAL_DATA` remains
+`PREVIEW_READY`. The full release claim remains blocked by protected-input
+gates, CRM production apply gates, and the consuming parts of production
+launch-spine proof.
 
 ## Start Here
 
@@ -26,8 +27,10 @@ production launch-spine proof.
 - Production and staging runtime SHA:
   `688fc70cf64b72bc52f4ea7511d8593750d7ab45`
 - Canonical draft PR: `https://github.com/webcraft-media/onetimev2/pull/91`
-- PR #92 latest green evidence head before this launch-spine read-only refresh:
-  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`
+- PR #92 current head:
+  `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`
+- PR #92 checks at the current head failed before workflow steps/logs; local
+  focused gates passed.
 - Final staging PR #92 web deployment:
   `c464ea23-649b-4c8d-b4af-0d10c5ce3022`
 - Final staging PR #92 worker deployment:
@@ -46,9 +49,17 @@ production launch-spine proof.
   preflight input.
 - CRM operator approval raw is preserved in
   `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`.
-- CRM counts-only real-source dry-run passed with status `done`; report SHA-256
-  is
-  `0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`.
+- Corrected CRM-first counts-only dry-run passed with status `done`; report
+  SHA-256 is
+  `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`. It found
+  1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0
+  WhatsApp-campaign-eligible contacts, and 848 manual-review rows.
+- Guarded real-source CRM apply writer is implemented locally and accepted with
+  synthetic integration evidence; production apply performed zero writes.
+- Sanitized email-inputs preflight verifies protected Resend/domain/sender/
+  reply-to inputs are present and policy-matching. It is blocked only by missing
+  protected operator canary destination file; no private manifest was written
+  and no email was sent.
 - A protected private CRM checkpoint manifest exists with
   `dry_run_authorized=true` and `production_apply_authorized=false`; contents
   are not committed or printed.
@@ -64,14 +75,15 @@ production launch-spine proof.
 
 ## What Is Blocked
 
-- Normal transactional access email: missing
-  `C:/Users/User/.onetime-w13-104-private/EMAIL-INPUTS.private.json` and
-  protected runtime values for Resend/sender/reply-to.
-- Real CRM import apply: dry-run authorization and counts-only preflight are
-  recorded, but production apply remains blocked by 2,418 manual-review rows,
-  missing exact protected `apply=true` acceptance of the dry-run hash/count set,
-  fresh backup/rollback proof, and W12-100 preflight
-  `apply_mode_implemented=false`.
+- Normal transactional access email: protected Resend/domain/sender/reply-to
+  inputs are present and policy-matching, but the protected operator canary
+  destination file and `EMAIL-INPUTS.private.json` are missing; production
+  variables and controlled canary send proof are not configured.
+- Real CRM import apply: corrected dry-run and guarded local apply code are
+  recorded, but production apply remains blocked until fresh backup proof JSON,
+  exact dry-run SHA/count authorization, DATABASE_URL, idempotency key,
+  created-by user key, `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and
+  exclusion/terminal handling for 848 manual-review rows are present.
 - Provider canaries: missing
   `C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json`.
 - Protected diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
@@ -94,12 +106,15 @@ deployment IDs/messages, and image digests. Railway did not populate
    protected authorization and cleanup instructions: administrator, parent, and
    student browser journeys using setup/reset links, or one production signup
    submit.
-2. Add or verify protected email inputs, then run exactly one allowlisted
-   transactional access email canary.
-3. Resolve CRM manual-review rows, record exact protected acceptance of the
-   preflight hash/count set with `apply=true`, verify fresh backup/rollback
-   proof, and implement the fail-closed apply path before any CRM production
-   import apply.
+2. Provide the protected operator canary destination file, generate
+   `EMAIL-INPUTS.private.json` from the sanitized preflight without committing
+   or printing it, configure production variables, then run exactly one
+   allowlisted transactional access email canary.
+3. Record fresh backup proof JSON, exact protected acceptance of
+   `APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production`,
+   DATABASE_URL, idempotency key, created-by user key,
+   `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and terminal/exclusion handling for
+   manual-review rows before any CRM production import apply.
 4. Activate provider canaries independently: Zoom, Vimeo/content, Stripe TEST,
    WhatsApp, Telegram, OpenAI helper, Buffer, and BNA support bridge.
 
