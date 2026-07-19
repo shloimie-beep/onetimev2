@@ -23,10 +23,11 @@ snapshot to point at W13-104 and this run packet.
 
 ## DEC-OT-FINISH-003 - Do not overclaim full release
 
-The core runtime is live and healthy, but the attached release definition also
-requires current launch-spine acceptance, diagnostics, rollback proof, and
-authorized provider/import lanes. Those are blocked by missing protected inputs
-or stale current-candidate proof.
+The core runtime is live and healthy, and PR #92 staging rollback/roll-forward
+is accepted for the staging candidate. The attached release definition still
+requires current production launch-spine acceptance, diagnostics, and authorized
+provider/import lanes. Those are blocked by missing protected inputs or stale
+current production proof.
 
 Decision: report `CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE`.
 

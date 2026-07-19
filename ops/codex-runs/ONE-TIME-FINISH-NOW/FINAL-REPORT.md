@@ -1,6 +1,6 @@
 # ONE-TIME-FINISH-NOW Final Report
 
-Generated: 2026-07-19T14:52:52.0505712+03:00
+Generated: 2026-07-19T15:22:50.497+03:00
 
 CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
 ADMIN_ACCESS: ACCEPTED
@@ -10,21 +10,22 @@ CRM_REAL_DATA: PREVIEW_READY
 
 ## Verdict
 
-The One Time core runtime is already live and healthy on production and staging
-at W13-104, but the full release definition in the attached prompt cannot be
-truthfully closed yet. The remaining gaps are exact safety-gate blockers:
-normal transactional email configuration, protected CRM import authorization,
-provider canary authorization, protected diagnostics token, source-authoritative
-rollback proof, and current launch-spine proof.
+The One Time core runtime is already live and healthy on production at W13-104.
+The PR #92 staging candidate has now passed runtime deployment proof plus
+rollback/roll-forward proof, but the full release definition in the attached
+prompt cannot be truthfully closed yet. The remaining gaps are exact
+safety-gate blockers: normal transactional email configuration, protected CRM
+import authorization, provider canary authorization, protected diagnostics
+token, and current production launch-spine proof.
 
 This is not a product-code failure. The app is fail-closed in the right places.
 Missing provider/private inputs block only their lanes.
 
-PR #92 now also contains CI-green runtime deployment proof code at
-`504560f77cbceae4675cba49e57f21ab55568467`. That code adds non-secret Railway
-deployment identity to `/version` and teaches the launch toolkit to validate it,
-but it is not live-proven until staging is deployed and rollback/roll-forward is
-rerun with deployment metadata and image digests bound to `/version.deployment`.
+PR #92 contains runtime deployment proof code and was deployed to staging from
+source commit `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`. The final staging
+roll-forward exposed non-secret Railway deployment identity at
+`/version.deployment`, bound to deployment
+`c464ea23-649b-4c8d-b4af-0d10c5ce3022`, with all smoke routes passing.
 
 ## Current Live Truth
 
@@ -41,8 +42,30 @@ Railway readback:
 
 - Production web deployment: `74a6b736-dd67-4966-bdf6-b7dd80280d1a`
 - Production worker deployment: `0a0d730c-fa00-4338-b446-a8dcb8832c17`
-- Staging web deployment: `e32187d8-a32b-401d-ae8a-37d87af1a203`
-- Staging worker deployment: `9f49ae76-3daf-4813-b01d-20e11867564a`
+- Staging web deployment after PR #92 roll-forward:
+  `c464ea23-649b-4c8d-b4af-0d10c5ce3022`
+- Staging worker deployment after PR #92 roll-forward:
+  `17f1970a-ec19-4fa8-8152-573b47f470ab`
+- Final staging web image digest:
+  `sha256:25d58d4a0661393a3d3d81e172dde87b610d8b97437162969615646e5c943234`
+- Final staging worker image digest:
+  `sha256:b213c58070b8d40b612351c5748bdf82e72b655014f8cc83e35a1ab0501a616d`
+
+Staging `/version` still reports W13-104 `APP_VERSION` and `COMMIT_SHA` because
+those values are environment-pinned. The new proof is the additional
+`/version.deployment` object:
+
+- `deployment_id`: `c464ea23-649b-4c8d-b4af-0d10c5ce3022`
+- `snapshot_id`: `14354877-0df6-45e1-806a-47dbcf53b61c`
+- `project_id`: `7c8eee26-7a6a-4684-826d-9f4377d67d46`
+- `environment_id`: `11edf8a2-0160-45b4-a039-b15b4beb4c10`
+- `service_id`: `9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2`
+- `git_commit_sha`: `null`
+
+Railway CLI source deploys did not populate `RAILWAY_GIT_COMMIT_SHA`; source
+binding therefore relies on exact detached deploy worktrees, deployment CLI
+messages, Railway deployment IDs, image digests, and `/version.deployment`
+readback.
 
 ## Access And CRM
 
@@ -66,32 +89,33 @@ tag map, and apply authorization.
 - CRM apply: missing protected import authorization manifest.
 - Provider canaries: missing protected canary authorization manifest.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
-- Rollback: W13-104 staging source-rebuild rollback and roll-forward were
-  exercised, but the gate is not accepted because `/version` stayed W13-104
-  during the rollback-source deploy. PR #92 implements the next proof path, but
-  that path is not live-accepted yet.
 - Launch spine: W13-104 production signup submit and current role browser
   acceptance were not rerun.
 
 ## External Effects
 
-This ONE-TIME-FINISH-NOW session performed four staging deployments for the
-rollback/roll-forward rehearsal. It performed no production deployment,
-production database write, CRM import apply, email send, WhatsApp or Telegram
-send, Stripe charge, DNS change, provider mutation, or secret print.
+This ONE-TIME-FINISH-NOW session performed ten staging deployments total: four
+for the initial W13-104 rollback rehearsal and six for the accepted PR #92
+runtime proof, rollback, and roll-forward sequence. It performed no production
+deployment, production database write, CRM import apply, email send, WhatsApp
+or Telegram send, Stripe charge, DNS change, provider mutation, or secret
+print.
 
 The W13-104 evidence inspected during this run records the prior successful
 staging and production deployments.
 
-No staging deployment was performed for PR #92 commit `504560f` in this update.
+Production was read only during the accepted PR #92 staging proof. Production
+Railway deployment IDs and image digests remained unchanged.
 
 ## Validation
 
 - JSON parse check passed for run and refreshed director JSON files.
-- `npm run director:truth` passed.
+- `npm run director:truth` passed after the staging runtime proof evidence
+  refresh.
 - `npm run director:truth:live` passed against production and staging
-  `/version`.
-- `npm run secret:scan` passed across 1662 repo text files.
+  `/version` after the staging runtime proof evidence refresh.
+- `npm run secret:scan` passed across 1694 repo text files after the staging
+  runtime proof evidence refresh.
 - `npm ci` passed from the lockfile.
 - Targeted ESLint passed for touched runtime proof files.
 - `npx --no-install vitest run scripts/w12-100/deploy/railway-launch-toolkit.test.ts`
@@ -101,13 +125,15 @@ No staging deployment was performed for PR #92 commit `504560f` in this update.
 - `npm run unit` passed.
 - `npm run build` passed.
 - PR #92 checks passed at
-  `504560f77cbceae4675cba49e57f21ab55568467`: Node 24 verify, OPS-06,
-  PostgreSQL 18 assurance/restore, and PostgreSQL 16 assurance.
+  `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`: Node 24 verify, OPS-06,
+  PostgreSQL 18 assurance/restore, and PostgreSQL 16 assurance. Rerun is
+  pending after this evidence refresh commit.
 - `node --check scripts/check-director-truth.mjs` passed.
-- W13-104 staging roll-forward smoke passed `/version`, `/health`, `/ready`,
-  `/`, `/signup`, `/login`, `/activate`, and `/forgot-password`.
-- Staging rollback rehearsal is recorded as
-  `partial_not_accepted_version_endpoint_not_source_authoritative`.
+- Staging smoke routes passed for the PR #92 deploy, W13-104 rollback, and PR
+  #92 roll-forward: `/version`, `/health`, `/ready`, `/`, `/signup`, `/login`,
+  `/activate`, and `/forgot-password`.
+- PR #92 staging runtime proof and rollback/roll-forward are recorded as
+  `accepted_for_pr92_staging_candidate`.
 - `npx --no-install eslint scripts/check-director-truth.mjs` did not run:
   local `node_modules` is absent and `npx` resolved an incompatible global
   ESLint before loading `@eslint/js`.
@@ -123,6 +149,8 @@ No staging deployment was performed for PR #92 commit `504560f` in this update.
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/*`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/*`
 - `ops/director/START-HERE.md`
 - `ops/director/CURRENT-STATE.json`
 - `ops/director/CAPABILITY-MATRIX.json`

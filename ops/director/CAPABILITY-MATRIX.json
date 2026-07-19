@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T14:52:52.0505712+03:00",
+  "generated_at": "2026-07-19T12:21:14.1995821Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -17,31 +17,95 @@
   "production_version": "w13-104-public-cls-688fc70",
   "canonical_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
   "capabilities": [
-    { "id": "public_landing_signup", "status": "DEPLOYED" },
-    { "id": "auth_recovery", "status": "DEPLOYED" },
-    { "id": "administrator", "status": "ACCEPTED" },
-    { "id": "crm", "status": "DEPLOYED" },
-    { "id": "real_data", "status": "BLOCKED", "runtime_mode": "PREVIEW_READY" },
-    { "id": "communications", "status": "DEPLOYED" },
-    { "id": "owner_dashboard", "status": "DEPLOYED" },
-    { "id": "parent_portal", "status": "ACCEPTED" },
-    { "id": "student_portal", "status": "ACCEPTED" },
-    { "id": "classes_zoom", "status": "BLOCKED" },
-    { "id": "content_vimeo", "status": "BLOCKED" },
-    { "id": "knowledge_helpers", "status": "BLOCKED" },
-    { "id": "gamification", "status": "DEPLOYED" },
-    { "id": "email", "status": "BLOCKED" },
-    { "id": "whatsapp", "status": "BLOCKED" },
-    { "id": "telegram", "status": "BLOCKED" },
-    { "id": "stripe", "status": "BLOCKED" },
-    { "id": "buffer", "status": "BLOCKED" },
-    { "id": "bna_support", "status": "BLOCKED" },
-    { "id": "diagnostics", "status": "DEPLOYED" },
-    { "id": "backup_restore", "status": "ACCEPTED" },
+    {
+      "id": "public_landing_signup",
+      "status": "DEPLOYED"
+    },
+    {
+      "id": "auth_recovery",
+      "status": "DEPLOYED"
+    },
+    {
+      "id": "administrator",
+      "status": "ACCEPTED"
+    },
+    {
+      "id": "crm",
+      "status": "DEPLOYED"
+    },
+    {
+      "id": "real_data",
+      "status": "BLOCKED",
+      "runtime_mode": "PREVIEW_READY"
+    },
+    {
+      "id": "communications",
+      "status": "DEPLOYED"
+    },
+    {
+      "id": "owner_dashboard",
+      "status": "DEPLOYED"
+    },
+    {
+      "id": "parent_portal",
+      "status": "ACCEPTED"
+    },
+    {
+      "id": "student_portal",
+      "status": "ACCEPTED"
+    },
+    {
+      "id": "classes_zoom",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "content_vimeo",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "knowledge_helpers",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "gamification",
+      "status": "DEPLOYED"
+    },
+    {
+      "id": "email",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "whatsapp",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "telegram",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "stripe",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "buffer",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "bna_support",
+      "status": "BLOCKED"
+    },
+    {
+      "id": "diagnostics",
+      "status": "DEPLOYED"
+    },
+    {
+      "id": "backup_restore",
+      "status": "ACCEPTED"
+    },
     {
       "id": "rollback",
-      "status": "BLOCKED",
-      "reason": "Source-rebuild rollback/roll-forward exercised; not accepted because /version was not source-authoritative. PR #92 head 504560f implements runtime deployment proof, but staging has not been rerun with it."
+      "status": "ACCEPTED",
+      "reason": "PR #92 staging rollback/roll-forward accepted with /version.deployment bound to Railway deployment metadata and image digests."
     }
   ],
   "notes": "Expanded evidence and blocker text live in ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json."

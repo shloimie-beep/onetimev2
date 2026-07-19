@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:52:52.0505712+03:00",
+  "generated_at": "2026-07-19T12:21:14.1995821Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -174,7 +174,7 @@
     },
     {
       "id": "rollback",
-      "status": "BLOCKED",
+      "status": "ACCEPTED",
       "evidence": [
         "ops/codex-runs/W13-104/DEPLOYMENT.json",
         "ops/codex-runs/W13-102/FINAL-REPORT.md",
@@ -182,9 +182,11 @@
         "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/SUMMARY.json",
         "apps/web/src/server/app.ts",
         "scripts/w12-100/deploy/railway-launch-toolkit.ts",
-        "tests/integration/runtime-version-proof.test.ts"
+        "tests/integration/runtime-version-proof.test.ts",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json"
       ],
-      "blocker": "W13-104 staging source-rebuild rollback and roll-forward were exercised, but rollback remains unaccepted because /version stayed W13-104 during the rollback-source deploy. PR #92 head 504560f implements runtime deployment proof for the next staging rehearsal, but it has not been live-deployed and proven yet."
+      "notes": "PR #92 staging candidate rollback/roll-forward accepted: staging rolled back to W13-104, then forward to PR #92 with /version.deployment matching Railway deployment metadata and image digests."
     }
   ]
 }

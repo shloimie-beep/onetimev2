@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.deployments.v2",
-  "generated_at": "2026-07-19T14:52:52.0505712+03:00",
+  "generated_at": "2026-07-19T12:21:14.1995821Z",
   "production": {
     "url": "https://join.onetimeonetime.com",
     "project": "one-time-production",
@@ -43,14 +43,14 @@
     "runtime_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
     "web_service": "ot99-web",
     "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
-    "web_deployment": "e32187d8-a32b-401d-ae8a-37d87af1a203",
+    "web_deployment": "c464ea23-649b-4c8d-b4af-0d10c5ce3022",
     "web_deployment_status": "SUCCESS",
-    "web_digest": "sha256:4f8a8e76f62ad24318f87ba496cdbf79a122d8b66905a34969304d96b7bee5d5",
+    "web_digest": "sha256:25d58d4a0661393a3d3d81e172dde87b610d8b97437162969615646e5c943234",
     "worker_service": "ot99-worker",
     "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
-    "worker_deployment": "9f49ae76-3daf-4813-b01d-20e11867564a",
+    "worker_deployment": "17f1970a-ec19-4fa8-8152-573b47f470ab",
     "worker_deployment_status": "SUCCESS",
-    "worker_digest": "sha256:da62398c2a4163393558935c30656f09936fb433a0db00b2deb52a026f35154a",
+    "worker_digest": "sha256:b213c58070b8d40b612351c5748bdf82e72b655014f8cc83e35a1ab0501a616d",
     "database_service": "Postgres",
     "database_service_id": "e6671cb7-178a-4821-b977-7b6e24c0c052",
     "latest_migration": "2203_w13_100_student_gamification",
@@ -66,15 +66,15 @@
     ]
   },
   "rollback": {
-    "status": "BLOCKED",
-    "reason": "Staging source-rebuild rollback and roll-forward were exercised, but rollback is not accepted because /version stayed W13-104 during the rollback-source deploy. PR #92 head 504560f implements runtime deployment proof for the next staging rehearsal, but it has not been live-deployed and proven yet.",
-    "latest_rehearsal": "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md",
+    "status": "ACCEPTED",
+    "reason": "PR #92 staging candidate rollback/roll-forward accepted: rollback to W13-104 and roll-forward to PR #92 passed with Railway deployment metadata, image digests, and /version.deployment proof.",
+    "latest_rehearsal": "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md",
     "last_fully_accepted": "W13-102 staging rollback/roll-forward",
     "database_restore_rule": "Do not restore production DB unless corruption is proven and operator-approved."
   },
   "external_effects_this_run": {
     "production_deployments": 0,
-    "staging_deployments": 4,
+    "staging_deployments": 10,
     "database_writes": 0,
     "provider_mutations": 0,
     "sends": 0,

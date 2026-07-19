@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T14:52:52.0505712+03:00",
+  "generated_at": "2026-07-19T12:21:14.1995821Z",
   "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -38,9 +38,9 @@
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
     "head_ref": "codex/one-time-finish-now-20260719",
-    "head_ref_oid": "504560f77cbceae4675cba49e57f21ab55568467",
+    "head_ref_oid": "ee9929008fc0068b3dcf9b86d11e7c21d1331c93",
     "checks_at_inspection": "green",
-    "note": "Runtime deployment proof code is implemented and CI-green, but not live-deployed or rollback-accepted yet."
+    "note": "Runtime deployment proof and PR #92 staging rollback/roll-forward are accepted; production launch-spine and private-input blockers remain."
   },
   "live_readback": {
     "production": {
@@ -71,7 +71,9 @@
     "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
     "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json",
-    "ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md"
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json"
   ],
   "blockers": [
     {
@@ -93,11 +95,6 @@
       "id": "BLOCK-OPERATIONS-PROBE",
       "lane": "diagnostics",
       "reason": "Missing OPERATIONS_PROBE_TOKEN."
-    },
-    {
-      "id": "BLOCK-CURRENT-ROLLBACK",
-      "lane": "rollback",
-      "reason": "Staging source-rebuild rollback and roll-forward were exercised, but rollback is not accepted because /version stayed W13-104 during the rollback-source deploy. PR #92 head 504560f implements runtime deployment proof for the next staging rehearsal, but it is not live-proven yet."
     },
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",

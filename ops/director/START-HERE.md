@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T14:52:52.0505712+03:00
+Generated: 2026-07-19T15:22:50.497+03:00
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -40,9 +40,10 @@ state without depending on local chat memory.
   `ops/codex-runs/ONE-TIME-FINISH-NOW/`
 - ONE-TIME-FINISH-NOW remediation PR:
   `https://github.com/webcraft-media/onetimev2/pull/92`
-- PR #92 head:
-  `504560f77cbceae4675cba49e57f21ab55568467`
-- PR #92 checks were green when inspected on 2026-07-19.
+- PR #92 runtime-proof source head:
+  `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`
+- PR #92 checks were green at `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`
+  before the accepted staging proof.
 
 ## Current Verdict
 
@@ -52,23 +53,24 @@ PARENT_ACCESS: ACCEPTED
 STUDENT_ACCESS: ACCEPTED
 CRM_REAL_DATA: PREVIEW_READY
 
-The safe core is live, but the full release gate remains blocked by exact
+The safe core is live, and PR #92 staging rollback/roll-forward is accepted for
+the staging candidate. The full release gate remains blocked by exact
 private-input/current-proof blockers: email inputs, CRM import authorization,
-provider canary authorization, protected diagnostics token, source-authoritative
-rollback proof, and current W13-104 launch-spine proof.
+provider canary authorization, protected diagnostics token, and current
+production launch-spine proof.
 
-The latest staging rollback exercise lives at
-`ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`. It exercised
-source-rebuild rollback and roll-forward, restored staging to W13-104, and kept
-production untouched, but it is not accepted as rollback proof because
-`/version` stayed W13-104 during the rollback-source deploy.
+The accepted staging runtime proof lives at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md` and
+`ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json`. It
+deployed PR #92 to staging, rolled back to W13-104, and rolled forward to PR
+#92 with `/version.deployment.deployment_id` matching Railway web deployment
+`c464ea23-649b-4c8d-b4af-0d10c5ce3022`.
 
-PR #92 head `504560f77cbceae4675cba49e57f21ab55568467` now implements the next
-runtime deployment proof path: `/version` includes non-secret Railway deployment
-identity when available, and the launch toolkit validates `/version.deployment`.
-This code is CI-green, but it is not a live rollback acceptance until staging is
-deployed and rollback/roll-forward is rerun against Railway deployment metadata
-and image digests.
+Staging `/version` still reports W13-104 `APP_VERSION` and `COMMIT_SHA` because
+those values are environment-pinned. Railway did not populate
+`RAILWAY_GIT_COMMIT_SHA` for the CLI source deploys, so source binding relies on
+exact detached deploy worktrees, deployment CLI messages, Railway deployment
+IDs, image digests, and `/version.deployment` readback.
 
 ## What Not To Do From This Handoff
 

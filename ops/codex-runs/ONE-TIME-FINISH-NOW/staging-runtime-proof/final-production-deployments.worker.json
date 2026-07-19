@@ -1,0 +1,569 @@
+[
+  {
+    "id": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+    "status": "SUCCESS",
+    "createdAt": "2026-07-19T06:53:15.513Z",
+    "meta": {
+      "buildOnly": false,
+      "cliAgentSessionId": "019f78ee-841d-7383-b2a7-279ff6723bab",
+      "cliCaller": "codex",
+      "cliMessage": "W13-104 production worker candidate 688fc70",
+      "configFile": "/railway.json",
+      "fileServiceManifest": {
+        "build": {
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile"
+        },
+        "deploy": {
+          "restartPolicyType": "ALWAYS",
+          "startCommand": "node scripts/railway-start.mjs"
+        }
+      },
+      "imageDigest": "sha256:da68b6adb377856d0612b5e97bceafb03435115250262065cc3305c232712370",
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "build.dockerfilePath": "$.build.dockerfilePath",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+        "deploy.startCommand": "$.deploy.startCommand"
+      },
+      "reason": "deploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile",
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": null,
+          "drainingSeconds": null,
+          "healthcheckPath": null,
+          "healthcheckTimeout": null,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": null,
+          "restartPolicyType": "ALWAYS",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": "node scripts/railway-start.mjs",
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  },
+  {
+    "id": "f81e56ba-cf4d-4f92-99e5-f5f6be360494",
+    "status": "REMOVED",
+    "createdAt": "2026-07-18T22:21:36.216Z",
+    "meta": {
+      "buildOnly": false,
+      "cliAgentSessionId": "019f76cb-094a-7873-a6a1-19d4e2c0904f",
+      "cliCaller": "codex",
+      "cliMessage": "W13-102 production worker candidate source 007e0215d1186ca51163dea3b1c15303bf52a860 worker manifest",
+      "configFile": "/railway.json",
+      "fileServiceManifest": {
+        "build": {
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile"
+        },
+        "deploy": {
+          "restartPolicyType": "ALWAYS",
+          "startCommand": "node scripts/railway-start.mjs"
+        }
+      },
+      "imageDigest": "sha256:71c90a3602874cd787ec45b5e93c0253e95328b8c10963bfadce57584c256cd0",
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "build.dockerfilePath": "$.build.dockerfilePath",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+        "deploy.startCommand": "$.deploy.startCommand"
+      },
+      "reason": "deploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile",
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": null,
+          "drainingSeconds": null,
+          "healthcheckPath": null,
+          "healthcheckTimeout": null,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": null,
+          "restartPolicyType": "ALWAYS",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": "node scripts/railway-start.mjs",
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  },
+  {
+    "id": "52226afb-5b5c-4e79-8982-8b26115dfaba",
+    "status": "REMOVED",
+    "createdAt": "2026-07-18T19:17:00.720Z",
+    "meta": {
+      "buildOnly": false,
+      "cliAgentSessionId": "019f765a-f00b-74f0-a872-0fcf5fdd85dd",
+      "cliCaller": "codex",
+      "cliMessage": "W13-101 production safe-core worker exact code worker manifest 466d848",
+      "configFile": "/railway.json",
+      "fileServiceManifest": {
+        "build": {
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile"
+        },
+        "deploy": {
+          "restartPolicyType": "ALWAYS",
+          "startCommand": "node scripts/railway-start.mjs"
+        }
+      },
+      "imageDigest": "sha256:8ce30ebc73e6937ff25c175b5aa795aba3c6beeabceea527c4f273b39c3c56b8",
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "build.dockerfilePath": "$.build.dockerfilePath",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+        "deploy.startCommand": "$.deploy.startCommand"
+      },
+      "reason": "deploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile",
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": null,
+          "drainingSeconds": null,
+          "healthcheckPath": null,
+          "healthcheckTimeout": null,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": null,
+          "restartPolicyType": "ALWAYS",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": "node scripts/railway-start.mjs",
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  },
+  {
+    "id": "d016b81c-a190-43f8-85e2-522e1bd4d83f",
+    "status": "FAILED",
+    "createdAt": "2026-07-18T19:11:02.122Z",
+    "meta": {
+      "buildOnly": false,
+      "cliAgentSessionId": "019f765a-f00b-74f0-a872-0fcf5fdd85dd",
+      "cliCaller": "codex",
+      "cliMessage": "W13-101 production safe-core worker exact source 466d848",
+      "configFile": "/railway.json",
+      "fileServiceManifest": {
+        "build": {
+          "builder": "DOCKERFILE"
+        },
+        "deploy": {
+          "healthcheckPath": "/health",
+          "healthcheckTimeout": 20,
+          "restartPolicyMaxRetries": 3,
+          "restartPolicyType": "ON_FAILURE"
+        }
+      },
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "deploy.healthcheckPath": "$.deploy.healthcheckPath",
+        "deploy.healthcheckTimeout": "$.deploy.healthcheckTimeout",
+        "deploy.restartPolicyMaxRetries": "$.deploy.restartPolicyMaxRetries",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType"
+      },
+      "reason": "deploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "/Dockerfile",
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": null,
+          "drainingSeconds": null,
+          "healthcheckPath": "/health",
+          "healthcheckTimeout": 20,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": 3,
+          "restartPolicyType": "ON_FAILURE",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": null,
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  },
+  {
+    "id": "45c4b4bc-b63f-4c50-84f9-87c72cf36ded",
+    "status": "REMOVED",
+    "createdAt": "2026-07-17T08:33:58.821Z",
+    "meta": {
+      "buildOnly": false,
+      "cliAgentSessionId": "019f6cb0-7408-7230-9234-6c3b1969d0d6",
+      "cliCaller": "codex",
+      "cliMessage": "OPS-11 production worker 1197673 sink",
+      "configFile": "/railway.json",
+      "fileServiceManifest": {
+        "build": {
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile"
+        },
+        "deploy": {
+          "restartPolicyType": "ALWAYS",
+          "startCommand": "node scripts/railway-start.mjs"
+        }
+      },
+      "imageDigest": "sha256:e4446dbc5b531c88b484ac04844503eae18916644159a165f7aa90adea250d43",
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "build.dockerfilePath": "$.build.dockerfilePath",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+        "deploy.startCommand": "$.deploy.startCommand"
+      },
+      "reason": "deploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "DOCKERFILE",
+          "dockerfilePath": "Dockerfile",
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": null,
+          "drainingSeconds": null,
+          "healthcheckPath": null,
+          "healthcheckTimeout": null,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": null,
+          "restartPolicyType": "ALWAYS",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": "node scripts/railway-start.mjs",
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  },
+  {
+    "id": "55dc5fb0-957c-49e3-b9fe-c83a5c703e73",
+    "status": "REMOVED",
+    "createdAt": "2026-07-17T08:25:16.138Z",
+    "meta": {
+      "buildOnly": true,
+      "cliMessage": "Deploy One Time delivery outbox cron runner",
+      "configFile": "/railway.json",
+      "fileServiceManifest": {
+        "build": {
+          "builder": "NIXPACKS"
+        },
+        "deploy": {
+          "cronSchedule": "*/5 * * * *",
+          "restartPolicyType": "NEVER",
+          "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs"
+        }
+      },
+      "ignoreWatchPatterns": true,
+      "imageDigest": "sha256:d180c1ce23d036da3a3841e2a78522d87f7a12d9227ce7e8fb084327aa7e28e8",
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "deploy.cronSchedule": "$.deploy.cronSchedule",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+        "deploy.startCommand": "$.deploy.startCommand"
+      },
+      "reason": "redeploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "NIXPACKS",
+          "dockerfilePath": null,
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": "*/5 * * * *",
+          "drainingSeconds": null,
+          "healthcheckPath": null,
+          "healthcheckTimeout": null,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": null,
+          "restartPolicyType": "NEVER",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs",
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  },
+  {
+    "id": "387e2e49-2055-43c8-86f4-de11f0e60b59",
+    "status": "REMOVED",
+    "createdAt": "2026-07-13T14:35:19.751Z",
+    "meta": {
+      "buildOnly": true,
+      "cliMessage": "Deploy One Time delivery outbox cron runner",
+      "configFile": "/railway.json",
+      "duration": 0,
+      "fileServiceManifest": {
+        "build": {
+          "builder": "NIXPACKS"
+        },
+        "deploy": {
+          "cronSchedule": "*/5 * * * *",
+          "restartPolicyType": "NEVER",
+          "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs"
+        }
+      },
+      "ignoreWatchPatterns": true,
+      "imageDigest": "sha256:cca6c9720caf97d780c455e403c9228756c97da56ef722c31f124a4376b1bc31",
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "deploy.cronSchedule": "$.deploy.cronSchedule",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+        "deploy.startCommand": "$.deploy.startCommand"
+      },
+      "reason": "redeploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "NIXPACKS",
+          "dockerfilePath": null,
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": "*/5 * * * *",
+          "drainingSeconds": null,
+          "healthcheckPath": null,
+          "healthcheckTimeout": null,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": null,
+          "restartPolicyType": "NEVER",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs",
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  },
+  {
+    "id": "df89ade6-86bc-4d2e-8384-54957fb7fada",
+    "status": "REMOVED",
+    "createdAt": "2026-07-12T20:03:38.703Z",
+    "meta": {
+      "buildOnly": true,
+      "cliMessage": "Deploy One Time delivery outbox cron runner",
+      "configFile": "/railway.json",
+      "duration": 0,
+      "fileServiceManifest": {
+        "build": {
+          "builder": "NIXPACKS"
+        },
+        "deploy": {
+          "cronSchedule": "*/5 * * * *",
+          "restartPolicyType": "NEVER",
+          "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs"
+        }
+      },
+      "imageDigest": "sha256:47b3aa50c695aba6bb5e4e738c1fbe5f97ec32f6989ccd7b7fbf3864e25caa0c",
+      "logsV2": true,
+      "nixpacksProviders": [],
+      "propertyFileMapping": {
+        "build.builder": "$.build.builder",
+        "deploy.cronSchedule": "$.deploy.cronSchedule",
+        "deploy.restartPolicyType": "$.deploy.restartPolicyType",
+        "deploy.startCommand": "$.deploy.startCommand"
+      },
+      "reason": "deploy",
+      "rootDirectory": null,
+      "runtime": "V2",
+      "serviceManifest": {
+        "build": {
+          "buildCommand": null,
+          "buildEnvironment": "V3",
+          "builder": "NIXPACKS",
+          "dockerfilePath": null,
+          "nixpacksConfigPath": null,
+          "nixpacksPlan": null,
+          "watchPatterns": []
+        },
+        "deploy": {
+          "cronSchedule": "*/5 * * * *",
+          "drainingSeconds": null,
+          "healthcheckPath": null,
+          "healthcheckTimeout": null,
+          "ipv6EgressEnabled": false,
+          "limitOverride": null,
+          "multiRegionConfig": {
+            "us-west2": {
+              "numReplicas": 1
+            }
+          },
+          "numReplicas": 1,
+          "overlapSeconds": null,
+          "preDeployCommand": null,
+          "region": null,
+          "registryCredentials": null,
+          "requiredMountPath": null,
+          "restartPolicyMaxRetries": null,
+          "restartPolicyType": "NEVER",
+          "runtime": "V2",
+          "sleepApplication": false,
+          "startCommand": "node scripts/run-one-time-delivery-outbox-cron.mjs",
+          "useLegacyStacker": false
+        }
+      },
+      "volumeMounts": []
+    }
+  }
+]
