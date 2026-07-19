@@ -1,42 +1,42 @@
 {
-  "generated_at": "2026-07-19T13:21:44.055Z",
+  "generated_at": "2026-07-19T15:55:29.845Z",
   "target_base_url": "https://join.onetimeonetime.com",
   "status": "blocked",
-  "duration_ms": 2556,
+  "duration_ms": 2124,
   "results": [
     {
       "id": "public_landing",
       "status": "passed",
       "http_status": 200,
-      "latency_ms": 1032,
+      "latency_ms": 736,
       "detail": "expected=200"
     },
     {
       "id": "public_signup",
       "status": "passed",
       "http_status": 200,
-      "latency_ms": 455,
+      "latency_ms": 417,
       "detail": "expected=200"
     },
     {
       "id": "auth_lifecycle_login_page",
       "status": "passed",
       "http_status": 200,
-      "latency_ms": 521,
+      "latency_ms": 420,
       "detail": "expected=200"
     },
     {
       "id": "private_session_role_denial",
       "status": "passed",
       "http_status": 302,
-      "latency_ms": 256,
+      "latency_ms": 278,
       "detail": "expected=302/401/403"
     },
     {
       "id": "db_readiness",
       "status": "passed",
       "http_status": 200,
-      "latency_ms": 291,
+      "latency_ms": 273,
       "detail": "readiness dependency payload present"
     },
     {

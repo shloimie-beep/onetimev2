@@ -12,14 +12,17 @@ Work was performed in the isolated worktree
 Reason: the prompt explicitly forbids modifying the dirty BNA checkout, and
 One Time is a standalone repo at `webcraft-media/onetimev2`.
 
-## DEC-OT-FINISH-002 - Treat W13-104 as newer truth than the old director
+## DEC-OT-FINISH-002 - Treat live readback as newer truth than old director snapshots
 
 The old director snapshot still referenced OPS-11/W12 runtime
-`1197673fa409bfc4c649c2683f782e86775caa5e`. Live production and staging now
-read back W13-104 runtime `688fc70cf64b72bc52f4ea7511d8593750d7ab45`.
+`1197673fa409bfc4c649c2683f782e86775caa5e`. This run first refreshed director
+truth to W13-104, then the CRM-first slice advanced live production and staging
+to `rabbi-day-one-crm-ed77a04` /
+`ed77a04dd24391d5b79be7f839d7f5752a57e0f9`.
 
-Decision: refresh the director current-state, capability matrix, and deployment
-snapshot to point at W13-104 and this run packet.
+Decision: keep director current-state, capability matrix, deployment snapshot,
+and run handoff files aligned with live `/version`, `/health`, and `/ready`
+readback, not stale historical snapshots.
 
 ## DEC-OT-FINISH-003 - Do not overclaim full release
 
@@ -70,7 +73,11 @@ corrected the CRM counts and implemented a guarded local apply writer, but
 production apply still requires the exact dry-run SHA/count authorization,
 fresh backup proof JSON, DATABASE_URL, idempotency key, created-by user key,
 `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and exclusion/terminal handling for
-manual-review rows.
+manual-review rows. The later CRM-first readiness refresh satisfied
+DATABASE_URL, idempotency, exact operator authorization, private manifest
+authorization, and manual-review handling; production apply is now narrowed to
+fresh backup proof JSON, created-by user key, and
+`RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
 
 ## DEC-OT-FINISH-008 - Treat read-only launch-spine proof as partial evidence
 
@@ -94,6 +101,8 @@ current compact source of truth is `ops/codex-runs/RABBI-DAY-ONE-CRM/`.
 
 Decision: keep `CRM_REAL_DATA` as `PREVIEW_READY`, but treat the corrected
 counts and guarded apply writer as newer evidence than the older broad
-counts-only report. Treat transactional email as blocked only by the protected
-operator canary destination/private manifest/configuration/canary-send chain,
-not by missing Resend/domain/sender/reply-to keyholder inputs.
+counts-only report. Treat transactional email code/config as deployed: staging
+controlled lifecycle email was provider-delivered and production was
+deployed/smoked. Final production controlled send and administrator access are
+blocked only by missing active production owner/admin actor and fresh
+bootstrap/role-access authorization.

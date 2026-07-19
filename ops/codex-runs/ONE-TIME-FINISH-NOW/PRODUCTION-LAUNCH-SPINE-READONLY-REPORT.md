@@ -1,6 +1,6 @@
 # Production Launch Spine Read-Only Report
 
-Generated: 2026-07-19T16:25:01.2183177+03:00
+Generated: 2026-07-19T15:56:47.640Z
 
 Target: `https://join.onetimeonetime.com`
 
@@ -21,7 +21,7 @@ links, form submits, provider calls, or production writes.
 OPS-06 synthetic probes:
 
 - JSON SHA-256:
-  `25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc`
+  `7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a`
 - Status: `blocked`
 - Passed: landing, signup, login, anonymous private CRM denial, DB readiness.
 - Blocked: protected worker diagnostics because `OPERATIONS_PROBE_TOKEN` is not
@@ -30,13 +30,15 @@ OPS-06 synthetic probes:
 Wider route readback:
 
 - JSON SHA-256:
-  `fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a`
+  `120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9`
 - Status: `passed`
 - 16 of 16 GET-only route checks passed.
 - Covered `/version`, `/health`, `/ready`, `/`, `/signup`, `/login`,
   `/activate`, `/forgot-password`, `/reset-password`, `/privacy`, `/terms`, a
   known missing route, and anonymous denial for `/app/dashboard`, `/app/crm`,
   `/app/parent`, and `/app/student`.
+- `/version` read back `rabbi-day-one-crm-ed77a04` /
+  `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`.
 
 ## Non-Consuming Role Baseline
 

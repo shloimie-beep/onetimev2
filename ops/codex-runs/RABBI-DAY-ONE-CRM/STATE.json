@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T15:43:28.344Z",
+  "generated_at": "2026-07-19T15:53:34.436Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -56,7 +56,8 @@
         "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
       ],
       "required_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
-      "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK"
+      "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
+      "generated_at": "2026-07-19T15:53:05.720Z"
     }
   },
   "crm_apply_writer": {
@@ -315,5 +316,6 @@
     "railway_deployments_created": 5,
     "broad_campaign_sends": 0
   },
-  "current_head": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9"
+  "current_head": "92e17cedba4e0ad5a99cd132772ff7a4acadb409",
+  "current_head_note": "Pushed evidence head at inspection time; deployed runtime commit remains ed77a04dd24391d5b79be7f839d7f5752a57e0f9."
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm_apply_readiness_preflight.v1",
-  "generated_at": "2026-07-19T15:42:14.327Z",
+  "generated_at": "2026-07-19T15:53:05.720Z",
   "status": "blocked",
   "blocked_reasons": [
     "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",

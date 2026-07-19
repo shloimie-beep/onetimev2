@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:47:51.237Z",
+  "generated_at": "2026-07-19T15:53:34.436Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -14,10 +14,10 @@
     "EXCLUDED"
   ],
   "source_ref": {
-    "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
-    "production_version": "w13-104-public-cls-688fc70",
+    "production_runtime_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+    "production_version": "rabbi-day-one-crm-ed77a04",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
-    "evidence_head": "123827a745be2531425e124085db6f5c53e5e82e",
+    "evidence_head": "see-pr-92-current-head; deployed runtime commit is ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
     "run_state": "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
   },
   "capabilities": [
@@ -43,7 +43,7 @@
         "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json"
       ],
-      "notes": "Login, forgot-password, activate, and reset routes are live in current production read-only proof. Normal transactional email remains blocked separately. Launch-spine consume readiness is now preflighted and blocked before mutation until exact protected inputs are present."
+      "notes": "Login, forgot-password, activate, and reset routes are live in current production proof. Transactional email code/config is deployed; production controlled send remains blocked by missing active owner/admin actor."
     },
     {
       "id": "administrator",
@@ -82,16 +82,17 @@
         "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
         "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json"
       ],
-      "blocker": "CRM apply readiness preflight records source packet and corrected dry-run proof present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
+      "blocker": "CRM apply readiness preflight records source packet, corrected dry-run proof, private authorization, operator authorization, idempotency, manual-review handling, and production DB configuration present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
     },
     {
       "id": "communications",
       "status": "DEPLOYED",
       "evidence": [
         "ops/codex-runs/W13-104/FINAL-REPORT.md",
-        "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json"
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
       ],
-      "notes": "Communications UI/outbox foundation is deployed. Transactional email configuration is preflighted but blocked before canary; external sends are provider-off."
+      "notes": "Communications UI/outbox foundation is deployed. Standalone One Time transactional email config is deployed to staging and production; staging controlled lifecycle email was provider-delivered. Generic campaign/provider sends remain disabled."
     },
     {
       "id": "owner_dashboard",
@@ -158,9 +159,10 @@
       "status": "BLOCKED",
       "evidence": [
         "ops/codex-runs/W13-104/EMAIL.json",
-        "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json"
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
       ],
-      "blocker": "Protected Resend/domain/sender/reply-to inputs are present and policy-matching; email remains blocked by missing protected operator canary destination file, missing EMAIL-INPUTS.private.json, missing production variable configuration, and no controlled operator-inbox send proof."
+      "blocker": "Protected One Time Resend inputs are present, Railway variables are configured on staging and production, staging controlled transactional email was delivered to the protected operator inbox, and production is deployed/smoked. Production controlled send and final admin access are blocked because production has no active owner/admin actor; a fresh bootstrap or role-access authorization is required before creating or refreshing administrator access."
     },
     {
       "id": "whatsapp",

@@ -79,10 +79,16 @@ The newer CRM-first pivot implements the guarded local apply writer. Production
 CRM import apply still remains blocked by:
 
 - Fresh backup/rollback proof JSON verified immediately before apply.
+- Created-by user key.
+- Production confirmation:
+  `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
+
+Already present in protected/sanitized readiness evidence:
+
 - Exact acceptance of the corrected dry-run hash/count set:
   `APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production`.
-- `DATABASE_URL`, idempotency key, created-by user key, and
-  `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
+- `DATABASE_URL`.
+- Idempotency key.
 - Exclusion/terminal handling for 848 current manual-review rows.
 
 No production CRM apply was performed.

@@ -1,13 +1,15 @@
 # Resume: ONE-TIME-FINISH-NOW
 
-Current state: safe core runtime is live on production, and the PR #92 staging
-candidate has accepted runtime deployment proof plus rollback/roll-forward
-proof. CRM approval raw, corrected counts-only real-source preflight, guarded
-local CRM apply code, sanitized email-inputs preflight, and current production
-read-only launch-spine route proof are recorded, but `CRM_REAL_DATA` remains
-`PREVIEW_READY`. The full release claim remains blocked by protected-input
-gates, CRM production apply gates, and the consuming parts of production
-launch-spine proof.
+Current state: safe core runtime is live on production and staging at
+`rabbi-day-one-crm-ed77a04` / `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`.
+CRM approval raw, corrected counts-only real-source preflight, guarded local CRM
+apply code, protected transactional email inputs, staging delivered
+transactional email proof, production transactional email deployment/smoke
+proof, and current production read-only launch-spine route proof are recorded.
+`CRM_REAL_DATA` remains `PREVIEW_READY`. The full release claim remains blocked
+by protected-input gates, CRM production apply gates, final production admin
+access, provider canary authorization, diagnostics token, and the consuming
+parts of production launch-spine proof.
 
 ## Start Here
 
@@ -23,27 +25,33 @@ launch-spine proof.
 
 - Production URL: `https://join.onetimeonetime.com`
 - Staging URL: `https://ot99-web-staging.up.railway.app`
-- Production and staging version: `w13-104-public-cls-688fc70`
+- Production and staging version: `rabbi-day-one-crm-ed77a04`
 - Production and staging runtime SHA:
-  `688fc70cf64b72bc52f4ea7511d8593750d7ab45`
+  `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`
 - Canonical draft PR: `https://github.com/webcraft-media/onetimev2/pull/91`
-- PR #92 launch-spine consume evidence head before this check-note commit:
-  `123827a745be2531425e124085db6f5c53e5e82e`
-- PR #92 checks at that evidence head failed before workflow steps/logs; all
-  five jobs completed with `steps: []`, and local focused gates passed. Read
+- PR #92 pushed evidence head inspected before this handoff refresh:
+  `92e17cedba4e0ad5a99cd132772ff7a4acadb409`
+- PR #92 checks at that pushed head showed the same GitHub-side pre-step
+  failure pattern as earlier: all five jobs completed as failure with
+  `steps:null` and `logs_url:null`; local gates and live smokes passed. Read
   the PR or `git rev-parse HEAD` for the current branch head after later
-  docs-only check-note commits.
-- Final staging PR #92 web deployment:
-  `c464ea23-649b-4c8d-b4af-0d10c5ce3022`
-- Final staging PR #92 worker deployment:
-  `17f1970a-ec19-4fa8-8152-573b47f470ab`
+  handoff commits.
+- Current staging web deployment:
+  `0bf927dd-bab7-407b-afd2-35983d8c7351`
+- Current staging worker deployment:
+  `385e3b5b-41f4-417d-996b-09e3b1a1f8e3`
+- Current production web deployment:
+  `a3a9328c-3fb5-41c6-b8d4-cf402f400ca7`
+- Current production worker deployment:
+  `37ce9edf-d7aa-40fc-a013-87dde0f29e72`
 - Isolated worktree:
   `C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW`
 
 ## What Is Accepted
 
-- W13-104 production and staging `/version`, `/health`, and `/ready` readbacks.
-- W13-104 production web and worker Railway deployments are successful.
+- Current production and staging `/version`, `/health`, and `/ready` readbacks
+  at `rabbi-day-one-crm-ed77a04`.
+- Current production and staging web/worker Railway deployments are successful.
 - W13-104 fresh PG18 backup/restore proof passed before production deployment.
 - W13-103 production protected browser acceptance passed for administrator,
   parent, and student identities.
@@ -60,15 +68,21 @@ launch-spine proof.
   synthetic integration evidence; production apply performed zero writes.
 - CRM production apply readiness preflight is recorded in
   `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`. It
-  confirms the source packet and corrected dry-run proof are present, and blocks
-  before any DB connection, write, send, or provider mutation.
+  confirms source packet, corrected dry-run proof, private authorization,
+  operator authorization, idempotency, manual-review handling, and production DB
+  configuration are present, and blocks before any write, send, or provider
+  mutation.
 - Sanitized email-inputs preflight verifies protected Resend/domain/sender/
-  reply-to inputs are present and policy-matching. It is blocked only by missing
-  protected operator canary destination file; no private manifest was written
-  and no email was sent.
-- A protected private CRM checkpoint manifest exists with
-  `dry_run_authorized=true` and `production_apply_authorized=false`; contents
-  are not committed or printed.
+  reply-to/canary/private-manifest inputs are present and policy-matching.
+  Staging controlled transactional lifecycle email was provider-delivered to
+  the protected operator inbox; no private destination, secret, or raw token was
+  committed.
+- Production transactional email code/config is deployed and smoked. Production
+  controlled send and final admin access remain blocked because production has
+  zero active owner/admin users; fresh bootstrap or role-access authorization is
+  required before creating or refreshing the administrator access message.
+- A protected private CRM checkpoint manifest exists with production apply
+  authorization present; contents are not committed or printed.
 - PR #92 staging runtime proof passed: staging deployed PR #92, rolled back to
   W13-104, and rolled forward to PR #92 with `/version.deployment` matching the
   serving Railway web deployment.
@@ -91,15 +105,15 @@ launch-spine proof.
 
 ## What Is Blocked
 
-- Normal transactional access email: protected Resend/domain/sender/reply-to
-  inputs are present and policy-matching, but the protected operator canary
-  destination file and `EMAIL-INPUTS.private.json` are missing; production
-  variables and controlled canary send proof are not configured.
+- Normal transactional access email/final admin access: protected One Time
+  Resend inputs are present, Railway variables are configured on staging and
+  production, staging controlled transactional email was delivered, and
+  production is deployed/smoked. Production controlled send and final admin
+  access are blocked by missing active production owner/admin actor.
 - Real CRM import apply: corrected dry-run and guarded local apply code are
-  recorded, but production apply readiness remains blocked by missing backup
-  proof, created-by user key, `DATABASE_URL`, idempotency key, manual-review
-  handling, exact operator authorization, private-manifest production-apply
-  authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
+  recorded, but production apply readiness remains blocked by missing fresh
+  backup proof JSON, created-by user key, and
+  `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
 - Provider canaries: W13-104 provider evidence is present, but all eight
   non-email provider lanes remain not ready to run. The protected canary
   manifest, exact operator authorization, and
@@ -114,29 +128,27 @@ launch-spine proof.
 
 ## Runtime Proof Caveat
 
-Staging `/version` still reports W13-104 `APP_VERSION` and `COMMIT_SHA` because
-those are environment-pinned. PR #92 source binding is proven by the additional
-`/version.deployment` object, exact detached deploy worktrees, Railway
-deployment IDs/messages, and image digests. Railway did not populate
-`RAILWAY_GIT_COMMIT_SHA` for the CLI source deploys.
+Production and staging `/version` now report `rabbi-day-one-crm-ed77a04` and
+`ed77a04dd24391d5b79be7f839d7f5752a57e0f9`. The later evidence commits are
+handoff-only; use PR #92 or `git rev-parse HEAD` for the current branch head.
 
 ## Next Executable Packets
 
 1. Complete the consuming production launch-spine proof only with exact
    protected authorization and cleanup instructions. The required exact
    authorization statement is
-   `APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production`,
+   `APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9:7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a:production`,
    and the required production confirmation is
    `ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK`.
-2. Provide the protected operator canary destination file, generate
-   `EMAIL-INPUTS.private.json` from the sanitized preflight without committing
-   or printing it, configure production variables, then run exactly one
-   allowlisted transactional access email canary.
-3. Record fresh backup proof JSON, exact protected acceptance of
-   `APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production`,
-   DATABASE_URL, idempotency key, created-by user key,
-   `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and terminal/exclusion handling for
-   manual-review rows before any CRM production import apply.
+2. Provide fresh bootstrap or role-access authorization for an active
+   production owner/admin actor, then run exactly one controlled production
+   transactional access email proof before refreshing final administrator
+   access.
+3. Record fresh backup proof JSON, created-by user key, and
+   `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` before any CRM production import
+   apply. The source packet, corrected dry-run proof, private/operator
+   authorization, idempotency, manual-review handling, and production DB
+   configuration are already present.
 4. Activate provider canaries independently: Zoom, Vimeo/content, Stripe TEST,
    WhatsApp, Telegram, OpenAI helper, Buffer, and BNA support bridge. Required
    exact authorization:

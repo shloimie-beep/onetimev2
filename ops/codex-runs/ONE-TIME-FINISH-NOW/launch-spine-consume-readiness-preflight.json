@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.one_time_finish_now.launch_spine_consume_readiness_preflight.v1",
-  "generated_at": "2026-07-19T14:35:10.989Z",
+  "generated_at": "2026-07-19T15:56:47.640Z",
   "status": "blocked",
   "blocked_reasons": [
     "BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED",
@@ -18,18 +18,18 @@
   "target_environment": "production",
   "readonly_evidence": {
     "route_readback_path": "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
-    "route_readback_sha256": "fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a",
-    "expected_route_readback_sha256": "fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a",
+    "route_readback_sha256": "120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9",
+    "expected_route_readback_sha256": "120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9",
     "route_readback_status": "passed",
     "route_count": 16,
     "passed_count": 16,
     "synthetic_probes_path": "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json",
-    "synthetic_probes_sha256": "25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
-    "expected_synthetic_probes_sha256": "25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
+    "synthetic_probes_sha256": "7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a",
+    "expected_synthetic_probes_sha256": "7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a",
     "synthetic_probes_status": "blocked",
     "role_baseline_path": "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
     "role_baseline_status": "passed",
-    "required_authorization_statement": "APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production",
+    "required_authorization_statement": "APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9:7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a:production",
     "required_production_confirmation": "ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK"
   },
   "protected_sources": {
