@@ -1,12 +1,8 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm_apply_readiness_preflight.v1",
-  "generated_at": "2026-07-19T15:53:05.720Z",
-  "status": "blocked",
-  "blocked_reasons": [
-    "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
-    "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
-    "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
-  ],
+  "generated_at": "2026-07-19T16:11:17.302Z",
+  "status": "ready",
+  "blocked_reasons": [],
   "target_environment": "production",
   "approved_scope": {
     "dry_run_report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
@@ -48,9 +44,9 @@
       "fingerprint": "ab3c5a282cb405f5417f9abd68c360e091b7b3127d566bc5a84146f738299727"
     },
     "backupProof": {
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "6435b25ba453195ad120e92822fe80d14906377e478e08b0827150f019218138"
     },
     "operatorAuthorization": {
       "present": true,
@@ -60,17 +56,17 @@
     "idempotencyKey": {
       "present": true,
       "nonempty": true,
-      "fingerprint": "e44f520f3a36ea819a6cf6e07d5d249d3315ed0daed300c0474042e12aeefafc"
+      "fingerprint": "416b72f02c6d2fc5f31ef40a70a5bc7e984a0fa46f748e9690a4aa54a604684a"
     },
     "createdByUserKey": {
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "09a6f27edfb70881b2cc52e5c6e30d561ad7f9efeaf390222479443bfcb85e92"
     },
     "productionConfirmation": {
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "40e6f78a95f9def95c0e19979189389d0fde35c0b8e8bc7ef2fb76a6425e9cbe"
     },
     "manualReviewHandling": {
       "present": true,
@@ -91,20 +87,20 @@
     "private_authorization_manifest_present": true,
     "private_authorization_manifest_readable_json": true,
     "private_authorization_manifest_production_apply_authorized": true,
-    "backup_proof_present": false,
-    "backup_proof_readable_json": false,
-    "backup_proof_target_environment_matches": false,
-    "backup_proof_dry_run_sha_matches": false,
-    "backup_proof_source_group_matches": false,
-    "backup_proof_total_rows_matches": false,
-    "backup_proof_crm_importable_matches": false,
-    "backup_proof_raw_values_excluded": false,
+    "backup_proof_present": true,
+    "backup_proof_readable_json": true,
+    "backup_proof_target_environment_matches": true,
+    "backup_proof_dry_run_sha_matches": true,
+    "backup_proof_source_group_matches": true,
+    "backup_proof_total_rows_matches": true,
+    "backup_proof_crm_importable_matches": true,
+    "backup_proof_raw_values_excluded": true,
     "operator_authorization_present": true,
     "operator_authorization_matches_required": true,
     "idempotency_key_present": true,
-    "created_by_user_key_present": false,
-    "production_confirmation_present": false,
-    "production_confirmation_matches_required": false,
+    "created_by_user_key_present": true,
+    "production_confirmation_present": true,
+    "production_confirmation_matches_required": true,
     "manual_review_handling_present": true,
     "manual_review_handling_readable_json": true,
     "manual_review_rows_match": true,

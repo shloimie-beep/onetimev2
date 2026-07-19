@@ -1,0 +1,69 @@
+{
+  "schema_version": "onetime.rabbi_day_one_crm.production_reconcile.v1",
+  "generated_at": "2026-07-19T16:55:35.054Z",
+  "apply_status": "applied",
+  "replay_status": "replayed",
+  "replay_database_writes_performed": false,
+  "batch_key": "crm_real_source_batch_214a8882392b37e950387f6b",
+  "dry_run_report_sha256": "93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
+  "counts": {
+    "contacts_total": 1555,
+    "import_batches": 1,
+    "import_rows": 2505,
+    "import_facts": 4594,
+    "outbox_events_total": 0,
+    "latest_migration": "2204_w12_100_real_source_crm_apply"
+  },
+  "row_results": [
+    {
+      "result": "blocked_duplicate",
+      "count": 98
+    },
+    {
+      "result": "blocked_identity_conflict",
+      "count": 37
+    },
+    {
+      "result": "blocked_invalid",
+      "count": 811
+    },
+    {
+      "result": "inserted_contact",
+      "count": 1555
+    },
+    {
+      "result": "skipped_existing_contact",
+      "count": 4
+    }
+  ],
+  "channel_counts": {
+    "email_campaign_eligible": 1357,
+    "whatsapp_campaign_eligible": 0,
+    "suppressed_rows": 152,
+    "raw_values_excluded_rows": 2505
+  },
+  "apply_counts": {
+    "total_rows": 2505,
+    "unique_identity_count": 1596,
+    "crm_importable": 1559,
+    "writable_candidates": 1559,
+    "inserted_contacts": 1555,
+    "skipped_existing_contacts": 4,
+    "blocked_contact_schema": 0,
+    "blocked_duplicate": 98,
+    "blocked_identity_conflict": 37,
+    "blocked_quarantined": 0,
+    "blocked_invalid": 811,
+    "email_campaign_eligible": 1357,
+    "whatsapp_campaign_eligible": 0,
+    "suppressed": 152,
+    "sends_queued": 0
+  },
+  "safety": {
+    "raw_values_included": false,
+    "raw_values_printed": false,
+    "external_sends_performed": false,
+    "provider_mutation_count": 0,
+    "sends_queued": 0
+  }
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T15:47:39.209Z",
+  "generated_at": "2026-07-19T17:04:18.192Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -20,12 +20,13 @@
     {
       "id": "public_landing_signup",
       "status": "DEPLOYED",
-      "reason": "Current production read-only route proof passed; launch-spine consume readiness preflight blocks production signup submit until exact protected inputs are present."
+      "reason": "Production signup-to-CRM operator canary is accepted with idempotent replay and zero external sends; broader launch-spine role consumption still requires exact protected inputs.",
+      "evidence": ["ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"]
     },
     {
       "id": "auth_recovery",
       "status": "DEPLOYED",
-      "reason": "Current production read-only route proof passed for login, activate, forgot-password, and reset-password; consume readiness preflight blocks setup/reset link journeys until exact protected inputs are present."
+      "reason": "Current production read-only route proof passed for login, activate, forgot-password, and reset-password. Transactional email is deployed/configured and staging-delivered; production final admin/access send and setup/reset link browser smoke were not rerun in the CRM import slice."
     },
     {
       "id": "administrator",
@@ -33,13 +34,25 @@
     },
     {
       "id": "crm",
-      "status": "DEPLOYED"
+      "status": "ACCEPTED",
+      "notes": "CRM surfaces and domain services are deployed; corrected dry-run, guarded apply, production migration 2204, real CRM import apply, idempotency replay, reconciliation, and production signup proof are recorded.",
+      "evidence": [
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"
+      ]
     },
     {
       "id": "real_data",
-      "status": "BLOCKED",
-      "runtime_mode": "PREVIEW_READY",
-      "reason": "CRM apply readiness preflight records source packet, corrected dry-run proof, private authorization, operator authorization, idempotency, manual-review handling, and production DB configuration present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
+      "status": "ACCEPTED",
+      "runtime_mode": "PRODUCTION_APPLIED",
+      "reason": "CRM production apply completed after fresh protected PG18 backup proof and exact operator authorization: 1,555 contacts inserted, 4 existing contacts skipped, 2,505 import rows recorded, idempotency replay wrote nothing, and zero sends/provider mutations were performed.",
+      "evidence": [
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json"
+      ]
     },
     {
       "id": "communications",
@@ -79,7 +92,7 @@
     {
       "id": "email",
       "status": "BLOCKED",
-      "reason": "Protected One Time Resend inputs are present, Railway variables are configured on staging and production, staging controlled transactional email was delivered to the protected operator inbox, and production is deployed/smoked. Production controlled send and final admin access are blocked because production has no active owner/admin actor; a fresh bootstrap or role-access authorization is required before creating or refreshing administrator access."
+      "reason": "Protected One Time Resend inputs are present, Railway variables are configured on staging and production, staging controlled transactional email was provider-delivered, and production is deployed/smoked. Production final admin/access send was not rerun in the CRM import slice and remains a deliberate separate action."
     },
     {
       "id": "whatsapp",
@@ -113,7 +126,9 @@
     },
     {
       "id": "backup_restore",
-      "status": "ACCEPTED"
+      "status": "ACCEPTED",
+      "notes": "Fresh PG18 backup/restore proof passed before the production CRM apply, using Railway proof deployment 4e58755e-1991-4ce5-b05f-0a5e8b4f25e7.",
+      "evidence": ["ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json"]
     },
     {
       "id": "rollback",

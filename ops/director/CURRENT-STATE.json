@@ -1,24 +1,24 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T15:57:26.781Z",
-  "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
+  "generated_at": "2026-07-19T17:00:29.695Z",
+  "current_run": "ops/codex-runs/RABBI-DAY-ONE-CRM",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
     "remote": "https://github.com/webcraft-media/onetimev2.git"
   },
   "release_truth": {
-    "status": "safe_core_live_external_lanes_pending",
+    "status": "crm_real_data_delivered_external_lanes_pending",
     "CORE_RELEASE": "BLOCKED_BY_CORE_SAFETY_GATE",
     "ADMIN_ACCESS": "ACCEPTED",
     "PARENT_ACCESS": "ACCEPTED",
     "STUDENT_ACCESS": "ACCEPTED",
-    "CRM_REAL_DATA": "PREVIEW_READY",
+    "CRM_REAL_DATA": "ACCEPTED",
     "production_url": "https://join.onetimeonetime.com",
     "staging_url": "https://ot99-web-staging.up.railway.app",
     "version": "rabbi-day-one-crm-ed77a04",
     "runtime_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
     "target_app": "one-time",
-    "latest_migration": "2203_w13_100_student_gamification",
+    "latest_migration": "2204_w12_100_real_source_crm_apply",
     "release_tag": "pending-post-pr92-transactional-email-release-tag"
   },
   "canonical_draft_pr": {
@@ -38,9 +38,9 @@
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
     "head_ref": "codex/one-time-finish-now-20260719",
-    "head_ref_oid": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
-    "checks_at_inspection": "PR #92 advanced to transactional email deployment evidence head ed77a04dd24391d5b79be7f839d7f5752a57e0f9; local gates and live smokes passed, while CRM apply/admin access remain blocked by the explicit safety gates in this file.",
-    "note": "Transactional email code/config is deployed to staging and production. Staging controlled test delivered; production controlled send/admin access are blocked by no active production owner/admin actor. Real CRM production apply remains blocked by fresh backup proof, created-by user key, and production confirmation."
+    "head_ref_oid": "e73b9d5edf38a300faf6c1ddb4929b913137031c",
+    "checks_at_inspection": "GitHub Actions on pushed head e73b9d5edf38a300faf6c1ddb4929b913137031c reported the same platform/pre-step failure pattern as prior PR #92 heads: all five jobs completed as failure with steps/logs unavailable in the GitHub job payload; local validation and live smokes passed.",
+    "note": "CRM-first pivot delivered the real production CRM import and one production signup proof. Deployed runtime remains ed77a04dd24391d5b79be7f839d7f5752a57e0f9; production schema now has 2204_w12_100_real_source_crm_apply. Transactional email production final/admin send, WhatsApp provider canary, campaign seed approval, and full authenticated Admin CRM browser smoke remain separate gated actions."
   },
   "live_readback": {
     "production": {
@@ -53,7 +53,8 @@
         "whatsapp_transport": "ok",
         "support_bridge": "disabled",
         "note": "Generic campaign/provider modes remain sink; only One Time lifecycle/auth transactional email is enabled."
-      }
+      },
+      "latest_migration": "2204_w12_100_real_source_crm_apply"
     },
     "staging": {
       "version": "rabbi-day-one-crm-ed77a04",
@@ -89,18 +90,22 @@
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json",
-    "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"
   ],
   "blockers": [
     {
       "id": "BLOCK-EMAIL-INPUTS",
       "lane": "transactional_email",
-      "reason": "Protected One Time Resend inputs are present, Railway variables are configured on staging and production, staging controlled transactional email was delivered to the protected operator inbox, and production is deployed/smoked. Production controlled send and final admin access are blocked because production has no active owner/admin actor; a fresh bootstrap or role-access authorization is required before creating or refreshing administrator access."
+      "reason": "Transactional email is configured and staging-delivered; production final admin/access send was not rerun in the CRM import slice and requires a deliberate fresh send/browser-smoke decision. Existing W13-103 admin acceptance remains protected evidence."
     },
     {
-      "id": "BLOCK-CRM-IMPORT-AUTH",
-      "lane": "crm_real_data",
-      "reason": "CRM apply readiness preflight records source packet, corrected dry-run proof, private authorization, operator authorization, idempotency, manual-review handling, and production DB configuration present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
+      "id": "BLOCK-CAMPAIGN-SEED-APPROVAL",
+      "lane": "campaign_seed",
+      "reason": "Real CRM production apply is complete. Campaign seed is waiting on one exact current campaign copy/seed-send approval; no seed or broad campaign was sent."
     },
     {
       "id": "BLOCK-CANARY-AUTH",

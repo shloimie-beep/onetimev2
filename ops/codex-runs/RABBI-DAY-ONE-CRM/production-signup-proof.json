@@ -1,0 +1,66 @@
+{
+  "schema_version": "onetime.rabbi_day_one_crm.production_signup_proof.v1",
+  "generated_at": "2026-07-19T16:57:08.398Z",
+  "endpoint": "POST /api/v1/leads",
+  "first_status": 200,
+  "second_status": 200,
+  "duplicate_submission_on_replay": true,
+  "contact_key": "contact_33c124d1-06fd-41d5-ae36-f8691f9eeaaa",
+  "signup_key": "signup_63036754087564bdc60760f1",
+  "email_hash": "ab736e148aac7175caf6153e4f3c497c0ce92672681f3e64f06e41b38f937b58",
+  "payload_policy": {
+    "operator_owned_email": true,
+    "phone_submitted": false,
+    "reminder_preference": "none",
+    "optional_reminder_consent": false,
+    "whatsapp_consent": false,
+    "raw_values_included": false
+  },
+  "counts": {
+    "contact_rows": 1,
+    "signup_rows": 1,
+    "outbox_rows": 2,
+    "whatsapp_outbox_rows": 0,
+    "raw_value_rows": 0
+  },
+  "outbox": [
+    {
+      "event_type": "family_signup_email_ack.v1",
+      "channel": "email",
+      "status": "pending",
+      "transport_mode": "sink",
+      "attempts": 0
+    },
+    {
+      "event_type": "internal_lead_alert",
+      "channel": "internal_email",
+      "status": "pending",
+      "transport_mode": "sink",
+      "attempts": 0
+    }
+  ],
+  "outbox_after_45s": [
+    {
+      "event_type": "family_signup_email_ack.v1",
+      "channel": "email",
+      "status": "pending",
+      "transport_mode": "sink",
+      "attempts": 0,
+      "delivered_at_present": false
+    },
+    {
+      "event_type": "internal_lead_alert",
+      "channel": "internal_email",
+      "status": "pending",
+      "transport_mode": "sink",
+      "attempts": 0,
+      "delivered_at_present": false
+    }
+  ],
+  "safety": {
+    "raw_email_included": false,
+    "raw_phone_included": false,
+    "provider_mutation_count": 0,
+    "broad_campaign_sends": 0
+  }
+}

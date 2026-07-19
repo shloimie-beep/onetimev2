@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T15:43:28.344Z
+Generated: 2026-07-19T16:58:00.000Z
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -13,10 +13,12 @@ state without depending on local chat memory.
 3. `ops/director/CURRENT-STATE.json`
 4. `ops/director/CAPABILITY-MATRIX.json`
 5. `ops/director/DEPLOYMENTS.json`
-6. `ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md`
-7. `ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md`
-8. `ops/director/PRODUCT-INVARIANTS.md`
-9. `ops/director/DECISION-REGISTER.md`
+6. `ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json`
+7. `ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md`
+8. `ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md`
+9. `ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md`
+10. `ops/director/PRODUCT-INVARIANTS.md`
+11. `ops/director/DECISION-REGISTER.md`
 
 ## Current Truth
 
@@ -34,18 +36,15 @@ state without depending on local chat memory.
 - PR #91 required checks were green when inspected on 2026-07-19.
 - Production `/health` and `/ready` were ok.
 - Staging `/health` and `/ready` were ok.
-- Latest migration from `/ready`:
-  `2203_w13_100_student_gamification`
+- Latest migration from production `/ready`:
+  `2204_w12_100_real_source_crm_apply`
 - Current release run:
-  `ops/codex-runs/ONE-TIME-FINISH-NOW/`
+  `ops/codex-runs/RABBI-DAY-ONE-CRM/`
 - ONE-TIME-FINISH-NOW remediation PR:
   `https://github.com/webcraft-media/onetimev2/pull/92`
-- PR #92 transactional email deployment evidence head:
-  `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`
-- PR #92 advanced to the transactional email deployment evidence head; local
-  full gates passed before deploy, production/staging live smokes passed after
-  deploy, and the final branch head should be read from the PR or
-  `git rev-parse HEAD` after later evidence commits.
+- PR #92 pushed handoff evidence head:
+  `e73b9d5edf38a300faf6c1ddb4929b913137031c`
+- PR #92 deployed runtime remains `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`; the CRM-first evidence after head `e73b9d5edf38a300faf6c1ddb4929b913137031c` records production migration 2204, real CRM import apply, idempotency replay, reconciliation, and one production signup proof.
 
 ## Current Verdict
 
@@ -53,19 +52,18 @@ CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
 ADMIN_ACCESS: ACCEPTED
 PARENT_ACCESS: ACCEPTED
 STUDENT_ACCESS: ACCEPTED
-CRM_REAL_DATA: PREVIEW_READY
+CRM_REAL_DATA: ACCEPTED
 
-The safe core is live, and PR #92 transactional email code/config is deployed to
-staging and production. CRM approval raw, corrected counts-only real-source
-preflight, a guarded local CRM apply writer, protected transactional email
-inputs, current production read-only launch-spine route proof, and the
-transactional email release proof are recorded. `CRM_REAL_DATA` remains
-`PREVIEW_READY` because production apply still requires fresh backup proof JSON,
-created-by user key, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`. The full
-release gate remains blocked by exact private-input/current-proof blockers:
-final production admin access, CRM apply gates, provider canary authorization,
-protected diagnostics token, and the consuming parts of production launch-spine
-proof.
+The safe core is live, PR #92 transactional email code/config is deployed to
+staging and production, and the CRM-first pivot delivered real production CRM
+data. The real-source CRM apply used a fresh protected PostgreSQL 18 backup
+proof, exact operator authorization, production confirmation, active admin actor
+attribution, and idempotency replay. It inserted 1,555 contacts, skipped 4
+existing contacts, recorded 2,505 import-row ledger rows, and queued zero sends.
+The full release gate remains blocked only by the still-separate lanes: fresh
+production final admin/access send or browser smoke, WhatsApp provider canary,
+campaign seed copy/approval, protected diagnostics token, and broader
+launch-spine consuming proof.
 
 The earlier accepted staging runtime proof lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md` and
@@ -83,9 +81,9 @@ owner/admin lifecycle email was provider-delivered to the protected operator
 inbox. Production Railway web `a3a9328c-3fb5-41c6-b8d4-cf402f400ca7` and worker
 `37ce9edf-d7aa-40fc-a013-87dde0f29e72` deployed with protected variables and
 passed `/version`, `/health`, and `/ready`. Production controlled transactional
-send and final admin access were not performed because production has zero
-active owner/admin users; a fresh bootstrap or role-access authorization is
-required before Codex creates or refreshes the administrator access message.
+send and final admin/access browser smoke were not rerun in the CRM import
+slice; prior W13-103 admin acceptance remains protected evidence, and no setup
+link was consumed here.
 
 CRM real-data dry-run evidence lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`,
@@ -96,17 +94,17 @@ corrected pivot dry-run status is `done`; report SHA-256 is
 `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`; it found
 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357
 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, and
-848 manual-review rows. The guarded apply writer is implemented locally and
-accepted with synthetic integration evidence. No production CRM apply was
-performed.
+848 manual-review rows. Production apply evidence lives at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json`,
+`ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json`, and
+`ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json`; production
+signup proof lives at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json`.
 
 CRM production apply readiness evidence lives at
 `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`. It
-confirms source packet, corrected dry-run proof, private authorization, operator
-authorization, idempotency, manual-review handling, and production DB
-configuration are present, then blocks before any write, send, or provider
-mutation because fresh backup proof, created-by user key, and production
-confirmation are still missing.
+is `ready`; the production apply has already been performed exactly once and
+replayed with `database_writes_performed=false`.
 
 Transactional email preflight evidence lives at
 `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`, and release
@@ -114,9 +112,9 @@ evidence lives at
 `ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json`. Protected
 Resend key, webhook secret, domain, sender, reply-to, operator canary
 destination, and private manifest inputs are present and policy-matching.
-Staging controlled transactional email was delivered. Production controlled send
-and final admin access remain blocked by missing active production owner/admin
-actor.
+Staging controlled transactional email was delivered. Production final
+admin/access send remains a separate deliberate action; no broad campaign send
+is authorized from this handoff.
 
 Production launch-spine read-only evidence lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
@@ -150,16 +148,13 @@ under the separate email-inputs gate.
 - Do not perform broad email, WhatsApp, Telegram, or social sends.
 - Do not create live Stripe charges.
 - Do not change DNS.
-- Do not perform production CRM import apply until fresh backup proof JSON,
-  created-by user key, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are all
-  present.
-- Do not create or refresh production administrator access until a fresh
-  bootstrap or role-access authorization supplies an active production
-  owner/admin actor.
-- Do not consume production setup/reset links or submit a production signup
-  lead until the protected launch-spine consume plan, cleanup instructions,
-  exact authorization, production confirmation, and either role-journey inputs
-  or signup-lead input are all present.
+- Do not rerun production CRM import with a different source packet, backup
+  proof, or idempotency key unless an explicit rollback/re-apply plan is created.
+- Do not create or refresh production administrator access, consume setup/reset
+  links, or run authenticated CRM browser smokes unless the operator explicitly
+  approves that current protected action.
+- Do not submit additional production signup leads unless they are
+  operator-owned canaries with cleanup/idempotency recorded.
 - Do not run Zoom, Vimeo, Stripe TEST, WhatsApp, Telegram, Buffer, OpenAI
   helper, or BNA support canaries until protected provider runtime inputs,
   `CANARY-AUTHORIZATION.private.json`, exact operator authorization, and
@@ -172,4 +167,5 @@ under the separate email-inputs gate.
   safety notes.
 - Use `CAPABILITY-MATRIX.json` for the required capability status list.
 - Use `DEPLOYMENTS.json` for Railway production/staging deployment IDs.
-- Use `ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md` for the next exact work.
+- Use `ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md` for the latest CRM-first
+  status.

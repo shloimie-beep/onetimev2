@@ -19,5 +19,14 @@ ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md
 ops/codex-runs/RABBI-DAY-ONE-CRM/CHANGED-FILES.txt
 ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json
 ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json
 ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json
 ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json
+ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json
+ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json
+ops/director/CURRENT-STATE.json
+ops/director/START-HERE.md
+ops/director/CAPABILITY-MATRIX.json

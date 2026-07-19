@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T15:53:34.436Z",
+  "generated_at": "2026-07-19T17:06:47.241Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -29,10 +29,10 @@
     "apply_cli": "scripts/w12-100/data/real-source-preflight.ts --apply",
     "required_exact_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
     "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
-    "production_apply_status": "blocked",
-    "production_apply_blocker": "CRM apply readiness preflight is blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED.",
+    "production_apply_status": "applied",
+    "production_apply_blocker": null,
     "apply_readiness_preflight": {
-      "status": "blocked",
+      "status": "ready",
       "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
       "schema_version": "onetime.rabbi_day_one_crm_apply_readiness_preflight.v1",
       "source_packet_available": true,
@@ -41,28 +41,24 @@
       "private_authorization_manifest_present": true,
       "private_authorization_manifest_readable_json": true,
       "private_authorization_manifest_production_apply_authorized": true,
-      "backup_proof_present": false,
+      "backup_proof_present": true,
       "operator_authorization_present": true,
       "idempotency_key_present": true,
-      "created_by_user_key_present": false,
-      "production_confirmation_present": false,
+      "created_by_user_key_present": true,
+      "production_confirmation_present": true,
       "manual_review_handling_present": true,
       "database_url_configured": true,
       "no_raw_values_in_report": true,
       "no_production_side_effects": true,
-      "blocked_reasons": [
-        "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
-        "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
-        "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
-      ],
+      "blocked_reasons": [],
       "required_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
       "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
-      "generated_at": "2026-07-19T15:53:05.720Z"
+      "generated_at": "2026-07-19T16:11:17.302Z"
     }
   },
   "crm_apply_writer": {
     "status": "accepted",
-    "production_database_writes_performed": false,
+    "production_database_writes_performed": true,
     "external_sends_performed": false,
     "provider_mutation_count": 0,
     "guards": [
@@ -79,6 +75,22 @@
       "synthetic_ledger_rows": 4,
       "synthetic_outbox_events": 0,
       "replay_status": "replayed"
+    },
+    "production_evidence": {
+      "apply_result_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+      "replay_result_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json",
+      "reconcile_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json",
+      "status": "applied",
+      "replay_status": "replayed",
+      "batch_key": "crm_real_source_batch_214a8882392b37e950387f6b",
+      "migration_applied": "2204_w12_100_real_source_crm_apply",
+      "fresh_backup_run_id": "rabbi-day-one-crm-prod-pg18-20260719T160633Z",
+      "backup_deployment_id": "4e58755e-1991-4ce5-b05f-0a5e8b4f25e7",
+      "inserted_contacts": 1555,
+      "skipped_existing_contacts": 4,
+      "import_rows": 2505,
+      "sends_queued": 0,
+      "raw_values_included": false
     }
   },
   "crm_corrected_dry_run": {
@@ -97,8 +109,8 @@
     "quarantined": 0,
     "manual_review_rows": 848,
     "apply_mode_implemented": true,
-    "production_database_connected": false,
-    "database_writes_performed": false,
+    "production_database_connected": true,
+    "database_writes_performed": true,
     "external_actions_count": 0
   },
   "transactional_email": {
@@ -215,16 +227,23 @@
         "latest_migration": "2203_w13_100_student_gamification"
       },
       "queue_preflight": {
-        "account_users": 0,
-        "active_owner_admin_candidates": 0,
+        "account_users": 4,
+        "active_owner_admin_candidates": 2,
         "lifecycle_pending_rows": 0,
         "auth_email_pending_rows": 0,
-        "provider_event_ledger_rows": 0
+        "provider_event_ledger_rows": 0,
+        "note": "Counts-only production read after CRM migration/apply; no raw user values recorded."
       },
       "controlled_test": {
-        "status": "blocked",
+        "status": "not_rerun_in_this_slice",
         "external_send_performed": false,
-        "blocker": "Production has no active owner/admin actor, so a product-native owner/admin lifecycle invitation cannot be issued without fresh bootstrap or role-access authorization."
+        "blocker": "Production transactional send/final admin message still need a deliberate fresh admin-access send decision; existing prior admin acceptance is recorded under W13-103 and no setup link was consumed in this CRM import slice."
+      },
+      "production_smokes_after_crm_apply": {
+        "version": "rabbi-day-one-crm-ed77a04",
+        "ready": "ok",
+        "latest_migration": "2204_w12_100_real_source_crm_apply",
+        "ready_blockers": []
       }
     }
   },
@@ -232,12 +251,23 @@
     "code_status": "accepted",
     "latest_existing_proof_path": "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
     "production_external_send_performed": false,
-    "production_blocker": "Production is deployed for transactional email, but final admin access is blocked because production has zero active owner/admin users. A fresh bootstrap/role-access authorization is required before Codex creates or refreshes the administrator access message."
+    "production_blocker": "Prior W13-103 admin acceptance exists and production has active admin users, but no fresh final admin access email/browser smoke was run in this CRM import slice to avoid consuming protected setup links."
   },
   "signup_to_crm": {
     "code_status": "accepted",
     "tests": ["tests/integration/lead-capture.test.ts"],
-    "production_signup_submitted": false
+    "production_signup_submitted": true,
+    "production_proof": {
+      "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json",
+      "first_status": 200,
+      "replay_duplicate": true,
+      "contact_rows": 1,
+      "signup_rows": 1,
+      "outbox_rows": 2,
+      "whatsapp_outbox_rows": 0,
+      "outbox_transport_mode": "sink",
+      "external_send_performed": false
+    }
   },
   "whatsapp_lead_capture": {
     "code_status": "accepted",
@@ -251,7 +281,7 @@
   "campaign_seed": {
     "status": "ready_for_operator_approval",
     "broad_campaign_status": "not_sent_pending_seed_approval",
-    "seed_blocker": "CRM production apply is not complete, and production admin access/test send is blocked by missing active production owner/admin actor."
+    "seed_blocker": "CRM production apply is complete and the final eligible email audience is 1,357, but no unambiguous current campaign copy plus seed-send approval was identified in this slice. No seed or broad campaign was sent."
   },
   "tests_run": [
     "npm test",
@@ -297,7 +327,20 @@
     "GET staging /version /health /ready after ed77a04 deployment",
     "staging controlled lifecycle transactional email: provider_delivered with Resend API delivered readback",
     "GET production /version /health /ready after ed77a04 deployment",
-    "production queue/user preflight before controlled send"
+    "production queue/user preflight before controlled send",
+    "Railway production PG18 backup proof redeploy 4e58755e-1991-4ce5-b05f-0a5e8b4f25e7 passed for rabbi-day-one-crm-prod-pg18-20260719T160633Z",
+    "npm run db:migrate against production through existing Railway TCP proxy applied 2204_w12_100_real_source_crm_apply",
+    "node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json returned ready",
+    "node --import tsx scripts/w12-100/data/real-source-preflight.ts --apply ... --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json returned applied",
+    "same CRM apply command with same idempotency key returned replayed with database_writes_performed=false",
+    "POST https://join.onetimeonetime.com/api/v1/leads with protected operator-owned email returned 200; replay returned duplicate_submission=true",
+    "GET production /version /health /ready after CRM migration/apply",
+    "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts tests/unit/w12-100-data/real-source-preflight.test.ts passed: 2 files, 6 tests",
+    "npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/lead-capture.test.ts passed: 2 files, 8 tests",
+    "npx prettier --check CRM/director handoff JSON and Markdown files passed",
+    "npm run director:truth:live passed against production and staging /version",
+    "npm run secret:scan passed across 1725 repo text files",
+    "git diff --check passed with Windows line-ending warnings only"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",
@@ -306,16 +349,22 @@
   },
   "external_effects": {
     "staging_database_writes": 1,
-    "production_database_writes": 0,
+    "production_database_writes": 1,
     "external_email_sends": 1,
     "staging_external_email_sends": 1,
     "production_external_email_sends": 0,
     "external_whatsapp_sends": 0,
     "provider_mutations": 0,
     "railway_variable_updates": 64,
-    "railway_deployments_created": 5,
-    "broad_campaign_sends": 0
+    "railway_deployments_created": 6,
+    "broad_campaign_sends": 0,
+    "production_crm_contacts_inserted": 1555,
+    "production_crm_existing_contacts_skipped": 4,
+    "production_crm_import_rows": 2505,
+    "production_signup_submissions": 1,
+    "production_signup_outbox_intents": 2,
+    "railway_backup_proof_deployments_created": 1
   },
-  "current_head": "92e17cedba4e0ad5a99cd132772ff7a4acadb409",
-  "current_head_note": "Pushed evidence head at inspection time; deployed runtime commit remains ed77a04dd24391d5b79be7f839d7f5752a57e0f9."
+  "current_head": "e73b9d5edf38a300faf6c1ddb4929b913137031c",
+  "current_head_note": "Pushed handoff head before this CRM apply evidence commit; deployed runtime remains ed77a04dd24391d5b79be7f839d7f5752a57e0f9 while production schema is migrated through 2204."
 }

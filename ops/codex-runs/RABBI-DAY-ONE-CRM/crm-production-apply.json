@@ -1,0 +1,37 @@
+{
+  "schema_version": "onetime.w12_100_04.real_source_crm_apply.v1",
+  "generated_at": "2026-07-19T16:12:14.427Z",
+  "status": "applied",
+  "blocked_reasons": [],
+  "batch_key": "crm_real_source_batch_214a8882392b37e950387f6b",
+  "target_environment": "production",
+  "dry_run_report_sha256": "93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
+  "approved_source_group_fingerprint": "0bee9ddd75358d7eb987c2581c79ff1e555a848d7830e002c80d3d34cf3e1e32",
+  "counts": {
+    "total_rows": 2505,
+    "unique_identity_count": 1596,
+    "crm_importable": 1559,
+    "writable_candidates": 1559,
+    "inserted_contacts": 1555,
+    "skipped_existing_contacts": 4,
+    "blocked_contact_schema": 0,
+    "blocked_duplicate": 98,
+    "blocked_identity_conflict": 37,
+    "blocked_quarantined": 0,
+    "blocked_invalid": 811,
+    "email_campaign_eligible": 1357,
+    "whatsapp_campaign_eligible": 0,
+    "suppressed": 152,
+    "sends_queued": 0
+  },
+  "safety": {
+    "backup_proof_verified": true,
+    "exact_authorization_verified": true,
+    "raw_values_included": false,
+    "raw_values_printed": false,
+    "database_writes_performed": true,
+    "production_side_effects": true,
+    "external_sends_performed": false,
+    "provider_mutation_count": 0
+  }
+}
