@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T12:21:14.1995821Z",
+  "generated_at": "2026-07-19T13:02:00.527Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -17,8 +17,8 @@
     "isolated_worktree": "C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW",
     "branch": "codex/one-time-finish-now-20260719",
     "branch_base": "origin/release/w13-100-controlled-day-one-20260717T182046Z",
-    "worktree_head": "ee9929008fc0068b3dcf9b86d11e7c21d1331c93",
-    "worktree_head_subject": "chore: record runtime proof follow-up",
+    "worktree_head": "7622cb1a6be1b31fe3e867604c805a1859625ade",
+    "worktree_head_subject": "chore: format staging runtime proof artifacts",
     "canonical_draft_pr": {
       "number": 91,
       "url": "https://github.com/webcraft-media/onetimev2/pull/91",
@@ -36,8 +36,8 @@
       "is_draft": true,
       "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
       "head_ref": "codex/one-time-finish-now-20260719",
-      "head_ref_oid": "ee9929008fc0068b3dcf9b86d11e7c21d1331c93",
-      "checks_at_inspection": "green",
+      "head_ref_oid": "7622cb1a6be1b31fe3e867604c805a1859625ade",
+      "checks_at_inspection": "green at 7622cb1a6be1b31fe3e867604c805a1859625ade before CRM evidence refresh",
       "role": "Release-gate remediation and durable ONE-TIME-FINISH-NOW evidence branch."
     }
   },
@@ -146,7 +146,10 @@
     ],
     "crm_real_data": [
       "OPS-13A provides sanitized source inventory and counts-only preview input.",
-      "No real production CRM import apply is accepted without CRM-IMPORT-AUTHORIZATION.private.json."
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md preserves the operator chat approval exactly.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json passed counts-only real-source preflight with report SHA-256 0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md records sanitized counts, safety assertions, and remaining production-apply blockers.",
+      "A protected private checkpoint manifest exists with dry_run_authorized=true and production_apply_authorized=false; manifest content is not committed or printed."
     ],
     "runtime_deployment_proof_code": [
       "PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93 adds non-secret Railway deployment proof fields to /version.",
@@ -168,8 +171,8 @@
     {
       "id": "BLOCK-CRM-IMPORT-AUTH",
       "lane": "crm_real_data",
-      "reason": "Missing protected CRM-IMPORT-AUTHORIZATION.private.json naming accepted source hashes, tag map, and apply=true.",
-      "scope": "Blocks real CRM import apply only; counts-only preview remains available."
+      "reason": "Operator approval was recorded and the protected checkpoint manifest authorizes only the six-source dry-run. Counts-only real-source preflight passed, but production apply remains blocked by 2,418 manual-review rows, missing exact apply=true acceptance of the dry-run hash/count set, fresh backup/rollback proof, and W12-100 preflight apply mode not implemented.",
+      "scope": "Blocks real CRM import apply only; counts-only preview and dry-run evidence are available."
     },
     {
       "id": "BLOCK-CANARY-AUTH",
@@ -212,28 +215,31 @@
     }
   },
   "validation": {
-    "json_parse": "passed for run and refreshed director JSON files",
-    "director_truth": "passed",
-    "director_truth_live": "passed against production and staging /version",
+    "json_parse": "passed for run, director, capability, and CRM preflight JSON files after CRM evidence refresh",
+    "director_truth": "passed after CRM evidence refresh",
+    "director_truth_live": "passed against production and staging /version after CRM evidence refresh",
     "staging_rollback_rehearsal": "accepted for PR #92 staging candidate; rollback to W13-104 and roll-forward to PR #92 both passed",
     "runtime_deployment_proof": "accepted in staging at PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93; final /version.deployment matched Railway web deployment c464ea23-649b-4c8d-b4af-0d10c5ce3022",
-    "secret_scan": "passed across 1694 repo text files after staging runtime proof evidence refresh",
+    "secret_scan": "passed across 1697 repo text files after CRM evidence refresh",
     "node_check": "passed for scripts/check-director-truth.mjs",
     "eslint": "targeted eslint passed for touched runtime proof files",
-    "unit": "npm run unit passed",
-    "integration": "runtime-version-proof integration test passed",
+    "unit": "real-source-preflight unit test passed in CRM evidence refresh; npm run unit passed earlier in PR #92 proof work",
+    "integration": "real-source-preflight CLI integration test passed in CRM evidence refresh; runtime-version-proof integration passed earlier in PR #92 proof work",
     "build": "npm run build passed",
-    "github_pr_92": "all checks green at ee9929008fc0068b3dcf9b86d11e7c21d1331c93 before staging deploy; rerun pending after evidence refresh commit",
-    "diff_check": "passed with Windows line-ending warnings only"
+    "github_pr_92": "all checks green at 7622cb1a6be1b31fe3e867604c805a1859625ade after staging runtime proof evidence formatting; rerun pending after CRM dry-run evidence refresh commit",
+    "diff_check": "passed after CRM evidence refresh with Windows line-ending warnings only",
+    "crm_real_data_preflight": "passed counts-only dry-run: status done, 6 approved sources, 2,505 total rows, 1,596 unique identities, 3 communication-eligible staged rows, 2,418 manual-review rows, 152 do-not-contact rows, report SHA-256 0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c",
+    "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
+    "prettier_check": "passed for touched CRM/director/run Markdown and JSON files"
   },
   "resume": {
     "primary_resume_file": "ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md",
     "private_inputs_needed": [
       "C:/Users/User/.onetime-w13-104-private/EMAIL-INPUTS.private.json",
-      "C:/Users/User/.onetime-w13-104-private/CRM-IMPORT-AUTHORIZATION.private.json",
+      "C:/Users/User/.onetime-w13-104-private/CRM-IMPORT-AUTHORIZATION.private.json with production_apply_authorized/apply=true after dry-run hash/count acceptance, manual-review terminal decisions, and fresh backup/rollback proof",
       "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
       "OPERATIONS_PROBE_TOKEN in protected production/staging runtime config"
     ],
-    "next_executable_lane_without_private_inputs": "Current production launch-spine proof remains. Provider/external-effect lanes still require private manifests; do not perform production data writes or sends without exact authorization."
+    "next_executable_lane_without_private_inputs": "Current production launch-spine proof remains. CRM real-source dry-run is complete, but apply/provider/external-effect lanes still require exact protected manifests; do not perform production data writes or sends without exact authorization."
   }
 }

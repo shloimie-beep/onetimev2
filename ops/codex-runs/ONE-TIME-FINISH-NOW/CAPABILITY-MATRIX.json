@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T12:21:14.1995821Z",
+  "generated_at": "2026-07-19T12:57:16.363Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -17,7 +17,7 @@
     "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
     "production_version": "w13-104-public-cls-688fc70",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
-    "evidence_head": "e3d3736546f48b3834d6698838befe20884005f1",
+    "evidence_head": "7622cb1a6be1b31fe3e867604c805a1859625ade",
     "run_state": "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
   },
   "capabilities": [
@@ -53,9 +53,11 @@
       "status": "DEPLOYED",
       "evidence": [
         "ops/codex-runs/W13-104/FINAL-REPORT.md",
-        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json"
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json"
       ],
-      "notes": "CRM surfaces and domain services are deployed; real import apply is blocked by private authorization."
+      "notes": "CRM surfaces and domain services are deployed; operator approval and counts-only real-source dry-run are recorded. Production import apply remains blocked by manual-review and explicit apply gates."
     },
     {
       "id": "real_data",
@@ -63,9 +65,12 @@
       "runtime_mode": "PREVIEW_READY",
       "evidence": [
         "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
-        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json"
+        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md"
       ],
-      "blocker": "Missing protected CRM-IMPORT-AUTHORIZATION.private.json with accepted source hashes and apply authorization."
+      "blocker": "Operator approval was recorded and the protected checkpoint manifest authorizes only the six-source dry-run. Counts-only real-source preflight passed, but production apply remains blocked by 2,418 manual-review rows, missing exact apply=true acceptance of the dry-run hash/count set, fresh backup/rollback proof, and W12-100 preflight apply mode not implemented."
     },
     {
       "id": "communications",

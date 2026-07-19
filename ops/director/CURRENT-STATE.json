@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T12:21:14.1995821Z",
+  "generated_at": "2026-07-19T12:57:16.363Z",
   "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -38,9 +38,9 @@
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
     "head_ref": "codex/one-time-finish-now-20260719",
-    "head_ref_oid": "ee9929008fc0068b3dcf9b86d11e7c21d1331c93",
-    "checks_at_inspection": "green",
-    "note": "Runtime deployment proof and PR #92 staging rollback/roll-forward are accepted; production launch-spine and private-input blockers remain."
+    "head_ref_oid": "7622cb1a6be1b31fe3e867604c805a1859625ade",
+    "checks_at_inspection": "green at 7622cb1a6be1b31fe3e867604c805a1859625ade before CRM evidence refresh",
+    "note": "Runtime deployment proof and PR #92 staging rollback/roll-forward are accepted. CRM approval and counts-only real-source preflight are recorded; production launch-spine and exact private apply/provider/diagnostic gates remain blocked."
   },
   "live_readback": {
     "production": {
@@ -73,7 +73,10 @@
     "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md",
-    "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json"
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md"
   ],
   "blockers": [
     {
@@ -84,7 +87,7 @@
     {
       "id": "BLOCK-CRM-IMPORT-AUTH",
       "lane": "crm_real_data",
-      "reason": "Missing protected CRM-IMPORT-AUTHORIZATION.private.json."
+      "reason": "Operator approval was recorded and the protected checkpoint manifest authorizes only the six-source dry-run. Counts-only real-source preflight passed, but production apply remains blocked by 2,418 manual-review rows, missing exact apply=true acceptance of the dry-run hash/count set, fresh backup/rollback proof, and W12-100 preflight apply mode not implemented."
     },
     {
       "id": "BLOCK-CANARY-AUTH",

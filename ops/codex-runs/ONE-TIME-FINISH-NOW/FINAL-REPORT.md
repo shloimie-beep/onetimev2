@@ -1,6 +1,6 @@
 # ONE-TIME-FINISH-NOW Final Report
 
-Generated: 2026-07-19T15:22:50.497+03:00
+Generated: 2026-07-19T15:57:22.8286523+03:00
 
 CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
 ADMIN_ACCESS: ACCEPTED
@@ -12,11 +12,12 @@ CRM_REAL_DATA: PREVIEW_READY
 
 The One Time core runtime is already live and healthy on production at W13-104.
 The PR #92 staging candidate has now passed runtime deployment proof plus
-rollback/roll-forward proof, but the full release definition in the attached
+rollback/roll-forward proof. CRM approval raw and counts-only real-source
+preflight are now recorded, but the full release definition in the attached
 prompt cannot be truthfully closed yet. The remaining gaps are exact
-safety-gate blockers: normal transactional email configuration, protected CRM
-import authorization, provider canary authorization, protected diagnostics
-token, and current production launch-spine proof.
+safety-gate blockers: normal transactional email configuration, CRM production
+apply gates, provider canary authorization, protected diagnostics token, and
+current production launch-spine proof.
 
 This is not a product-code failure. The app is fail-closed in the right places.
 Missing provider/private inputs block only their lanes.
@@ -78,15 +79,37 @@ Transactional email is still blocked. Missing input:
 `EMAIL-INPUTS.private.json`, plus protected Resend/sender/reply-to runtime
 values.
 
-CRM real data is preview-ready only. OPS-13A contains sanitized source inventory
-and counts-only preview input, but no real import may be applied until
-`CRM-IMPORT-AUTHORIZATION.private.json` identifies the accepted source hashes,
-tag map, and apply authorization.
+CRM real data is preview-ready only. The operator chat approval was preserved
+exactly in `CRM-IMPORT-APPROVAL-RAW.md`, a protected private checkpoint manifest
+was created outside git with `dry_run_authorized=true` and
+`production_apply_authorized=false`, and the counts-only real-source preflight
+completed with status `done`.
+
+CRM preflight summary:
+
+- Report JSON:
+  `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`
+- Report SHA-256:
+  `0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`
+- Approved source files: 6
+- Total rows processed counts-only: 2,505
+- Unique identity count: 1,596
+- Communication-eligible staged rows: 3
+- Do-not-contact rows: 152
+- Manual-review rows: 2,418
+
+No real import may be applied until the protected manifest explicitly accepts
+the dry-run hash/count set with `apply=true`, manual-review rows have terminal
+decisions, fresh backup/rollback proof is recorded, and the apply path is
+implemented.
 
 ## Blockers
 
 - Email: missing protected email inputs and runtime variables.
-- CRM apply: missing protected import authorization manifest.
+- CRM apply: operator approval and dry-run preflight are recorded, but
+  production apply remains blocked by 2,418 manual-review rows, missing exact
+  `apply=true` hash/count acceptance, fresh backup/rollback proof, and
+  `apply_mode_implemented=false` in the W12-100 preflight.
 - Provider canaries: missing protected canary authorization manifest.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
 - Launch spine: W13-104 production signup submit and current role browser
@@ -99,7 +122,9 @@ for the initial W13-104 rollback rehearsal and six for the accepted PR #92
 runtime proof, rollback, and roll-forward sequence. It performed no production
 deployment, production database write, CRM import apply, email send, WhatsApp
 or Telegram send, Stripe charge, DNS change, provider mutation, or secret
-print.
+print. The CRM work in this refresh was counts-only local preflight and private
+checkpoint recording; production database and external systems were not
+mutated.
 
 The W13-104 evidence inspected during this run records the prior successful
 staging and production deployments.
@@ -109,35 +134,48 @@ Railway deployment IDs and image digests remained unchanged.
 
 ## Validation
 
-- JSON parse check passed for run and refreshed director JSON files.
-- `npm run director:truth` passed after the staging runtime proof evidence
-  refresh.
+- JSON parse check passed for run, director, capability, and CRM preflight JSON
+  files after the CRM evidence refresh.
+- `npm run director:truth` passed after the CRM evidence refresh.
 - `npm run director:truth:live` passed against production and staging
-  `/version` after the staging runtime proof evidence refresh.
-- `npm run secret:scan` passed across 1694 repo text files after the staging
-  runtime proof evidence refresh.
+  `/version` after the CRM evidence refresh.
+- `npm run secret:scan` passed across 1697 repo text files after the CRM
+  evidence refresh.
+- `npx --no-install prettier --check` passed for touched CRM/director/run
+  Markdown and JSON files.
 - `npm ci` passed from the lockfile.
 - Targeted ESLint passed for touched runtime proof files.
 - `npx --no-install vitest run scripts/w12-100/deploy/railway-launch-toolkit.test.ts`
+  passed.
+- `npx --no-install vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/real-source-preflight.test.ts`
+  passed.
+- `npx --no-install vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts`
   passed.
 - `npm run integration -- tests/integration/runtime-version-proof.test.ts`
   passed.
 - `npm run unit` passed.
 - `npm run build` passed.
 - PR #92 checks passed at
-  `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`: Node 24 verify, OPS-06,
+  `7622cb1a6be1b31fe3e867604c805a1859625ade`: Node 24 verify, OPS-06,
   PostgreSQL 18 assurance/restore, and PostgreSQL 16 assurance. Rerun is
-  pending after this evidence refresh commit.
+  pending after this CRM evidence refresh commit.
 - `node --check scripts/check-director-truth.mjs` passed.
 - Staging smoke routes passed for the PR #92 deploy, W13-104 rollback, and PR
   #92 roll-forward: `/version`, `/health`, `/ready`, `/`, `/signup`, `/login`,
   `/activate`, and `/forgot-password`.
 - PR #92 staging runtime proof and rollback/roll-forward are recorded as
   `accepted_for_pr92_staging_candidate`.
+- CRM real-data preflight passed counts-only with status `done`, no production
+  side effects, and report SHA-256
+  `0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`.
+- CRM private checkpoint manifest was created outside git with
+  `dry_run_authorized=true` and `production_apply_authorized=false`; contents
+  were not printed or committed.
 - `npx --no-install eslint scripts/check-director-truth.mjs` did not run:
   local `node_modules` is absent and `npx` resolved an incompatible global
   ESLint before loading `@eslint/js`.
-- `git diff --check` passed with Windows line-ending warnings only.
+- `git diff --check` passed after the CRM evidence refresh with Windows
+  line-ending warnings only.
 
 ## Files Created Or Refreshed
 
@@ -147,6 +185,9 @@ Railway deployment IDs and image digests remained unchanged.
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/*`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md`

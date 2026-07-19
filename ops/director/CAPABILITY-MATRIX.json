@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T12:21:14.1995821Z",
+  "generated_at": "2026-07-19T12:57:16.363Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -36,7 +36,8 @@
     {
       "id": "real_data",
       "status": "BLOCKED",
-      "runtime_mode": "PREVIEW_READY"
+      "runtime_mode": "PREVIEW_READY",
+      "reason": "CRM approval raw and counts-only preflight are recorded; runtime mode remains PREVIEW_READY because production apply is still blocked by 2,418 manual-review rows, exact apply=true hash/count acceptance, fresh backup/rollback proof, and missing apply implementation."
     },
     {
       "id": "communications",

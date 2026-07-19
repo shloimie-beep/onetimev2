@@ -56,3 +56,16 @@ OPS-13A gives sanitized source inventory and counts-only preflight evidence, but
 there is no protected apply authorization manifest.
 
 Decision: report `CRM_REAL_DATA: PREVIEW_READY` and block real apply.
+
+## DEC-OT-FINISH-007 - Accept CRM chat approval only up to dry-run checkpoint
+
+The operator wrote `autorization for crm impot aproved` in Codex chat. The raw
+wording is preserved exactly in
+`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`.
+
+Decision: treat the statement as authorization to create the protected CRM
+checkpoint manifest and run the OPS-13A six-source counts-only dry-run. Do not
+treat it as production import apply approval, because the dry-run produced 2,418
+manual-review rows and production apply still requires exact dry-run hash/count
+acceptance with protected `apply=true`, terminal review decisions, fresh
+backup/rollback proof, and an implemented fail-closed apply path.

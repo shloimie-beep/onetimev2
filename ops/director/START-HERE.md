@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T15:22:50.497+03:00
+Generated: 2026-07-19T15:57:22.8286523+03:00
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -40,10 +40,10 @@ state without depending on local chat memory.
   `ops/codex-runs/ONE-TIME-FINISH-NOW/`
 - ONE-TIME-FINISH-NOW remediation PR:
   `https://github.com/webcraft-media/onetimev2/pull/92`
-- PR #92 runtime-proof source head:
-  `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`
-- PR #92 checks were green at `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`
-  before the accepted staging proof.
+- PR #92 latest accepted evidence head before this CRM refresh:
+  `7622cb1a6be1b31fe3e867604c805a1859625ade`
+- PR #92 checks were green at `7622cb1a6be1b31fe3e867604c805a1859625ade`
+  after the staging runtime proof evidence formatting commit.
 
 ## Current Verdict
 
@@ -54,8 +54,12 @@ STUDENT_ACCESS: ACCEPTED
 CRM_REAL_DATA: PREVIEW_READY
 
 The safe core is live, and PR #92 staging rollback/roll-forward is accepted for
-the staging candidate. The full release gate remains blocked by exact
-private-input/current-proof blockers: email inputs, CRM import authorization,
+the staging candidate. CRM approval raw and counts-only real-source preflight
+are now recorded, but `CRM_REAL_DATA` remains `PREVIEW_READY` because production
+apply still requires manual-review decisions, exact dry-run hash/count
+acceptance with protected `apply=true`, fresh backup/rollback proof, and an
+implemented fail-closed apply path. The full release gate remains blocked by
+exact private-input/current-proof blockers: email inputs, CRM apply gates,
 provider canary authorization, protected diagnostics token, and current
 production launch-spine proof.
 
@@ -72,6 +76,15 @@ those values are environment-pinned. Railway did not populate
 exact detached deploy worktrees, deployment CLI messages, Railway deployment
 IDs, image digests, and `/version.deployment` readback.
 
+CRM real-data dry-run evidence lives at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`,
+`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`, and
+`ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md`. The
+preflight status is `done`; report SHA-256 is
+`0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`; it found
+3 communication-eligible staged rows, 152 do-not-contact rows, and 2,418
+manual-review rows. No production CRM apply was performed.
+
 ## What Not To Do From This Handoff
 
 - Do not print or commit secrets, private manifests, setup/reset links,
@@ -80,7 +93,10 @@ IDs, image digests, and `/version.deployment` readback.
 - Do not perform broad email, WhatsApp, Telegram, or social sends.
 - Do not create live Stripe charges.
 - Do not change DNS.
-- Do not perform production CRM import apply without the protected manifest.
+- Do not perform production CRM import apply until the protected manifest
+  explicitly accepts the dry-run hash/count set with `apply=true`, manual-review
+  rows have terminal decisions, fresh backup/rollback proof is recorded, and the
+  apply path is implemented.
 - Do not run Zoom, Vimeo, Stripe TEST, WhatsApp, Telegram, Buffer, OpenAI
   helper, or BNA support canaries without the protected manifest.
 - Do not use the dirty BNA checkout for One Time product edits.
