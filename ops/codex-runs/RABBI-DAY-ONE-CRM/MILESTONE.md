@@ -4,7 +4,8 @@ Status: real One Time CRM import delivered to production; production signup proo
 
 Branch: `codex/one-time-finish-now-20260719`  
 PR: `https://github.com/webcraft-media/onetimev2/pull/92`  
-Current pushed head before this evidence commit: `e73b9d5edf38a300faf6c1ddb4929b913137031c`
+CRM production evidence commit:
+`25c271576be675c36261465e51d4f176a923b007`
 
 ## Delivered
 
@@ -36,3 +37,8 @@ Current pushed head before this evidence commit: `e73b9d5edf38a300faf6c1ddb4929b
 - Transactional email release proof: `ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json`
 
 External effects this slice: one Railway backup-proof deployment, one production DB migration, one production CRM import apply, one production signup submit, zero production external email sends from signup, zero WhatsApp sends, zero provider mutations, zero broad campaign sends.
+
+GitHub Actions on the CRM production evidence commit completed as failure for
+all five PR #92 jobs, but the gh-fix-ci inspector reported job logs unavailable
+(`log not found`) for every job id. Local validation and production smokes
+passed.

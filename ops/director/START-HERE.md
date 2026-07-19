@@ -42,9 +42,13 @@ state without depending on local chat memory.
   `ops/codex-runs/RABBI-DAY-ONE-CRM/`
 - ONE-TIME-FINISH-NOW remediation PR:
   `https://github.com/webcraft-media/onetimev2/pull/92`
-- PR #92 pushed handoff evidence head:
-  `e73b9d5edf38a300faf6c1ddb4929b913137031c`
-- PR #92 deployed runtime remains `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`; the CRM-first evidence after head `e73b9d5edf38a300faf6c1ddb4929b913137031c` records production migration 2204, real CRM import apply, idempotency replay, reconciliation, and one production signup proof.
+- PR #92 CRM production evidence commit:
+  `25c271576be675c36261465e51d4f176a923b007`
+- PR #92 deployed runtime remains `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`; the CRM-first evidence at commit `25c271576be675c36261465e51d4f176a923b007` records production migration 2204, real CRM import apply, idempotency replay, reconciliation, and one production signup proof.
+- GitHub Actions on that CRM production evidence commit completed as failure for
+  all five PR #92 jobs, but the gh-fix-ci inspector reported job logs
+  unavailable (`log not found`) for every job id. Local validation and
+  production smokes passed.
 
 ## Current Verdict
 

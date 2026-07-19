@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T17:06:47.241Z",
+  "generated_at": "2026-07-19T17:10:21.794Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -340,7 +340,8 @@
     "npx prettier --check CRM/director handoff JSON and Markdown files passed",
     "npm run director:truth:live passed against production and staging /version",
     "npm run secret:scan passed across 1725 repo text files",
-    "git diff --check passed with Windows line-ending warnings only"
+    "git diff --check passed with Windows line-ending warnings only",
+    "python gh-fix-ci inspect_pr_checks.py --repo . --pr 92 --json returned log_unavailable for all five GitHub Actions checks on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",
@@ -365,6 +366,19 @@
     "production_signup_outbox_intents": 2,
     "railway_backup_proof_deployments_created": 1
   },
-  "current_head": "e73b9d5edf38a300faf6c1ddb4929b913137031c",
-  "current_head_note": "Pushed handoff head before this CRM apply evidence commit; deployed runtime remains ed77a04dd24391d5b79be7f839d7f5752a57e0f9 while production schema is migrated through 2204."
+  "current_head": "25c271576be675c36261465e51d4f176a923b007",
+  "current_head_note": "CRM production evidence commit; latest PR #92 branch head may include later handoff/status-only commits, so use git rev-parse HEAD or PR #92 for the current head.",
+  "github_actions": {
+    "crm_production_evidence_head": "25c271576be675c36261465e51d4f176a923b007",
+    "status": "failed_log_unavailable",
+    "checks": [
+      "Node 24 verify",
+      "OPS-06 deterministic checks",
+      "PostgreSQL 18 assurance and restore clone",
+      "PostgreSQL 16 assurance harness",
+      "PostgreSQL 16 learner-seat proof"
+    ],
+    "inspector": "gh-fix-ci inspect_pr_checks.py --json",
+    "summary": "All five GitHub Actions checks completed as failure on the CRM production evidence commit, but job logs were unavailable/log not found for each job id; local validation and production smokes passed."
+  }
 }

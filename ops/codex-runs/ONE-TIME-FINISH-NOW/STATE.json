@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T17:06:47.242Z",
+  "generated_at": "2026-07-19T17:10:21.794Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -17,8 +17,8 @@
     "isolated_worktree": "C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW",
     "branch": "codex/one-time-finish-now-20260719",
     "branch_base": "origin/release/w13-100-controlled-day-one-20260717T182046Z",
-    "worktree_head": "e73b9d5edf38a300faf6c1ddb4929b913137031c",
-    "worktree_head_subject": "chore: record transactional email deployment proof",
+    "worktree_head": "25c271576be675c36261465e51d4f176a923b007",
+    "worktree_head_subject": "chore: record crm production import delivery",
     "canonical_draft_pr": {
       "number": 91,
       "url": "https://github.com/webcraft-media/onetimev2/pull/91",
@@ -36,11 +36,11 @@
       "is_draft": true,
       "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
       "head_ref": "codex/one-time-finish-now-20260719",
-      "head_ref_oid": "e73b9d5edf38a300faf6c1ddb4929b913137031c",
-      "checks_at_inspection": "GitHub Actions on prior pushed PR #92 heads reported the same platform/pre-step failure pattern with steps/logs unavailable in the GitHub job payload; local validation and live smokes passed. Recheck current head after the CRM production evidence commit.",
+      "head_ref_oid": "25c271576be675c36261465e51d4f176a923b007",
+      "checks_at_inspection": "GitHub Actions on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007 completed as failure for all five jobs, with job logs unavailable/log not found for each job id through the gh-fix-ci inspector; local validation and production smokes passed. Use PR #92 for the current branch head after later handoff/status commits.",
       "role": "Release-gate remediation and durable ONE-TIME-FINISH-NOW evidence branch."
     },
-    "worktree_head_note": "This was the pushed evidence head immediately before the CRM production evidence commit; use git rev-parse HEAD or PR #92 for the current branch head."
+    "worktree_head_note": "This records the CRM production evidence commit; use git rev-parse HEAD or PR #92 for the latest branch head after follow-up handoff/status commits."
   },
   "raw_prompt": {
     "source_path": "C:/Users/User/.codex/attachments/bac984fb-2e71-49d4-a897-1066788fd6c3/pasted-text.txt",
@@ -301,7 +301,7 @@
     "unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts tests/unit/w12-100-data/real-source-preflight.test.ts passed: 2 files, 6 tests",
     "integration": "npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/lead-capture.test.ts passed: 2 files, 8 tests",
     "build": "npm run build passed",
-    "github_pr_92": "GitHub Actions on pushed head 92e17cedba4e0ad5a99cd132772ff7a4acadb409 reported the same platform/pre-step failure pattern as prior PR #92 heads: all five jobs completed as failure with steps/logs unavailable in the GitHub job payload; local validation and live smokes passed.",
+    "github_pr_92": "GitHub Actions on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007 completed as failure for all five jobs, with job logs unavailable/log not found for each job id through the gh-fix-ci inspector; local validation and production smokes passed.",
     "diff_check": "passed after CRM production evidence handoff refresh with Windows line-ending warnings only",
     "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
