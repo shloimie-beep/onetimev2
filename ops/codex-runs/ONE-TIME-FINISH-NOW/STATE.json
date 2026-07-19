@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T17:10:21.794Z",
+  "generated_at": "2026-07-19T17:19:44.167Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -246,8 +246,8 @@
     {
       "id": "BLOCK-CAMPAIGN-SEED-APPROVAL",
       "lane": "campaign_seed",
-      "reason": "Real CRM production apply is complete. Campaign seed is waiting on one exact current campaign copy/seed-send approval; no seed or broad campaign was sent.",
-      "scope": "Blocks campaign seed and broad campaign sends only."
+      "reason": "Campaign seed approval packet is ready with exact proposed copy and required approval statement; no seed or broad campaign was sent. Awaiting operator approval statement and ONE-TIME-CAMPAIGN-SEED-OK before one protected seed send.",
+      "scope": "Blocks seed and broad campaign sends only; exact seed approval packet is ready."
     },
     {
       "id": "BLOCK-CANARY-AUTH",
@@ -292,26 +292,26 @@
   "validation": {
     "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, launch-spine route-readback, launch-spine consume-readiness, and provider canary readiness JSON files after provider canary readiness preflight",
     "director_truth": "passed after transactional email deployment evidence refresh",
-    "director_truth_live": "passed against production and staging /version after CRM production evidence handoff refresh",
+    "director_truth_live": "passed against production and staging /version after campaign seed approval packet handoff refresh",
     "staging_rollback_rehearsal": "accepted for PR #92 staging candidate; rollback to W13-104 and roll-forward to PR #92 both passed",
     "runtime_deployment_proof": "accepted in staging at PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93; final /version.deployment matched Railway web deployment c464ea23-649b-4c8d-b4af-0d10c5ce3022",
-    "secret_scan": "passed across 1725 repo text files after CRM production evidence handoff refresh",
+    "secret_scan": "passed across 1729 repo text files after campaign seed approval packet generator",
     "node_check": "passed for scripts/check-director-truth.mjs",
     "eslint": "targeted eslint passed for touched runtime proof files",
     "unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts tests/unit/w12-100-data/real-source-preflight.test.ts passed: 2 files, 6 tests",
     "integration": "npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/lead-capture.test.ts passed: 2 files, 8 tests",
     "build": "npm run build passed",
     "github_pr_92": "GitHub Actions on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007 completed as failure for all five jobs, with job logs unavailable/log not found for each job id through the gh-fix-ci inspector; local validation and production smokes passed.",
-    "diff_check": "passed after CRM production evidence handoff refresh with Windows line-ending warnings only",
+    "diff_check": "passed after campaign seed approval packet generator with Windows line-ending warnings only",
     "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
-    "prettier_check": "passed for touched CRM, director, and run Markdown/JSON files",
+    "prettier_check": "passed for touched campaign, CRM, director, and run Markdown/JSON files",
     "production_launch_spine_readonly": "passed refreshed current production GET-only route readback: 16/16 checks passed, no form submits, no setup/reset links consumed, no production writes, route-readback SHA-256 120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9",
     "ops06_production_synthetic_probes": "expected blocked status after refresh: public/login/readiness/private-denial probes passed and protected diagnostics blocked by missing OPERATIONS_PROBE_TOKEN, synthetic-probes SHA-256 7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a",
     "launch_spine_privacy_scan": "passed for synthetic-probes.json and route-readback.json with route-name-aware private-data patterns",
     "email_inputs_preflight": "ready: protected Resend/sender/reply-to/canary/private manifest inputs present without raw values; staging controlled transactional email delivered; production configured and deployed.",
-    "typecheck": "npm run typecheck passed after provider canary readiness preflight",
-    "lint": "npm run lint passed after provider canary readiness preflight",
+    "typecheck": "npm run typecheck passed after campaign seed approval packet generator",
+    "lint": "npm run lint passed after campaign seed approval packet generator",
     "crm_apply_readiness_preflight": "ready: source packet, corrected dry-run proof, private/operator authorization, fresh backup proof, idempotency, created-by user key, manual-review handling, production DB configuration, and production confirmation are present; no blockers.",
     "launch_spine_consume_readiness_preflight": "blocked safely with refreshed current read-only route proof and W13-103 role baseline accepted; protected consume plan, cleanup instructions, operator authorization, production confirmation, role journey inputs, and signup lead input remain absent.",
     "launch_spine_consume_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-launch/launch-spine-consume-readiness-preflight.test.ts passed after refreshed read-only proof",
@@ -320,12 +320,14 @@
     "transactional_email_release": "staging controlled transactional email provider_delivered; production web/worker deployed and smoked; production controlled send/final admin browser smoke were not rerun in this CRM import slice.",
     "crm_apply_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts passed",
     "crm_production_apply": "applied once with idempotency replay: 1,555 inserted contacts, 4 skipped existing contacts, 2,505 import rows, zero sends queued, zero provider mutations.",
-    "production_signup_to_crm": "accepted: protected operator-owned production signup returned 200 twice with idempotent replay, one contact, one signup, two sink outbox intents, and zero external sends."
+    "production_signup_to_crm": "accepted: protected operator-owned production signup returned 200 twice with idempotent replay, one contact, one signup, two sink outbox intents, and zero external sends.",
+    "campaign_seed_approval_packet": "ready_for_operator_approval: exact proposed copy, snapshot hash, required seed approval statement, and zero-send safety evidence recorded in ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+    "campaign_seed_approval_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-campaign/campaign-seed-approval-packet.test.ts passed: 1 file, 2 tests"
   },
   "resume": {
     "primary_resume_file": "ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md",
     "private_inputs_needed": [
-      "Exact current campaign copy and seed-send approval before any campaign seed or broad campaign send.",
+      "Operator approval for the exact campaign seed packet: APPROVE_ONE_TIME_CAMPAIGN_SEED:6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5:1357:email:seed-only plus ONE-TIME-CAMPAIGN-SEED-OK before any seed send; broad campaign still requires separate approval.",
       "Fresh production final admin/access send or authenticated CRM browser-smoke authorization if that lane should be rerun.",
       "Fresh bootstrap or role-access authorization for a production owner/admin actor before final production admin access or controlled production transactional email send.",
       "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",

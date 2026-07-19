@@ -1,13 +1,13 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T17:10:21.794Z",
+  "generated_at": "2026-07-19T17:17:46.468Z",
   "current_run": "ops/codex-runs/RABBI-DAY-ONE-CRM",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
     "remote": "https://github.com/webcraft-media/onetimev2.git"
   },
   "release_truth": {
-    "status": "crm_real_data_delivered_external_lanes_pending",
+    "status": "crm_real_data_delivered_campaign_seed_ready_external_lanes_pending",
     "CORE_RELEASE": "BLOCKED_BY_CORE_SAFETY_GATE",
     "ADMIN_ACCESS": "ACCEPTED",
     "PARENT_ACCESS": "ACCEPTED",
@@ -105,7 +105,7 @@
     {
       "id": "BLOCK-CAMPAIGN-SEED-APPROVAL",
       "lane": "campaign_seed",
-      "reason": "Real CRM production apply is complete. Campaign seed is waiting on one exact current campaign copy/seed-send approval; no seed or broad campaign was sent."
+      "reason": "Campaign seed approval packet is ready with exact proposed copy and required approval statement; no seed or broad campaign was sent. Awaiting operator approval statement and ONE-TIME-CAMPAIGN-SEED-OK before one protected seed send."
     },
     {
       "id": "BLOCK-CANARY-AUTH",
@@ -143,5 +143,15 @@
       "PostgreSQL 16 learner-seat proof"
     ],
     "summary": "All five GitHub Actions checks completed as failure on the CRM production evidence commit, but job logs were unavailable/log not found for each job id; local validation and production smokes passed."
+  },
+  "campaign_seed": {
+    "status": "ready_for_operator_approval",
+    "packet_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+    "markdown_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md",
+    "snapshot_hash": "6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5",
+    "required_operator_approval_statement": "APPROVE_ONE_TIME_CAMPAIGN_SEED:6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5:1357:email:seed-only",
+    "required_operator_confirmation": "ONE-TIME-CAMPAIGN-SEED-OK",
+    "seed_send_performed": false,
+    "broad_campaign_sends": 0
   }
 }

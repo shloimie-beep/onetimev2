@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.rabbi_day_one_transactional_email_release.v1",
-  "generated_at": "2026-07-19T15:43:28.344Z",
+  "generated_at": "2026-07-19T17:14:06.418Z",
   "branch": "codex/one-time-finish-now-20260719",
   "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
   "staging": {
@@ -68,19 +68,20 @@
       "version": "rabbi-day-one-crm-ed77a04",
       "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
       "ready_blockers": [],
-      "latest_migration": "2203_w13_100_student_gamification"
+      "latest_migration": "2204_w12_100_real_source_crm_apply"
     },
     "queue_preflight": {
-      "account_users": 0,
-      "active_owner_admin_candidates": 0,
+      "account_users": 4,
+      "active_owner_admin_candidates": 2,
       "lifecycle_pending_rows": 0,
       "auth_email_pending_rows": 0,
-      "provider_event_ledger_rows": 0
+      "provider_event_ledger_rows": 0,
+      "note": "Counts-only production read after CRM migration/apply showed active administrator candidates; no raw user values recorded."
     },
     "controlled_test": {
-      "status": "blocked",
+      "status": "not_rerun_in_crm_import_slice",
       "external_send_performed": false,
-      "blocker": "Production has no active owner/admin actor, so a product-native owner/admin lifecycle invitation cannot be issued without fresh bootstrap or role-access authorization."
+      "blocker": "Production transactional send/final admin message still need a deliberate fresh admin-access send decision; existing prior admin acceptance is recorded under W13-103 and no setup link was consumed in this CRM import slice."
     }
   },
   "safety": {
@@ -88,8 +89,11 @@
     "secrets_committed": false,
     "generic_provider_campaign_sends_enabled": false,
     "broad_campaign_sends": 0,
-    "production_crm_import_performed": false,
+    "production_crm_import_performed": true,
     "production_email_sends_performed": 0,
-    "staging_email_sends_performed": 1
+    "staging_email_sends_performed": 1,
+    "production_crm_import_evidence": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+    "production_signup_to_crm_performed": true,
+    "production_signup_to_crm_evidence": "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"
   }
 }

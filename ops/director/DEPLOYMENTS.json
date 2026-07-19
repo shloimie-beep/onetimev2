@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.deployments.v2",
-  "generated_at": "2026-07-19T15:47:39.209Z",
+  "generated_at": "2026-07-19T17:14:06.418Z",
   "production": {
     "url": "https://join.onetimeonetime.com",
     "project": "one-time-production",
@@ -21,7 +21,7 @@
     "worker_digest": "sha256:69e95b261899044411e252327e89e570b2d71ab60578eb0f7ef8890f28a1fc1c",
     "database_service": "Postgres-j9Pi",
     "database_service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
-    "latest_migration": "2203_w13_100_student_gamification",
+    "latest_migration": "2204_w12_100_real_source_crm_apply",
     "route_readback": {
       "/version": 200,
       "/health": 200,
@@ -31,7 +31,10 @@
       "ops/codex-runs/W13-104/DEPLOYMENT.json",
       "ops/codex-runs/W13-104/evidence/live-smoke.json",
       "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json",
-      "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"
     ]
   },
   "staging": {
@@ -77,13 +80,17 @@
   "external_effects_this_run": {
     "production_deployments": 3,
     "staging_deployments": 2,
-    "database_writes": 1,
+    "database_writes": 3,
     "provider_mutations": 0,
     "sends": 1,
     "dns_changes": 0,
-    "database_writes_scope": "staging lifecycle invitation/test only; production database writes were 0",
-    "production_database_writes": 0,
-    "sends_scope": "one staging controlled transactional email; production sends were 0",
-    "production_sends": 0
+    "database_writes_scope": "one staging lifecycle invitation/test, one production CRM import apply, and one protected operator-owned production signup-to-CRM canary; row-level counts live in RABBI-DAY-ONE-CRM evidence files",
+    "production_database_writes": 2,
+    "sends_scope": "one staging controlled transactional email; production email/WhatsApp/campaign sends were 0",
+    "production_sends": 0,
+    "production_crm_contacts_inserted": 1555,
+    "production_crm_existing_contacts_skipped": 4,
+    "production_signup_submissions": 1,
+    "backup_proof_deployments": 1
   }
 }

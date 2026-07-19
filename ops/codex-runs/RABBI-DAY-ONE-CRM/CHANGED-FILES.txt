@@ -30,3 +30,8 @@ ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json
 ops/director/CURRENT-STATE.json
 ops/director/START-HERE.md
 ops/director/CAPABILITY-MATRIX.json
+ops/director/DEPLOYMENTS.json
+scripts/w12-100/campaign/campaign-seed-approval-packet.ts
+tests/unit/w12-100-campaign/campaign-seed-approval-packet.test.ts
+ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md

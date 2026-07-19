@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T17:04:18.192Z",
+  "generated_at": "2026-07-19T17:17:46.468Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -56,7 +56,12 @@
     },
     {
       "id": "communications",
-      "status": "DEPLOYED"
+      "status": "DEPLOYED",
+      "reason": "Transactional email is deployed/configured and staging-delivered; current campaign seed approval packet is ready but no seed or broad campaign send is authorized yet.",
+      "evidence": [
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md"
+      ]
     },
     {
       "id": "owner_dashboard",

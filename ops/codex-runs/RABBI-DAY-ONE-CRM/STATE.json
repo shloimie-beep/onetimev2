@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T17:10:21.794Z",
+  "generated_at": "2026-07-19T17:19:44.167Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -118,7 +118,7 @@
     "mode_variable": "ONE_TIME_LIFECYCLE_EMAIL_MODE",
     "modes": ["disabled", "canary", "transactional"],
     "production_external_send_performed": false,
-    "production_blocker": "Production has no active owner/admin actor, so a product-native owner/admin lifecycle invitation cannot be issued without fresh bootstrap or role-access authorization.",
+    "production_blocker": "Production transactional send/final admin message still need a deliberate fresh admin-access send decision; existing prior admin acceptance is recorded under W13-103 and no setup link was consumed in this CRM import slice.",
     "worker_lifecycle_gate": {
       "status": "fixed",
       "code": "apps/worker/src/delivery/config.ts",
@@ -150,14 +150,14 @@
       "railway_variables_ready": true,
       "private_manifest_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json",
       "blocker": null,
-      "next_exact_action": "Deploy the exact candidate with staging/production Railway variables from the protected private manifest and run one controlled operator-inbox transactional test."
+      "next_exact_action": "Production final admin/access send remains a separate deliberate action; run only after exact operator approval for the current protected recipient/action."
     },
     "release_proof": {
       "status": "staging_delivered_production_deployed_production_test_blocked",
       "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json",
       "staging_controlled_test_status": "provider_delivered",
       "production_deploy_status": "deployed_and_smoked",
-      "production_controlled_test_status": "blocked_no_active_owner_admin_actor"
+      "production_controlled_test_status": "not_rerun_in_crm_import_slice"
     },
     "staging": {
       "railway": {
@@ -224,7 +224,7 @@
         "version": "rabbi-day-one-crm-ed77a04",
         "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
         "ready_blockers": [],
-        "latest_migration": "2203_w13_100_student_gamification"
+        "latest_migration": "2204_w12_100_real_source_crm_apply"
       },
       "queue_preflight": {
         "account_users": 4,
@@ -232,10 +232,10 @@
         "lifecycle_pending_rows": 0,
         "auth_email_pending_rows": 0,
         "provider_event_ledger_rows": 0,
-        "note": "Counts-only production read after CRM migration/apply; no raw user values recorded."
+        "note": "Counts-only production read after CRM migration/apply showed active administrator candidates; no raw user values recorded."
       },
       "controlled_test": {
-        "status": "not_rerun_in_this_slice",
+        "status": "not_rerun_in_crm_import_slice",
         "external_send_performed": false,
         "blocker": "Production transactional send/final admin message still need a deliberate fresh admin-access send decision; existing prior admin acceptance is recorded under W13-103 and no setup link was consumed in this CRM import slice."
       },
@@ -251,7 +251,7 @@
     "code_status": "accepted",
     "latest_existing_proof_path": "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
     "production_external_send_performed": false,
-    "production_blocker": "Prior W13-103 admin acceptance exists and production has active admin users, but no fresh final admin access email/browser smoke was run in this CRM import slice to avoid consuming protected setup links."
+    "production_blocker": "Prior W13-103 admin acceptance exists and production has active admin users, but no fresh final admin access email/browser smoke was run in this CRM import slice to avoid consuming protected setup links without explicit approval."
   },
   "signup_to_crm": {
     "code_status": "accepted",
@@ -281,7 +281,20 @@
   "campaign_seed": {
     "status": "ready_for_operator_approval",
     "broad_campaign_status": "not_sent_pending_seed_approval",
-    "seed_blocker": "CRM production apply is complete and the final eligible email audience is 1,357, but no unambiguous current campaign copy plus seed-send approval was identified in this slice. No seed or broad campaign was sent."
+    "approval_packet_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+    "approval_markdown_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md",
+    "snapshot_hash": "6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5",
+    "template_revision": "rabbi-day-one-email-seed-v1",
+    "email_campaign_eligible": 1357,
+    "seed_requested_count": 1,
+    "broad_requested_count": 0,
+    "required_operator_approval_statement": "APPROVE_ONE_TIME_CAMPAIGN_SEED:6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5:1357:email:seed-only",
+    "required_operator_confirmation": "ONE-TIME-CAMPAIGN-SEED-OK",
+    "seed_send_authorized": false,
+    "seed_send_performed": false,
+    "broad_campaign_authorized": false,
+    "broad_campaign_sends": 0,
+    "seed_blocker": "Campaign seed approval packet is ready with exact proposed copy and required approval statement; no seed or broad campaign was sent. Awaiting operator approval statement and ONE-TIME-CAMPAIGN-SEED-OK before one protected seed send."
   },
   "tests_run": [
     "npm test",
@@ -341,7 +354,16 @@
     "npm run director:truth:live passed against production and staging /version",
     "npm run secret:scan passed across 1725 repo text files",
     "git diff --check passed with Windows line-ending warnings only",
-    "python gh-fix-ci inspect_pr_checks.py --repo . --pr 92 --json returned log_unavailable for all five GitHub Actions checks on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007"
+    "python gh-fix-ci inspect_pr_checks.py --repo . --pr 92 --json returned log_unavailable for all five GitHub Actions checks on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007",
+    "GET production /ready at 2026-07-19T17:13Z returned latest=2204_w12_100_real_source_crm_apply; GET staging /ready returned latest=2203_w13_100_student_gamification",
+    "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-campaign/campaign-seed-approval-packet.test.ts passed: 1 file, 2 tests",
+    "node --import tsx scripts/w12-100/campaign/campaign-seed-approval-packet.ts generated ready_for_operator_approval campaign packet with zero side effects",
+    "npm run typecheck passed after campaign seed approval packet generator",
+    "npm run lint passed after campaign seed approval packet generator",
+    "npx prettier --check touched campaign/CRM/director files passed after campaign seed approval packet generator",
+    "npm run director:truth:live passed after campaign seed approval packet handoff refresh",
+    "npm run secret:scan passed across 1729 repo text files after campaign seed approval packet generator",
+    "git diff --check passed after campaign seed approval packet generator with Windows line-ending warnings only"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",

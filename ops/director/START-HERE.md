@@ -66,8 +66,8 @@ attribution, and idempotency replay. It inserted 1,555 contacts, skipped 4
 existing contacts, recorded 2,505 import-row ledger rows, and queued zero sends.
 The full release gate remains blocked only by the still-separate lanes: fresh
 production final admin/access send or browser smoke, WhatsApp provider canary,
-campaign seed copy/approval, protected diagnostics token, and broader
-launch-spine consuming proof.
+campaign seed approval/send authorization, protected diagnostics token, and
+broader launch-spine consuming proof.
 
 The earlier accepted staging runtime proof lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md` and
@@ -120,6 +120,14 @@ Staging controlled transactional email was delivered. Production final
 admin/access send remains a separate deliberate action; no broad campaign send
 is authorized from this handoff.
 
+Campaign seed approval evidence lives at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json` and
+`ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md`. It records exact
+proposed seed copy, 1,357 email-campaign-eligible contacts, snapshot hash
+`6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5`, and the
+required approval string for one protected seed send. It performed no database
+write, provider mutation, seed send, or broad campaign send.
+
 Production launch-spine read-only evidence lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
 and `ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/`.
@@ -150,6 +158,9 @@ under the separate email-inputs gate.
   passwords, private email addresses, phone numbers, contact rows, or raw
   message bodies.
 - Do not perform broad email, WhatsApp, Telegram, or social sends.
+- Do not perform the campaign seed send unless the exact approval statement in
+  `CAMPAIGN-SEED-APPROVAL.md` and `ONE-TIME-CAMPAIGN-SEED-OK` are supplied for
+  the current protected seed destination.
 - Do not create live Stripe charges.
 - Do not change DNS.
 - Do not rerun production CRM import with a different source packet, backup

@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T17:04:18.192Z",
+  "generated_at": "2026-07-19T17:17:46.468Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -98,9 +98,11 @@
       "evidence": [
         "ops/codex-runs/W13-104/FINAL-REPORT.md",
         "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
-        "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md"
       ],
-      "notes": "Communications UI/outbox foundation is deployed. Standalone One Time transactional email config is deployed to staging and production; staging controlled lifecycle email was provider-delivered. Generic campaign/provider sends remain disabled."
+      "notes": "Communications UI/outbox foundation is deployed. Standalone One Time transactional email config is deployed to staging and production; staging controlled lifecycle email was provider-delivered. Campaign seed approval packet is ready for operator approval, with zero seed/broad sends performed."
     },
     {
       "id": "owner_dashboard",
