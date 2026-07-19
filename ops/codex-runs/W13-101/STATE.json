@@ -1,0 +1,199 @@
+{
+  "schema_version": "onetime.w13_101.state.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T19:25:46.855Z",
+  "status": "CORE_DEPLOYED_OPTIONAL_CAPABILITIES_PENDING",
+  "terminal_status": "CORE_DEPLOYED_OPTIONAL_CAPABILITIES_PENDING",
+  "repository": {
+    "full_name": "webcraft-media/onetimev2",
+    "worktree": "C:/Users/User/OneTimeOneTime-w13-100-final-launch",
+    "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "pr_number": 91,
+    "pr_url": "https://github.com/webcraft-media/onetimev2/pull/91",
+    "base_ref": "integration/w12-final-convergence-20260717T123715Z",
+    "base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "prompt_expected_pr_head": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "verified_pr_head": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "local_head_at_start": "466d8489bb8c7a3a57f7590929b58e7857420e86"
+  },
+  "identity_model": {
+    "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "evidence_head_sha": null,
+    "default_branch_sha": null,
+    "release_tag": null,
+    "image_digest_or_rebuild_fingerprint": "web=sha256:58e5f7625d2d90d591f99b9193a2b8f829b0fb2fba7dfeea1fc343ba2719065e; worker=sha256:a05951d0240fa976bc313d86616505052df03080c34a6653aa1b1a74b1f3cf16"
+  },
+  "historical_evidence": {
+    "w13_100_preserved_unchanged": true,
+    "w13_100_state_path": "ops/codex-runs/W13-100/STATE.json",
+    "w13_100_recorded_head_sha": "85dce2a3df029adf348ffe15bafbd13ff2ad6c81",
+    "corrected_pr91_head_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "stale_head_discrepancy": "W13-100 STATE.json records the head at the earlier checkpoint/PR creation, while current GitHub PR #91 head is 466d8489bb8c7a3a57f7590929b58e7857420e86 after the later visual-evidence formatting commit."
+  },
+  "phase_status": {
+    "phase_1_refresh_and_core_blockers": "done",
+    "phase_2_non_production_postgres": "done",
+    "phase_3_staging_deployment_and_rollback": "done",
+    "phase_4_controlled_identities": "done",
+    "phase_7_production_safe_core": "in_progress",
+    "phase_5_provider_canaries": "not_started",
+    "phase_6_crm_import": "not_started",
+    "phase_8_github_release_governance": "not_started",
+    "phase_7": "production_safe_core_deployed",
+    "phase_5": "optional_provider_canaries_left_off",
+    "phase_6": "crm_import_pending_no_accepted_apply_manifest",
+    "phase_8": "release_governance_pending_commit_push_tag_and_live_role_login"
+  },
+  "authorization": {
+    "source": "ops/codex-runs/W13-101/ORIGINAL-PROMPT.md",
+    "safe_core_deployment_authorized": true,
+    "provider_optional_lanes_do_not_block_core": true,
+    "real_crm_import_requires_exact_manifest_gates": true,
+    "live_stripe_charges_authorized": false,
+    "broad_campaigns_authorized": false,
+    "dns_changes_authorized": false
+  },
+  "external_effects": {
+    "emails_sent": 0,
+    "whatsapp_messages": 0,
+    "telegram_actions": 0,
+    "zoom_meetings": 0,
+    "zoom_registrants": 0,
+    "vimeo_operations": 0,
+    "helper_queries": 0,
+    "buffer_drafts": 0,
+    "buffer_posts": 0,
+    "stripe_test_objects": 0,
+    "stripe_live_objects": 0,
+    "bna_events": 0,
+    "railway_deployments": 15,
+    "database_migrations": 47,
+    "database_backups": 1,
+    "database_restores": 2,
+    "crm_import_rows": 0,
+    "production_database_writes": 4,
+    "dns_changes": 0,
+    "railway_deployment_removals": 2,
+    "railway_variable_updates": 97,
+    "staging_identity_proof_runs": 4,
+    "staging_identity_external_sends": 0
+  },
+  "phase_1_evidence": {
+    "github_pr_head_verified": true,
+    "github_pr_checks_green": [
+      "Node 24 verify",
+      "OPS-06 deterministic checks",
+      "PostgreSQL 18 assurance and restore clone",
+      "PostgreSQL 16 assurance harness",
+      "PostgreSQL 16 learner-seat proof"
+    ],
+    "runtime_source_changed_after_green_head": false,
+    "action_registry_inspected": true,
+    "core_routes_inspected": true,
+    "optional_capabilities_provider_off_or_guarded": true,
+    "focused_checks": [
+      "npm run secret:scan: passed",
+      "npm run brand:check: passed",
+      "npx vitest run --config vitest.unit.config.ts tests/unit/day-one/visible-action-registry.test.ts tests/unit/w13-10/delivery-activation-policy.test.ts tests/unit/w13-10/deploy-guard.test.ts tests/unit/delivery/config.test.ts tests/unit/ot72-provider-adapters.test.ts: passed, 31 tests",
+      "npm run typecheck: passed",
+      "W13-101 JSON parse check: passed"
+    ]
+  },
+  "phase_2_evidence": {
+    "railway_staging_pg16_service": "ot99-pg16",
+    "postgres_server_version_num": "160014",
+    "database_url_printed": false,
+    "w13_101_pg16_migration_assurance": "passed",
+    "migration_files": 39,
+    "latest_migration": "2203_w13_100_student_gamification",
+    "idempotent_second_run": true,
+    "ledger_matches_normalized_checksums": true,
+    "gamification_2203_tables_present": true,
+    "disposable_databases_created": 1,
+    "disposable_databases_dropped": 1,
+    "remaining_w13_101_disposable_databases": 0,
+    "ops06_migration_safety": "passed",
+    "ci_restore_clone": "PostgreSQL 18 assurance and restore clone SUCCESS",
+    "evidence_paths": [
+      "ops/codex-runs/W13-101/DATABASE-ASSURANCE.json",
+      "ops/codex-runs/W13-101/evidence/pg16-migration-assurance.json",
+      "ops/codex-runs/W13-101/evidence/ops06/migration-safety.json"
+    ]
+  },
+  "blockers": [
+    {
+      "id": "W13-101-PRODUCTION-LIVE-ROLE-LOGIN",
+      "status": "operator_action_or_accepted_production_identity_path_needed",
+      "scope": "production admin/parent/student live login",
+      "detail": "Core app is deployed and isolated route checks pass. Existing OPS-11 protected admin activation was sent but was time-limited; Codex did not create production identities because the repo provisioning helper explicitly refuses production targets."
+    }
+  ],
+  "next_action": "Commit/push W13-101 checkpoint evidence, create release tag if approved, and refresh/complete protected production admin/parent/student live login handoff through an accepted production identity path.",
+  "phase_3_evidence": {
+    "staging_url": "https://ot99-web-staging.up.railway.app",
+    "final_web_deployment_id": "7fa7c45b-21a8-45eb-b92d-3750fca06362",
+    "final_worker_deployment_id": "6e18ddfa-c4fd-4aab-ac30-164bf18bbab4",
+    "web_image_digest": "sha256:58e5f7625d2d90d591f99b9193a2b8f829b0fb2fba7dfeea1fc343ba2719065e",
+    "worker_image_digest": "sha256:a05951d0240fa976bc313d86616505052df03080c34a6653aa1b1a74b1f3cf16",
+    "version": "w13-101-safe-core-466d848",
+    "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "ready_latest_migration": "2203_w13_100_student_gamification",
+    "staging_main_db_migrations_applied": [
+      "2200_w12_02_communication_history",
+      "2201_w12_01_crm_audience_import",
+      "2202_w12_05_telegram_operations",
+      "2203_w13_100_student_gamification"
+    ],
+    "optional_transports_disabled": true,
+    "worker_sink_runtime_healthy": true,
+    "rollback_rehearsal": "native_railway_down_unreliable_exact_source_roll_forward_passed",
+    "production_rollback_recommendation": "Use exact-source roll-forward fallback; do not use railway down in production as routine rollback until staging behavior is explained and re-tested.",
+    "evidence_paths": [
+      "ops/codex-runs/W13-101/STAGING-DEPLOYMENT.json",
+      "ops/codex-runs/W13-101/STAGING-ACCEPTANCE.json",
+      "ops/codex-runs/W13-101/ROLLBACK-ROLLFORWARD.md"
+    ]
+  },
+  "phase_4_evidence": {
+    "status": "passed",
+    "staging_url": "https://ot99-web-staging.up.railway.app",
+    "evidence_path": "ops/codex-runs/W13-101/evidence/staging-identity-proof.json",
+    "protected_local_handoff_path": "C:\\Users\\User\\.onetime-w13-101-private\\staging-identity-handoff.private.json",
+    "owner_test_email_configured": true,
+    "parent_test_email_configured": false,
+    "parent_student_destinations": "derived_plus_alias_from_owner_test_email_for_staging_sink_proof",
+    "external_activation_emails_sent": 0,
+    "external_reset_emails_sent": 0,
+    "owner_activation": "passed",
+    "admin_activation": "passed",
+    "parent_activation": "passed",
+    "student_activation": "passed",
+    "admin_email_challenge_not_totp": true,
+    "trusted_device_login_and_revoke": "passed",
+    "parent_login_without_owner_admin_step_up": "passed",
+    "student_login_without_owner_admin_step_up": "passed",
+    "parent_portal_and_dashboard": "passed",
+    "student_portal_and_dashboard": "passed",
+    "password_recovery_and_session_invalidation": "passed",
+    "student_session_revoke_old_session_status": 401,
+    "no_store_headers_seen": true,
+    "private_values_in_evidence": false,
+    "notes": [
+      "Earlier v2 proof attempts created staging-only sink rows and hit live login rate limiting; final v4 proof passed with fresh derived aliases. No external sends were performed."
+    ]
+  },
+  "phase_7_evidence": {
+    "production_url": "https://join.onetimeonetime.com",
+    "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "web_deployment_id": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
+    "worker_deployment_id": "52226afb-5b5c-4e79-8982-8b26115dfaba",
+    "web_image_digest": "sha256:b8a17ddb5e588dbaf13aaa9b086d3ffb66dbdc70984d0e3deb6b24ada68a6718",
+    "worker_image_digest": "sha256:8ce30ebc73e6937ff25c175b5aa795aba3c6beeabceea527c4f273b39c3c56b8",
+    "backup_status": "passed",
+    "migration_latest": "2203_w13_100_student_gamification",
+    "route_smoke": "passed",
+    "worker_heartbeat": "passed",
+    "optional_transports": "disabled",
+    "production_live_role_login": "not_completed_by_codex"
+  }
+}

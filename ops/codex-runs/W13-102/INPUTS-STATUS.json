@@ -1,0 +1,88 @@
+{
+  "schema": "onetime.w13_102.inputs_status.v1",
+  "updated_at": "2026-07-19T00:00:00+03:00",
+  "private_directory": "C:/Users/User/.onetime-w13-102-private",
+  "private_files": {
+    "identity_authorization_manifest": {
+      "path": "C:/Users/User/.onetime-w13-102-private/identity-authorization.private.json",
+      "status": "present_template_pending_values",
+      "printed_values": false
+    },
+    "w13_101_staging_identity_handoff": {
+      "path": "C:/Users/User/.onetime-w13-101-private/staging-identity-handoff.private.json",
+      "status": "present_staging_only",
+      "printed_values": false
+    },
+    "w13_101_production_runtime_env": {
+      "path": "C:/Users/User/.onetime-w13-101-private/production-runtime-env.private.json",
+      "status": "present",
+      "printed_values": false
+    },
+    "crm_source_acceptance_manifest": {
+      "path": "C:/Users/User/.onetime-w13-102-private/crm-source-acceptance.private.json",
+      "status": "present_template_pending_operator_approval",
+      "printed_values": false
+    }
+  },
+  "critical_inputs": {
+    "production_runtime_env": "present",
+    "identity_authorization": "present_but_missing_required_values_and_valid_expiry",
+    "accepted_crm_manifest": "source_hashes_verified_private_acceptance_pending",
+    "provider_credentials": "audited_missing_or_disabled_by_provider"
+  },
+  "missing_field_names_only": [
+    "identity_authorization.expires_at",
+    "recipients.owner.destination",
+    "recipients.owner.operator_controls_destination",
+    "recipients.owner.send_now",
+    "recipients.owner.max_message_count",
+    "recipients.administrator.destination",
+    "recipients.administrator.operator_controls_destination",
+    "recipients.administrator.send_now",
+    "recipients.administrator.max_message_count",
+    "recipients.parent.destination",
+    "recipients.parent.operator_controls_destination",
+    "recipients.parent.send_now",
+    "recipients.parent.max_message_count",
+    "recipients.student.learner_display_identity",
+    "recipients.student.parent_managed_destination",
+    "recipients.student.operator_controls_destination",
+    "recipients.student.send_now",
+    "recipients.student.max_message_count",
+    "crm_source_manifest.path",
+    "crm_source_manifest.sha256",
+    "crm_tag_map_approval",
+    "crm_source_acceptance.accepted_for_production_apply",
+    "provider.transactional_email.RESEND_API_KEY",
+    "provider.transactional_email.RESEND_WEBHOOK_SECRET",
+    "provider.transactional_email.ONE_TIME_EMAIL_FROM",
+    "provider.transactional_email.ONE_TIME_EMAIL_REPLY_TO",
+    "provider.transactional_email.ONE_TIME_RESEND_WEBHOOK_ENABLED"
+  ],
+  "lane_blockers": [
+    {
+      "lane": "production_identity_handoff",
+      "status": "blocked_before_apply",
+      "reason": "private authorization manifest exists only as a template; exact recipient authorization values are absent and expiry placeholder is invalid",
+      "blocks_global_run": false
+    },
+    {
+      "lane": "real_crm_apply",
+      "status": "blocked_before_apply",
+      "reason": "six expected source hashes were verified, but the private acceptance manifest still requires operator approval and tag-map approval",
+      "blocks_global_run": false
+    },
+    {
+      "lane": "transactional_email",
+      "status": "blocked_before_send",
+      "reason": "Resend webhook route is implemented and tested, but protected runtime is missing API key, webhook secret, sender, reply-to evidence, and webhook enablement",
+      "blocks_global_run": false
+    },
+    {
+      "lane": "optional_provider_canaries",
+      "status": "blocked_by_provider",
+      "reason": "provider readiness snapshot records missing protected credentials/config per provider",
+      "blocks_global_run": false
+    }
+  ]
+}

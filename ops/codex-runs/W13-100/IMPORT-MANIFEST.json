@@ -1,0 +1,11 @@
+{
+  "schema_version": "onetime.w13_100.import_manifest.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "status": "not_started",
+  "approved_scope": ["Rabbi Scheller Followers.xlsx", "five approved email-audience exports"],
+  "source_hashes_verified": false,
+  "counts": null,
+  "apply_authorized_by_prompt_after_gates": true,
+  "apply_performed": false,
+  "sends_remained_zero": true
+}

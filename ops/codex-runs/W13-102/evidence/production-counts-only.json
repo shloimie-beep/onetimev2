@@ -1,0 +1,211 @@
+{
+  "schema": "onetime.w13_102.production_counts_only.v1",
+  "generated_at": "2026-07-18T20:06:23.634Z",
+  "scope": "w13-102-production-readonly",
+  "table_count": 50,
+  "counts": [
+    {
+      "table": "account_activation_mfa_handoffs",
+      "total_rows": 0
+    },
+    {
+      "table": "account_learner_identity_links",
+      "total_rows": 0
+    },
+    {
+      "table": "account_lifecycle_audit_events",
+      "total_rows": 4
+    },
+    {
+      "table": "account_lifecycle_delivery_intents",
+      "total_rows": 2
+    },
+    {
+      "table": "account_lifecycle_delivery_outbox",
+      "total_rows": 2
+    },
+    {
+      "table": "account_lifecycle_idempotency_records",
+      "total_rows": 0
+    },
+    {
+      "table": "account_lifecycle_session_invalidations",
+      "total_rows": 0
+    },
+    {
+      "table": "account_lifecycle_tokens",
+      "total_rows": 2
+    },
+    {
+      "table": "account_users",
+      "total_rows": 1
+    },
+    {
+      "table": "action_gateway_event_outbox",
+      "total_rows": 0
+    },
+    {
+      "table": "audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "auth_audit_events",
+      "total_rows": 1
+    },
+    {
+      "table": "auth_email_challenge_delivery_outbox",
+      "total_rows": 0
+    },
+    {
+      "table": "billing_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "billing_checkout_sessions",
+      "total_rows": 0
+    },
+    {
+      "table": "billing_provider_accounts",
+      "total_rows": 0
+    },
+    {
+      "table": "classroom_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "classroom_household_entitlements",
+      "total_rows": 0
+    },
+    {
+      "table": "communication_import_batches",
+      "total_rows": 0
+    },
+    {
+      "table": "contacts",
+      "total_rows": 0
+    },
+    {
+      "table": "content_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "crm_contact_facts",
+      "total_rows": 0
+    },
+    {
+      "table": "crm_contact_notes",
+      "total_rows": 0
+    },
+    {
+      "table": "crm_contact_tags",
+      "total_rows": 0
+    },
+    {
+      "table": "crm_identity_resolutions",
+      "total_rows": 0
+    },
+    {
+      "table": "crm_tags",
+      "total_rows": 0
+    },
+    {
+      "table": "legacy_activation_campaign_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "legacy_audience_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "legacy_audience_import_batches",
+      "total_rows": 0
+    },
+    {
+      "table": "legacy_audience_import_rows",
+      "total_rows": 0
+    },
+    {
+      "table": "ot104r_vimeo_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "ot106_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "ot86_publication_outbox",
+      "total_rows": 0
+    },
+    {
+      "table": "ot86_retrieval_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "ot86b_social_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "outbox_events",
+      "total_rows": 0
+    },
+    {
+      "table": "oversight_outbox_events",
+      "total_rows": 0
+    },
+    {
+      "table": "portal_audit_actions",
+      "total_rows": 0
+    },
+    {
+      "table": "portal_households",
+      "total_rows": 0
+    },
+    {
+      "table": "portal_learners",
+      "total_rows": 0
+    },
+    {
+      "table": "support_audit_events",
+      "total_rows": 0
+    },
+    {
+      "table": "support_outbox",
+      "total_rows": 0
+    },
+    {
+      "table": "telegram_dead_letters",
+      "total_rows": 0
+    },
+    {
+      "table": "telegram_identity_mappings",
+      "total_rows": 0
+    },
+    {
+      "table": "telegram_operation_audit",
+      "total_rows": 0
+    },
+    {
+      "table": "telegram_response_outbox",
+      "total_rows": 0
+    },
+    {
+      "table": "user_sessions",
+      "total_rows": 1
+    },
+    {
+      "table": "whatsapp_account_link_requests",
+      "total_rows": 0
+    },
+    {
+      "table": "whatsapp_outbox_messages",
+      "total_rows": 0
+    },
+    {
+      "table": "whatsapp_suppressions",
+      "total_rows": 0
+    }
+  ],
+  "secrets_printed": false,
+  "pii_printed": false,
+  "raw_rows_printed": false
+}

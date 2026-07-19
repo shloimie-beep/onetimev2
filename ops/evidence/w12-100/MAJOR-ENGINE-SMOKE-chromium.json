@@ -1,0 +1,54 @@
+{
+  "schema_version": "onetime.w12_100.major_engine_smoke.v1",
+  "generated_at": "2026-07-17T19:03:22.722Z",
+  "browser": "chromium",
+  "records": [
+    {
+      "browser": "chromium",
+      "route": "/",
+      "status": 200,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "safety_findings": []
+    },
+    {
+      "browser": "chromium",
+      "route": "/signup",
+      "status": 200,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "safety_findings": []
+    },
+    {
+      "browser": "chromium",
+      "route": "/login",
+      "status": 200,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "safety_findings": []
+    },
+    {
+      "browser": "chromium",
+      "route": "/w12-100-missing-route",
+      "status": 404,
+      "overflow": {
+        "clientWidth": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390
+      },
+      "safety_findings": []
+    }
+  ],
+  "defects": [],
+  "external_actions": 0,
+  "production_mutations": 0
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "onetime.w13_102.external_effects.v1",
+  "updated_at": "2026-07-19T01:24:00+03:00",
+  "status": "tracking",
+  "production_database_writes": 0,
+  "external_email_sends": 0,
+  "whatsapp_messages": 0,
+  "telegram_messages": 0,
+  "bna_support_tickets": 0,
+  "stripe_live_charges": 0,
+  "stripe_test_sessions": 0,
+  "zoom_meetings": 0,
+  "vimeo_uploads": 0,
+  "buffer_drafts": 0,
+  "crm_contacts_imported": 0,
+  "railway_backup_proof_deployments": 2,
+  "staging_runtime_deployments": 6,
+  "production_runtime_deployments": 2,
+  "notes": [
+    "No W13-102 production database writes, provider sends, CRM imports, tickets, payments, meetings, uploads, drafts, or provider canaries have been performed.",
+    "W13-102 Railway proof deployments created native production PG18 backup/restore reports without printing secrets or PII. The current fresh proof is deployment 02abfb5a-e115-49fb-b159-3f8c3e5ab211.",
+    "Provider and CRM discovery produced sanitized committed evidence only; private CRM source paths were written outside Git.",
+    "W13-102 continuation added and tested a disabled-by-default Resend webhook route locally; it performed no external sends and no production writes.",
+    "Staging deployment, rollback, and roll-forward were executed with sink/disabled transports.",
+    "Production runtime deployment was performed for web and worker after staging rollback/roll-forward, fresh backup/restore, and green CI rerun. Transports and provider lanes remained disabled/sink."
+  ]
+}

@@ -21,7 +21,7 @@ export function buildProviderControlCenter(input: {
 }): ProviderControlCenterResponse {
   const env = input.env ?? process.env;
   const now = input.now ?? new Date();
-  const endpoints = buildWebhookEndpoints();
+  const endpoints = buildWebhookEndpoints(input.config);
   const providers = buildProviderItems(input.config, env, endpoints);
   return providerControlCenterResponseSchema.parse({
     success: true,
@@ -60,21 +60,23 @@ export function buildProviderControlCenter(input: {
   });
 }
 
-export function buildWebhookEndpoints(): WebhookEndpointContract[] {
+export function buildWebhookEndpoints(config?: AppConfig): WebhookEndpointContract[] {
   return [
     endpoint({
       provider: 'resend_email',
-      path: null,
-      method: null,
+      path: '/api/v1/delivery/resend/webhook',
+      method: 'POST',
       maxBytes: 128 * 1024,
       contentType: 'application/json',
       rawBody: true,
       scheme: 'svix_headers_raw_body',
       replay: ['svix_timestamp_window', 'svix_message_id_replay', 'provider_event_id_dedupe'],
-      mounted: false,
-      durable: false,
+      mounted: true,
+      durable: true,
       asyncProcessing: true,
-      note: 'No Resend route is mounted in base; final conductor must mount a raw-body POST route before express.json.',
+      note: config?.resendWebhookEnabled
+        ? 'Mounted before express.json; accepts only signed raw-body Resend Svix events.'
+        : 'Mounted before express.json and safely returns disabled until ONE_TIME_RESEND_WEBHOOK_ENABLED and RESEND_WEBHOOK_SECRET are configured.',
     }),
     endpoint({
       provider: 'whatsapp_meta',

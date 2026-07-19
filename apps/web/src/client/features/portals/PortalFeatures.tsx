@@ -16,6 +16,7 @@ import type {
   StudentPortalDashboard,
   UpcomingClassSummary,
 } from '../../../../../../packages/contracts/src/portals/index.ts';
+import type { GamificationSummary } from '../../../../../../packages/contracts/src/gamification/index.ts';
 
 export type PortalViewState =
   | 'loading'
@@ -52,6 +53,10 @@ export type ParentPortalFeatureProps = {
   onPreviewSupport?: (learnerKey?: string) => void;
   onBillingCheckout?: () => void;
   onBillingPortal?: () => void;
+  onCreateRewardGoal?: (
+    learnerKey: string,
+    goal: { title: string; description: string; pointsRequired: number },
+  ) => void;
   onRetry?: () => void;
 };
 
@@ -88,6 +93,7 @@ export function ParentPortalFeature({
   onPreviewSupport,
   onBillingCheckout,
   onBillingPortal,
+  onCreateRewardGoal,
   onRetry,
 }: ParentPortalFeatureProps) {
   const [activeLearnerKey, setActiveLearnerKey] = useState<string | null>(
@@ -252,6 +258,15 @@ export function ParentPortalFeature({
               rewards={dashboard.rewards[selectedLearner.learner_key]}
               progress={selectedMaterials?.progress}
               history={rewardHistory[selectedLearner.learner_key] ?? []}
+              gamification={
+                selectedMaterials?.gamification ??
+                dashboard.gamification?.[selectedLearner.learner_key]
+              }
+              onCreateRewardGoal={
+                onCreateRewardGoal
+                  ? (goal) => onCreateRewardGoal(selectedLearner.learner_key, goal)
+                  : undefined
+              }
             />
             <UpdatesList updates={dashboard.updates[selectedLearner.learner_key] ?? []} />
           </section>
@@ -438,7 +453,12 @@ export function StudentPortalFeature({
         </section>
         <section className="ot-panel" aria-labelledby="student-progress-heading">
           <h2 id="student-progress-heading">Progress</h2>
-          <ProgressSummaryView progress={dashboard.progress} rewards={dashboard.rewards} />
+          <RewardSummary
+            rewards={dashboard.rewards}
+            progress={dashboard.progress}
+            history={[]}
+            gamification={dashboard.gamification}
+          />
         </section>
         <section className="ot-panel" aria-labelledby="student-questions-heading">
           <h2 id="student-questions-heading">Questions</h2>
@@ -924,12 +944,27 @@ function RewardSummary({
   rewards,
   progress,
   history,
+  gamification,
+  onCreateRewardGoal,
 }: {
   rewards?: RewardBalance | undefined;
   progress?: ProgressSummary | undefined;
   history: RewardEvent[];
+  gamification?: GamificationSummary | undefined;
+  onCreateRewardGoal?:
+    ((goal: { title: string; description: string; pointsRequired: number }) => void) | undefined;
 }) {
   if (!rewards) return <p className="ot-muted">Rewards are not loaded.</p>;
+  if (gamification) {
+    return (
+      <GamificationSummaryView
+        summary={gamification}
+        fallbackProgress={progress}
+        fallbackRewards={rewards}
+        onCreateRewardGoal={onCreateRewardGoal}
+      />
+    );
+  }
   return (
     <div className="ot-stack">
       <ProgressSummaryView
@@ -954,6 +989,299 @@ function RewardSummary({
       ))}
     </div>
   );
+}
+
+function GamificationSummaryView({
+  summary,
+  fallbackProgress,
+  fallbackRewards,
+  onCreateRewardGoal,
+}: {
+  summary: GamificationSummary;
+  fallbackProgress?: ProgressSummary | undefined;
+  fallbackRewards: RewardBalance;
+  onCreateRewardGoal?:
+    ((goal: { title: string; description: string; pointsRequired: number }) => void) | undefined;
+}) {
+  const attendance = summary.streaks.find((streak) => streak.kind === 'attendance');
+  const review = summary.streaks.find((streak) => streak.kind === 'review');
+  return (
+    <div className="ot-stack ot-gamification" data-guardrails={summary.guardrails.student_scope}>
+      {summary.celebration && (
+        <section className="ot-celebration" role="status">
+          <strong>{summary.celebration.title}</strong>
+          <span>{summary.celebration.detail}</span>
+        </section>
+      )}
+      <div className="ot-level-card">
+        <div>
+          <p className="ot-kicker">Level {summary.level.level}</p>
+          <h3>{summary.level.title}</h3>
+          <p>{summary.learning_points} meaningful learning points</p>
+        </div>
+        <ProgressMeter
+          label={
+            summary.level.next_level_points
+              ? `${summary.level.progress_percent}% to next level`
+              : 'Top V1 level'
+          }
+          value={summary.level.progress_percent}
+        />
+      </div>
+      <ProgressSummaryView
+        progress={fallbackProgress ?? progressFromSummary(summary)}
+        rewards={fallbackRewards}
+      />
+      <div className="ot-progress-bars" aria-label="Learning progress">
+        <ProgressMeter
+          label="Mishnayos"
+          value={percent(summary.progress.mishnayos_completed, summary.progress.mishnayos_target)}
+        />
+        <ProgressMeter
+          label="Classes"
+          value={percent(
+            summary.progress.classes_attended,
+            Math.max(1, summary.progress.classes_total),
+          )}
+        />
+        <ProgressMeter
+          label="Review"
+          value={percent(
+            summary.progress.review_items_completed,
+            Math.max(1, summary.progress.review_items_total),
+          )}
+        />
+        <ProgressMeter label="Retention" value={summary.progress.retention_percent} />
+      </div>
+      <div className="ot-streak-grid">
+        <StreakCard title="Attendance streak" streak={attendance} />
+        <StreakCard title="Review streak" streak={review} />
+      </div>
+      <BadgeList badges={summary.badges} />
+      <MilestoneList milestones={summary.milestones} />
+      <ClassMilestoneList milestones={summary.class_milestones} />
+      <ParentRewardList rewards={summary.parent_rewards} />
+      {onCreateRewardGoal && <ParentRewardGoalForm onCreate={onCreateRewardGoal} />}
+      <AccomplishmentList accomplishments={summary.accomplishments} />
+      <p className="ot-guardrail-note">
+        Private progress only. No public rankings, random rewards, or points for empty clicks.
+      </p>
+    </div>
+  );
+}
+
+function ProgressMeter({ label, value }: { label: string; value: number }) {
+  const safeValue = Math.max(0, Math.min(100, Math.round(value)));
+  return (
+    <div className="ot-progress-meter">
+      <span>{label}</span>
+      <div aria-hidden="true">
+        <i style={{ width: `${safeValue}%` }} />
+      </div>
+      <strong>{safeValue}%</strong>
+    </div>
+  );
+}
+
+function StreakCard({
+  title,
+  streak,
+}: {
+  title: string;
+  streak?: GamificationSummary['streaks'][number] | undefined;
+}) {
+  if (!streak) return null;
+  return (
+    <article className="ot-streak-card" data-streak-state={streak.status}>
+      <strong>{title}</strong>
+      <span>{streak.current_count} current</span>
+      <small>
+        Best {streak.best_count}; grace {streak.grace_remaining}
+      </small>
+    </article>
+  );
+}
+
+function BadgeList({ badges }: { badges: GamificationSummary['badges'] }) {
+  if (badges.length === 0) {
+    return <p className="ot-muted">Badges will appear after learning progress.</p>;
+  }
+  return (
+    <div className="ot-badge-list" aria-label="Badges">
+      {badges.map((badge) => (
+        <span
+          className={`ot-badge tone-${badge.tone}`}
+          key={badge.badge_key}
+          title={badge.description}
+        >
+          {badge.title}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function MilestoneList({ milestones }: { milestones: GamificationSummary['milestones'] }) {
+  return (
+    <div className="ot-stack" aria-label="Personal milestones">
+      {milestones.map((milestone) => (
+        <article
+          className="ot-item ot-milestone"
+          data-status={milestone.status}
+          key={milestone.milestone_key}
+        >
+          <div>
+            <strong>{milestone.title}</strong>
+            <span>{milestone.description}</span>
+          </div>
+          <b>
+            {milestone.progress_current}/{milestone.progress_target}
+          </b>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function ClassMilestoneList({
+  milestones,
+}: {
+  milestones: GamificationSummary['class_milestones'];
+}) {
+  if (milestones.length === 0) {
+    return <p className="ot-muted">Class milestones will appear here.</p>;
+  }
+  return (
+    <div className="ot-stack" aria-label="Class milestones">
+      {milestones.map((milestone) => (
+        <article
+          className="ot-item ot-milestone"
+          data-status={milestone.status}
+          key={milestone.class_milestone_key}
+        >
+          <div>
+            <strong>{milestone.title}</strong>
+            <span>{milestone.description}</span>
+          </div>
+          <b>
+            {milestone.progress_current}/{milestone.progress_target}
+          </b>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function ParentRewardList({ rewards }: { rewards: GamificationSummary['parent_rewards'] }) {
+  if (rewards.length === 0) {
+    return <p className="ot-muted">Optional parent rewards can be added for this learner.</p>;
+  }
+  return (
+    <div className="ot-stack" aria-label="Parent rewards">
+      {rewards.map((reward) => (
+        <article className="ot-item" key={reward.reward_goal_key}>
+          <div>
+            <strong>{reward.title}</strong>
+            <span>{reward.description || label(reward.status)}</span>
+          </div>
+          <b>{reward.points_required} pts</b>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function ParentRewardGoalForm({
+  onCreate,
+}: {
+  onCreate: (goal: { title: string; description: string; pointsRequired: number }) => void;
+}) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [pointsRequired, setPointsRequired] = useState(50);
+  const canSubmit = title.trim().length > 0 && pointsRequired > 0;
+  return (
+    <form
+      className="ot-reward-form"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!canSubmit) return;
+        onCreate({ title: title.trim(), description: description.trim(), pointsRequired });
+        setTitle('');
+        setDescription('');
+        setPointsRequired(50);
+      }}
+    >
+      <label className="ot-field">
+        <span>Parent reward</span>
+        <input
+          value={title}
+          maxLength={160}
+          onChange={(event) => setTitle(event.currentTarget.value)}
+        />
+      </label>
+      <label className="ot-field">
+        <span>Details</span>
+        <input
+          value={description}
+          maxLength={320}
+          onChange={(event) => setDescription(event.currentTarget.value)}
+        />
+      </label>
+      <label className="ot-field">
+        <span>Points required</span>
+        <input
+          type="number"
+          min={1}
+          max={5000}
+          value={pointsRequired}
+          onChange={(event) => setPointsRequired(Number(event.currentTarget.value))}
+        />
+      </label>
+      <button type="submit" className="ot-button ot-button-primary" disabled={!canSubmit}>
+        Add reward
+      </button>
+    </form>
+  );
+}
+
+function AccomplishmentList({
+  accomplishments,
+}: {
+  accomplishments: GamificationSummary['accomplishments'];
+}) {
+  if (accomplishments.length === 0) {
+    return (
+      <p className="ot-muted">Accomplishments will appear after learning events are recorded.</p>
+    );
+  }
+  return (
+    <div className="ot-stack" aria-label="Accomplishment history">
+      {accomplishments.map((event) => (
+        <article className="ot-item" data-reversal={event.points_delta < 0} key={event.event_key}>
+          <div>
+            <strong>{event.title}</strong>
+            <span>{event.detail}</span>
+            <small>{formatDate(event.occurred_at)}</small>
+          </div>
+          <b>{event.points_delta > 0 ? `+${event.points_delta}` : event.points_delta}</b>
+        </article>
+      ))}
+    </div>
+  );
+}
+
+function progressFromSummary(summary: GamificationSummary): ProgressSummary {
+  return {
+    attendance_count: summary.progress.classes_attended,
+    watch_minutes: 0,
+    completed_items: summary.progress.review_items_completed + summary.progress.mishnayos_completed,
+    last_activity_at: summary.accomplishments[0]?.occurred_at ?? null,
+  };
+}
+
+function percent(current: number, target: number) {
+  return target <= 0 ? 0 : Math.min(100, Math.round((current / target) * 100));
 }
 
 function UpdatesList({ updates }: { updates: AdministrativeUpdate[] }) {

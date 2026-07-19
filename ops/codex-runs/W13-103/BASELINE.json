@@ -1,0 +1,47 @@
+{
+  "schema_version": "onetime.w13_103.baseline.v1",
+  "run_id": "W13-103",
+  "captured_at": "2026-07-19T05:20:57Z",
+  "pr": {
+    "number": 91,
+    "head_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "starting_head_sha": "333ebd23376ea29edcbd6b5ba19c4dfa2125a03a",
+    "latest_task_source_sha": "50aabf46a5fd5e9c0260ed3528e73ac7e2219d1e",
+    "merge_state": "CLEAN",
+    "is_draft": true,
+    "state": "OPEN"
+  },
+  "local_checkout": {
+    "path": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch",
+    "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "dirty_state": "W13-103 closeout records and helpers before final commit"
+  },
+  "live_runtime": {
+    "url": "https://join.onetimeonetime.com",
+    "version": "w13-102-resend-webhook-007e021",
+    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "target_app": "one-time",
+    "health": "ok",
+    "ready": "ok",
+    "latest_migration": "2203_w13_100_student_gamification",
+    "web_deployment_id": "9334b362-f00d-4170-9713-ecee0d22b85c",
+    "runtime_replaced_during_w13_103": false,
+    "optional_email_transport": "disabled_private_handoff",
+    "optional_whatsapp_transport": "disabled",
+    "optional_support_bridge": "disabled"
+  },
+  "fresh_backup_restore": {
+    "status": "passed",
+    "deployment_id": "7bfb281b-9166-421b-9410-9bf6b5280f36",
+    "postgres_version": "18.4",
+    "dump_sha256": "0c839090ca962711fc3aac0878ecae9741a510ed19d771e61e8f8280610cc189",
+    "latest_migration": "2203_w13_100_student_gamification",
+    "table_hash_match": true,
+    "migration_ledger_hash_match": true
+  },
+  "notes": [
+    "Director handoff files predate W13-102 and were used only for invariants.",
+    "Live runtime and PR #91 readbacks are authoritative for this W13-103 run.",
+    "No private identifiers, setup/reset links, secrets, database URLs, or raw production rows are stored in this file."
+  ]
+}

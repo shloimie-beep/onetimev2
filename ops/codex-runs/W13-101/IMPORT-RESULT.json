@@ -1,0 +1,17 @@
+{
+  "schema_version": "onetime.w13_101.import_result.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T19:25:46.855Z",
+  "status": "pending_no_accepted_production_apply_manifest",
+  "approved_manifest_found": false,
+  "production_import_performed": false,
+  "counts": {
+    "source_files": 0,
+    "preview_rows": 0,
+    "rehearsed_rows": 0,
+    "imported_rows": 0,
+    "quarantined_rows": 0,
+    "rolled_back_rows": 0
+  },
+  "notes": "OPS-13A artifacts exist only as preflight inputs in prior W12 records; no accepted production apply manifest/hash/count gate was present for this W13-101 run. No CRM import was applied."
+}

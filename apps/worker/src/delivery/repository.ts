@@ -112,7 +112,7 @@ UPDATE onetime.outbox_events
  WHERE id = $1
    AND account_key = $7
    AND product_key = $8
-   AND transport_mode = 'sink'
+   AND transport_mode = $9
    AND status = 'processing'
    AND next_attempt_at = $5::timestamptz
    AND next_attempt_at > $6::timestamptz
@@ -322,6 +322,7 @@ export class PostgresDeliveryRepository implements DeliveryRepository {
         outcome.at,
         claim.accountKey,
         claim.productKey,
+        claim.transportMode,
       ]);
       if (!updated.rowCount) {
         await client.query('COMMIT');

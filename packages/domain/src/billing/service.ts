@@ -328,7 +328,15 @@ export function createBillingServices(deps: BillingServicesDeps) {
       if (!principal.ok) return principal;
       const account = providerAccount();
       if (!account.ok) return account;
-      const provider = await deps.providerAdapter.reconcileBillingPrincipal(principal.value);
+      let provider;
+      try {
+        provider = await deps.providerAdapter.reconcileBillingPrincipal(principal.value);
+      } catch {
+        provider = {
+          status: 'failed' as const,
+          reason: 'provider_unavailable',
+        };
+      }
       const status = provider.status === 'succeeded' ? 'succeeded' : 'failed';
       const reconciliationKey = await deps.repositories.createReconciliation({
         principal: principal.value,

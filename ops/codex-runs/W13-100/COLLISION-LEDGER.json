@@ -1,0 +1,110 @@
+{
+  "schema_version": "onetime.w13_100.collision_ledger.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "updated_at": "2026-07-17T19:09:41Z",
+  "status": "checkpoint_ready",
+  "collisions": [
+    {
+      "id": "COL-W13-100-001",
+      "area": "release ancestry",
+      "refs": [
+        "origin/integration/w12-100-launch-readiness-convergence-20260717",
+        "origin/codex/w13-10-complete-launch-foundations"
+      ],
+      "finding": "W13-10 and W12-100 both descend from W12-99 but neither is ancestor of the other.",
+      "decision": "Start from W12-100 and semantically recover W13-10."
+    },
+    {
+      "id": "COL-W13-100-002",
+      "area": "director records",
+      "refs": ["ops/director/*"],
+      "finding": "W13-10 director files were older than W12-100 convergence director truth.",
+      "decision": "Preserved W12-100 director records and represented W13-10 recovery in ops/codex-runs/W13-100 and imported W13-10 run artifacts."
+    },
+    {
+      "id": "COL-W13-100-003",
+      "area": "config and environment contract",
+      "refs": [".env.example", "packages/config/src/index.ts"],
+      "finding": "W12-100 added provider-capable outbox transport while W13-10 added runtime/provider authorization and budget controls.",
+      "decision": "Kept W12-100 OUTBOX provider support, added W13-10 provider mode, authorization, staging proof, budget, and timeout keys, and preserved production fail-closed guards."
+    },
+    {
+      "id": "COL-W13-100-004",
+      "area": "provider delivery router",
+      "refs": [
+        "apps/worker/src/delivery/provider-config.ts",
+        "apps/worker/src/delivery/provider-router.ts",
+        "packages/domain/src/delivery/retry.ts"
+      ],
+      "finding": "W12-100 provider transport used explicit environment, allowlist, canary, and receipt-cache gates while W13-10 added a provider activation policy and attempt idempotency.",
+      "decision": "Composed both layers: hard transport/environment/idempotency gates run first, W13 activation policy runs before adapter invocation, accepted receipts remain cached, and retry classification accepts both legacy and W13 blocker codes."
+    },
+    {
+      "id": "COL-W13-100-005",
+      "area": "public signup and legal generation",
+      "refs": ["apps/web/src/client/public/public-entry.ts", "scripts/build-public-pages.ts"],
+      "finding": "W12-100 public signup markup and legal-document renderer conflicted with W13-10 hidden consent fields and separate notice renderer.",
+      "decision": "Kept W12-100 visible channel-specific signup controls, added W13-10 consent_context payload, generated /communications-consent and /student-data through the shared legal-document renderer, and surfaced counsel_review_required in legal metadata."
+    },
+    {
+      "id": "COL-W13-100-006",
+      "area": "tests",
+      "refs": [
+        "tests/unit/delivery/provider-transport.test.ts",
+        "tests/unit/w13-10/delivery-activation-policy.test.ts",
+        "tests/e2e/w13-10/public-consent-legal.spec.ts"
+      ],
+      "finding": "Provider tests disagreed on blocker vocabulary and idempotency key shape; public consent tests disagreed with the merged DOM.",
+      "decision": "Updated expectations to W13 activation blocker vocabulary and attempt-scoped provider keys while preserving no-repeat provider calls for cached accepted receipts; public tests now assert merged visible labels and legal routes."
+    },
+    {
+      "id": "COL-W13-100-007",
+      "area": "W12-09 ancestry and director records",
+      "refs": ["origin/codex/w12-09-student-gamification", "ops/codex-runs/W13-100/*"],
+      "finding": "The W12-09 branch carried useful gamification work but was based on an older release/ops10 line and would delete W12-100/W13 records and migrations if mechanically merged.",
+      "decision": "Skipped mechanical merge; ported only safe W12-09 gamification semantics onto the W13-100 branch."
+    },
+    {
+      "id": "COL-W13-100-008",
+      "area": "migrations",
+      "refs": [
+        "packages/db/migrations/2200_w12_09_student_gamification.sql",
+        "packages/db/migrations/2203_w13_100_student_gamification.sql"
+      ],
+      "finding": "W12-09 introduced migration prefix 2200 after W12-100 already occupied later migration space.",
+      "decision": "Rebased the gamification schema into additive migration 2203 and verified no duplicate migration prefixes across 39 migration files."
+    },
+    {
+      "id": "COL-W13-100-009",
+      "area": "portal and class contracts",
+      "refs": [
+        "packages/contracts/src/portals/index.ts",
+        "packages/domain/src/portals/services.ts",
+        "packages/db/src/gamification/repository.ts"
+      ],
+      "finding": "W12-09 added strict gamification summaries beside existing portal rewards/progress and existing portal-test-lab reward reasons.",
+      "decision": "Made gamification optional in portal dashboards, preserved existing progress/reward fields, injected a portal gamification adapter, and filtered legacy reward reasons out of the strict gamification reason-code summary."
+    },
+    {
+      "id": "COL-W13-100-010",
+      "area": "visible actions and owner app route composition",
+      "refs": [
+        "apps/web/src/server/app.ts",
+        "apps/web/src/client/app/crm-entry.tsx",
+        "ops/day-one/visible-action-registry.json"
+      ],
+      "finding": "W12-09 introduced owner/admin reward administration and parent reward-goal creation that needed visible-action and route coverage.",
+      "decision": "Added /app/rewards, rewards refresh/open actions, and parent reward-goal form registry entries without changing existing owner routes."
+    },
+    {
+      "id": "COL-W13-100-011",
+      "area": "browser tests",
+      "refs": [
+        "tests/e2e/w12-03-portal-test-lab.spec.ts",
+        "tests/e2e/w13-10/public-consent-legal.spec.ts"
+      ],
+      "finding": "Merged gamification text created strict-selector collisions for generic progress labels; legal pages exposed multiple counsel-review metadata markers.",
+      "decision": "Scoped the portal test to exact metric cells and the legal test to the first visible main-region counsel marker while leaving product behavior unchanged."
+    }
+  ]
+}

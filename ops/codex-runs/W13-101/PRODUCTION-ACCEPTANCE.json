@@ -1,0 +1,54 @@
+{
+  "schema_version": "onetime.w13_101.production_acceptance.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T19:25:46.855Z",
+  "status": "core_routes_live_optional_capabilities_pending",
+  "checks": [
+    {
+      "id": "production_health_ready_version",
+      "status": "passed",
+      "evidence": "live /health 200, /ready 200 latest=2203_w13_100_student_gamification, /version exact runtime SHA"
+    },
+    {
+      "id": "production_public_landing",
+      "status": "passed",
+      "evidence": "https://join.onetimeonetime.com/ returned 200"
+    },
+    {
+      "id": "production_auth_pages",
+      "status": "passed",
+      "evidence": "login, forgot-password, activate, and reset-password returned 200 with no-store/private cache controls"
+    },
+    {
+      "id": "production_protected_route_denial",
+      "status": "passed",
+      "evidence": "dashboard, parent, and student app routes redirect to login; parent/student/session APIs return 401 without a session"
+    },
+    {
+      "id": "production_worker_heartbeat",
+      "status": "passed",
+      "evidence": "production-postdeploy audit found worker_heartbeats latest at 2026-07-18T19:20Z and zero ready/dead-letter outbox rows"
+    },
+    {
+      "id": "production_optional_dependencies_disabled",
+      "status": "passed",
+      "evidence": "/ready reports email, WhatsApp, and support bridge disabled by runtime flag"
+    },
+    {
+      "id": "production_pwa_manifests",
+      "status": "not_applicable",
+      "evidence": "No One Time app route/test coverage exists for /manifest.json, /parent-manifest.json, or /operations-manifest.json"
+    }
+  ],
+  "role_journeys": {
+    "admin": "partially_satisfied_prior_ops11_protected_activation_sent_current_live_login_not_completed_by_codex",
+    "parent": "staging_full_journey_passed_production_unauthenticated_isolation_passed_live_login_pending_accepted_production_identity_path",
+    "student": "staging_full_journey_passed_production_unauthenticated_isolation_passed_live_login_pending_accepted_production_identity_path"
+  },
+  "private_values_in_evidence": false,
+  "evidence_files": [
+    "ops/codex-runs/W13-101/evidence/production-postdeploy-audit.json",
+    "ops/codex-runs/W13-101/evidence/production-route-auth-smoke.json",
+    "C:/Users/User/.onetime-w13-101-private/production-runtime-env.private.json"
+  ]
+}

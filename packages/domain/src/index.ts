@@ -1,5 +1,13 @@
 export { campaignTicker } from './landing/campaign.ts';
 export { campaign, landingContent, sharedNav } from './landing/content.ts';
+export {
+  communicationConsentNotice,
+  legalPolicyMetadata,
+  parentGuardianStudentDataNotice,
+  privacyDataCategories,
+  privacyNotice,
+  termsOfUse,
+} from './legal/index.ts';
 export { captureLead, IdempotencyConflictError } from './lead/service.ts';
 export {
   normalizeEmail,
@@ -259,6 +267,15 @@ export {
   fingerprint as portalFingerprint,
   type PortalServiceDeps,
 } from './portals/services.ts';
+export {
+  createGamificationService,
+  createPortalGamificationAdapter,
+  emptyGamificationSummary,
+  type GamificationEventRow,
+  type GamificationLearnerSnapshot,
+  type GamificationRepository,
+  type GamificationService,
+} from './gamification/service.ts';
 export {
   STUDENT_CLASS_HELPER_NO_SOURCE,
   STUDENT_CLASS_HELPER_OUTSIDE_SCOPE,

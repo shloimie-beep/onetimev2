@@ -1,0 +1,43 @@
+{
+  "schema_version": "onetime.w13_103.authorization_status.v1",
+  "run_id": "W13-103",
+  "status": "complete",
+  "terminal_status": "PRODUCTION_ROLE_ACCESS_READY",
+  "authorized": {
+    "counts_only_production_discovery": true,
+    "fresh_native_backup_and_restore_proof": true,
+    "bounded_identity_access_mutations": true,
+    "protected_local_setup_link_handoff_when_resend_unavailable": true,
+    "railway_private_network_one_off_task": true,
+    "task_owned_commits_push_pr_update": true
+  },
+  "not_authorized": {
+    "contact_rabbi": true,
+    "broad_sends": true,
+    "crm_import": true,
+    "live_charges": true,
+    "provider_canaries_without_protected_approval": true,
+    "password_hash_copy": true,
+    "permanent_auth_bypass": true,
+    "print_or_commit_private_material": true
+  },
+  "production_apply_requirements": {
+    "exact_verified_production_lineage": "passed",
+    "expected_runtime_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "expiring_private_authorization_manifest": "passed",
+    "explicit_one_time_production_authorization": "passed",
+    "apply_gate": "passed",
+    "account_product_role_allowlists": "passed",
+    "hard_mutation_budget": "passed",
+    "database_advisory_lock": "used",
+    "transactional_and_idempotent_execution": "used",
+    "redacted_audit_evidence": "complete"
+  },
+  "private_manifest_path": "C:\\Users\\User\\.onetime-w13-103-private\\identity-authorization.private.json",
+  "private_handoff_path": "C:\\Users\\User\\.onetime-w13-103-private\\LOGIN-HANDOFF.private.json",
+  "notes": [
+    "Resend remained unavailable/disabled, so final role access was delivered through the authorized protected local handoff.",
+    "No destination was contacted merely because it existed.",
+    "No Rabbi contact, broad send, CRM import, live charge, password hash copy, or permanent auth bypass occurred."
+  ]
+}

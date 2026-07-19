@@ -63,15 +63,19 @@ export type StripeTestClient = {
       params: Record<string, unknown>,
       options: { idempotencyKey: string },
     ): Promise<{ id: string; livemode?: boolean }>;
-    retrieve(providerCustomerRef: string): Promise<{ id: string; deleted?: boolean } | null>;
+    retrieve(
+      providerCustomerRef: string,
+    ): Promise<{ id: string; deleted?: boolean; livemode?: boolean } | null>;
   };
   subscriptions: {
     retrieve(
       providerSubscriptionRef: string,
-    ): Promise<{ id: string; status: BillingSubscriptionStatus } | null>;
+    ): Promise<{ id: string; status: BillingSubscriptionStatus; livemode?: boolean } | null>;
   };
   invoices: {
-    retrieve(providerInvoiceRef: string): Promise<{ id: string; status: string } | null>;
+    retrieve(
+      providerInvoiceRef: string,
+    ): Promise<{ id: string; status: string; livemode?: boolean } | null>;
   };
 };
 
@@ -231,11 +235,17 @@ export function createStripeTestBillingProviderAdapter(
       assertNoLiveReference('stripe customer', providerCustomerRef);
       const customer = await options.client.customers.retrieve(providerCustomerRef);
       if (!customer || customer.deleted) return null;
+      rejectLiveMode(Boolean(customer.livemode));
+      assertNoLiveReference('stripe customer', customer.id);
       return { provider_customer_ref: customer.id };
     },
     async retrieveSubscription(providerSubscriptionRef: string) {
       assertNoLiveReference('stripe subscription', providerSubscriptionRef);
       const subscription = await options.client.subscriptions.retrieve(providerSubscriptionRef);
+      if (subscription) {
+        rejectLiveMode(Boolean(subscription.livemode));
+        assertNoLiveReference('stripe subscription', subscription.id);
+      }
       return subscription
         ? { provider_subscription_ref: subscription.id, status: subscription.status }
         : null;
@@ -243,6 +253,10 @@ export function createStripeTestBillingProviderAdapter(
     async retrieveInvoice(providerInvoiceRef: string) {
       assertNoLiveReference('stripe invoice', providerInvoiceRef);
       const invoice = await options.client.invoices.retrieve(providerInvoiceRef);
+      if (invoice) {
+        rejectLiveMode(Boolean(invoice.livemode));
+        assertNoLiveReference('stripe invoice', invoice.id);
+      }
       return invoice ? { provider_invoice_ref: invoice.id, status: invoice.status } : null;
     },
     async reconcileBillingPrincipal(_principal: BillingPrincipalRef) {

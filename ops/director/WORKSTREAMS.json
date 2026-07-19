@@ -1,10 +1,13 @@
 {
   "schema_version": "onetime.director.workstreams.v1",
-  "generated_at": "2026-07-17T13:32:48+03:00",
+  "generated_at": "2026-07-17T17:17:56.257Z",
   "base": {
     "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
-    "run_w12_99_last": true
+    "run_w12_99_last": true,
+    "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "w12_99_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "w12_100_owns_launch_readiness": true
   },
   "parallel_w12_lanes": [
     {
@@ -12,100 +15,198 @@
       "title": "Canonical director handoff",
       "owner_scope": "ops/director/** and ops/codex-runs/W12-00/**",
       "branch": "codex/w12-00-canonical-director-handoff",
-      "status": "draft_pr_open",
+      "head": "d22b68381f53686efb0badcce159f966e3167fe2",
+      "status": "integrated_in_w12_99",
       "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/63",
-      "notes": "This branch owns durable director memory, not product implementation."
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-01",
       "title": "CRM audience import",
-      "owner_scope": "import/reconciliation domain, scripts, tests",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-01-crm-audience-import",
-      "status": "local_branch_seen_not_pushed",
-      "notes": "Real bulk import remains unauthorized until exact counts/conflicts/rollback are approved."
+      "head": "f31316dcb55a53b3ab4f77e7dc79988f2c988dfe",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/68",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-02",
       "title": "Communication history",
-      "owner_scope": "communications adapters/domain/UI",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-02-communication-history",
-      "status": "local_branch_seen_not_pushed",
-      "notes": "Must not record raw message bodies or broad-send evidence."
+      "head": "5c412373b3a317f1197ab50dffcf5352c2f97a2e",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/66",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-03",
       "title": "Portal test lab",
-      "owner_scope": "portal routes/UI/fixtures/tests",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-03-portal-test-lab",
-      "status": "local_branch_seen_not_pushed",
-      "notes": "Must use separate synthetic parent/student identities, not admin impersonation."
+      "head": "5bed730705f92a07647bd6eb3672952a47a4a075",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/70",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-04",
       "title": "Content, Vimeo, classroom",
-      "owner_scope": "content/classroom/provider seams/UI",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-04-content-vimeo-classroom",
-      "status": "local_branch_seen_not_pushed",
-      "notes": "Protected Vimeo/Zoom canaries require explicit bounded approval."
+      "head": "373f6d55f6a636922d08b994b5dee28ff7bf6aa9",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/64",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-05",
       "title": "Telegram operations",
-      "owner_scope": "Telegram runtime, capabilities, audit",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-05-telegram-operations",
-      "status": "local_branch_seen_not_pushed",
-      "notes": "Do not expose bot tokens or operator private mappings."
+      "head": "fcdfcd3a93b2174d62298099ebefa39ac2e7c34d",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/65",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-06",
       "title": "WhatsApp lead assistant",
-      "owner_scope": "WhatsApp runtime, lead persistence, handoff",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-06-whatsapp-lead-assistant",
-      "status": "local_branch_seen_not_pushed",
-      "notes": "No broad sends or public provider activation without explicit approval."
+      "head": "fbc5c2f7304fec23d41e44e3f141f9b6abbade9f",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/62",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-07",
       "title": "Premium landing",
-      "owner_scope": "public landing/assets/styles/visual tests",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-07-premium-landing",
-      "status": "not_seen_locally_or_remotely",
-      "notes": "Must preserve One Time black/yellow brand and mobile CTA rules."
+      "head": "7d1196b03cfdb6828b376486c196a43b7ab9df32",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/69",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
     {
       "lane": "W12-08",
       "title": "Admin classroom productization",
-      "owner_scope": "admin dashboard/class detail UI and APIs",
+      "owner_scope": "See lane packet; integrated by W12-99.",
       "branch": "codex/w12-08-admin-classroom-productization",
-      "status": "local_branch_seen_not_pushed",
-      "notes": "Do not create BNA-coupled admin controls."
+      "head": "4c29c6c665f9094f1d83f332c40316e0d2bce18f",
+      "status": "integrated_in_w12_99",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/67",
+      "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+      "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
+    },
+    {
+      "lane": "W12-09",
+      "title": "Student gamification",
+      "owner_scope": "Not integrated unless explicitly scoped by a later decision.",
+      "branch": "codex/w12-09-student-gamification",
+      "head": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
+      "status": "excluded_pending_explicit_decision",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/71",
+      "notes": "Excluded from W12-99 and this W12-100-00 operations lane."
+    },
+    {
+      "lane": "OPS-13A",
+      "title": "Real-data and provider preflight",
+      "owner_scope": "ops/codex-runs/OPS-13A/**",
+      "branch": "codex/ops13a-real-data-provider-preflight",
+      "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
+      "status": "available_preflight_input_not_acceptance_proof",
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/72",
+      "notes": "Eight sanitized artifacts integrated by W12-100-00; OPS-13B was not run."
     },
     {
       "lane": "W12-99",
       "title": "Semantic convergence",
       "owner_scope": "shared hotspots and release proof",
       "branch": "integration/w12-final-convergence-20260717T123715Z",
+      "head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "status": "pushed_draft_pr_open",
-      "notes": "Includes W12-00 through W12-08. Excludes W12-09, OPS-13A, and BNA P1/P2/P3. Staging deploy, real import, and provider canaries remain W12-100 work."
+      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+      "notes": "Includes W12-00 through W12-08. Excludes W12-09 and BNA P1/P2/P3. Staging deploy, real import, and provider canaries remain W12-100 work."
+    },
+    {
+      "lane": "W12-100-00",
+      "title": "Director and OPS-13A convergence",
+      "owner_scope": "ops/director/**, ops/codex-runs/OPS-13A/**, ops/codex-runs/W12-100-00/**",
+      "branch": "codex/w12-100-00-director-and-ops13a-convergence",
+      "status": "in_progress_operations_record_lane",
+      "notes": "Operations records only: integrate OPS-13A artifacts and refresh director truth. Does not deploy, import, run provider canaries, or run OPS-13B."
     }
   ],
   "convergence_order": [
-    "Establish exact accepted release source and rollback point.",
-    "Integrate premium landing changes.",
-    "Integrate admin/dashboard productization.",
-    "Integrate canonical contact/tag/import schema and dry-run tooling.",
-    "Integrate historical communications against canonical contact identifiers.",
-    "Integrate portal identities/household fixtures.",
-    "Integrate content, classes, Vimeo, transcript, knowledge, and portal display.",
-    "Integrate Telegram operations.",
-    "Integrate WhatsApp assistant and connect the landing launcher.",
-    "Reconcile root exports, server composition, navigation, design tokens, package/lockfiles, migration numbering, and CI.",
-    "Run full PostgreSQL, unit, integration, browser, accessibility, privacy, performance, bundle, secret, and visual gates.",
-    "Deploy one exact candidate SHA to isolated staging.",
-    "Run full owner/admin/parent/student journeys.",
-    "Produce counts-only real-audience import preview and conflict report.",
+    "Use W12-99 head 0d8d7168f066668f035176d777bdaaa4dcc5accd as the candidate input, not main, PR #61, PR #72, or an individual W12 lane branch.",
+    "Treat W12-00 through W12-08 as integrated by W12-99.",
+    "Keep W12-09 excluded until an explicit operator decision adds it to scope.",
+    "Use OPS-13A only as a sanitized preflight input; it is not import acceptance or provider acceptance proof.",
+    "Do not run OPS-13B unless a later prompt explicitly scopes it.",
+    "Deploy one exact candidate SHA to isolated staging only in the W12-100 launch-proof lane.",
+    "Run full owner/admin/parent/student journeys only after isolated staging exists.",
+    "Produce counts-only real-audience import preview and conflict report before any write-stage approval.",
+    "Do not treat source metadata row counts as deduplicated people counts.",
     "Apply real audience data only after explicit approval of exact counts/conflicts/rollback.",
     "Run one-recipient protected provider canaries only with explicit authorization and protected credentials.",
-    "Promote the exact verified build only after rollback/readiness proof."
-  ]
+    "Promote the exact verified build only after rollback/readiness proof.",
+    "Keep BNA on its separate convergence train unless a later One Time prompt explicitly scopes a bridge contract."
+  ],
+  "w12_100_convergence": {
+    "schema_version": "onetime.director.w12_100_convergence_ref.v1",
+    "generated_at": "2026-07-17T17:17:56.257Z",
+    "branch": "integration/w12-100-launch-readiness-convergence-20260717",
+    "base_w12_99_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "integrated_head_before_closeout": "4112930380fc9ae5bcdac9f316246e285cc93b35",
+    "accepted_lanes": [
+      "W12-100-00",
+      "W12-100-01",
+      "W12-100-02",
+      "W12-100-03",
+      "W12-100-04",
+      "W12-100-06",
+      "W12-100-07",
+      "W12-100-08",
+      "W12-100-09",
+      "W12-100-10",
+      "W12-100-11",
+      "W12-100-12",
+      "W12-100-13-assessment-only"
+    ],
+    "skipped_lanes": [
+      {
+        "lane": "W12-100-05",
+        "reason": "Skipped because lane STATE/FINAL-REPORT classify it blocked_environment_or_rehearsal."
+      },
+      {
+        "lane": "PR-71 / W12-09 gamification product code",
+        "reason": "Skipped because W12-100-13 recommends deferral and the operator did not explicitly approve PR #71 integration."
+      },
+      {
+        "lane": "PR-72 direct merge",
+        "reason": "Not merged directly; the exact eight OPS-13A files entered through W12-100-00 as requested."
+      }
+    ],
+    "draft_pr_target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
+    "deploy_performed": false,
+    "marked_ready": false,
+    "artifacts_dir": "ops/codex-runs/W12-100-CONVERGENCE",
+    "validation_summary": {
+      "local_non_database_gates": "passed",
+      "db_verify": "blocked_missing_database_url",
+      "postgres_16": "blocked_missing_local_postgres_docker_psql",
+      "postgres_18": "blocked_missing_local_postgres_docker_psql"
+    }
+  }
 }

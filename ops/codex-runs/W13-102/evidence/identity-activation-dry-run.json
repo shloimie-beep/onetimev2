@@ -1,0 +1,76 @@
+{
+  "schema": "onetime.w13_102.production_identity_activation.v1",
+  "generated_at": "2026-07-18T20:18:04.529Z",
+  "run_id": "W13-102",
+  "apply": false,
+  "status": "dry_run_blocked",
+  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "railway": {
+    "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+    "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+    "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d"
+  },
+  "missing_field_names_only": [
+    "recipients.owner.destination",
+    "recipients.administrator.destination",
+    "recipients.parent.destination",
+    "recipients.student.learner_display_identity",
+    "recipients.student.parent_managed_destination"
+  ],
+  "blockers": ["authorization_expiry_invalid"],
+  "roles": [
+    {
+      "role": "owner",
+      "lifecycle_role": "owner",
+      "destination_ref": null,
+      "operation": "blocked",
+      "status": "blocked",
+      "reason_code": "manifest_or_gate_blocker",
+      "idempotency_key": null
+    },
+    {
+      "role": "administrator",
+      "lifecycle_role": "admin",
+      "destination_ref": null,
+      "operation": "blocked",
+      "status": "blocked",
+      "reason_code": "manifest_or_gate_blocker",
+      "idempotency_key": null
+    },
+    {
+      "role": "parent",
+      "lifecycle_role": "parent",
+      "destination_ref": null,
+      "operation": "blocked",
+      "status": "blocked",
+      "reason_code": "manifest_or_gate_blocker",
+      "idempotency_key": null
+    },
+    {
+      "role": "student",
+      "lifecycle_role": "student",
+      "destination_ref": null,
+      "operation": "blocked",
+      "status": "blocked",
+      "reason_code": "manifest_or_gate_blocker",
+      "idempotency_key": null
+    }
+  ],
+  "external_effects": {
+    "production_database_writes": 0,
+    "external_sends": 0,
+    "private_fallback_links": 0
+  },
+  "safety": {
+    "dry_run_default": true,
+    "exact_railway_identity_required": true,
+    "expected_runtime_sha_required": true,
+    "ephemeral_authorization_required_for_apply": true,
+    "private_manifest_required": true,
+    "advisory_lock_required_for_apply": true,
+    "raw_tokens_printed": false,
+    "raw_urls_printed": false,
+    "secrets_printed": false,
+    "pii_printed": false
+  }
+}

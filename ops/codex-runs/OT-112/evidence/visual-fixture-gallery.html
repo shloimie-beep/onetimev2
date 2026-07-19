@@ -174,6 +174,9 @@
         display: grid;
         gap: 10px;
       }
+      .ot-helper-panel {
+        align-content: start;
+      }
       .ot-question-form {
         display: grid;
         gap: 10px;
@@ -275,6 +278,28 @@
         color: #fff6bf;
         border-radius: 8px;
         padding: 10px 12px;
+      }
+      .ot-helper-answer,
+      .ot-private-preview {
+        background: #191919;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .ot-helper-answer p,
+      .ot-private-preview p {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      .ot-citation-list {
+        display: grid;
+        gap: 6px;
+        margin: 10px 0 0;
+        padding-left: 20px;
+      }
+      .ot-citation-list a {
+        color: var(--ot-portal-ice);
+        overflow-wrap: anywhere;
       }
       .ot-metrics {
         display: grid;
@@ -380,6 +405,124 @@
         color: #ffffff;
         font-weight: 800;
       }
+      .ot-gamification {
+        gap: 14px;
+      }
+      .ot-celebration,
+      .ot-level-card,
+      .ot-streak-card,
+      .ot-reward-form {
+        background: #191919;
+        border: 1px solid rgba(255, 210, 31, 0.2);
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .ot-celebration {
+        display: grid;
+        gap: 4px;
+        color: #ffffff;
+      }
+      .ot-celebration span,
+      .ot-guardrail-note {
+        color: var(--ot-portal-muted);
+        overflow-wrap: anywhere;
+      }
+      .ot-level-card {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr;
+        align-items: center;
+      }
+      .ot-level-card h3,
+      .ot-level-card p {
+        margin: 0;
+      }
+      .ot-progress-bars,
+      .ot-reward-form {
+        display: grid;
+        gap: 10px;
+      }
+      .ot-progress-meter {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        color: var(--ot-portal-muted);
+      }
+      .ot-progress-meter > span {
+        grid-column: 1 / -1;
+      }
+      .ot-progress-meter > div {
+        min-width: 0;
+        height: 10px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+      }
+      .ot-progress-meter i {
+        display: block;
+        height: 100%;
+        background: var(--ot-portal-yellow);
+        border-radius: 999px;
+      }
+      .ot-progress-meter strong {
+        color: #ffffff;
+        font-size: 0.9rem;
+      }
+      .ot-streak-grid,
+      .ot-badge-list {
+        display: grid;
+        gap: 10px;
+      }
+      .ot-streak-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .ot-streak-card {
+        display: grid;
+        gap: 4px;
+      }
+      .ot-streak-card strong,
+      .ot-badge {
+        color: #ffffff;
+      }
+      .ot-streak-card span,
+      .ot-streak-card small {
+        color: var(--ot-portal-muted);
+      }
+      .ot-badge-list {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+      .ot-badge {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        border-radius: 999px;
+        padding: 6px 10px;
+        background: rgba(255, 210, 31, 0.16);
+        border: 1px solid rgba(255, 210, 31, 0.34);
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+      .ot-badge.tone-ice {
+        background: rgba(156, 231, 240, 0.14);
+        border-color: rgba(156, 231, 240, 0.36);
+      }
+      .ot-badge.tone-success {
+        background: rgba(99, 210, 149, 0.14);
+        border-color: rgba(99, 210, 149, 0.36);
+      }
+      .ot-milestone[data-status='earned'] {
+        border-color: rgba(99, 210, 149, 0.4);
+      }
+      .ot-item[data-reversal='true'] {
+        border-color: rgba(255, 105, 120, 0.46);
+      }
+      .ot-reward-form {
+        grid-template-columns: 1fr;
+        align-items: end;
+      }
       @media (max-width: 760px) {
         .ot-portal {
           padding: 14px;
@@ -394,6 +537,10 @@
         }
         .ot-grid-parent,
         .ot-grid {
+          grid-template-columns: 1fr;
+        }
+        .ot-streak-grid,
+        .ot-progress-meter {
           grid-template-columns: 1fr;
         }
       }
@@ -978,16 +1125,19 @@
       .contact-form-shell,
       .dashboard-surface,
       .readonly-list,
+      .class-detail,
       .action-registry {
         min-width: 0;
       }
 
-      .dashboard-surface {
+      .dashboard-surface,
+      .class-detail {
         display: grid;
         gap: 14px;
       }
 
       .dashboard-grid,
+      .class-detail-grid,
       .action-registry-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -1068,13 +1218,32 @@
         border-color: #ede518;
       }
 
+      .state-action_needed {
+        border-color: #ede518;
+      }
+
+      .state-processing {
+        border-color: #86e8ff;
+      }
+
+      .state-not_connected,
       .state-needs_setup {
         border-color: #86e8ff;
       }
 
+      .state-no_data_yet,
       .state-unavailable {
         border-color: #66777d;
         background: #101719;
+      }
+
+      .state-temporarily_unavailable {
+        border-color: #66777d;
+        background: #101719;
+      }
+
+      .state-ready {
+        border-color: #65d6a6;
       }
 
       .readonly-list {
@@ -1112,6 +1281,25 @@
       .action-registry {
         display: grid;
         gap: 10px;
+      }
+
+      .diagnostics-disclosure {
+        border: 1px solid #34464d;
+        border-radius: 12px;
+        background: #0d1a20;
+        padding: 12px 14px;
+      }
+
+      .diagnostics-disclosure summary {
+        min-height: 44px;
+        cursor: pointer;
+        color: #ffffff;
+        font-weight: 900;
+        line-height: 44px;
+      }
+
+      .diagnostics-disclosure[open] summary {
+        margin-bottom: 10px;
       }
 
       .action-registry h2 {
@@ -1557,6 +1745,89 @@
         line-height: 1.5;
       }
 
+      .fact-list,
+      .compact-list,
+      .timeline-list,
+      .support-ticket-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .fact-list {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        margin-top: 10px;
+      }
+
+      .fact-list span,
+      .compact-list li,
+      .timeline-list li,
+      .support-ticket-list a,
+      .reply-preview {
+        min-width: 0;
+        border: 1px solid #34464d;
+        border-radius: 8px;
+        background: #071117;
+        padding: 10px;
+      }
+
+      .compact-list,
+      .timeline-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .compact-list li,
+      .timeline-list li,
+      .support-ticket-list a {
+        display: grid;
+        gap: 4px;
+        color: #f8fafb;
+        text-decoration: none;
+      }
+
+      .compact-list span,
+      .timeline-list span,
+      .support-ticket-list span,
+      .support-ticket-list small {
+        color: #c8d6d9;
+      }
+
+      .detail-columns,
+      .support-layout,
+      .form-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .inline-editor,
+      .support-form {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .inline-editor label,
+      .support-form label {
+        display: grid;
+        gap: 6px;
+      }
+
+      .inline-editor textarea,
+      .support-form textarea {
+        min-height: 96px;
+        resize: vertical;
+      }
+
+      .support-shell {
+        display: grid;
+        gap: 14px;
+      }
+
+      .support-ticket-list {
+        align-content: start;
+      }
+
       .state-panel {
         display: grid;
         gap: 10px;
@@ -1690,6 +1961,11 @@
         .action-registry-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+
+        .detail-columns,
+        .form-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
       }
 
       @media (min-width: 900px) {
@@ -1708,6 +1984,11 @@
 
         .dashboard-grid {
           grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .support-layout {
+          grid-template-columns: minmax(0, 1fr) minmax(260px, 0.38fr);
+          align-items: start;
         }
       }
 
@@ -2066,7 +2347,7 @@ This fictional long message wraps inside the form without resizing the layout.</
             <figure class="ot-media-frame" data-ot-primitive="MediaFrame">
               <div>
                 <img
-                  src="file:///C:/Users/User/.overnight-20260717-worktrees/OT-112/apps/web/public/assets/outcomes/clarity-class.webp"
+                  src="file:///C:/Users/User/OneTimeOneTime-w13-100-final-launch/apps/web/public/assets/outcomes/clarity-class.webp"
                   alt="Fictional clarity class fixture"
                 />
               </div>

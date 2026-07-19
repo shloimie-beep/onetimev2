@@ -66,7 +66,7 @@ export function evaluateDeliveryEligibility(
   protectedOwnerEmail: string | undefined,
 ): DeliveryEligibility {
   const expectedChannel = supportedChannelForEvent(claim.eventType);
-  if (!expectedChannel || expectedChannel !== claim.channel || claim.transportMode !== 'sink') {
+  if (!expectedChannel || expectedChannel !== claim.channel) {
     return {
       kind: 'skipped',
       channel: claim.channel,

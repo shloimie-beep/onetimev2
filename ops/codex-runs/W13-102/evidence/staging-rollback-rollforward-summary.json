@@ -1,0 +1,118 @@
+{
+  "schema": "onetime.w13_102.staging_rollback_rollforward_summary.v1",
+  "updated_at": "2026-07-19T00:45:00+03:00",
+  "status": "passed",
+  "staging_url": "https://ot99-web-staging.up.railway.app",
+  "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+  "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+  "services": {
+    "web": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+    "worker": "76e7fdc2-99b9-4a82-ba55-5dff3723398f"
+  },
+  "transport_safety": {
+    "outbox_transport_mode": "sink",
+    "delivery_provider_mode": "sink",
+    "one_time_delivery_provider_transport_enabled": false,
+    "one_time_resend_transport_enabled": false,
+    "one_time_resend_webhook_enabled": false,
+    "real_email_transport_enabled": false,
+    "real_whatsapp_transport_enabled": false,
+    "real_telegram_transport_enabled": false,
+    "payment_transport_enabled": false,
+    "zoom_classroom_real_provider_enabled": false,
+    "support_delivery_mode": "disabled"
+  },
+  "candidate_before_rollback": {
+    "source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "version": "w13-102-resend-webhook-007e021",
+    "web": {
+      "deployment_id": "7b493142-1c10-460d-a168-c5e48165e0b5",
+      "status": "SUCCESS",
+      "config_file": "/railway.web.staging.json",
+      "image_digest": "sha256:3105f506ab7315ab2217bd3a2e0b9c450513df2fdf99d5324532b27c0aed265b"
+    },
+    "worker": {
+      "deployment_id": "cfccbe3a-0952-4f99-89a0-99ff6a412ebe",
+      "status": "SUCCESS",
+      "config_file": "/railway.worker.staging.json",
+      "image_digest": "sha256:179bd050ae7938c83d3a92a6c73ac7162832363faf113a752d732363b402b027"
+    }
+  },
+  "rollback_rehearsal": {
+    "source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "version": "w13-101-safe-core-466d848",
+    "web": {
+      "deployment_id": "a152e000-5637-4efd-aeb2-4a1d1740d8f1",
+      "status": "SUCCESS",
+      "config_file": "/railway.web.staging.json",
+      "image_digest": "sha256:152375c8183530a69898d61455fed2f6dac1cf814c63869c40c648e5f2091ed0"
+    },
+    "worker": {
+      "deployment_id": "bc94375d-3c6b-4b62-8abf-c3b0956aa65f",
+      "status": "SUCCESS",
+      "config_file": "/railway.worker.staging.json",
+      "image_digest": "sha256:f3f09b6f7deae6cffc7910061f88c6011c9c423a5a81009ae9641cfdcc2e9d30"
+    },
+    "acceptance": {
+      "version_status": 200,
+      "health_status": 200,
+      "ready_status": 200,
+      "ready_database_ok": true,
+      "ready_latest_migration": "2203_w13_100_student_gamification",
+      "public_and_account_pages_200": ["/", "/signup", "/login", "/activate", "/forgot-password"],
+      "resend_webhook_expected_status": 404,
+      "resend_webhook_expected_reason": "route_absent_on_w13_101_rollback_source",
+      "worker_delivery_batches": {
+        "claimed": 0,
+        "delivered": 0,
+        "sink_delivered": 0,
+        "dead_lettered": 0
+      }
+    }
+  },
+  "roll_forward": {
+    "source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "version": "w13-102-resend-webhook-007e021",
+    "web": {
+      "deployment_id": "43d67064-9588-4cab-9b8c-4e46da097bdc",
+      "status": "SUCCESS",
+      "config_file": "/railway.web.staging.json",
+      "image_digest": "sha256:3105f506ab7315ab2217bd3a2e0b9c450513df2fdf99d5324532b27c0aed265b"
+    },
+    "worker": {
+      "deployment_id": "1bf14299-17e0-4f54-944e-8cf5feea8c9b",
+      "status": "SUCCESS",
+      "config_file": "/railway.worker.staging.json",
+      "image_digest": "sha256:179bd050ae7938c83d3a92a6c73ac7162832363faf113a752d732363b402b027"
+    },
+    "acceptance": {
+      "version_status": 200,
+      "health_status": 200,
+      "ready_status": 200,
+      "ready_database_ok": true,
+      "ready_latest_migration": "2203_w13_100_student_gamification",
+      "public_and_account_pages_200": ["/", "/signup", "/login", "/activate", "/forgot-password"],
+      "resend_webhook_expected_status": 503,
+      "resend_webhook_expected_code": "RESEND_WEBHOOK_DISABLED",
+      "worker_delivery_batches": {
+        "claimed": 0,
+        "delivered": 0,
+        "sink_delivered": 0,
+        "dead_lettered": 0
+      }
+    }
+  },
+  "production_effects": {
+    "production_deployments_changed": false,
+    "production_database_writes": 0,
+    "external_sends": 0,
+    "crm_imports": 0,
+    "live_charges": 0
+  },
+  "notes": [
+    "Rollback rehearsal used a fresh detached W13-101 worktree at source 466d8489bb8c7a3a57f7590929b58e7857420e86.",
+    "Roll-forward restored staging to the W13-102 candidate source 007e0215d1186ca51163dea3b1c15303bf52a860.",
+    "The final roll-forward image digests match the original W13-102 staging candidate digests.",
+    "No secrets, PII, raw provider payloads, or protected source rows are included in this summary."
+  ]
+}

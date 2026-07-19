@@ -14,9 +14,9 @@ test('synthetic signup appears once in authenticated CRM and opens detail on mob
   await page.getByLabel('Family or School').fill('CRM Browser Family');
   await page.getByLabel('Location').fill('Jerusalem');
   await page.getByRole('textbox', { name: 'Email' }).fill(email);
-  await page
-    .getByLabel('Confirm that we may send the selected class information and reminders.')
-    .check();
+  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
+  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
+  await page.getByLabel('Email class reminders').check();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
   await expect(
     page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
@@ -53,7 +53,7 @@ test('CRM create and edit controls are keyboard reachable with readable names', 
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await expect(page.locator('.mobile-current-link')).toBeFocused();
-  await page.getByRole('button', { name: 'Add contact' }).click();
+  await page.getByLabel('CRM toolbar').getByRole('button', { name: 'Add contact' }).click();
   const createForm = page.locator('.contact-form');
   await createForm.getByRole('textbox', { name: 'Name' }).fill('Keyboard Contact');
   await createForm.getByLabel('Type').selectOption('school');

@@ -1,0 +1,85 @@
+{
+  "schema_version": "onetime.w13_104.validation.v1",
+  "generated_at": "2026-07-19T06:57:14Z",
+  "status": "local_and_remote_candidate_validation_passed",
+  "commands": [
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "notes": "Final pass after W13-104 artifacts: passed across 1626 repo text files."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "notes": "Manifest, token drift, ticker allowlist, and raw source scan passed."
+    },
+    {
+      "command": "npx prettier --check <W13-104 touched source and run artifacts>",
+      "status": "passed",
+      "notes": "Scoped formatting check passed for W13-104-touched source files and generated run artifacts."
+    },
+    {
+      "command": "npm run format",
+      "status": "baseline_failed_locally_before_artifact_formatting",
+      "notes": "Local full-repo Prettier check reported pre-existing Windows line-ending/baseline noise; GitHub Node 24 verify later passed format on the pushed candidate."
+    },
+    {
+      "command": "npm run test",
+      "status": "passed_after_fixture_fix",
+      "notes": "46 unit files and 47 integration files passed. The W13-103 production-role test was fixed to seed non-expired sessions relative to the current test clock."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed",
+      "notes": "50 Playwright e2e tests passed."
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "notes": "23 Playwright accessibility tests passed."
+    },
+    {
+      "command": "npm run performance",
+      "status": "passed_after_single_transient_rerun",
+      "notes": "Final rerun passed 10 Playwright performance tests plus bundle audit. The original CLS failure was fixed by font loading changes."
+    },
+    {
+      "command": "gh pr checks 91",
+      "status": "passed",
+      "notes": "PR #91 head 688fc70cf64b72bc52f4ea7511d8593750d7ab45 passed Node 24 verify, OPS-06 deterministic checks, PostgreSQL 16 assurance, PostgreSQL 16 learner-seat proof, and PostgreSQL 18 assurance."
+    },
+    {
+      "command": "Railway staging and production smoke",
+      "status": "passed",
+      "notes": "Staging and production /version, /health, /ready, and login route smoke passed after W13-104 deploy. Production signup/activate/forgot-password routes also returned 200."
+    }
+  ],
+  "performance_evidence": [
+    "ops/codex-runs/W13-104/evidence/final-performance-seo-bundle-report.json",
+    "ops/codex-runs/W13-104/evidence/crm-performance-report.json",
+    "ops/codex-runs/W13-104/evidence/ot81-performance-30-sample.json"
+  ],
+  "visual_evidence": [
+    "ops/codex-runs/W13-104/evidence/screenshots/landing-top-fold-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/signup-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/login-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/crm-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/parent-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/student-390x844.png"
+  ],
+  "deployment_evidence": [
+    "ops/codex-runs/W13-104/evidence/production-pg18-backup-restore-summary.json",
+    "ops/codex-runs/W13-104/evidence/deployment-summary.json",
+    "ops/codex-runs/W13-104/evidence/live-smoke.json"
+  ],
+  "production_writes_from_smoke": 0,
+  "external_sends": 0
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "onetime.w13_104.production_pg18_backup_restore_summary.v1",
+  "run_id": "W13-104",
+  "status": "passed",
+  "generated_at": "2026-07-19T06:47:40Z",
+  "deployment_id": "209c4849-fab1-4786-9514-cbddd28155e1",
+  "ops_run_id": "w13-104-prod-pg18-20260719T064642Z",
+  "database_service": "Postgres-j9Pi",
+  "postgres_version": "18.4",
+  "dump_path": "/backup/w13-104-prod-pg18-20260719T064642Z/production-pg18.dump",
+  "dump_size_bytes": 3231000,
+  "dump_sha256": "735c0e385f1b472fab0c962371177917fad2ef30fe7a78bdfd303978f9a20bde",
+  "archive_list_entries": 4956,
+  "table_count": 182,
+  "index_count": 675,
+  "constraint_count": 3287,
+  "migration_rows": 39,
+  "latest_migration": "2203_w13_100_student_gamification",
+  "source_restored_table_hash_match": true,
+  "source_restored_migration_ledger_hash_match": true,
+  "hard_failures": [],
+  "external_mutations": {
+    "production_database": false,
+    "providers": false,
+    "sends": false,
+    "railway": true
+  },
+  "task_variables": {
+    "set_without_printing_values": ["SOURCE_DATABASE_URL", "OPS11_RUN_ID", "OPS11_BACKUP_ROOT"],
+    "deleted_after_proof": ["SOURCE_DATABASE_URL", "OPS11_RUN_ID", "OPS11_BACKUP_ROOT"]
+  }
+}

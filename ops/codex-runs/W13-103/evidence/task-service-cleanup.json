@@ -1,0 +1,13 @@
+{
+  "schema_version": "onetime.w13_103.task_service_cleanup.v1",
+  "run_id": "W13-103",
+  "status": "complete",
+  "captured_at": "2026-07-19T05:20:57Z",
+  "task_service_id": "52db1072-b4eb-450c-bec7-5151cb9a8461",
+  "targeted_variables_deleted": 32,
+  "lingering_targeted_keys": [],
+  "notes": [
+    "Verification output was key-only/count-only.",
+    "No task-scoped W13 authorization, handoff encryption, copied auth, copied lifecycle, copied database, copied delivery, copied runtime, or copied transport variables remained after cleanup."
+  ]
+}

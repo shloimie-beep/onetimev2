@@ -1,0 +1,107 @@
+{
+  "schema_version": "onetime.w13_100.validation.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "updated_at": "2026-07-17T19:12:48Z",
+  "status": "local_validation_passed_db_verify_blocked_missing_database_url",
+  "checks": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "evidence": "added 359 packages; audited 368 packages; found 0 vulnerabilities"
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "evidence": "Secret scan passed across 1513 repo text files."
+    },
+    {
+      "command": "npx prettier --write --ignore-unknown <W12-09 touched files>",
+      "status": "passed",
+      "evidence": "Scoped Prettier completed over touched TypeScript/CSS/JSON files; SQL migration was intentionally ignored by --ignore-unknown because no SQL parser is configured."
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "evidence": "manifest, token_drift, and raw_source_scan passed; 27 brand routes checked"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "evidence": "tsc --noEmit completed successfully"
+    },
+    {
+      "command": "npm run build:pages",
+      "status": "passed",
+      "evidence": "public page generation completed successfully"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "evidence": "eslint completed successfully"
+    },
+    {
+      "command": "npx vitest run tests/unit/delivery/config.test.ts tests/unit/delivery/provider-transport.test.ts tests/unit/ot72-provider-adapters.test.ts tests/unit/w13-10/delivery-activation-policy.test.ts tests/unit/w13-10/legal-consent.test.ts tests/unit/w13-10/deploy-guard.test.ts",
+      "status": "passed",
+      "evidence": "6 test files passed; 46 tests passed"
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "evidence": "46 test files passed; 238 tests passed"
+    },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "evidence": "44 test files passed; 204 tests passed"
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "evidence": "clean, public/app Vite builds, public page generation, and typecheck completed; existing font runtime-resolution warning remains non-fatal"
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed",
+      "evidence": "50 Playwright tests passed"
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "evidence": "23 Playwright accessibility tests passed"
+    },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "evidence": "10 Playwright performance tests passed; bundle checker reported public_js gzip 4414 bytes and public_css gzip 5899 bytes"
+    },
+    {
+      "command": "duplicate migration-prefix check",
+      "status": "passed",
+      "evidence": "39 migration filenames checked; no duplicate numeric prefixes"
+    },
+    {
+      "command": "npx tsx tests/w12-09/portal-gamification-browser-harness.ts",
+      "status": "passed",
+      "evidence": "W12-09 gamification browser harness passed across 360, 390, tablet, and desktop viewports with zero critical/serious axe violations and no horizontal overflow"
+    }
+  ],
+  "failures": [
+    {
+      "command": "npm run typecheck and npm run build:pages before npm ci",
+      "status": "resolved",
+      "evidence": "Fresh worktree lacked local node_modules/.bin; npm ci resolved the toolchain and both commands passed afterward."
+    }
+  ],
+  "blocked": [
+    {
+      "command": "npm run db:verify",
+      "status": "blocked",
+      "evidence": "DATABASE_URL is required for PostgreSQL-backed runtime; no non-production database identity is configured."
+    },
+    {
+      "command": "PostgreSQL 16 and 18 assurance",
+      "status": "blocked",
+      "evidence": "No explicit PostgreSQL 16/18 test database identity is configured; external/staging database guesses are forbidden."
+    }
+  ]
+}

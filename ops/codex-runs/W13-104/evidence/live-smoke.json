@@ -1,0 +1,43 @@
+{
+  "schema_version": "onetime.w13_104.live_smoke.v1",
+  "run_id": "W13-104",
+  "captured_at": "2026-07-19T06:55:43Z",
+  "production_url": "https://join.onetimeonetime.com",
+  "version": {
+    "status": 200,
+    "body": {
+      "version": "w13-104-public-cls-688fc70",
+      "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+      "target_app": "one-time"
+    }
+  },
+  "routes": {
+    "/health": 200,
+    "/ready": 200,
+    "/login": 200,
+    "/signup": 200,
+    "/activate": 200,
+    "/forgot-password": 200
+  },
+  "worker": {
+    "diagnostics_probe": "blocked_missing_probe_token",
+    "railway_deployment_id": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+    "log_sample": {
+      "event": "delivery_batch_completed",
+      "claimed": 0,
+      "delivered": 0,
+      "sink_delivered": 0,
+      "retried": 0,
+      "dead_lettered": 0,
+      "suppressed": 0,
+      "skipped": 0
+    }
+  },
+  "external_effects_observed": {
+    "production_database_writes_from_smoke": 0,
+    "external_sends": 0,
+    "provider_mutations": 0,
+    "live_stripe_charges": 0,
+    "buffer_publications": 0
+  }
+}

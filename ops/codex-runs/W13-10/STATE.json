@@ -1,0 +1,239 @@
+{
+  "schema_version": "onetime.w13_10.state.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "repository": "webcraft-media/onetimev2",
+  "exact_base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "base_branch": "integration/w12-final-convergence-20260717T123715Z",
+  "branch": "codex/w13-10-complete-launch-foundations",
+  "worktree": "C:/Users/User/OneTimeOneTime-w13-10-launch-foundations",
+  "current_phase": "draft_pr_opened",
+  "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/88",
+  "draft_pr_opened_at": "2026-07-17T16:22:01.1385736Z",
+  "completed_objectives": [
+    {
+      "id": "phase_1_governance",
+      "status": "done"
+    },
+    {
+      "id": "phase_2_delivery_activation_policy",
+      "status": "done"
+    },
+    {
+      "id": "phase_3_public_legal_consent",
+      "status": "done"
+    },
+    {
+      "id": "phase_4_migration_assurance_harness",
+      "status": "done"
+    },
+    {
+      "id": "postgres_16_18_disposable_execution",
+      "status": "blocked"
+    },
+    {
+      "id": "phase_5_security_privacy_assurance",
+      "status": "done"
+    },
+    {
+      "id": "phase_6_sre_runbooks_guard",
+      "status": "done"
+    },
+    {
+      "id": "phase_7_supply_chain_audit",
+      "status": "done"
+    }
+  ],
+  "test_results": [
+    {
+      "command": "npm ci",
+      "result": "passed",
+      "note": "added 359 packages, audited 368 packages, found 0 vulnerabilities"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/w13-10/delivery-activation-policy.test.ts tests/unit/w13-10/legal-consent.test.ts tests/unit/w13-10/deploy-guard.test.ts tests/unit/lead-validation.test.ts tests/unit/delivery/config.test.ts",
+      "result": "passed",
+      "note": "5 files, 29 tests passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts tests/integration/delivery/web-app-independence.test.ts",
+      "result": "passed",
+      "note": "2 files, 8 tests passed"
+    },
+    {
+      "command": "npm run typecheck",
+      "result": "passed",
+      "note": "tsc --noEmit passed on final code shape"
+    },
+    {
+      "command": "npm run lint",
+      "result": "passed",
+      "note": "eslint . passed on final code shape"
+    },
+    {
+      "command": "npm run secret:scan",
+      "result": "passed",
+      "note": "Secret scan passed across 1345 repo text files"
+    },
+    {
+      "command": "npm run brand:check",
+      "result": "passed",
+      "note": "manifest, token drift, route, ticker allowlist, and raw source scan passed"
+    },
+    {
+      "command": "npm run build",
+      "result": "passed",
+      "note": "clean, client build, public pages, and typecheck passed"
+    },
+    {
+      "command": "npm run unit",
+      "result": "passed",
+      "note": "41 files, 209 tests passed"
+    },
+    {
+      "command": "npm run integration",
+      "result": "passed",
+      "note": "38 files, 184 tests passed"
+    },
+    {
+      "command": "npx playwright test tests/e2e/landing-signup.spec.ts",
+      "result": "passed",
+      "note": "8 tests passed"
+    },
+    {
+      "command": "npx playwright test tests/e2e/w13-10/public-consent-legal.spec.ts",
+      "result": "passed",
+      "note": "2 tests passed after an initial parallel web-server port conflict"
+    },
+    {
+      "command": "npx playwright test tests/e2e/crm-core.spec.ts",
+      "result": "passed",
+      "note": "2 tests passed after replacing stale consent and ambiguous toolbar selectors"
+    },
+    {
+      "command": "npx playwright test tests/e2e --workers=1",
+      "result": "passed",
+      "note": "40 tests passed in the same one-worker profile used by GitHub Node 24 verify"
+    },
+    {
+      "command": "npm run accessibility",
+      "result": "passed",
+      "note": "17 tests passed"
+    },
+    {
+      "command": "npm run performance",
+      "result": "passed",
+      "note": "7 tests passed and bundle check completed after updating old consent helpers"
+    },
+    {
+      "command": "npm run ops06:migrations",
+      "result": "passed",
+      "note": "duplicate migration safety passed; generated OPS-06 evidence restored out of W13-10 diff"
+    },
+    {
+      "command": "JSON parse check for W13-10 and director JSON",
+      "result": "passed",
+      "note": "21 JSON files parsed successfully"
+    },
+    {
+      "command": "scoped Prettier check",
+      "result": "passed",
+      "note": ".env.example and CHANGED-FILES.txt excluded because Prettier has no inferred parser; ORIGINAL-PROMPT.md preserved exactly"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed",
+      "note": "no whitespace errors"
+    }
+  ],
+  "blockers": [
+    "postgres_16_18_disposable_execution_requires_local_container_or_database_authorization"
+  ],
+  "external_effects": {
+    "provider_calls": 0,
+    "railway_mutations": 0,
+    "production_database_reads": 0,
+    "production_database_writes": 0,
+    "real_import_rows_processed": 0,
+    "sends": 0,
+    "charges": 0,
+    "uploads_posts_meetings_dns": 0,
+    "git_push_and_pr_pending": false,
+    "git_branch_pushed": true,
+    "draft_pr_opened": true,
+    "draft_pr_url": "https://github.com/webcraft-media/onetimev2/pull/88"
+  },
+  "production_mutations": 0,
+  "changed_files": [
+    ".env.example",
+    "apps/web/src/client/public/public-entry.ts",
+    "apps/web/src/server/app.ts",
+    "apps/worker/src/delivery/provider-config.ts",
+    "apps/worker/src/delivery/provider-router.ts",
+    "ops/codex-runs/W13-10/BACKUP-RESTORE-PROOF.md",
+    "ops/codex-runs/W13-10/CHANGED-FILES.txt",
+    "ops/codex-runs/W13-10/CI-THREAT-MODEL.md",
+    "ops/codex-runs/W13-10/COLLISIONS.json",
+    "ops/codex-runs/W13-10/CONSENT-CONTRACT.md",
+    "ops/codex-runs/W13-10/COUNSEL-DECISIONS.md",
+    "ops/codex-runs/W13-10/DATA-LIFECYCLE-MATRIX.json",
+    "ops/codex-runs/W13-10/DELIVERY-INTEGRATION-INSTRUCTIONS.md",
+    "ops/codex-runs/W13-10/DELIVERY-PLATFORM-CONTRACT.md",
+    "ops/codex-runs/W13-10/DEPENDENCY-INVENTORY.json",
+    "ops/codex-runs/W13-10/ENV-CONTRACT-DRIFT.json",
+    "ops/codex-runs/W13-10/FINAL-REPORT.md",
+    "ops/codex-runs/W13-10/LANE-OWNERSHIP-MATRIX.json",
+    "ops/codex-runs/W13-10/LEGAL-CONTENT-STATUS.json",
+    "ops/codex-runs/W13-10/LOCK-REPORT.json",
+    "ops/codex-runs/W13-10/MIGRATION-ASSURANCE.json",
+    "ops/codex-runs/W13-10/OPS-13B-R-REPLACEMENT-PROMPT.md",
+    "ops/codex-runs/W13-10/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/W13-10/PRODUCT-DECISION-GATES.json",
+    "ops/codex-runs/W13-10/PROVIDER-ACTIVATION-MATRIX.json",
+    "ops/codex-runs/W13-10/RELEASE-AUTHORIZATION-MODEL.md",
+    "ops/codex-runs/W13-10/RELEASE-BLOCKERS.json",
+    "ops/codex-runs/W13-10/RESUME.md",
+    "ops/codex-runs/W13-10/ROLLING-COMPATIBILITY.md",
+    "ops/codex-runs/W13-10/SBOM-RECORD.json",
+    "ops/codex-runs/W13-10/SECURITY-PRIVACY-FINDINGS.json",
+    "ops/codex-runs/W13-10/SRE-READINESS.json",
+    "ops/codex-runs/W13-10/STAGING-MIGRATION-RUNBOOK.md",
+    "ops/codex-runs/W13-10/STATE.json",
+    "ops/codex-runs/W13-10/SUPPLY-CHAIN-REPORT.json",
+    "ops/codex-runs/W13-10/THREAT-MODEL.md",
+    "ops/codex-runs/W13-10/UPGRADE-PLAN.md",
+    "ops/codex-runs/W13-10/W13-90-REPLACEMENT-PROMPT.md",
+    "ops/codex-runs/W13-10/W13-99-REPLACEMENT-PROMPT.md",
+    "ops/director/BRANCH-FLEET.json",
+    "ops/director/CAPABILITY-MATRIX.json",
+    "ops/director/CURRENT-STATE.json",
+    "ops/director/DECISION-REGISTER.md",
+    "ops/director/DEPLOYMENTS.json",
+    "ops/director/WORKSTREAMS.json",
+    "ops/runbooks/w13-10/INCIDENT-RESPONSE.md",
+    "ops/runbooks/w13-10/PRODUCTION-PROMOTION.md",
+    "ops/runbooks/w13-10/PROVIDER-KILL-SWITCHES.md",
+    "ops/runbooks/w13-10/SLOS-AND-ALERTS.md",
+    "ops/runbooks/w13-10/STAGING-DEPLOY.md",
+    "ops/runbooks/w13-10/STAGING-ROLLBACK-ROLLFORWARD.md",
+    "packages/config/src/index.ts",
+    "packages/contracts/src/index.ts",
+    "packages/domain/src/delivery/activation-policy.ts",
+    "packages/domain/src/delivery/retry.ts",
+    "packages/domain/src/lead/service.ts",
+    "packages/domain/src/legal/policies.ts",
+    "scripts/build-public-pages.ts",
+    "scripts/w13-10/generate-artifacts.ts",
+    "scripts/w13-10/staging-deploy-guard.ts",
+    "tests/accessibility/w13-10/legal-pages-a11y.spec.ts",
+    "tests/e2e/crm-core.spec.ts",
+    "tests/e2e/landing-signup.spec.ts",
+    "tests/e2e/w13-10/public-consent-legal.spec.ts",
+    "tests/performance/ot81-day-one-performance.spec.ts",
+    "tests/performance/public-performance.spec.ts",
+    "tests/unit/ot72-provider-adapters.test.ts",
+    "tests/unit/w13-10/delivery-activation-policy.test.ts",
+    "tests/unit/w13-10/deploy-guard.test.ts",
+    "tests/unit/w13-10/legal-consent.test.ts"
+  ],
+  "next_action": "monitor draft PR checks; do not deploy, import real data, enable providers, send, charge, upload, post, create meetings, mutate DNS, or read production private rows without explicit release authorization"
+}

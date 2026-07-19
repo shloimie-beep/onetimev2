@@ -1,0 +1,13 @@
+{
+  "schema_version": "onetime.w13_104.crm_import.v1",
+  "status": "pending_private_authorization",
+  "required_manifest": "C:\\Users\\User\\.onetime-w13-104-private\\CRM-IMPORT-AUTHORIZATION.private.json",
+  "inputs_needed_report": "ops/codex-runs/W13-104/CRM-IMPORT-INPUTS-NEEDED.md",
+  "approved_source_hashes_revalidated": false,
+  "preview_counts_only": null,
+  "rehearsal_status": "not_run",
+  "production_apply_status": "blocked_pending_manifest_fresh_backup_and_phase_13_gate",
+  "production_contacts_created": 0,
+  "production_contacts_updated": 0,
+  "production_outreach_sent": 0
+}

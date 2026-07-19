@@ -1,0 +1,259 @@
+{
+  "schema_version": "onetime.codex_run.state.v1",
+  "run_id": "W12-100-08",
+  "title": "Messaging readiness",
+  "status": "ready_for_draft_pr",
+  "generated_at": "2026-07-17T18:06:46+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-08",
+  "branch": "codex/w12-100-08-messaging-readiness",
+  "base_branch_for_pr": "integration/w12-final-convergence-20260717T123715Z",
+  "objectives": [
+    {
+      "id": "setup.fetch_verify_exact_starting_commit",
+      "status": "done",
+      "evidence": ["git fetch --all --tags --prune", "git rev-parse exact starting commit"]
+    },
+    {
+      "id": "setup.isolated_worktree_branch",
+      "status": "done",
+      "evidence": ["C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-08"]
+    },
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": [
+        "AGENTS.md",
+        "ops/director/START-HERE.md",
+        "ops/director/PRODUCT-INVARIANTS.md",
+        "ops/codex-runs/W12-99/FINAL-REPORT.md",
+        "ops/codex-runs/W12-99/STATE.json",
+        "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
+        "ops/codex-runs/W12-99/CANARY-REPORT.json",
+        "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
+        "ops/codex-runs/W12-99/ROLLBACK.md"
+      ]
+    },
+    {
+      "id": "telegram.one_active_consumer_model",
+      "status": "already_satisfied",
+      "evidence": ["Telegram consumer lease tests"]
+    },
+    {
+      "id": "telegram.webhook_polling_mutual_exclusion",
+      "status": "already_satisfied",
+      "evidence": ["validateTelegramRuntimeTopology tests"]
+    },
+    {
+      "id": "telegram.webhook_secret_validation",
+      "status": "already_satisfied",
+      "evidence": ["createTelegramWebhookHandler secret rejection tests"]
+    },
+    {
+      "id": "telegram.bounded_body_depth_size_array_string_limits",
+      "status": "done",
+      "evidence": ["tests/unit/telegram/telegram-foundation.test.ts"]
+    },
+    {
+      "id": "telegram.encrypted_durable_inbox",
+      "status": "already_satisfied",
+      "evidence": ["TelegramSqlInboxRepository payload_ciphertext and payload_digest"]
+    },
+    {
+      "id": "telegram.event_dedupe_and_replay_protection",
+      "status": "already_satisfied",
+      "evidence": ["update-id dedupe tests", "confirmation replay tests"]
+    },
+    {
+      "id": "telegram.operator_chat_allowlist",
+      "status": "already_satisfied",
+      "evidence": ["wrong private chat denial test"]
+    },
+    {
+      "id": "telegram.capability_and_role_enforcement",
+      "status": "already_satisfied",
+      "evidence": ["viewer/admin/owner capability tests"]
+    },
+    {
+      "id": "telegram.redacted_contact_support_question_output",
+      "status": "already_satisfied",
+      "evidence": ["fixture and SQL-backed redacted read tests"]
+    },
+    {
+      "id": "telegram.preview_confirmation_digest_for_writes",
+      "status": "already_satisfied",
+      "evidence": ["Payload hash and idempotency preview tests"]
+    },
+    {
+      "id": "telegram.confirmation_expiry_and_single_use",
+      "status": "already_satisfied",
+      "evidence": ["expiry, cancel, consume, and replay tests"]
+    },
+    {
+      "id": "telegram.delivery_retry_cannot_broaden_account_product_scope",
+      "status": "done",
+      "evidence": ["tests/integration/telegram-admin-runtime.test.ts"]
+    },
+    {
+      "id": "telegram.no_raw_token_or_chat_id_in_evidence",
+      "status": "done",
+      "evidence": ["TELEGRAM-STAGING-READINESS-MATRIX.json", "raw numeric ID storage assertions"]
+    },
+    {
+      "id": "whatsapp.challenge_and_signature_validation",
+      "status": "already_satisfied",
+      "evidence": ["tests/integration/whatsapp/ot85-webhook-route.test.ts"]
+    },
+    {
+      "id": "whatsapp.replay_duplicate_malformed_oversized_handling",
+      "status": "done",
+      "evidence": [
+        "tests/integration/whatsapp/ot85-assistant.test.ts",
+        "tests/integration/whatsapp/ot85-webhook-route.test.ts"
+      ]
+    },
+    {
+      "id": "whatsapp.sender_account_rate_limits",
+      "status": "already_satisfied",
+      "evidence": ["tests/integration/whatsapp/ot85-assistant.test.ts"]
+    },
+    {
+      "id": "whatsapp.opt_out_and_suppression_precedence",
+      "status": "already_satisfied",
+      "evidence": ["STOP/START and send-time suppression tests"]
+    },
+    {
+      "id": "whatsapp.consent_before_outbound_eligibility",
+      "status": "already_satisfied",
+      "evidence": ["family reminder consent event tests"]
+    },
+    {
+      "id": "whatsapp.public_assistant_offline_readiness_truth",
+      "status": "already_satisfied",
+      "evidence": ["public assistant status route tests"]
+    },
+    {
+      "id": "whatsapp.deep_link_and_prefill_validation",
+      "status": "done",
+      "evidence": ["safe wa.me link and unsafe host tests"]
+    },
+    {
+      "id": "whatsapp.no_browser_persistence_of_private_state",
+      "status": "done",
+      "evidence": [
+        "rg found no localStorage/sessionStorage/indexedDB/document.cookie in public WhatsApp scope"
+      ]
+    },
+    {
+      "id": "whatsapp.account_product_scope",
+      "status": "already_satisfied",
+      "evidence": ["scoped inbox/outbox/conversation queries"]
+    },
+    {
+      "id": "whatsapp.one_recipient_canary_budget_enforcement",
+      "status": "done",
+      "evidence": [
+        "packages/domain/src/whatsapp/service.ts",
+        "tests/integration/whatsapp/ot100-provider-runtime.test.ts"
+      ]
+    },
+    {
+      "id": "readiness_matrices",
+      "status": "done",
+      "evidence": [
+        "TELEGRAM-STAGING-READINESS-MATRIX.json",
+        "WHATSAPP-STAGING-READINESS-MATRIX.json"
+      ]
+    },
+    {
+      "id": "safety.no_deploy_no_external_actions_no_production_mutation",
+      "status": "done",
+      "evidence": ["external_actions_count=0", "production_mutation_count=0"]
+    },
+    {
+      "id": "w12_100_02_dependency_record",
+      "status": "done",
+      "evidence": ["FINAL-REPORT.md dependency note"]
+    }
+  ],
+  "validation": [
+    { "command": "npm ci", "status": "passed" },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/telegram/telegram-foundation.test.ts",
+      "status": "passed",
+      "details": "12 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/telegram-admin-runtime.test.ts",
+      "status": "passed",
+      "details": "1 test"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/whatsapp/ot85-webhook-route.test.ts tests/integration/whatsapp/ot100-provider-runtime.test.ts",
+      "status": "passed",
+      "details": "7 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/telegram/ot84-action-gateway.test.ts tests/unit/telegram/ot101r-admin-runtime.test.ts tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/whatsapp/ot100-meta-provider.test.ts",
+      "status": "passed",
+      "details": "17 tests"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/whatsapp/ot85-assistant.test.ts",
+      "status": "passed",
+      "details": "11 tests"
+    },
+    {
+      "command": "rg -n \"localStorage|sessionStorage|indexedDB|document.cookie\" apps/web/src/client/public packages/domain/src/whatsapp",
+      "status": "passed",
+      "details": "No matches; rg exit 1 means no forbidden persistence API found."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "details": "Secret scan passed across 1303 repo text files after final artifacts."
+    },
+    { "command": "npm run lint", "status": "passed" },
+    { "command": "npm run typecheck", "status": "passed" },
+    { "command": "npm run unit", "status": "passed", "details": "38 files, 197 tests." },
+    { "command": "npm run integration", "status": "passed", "details": "38 files, 186 tests." },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "details": "manifest/token/routes/raw source scan passed; bundle budgets skipped before build."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "details": "Inherited Vite font URL warning only."
+    },
+    { "command": "npm run e2e", "status": "passed", "details": "38 tests." },
+    { "command": "npm run accessibility", "status": "passed", "details": "13 tests." },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "details": "7 tests plus bundle budget summary."
+    }
+  ],
+  "safety": {
+    "staging_deploy_performed": false,
+    "production_deploy_performed": false,
+    "production_database_read": false,
+    "production_database_write": false,
+    "provider_mutation_performed": false,
+    "external_actions_count": 0,
+    "production_mutation_count": 0,
+    "raw_secrets_printed_or_committed": false,
+    "raw_private_destinations_printed_or_committed": false,
+    "bna_code_or_data_used": false,
+    "w12_09_integrated": false
+  },
+  "dependencies": [
+    {
+      "owner": "W12-100-02",
+      "status": "needs_operator_decision",
+      "note": "If a real staging canary runner is wired outside this lane, it must call WhatsApp outbox processing with canaryOnly=true and seed exactly one protected canary budget row. This lane did not edit shared config or delivery worker files."
+    }
+  ]
+}

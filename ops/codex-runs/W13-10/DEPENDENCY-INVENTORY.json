@@ -1,0 +1,38 @@
+{
+  "schema_version": "onetime.w13_10.dependency_inventory.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "package_count": 443,
+  "direct_dependencies": [
+    "@vitejs/plugin-react",
+    "dotenv",
+    "express",
+    "helmet",
+    "libphonenumber-js",
+    "pg",
+    "pino",
+    "react",
+    "react-dom",
+    "sharp",
+    "stripe",
+    "zod"
+  ],
+  "direct_dev_dependencies": [
+    "@axe-core/playwright",
+    "@eslint/js",
+    "@playwright/test",
+    "@types/express",
+    "@types/node",
+    "@types/pg",
+    "@types/react",
+    "@types/react-dom",
+    "eslint",
+    "globals",
+    "pg-mem",
+    "prettier",
+    "tsx",
+    "typescript",
+    "typescript-eslint",
+    "vite",
+    "vitest"
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "schema_version": "onetime.w12_100.convergence.release_manifest.v1",
+  "generated_at": "2026-07-17T17:17:56.257Z",
+  "branch": "integration/w12-100-launch-readiness-convergence-20260717",
+  "base": {
+    "branch": "integration/w12-final-convergence-20260717T123715Z",
+    "head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73"
+  },
+  "integrated_head_before_closeout": "4112930380fc9ae5bcdac9f316246e285cc93b35",
+  "accepted_lanes": [
+    "W12-100-00",
+    "W12-100-01",
+    "W12-100-02",
+    "W12-100-03",
+    "W12-100-04",
+    "W12-100-06",
+    "W12-100-07",
+    "W12-100-08",
+    "W12-100-09",
+    "W12-100-10",
+    "W12-100-11",
+    "W12-100-12",
+    "W12-100-13-assessment-only"
+  ],
+  "skipped_lanes": [
+    {
+      "lane": "W12-100-05",
+      "reason": "Skipped because lane STATE/FINAL-REPORT classify it blocked_environment_or_rehearsal."
+    },
+    {
+      "lane": "PR-71 / W12-09 gamification product code",
+      "reason": "Skipped because W12-100-13 recommends deferral and the operator did not explicitly approve PR #71 integration."
+    },
+    {
+      "lane": "PR-72 direct merge",
+      "reason": "Not merged directly; the exact eight OPS-13A files entered through W12-100-00 as requested."
+    }
+  ],
+  "product_repairs": [
+    "Serve /app/communications through the owner/admin protected app shell.",
+    "Serve /app/support and /app/support/receipts/* through the owner/admin protected app shell.",
+    "Align W12-100 journey helper with current public signup consent model."
+  ],
+  "validations": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "notes": "Installed 359 packages; 0 vulnerabilities."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "notes": "Passed across 1423 repo text files before closeout artifacts."
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "notes": "Manifest, token drift, routes, ticker allowlist, and raw source scan passed."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "notes": "Passed before and after scoped formatting."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "notes": "Passed before and after scoped formatting."
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "notes": "42 files / 221 tests passed."
+    },
+    {
+      "command": "npm run integration",
+      "status": "passed",
+      "notes": "44 files / 204 tests passed."
+    },
+    {
+      "command": "npm run build",
+      "status": "passed",
+      "notes": "Client bundles, public pages, and typecheck passed."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed_after_repair",
+      "notes": "Initial W12-100 journey helper timeout fixed; rerun passed 48 tests."
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "notes": "19 tests passed."
+    },
+    {
+      "command": "npm run performance",
+      "status": "passed",
+      "notes": "10 tests passed plus bundle budget script completed."
+    },
+    {
+      "command": "npm run db:verify",
+      "status": "blocked_environment",
+      "notes": "DATABASE_URL is required for PostgreSQL-backed runtime."
+    },
+    {
+      "command": "PostgreSQL 16 assurance",
+      "status": "blocked_environment",
+      "notes": "Docker/psql unavailable locally; localhost PostgreSQL refused 127.0.0.1:5432."
+    },
+    {
+      "command": "PostgreSQL 18 assurance",
+      "status": "blocked_environment",
+      "notes": "Docker/psql unavailable locally; harness refused 127.0.0.1:5432 and restore-clone requires Docker."
+    },
+    {
+      "command": "duplicate migration-prefix check",
+      "status": "passed",
+      "notes": "Passed across 38 migration files."
+    },
+    {
+      "command": "scoped Prettier over W12-100 touched files",
+      "status": "passed",
+      "notes": "Applied/check passed on actual content diff and W12-100 touched artifacts; inherited generated evidence restored out."
+    },
+    {
+      "command": "npm run ops06:migrations",
+      "status": "passed",
+      "notes": "OPS-06 migration safety passed; generated inherited evidence restored out of final diff."
+    },
+    {
+      "command": "new security suite",
+      "status": "passed",
+      "notes": "3 files / 7 tests passed."
+    },
+    {
+      "command": "new delivery suites",
+      "status": "passed",
+      "notes": "Delivery unit slice 8 files / 64 tests; delivery integration slice 3 files / 17 tests."
+    },
+    {
+      "command": "new provider-fake suite",
+      "status": "passed",
+      "notes": "1 file / 2 tests passed."
+    },
+    {
+      "command": "new journey suite",
+      "status": "passed",
+      "notes": "W12-100 route journey inventory passed 3 tests after helper repair."
+    }
+  ],
+  "safety": {
+    "deployed": false,
+    "marked_pr_ready": false,
+    "production_database_mutation": false,
+    "production_private_data_read": false,
+    "provider_calls": false,
+    "emails_or_messages_sent": false,
+    "payments_or_charges": false,
+    "github_ui_merge": false
+  },
+  "artifacts": [
+    "ops/codex-runs/W12-100-CONVERGENCE/CAPABILITY-MATRIX.json",
+    "ops/codex-runs/W12-100-CONVERGENCE/CONFLICT-LEDGER.md",
+    "ops/codex-runs/W12-100-CONVERGENCE/MIGRATION-REPORT.md",
+    "ops/codex-runs/W12-100-CONVERGENCE/TEST-REPORT.md",
+    "ops/codex-runs/W12-100-CONVERGENCE/RELEASE-MANIFEST.json",
+    "ops/codex-runs/W12-100-CONVERGENCE/EXTERNAL-ACTION-LEDGER.md",
+    "ops/codex-runs/W12-100-CONVERGENCE/ROLLBACK-PLAN.md",
+    "ops/codex-runs/W12-100-CONVERGENCE/STAGING-PROMPT.md",
+    "ops/codex-runs/W12-100-CONVERGENCE/FINAL-REPORT.md",
+    "ops/codex-runs/W12-100-CONVERGENCE/RESUME.md"
+  ]
+}

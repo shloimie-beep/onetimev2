@@ -1,0 +1,43 @@
+{
+  "schema_version": "onetime.w13_104.baseline.v1",
+  "generated_at": "2026-07-19T06:19:44Z",
+  "repository": "webcraft-media/onetimev2",
+  "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+  "pr": {
+    "number": 91,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/91",
+    "starting_head": "2a6b3a58167dd99a35b925062b0127fcf7660946",
+    "base": "integration/w12-final-convergence-20260717T123715Z",
+    "base_sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+    "mergeable": "MERGEABLE",
+    "starting_merge_state_status": "UNSTABLE",
+    "starting_failing_check": {
+      "name": "Node 24 verify",
+      "job_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29674821070/job/88160161130",
+      "failure": "tests/performance/w12-100/seo-bundle-performance.spec.ts public pages CLS budget",
+      "expected_cls_max": 0.1,
+      "observed_cls": 0.3084989208984375
+    }
+  },
+  "production": {
+    "url": "https://join.onetimeonetime.com",
+    "version": "w13-102-resend-webhook-007e021",
+    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "target_app": "one-time",
+    "health_status": 200,
+    "ready_status": 200,
+    "login_status": 200,
+    "web_deployment_id": "9334b362-f00d-4170-9713-ecee0d22b85c",
+    "worker_deployment_id": "f81e56ba-cf4d-4f92-99e5-f5f6be360494"
+  },
+  "local_candidate": {
+    "status": "validated",
+    "font_stability_fix": "implemented",
+    "w13_103_session_fixture_fix": "implemented",
+    "validation_report": "ops/codex-runs/W13-104/VALIDATION.json"
+  },
+  "starting_worktree": {
+    "dirty_paths": ["ops/codex-runs/W13-104/"],
+    "unrelated_dirty_paths": []
+  }
+}

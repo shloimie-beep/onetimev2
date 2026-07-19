@@ -1,0 +1,431 @@
+{
+  "schema_version": "onetime.w13_101.staging_identity_proof.v1",
+  "generated_at": "2026-07-18T18:55:07.985Z",
+  "status": "passed",
+  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "staging_url": "https://ot99-web-staging.up.railway.app",
+  "private_handoff_path": "C:\\Users\\User\\.onetime-w13-101-private\\staging-identity-handoff.private.json",
+  "identity_set": {
+    "sha256": "8178c625f5d1c8548c012ab2757be02ff0b6fcc7658be1fb8e4719a1e495b5b4"
+  },
+  "proof_run": {
+    "sha256": "9a133075b5466009d0dd5905505a24f5c3dbeae78133616fc1d26215b03c449a"
+  },
+  "scope": {
+    "account": {
+      "sha256": "cb7ab9470e151a3674d141283c2a59b59f9b1433e481f60752ce6f87d950d479"
+    },
+    "product": {
+      "sha256": "0bc682390cacd0c604745979ba634a968298a088cd4be4bd4272d2de42a82425"
+    }
+  },
+  "destination_configuration": {
+    "owner_test_email_configured": true,
+    "parent_test_email_configured": false,
+    "admin_destination": "derived_plus_alias_from_owner_test_email",
+    "parent_destination": "derived_plus_alias_from_owner_test_email",
+    "student_destination": "derived_plus_alias_from_owner_test_email",
+    "private_destinations_printed_or_committed": false
+  },
+  "provisioning": {
+    "first": {
+      "schema_version": "onetime.w12_100.identity_provisioning.v1",
+      "generated_at": "2026-07-18T18:54:19.008Z",
+      "environment": "staging",
+      "scope": {
+        "account": {
+          "kind": "account",
+          "sha256": "cb7ab9470e151a3674d141283c2a59b59f9b1433e481f60752ce6f87d950d479"
+        },
+        "product": {
+          "kind": "product",
+          "sha256": "0bc682390cacd0c604745979ba634a968298a088cd4be4bd4272d2de42a82425"
+        },
+        "identity_set": {
+          "kind": "identity_set",
+          "sha256": "8178c625f5d1c8548c012ab2757be02ff0b6fcc7658be1fb8e4719a1e495b5b4"
+        }
+      },
+      "outcomes": [
+        {
+          "resource": "bootstrap_operator",
+          "status": "created",
+          "ref": {
+            "kind": "bootstrap_operator",
+            "sha256": "f16068e4c160ef4a9b6ec675a452ba3471b34181a2f1839e1216555563637988"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "system",
+          "secret_material_included": false
+        },
+        {
+          "resource": "owner_admin_owner_invitation",
+          "status": "created",
+          "ref": {
+            "kind": "staff",
+            "sha256": "4c1029697ee358715d3a14a2add817c4b01651440de808371f78165ac90dc581"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "delivery_state": "sink_queued",
+          "external_send_performed": false,
+          "secret_material_included": false
+        },
+        {
+          "resource": "owner_admin_admin_invitation",
+          "status": "created",
+          "ref": {
+            "kind": "staff",
+            "sha256": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "delivery_state": "sink_queued",
+          "external_send_performed": false,
+          "secret_material_included": false
+        },
+        {
+          "resource": "household",
+          "status": "created",
+          "ref": {
+            "kind": "household",
+            "sha256": "2dfbf3ac207f760128efed002b65be34c6ab2b6ffff919621296630329228365"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "secret_material_included": false
+        },
+        {
+          "resource": "parent_activation",
+          "status": "created",
+          "ref": {
+            "kind": "relationship",
+            "sha256": "b80c9572097446e6e7e3bcb33e8dcaca1143cd37de3ec70dea94446dce0d670c"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "delivery_state": "sink_queued",
+          "external_send_performed": false,
+          "secret_material_included": false
+        },
+        {
+          "resource": "learner",
+          "status": "created",
+          "ref": {
+            "kind": "learner",
+            "sha256": "81cc7bb6db9d09f57c5fb9d8361d4a6152b3b501b028b622c0d687f013198ada"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "secret_material_included": false
+        },
+        {
+          "resource": "student_access_state",
+          "status": "created",
+          "ref": {
+            "kind": "access_state",
+            "sha256": "a3e567d912df1cf518e4f265f87d0596e11a0891fe7b7ab44fe76b41b5acc19a"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "secret_material_included": false
+        },
+        {
+          "resource": "student_setup",
+          "status": "update_blocked",
+          "ref": {
+            "kind": "learner",
+            "sha256": "81cc7bb6db9d09f57c5fb9d8361d4a6152b3b501b028b622c0d687f013198ada"
+          },
+          "count": 1,
+          "reason_code": "parent_activation_required",
+          "actor_role": null,
+          "secret_material_included": false
+        }
+      ],
+      "counts": {
+        "created": 7,
+        "already_exists": 0,
+        "update_blocked": 1,
+        "conflict": 0,
+        "total_outcomes": 8,
+        "audit_entries_recorded": 1,
+        "external_actions": 0,
+        "production_mutations": 0
+      },
+      "safety": {
+        "production_rejected": true,
+        "explicit_account_product_scope": true,
+        "isolated_environment_confirmed": true,
+        "delivery_transport": "sink_only",
+        "external_actions": 0,
+        "production_mutations": 0,
+        "secret_material_printed": false,
+        "default_credentials_used_for_target_identities": false,
+        "admin_parent_student_impersonation": false
+      }
+    },
+    "second": {
+      "schema_version": "onetime.w12_100.identity_provisioning.v1",
+      "generated_at": "2026-07-18T18:54:42.900Z",
+      "environment": "staging",
+      "scope": {
+        "account": {
+          "kind": "account",
+          "sha256": "cb7ab9470e151a3674d141283c2a59b59f9b1433e481f60752ce6f87d950d479"
+        },
+        "product": {
+          "kind": "product",
+          "sha256": "0bc682390cacd0c604745979ba634a968298a088cd4be4bd4272d2de42a82425"
+        },
+        "identity_set": {
+          "kind": "identity_set",
+          "sha256": "8178c625f5d1c8548c012ab2757be02ff0b6fcc7658be1fb8e4719a1e495b5b4"
+        }
+      },
+      "outcomes": [
+        {
+          "resource": "bootstrap_operator",
+          "status": "already_exists",
+          "ref": {
+            "kind": "bootstrap_operator",
+            "sha256": "f16068e4c160ef4a9b6ec675a452ba3471b34181a2f1839e1216555563637988"
+          },
+          "count": 1,
+          "reason_code": "bootstrap_actor_reused",
+          "actor_role": "system",
+          "secret_material_included": false
+        },
+        {
+          "resource": "owner_admin_owner_invitation",
+          "status": "already_exists",
+          "ref": {
+            "kind": "staff",
+            "sha256": "4c1029697ee358715d3a14a2add817c4b01651440de808371f78165ac90dc581"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "delivery_state": "sink_queued",
+          "external_send_performed": false,
+          "secret_material_included": false
+        },
+        {
+          "resource": "owner_admin_admin_invitation",
+          "status": "already_exists",
+          "ref": {
+            "kind": "staff",
+            "sha256": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "delivery_state": "sink_queued",
+          "external_send_performed": false,
+          "secret_material_included": false
+        },
+        {
+          "resource": "household",
+          "status": "already_exists",
+          "ref": {
+            "kind": "household",
+            "sha256": "2dfbf3ac207f760128efed002b65be34c6ab2b6ffff919621296630329228365"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "secret_material_included": false
+        },
+        {
+          "resource": "parent_activation",
+          "status": "already_exists",
+          "ref": {
+            "kind": "relationship",
+            "sha256": "b80c9572097446e6e7e3bcb33e8dcaca1143cd37de3ec70dea94446dce0d670c"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "delivery_state": "sink_queued",
+          "external_send_performed": false,
+          "secret_material_included": false
+        },
+        {
+          "resource": "learner",
+          "status": "already_exists",
+          "ref": {
+            "kind": "learner",
+            "sha256": "81cc7bb6db9d09f57c5fb9d8361d4a6152b3b501b028b622c0d687f013198ada"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "secret_material_included": false
+        },
+        {
+          "resource": "student_access_state",
+          "status": "already_exists",
+          "ref": {
+            "kind": "access_state",
+            "sha256": "a3e567d912df1cf518e4f265f87d0596e11a0891fe7b7ab44fe76b41b5acc19a"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "owner",
+          "secret_material_included": false
+        },
+        {
+          "resource": "student_setup",
+          "status": "created",
+          "ref": {
+            "kind": "learner",
+            "sha256": "81cc7bb6db9d09f57c5fb9d8361d4a6152b3b501b028b622c0d687f013198ada"
+          },
+          "count": 1,
+          "reason_code": null,
+          "actor_role": "parent",
+          "delivery_state": "sink_queued",
+          "external_send_performed": false,
+          "secret_material_included": false
+        }
+      ],
+      "counts": {
+        "created": 1,
+        "already_exists": 7,
+        "update_blocked": 0,
+        "conflict": 0,
+        "total_outcomes": 8,
+        "audit_entries_recorded": 1,
+        "external_actions": 0,
+        "production_mutations": 0
+      },
+      "safety": {
+        "production_rejected": true,
+        "explicit_account_product_scope": true,
+        "isolated_environment_confirmed": true,
+        "delivery_transport": "sink_only",
+        "external_actions": 0,
+        "production_mutations": 0,
+        "secret_material_printed": false,
+        "default_credentials_used_for_target_identities": false,
+        "admin_parent_student_impersonation": false
+      }
+    }
+  },
+  "acceptance": {
+    "owner_activation": "passed",
+    "admin_activation": "passed",
+    "parent_activation": "passed",
+    "student_activation": "passed",
+    "admin_password_requires_email_challenge_not_totp": true,
+    "admin_email_challenge_verify": "passed",
+    "trusted_device_login_attempt_status": 200,
+    "trusted_device_login_logout": {
+      "logout_status": 200,
+      "after_session_status": 401,
+      "cache_control": "no-store, private"
+    },
+    "trusted_device_revoke": "passed",
+    "parent_login_without_owner_admin_step_up": "passed",
+    "student_login_without_owner_admin_step_up": "passed",
+    "parent_portal": {
+      "status": 200,
+      "cache_control": "no-store, private"
+    },
+    "parent_dashboard": {
+      "status": 200,
+      "cache_control": "no-store"
+    },
+    "student_portal": {
+      "status": 200,
+      "cache_control": "no-store, private"
+    },
+    "student_dashboard": {
+      "status": 200,
+      "cache_control": "no-store"
+    },
+    "student_session_revoke": {
+      "revoke_status": 200,
+      "old_student_dashboard_status": 401
+    },
+    "parent_password_recovery": {
+      "request_status": 200,
+      "complete_status": 200,
+      "old_password_status": 401,
+      "new_password_status": 200,
+      "previous_sessions_invalidated": 1
+    },
+    "logout_checks": {
+      "owner": {
+        "logout_status": 200,
+        "after_session_status": 401,
+        "cache_control": "no-store, private"
+      },
+      "admin_after_activation": {
+        "logout_status": 200,
+        "after_session_status": 401,
+        "cache_control": "no-store, private"
+      },
+      "admin_after_challenge": {
+        "logout_status": 200,
+        "after_session_status": 401,
+        "cache_control": "no-store, private"
+      },
+      "parent_after_activation": {
+        "logout_status": 200,
+        "after_session_status": 401,
+        "cache_control": "no-store, private"
+      },
+      "student_after_activation": {
+        "logout_status": 200,
+        "after_session_status": 401,
+        "cache_control": "no-store, private"
+      },
+      "parent_after_reset": {
+        "logout_status": 200,
+        "after_session_status": 401,
+        "cache_control": "no-store, private"
+      }
+    },
+    "no_store_headers_seen": true
+  },
+  "counts": {
+    "users_by_role": {
+      "admin": 1,
+      "owner": 1,
+      "parent": 1,
+      "student": 1
+    },
+    "recent_session_rows": 26
+  },
+  "email_budget": {
+    "external_activation_emails_sent": 0,
+    "external_reset_emails_sent": 0,
+    "lifecycle_delivery_mode": "sink",
+    "auth_challenge_delivery_mode": "sink"
+  },
+  "external_effects": {
+    "emails_sent": 0,
+    "whatsapp_messages": 0,
+    "telegram_actions": 0,
+    "stripe_live_objects": 0,
+    "production_database_writes": 0
+  },
+  "safety": {
+    "environment": "isolated_staging",
+    "production_rejected_by_tool": true,
+    "runtime_source_changed": false,
+    "activation_links_printed_or_committed": false,
+    "reset_links_printed_or_committed": false,
+    "passwords_printed_or_committed": false,
+    "secrets_printed_or_committed": false,
+    "protected_handoff_outside_git": true
+  }
+}

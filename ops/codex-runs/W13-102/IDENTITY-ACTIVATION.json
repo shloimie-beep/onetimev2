@@ -1,0 +1,49 @@
+{
+  "schema": "onetime.w13_102.identity_activation.v1",
+  "updated_at": "2026-07-18T23:19:00+03:00",
+  "status": "mechanism_implemented_dry_run_blocked_on_private_manifest",
+  "production_apply_status": "not_started",
+  "mechanism": {
+    "implemented": true,
+    "script": "scripts/w13-102/identity/production-identity-activation.ts",
+    "dry_run_default": true,
+    "requires_exact_railway_identity": true,
+    "requires_expected_runtime_sha": true,
+    "requires_apply_and_ephemeral_authorization": true,
+    "requires_private_manifest": true,
+    "advisory_lock": true,
+    "transactional_idempotent": true,
+    "prints_tokens_or_links": false
+  },
+  "role_status": {
+    "owner": "not_started",
+    "administrator": "not_started",
+    "parent": "not_started",
+    "student": "not_started"
+  },
+  "external_effects": {
+    "activation_or_reset_emails": 0,
+    "private_fallback_links": 0,
+    "production_identity_writes": 0
+  },
+  "blockers": [
+    "private identity authorization manifest is incomplete",
+    "actual dry run reports missing recipient destinations / student identity fields and invalid expiry placeholder"
+  ],
+  "dry_run_evidence": {
+    "status": "dry_run_blocked",
+    "path": "ops/codex-runs/W13-102/evidence/identity-activation-dry-run.json",
+    "production_database_writes": 0,
+    "external_sends": 0,
+    "private_fallback_links": 0,
+    "raw_tokens_printed": false,
+    "pii_printed": false
+  },
+  "tests": [
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/accounts/w13-102-production-identity-activation.test.ts",
+      "status": "passed",
+      "tests": 4
+    }
+  ]
+}

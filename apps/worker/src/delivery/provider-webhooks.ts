@@ -112,12 +112,15 @@ export function normalizeResendWebhookEvent(input: {
     canonicalState: normalizeResendEventState(eventType),
     providerCreatedAt: stringValue(payload.created_at) ?? null,
     objectRefs: {
+      ...(input.headers.id ? { svix_message_ref_hash: redactedRefHash(input.headers.id) } : {}),
       ...(messageRef ? { message_ref_hash: redactedRefHash(messageRef) } : {}),
       message_ref_hash_present: Boolean(payload.message_id),
+      svix_message_ref_hash_present: Boolean(input.headers.id),
     },
     minimizedPayload: {
       type: eventType,
       has_message_ref: Boolean(payload.message_id),
+      has_svix_message_ref: Boolean(input.headers.id),
     },
   });
 }

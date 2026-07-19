@@ -1,0 +1,128 @@
+{
+  "schema_version": "onetime.codex_run_state.v1",
+  "run_id": "W13-104",
+  "title": "Final Day-One production operations conductor",
+  "status": "deployed_core_runtime_external_lanes_pending",
+  "terminal_status": "READY_FOR_USE_EXTERNAL_ACCOUNTS_PENDING",
+  "created_at": "2026-07-19T05:56:00Z",
+  "updated_at": "2026-07-19T06:57:14Z",
+  "repository": "webcraft-media/onetimev2",
+  "pr": 91,
+  "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+  "starting_pr_head": "2a6b3a58167dd99a35b925062b0127fcf7660946",
+  "validated_pr_head": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+  "starting_deployed_runtime_source": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "deployed_runtime_source": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+  "production_url": "https://join.onetimeonetime.com",
+  "production_login_url": "https://join.onetimeonetime.com/login",
+  "private_directory": "C:\\Users\\User\\.onetime-w13-104-private",
+  "source_pack": {
+    "path": "C:\\Users\\User\\Downloads\\W13-104-FINAL-DAY-ONE-OPERATIONS-PACK.zip",
+    "sha256": "90D7384864C7E2A87B3B3A75C566FFEDF1A528E086419D2BF1759A6F064922EA",
+    "entry_count": 3,
+    "prompt_sha256": "B16BFCEFA28331B09B9336C7F5453CE66A8804A413E23999D5892C4CE1DEEE1B"
+  },
+  "live_runtime": {
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "target_app": "one-time",
+    "health": "ok",
+    "ready": "ok",
+    "web_deployment_id": "74a6b736-dd67-4966-bdf6-b7dd80280d1a",
+    "worker_deployment_id": "0a0d730c-fa00-4338-b446-a8dcb8832c17"
+  },
+  "fresh_backup_restore": {
+    "status": "passed",
+    "deployment_id": "209c4849-fab1-4786-9514-cbddd28155e1",
+    "run_id": "w13-104-prod-pg18-20260719T064642Z",
+    "dump_sha256": "735c0e385f1b472fab0c962371177917fad2ef30fe7a78bdfd303978f9a20bde",
+    "latest_migration": "2203_w13_100_student_gamification",
+    "row_count_hash_match": true,
+    "migration_ledger_hash_match": true
+  },
+  "release_tag": "onetime-w13-104-production-20260719T0656Z",
+  "phases": [
+    { "phase": 1, "name": "Preserve healthy live baseline", "status": "complete" },
+    {
+      "phase": 2,
+      "name": "Transactional email and login email",
+      "status": "blocked_pending_inputs"
+    },
+    { "phase": 3, "name": "Approved CRM import rehearsal", "status": "blocked_pending_inputs" },
+    {
+      "phase": 4,
+      "name": "Signup, lead capture, lifecycle",
+      "status": "route_smoke_passed_local_submit_covered"
+    },
+    {
+      "phase": 5,
+      "name": "Administrator, parent, student product journeys",
+      "status": "w13_103_baseline_passed_post_deploy_routes_smoke_passed"
+    },
+    { "phase": 6, "name": "Zoom classroom canary", "status": "blocked_pending_inputs" },
+    {
+      "phase": 7,
+      "name": "Vimeo, content, knowledge, social drafts",
+      "status": "blocked_pending_inputs"
+    },
+    { "phase": 8, "name": "Telegram and WhatsApp operations", "status": "blocked_pending_inputs" },
+    { "phase": 9, "name": "BNA support bridge", "status": "blocked_pending_inputs" },
+    {
+      "phase": 10,
+      "name": "Grounded helper and Buffer readiness",
+      "status": "blocked_pending_inputs"
+    },
+    { "phase": 11, "name": "Stripe TEST billing", "status": "blocked_pending_inputs" },
+    {
+      "phase": 12,
+      "name": "UI and usability acceptance",
+      "status": "passed_local_candidate_and_live_smoke"
+    },
+    {
+      "phase": 13,
+      "name": "Staging, production, complete journey",
+      "status": "staging_and_production_deployed_smoke_passed"
+    },
+    {
+      "phase": 14,
+      "name": "Release governance and handoff",
+      "status": "sanitized_handoff_ready_external_inputs_pending"
+    }
+  ],
+  "global_blockers": [],
+  "lane_blockers": [
+    "EMAIL-INPUTS.private.json is missing.",
+    "CANARY-AUTHORIZATION.private.json is missing.",
+    "CRM-IMPORT-AUTHORIZATION.private.json is missing.",
+    "OPERATIONS_PROBE_TOKEN was not available through production railway run, so internal diagnostics were not called."
+  ],
+  "not_rerun_in_w13_104": [
+    "staging rollback and roll-forward rehearsal after the W13-104 staging deploy",
+    "production admin/parent/student browser acceptance with private links",
+    "production synthetic signup submit"
+  ],
+  "safety": {
+    "print_secrets_or_pii": false,
+    "broad_sends": false,
+    "live_stripe_charges": false,
+    "buffer_publication": false,
+    "provider_canaries_require_private_authorization": true,
+    "crm_import_requires_private_authorization": true,
+    "production_database_writes": 0,
+    "external_sends": 0,
+    "production_runtime_deployments": 2,
+    "staging_runtime_deployments": 2,
+    "railway_backup_proof_deployments": 1
+  },
+  "evidence": [
+    "ops/codex-runs/W13-104/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/W13-104/BASELINE.json",
+    "ops/codex-runs/W13-104/INPUTS-STATUS.json",
+    "ops/codex-runs/W13-104/VALIDATION.json",
+    "ops/codex-runs/W13-104/UI-QUALITY.json",
+    "ops/codex-runs/W13-104/DEPLOYMENT.json",
+    "ops/codex-runs/W13-104/evidence/production-pg18-backup-restore-summary.json",
+    "ops/codex-runs/W13-104/evidence/deployment-summary.json",
+    "ops/codex-runs/W13-104/evidence/live-smoke.json"
+  ]
+}

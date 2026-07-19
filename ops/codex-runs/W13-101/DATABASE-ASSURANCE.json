@@ -1,0 +1,86 @@
+{
+  "schema_version": "onetime.w13_101.database_assurance.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T18:18:00Z",
+  "status": "passed",
+  "target": {
+    "kind": "railway_staging_postgresql16_disposable_database_assurance",
+    "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+    "environment_name": "staging",
+    "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+    "service_name": "ot99-pg16",
+    "service_id": "7dc5b2ec-03ff-4c22-821d-8df925fe63ee",
+    "postgres_server_version_num": "160014",
+    "connection_method": "Railway-provided environment variables with TCP proxy selected inside process; secret values and URLs were not printed."
+  },
+  "database_url_printed": false,
+  "checks": [
+    {
+      "name": "PR #91 PostgreSQL 16 assurance harness",
+      "status": "passed_in_github_actions",
+      "head_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+      "job_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29607121633/job/87972938776"
+    },
+    {
+      "name": "PR #91 PostgreSQL 16 learner-seat proof",
+      "status": "passed_in_github_actions",
+      "head_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+      "job_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29607121645/job/87972938667"
+    },
+    {
+      "name": "PR #91 PostgreSQL 18 assurance and restore clone",
+      "status": "passed_in_github_actions",
+      "head_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+      "job_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29607121628/job/87972939156"
+    },
+    {
+      "name": "Railway staging PG16 connection proof",
+      "status": "passed",
+      "evidence": "Connected through ot99-pg16 TCP proxy and read server_version_num=160014 without printing connection values."
+    },
+    {
+      "name": "W13-101 PG16 migration assurance helper",
+      "status": "passed",
+      "evidence_path": "ops/codex-runs/W13-101/evidence/pg16-migration-assurance.json",
+      "summary": {
+        "local_migrations": 39,
+        "latest_migration": "2203_w13_100_student_gamification",
+        "first_run_applied_count": 39,
+        "second_run_already_applied_count": 39,
+        "ledger_count": 39,
+        "ledger_matches_normalized_checksums": true,
+        "duplicate_numeric_prefixes": 0,
+        "gamification_tables_present": true,
+        "disposable_databases_created": 1,
+        "disposable_databases_dropped": 1,
+        "remaining_w13_101_databases": 0
+      }
+    },
+    {
+      "name": "OPS-06 migration safety scan",
+      "status": "passed",
+      "evidence_path": "ops/codex-runs/W13-101/evidence/ops06/migration-safety.json"
+    },
+    {
+      "name": "Unmodified OT-37 harness local attempt",
+      "status": "not_used_as_controlling_evidence",
+      "summary": "A direct local Windows/Railway-proxy run stopped at the harness ledger comparison with 'Migration ledger does not match repository checksums'; cleanup verification found remaining_ot37_databases=0. GitHub CI for the same PR head is green, and W13-101 helper verified the same migration runner and ledger on the live staging PG16 service."
+    }
+  ],
+  "backup_restore": {
+    "status": "ci_pg18_restore_clone_passed_nonproduction_railway_native_backup_pending_phase_7",
+    "native_backup_count": 1,
+    "restore_count": 1,
+    "private_artifact_location": "GitHub Actions PostgreSQL 18 restore-clone job at https://github.com/webcraft-media/onetimev2/actions/runs/29607121628/job/87972939156; no dump artifact or database URL stored in Git.",
+    "notes": "Local Windows host has no pg_dump, pg_restore, psql, or Docker client. Do not claim Railway PITR/native production backup from this Phase 2 record; production backup identity remains a Phase 7 checkpoint before production deploy."
+  },
+  "external_effects": {
+    "production_database_writes": 0,
+    "nonproduction_disposable_databases_created": 1,
+    "nonproduction_disposable_databases_dropped": 1,
+    "providers": 0,
+    "sends": 0,
+    "secrets_printed_or_committed": false
+  },
+  "notes": "Phase 2 controls prove PR #91 migration stack on PostgreSQL 16 staging disposable DB plus green CI PostgreSQL 16/18 assurance. Connection credentials remained in Railway/BNA key-holder env and were never printed."
+}

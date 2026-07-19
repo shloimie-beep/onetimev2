@@ -1,0 +1,107 @@
+{
+  "schema": "onetime.w13_102.production_deployment_summary.v1",
+  "updated_at": "2026-07-19T01:24:00+03:00",
+  "status": "passed",
+  "production_url": "https://join.onetimeonetime.com",
+  "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+  "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+  "source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "version": "w13-102-resend-webhook-007e021",
+  "previous_production": {
+    "source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "version": "w13-101-safe-core-466d848",
+    "web_deployment_id": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
+    "worker_deployment_id": "52226afb-5b5c-4e79-8982-8b26115dfaba"
+  },
+  "ci_gate": {
+    "status": "passed_after_rerun",
+    "head_sha": "b5956ec",
+    "node_24_job": "88128187552",
+    "node_24_first_attempt": {
+      "job": "88127070504",
+      "status": "failed",
+      "reason": "known_cls_performance_flake",
+      "received_cls": 0.3084989208984375,
+      "expected_max_cls": 0.1
+    },
+    "other_required_checks": [
+      "OPS-06 deterministic checks",
+      "PostgreSQL 16 assurance harness",
+      "PostgreSQL 16 learner-seat proof",
+      "PostgreSQL 18 assurance and restore clone"
+    ]
+  },
+  "backup_restore_proof": {
+    "deployment_id": "02abfb5a-e115-49fb-b159-3f8c3e5ab211",
+    "run_id": "w13-102-prod-pg18-20260718T214715Z",
+    "status": "passed",
+    "row_count_hash_match": true,
+    "migration_ledger_hash_match": true
+  },
+  "deployments": {
+    "web": {
+      "service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+      "deployment_id": "9334b362-f00d-4170-9713-ecee0d22b85c",
+      "status": "SUCCESS",
+      "config_file": "/railway.json",
+      "image_digest": "sha256:7ade492a6ad886e336d60c5f6548ef8f74e399a226ccd7d7e56b97ca88e178f5",
+      "manifest_overlay": "web manifest matched staging shape with explicit Dockerfile and start command"
+    },
+    "worker": {
+      "service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+      "deployment_id": "f81e56ba-cf4d-4f92-99e5-f5f6be360494",
+      "status": "SUCCESS",
+      "config_file": "/railway.json",
+      "image_digest": "sha256:71c90a3602874cd787ec45b5e93c0253e95328b8c10963bfadce57584c256cd0",
+      "manifest_overlay": "worker manifest matched staging worker shape with restartPolicyType ALWAYS"
+    }
+  },
+  "transport_safety": {
+    "outbox_transport_mode": "sink",
+    "delivery_provider_mode": "sink",
+    "one_time_delivery_provider_transport_enabled": false,
+    "one_time_resend_transport_enabled": false,
+    "one_time_resend_webhook_enabled": false,
+    "real_email_transport_enabled": false,
+    "real_whatsapp_transport_enabled": false,
+    "real_telegram_transport_enabled": false,
+    "payment_transport_enabled": false,
+    "support_delivery_mode": "disabled"
+  },
+  "acceptance": {
+    "version_status": 200,
+    "health_status": 200,
+    "ready_status": 200,
+    "ready_database_ok": true,
+    "ready_latest_migration": "2203_w13_100_student_gamification",
+    "public_and_account_pages_200": ["/", "/signup", "/login", "/activate", "/forgot-password"],
+    "resend_webhook_expected_status": 503,
+    "resend_webhook_expected_code": "RESEND_WEBHOOK_DISABLED",
+    "worker_delivery_batches": {
+      "claimed": 0,
+      "delivered": 0,
+      "sink_delivered": 0,
+      "dead_lettered": 0
+    }
+  },
+  "scoped_blockers": [
+    {
+      "lane": "predeploy_direct_db_audit_from_local_shell",
+      "status": "blocked_by_private_dns",
+      "reason": "Railway CLI run injects the production private database host into a local process; the local machine cannot resolve postgres-j9pi.railway.internal. Alternative evidence from /ready and worker logs passed.",
+      "blocks_global_run": false
+    }
+  ],
+  "production_effects": {
+    "production_runtime_deployments": 2,
+    "production_database_writes": 0,
+    "external_sends": 0,
+    "crm_imports": 0,
+    "live_charges": 0
+  },
+  "notes": [
+    "Production deploy used detached worktrees at source 007e0215d1186ca51163dea3b1c15303bf52a860 with service-specific Railway manifest overlays only.",
+    "W13-101 source 466d8489bb8c7a3a57f7590929b58e7857420e86 remains the source rollback fallback.",
+    "No secrets, PII, raw provider payloads, activation/reset URLs, CRM rows, or credentials are included."
+  ]
+}

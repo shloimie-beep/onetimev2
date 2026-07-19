@@ -1,0 +1,10 @@
+{
+  "schema_version": "onetime.w13_10.sbom_record.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "format": "summary",
+  "package_lock_sha256": "5308eebc01cb0756bd3a3dc90bab5e5094b7e1fe1d03507914d63db29f738b55",
+  "package_json_sha256": "b569dd2a206e30371a46ce853da9bde9129666a86be53bd81b35ad811ca68131",
+  "combined_source_hash": "36676c4f04ac8fcbe344572e738eaccf3cbb5c4275860f2d331ea9d68f23aafc",
+  "committed_full_sbom": false,
+  "reason": "Summary avoids unnecessary repository weight."
+}

@@ -1,5 +1,7 @@
 import './styles.css';
 
+import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../../../../../packages/domain/src/legal/policies.ts';
+
 const drawer = document.querySelector<HTMLElement>('[data-drawer]');
 const drawerOverlay = document.querySelector<HTMLElement>('[data-drawer-overlay]');
 const drawerToggle = document.querySelector<HTMLButtonElement>('[data-drawer-toggle]');
@@ -175,12 +177,15 @@ if (form) {
   const status = form.querySelector<HTMLElement>('[data-form-status]');
   const success = document.querySelector<HTMLElement>('[data-success-panel]');
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const noScriptFallback = document.querySelector<HTMLElement>('[data-noscript-fallback]');
   const phone = form.querySelector<HTMLInputElement>('#phone');
-  const consentWrap = form.querySelector<HTMLElement>('[data-consent-wrap]');
-  const consent = form.querySelector<HTMLInputElement>('#reminder_consent');
+  const emailReminder = form.querySelector<HTMLInputElement>('#email_reminder_consent');
+  const whatsappReminder = form.querySelector<HTMLInputElement>('#whatsapp_reminder_consent');
   const timezone = form.querySelector<HTMLInputElement>('#timezone');
   const timezoneFallback = form.querySelector<HTMLInputElement>('#timezone_fallback');
   const idempotencyKey = crypto.randomUUID();
+  if (noScriptFallback) noScriptFallback.hidden = true;
+  if (submit) submit.hidden = false;
 
   const setError = (name: string, message: string) => {
     const field = form.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
@@ -190,23 +195,24 @@ if (form) {
     form
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
-  const currentReminder = () =>
-    form.querySelector<HTMLInputElement>('input[name="reminder_preference"]:checked')?.value ??
-    'email';
+  const reminderChannels = () => [
+    ...(emailReminder?.checked ? (['email'] as const) : []),
+    ...(whatsappReminder?.checked ? (['whatsapp'] as const) : []),
+  ];
+  const currentReminder = () => {
+    const channels = reminderChannels();
+    if (channels.includes('email') && channels.includes('whatsapp')) return 'both';
+    if (channels.includes('email')) return 'email';
+    if (channels.includes('whatsapp')) return 'whatsapp';
+    return 'none';
+  };
 
   const syncConditionalFields = () => {
     const reminder = currentReminder();
     const needsPhone = reminder === 'whatsapp' || reminder === 'both';
-    const needsConsent = reminder !== 'none';
     if (phone) {
       phone.required = needsPhone;
       phone.setAttribute('aria-required', String(needsPhone));
-    }
-    if (consentWrap && consent) {
-      consentWrap.hidden = !needsConsent;
-      consent.disabled = !needsConsent;
-      consent.required = needsConsent;
-      if (!needsConsent) consent.checked = false;
     }
   };
 
@@ -219,9 +225,8 @@ if (form) {
     timezoneFallback.disabled = false;
   }
 
-  form.querySelectorAll<HTMLInputElement>('input[name="reminder_preference"]').forEach((input) => {
-    input.addEventListener('change', syncConditionalFields);
-  });
+  emailReminder?.addEventListener('change', syncConditionalFields);
+  whatsappReminder?.addEventListener('change', syncConditionalFields);
   syncConditionalFields();
 
   form.addEventListener('submit', async (event) => {
@@ -229,6 +234,8 @@ if (form) {
     clearErrors();
     if (!form.reportValidity()) return;
     const data = new FormData(form);
+    const reminder = currentReminder();
+    const optionalReminderConsent = reminder !== 'none';
     const payload = {
       contact_name: String(data.get('contact_name') ?? ''),
       family_or_school: String(data.get('family_or_school') ?? ''),
@@ -238,8 +245,17 @@ if (form) {
       browser_timezone: detectedTimezone || undefined,
       email: String(data.get('email') ?? ''),
       phone: String(data.get('phone') ?? ''),
-      reminder_preference: String(data.get('reminder_preference') ?? 'email'),
-      reminder_consent: data.get('reminder_consent') === 'on',
+      reminder_preference: reminder,
+      reminder_consent: optionalReminderConsent,
+      consent_context: {
+        policy_version: COMMUNICATION_CONSENT_POLICY_VERSION,
+        purpose: 'optional_class_reminders',
+        source: 'public_signup',
+        channels: reminderChannels(),
+        captured_at: new Date().toISOString(),
+        withdrawal_state: 'not_withdrawn',
+        suppression_state: 'active',
+      },
       idempotency_key: idempotencyKey,
       attribution: {
         landing_path: '/signup',

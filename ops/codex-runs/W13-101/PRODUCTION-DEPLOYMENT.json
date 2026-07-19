@@ -1,0 +1,48 @@
+{
+  "schema_version": "onetime.w13_101.production_deployment.v1",
+  "generated_at": "2026-07-18T17:56:40Z",
+  "updated_at": "2026-07-18T19:25:46.855Z",
+  "status": "deployed_safe_core_optional_capabilities_pending",
+  "url": "https://join.onetimeonetime.com",
+  "runtime_source_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+  "pre_deploy_version": {
+    "version": "ops11-1197673",
+    "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e"
+  },
+  "post_deploy_version": {
+    "version": "w13-101-safe-core-466d848",
+    "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "target_app": "one-time"
+  },
+  "web_deployment_id": "243b614a-bd51-49fe-9aae-b17b99a6fe22",
+  "worker_deployment_id": "52226afb-5b5c-4e79-8982-8b26115dfaba",
+  "image_digest_or_rebuild_fingerprint": "web=sha256:b8a17ddb5e588dbaf13aaa9b086d3ffb66dbdc70984d0e3deb6b24ada68a6718; worker=sha256:8ce30ebc73e6937ff25c175b5aa795aba3c6beeabceea527c4f273b39c3c56b8",
+  "fresh_backup": {
+    "status": "passed",
+    "proof_deployment_id": "217563a6-abe7-4a79-a093-b5129b528618",
+    "run_id": "w13-101-prod-pg18-20260718T190341Z",
+    "private_location": "/backup/w13-101-prod-pg18-20260718T190341Z/production-pg18.dump",
+    "dump_sha256": "75fdc8c1096f4a4ede5bab2a44fe7b90538c247c82740ff50c167cced7bdfbc2",
+    "restored_latest_migration": "2190_ot109_rabbi_content_publisher"
+  },
+  "providers_off_during_core_deploy": true,
+  "real_import_off_during_core_deploy": true,
+  "production_database_migration": {
+    "pre_migration_latest": "2190_ot109_rabbi_content_publisher",
+    "post_migration_latest": "2203_w13_100_student_gamification",
+    "applied_ids": [
+      "2200_w12_02_communication_history",
+      "2201_w12_01_crm_audience_import",
+      "2202_w12_05_telegram_operations",
+      "2203_w13_100_student_gamification"
+    ],
+    "database_url_printed": false
+  },
+  "worker_manifest_workaround": {
+    "status": "used",
+    "reason": "Railway CLI local upload applies the root railway.json. Worker retry used a disposable detached worktree at the same commit with the tracked worker manifest copied to railway.json.",
+    "disposable_worktree": "C:/Users/User/OneTimeOneTime-w13-101-worker-deploy-20260718T191641Z",
+    "app_code_head": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+    "manifest_only_diff": true
+  }
+}

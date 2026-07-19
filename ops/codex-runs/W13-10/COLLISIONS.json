@@ -1,0 +1,31 @@
+{
+  "schema_version": "onetime.w13_10.collisions.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "hotspots": [
+    {
+      "file": "apps/web/src/server/app.ts",
+      "reason": "narrow W13-10 integration required by consent/static page/config contract",
+      "expected_owner_lane": "shared_convergence_or_W13-10",
+      "semantic_resolution": "preserve existing behavior while adding W13-10 contract"
+    },
+    {
+      "file": "packages/config/src/index.ts",
+      "reason": "narrow W13-10 integration required by consent/static page/config contract",
+      "expected_owner_lane": "shared_convergence_or_W13-10",
+      "semantic_resolution": "preserve existing behavior while adding W13-10 contract"
+    },
+    {
+      "file": "packages/contracts/src/index.ts",
+      "reason": "narrow W13-10 integration required by consent/static page/config contract",
+      "expected_owner_lane": "shared_convergence_or_W13-10",
+      "semantic_resolution": "preserve existing behavior while adding W13-10 contract"
+    },
+    {
+      "file": "scripts/build-public-pages.ts",
+      "reason": "narrow W13-10 integration required by consent/static page/config contract",
+      "expected_owner_lane": "shared_convergence_or_W13-10",
+      "semantic_resolution": "preserve existing behavior while adding W13-10 contract"
+    }
+  ],
+  "avoided": ["package-lock.json", "existing migrations", "CI workflows", "CRM UI files"]
+}

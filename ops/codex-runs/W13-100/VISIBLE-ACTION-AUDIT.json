@@ -1,0 +1,27 @@
+{
+  "schema_version": "onetime.w13_100.visible_action_audit.v1",
+  "generated_at": "2026-07-17T18:20:46Z",
+  "updated_at": "2026-07-17T19:09:41Z",
+  "status": "w12_09_registry_entries_added_local_tests_passed",
+  "audited_routes": [
+    {
+      "route": "/app/rewards",
+      "actions": ["dashboard.open_rewards.button", "rewards.view.route", "rewards.refresh.button"],
+      "status": "covered"
+    },
+    {
+      "route": "/app/parent",
+      "actions": ["portal.parent.reward_goal.create.form"],
+      "status": "covered"
+    }
+  ],
+  "findings": [
+    {
+      "id": "VA-W13-100-001",
+      "status": "resolved",
+      "finding": "W12-09 reward administration and parent reward-goal creation required visible-action registry coverage.",
+      "resolution": "Added owner rewards route/open/refresh actions and parent reward-goal form action to ops/day-one/visible-action-registry.json."
+    }
+  ],
+  "next_action": "Re-run registry audit after any additional semantic lane is ported."
+}

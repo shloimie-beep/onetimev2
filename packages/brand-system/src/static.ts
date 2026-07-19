@@ -105,6 +105,7 @@ export function renderPageShell({
   <meta property="og:type" content="website">
   <meta property="og:url" content="${escapeHtml(canonical)}">
   <meta name="theme-color" content="#050505">
+  <link rel="preload" href="/assets/fonts/dm-serif-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="${stylesheet}">
 </head>
 <body>

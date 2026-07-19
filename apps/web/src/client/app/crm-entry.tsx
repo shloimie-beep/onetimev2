@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
+  AdminGamificationDashboardResponse,
   ClassOccurrenceDetail,
   ClassOccurrenceSummary,
   ContactDetail,
@@ -13,6 +14,7 @@ import {
   contactCommunicationsTabDescriptor,
 } from './communications/route-descriptor.js';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { GamificationAdminPanel } from './gamification-admin/GamificationAdminPanel.js';
 import { SupportFeature } from './support/SupportFeature.js';
 import {
   AuthExpiredError,
@@ -26,6 +28,7 @@ import {
   getClassDetail,
   getClasses,
   getContact,
+  getGamificationAdminDashboard,
   getOwnerDashboard,
   getSession,
   listContacts,
@@ -70,7 +73,7 @@ type Notice = {
 };
 
 type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
-type OwnerSurface = 'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'support';
+type OwnerSurface = 'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'rewards' | 'support';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -114,6 +117,12 @@ function CrmApp() {
   const [supportReceiptId, setSupportReceiptId] = useState<string | null>(null);
   const [dashboard, setDashboard] = useState<OwnerDashboardResponse | null>(null);
   const [dashboardState, setDashboardState] = useState<AsyncPanelState>({
+    loading: false,
+    error: '',
+  });
+  const [gamificationDashboard, setGamificationDashboard] =
+    useState<AdminGamificationDashboardResponse | null>(null);
+  const [gamificationState, setGamificationState] = useState<AsyncPanelState>({
     loading: false,
     error: '',
   });
@@ -238,6 +247,7 @@ function CrmApp() {
         setClassDetailState({ loading: false, error: '' });
       }
       if (ownerSurface === 'content') setContentRoutePath(location.pathname);
+      if (ownerSurface === 'rewards') await loadGamificationDashboard();
       return;
     }
     if (location.pathname === communicationsRouteDescriptor.path) {
@@ -335,6 +345,20 @@ function CrmApp() {
       return;
     }
     setDashboardState({ loading: false, error: '' });
+  }
+
+  async function loadGamificationDashboard() {
+    setGamificationState({ loading: true, error: '' });
+    try {
+      setGamificationDashboard(await getGamificationAdminDashboard());
+      setGamificationState({ loading: false, error: '' });
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setGamificationState({
+        loading: false,
+        error: errorMessage(error, 'Learning rewards could not load.'),
+      });
+    }
   }
 
   async function loadClasses() {
@@ -452,6 +476,7 @@ function CrmApp() {
     setCreating(false);
     setListLoading(false);
     if (nextSurface === 'dashboard' || nextSurface === 'billing') void loadDashboard();
+    if (nextSurface === 'rewards') void loadGamificationDashboard();
     if (nextSurface === 'classes') {
       void loadClasses();
       if (classDetailMatch?.[1]) void loadClassDetail(decodeURIComponent(classDetailMatch[1]));
@@ -624,6 +649,12 @@ function CrmApp() {
             href: '/app/billing',
             current: surface === 'billing',
           },
+          {
+            id: 'rewards',
+            label: 'Rewards',
+            href: '/app/rewards',
+            current: surface === 'rewards',
+          },
         ]
       : []),
     ...(canReadCommunications
@@ -695,6 +726,13 @@ function CrmApp() {
         actionId="billing.status.refresh.button"
         loading={dashboardState.loading}
         onRefresh={() => void loadDashboard()}
+      />
+    ) : surface === 'rewards' ? (
+      <ReadOnlyToolbar
+        label="Refresh rewards"
+        actionId="rewards.refresh.button"
+        loading={gamificationState.loading}
+        onRefresh={() => void loadGamificationDashboard()}
       />
     ) : surface === 'support' ? null : communicationsMode?.kind === 'contact' ? (
       <ContactCommunicationsToolbar
@@ -802,6 +840,14 @@ function CrmApp() {
           loading={dashboardState.loading}
           error={dashboardState.error}
           onRetry={() => void loadDashboard()}
+        />
+      )}
+      {surface === 'rewards' && (
+        <GamificationAdminPanel
+          dashboard={gamificationDashboard}
+          loading={gamificationState.loading}
+          error={gamificationState.error}
+          onRetry={() => void loadGamificationDashboard()}
         />
       )}
       {surface === 'support' && (
@@ -2385,6 +2431,7 @@ function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/classes' || pathname.startsWith('/app/classes/')) return 'classes';
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
+  if (pathname === '/app/rewards') return 'rewards';
   if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
     return 'support';
   }
@@ -2402,6 +2449,7 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'classes') return 'Classes';
   if (surface === 'content') return 'Content Workspace';
   if (surface === 'billing') return 'Products/Billing status';
+  if (surface === 'rewards') return 'Learning Rewards';
   if (surface === 'support') return 'Support';
   return 'CRM';
 }
@@ -2416,6 +2464,9 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
     return 'Rabbi and One Time content review, prompts, artifacts, social drafts, and provider-off status.';
   }
   if (surface === 'billing') return 'Billing setup and access projection status.';
+  if (surface === 'rewards') {
+    return 'Private learner progress, rewards, guardrails, and correction audit.';
+  }
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
   return 'One Time signup and contact review.';
 }
@@ -2426,6 +2477,7 @@ function dashboardOpenActionId(href: string | null) {
   if (href === communicationsRouteDescriptor.path) return 'dashboard.open_communications.button';
   if (href === '/app/content') return 'dashboard.open_content.button';
   if (href === '/app/billing') return 'dashboard.open_billing.button';
+  if (href === '/app/rewards') return 'dashboard.open_rewards.button';
   return null;
 }
 
@@ -2435,6 +2487,7 @@ function dashboardOpenLabel(href: string) {
   if (href === communicationsRouteDescriptor.path) return 'Review communications';
   if (href === '/app/content') return 'Configure content';
   if (href === '/app/billing') return 'Open billing';
+  if (href === '/app/rewards') return 'Review rewards';
   return 'Open';
 }
 

@@ -1,0 +1,126 @@
+{
+  "lane_id": "W12-100-06",
+  "branch": "codex/w12-100-06-account-and-portal-readiness",
+  "repository": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-06",
+  "canonical_starting_commit": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
+  "integration_base": "integration/w12-final-convergence-20260717T123715Z",
+  "overall_status": "done",
+  "external_actions_count": 0,
+  "production_mutations_count": 0,
+  "provider_resource_mutations_count": 0,
+  "objectives": [
+    {
+      "id": "canonical_start_commit_verified",
+      "status": "done",
+      "evidence": "Fetched all refs and verified 0d8d7168f066668f035176d777bdaaa4dcc5accd exists before continuing."
+    },
+    {
+      "id": "isolated_worktree_and_branch",
+      "status": "done",
+      "evidence": "Used isolated worktree C:\\Users\\User\\.w12-100-20260717-worktrees\\W12-100-06 on branch codex/w12-100-06-account-and-portal-readiness at the canonical commit."
+    },
+    {
+      "id": "required_first_reads",
+      "status": "done",
+      "evidence": "Read AGENTS.md, ops/director/START-HERE.md, ops/director/PRODUCT-INVARIANTS.md, and all listed W12-99 artifacts before implementation."
+    },
+    {
+      "id": "ownership_boundaries",
+      "status": "done",
+      "evidence": "Changes are limited to scripts/w12-100/identity, portal/account lifecycle integration tests, and ops/codex-runs/W12-100-06."
+    },
+    {
+      "id": "safe_identity_provisioning_tool",
+      "status": "done",
+      "evidence": "Added scripts/w12-100/identity/provision-first-identity-set.ts for synthetic owner/admin, parent/guardian, and three separate student identities in one household."
+    },
+    {
+      "id": "environment_gated_and_production_rejected",
+      "status": "done",
+      "evidence": "Tool requires ONE_TIME_IDENTITY_PROVISIONING_ENABLED=true, --apply, --confirm-isolated, explicit local/test/staging environment, sink transport, and non-production config/database."
+    },
+    {
+      "id": "explicit_account_product_scope",
+      "status": "done",
+      "evidence": "Tool requires --account-key and --product-key and rejects scope mismatches against loaded runtime config."
+    },
+    {
+      "id": "no_default_passwords_or_secret_output",
+      "status": "done",
+      "evidence": "Tool does not set target identity passwords, uses random internal bootstrap material when needed, and serializes only redacted IDs, hashes, statuses, and counts."
+    },
+    {
+      "id": "idempotent_status_distinctions",
+      "status": "done",
+      "evidence": "Focused tests cover created, already_exists, update_blocked, and conflict outcomes across repeated runs and mismatched manifest input."
+    },
+    {
+      "id": "audit_entry_recorded",
+      "status": "done",
+      "evidence": "Each provisioning run records w12_100_identity_provisioning_run in account_lifecycle_audit_events with redacted metadata."
+    },
+    {
+      "id": "no_admin_impersonation",
+      "status": "done",
+      "evidence": "Student setup remains update_blocked until parent activation, then setup is issued by the activated parent actor rather than an owner/admin actor."
+    },
+    {
+      "id": "owner_admin_activation_assurance_journey",
+      "status": "done",
+      "evidence": "Focused integration test exercises owner/admin activation, login challenge, trusted device assurance, logout, revocation, and recovery paths."
+    },
+    {
+      "id": "parent_household_scope_journey",
+      "status": "done",
+      "evidence": "Focused integration test activates the parent and verifies household scope contains the synthetic household learners."
+    },
+    {
+      "id": "student_setup_and_sibling_isolation",
+      "status": "done",
+      "evidence": "Focused integration test activates three separate student accounts and verifies each student sees only their own learner scope."
+    },
+    {
+      "id": "suspended_and_revoked_student_behavior",
+      "status": "done",
+      "evidence": "Focused integration test revokes a student session and verifies suspended student login/dashboard access fails closed."
+    },
+    {
+      "id": "trusted_device_expiry",
+      "status": "done",
+      "evidence": "Focused integration test creates a trusted device and verifies expiry removes the assurance path."
+    },
+    {
+      "id": "class_content_visibility",
+      "status": "done",
+      "evidence": "Focused integration test seeds synthetic class/content fixtures and verifies parent and student portal visibility."
+    },
+    {
+      "id": "support_access",
+      "status": "done",
+      "evidence": "Focused integration test verifies support previews remain local/synthetic with external_send=false."
+    },
+    {
+      "id": "portal_test_lab_production_rejection",
+      "status": "done",
+      "evidence": "Focused integration test verifies production configuration rejects the portal test-lab/provisioning path."
+    },
+    {
+      "id": "staging_operator_runbook",
+      "status": "done",
+      "evidence": "Added ops/codex-runs/W12-100-06/STAGING-OPERATOR-RUNBOOK.md describing later protected activation delivery without credentials or destinations."
+    },
+    {
+      "id": "validation",
+      "status": "done",
+      "evidence": "Focused integration, unit, full integration, secret scan, lint, typecheck, brand check, and build passed. Exact commands are listed in FINAL-REPORT.md."
+    },
+    {
+      "id": "safety_contract",
+      "status": "done",
+      "evidence": "No staging or production deploy, no production database access, no external sends, no provider resource mutations, no secrets printed or committed."
+    }
+  ],
+  "blockers": [],
+  "needs_operator_decision": []
+}

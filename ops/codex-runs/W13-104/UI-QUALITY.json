@@ -1,0 +1,36 @@
+{
+  "schema_version": "onetime.w13_104.ui_quality.v1",
+  "status": "passed_local_candidate_and_live_smoke",
+  "fixed": [
+    {
+      "issue": "PR #91 Node 24 verify public-page CLS failure",
+      "change": "Preloaded the self-hosted DM Serif Display font and changed font-display to optional for public shell font stability."
+    }
+  ],
+  "local_validation": {
+    "performance": "passed",
+    "accessibility": "passed",
+    "e2e": "passed",
+    "mobile_visual_screenshots": "captured"
+  },
+  "remote_validation": {
+    "github_node_24_verify": "passed",
+    "production_version": "w13-104-public-cls-688fc70",
+    "production_commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "production_routes_200": [
+      "/health",
+      "/ready",
+      "/login",
+      "/signup",
+      "/activate",
+      "/forgot-password"
+    ]
+  },
+  "evidence": [
+    "ops/codex-runs/W13-104/evidence/final-performance-seo-bundle-report.json",
+    "ops/codex-runs/W13-104/evidence/screenshots/landing-top-fold-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/signup-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/login-390x844.png",
+    "ops/codex-runs/W13-104/evidence/live-smoke.json"
+  ]
+}

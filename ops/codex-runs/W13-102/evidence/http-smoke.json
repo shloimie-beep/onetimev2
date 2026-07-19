@@ -1,0 +1,158 @@
+{
+  "schema": "onetime.w13_102.http_smoke.v1",
+  "generated_at": "2026-07-18T20:03:13.169Z",
+  "base_url": "https://join.onetimeonetime.com",
+  "results": [
+    {
+      "path": "/version",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "application/json",
+      "bytes": 119,
+      "sha256": "0accc657393ca6e4d0339896e99e55e61f0497f7edc4e21379f44d8f80a76a20",
+      "duration_ms": 1007,
+      "json": {
+        "version": "w13-101-safe-core-466d848",
+        "commit_sha": "466d8489bb8c7a3a57f7590929b58e7857420e86",
+        "target_app": "one-time"
+      }
+    },
+    {
+      "path": "/health",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "application/json",
+      "bytes": 35,
+      "sha256": "18be52c0fc9dadf2bfa0888caa6f6afa60c9598c617417b4251773a5e8a0a827",
+      "duration_ms": 418,
+      "json": {
+        "ok": true,
+        "service": "onetime-web"
+      }
+    },
+    {
+      "path": "/ready",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "application/json",
+      "bytes": 857,
+      "sha256": "124c8e921b3e28a12e0615858924582a807885c2ed644c88662fc2c4a34c9340",
+      "duration_ms": 269,
+      "json": {
+        "ok": true,
+        "service": "onetime-web",
+        "generated_at": "2026-07-18T20:03:14.245Z",
+        "dependencies": [
+          {
+            "name": "database",
+            "ok": true,
+            "essential": true,
+            "status": "ok",
+            "latency_ms": 32,
+            "blocker_code": null,
+            "detail": "query ok"
+          },
+          {
+            "name": "schema_migrations",
+            "ok": true,
+            "essential": true,
+            "status": "ok",
+            "latency_ms": 1,
+            "blocker_code": null,
+            "detail": "latest=2203_w13_100_student_gamification"
+          }
+        ],
+        "optional_dependencies": [
+          {
+            "name": "email_transport",
+            "ok": true,
+            "essential": false,
+            "status": "disabled",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "disabled by runtime flag"
+          },
+          {
+            "name": "whatsapp_transport",
+            "ok": true,
+            "essential": false,
+            "status": "disabled",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "disabled by runtime flag"
+          },
+          {
+            "name": "support_bridge",
+            "ok": true,
+            "essential": false,
+            "status": "disabled",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "disabled by runtime flag"
+          }
+        ],
+        "blockers": []
+      }
+    },
+    {
+      "path": "/",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "text/html",
+      "bytes": 16888,
+      "sha256": "685e0e16661c0d78e805ad7be975b4b4f52f350ae48f648571662543c2bd48f5",
+      "duration_ms": 296,
+      "json": null
+    },
+    {
+      "path": "/login",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "text/html",
+      "bytes": 2663,
+      "sha256": "ad03d88e172788859b62fb74ba9fe50a39a4315faf3516fbadef3ae07218287c",
+      "duration_ms": 240,
+      "json": null
+    },
+    {
+      "path": "/forgot-password",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "text/html",
+      "bytes": 1723,
+      "sha256": "1dbab14ff458a694ab8b0f18fa3b85b2d76f8e5443c1d6d74bfab821a9a44b7c",
+      "duration_ms": 233,
+      "json": null
+    },
+    {
+      "path": "/activate",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "text/html",
+      "bytes": 2124,
+      "sha256": "f00b9d7fedfe4ae6a6fec70c0290cd1b52120cb7ee04ba22a6974bcc73d2bef1",
+      "duration_ms": 231,
+      "json": null
+    },
+    {
+      "path": "/reset-password",
+      "status": 200,
+      "ok": true,
+      "redirect": false,
+      "content_type": "text/html",
+      "bytes": 2113,
+      "sha256": "8e216c37028fb8ace5dc2f9a094bb8e93d7a0760e21e2677463b5d7da29503de",
+      "duration_ms": 230,
+      "json": null
+    }
+  ],
+  "secrets_printed": false,
+  "pii_printed": false
+}

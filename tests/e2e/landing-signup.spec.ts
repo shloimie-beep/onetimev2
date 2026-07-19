@@ -1,4 +1,6 @@
-import { expect, type Locator, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
+
+const testBaseUrl = `http://127.0.0.1:${process.env.PORT ?? '3100'}`;
 
 async function expectLocatorInsideViewport(
   locator: Locator,
@@ -321,9 +323,9 @@ test('family and school signup submit through canonical lead endpoint', async ({
   await page.getByLabel('Family or School').fill('Playwright Family');
   await page.getByLabel('Location').fill('Jerusalem');
   await page.getByRole('textbox', { name: 'Email' }).fill(`family-${Date.now()}@example.test`);
-  await page
-    .getByLabel('Confirm that we may send the selected class information and reminders.')
-    .check();
+  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
+  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
+  await page.getByLabel('Email class reminders').check();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
   await expect(
     page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
@@ -335,9 +337,8 @@ test('family and school signup submit through canonical lead endpoint', async ({
   await page.getByRole('radio', { name: 'School' }).check();
   await page.getByLabel('Location').fill('London');
   await page.getByRole('textbox', { name: 'Email' }).fill(`school-${Date.now()}@example.test`);
-  await page
-    .getByLabel('Confirm that we may send the selected class information and reminders.')
-    .check();
+  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
+  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
   await page.getByRole('button', { name: 'Sign Up Now' }).click();
   await expect(
     page.getByRole('heading', { name: 'Thank you - we received your school inquiry.' }),
@@ -358,3 +359,156 @@ test('public pages do not load the future React CRM bundle', async ({ page }) =>
   await page.goto('/signup');
   expect(scripts.some((url) => url.includes('app-crm'))).toBe(false);
 });
+
+test('signup consent is channel-specific and not inferred from a default choice', async ({
+  page,
+}) => {
+  const submittedPayloads: Array<Record<string, unknown>> = [];
+  await page.route('**/api/v1/leads', async (route) => {
+    submittedPayloads.push(
+      JSON.parse(route.request().postData() ?? '{}') as Record<string, unknown>,
+    );
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        duplicate_submission: false,
+        classification: 'family',
+        contact_key: 'contact_public_consent',
+        signup_key: 'signup_public_consent',
+        confirmation_queued: true,
+        outbox_intents: [],
+        message: {
+          heading: 'Thank you - we received your Family signup.',
+          body: 'Test success.',
+        },
+      }),
+    });
+  });
+
+  await page.goto('/signup');
+  await expect(page.getByRole('group', { name: 'Required service communications' })).toContainText(
+    'Optional daily reminders are separate',
+  );
+  await expect(page.getByRole('group', { name: 'Optional class reminders' })).toContainText(
+    'No optional reminders are selected by default.',
+  );
+  await expect(page.getByLabel('Email class reminders')).not.toBeChecked();
+  await expect(page.getByLabel('WhatsApp class reminders')).not.toBeChecked();
+  await fillSignup(page, 'No Optional', 'none');
+  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+  ).toBeVisible();
+  expect(submittedPayloads.at(-1)).toMatchObject({
+    reminder_preference: 'none',
+    reminder_consent: false,
+  });
+
+  await page.goto('/signup');
+  await page.getByLabel('Email class reminders').focus();
+  await page.keyboard.press('Space');
+  await expect(page.getByLabel('Email class reminders')).toBeChecked();
+  await fillSignup(page, 'Email Optional', 'email');
+  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+  ).toBeVisible();
+  expect(submittedPayloads.at(-1)).toMatchObject({
+    reminder_preference: 'email',
+    reminder_consent: true,
+  });
+});
+
+test('signup validates WhatsApp phone consent and avoids student-sensitive fields', async ({
+  page,
+}) => {
+  const submittedPayloads: Array<Record<string, unknown>> = [];
+  await page.route('**/api/v1/leads', async (route) => {
+    submittedPayloads.push(
+      JSON.parse(route.request().postData() ?? '{}') as Record<string, unknown>,
+    );
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        duplicate_submission: false,
+        classification: 'family',
+        contact_key: 'contact_public_whatsapp',
+        signup_key: 'signup_public_whatsapp',
+        confirmation_queued: true,
+        outbox_intents: [],
+        message: {
+          heading: 'Thank you - we received your Family signup.',
+          body: 'Test success.',
+        },
+      }),
+    });
+  });
+
+  await page.goto('/signup');
+  await expect(page.getByText('Do not include student names')).toBeVisible();
+  await expect(page.getByLabel(/student.*name/i)).toHaveCount(0);
+  await expect(page.getByLabel(/student.*age/i)).toHaveCount(0);
+  await page.getByLabel('WhatsApp class reminders').check();
+  await expect(page.getByLabel('Phone / WhatsApp')).toHaveJSProperty('required', true);
+  await expect(page.getByLabel('Phone / WhatsApp')).toHaveAttribute('aria-required', 'true');
+  await fillSignup(page, 'WhatsApp Missing Phone', 'missing-phone');
+  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  expect(submittedPayloads).toHaveLength(0);
+
+  await page.getByLabel('Phone / WhatsApp').fill('+972501112222');
+  await page.getByRole('button', { name: 'Sign Up Now' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Thank you - we received your Family signup.' }),
+  ).toBeVisible();
+  expect(submittedPayloads.at(-1)).toMatchObject({
+    phone: '+972501112222',
+    reminder_preference: 'whatsapp',
+    reminder_consent: true,
+  });
+});
+
+test('signup consent layout stays usable on required mobile viewports', async ({ page }) => {
+  for (const size of [
+    { width: 360, height: 800 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(size);
+    await page.goto('/signup');
+    await expect(page.getByRole('group', { name: 'Optional class reminders' })).toBeVisible();
+    await expect(
+      page.getByRole('group', { name: 'Required service communications' }),
+    ).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    );
+    expect(overflow).toBe(false);
+  }
+});
+
+test('signup has an explicit no-JavaScript fallback', async ({ browser }) => {
+  const context = await browser.newContext({ baseURL: testBaseUrl, javaScriptEnabled: false });
+  const noJsPage = await context.newPage();
+  try {
+    await noJsPage.goto('/signup');
+    await expect(
+      noJsPage.getByText('JavaScript is required for secure signup submission.'),
+    ).toBeVisible();
+    await expect(noJsPage.getByRole('button', { name: 'Sign Up Now' })).toBeHidden();
+    await expect(noJsPage.getByText('Do not send student-sensitive information')).toBeVisible();
+  } finally {
+    await context.close();
+  }
+});
+
+async function fillSignup(page: Page, name: string, suffix: string) {
+  await page.getByLabel('Parent or contact name').fill(`Playwright ${name}`);
+  await page.getByLabel('Family or School').fill(`Playwright ${name} Family`);
+  await page.getByLabel('Location').fill('Jerusalem');
+  await page
+    .getByRole('textbox', { name: 'Email' })
+    .fill(`public-${suffix}-${Date.now()}@example.test`);
+}

@@ -1,0 +1,78 @@
+{
+  "schema_version": "onetime.w12_100_08.messaging_readiness_matrix.v1",
+  "lane_id": "W12-100-08",
+  "provider": "whatsapp",
+  "environment": "staging",
+  "generated_at": "2026-07-17T17:54:53+03:00",
+  "protected_values": [
+    { "name": "webhook_app_secret", "status": "absent" },
+    { "name": "verify_token", "status": "absent" },
+    { "name": "cloud_access_token", "status": "absent" },
+    { "name": "phone_number_id", "status": "absent" },
+    { "name": "waba_id", "status": "absent" },
+    { "name": "canary_recipient", "status": "absent" },
+    { "name": "staging_environment_fingerprint", "status": "absent" },
+    { "name": "one_recipient_canary_budget", "status": "absent" }
+  ],
+  "controls": [
+    {
+      "name": "challenge_and_signature_validation",
+      "status": "valid",
+      "evidence": ["tests/integration/whatsapp/ot85-webhook-route.test.ts"]
+    },
+    {
+      "name": "replay_duplicate_malformed_oversized_handling",
+      "status": "valid",
+      "evidence": [
+        "tests/integration/whatsapp/ot85-assistant.test.ts",
+        "tests/integration/whatsapp/ot85-webhook-route.test.ts"
+      ]
+    },
+    {
+      "name": "sender_account_rate_limits",
+      "status": "valid",
+      "evidence": ["tests/integration/whatsapp/ot85-assistant.test.ts"]
+    },
+    {
+      "name": "opt_out_and_suppression_precedence",
+      "status": "valid",
+      "evidence": ["STOP/START and send-time suppression tests"]
+    },
+    {
+      "name": "consent_before_outbound_eligibility",
+      "status": "valid",
+      "evidence": ["family reminder consent event assertions"]
+    },
+    {
+      "name": "public_assistant_offline_readiness_truth",
+      "status": "valid",
+      "evidence": ["public assistant status route returns provider_off or canary blocked truth"]
+    },
+    {
+      "name": "deep_link_and_prefill_validation",
+      "status": "valid",
+      "evidence": ["safe wa.me link test", "unsafe host rejection test"]
+    },
+    {
+      "name": "browser_private_state_persistence",
+      "status": "absent",
+      "evidence": [
+        "rg found no localStorage/sessionStorage/indexedDB/document.cookie in public WhatsApp scope"
+      ]
+    },
+    {
+      "name": "account_product_scope",
+      "status": "valid",
+      "evidence": ["all inbox/outbox/conversation queries use config account/product scope"]
+    },
+    {
+      "name": "one_recipient_canary_budget_enforcement",
+      "status": "valid",
+      "evidence": ["tests/integration/whatsapp/ot100-provider-runtime.test.ts"]
+    }
+  ],
+  "external_actions_count": 0,
+  "production_mutation_count": 0,
+  "raw_secret_values_included": false,
+  "raw_private_destinations_included": false
+}

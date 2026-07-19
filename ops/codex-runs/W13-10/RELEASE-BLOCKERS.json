@@ -1,0 +1,12 @@
+{
+  "schema_version": "onetime.w13_10.release_blockers.v1",
+  "generated_at": "2026-07-17T16:17:17.487Z",
+  "blockers": [
+    "production_deployment_authorization_missing",
+    "real_audience_import_authorization_missing",
+    "production_provider_activation_authorization_missing",
+    "public_legal_counsel_approval_missing",
+    "retention_deletion_export_guardian_policy_missing",
+    "postgres_16_18_disposable_rehearsal_not_recorded_by_w13_10"
+  ]
+}
