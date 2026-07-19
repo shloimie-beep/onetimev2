@@ -24,8 +24,9 @@ production launch-spine proof.
 This is not a product-code failure. The app is fail-closed in the right places.
 Missing provider/private inputs block only their lanes.
 
-PR #92 current head is `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`. The accepted
-staging runtime proof deployed an earlier PR #92 source commit,
+PR #92 CRM/email evidence head before this truth-refresh commit was
+`0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`. The accepted staging runtime proof
+deployed an earlier PR #92 source commit,
 `ee9929008fc0068b3dcf9b86d11e7c21d1331c93`, and the final staging roll-forward
 exposed non-secret Railway deployment identity at `/version.deployment`, bound
 to deployment `c464ea23-649b-4c8d-b4af-0d10c5ce3022`, with all smoke routes
@@ -177,9 +178,11 @@ digests remained unchanged.
 - `npm run unit` passed.
 - `npm run build` passed.
 - PR #92 checks passed at earlier head
-  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`. At current head
+  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`. At CRM/email evidence head
   `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`, GitHub checks failed before
-  workflow steps/logs; local focused gates passed.
+  workflow steps/logs; local focused gates passed. Read the PR or
+  `git rev-parse HEAD` for the current branch head after later docs-only truth
+  refresh commits.
 - `node --check scripts/check-director-truth.mjs` passed.
 - Staging smoke routes passed for the PR #92 deploy, W13-104 rollback, and PR
   #92 roll-forward: `/version`, `/health`, `/ready`, `/`, `/signup`, `/login`,

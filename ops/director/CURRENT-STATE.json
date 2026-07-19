@@ -39,8 +39,8 @@
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
     "head_ref": "codex/one-time-finish-now-20260719",
     "head_ref_oid": "0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c",
-    "checks_at_inspection": "GitHub checks failed before workflow steps/logs at 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c after email preflight; local focused gates passed.",
-    "note": "Runtime deployment proof, PR #92 staging rollback/roll-forward, corrected CRM dry-run, guarded CRM apply writer, sanitized email-inputs preflight, and production read-only route proof are recorded. Full release remains blocked by consuming launch-spine, transactional email canary/manifest, CRM production apply, provider, and protected diagnostic gates."
+    "checks_at_inspection": "GitHub checks failed before workflow steps/logs at CRM/email evidence head 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c; local focused gates passed. Read the PR or git rev-parse HEAD for the current branch head after later docs-only truth refresh commits.",
+    "note": "Runtime deployment proof, PR #92 staging rollback/roll-forward, corrected CRM dry-run, guarded CRM apply writer, sanitized email-inputs preflight, and production read-only route proof are recorded. The recorded head_ref_oid is the CRM/email evidence head captured before docs-only truth-refresh commits; read the PR for the current branch head. Full release remains blocked by consuming launch-spine, transactional email canary/manifest, CRM production apply, provider, and protected diagnostic gates."
   },
   "live_readback": {
     "production": {

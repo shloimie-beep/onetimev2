@@ -37,9 +37,10 @@
       "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
       "head_ref": "codex/one-time-finish-now-20260719",
       "head_ref_oid": "0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c",
-      "checks_at_inspection": "GitHub checks failed before workflow steps/logs at 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c after email preflight; local focused gates passed.",
+      "checks_at_inspection": "GitHub checks failed before workflow steps/logs at CRM/email evidence head 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c; local focused gates passed. Read the PR or git rev-parse HEAD for the current branch head after later docs-only truth refresh commits.",
       "role": "Release-gate remediation and durable ONE-TIME-FINISH-NOW evidence branch."
-    }
+    },
+    "worktree_head_note": "CRM/email evidence head captured before docs-only truth-refresh commits; use git rev-parse HEAD for the current branch head."
   },
   "raw_prompt": {
     "source_path": "C:/Users/User/.codex/attachments/bac984fb-2e71-49d4-a897-1066788fd6c3/pasted-text.txt",
@@ -251,7 +252,7 @@
     "unit": "real-source-preflight unit test passed in CRM evidence refresh; npm run unit passed earlier in PR #92 proof work",
     "integration": "real-source-preflight CLI integration test passed in CRM evidence refresh; runtime-version-proof integration passed earlier in PR #92 proof work",
     "build": "npm run build passed",
-    "github_pr_92": "GitHub checks failed before workflow steps/logs at 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c after email preflight; local focused gates passed.",
+    "github_pr_92": "GitHub checks failed before workflow steps/logs at CRM/email evidence head 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c; local focused gates passed. Read the PR or git rev-parse HEAD for the current branch head after later docs-only truth refresh commits.",
     "diff_check": "passed after email inputs preflight with Windows line-ending warnings only",
     "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",

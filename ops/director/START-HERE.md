@@ -40,10 +40,11 @@ state without depending on local chat memory.
   `ops/codex-runs/ONE-TIME-FINISH-NOW/`
 - ONE-TIME-FINISH-NOW remediation PR:
   `https://github.com/webcraft-media/onetimev2/pull/92`
-- PR #92 current head:
+- PR #92 CRM/email evidence head before this truth-refresh commit:
   `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`
-- PR #92 checks at the current head failed before workflow steps/logs; local
-  focused gates passed.
+- PR #92 checks at that evidence head failed before workflow steps/logs; local
+  focused gates passed. Read the PR or `git rev-parse HEAD` for the current
+  branch head after later docs-only truth refresh commits.
 
 ## Current Verdict
 
