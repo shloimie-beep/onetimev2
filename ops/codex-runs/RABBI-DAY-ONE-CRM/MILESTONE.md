@@ -1,6 +1,6 @@
 # RABBI-DAY-ONE-CRM
 
-Status: real One Time CRM import delivered to production; production signup proof delivered; campaign seed approval packet ready; WhatsApp and external sends remain gated.
+Status: real One Time CRM import delivered to production; production signup proof delivered; campaign seed approval packet ready; WhatsApp and external sends remain gated; GitHub Actions blocked by account billing/spending limit.
 
 Branch: `codex/one-time-finish-now-20260719`  
 PR: `https://github.com/webcraft-media/onetimev2/pull/92`  
@@ -28,6 +28,7 @@ CRM production evidence commit:
 - `WHATSAPP_LEAD_CAPTURE`: provider remains off until Meta WhatsApp production webhook secrets and verify token are configured and canaried.
 - `CAMPAIGN_SEED`: ready for operator approval; exact proposed seed copy and required approval statement are recorded in `CAMPAIGN-SEED-APPROVAL.md`, but no seed send is authorized yet.
 - `BROAD_CAMPAIGN`: not sent.
+- `GITHUB_ACTIONS`: blocked before runner execution by GitHub account billing/spending-limit status; no job steps ran.
 
 ## Evidence
 
@@ -40,10 +41,14 @@ CRM production evidence commit:
 - Campaign seed approval packet: `ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json`
 - Campaign seed approval Markdown: `ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md`
 - Transactional email release proof: `ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json`
+- GitHub Actions billing blocker: `ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json`
+- GitHub Actions billing blocker Markdown: `ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md`
 
 External effects this slice: one Railway backup-proof deployment, one production DB migration, one production CRM import apply, one production signup submit, zero production external email sends from signup, zero WhatsApp sends, zero provider mutations, zero broad campaign sends.
 
-GitHub Actions on the CRM production evidence commit completed as failure for
-all five PR #92 jobs, but the gh-fix-ci inspector reported job logs unavailable
-(`log not found`) for every job id. Local validation and production smokes
-passed.
+GitHub Actions on PR #92 head
+`f46375cdbfea26700e6d6a181745b2c35705412b` completed as failure for all five
+jobs before runner steps started. The Checks API annotations classify the cause
+as account billing/spending-limit failure, so there is no repo code fix to apply
+until GitHub Billing & plans is fixed and the checks are rerun. Local validation
+and production smokes previously passed.

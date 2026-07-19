@@ -1,0 +1,89 @@
+{
+  "schema_version": "onetime.github_actions_blocker.v1",
+  "generated_at": "2026-07-19T17:24:51.805Z",
+  "repository": "webcraft-media/onetimev2",
+  "pull_request": {
+    "number": 92,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+    "head_ref": "codex/one-time-finish-now-20260719",
+    "inspected_head_sha": "f46375cdbfea26700e6d6a181745b2c35705412b"
+  },
+  "status": "blocked_by_github_account_billing_or_spending_limit",
+  "classification": "external_platform_account_blocker",
+  "repo_code_fix_available": false,
+  "jobs": [
+    {
+      "workflow_name": "CI",
+      "check_name": "Node 24 verify",
+      "run_id": "29696629628",
+      "job_id": "88218387162",
+      "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29696629628",
+      "conclusion": "failure",
+      "duration_seconds": 4,
+      "steps_reported": 0
+    },
+    {
+      "workflow_name": "OPS-06 Reliability Observability",
+      "check_name": "OPS-06 deterministic checks",
+      "run_id": "29696629632",
+      "job_id": "88218387106",
+      "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29696629632",
+      "conclusion": "failure",
+      "duration_seconds": 2,
+      "steps_reported": 0
+    },
+    {
+      "workflow_name": "OPS-11 PostgreSQL 18 Assurance",
+      "check_name": "PostgreSQL 18 assurance and restore clone",
+      "run_id": "29696629635",
+      "job_id": "88218387170",
+      "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29696629635",
+      "conclusion": "failure",
+      "duration_seconds": 3,
+      "steps_reported": 0
+    },
+    {
+      "workflow_name": "OT-37 PostgreSQL Assurance",
+      "check_name": "PostgreSQL 16 assurance harness",
+      "run_id": "29696629630",
+      "job_id": "88218387371",
+      "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29696629630",
+      "conclusion": "failure",
+      "duration_seconds": 2,
+      "steps_reported": 0
+    },
+    {
+      "workflow_name": "OT-83 PostgreSQL Concurrency",
+      "check_name": "PostgreSQL 16 learner-seat proof",
+      "run_id": "29696629637",
+      "job_id": "88218387142",
+      "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29696629637",
+      "conclusion": "failure",
+      "duration_seconds": 2,
+      "steps_reported": 0
+    }
+  ],
+  "check_run_annotation": {
+    "annotation_level": "failure",
+    "path": ".github",
+    "start_line": 1,
+    "message": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings"
+  },
+  "inspection_commands": [
+    "gh auth status",
+    "python C:/Users/User/.codex/plugins/cache/openai-curated-remote/github/0.1.8-2841cf9749ae/skills/gh-fix-ci/scripts/inspect_pr_checks.py --repo . --pr 92 --json",
+    "gh run view <run_id> --json name,workflowName,conclusion,status,url,event,headBranch,headSha,createdAt,updatedAt,jobs",
+    "gh api repos/webcraft-media/onetimev2/commits/f46375cdbfea26700e6d6a181745b2c35705412b/check-runs --paginate",
+    "gh api repos/webcraft-media/onetimev2/check-runs/<job_id>/annotations"
+  ],
+  "release_impact": "PR #92 cannot be proven green or merged through required GitHub Actions until the repository/account billing or spending-limit issue is resolved and the workflows are rerun.",
+  "operator_next_action": "Fix GitHub Billing & plans or increase the spending limit for the account/organization that owns webcraft-media/onetimev2, then rerun all failed PR #92 checks.",
+  "local_validation_status": "Local validation and live smokes previously passed; this artifact does not replace a post-billing-fix GitHub Actions rerun.",
+  "side_effects": {
+    "repository_code_changed": false,
+    "production_deployment_changed": false,
+    "production_database_writes": 0,
+    "external_sends": 0,
+    "provider_mutations": 0
+  }
+}

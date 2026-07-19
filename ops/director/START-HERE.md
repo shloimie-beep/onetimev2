@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T16:58:00.000Z
+Generated: 2026-07-19T17:24:51.805Z
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -45,10 +45,11 @@ state without depending on local chat memory.
 - PR #92 CRM production evidence commit:
   `25c271576be675c36261465e51d4f176a923b007`
 - PR #92 deployed runtime remains `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`; the CRM-first evidence at commit `25c271576be675c36261465e51d4f176a923b007` records production migration 2204, real CRM import apply, idempotency replay, reconciliation, and one production signup proof.
-- GitHub Actions on that CRM production evidence commit completed as failure for
-  all five PR #92 jobs, but the gh-fix-ci inspector reported job logs
-  unavailable (`log not found`) for every job id. Local validation and
-  production smokes passed.
+- GitHub Actions on PR #92 head
+  `f46375cdbfea26700e6d6a181745b2c35705412b` failed before runner execution.
+  The Checks API annotations report a GitHub account billing/spending-limit
+  blocker, not an observed application-code failure. Evidence:
+  `ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json`.
 
 ## Current Verdict
 
@@ -64,10 +65,11 @@ data. The real-source CRM apply used a fresh protected PostgreSQL 18 backup
 proof, exact operator authorization, production confirmation, active admin actor
 attribution, and idempotency replay. It inserted 1,555 contacts, skipped 4
 existing contacts, recorded 2,505 import-row ledger rows, and queued zero sends.
-The full release gate remains blocked only by the still-separate lanes: fresh
-production final admin/access send or browser smoke, WhatsApp provider canary,
-campaign seed approval/send authorization, protected diagnostics token, and
-broader launch-spine consuming proof.
+The full release gate remains blocked only by the still-separate lanes: GitHub
+Actions account billing/spending-limit repair and rerun, fresh production final
+admin/access send or browser smoke, WhatsApp provider canary, campaign seed
+approval/send authorization, protected diagnostics token, and broader
+launch-spine consuming proof.
 
 The earlier accepted staging runtime proof lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md` and
@@ -128,6 +130,13 @@ proposed seed copy, 1,357 email-campaign-eligible contacts, snapshot hash
 required approval string for one protected seed send. It performed no database
 write, provider mutation, seed send, or broad campaign send.
 
+GitHub Actions billing blocker evidence lives at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json` and
+`ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md`. All five
+PR #92 jobs failed before runner steps started because GitHub reported an
+account billing/spending-limit blocker. Fix Billing & plans or the spending
+limit, then rerun the checks.
+
 Production launch-spine read-only evidence lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
 and `ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/`.
@@ -158,6 +167,9 @@ under the separate email-inputs gate.
   passwords, private email addresses, phone numbers, contact rows, or raw
   message bodies.
 - Do not perform broad email, WhatsApp, Telegram, or social sends.
+- Do not treat current red PR #92 GitHub Actions as code/test failures until
+  GitHub Billing & plans or the spending limit is fixed and the checks are
+  rerun.
 - Do not perform the campaign seed send unless the exact approval statement in
   `CAMPAIGN-SEED-APPROVAL.md` and `ONE-TIME-CAMPAIGN-SEED-OK` are supplied for
   the current protected seed destination.

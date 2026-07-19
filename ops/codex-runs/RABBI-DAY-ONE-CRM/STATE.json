@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T17:19:44.167Z",
+  "generated_at": "2026-07-19T17:24:51.805Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -363,7 +363,8 @@
     "npx prettier --check touched campaign/CRM/director files passed after campaign seed approval packet generator",
     "npm run director:truth:live passed after campaign seed approval packet handoff refresh",
     "npm run secret:scan passed across 1729 repo text files after campaign seed approval packet generator",
-    "git diff --check passed after campaign seed approval packet generator with Windows line-ending warnings only"
+    "git diff --check passed after campaign seed approval packet generator with Windows line-ending warnings only",
+    "gh api check-run annotations on PR #92 head f46375cdbfea26700e6d6a181745b2c35705412b showed all five Actions jobs blocked before runner execution by GitHub account billing/spending-limit gating"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",
@@ -392,7 +393,9 @@
   "current_head_note": "CRM production evidence commit; latest PR #92 branch head may include later handoff/status-only commits, so use git rev-parse HEAD or PR #92 for the current head.",
   "github_actions": {
     "crm_production_evidence_head": "25c271576be675c36261465e51d4f176a923b007",
-    "status": "failed_log_unavailable",
+    "latest_inspected_pr_head": "f46375cdbfea26700e6d6a181745b2c35705412b",
+    "status": "blocked_by_github_account_billing_or_spending_limit",
+    "evidence_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json",
     "checks": [
       "Node 24 verify",
       "OPS-06 deterministic checks",
@@ -400,7 +403,7 @@
       "PostgreSQL 16 assurance harness",
       "PostgreSQL 16 learner-seat proof"
     ],
-    "inspector": "gh-fix-ci inspect_pr_checks.py --json",
-    "summary": "All five GitHub Actions checks completed as failure on the CRM production evidence commit, but job logs were unavailable/log not found for each job id; local validation and production smokes passed."
+    "inspector": "gh-fix-ci inspect_pr_checks.py --json plus gh Checks API annotations",
+    "summary": "All five PR #92 GitHub Actions checks failed before runner execution on inspected head f46375cdbfea26700e6d6a181745b2c35705412b. The Checks API annotations report account billing or spending-limit gating, not an observed application-code failure. Fix GitHub Billing & plans or increase the spending limit, then rerun the checks."
   }
 }

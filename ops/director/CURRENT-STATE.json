@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T17:17:46.468Z",
+  "generated_at": "2026-07-19T17:24:51.805Z",
   "current_run": "ops/codex-runs/RABBI-DAY-ONE-CRM",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -38,8 +38,8 @@
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
     "head_ref": "codex/one-time-finish-now-20260719",
-    "head_ref_oid": "e73b9d5edf38a300faf6c1ddb4929b913137031c",
-    "checks_at_inspection": "GitHub Actions on pushed head e73b9d5edf38a300faf6c1ddb4929b913137031c reported the same platform/pre-step failure pattern as prior PR #92 heads: all five jobs completed as failure with steps/logs unavailable in the GitHub job payload; local validation and live smokes passed.",
+    "head_ref_oid": "f46375cdbfea26700e6d6a181745b2c35705412b",
+    "checks_at_inspection": "GitHub Actions on pushed head f46375cdbfea26700e6d6a181745b2c35705412b failed before runner execution. Checks API annotations report a GitHub account billing/spending-limit blocker, not an observed application-code failure. Fix Billing & plans or the spending limit, then rerun all failed PR #92 checks.",
     "note": "CRM-first pivot delivered the real production CRM import and one production signup proof. Deployed runtime remains ed77a04dd24391d5b79be7f839d7f5752a57e0f9; production schema now has 2204_w12_100_real_source_crm_apply. Transactional email production final/admin send, WhatsApp provider canary, campaign seed approval, and full authenticated Admin CRM browser smoke remain separate gated actions."
   },
   "live_readback": {
@@ -94,9 +94,18 @@
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json",
-    "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md"
   ],
   "blockers": [
+    {
+      "id": "BLOCK-GITHUB-ACTIONS-BILLING",
+      "lane": "ci",
+      "reason": "PR #92 GitHub Actions failed before runner execution because GitHub reported account billing or spending-limit gating. No job steps ran, so no code/test failure logs exist. Fix GitHub Billing & plans or increase the spending limit, then rerun all failed checks."
+    },
     {
       "id": "BLOCK-EMAIL-INPUTS",
       "lane": "transactional_email",
@@ -134,7 +143,9 @@
   },
   "github_actions": {
     "crm_production_evidence_head": "25c271576be675c36261465e51d4f176a923b007",
-    "status": "failed_log_unavailable",
+    "latest_inspected_pr_head": "f46375cdbfea26700e6d6a181745b2c35705412b",
+    "status": "blocked_by_github_account_billing_or_spending_limit",
+    "evidence_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json",
     "checks": [
       "Node 24 verify",
       "OPS-06 deterministic checks",
@@ -142,7 +153,7 @@
       "PostgreSQL 16 assurance harness",
       "PostgreSQL 16 learner-seat proof"
     ],
-    "summary": "All five GitHub Actions checks completed as failure on the CRM production evidence commit, but job logs were unavailable/log not found for each job id; local validation and production smokes passed."
+    "summary": "All five PR #92 GitHub Actions checks failed before runner execution on inspected head f46375cdbfea26700e6d6a181745b2c35705412b. The Checks API annotations report account billing or spending-limit gating, so the next action is GitHub Billing & plans/spending-limit repair followed by check rerun; local validation and production smokes previously passed."
   },
   "campaign_seed": {
     "status": "ready_for_operator_approval",
