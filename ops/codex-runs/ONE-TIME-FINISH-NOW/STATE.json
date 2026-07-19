@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T13:02:00.527Z",
+  "generated_at": "2026-07-19T13:28:07.676Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -17,8 +17,8 @@
     "isolated_worktree": "C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW",
     "branch": "codex/one-time-finish-now-20260719",
     "branch_base": "origin/release/w13-100-controlled-day-one-20260717T182046Z",
-    "worktree_head": "7622cb1a6be1b31fe3e867604c805a1859625ade",
-    "worktree_head_subject": "chore: format staging runtime proof artifacts",
+    "worktree_head": "3e9b286c51d71530cccf192f4ce01b905c73c2e1",
+    "worktree_head_subject": "chore: record crm dry-run authorization checkpoint",
     "canonical_draft_pr": {
       "number": 91,
       "url": "https://github.com/webcraft-media/onetimev2/pull/91",
@@ -36,8 +36,8 @@
       "is_draft": true,
       "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
       "head_ref": "codex/one-time-finish-now-20260719",
-      "head_ref_oid": "7622cb1a6be1b31fe3e867604c805a1859625ade",
-      "checks_at_inspection": "green at 7622cb1a6be1b31fe3e867604c805a1859625ade before CRM evidence refresh",
+      "head_ref_oid": "3e9b286c51d71530cccf192f4ce01b905c73c2e1",
+      "checks_at_inspection": "green at 3e9b286c51d71530cccf192f4ce01b905c73c2e1 before production launch-spine read-only evidence refresh",
       "role": "Release-gate remediation and durable ONE-TIME-FINISH-NOW evidence branch."
     }
   },
@@ -159,6 +159,12 @@
     "rollback_rollforward": [
       "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md",
       "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json"
+    ],
+    "launch_spine_readonly": [
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md records current production read-only route proof and safety boundaries.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json passed 16 of 16 GET-only route checks with JSON SHA-256 fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json passed public/login/readiness/private-denial probes and blocked protected diagnostics due to missing OPERATIONS_PROBE_TOKEN.",
+      "W13-103 sanitized role acceptance remains the accepted non-consuming administrator/parent/student baseline."
     ]
   },
   "core_safety_gate_blockers": [
@@ -189,8 +195,8 @@
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",
       "lane": "launch_spine",
-      "reason": "W13-104 did not rerun production admin/parent/student browser acceptance or production signup submit; W13-103 role proof remains accepted baseline.",
-      "scope": "Blocks full release claim, not protected role handoff availability."
+      "reason": "Current production read-only launch-spine proof passed for public/account lifecycle routes, anonymous private-route denial, and readiness. Full launch-spine acceptance remains blocked because this run did not consume administrator/parent/student setup or reset links and did not submit a production signup lead; those actions still require exact protected authorization and cleanup instructions.",
+      "scope": "Blocks full launch-spine acceptance only; current read-only production route proof is recorded."
     }
   ],
   "safety_ledger": {
@@ -215,22 +221,25 @@
     }
   },
   "validation": {
-    "json_parse": "passed for run, director, capability, and CRM preflight JSON files after CRM evidence refresh",
-    "director_truth": "passed after CRM evidence refresh",
-    "director_truth_live": "passed against production and staging /version after CRM evidence refresh",
+    "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, and launch-spine route-readback JSON files after launch-spine read-only evidence refresh",
+    "director_truth": "passed after launch-spine read-only evidence refresh",
+    "director_truth_live": "passed against production and staging /version after launch-spine read-only evidence refresh",
     "staging_rollback_rehearsal": "accepted for PR #92 staging candidate; rollback to W13-104 and roll-forward to PR #92 both passed",
     "runtime_deployment_proof": "accepted in staging at PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93; final /version.deployment matched Railway web deployment c464ea23-649b-4c8d-b4af-0d10c5ce3022",
-    "secret_scan": "passed across 1697 repo text files after CRM evidence refresh",
+    "secret_scan": "passed across 1702 repo text files after launch-spine read-only evidence refresh",
     "node_check": "passed for scripts/check-director-truth.mjs",
     "eslint": "targeted eslint passed for touched runtime proof files",
     "unit": "real-source-preflight unit test passed in CRM evidence refresh; npm run unit passed earlier in PR #92 proof work",
     "integration": "real-source-preflight CLI integration test passed in CRM evidence refresh; runtime-version-proof integration passed earlier in PR #92 proof work",
     "build": "npm run build passed",
-    "github_pr_92": "all checks green at 7622cb1a6be1b31fe3e867604c805a1859625ade after staging runtime proof evidence formatting; rerun pending after CRM dry-run evidence refresh commit",
-    "diff_check": "passed after CRM evidence refresh with Windows line-ending warnings only",
+    "github_pr_92": "all checks green at 3e9b286c51d71530cccf192f4ce01b905c73c2e1 after CRM dry-run evidence refresh; rerun pending after production launch-spine read-only evidence refresh commit",
+    "diff_check": "passed after launch-spine read-only evidence refresh with Windows line-ending warnings only",
     "crm_real_data_preflight": "passed counts-only dry-run: status done, 6 approved sources, 2,505 total rows, 1,596 unique identities, 3 communication-eligible staged rows, 2,418 manual-review rows, 152 do-not-contact rows, report SHA-256 0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
-    "prettier_check": "passed for touched CRM/director/run Markdown and JSON files"
+    "prettier_check": "passed for touched launch-spine/director/run Markdown and JSON files",
+    "production_launch_spine_readonly": "passed current production GET-only route readback: 16/16 checks passed, no form submits, no setup/reset links consumed, no production writes, route-readback SHA-256 fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a",
+    "ops06_production_synthetic_probes": "expected blocked status: public/login/readiness/private-denial probes passed and protected diagnostics blocked by missing OPERATIONS_PROBE_TOKEN, synthetic-probes SHA-256 25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
+    "launch_spine_privacy_scan": "passed for synthetic-probes.json and route-readback.json with route-name-aware private-data patterns"
   },
   "resume": {
     "primary_resume_file": "ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md",
@@ -240,6 +249,6 @@
       "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
       "OPERATIONS_PROBE_TOKEN in protected production/staging runtime config"
     ],
-    "next_executable_lane_without_private_inputs": "Current production launch-spine proof remains. CRM real-source dry-run is complete, but apply/provider/external-effect lanes still require exact protected manifests; do not perform production data writes or sends without exact authorization."
+    "next_executable_lane_without_private_inputs": "Read-only production launch-spine proof is now recorded. Remaining executable work without private inputs is limited to documentation/validation refreshes; consuming role-link proof, production signup submit, email, provider canaries, diagnostics, and CRM apply still require exact protected authorization or runtime inputs."
   }
 }

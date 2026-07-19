@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T12:57:16.363Z",
+  "generated_at": "2026-07-19T13:25:50.525Z",
   "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -38,9 +38,9 @@
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
     "head_ref": "codex/one-time-finish-now-20260719",
-    "head_ref_oid": "7622cb1a6be1b31fe3e867604c805a1859625ade",
-    "checks_at_inspection": "green at 7622cb1a6be1b31fe3e867604c805a1859625ade before CRM evidence refresh",
-    "note": "Runtime deployment proof and PR #92 staging rollback/roll-forward are accepted. CRM approval and counts-only real-source preflight are recorded; production launch-spine and exact private apply/provider/diagnostic gates remain blocked."
+    "head_ref_oid": "3e9b286c51d71530cccf192f4ce01b905c73c2e1",
+    "checks_at_inspection": "green at 3e9b286c51d71530cccf192f4ce01b905c73c2e1 before production launch-spine read-only evidence refresh",
+    "note": "Runtime deployment proof, PR #92 staging rollback/roll-forward, CRM dry-run checkpoint, and production read-only route proof are recorded. Full release remains blocked by consuming launch-spine, email, CRM apply, provider, and protected diagnostic gates."
   },
   "live_readback": {
     "production": {
@@ -76,7 +76,12 @@
     "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
-    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md"
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.md"
   ],
   "blockers": [
     {
@@ -102,7 +107,7 @@
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",
       "lane": "launch_spine",
-      "reason": "W13-104 did not rerun consuming role links or production signup submit."
+      "reason": "Current production read-only launch-spine proof passed for public/account lifecycle routes, anonymous private-route denial, and readiness. Full launch-spine acceptance remains blocked because this run did not consume administrator/parent/student setup or reset links and did not submit a production signup lead; those actions still require exact protected authorization and cleanup instructions."
     }
   ],
   "safety_contract": {

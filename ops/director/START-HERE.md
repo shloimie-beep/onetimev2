@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T15:57:22.8286523+03:00
+Generated: 2026-07-19T16:25:01.2183177+03:00
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -40,10 +40,10 @@ state without depending on local chat memory.
   `ops/codex-runs/ONE-TIME-FINISH-NOW/`
 - ONE-TIME-FINISH-NOW remediation PR:
   `https://github.com/webcraft-media/onetimev2/pull/92`
-- PR #92 latest accepted evidence head before this CRM refresh:
-  `7622cb1a6be1b31fe3e867604c805a1859625ade`
-- PR #92 checks were green at `7622cb1a6be1b31fe3e867604c805a1859625ade`
-  after the staging runtime proof evidence formatting commit.
+- PR #92 latest green evidence head before this launch-spine read-only refresh:
+  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`
+- PR #92 checks were green at `3e9b286c51d71530cccf192f4ce01b905c73c2e1`
+  after the CRM dry-run evidence refresh commit.
 
 ## Current Verdict
 
@@ -55,12 +55,13 @@ CRM_REAL_DATA: PREVIEW_READY
 
 The safe core is live, and PR #92 staging rollback/roll-forward is accepted for
 the staging candidate. CRM approval raw and counts-only real-source preflight
-are now recorded, but `CRM_REAL_DATA` remains `PREVIEW_READY` because production
-apply still requires manual-review decisions, exact dry-run hash/count
-acceptance with protected `apply=true`, fresh backup/rollback proof, and an
-implemented fail-closed apply path. The full release gate remains blocked by
-exact private-input/current-proof blockers: email inputs, CRM apply gates,
-provider canary authorization, protected diagnostics token, and current
+are recorded, and current production read-only launch-spine route proof is now
+recorded. `CRM_REAL_DATA` remains `PREVIEW_READY` because production apply still
+requires manual-review decisions, exact dry-run hash/count acceptance with
+protected `apply=true`, fresh backup/rollback proof, and an implemented
+fail-closed apply path. The full release gate remains blocked by exact
+private-input/current-proof blockers: email inputs, CRM apply gates, provider
+canary authorization, protected diagnostics token, and the consuming parts of
 production launch-spine proof.
 
 The accepted staging runtime proof lives at
@@ -84,6 +85,16 @@ preflight status is `done`; report SHA-256 is
 `0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c`; it found
 3 communication-eligible staged rows, 152 do-not-contact rows, and 2,418
 manual-review rows. No production CRM apply was performed.
+
+Production launch-spine read-only evidence lives at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
+and `ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/`.
+The wider route readback passed 16 of 16 GET-only checks, including account
+lifecycle pages and anonymous denial for private app routes. The OPS-06
+synthetic probe passed public/login/readiness/private-denial checks and remains
+blocked only for protected worker diagnostics because `OPERATIONS_PROBE_TOKEN`
+is absent. No production write, form submit, provider mutation, deployment, or
+setup/reset-link consumption was performed.
 
 ## What Not To Do From This Handoff
 

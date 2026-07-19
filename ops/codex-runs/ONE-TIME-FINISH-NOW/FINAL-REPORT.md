@@ -1,6 +1,6 @@
 # ONE-TIME-FINISH-NOW Final Report
 
-Generated: 2026-07-19T15:57:22.8286523+03:00
+Generated: 2026-07-19T16:25:01.2183177+03:00
 
 CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
 ADMIN_ACCESS: ACCEPTED
@@ -12,12 +12,13 @@ CRM_REAL_DATA: PREVIEW_READY
 
 The One Time core runtime is already live and healthy on production at W13-104.
 The PR #92 staging candidate has now passed runtime deployment proof plus
-rollback/roll-forward proof. CRM approval raw and counts-only real-source
-preflight are now recorded, but the full release definition in the attached
-prompt cannot be truthfully closed yet. The remaining gaps are exact
-safety-gate blockers: normal transactional email configuration, CRM production
-apply gates, provider canary authorization, protected diagnostics token, and
-current production launch-spine proof.
+rollback/roll-forward proof. CRM approval raw, counts-only real-source
+preflight, and current production read-only launch-spine route proof are now
+recorded, but the full release definition in the attached prompt cannot be
+truthfully closed yet. The remaining gaps are exact safety-gate blockers: normal
+transactional email configuration, CRM production apply gates, provider canary
+authorization, protected diagnostics token, and the consuming parts of
+production launch-spine proof.
 
 This is not a product-code failure. The app is fail-closed in the right places.
 Missing provider/private inputs block only their lanes.
@@ -112,8 +113,10 @@ implemented.
   `apply_mode_implemented=false` in the W12-100 preflight.
 - Provider canaries: missing protected canary authorization manifest.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
-- Launch spine: W13-104 production signup submit and current role browser
-  acceptance were not rerun.
+- Launch spine: current read-only production route proof passed, but consuming
+  administrator/parent/student role-link browser journeys and production signup
+  submit were not rerun. Those actions still require exact protected
+  authorization and cleanup instructions.
 
 ## External Effects
 
@@ -129,20 +132,25 @@ mutated.
 The W13-104 evidence inspected during this run records the prior successful
 staging and production deployments.
 
-Production was read only during the accepted PR #92 staging proof. Production
-Railway deployment IDs and image digests remained unchanged.
+Production was read only during the accepted PR #92 staging proof and during
+this launch-spine read-only refresh. Production Railway deployment IDs and image
+digests remained unchanged.
 
 ## Validation
 
-- JSON parse check passed for run, director, capability, and CRM preflight JSON
-  files after the CRM evidence refresh.
-- `npm run director:truth` passed after the CRM evidence refresh.
+- JSON parse check passed for run, director, capability, CRM preflight,
+  synthetic probe, and launch-spine route-readback JSON files after the
+  launch-spine read-only evidence refresh.
+- `npm run director:truth` passed after the launch-spine read-only evidence
+  refresh.
 - `npm run director:truth:live` passed against production and staging
-  `/version` after the CRM evidence refresh.
-- `npm run secret:scan` passed across 1697 repo text files after the CRM
-  evidence refresh.
-- `npx --no-install prettier --check` passed for touched CRM/director/run
-  Markdown and JSON files.
+  `/version` after the launch-spine read-only evidence refresh.
+- `npm run secret:scan` passed across 1702 repo text files after the
+  launch-spine read-only evidence refresh.
+- `npx --no-install prettier --check` passed for touched launch-spine,
+  director, and run Markdown/JSON files.
+- Route-proof privacy scan passed for `synthetic-probes.json` and
+  `route-readback.json` with route-name-aware private-data patterns.
 - `npm ci` passed from the lockfile.
 - Targeted ESLint passed for touched runtime proof files.
 - `npx --no-install vitest run scripts/w12-100/deploy/railway-launch-toolkit.test.ts`
@@ -156,9 +164,9 @@ Railway deployment IDs and image digests remained unchanged.
 - `npm run unit` passed.
 - `npm run build` passed.
 - PR #92 checks passed at
-  `7622cb1a6be1b31fe3e867604c805a1859625ade`: Node 24 verify, OPS-06,
+  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`: Node 24 verify, OPS-06,
   PostgreSQL 18 assurance/restore, and PostgreSQL 16 assurance. Rerun is
-  pending after this CRM evidence refresh commit.
+  pending after this launch-spine read-only evidence refresh commit.
 - `node --check scripts/check-director-truth.mjs` passed.
 - Staging smoke routes passed for the PR #92 deploy, W13-104 rollback, and PR
   #92 roll-forward: `/version`, `/health`, `/ready`, `/`, `/signup`, `/login`,
@@ -171,11 +179,20 @@ Railway deployment IDs and image digests remained unchanged.
 - CRM private checkpoint manifest was created outside git with
   `dry_run_authorized=true` and `production_apply_authorized=false`; contents
   were not printed or committed.
+- Current production launch-spine read-only route proof passed: 16 of 16
+  GET-only checks passed, no form submits, no setup/reset links consumed, no
+  production writes, route-readback SHA-256
+  `fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a`.
+- Current OPS-06 production synthetic probes returned the expected blocked
+  status: public/login/readiness/private-denial probes passed, and protected
+  diagnostics remained blocked by missing `OPERATIONS_PROBE_TOKEN`. Synthetic
+  JSON SHA-256:
+  `25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc`.
 - `npx --no-install eslint scripts/check-director-truth.mjs` did not run:
   local `node_modules` is absent and `npx` resolved an incompatible global
   ESLint before loading `@eslint/js`.
-- `git diff --check` passed after the CRM evidence refresh with Windows
-  line-ending warnings only.
+- `git diff --check` passed after the launch-spine read-only evidence refresh
+  with Windows line-ending warnings only.
 
 ## Files Created Or Refreshed
 
@@ -188,6 +205,8 @@ Railway deployment IDs and image digests remained unchanged.
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/*`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/*`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md`

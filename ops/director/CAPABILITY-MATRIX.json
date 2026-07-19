@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T12:57:16.363Z",
+  "generated_at": "2026-07-19T13:25:50.525Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -19,11 +19,13 @@
   "capabilities": [
     {
       "id": "public_landing_signup",
-      "status": "DEPLOYED"
+      "status": "DEPLOYED",
+      "reason": "Current production read-only route proof passed; production signup submit remains blocked without exact authorization and cleanup instructions."
     },
     {
       "id": "auth_recovery",
-      "status": "DEPLOYED"
+      "status": "DEPLOYED",
+      "reason": "Current production read-only route proof passed for login, activate, forgot-password, and reset-password; transactional email remains blocked."
     },
     {
       "id": "administrator",
@@ -97,7 +99,8 @@
     },
     {
       "id": "diagnostics",
-      "status": "DEPLOYED"
+      "status": "DEPLOYED",
+      "reason": "Current public readiness proof passed; protected diagnostics remain blocked by missing OPERATIONS_PROBE_TOKEN."
     },
     {
       "id": "backup_restore",

@@ -69,3 +69,16 @@ treat it as production import apply approval, because the dry-run produced 2,418
 manual-review rows and production apply still requires exact dry-run hash/count
 acceptance with protected `apply=true`, terminal review decisions, fresh
 backup/rollback proof, and an implemented fail-closed apply path.
+
+## DEC-OT-FINISH-008 - Treat read-only launch-spine proof as partial evidence
+
+Current production read-only route proof passed for public, account lifecycle,
+readiness, missing-route, and anonymous private-route denial checks. The proof
+performed no form submit, setup/reset-link consumption, production write,
+provider mutation, deployment, or external send.
+
+Decision: accept the read-only production route proof as current partial
+launch-spine evidence. Do not treat it as full launch-spine acceptance because
+administrator, parent, and student consuming browser journeys and production
+signup submit still require exact protected authorization and cleanup
+instructions.

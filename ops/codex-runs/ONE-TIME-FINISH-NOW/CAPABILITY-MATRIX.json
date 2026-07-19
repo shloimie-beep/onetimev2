@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T12:57:16.363Z",
+  "generated_at": "2026-07-19T13:25:50.525Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -17,7 +17,7 @@
     "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
     "production_version": "w13-104-public-cls-688fc70",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
-    "evidence_head": "7622cb1a6be1b31fe3e867604c805a1859625ade",
+    "evidence_head": "3e9b286c51d71530cccf192f4ce01b905c73c2e1",
     "run_state": "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
   },
   "capabilities": [
@@ -26,18 +26,22 @@
       "status": "DEPLOYED",
       "evidence": [
         "ops/codex-runs/W13-104/SIGNUP-JOURNEY.json",
-        "ops/codex-runs/W13-104/evidence/live-smoke.json"
+        "ops/codex-runs/W13-104/evidence/live-smoke.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json"
       ],
-      "notes": "Public landing/signup routes are live. Production submit was intentionally skipped without email/provider authorization; local submit coverage exists."
+      "notes": "Public landing/signup routes are live. Current production read-only route proof passed; production signup submit remains blocked without exact authorization and cleanup instructions."
     },
     {
       "id": "auth_recovery",
       "status": "DEPLOYED",
       "evidence": [
         "ops/codex-runs/W13-104/evidence/live-smoke.json",
-        "ops/codex-runs/W13-103/FINAL-REPORT.md"
+        "ops/codex-runs/W13-103/FINAL-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json"
       ],
-      "notes": "Login, forgot-password, activate, and reset routes are live. Normal transactional email remains blocked separately."
+      "notes": "Login, forgot-password, activate, and reset routes are live in current production read-only proof. Normal transactional email remains blocked separately."
     },
     {
       "id": "administrator",
@@ -168,8 +172,12 @@
     {
       "id": "diagnostics",
       "status": "DEPLOYED",
-      "evidence": ["ops/codex-runs/W13-104/evidence/live-smoke.json"],
-      "notes": "Public /health, /ready, and /version are live. Protected internal diagnostics remain blocked by missing OPERATIONS_PROBE_TOKEN."
+      "evidence": [
+        "ops/codex-runs/W13-104/evidence/live-smoke.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json"
+      ],
+      "notes": "Public /health, /ready, and /version are live. Current OPS-06 synthetic probe confirms protected internal diagnostics remain blocked by missing OPERATIONS_PROBE_TOKEN."
     },
     {
       "id": "backup_restore",

@@ -2,10 +2,11 @@
 
 Current state: safe core runtime is live on production, and the PR #92 staging
 candidate has accepted runtime deployment proof plus rollback/roll-forward
-proof. CRM approval raw and counts-only real-source preflight are recorded, but
-`CRM_REAL_DATA` remains `PREVIEW_READY`. The full release claim remains blocked
-by protected-input gates, CRM production apply gates, and current production
-launch-spine proof.
+proof. CRM approval raw, counts-only real-source preflight, and current
+production read-only launch-spine route proof are recorded, but `CRM_REAL_DATA`
+remains `PREVIEW_READY`. The full release claim remains blocked by
+protected-input gates, CRM production apply gates, and the consuming parts of
+production launch-spine proof.
 
 ## Start Here
 
@@ -25,8 +26,8 @@ launch-spine proof.
 - Production and staging runtime SHA:
   `688fc70cf64b72bc52f4ea7511d8593750d7ab45`
 - Canonical draft PR: `https://github.com/webcraft-media/onetimev2/pull/91`
-- PR #92 latest accepted evidence head before this CRM refresh:
-  `7622cb1a6be1b31fe3e867604c805a1859625ade`
+- PR #92 latest green evidence head before this launch-spine read-only refresh:
+  `3e9b286c51d71530cccf192f4ce01b905c73c2e1`
 - Final staging PR #92 web deployment:
   `c464ea23-649b-4c8d-b4af-0d10c5ce3022`
 - Final staging PR #92 worker deployment:
@@ -54,6 +55,12 @@ launch-spine proof.
 - PR #92 staging runtime proof passed: staging deployed PR #92, rolled back to
   W13-104, and rolled forward to PR #92 with `/version.deployment` matching the
   serving Railway web deployment.
+- Current production read-only launch-spine proof passed for 16 of 16 GET-only
+  route checks, including public/account lifecycle routes, known 404 behavior,
+  and anonymous denial for private app routes.
+- Current OPS-06 production synthetic probes passed public/login/readiness and
+  private-denial checks; protected diagnostics remains blocked by missing
+  `OPERATIONS_PROBE_TOKEN`.
 
 ## What Is Blocked
 
@@ -68,8 +75,10 @@ launch-spine proof.
 - Provider canaries: missing
   `C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json`.
 - Protected diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
-- Current launch-spine proof: W13-104 did not rerun consuming role-link browser
-  acceptance or production signup submit.
+- Consuming launch-spine proof: current read-only route proof is recorded, but
+  this run did not consume role-link browser journeys or submit a production
+  signup lead. Those actions still require exact protected authorization and
+  cleanup instructions.
 
 ## Runtime Proof Caveat
 
@@ -81,10 +90,10 @@ deployment IDs/messages, and image digests. Railway did not populate
 
 ## Next Executable Packets
 
-1. Run production launch-spine proof only within the approved safety ceiling:
-   start with read-only route/current-state proof and non-consuming role
-   evidence; consume production setup/reset links or submit one production test
-   lead only with exact protected authorization and cleanup instructions.
+1. Complete the consuming production launch-spine proof only with exact
+   protected authorization and cleanup instructions: administrator, parent, and
+   student browser journeys using setup/reset links, or one production signup
+   submit.
 2. Add or verify protected email inputs, then run exactly one allowlisted
    transactional access email canary.
 3. Resolve CRM manual-review rows, record exact protected acceptance of the
