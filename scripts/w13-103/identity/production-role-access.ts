@@ -1215,7 +1215,7 @@ if (isCliEntrypoint()) {
     authorizationPhrase: process.env.W13_103_PRODUCTION_ROLE_ACCESS_AUTHORIZATION,
     handoffEncryptionKey: process.env.W13_103_HANDOFF_ENCRYPTION_KEY_B64,
   });
-  const output = `${JSON.stringify(report, null, 2)}\n`;
+  const output = `${JSON.stringify(report)}\n`;
   if (typeof args.get('out') === 'string') await writeFile(String(args.get('out')), output, 'utf8');
   process.stdout.write(output);
   if (report.status === 'blocked') process.exitCode = 2;
