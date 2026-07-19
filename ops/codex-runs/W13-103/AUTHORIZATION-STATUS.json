@@ -1,0 +1,41 @@
+{
+  "schema_version": "onetime.w13_103.authorization_status.v1",
+  "run_id": "W13-103",
+  "status": "in_progress",
+  "authorized": {
+    "counts_only_production_discovery": true,
+    "fresh_native_backup_and_restore_proof": true,
+    "bounded_identity_access_mutations": true,
+    "protected_local_setup_link_handoff_when_resend_unavailable": true,
+    "railway_private_network_one_off_task": true,
+    "task_owned_commits_push_pr_update": true
+  },
+  "not_authorized": {
+    "contact_rabbi": true,
+    "broad_sends": true,
+    "crm_import": true,
+    "live_charges": true,
+    "provider_canaries_without_protected_approval": true,
+    "password_hash_copy": true,
+    "permanent_auth_bypass": true,
+    "print_or_commit_private_material": true
+  },
+  "production_apply_requirements": [
+    "exact verified production lineage",
+    "expected runtime/source SHA",
+    "expiring private authorization manifest",
+    "explicit one-time production authorization",
+    "--apply",
+    "account/product/role allowlists",
+    "hard mutation budget",
+    "database advisory lock",
+    "transactional and idempotent execution",
+    "redacted audit evidence"
+  ],
+  "private_manifest_path": "C:\\Users\\User\\.onetime-w13-103-private\\identity-authorization.private.json",
+  "private_handoff_path": "C:\\Users\\User\\.onetime-w13-103-private\\LOGIN-HANDOFF.private.json",
+  "notes": [
+    "Missing Resend credentials are not a global blocker because private setup-link handoff is authorized.",
+    "No destination may be contacted merely because it exists."
+  ]
+}

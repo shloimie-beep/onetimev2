@@ -1,0 +1,63 @@
+{
+  "schema_version": "onetime.codex_run_state.v1",
+  "run_id": "W13-103",
+  "title": "Production role access",
+  "status": "in_progress",
+  "terminal_status": null,
+  "created_at": "2026-07-19",
+  "repository": "webcraft-media/onetimev2",
+  "pr": 91,
+  "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+  "starting_checkpoint": "333ebd23376ea29edcbd6b5ba19c4dfa2125a03a",
+  "starting_deployed_runtime_source": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "production_url": "https://join.onetimeonetime.com",
+  "private_directory": "C:\\Users\\User\\.onetime-w13-103-private",
+  "source_pack": {
+    "path": "C:\\Users\\User\\Downloads\\W13-103-PRODUCTION-ROLE-ACCESS-PACK.zip",
+    "sha256": "6AA32FDC14169887922894619D5AE84344E475442386A25271ADF12CD9CEDB35",
+    "entry_count": 2,
+    "path_safety": "passed"
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Live baseline and backup",
+      "status": "in_progress"
+    },
+    {
+      "phase": 2,
+      "name": "Private authorization manifest",
+      "status": "pending"
+    },
+    {
+      "phase": 3,
+      "name": "Production-safe one-off execution",
+      "status": "pending"
+    },
+    {
+      "phase": 4,
+      "name": "Setup handoff",
+      "status": "pending"
+    },
+    {
+      "phase": 5,
+      "name": "Role acceptance",
+      "status": "pending"
+    },
+    {
+      "phase": 6,
+      "name": "Cleanup, governance, and handoff",
+      "status": "pending"
+    }
+  ],
+  "global_blockers": [],
+  "lane_blockers": [],
+  "safety": {
+    "print_secrets_or_pii": false,
+    "contact_rabbi": false,
+    "broad_sends": false,
+    "live_charges": false,
+    "crm_import": false,
+    "provider_canaries": false
+  }
+}

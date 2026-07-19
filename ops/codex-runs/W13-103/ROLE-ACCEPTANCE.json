@@ -1,0 +1,24 @@
+{
+  "schema_version": "onetime.w13_103.role_acceptance.v1",
+  "run_id": "W13-103",
+  "status": "pending",
+  "browser_contexts": {
+    "administrator": "pending",
+    "parent": "pending",
+    "student": "pending"
+  },
+  "viewports": {
+    "360x800": "pending",
+    "390x844": "pending",
+    "tablet": "pending",
+    "desktop": "pending"
+  },
+  "role_isolation": {
+    "administrator": "pending",
+    "parent": "pending",
+    "student": "pending"
+  },
+  "notes": [
+    "Acceptance evidence must stay sanitized and must not include private browser URLs containing setup or reset tokens."
+  ]
+}

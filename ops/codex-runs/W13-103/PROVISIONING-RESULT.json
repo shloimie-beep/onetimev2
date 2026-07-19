@@ -1,0 +1,37 @@
+{
+  "schema_version": "onetime.w13_103.provisioning_result.v1",
+  "run_id": "W13-103",
+  "status": "pending",
+  "delivery_mode": null,
+  "production_mutation_counts": {
+    "users_created": 0,
+    "users_recovered": 0,
+    "households_created": 0,
+    "learners_created": 0,
+    "student_access_created": 0,
+    "activation_or_reset_tokens_issued": 0,
+    "tokens_revoked": 0,
+    "sessions_revoked": 0,
+    "outbox_rows_created": 0,
+    "provider_sends": 0,
+    "billing_rows_created": 0,
+    "crm_import_rows_created": 0
+  },
+  "roles": {
+    "administrator": {
+      "status": "pending",
+      "delivery": null
+    },
+    "parent": {
+      "status": "pending",
+      "delivery": null
+    },
+    "student": {
+      "status": "pending",
+      "delivery": null
+    }
+  },
+  "notes": [
+    "This committed result file intentionally excludes emails, usernames, setup URLs, tokens, and raw private identifiers."
+  ]
+}

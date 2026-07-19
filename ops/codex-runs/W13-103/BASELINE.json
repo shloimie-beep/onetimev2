@@ -1,0 +1,36 @@
+{
+  "schema_version": "onetime.w13_103.baseline.v1",
+  "run_id": "W13-103",
+  "captured_at": "2026-07-19",
+  "pr": {
+    "number": 91,
+    "head_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "head_sha": "333ebd23376ea29edcbd6b5ba19c4dfa2125a03a",
+    "merge_state": "CLEAN",
+    "is_draft": true,
+    "state": "OPEN"
+  },
+  "local_checkout": {
+    "path": "C:\\Users\\User\\OneTimeOneTime-w13-100-final-launch",
+    "head_sha": "333ebd23376ea29edcbd6b5ba19c4dfa2125a03a",
+    "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "dirty_state": "only_W13_103_records_after_initialization"
+  },
+  "live_runtime": {
+    "url": "https://join.onetimeonetime.com",
+    "version": "w13-102-resend-webhook-007e021",
+    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "target_app": "one-time",
+    "health": "ok",
+    "ready": "ok",
+    "latest_migration": "2203_w13_100_student_gamification",
+    "optional_email_transport": "disabled",
+    "optional_whatsapp_transport": "disabled",
+    "optional_support_bridge": "disabled"
+  },
+  "notes": [
+    "Director handoff files predate W13-102 and are used only for invariants.",
+    "Live runtime and PR #91 readbacks are authoritative for this W13-103 run.",
+    "No private identifiers, setup links, secrets, or raw production rows are stored in this file."
+  ]
+}

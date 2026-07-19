@@ -1,0 +1,28 @@
+{
+  "schema_version": "onetime.w13_103.external_effects.v1",
+  "run_id": "W13-103",
+  "effects": {
+    "production_database_writes": 0,
+    "production_database_reads": "counts_only_pending",
+    "railway_deployments": 0,
+    "railway_one_off_tasks": 0,
+    "provider_sends": 0,
+    "email_sends": 0,
+    "whatsapp_sends": 0,
+    "telegram_sends": 0,
+    "crm_imports": 0,
+    "stripe_live_actions": 0,
+    "billing_mutations": 0,
+    "third_party_contacts": 0,
+    "rabbi_contacts": 0
+  },
+  "transport_state": {
+    "email": "disabled",
+    "whatsapp": "disabled",
+    "support_bridge": "disabled"
+  },
+  "notes": [
+    "Private local setup-link handoff is preferred if Resend remains unavailable.",
+    "No secrets, PII, raw setup links, or private destination identifiers are committed here."
+  ]
+}
