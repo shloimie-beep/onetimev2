@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T13:40:35.8894527+03:00",
+  "generated_at": "2026-07-19T14:52:52.0505712+03:00",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -41,7 +41,7 @@
     {
       "id": "rollback",
       "status": "BLOCKED",
-      "reason": "Source-rebuild rollback/roll-forward exercised; not accepted because /version is not source-authoritative for rollback."
+      "reason": "Source-rebuild rollback/roll-forward exercised; not accepted because /version was not source-authoritative. PR #92 head 504560f implements runtime deployment proof, but staging has not been rerun with it."
     }
   ],
   "notes": "Expanded evidence and blocker text live in ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json."

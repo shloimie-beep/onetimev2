@@ -22,7 +22,7 @@ release claim remains blocked by protected-input and current-proof gates.
   `688fc70cf64b72bc52f4ea7511d8593750d7ab45`
 - Canonical draft PR: `https://github.com/webcraft-media/onetimev2/pull/91`
 - Evidence head:
-  `e3d3736546f48b3834d6698838befe20884005f1`
+  `504560f77cbceae4675cba49e57f21ab55568467`
 - Isolated worktree:
   `C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW`
 
@@ -51,6 +51,10 @@ release claim remains blocked by protected-input and current-proof gates.
   roll-forward were exercised, but rollback is not accepted because `/version`
   stayed W13-104 during the rollback-source deploy. See
   `STAGING-ROLLBACK-REPORT.md`.
+- Runtime deployment proof code: PR #92 head
+  `504560f77cbceae4675cba49e57f21ab55568467` adds non-secret Railway deployment
+  identity to `/version` and launch-toolkit validation for
+  `/version.deployment`. It is CI-green but not live-proven.
 - Current launch-spine proof: W13-104 did not rerun consuming role-link browser
   acceptance or production signup submit.
 
@@ -58,9 +62,9 @@ release claim remains blocked by protected-input and current-proof gates.
 
 1. Add or verify protected email inputs, then run exactly one allowlisted
    transactional access email canary.
-2. Make runtime source proof source-authoritative for rollback, or update the
-   rollback procedure to bind deployment metadata, image digest, and runtime
-   source readback in one accepted proof; then rerun staging rollback.
+2. Deploy PR #92 head `504560f77cbceae4675cba49e57f21ab55568467` to isolated
+   staging web/worker, then rerun rollback/roll-forward proof and bind
+   `/version.deployment` to Railway deployment metadata and image digests.
 3. Build or run non-consuming role acceptance fixtures; consume production
    setup/reset links only if the protected manifest explicitly permits it.
 4. Run a production-safe signup proof, or one approved test lead submit with

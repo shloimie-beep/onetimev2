@@ -1,6 +1,6 @@
 # ONE-TIME-FINISH-NOW Final Report
 
-Generated: 2026-07-19T14:16:03.6873451+03:00
+Generated: 2026-07-19T14:52:52.0505712+03:00
 
 CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
 ADMIN_ACCESS: ACCEPTED
@@ -19,6 +19,12 @@ rollback proof, and current launch-spine proof.
 
 This is not a product-code failure. The app is fail-closed in the right places.
 Missing provider/private inputs block only their lanes.
+
+PR #92 now also contains CI-green runtime deployment proof code at
+`504560f77cbceae4675cba49e57f21ab55568467`. That code adds non-secret Railway
+deployment identity to `/version` and teaches the launch toolkit to validate it,
+but it is not live-proven until staging is deployed and rollback/roll-forward is
+rerun with deployment metadata and image digests bound to `/version.deployment`.
 
 ## Current Live Truth
 
@@ -62,7 +68,8 @@ tag map, and apply authorization.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
 - Rollback: W13-104 staging source-rebuild rollback and roll-forward were
   exercised, but the gate is not accepted because `/version` stayed W13-104
-  during the rollback-source deploy.
+  during the rollback-source deploy. PR #92 implements the next proof path, but
+  that path is not live-accepted yet.
 - Launch spine: W13-104 production signup submit and current role browser
   acceptance were not rerun.
 
@@ -76,13 +83,26 @@ send, Stripe charge, DNS change, provider mutation, or secret print.
 The W13-104 evidence inspected during this run records the prior successful
 staging and production deployments.
 
+No staging deployment was performed for PR #92 commit `504560f` in this update.
+
 ## Validation
 
 - JSON parse check passed for run and refreshed director JSON files.
 - `npm run director:truth` passed.
 - `npm run director:truth:live` passed against production and staging
   `/version`.
-- `npm run secret:scan` passed across 1660 repo text files.
+- `npm run secret:scan` passed across 1662 repo text files.
+- `npm ci` passed from the lockfile.
+- Targeted ESLint passed for touched runtime proof files.
+- `npx --no-install vitest run scripts/w12-100/deploy/railway-launch-toolkit.test.ts`
+  passed.
+- `npm run integration -- tests/integration/runtime-version-proof.test.ts`
+  passed.
+- `npm run unit` passed.
+- `npm run build` passed.
+- PR #92 checks passed at
+  `504560f77cbceae4675cba49e57f21ab55568467`: Node 24 verify, OPS-06,
+  PostgreSQL 18 assurance/restore, and PostgreSQL 16 assurance.
 - `node --check scripts/check-director-truth.mjs` passed.
 - W13-104 staging roll-forward smoke passed `/version`, `/health`, `/ready`,
   `/`, `/signup`, `/login`, `/activate`, and `/forgot-password`.
@@ -108,4 +128,10 @@ staging and production deployments.
 - `ops/director/CAPABILITY-MATRIX.json`
 - `ops/director/DEPLOYMENTS.json`
 - `scripts/check-director-truth.mjs`
+- `.dockerignore`
+- `apps/web/src/server/app.ts`
+- `packages/config/src/index.ts`
+- `scripts/w12-100/deploy/railway-launch-toolkit.ts`
+- `scripts/w12-100/deploy/railway-launch-toolkit.test.ts`
+- `tests/integration/runtime-version-proof.test.ts`
 - `package.json`

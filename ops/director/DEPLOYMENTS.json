@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.deployments.v2",
-  "generated_at": "2026-07-19T13:40:35.8894527+03:00",
+  "generated_at": "2026-07-19T14:52:52.0505712+03:00",
   "production": {
     "url": "https://join.onetimeonetime.com",
     "project": "one-time-production",
@@ -67,7 +67,7 @@
   },
   "rollback": {
     "status": "BLOCKED",
-    "reason": "Staging source-rebuild rollback and roll-forward were exercised, but rollback is not accepted because /version stayed W13-104 during the rollback-source deploy.",
+    "reason": "Staging source-rebuild rollback and roll-forward were exercised, but rollback is not accepted because /version stayed W13-104 during the rollback-source deploy. PR #92 head 504560f implements runtime deployment proof for the next staging rehearsal, but it has not been live-deployed and proven yet.",
     "latest_rehearsal": "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md",
     "last_fully_accepted": "W13-102 staging rollback/roll-forward",
     "database_restore_rule": "Do not restore production DB unless corruption is proven and operator-approved."

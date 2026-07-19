@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T13:40:35.8894527+03:00",
+  "generated_at": "2026-07-19T14:52:52.0505712+03:00",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -17,8 +17,8 @@
     "isolated_worktree": "C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW",
     "branch": "codex/one-time-finish-now-20260719",
     "branch_base": "origin/release/w13-100-controlled-day-one-20260717T182046Z",
-    "worktree_head": "e3d3736546f48b3834d6698838befe20884005f1",
-    "worktree_head_subject": "Record W13-104 production deployment evidence",
+    "worktree_head": "504560f77cbceae4675cba49e57f21ab55568467",
+    "worktree_head_subject": "feat: expose runtime deployment proof",
     "canonical_draft_pr": {
       "number": 91,
       "url": "https://github.com/webcraft-media/onetimev2/pull/91",
@@ -28,6 +28,17 @@
       "head_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
       "head_ref_oid": "e3d3736546f48b3834d6698838befe20884005f1",
       "checks_at_inspection": "green"
+    },
+    "finish_now_pr": {
+      "number": 92,
+      "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+      "state": "OPEN",
+      "is_draft": true,
+      "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+      "head_ref": "codex/one-time-finish-now-20260719",
+      "head_ref_oid": "504560f77cbceae4675cba49e57f21ab55568467",
+      "checks_at_inspection": "green",
+      "role": "Release-gate remediation and durable ONE-TIME-FINISH-NOW evidence branch."
     }
   },
   "raw_prompt": {
@@ -136,6 +147,11 @@
     "crm_real_data": [
       "OPS-13A provides sanitized source inventory and counts-only preview input.",
       "No real production CRM import apply is accepted without CRM-IMPORT-AUTHORIZATION.private.json."
+    ],
+    "runtime_deployment_proof_code": [
+      "PR #92 head 504560f77cbceae4675cba49e57f21ab55568467 adds non-secret Railway deployment proof fields to /version.",
+      "The launch toolkit validates /version.deployment when present and falls back with a warning for older deployed code.",
+      "This code is CI-green but has not yet been deployed to staging or used in an accepted rollback rehearsal."
     ]
   },
   "core_safety_gate_blockers": [
@@ -166,8 +182,8 @@
     {
       "id": "BLOCK-CURRENT-ROLLBACK",
       "lane": "rollback",
-      "reason": "Staging source-rebuild rollback and roll-forward were exercised, and W13-104 was restored, but rollback is not accepted because /version remained W13-104 during the rollback source deploy.",
-      "scope": "Blocks full release claim until /version is source-authoritative for source-rebuild rollback or an accepted equivalent runtime source proof exists."
+      "reason": "Staging source-rebuild rollback and roll-forward were exercised, and W13-104 was restored, but rollback is not accepted because /version remained W13-104 during the rollback source deploy. PR #92 head 504560f implements runtime deployment proof for the next rehearsal, but it is not live-proven yet.",
+      "scope": "Blocks full release claim until PR #92 or equivalent runtime deployment proof is deployed to staging and a rollback/roll-forward rehearsal binds /version.deployment to Railway deployment metadata and image digests."
     },
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",
@@ -202,9 +218,14 @@
     "director_truth": "passed",
     "director_truth_live": "passed against production and staging /version",
     "staging_rollback_rehearsal": "partial_not_accepted; source deploy and roll-forward ran, but rollback /version did not prove the rollback source",
-    "secret_scan": "passed across 1660 repo text files",
+    "runtime_deployment_proof": "implemented in PR #92 at 504560f77cbceae4675cba49e57f21ab55568467; local tests and GitHub checks passed; not live-deployed yet",
+    "secret_scan": "passed across 1662 repo text files",
     "node_check": "passed for scripts/check-director-truth.mjs",
-    "eslint": "not run; local node_modules is absent and npx resolved an incompatible global ESLint before loading @eslint/js",
+    "eslint": "targeted eslint passed for touched runtime proof files",
+    "unit": "npm run unit passed",
+    "integration": "runtime-version-proof integration test passed",
+    "build": "npm run build passed",
+    "github_pr_92": "all checks green at 504560f77cbceae4675cba49e57f21ab55568467",
     "diff_check": "passed with Windows line-ending warnings only"
   },
   "resume": {
@@ -215,6 +236,6 @@
       "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
       "OPERATIONS_PROBE_TOKEN in protected production/staging runtime config"
     ],
-    "next_executable_lane_without_private_inputs": "No external-effect lane may advance without the listed private manifests. Continue only with code/docs/tests that do not read secrets, write production data, or contact providers."
+    "next_executable_lane_without_private_inputs": "Staging-only deploy PR #92 head 504560f77cbceae4675cba49e57f21ab55568467 to web/worker, then rerun rollback/roll-forward proof binding /version.deployment to Railway deployment metadata and image digests. External-effect provider lanes still require private manifests."
   }
 }

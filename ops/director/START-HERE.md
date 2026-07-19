@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T13:40:35.8894527+03:00
+Generated: 2026-07-19T14:52:52.0505712+03:00
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -38,6 +38,11 @@ state without depending on local chat memory.
   `2203_w13_100_student_gamification`
 - Current release run:
   `ops/codex-runs/ONE-TIME-FINISH-NOW/`
+- ONE-TIME-FINISH-NOW remediation PR:
+  `https://github.com/webcraft-media/onetimev2/pull/92`
+- PR #92 head:
+  `504560f77cbceae4675cba49e57f21ab55568467`
+- PR #92 checks were green when inspected on 2026-07-19.
 
 ## Current Verdict
 
@@ -57,6 +62,13 @@ The latest staging rollback exercise lives at
 source-rebuild rollback and roll-forward, restored staging to W13-104, and kept
 production untouched, but it is not accepted as rollback proof because
 `/version` stayed W13-104 during the rollback-source deploy.
+
+PR #92 head `504560f77cbceae4675cba49e57f21ab55568467` now implements the next
+runtime deployment proof path: `/version` includes non-secret Railway deployment
+identity when available, and the launch toolkit validates `/version.deployment`.
+This code is CI-green, but it is not a live rollback acceptance until staging is
+deployed and rollback/roll-forward is rerun against Railway deployment metadata
+and image digests.
 
 ## What Not To Do From This Handoff
 
