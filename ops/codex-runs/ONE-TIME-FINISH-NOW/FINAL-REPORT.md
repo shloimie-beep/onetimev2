@@ -126,6 +126,13 @@ It accepts the current read-only route proof and W13-103 role baseline, then
 blocks before any form submit, production write, setup/reset link consumption,
 send, or provider mutation.
 
+Provider canary readiness is now preflighted at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json`.
+It reads the W13-104 provider report, excludes transactional email because that
+has a separate canary gate, and blocks WhatsApp, Telegram, Zoom, Vimeo, OpenAI
+helper, BNA support, Stripe TEST, and Buffer before any provider call, send,
+write, charge, or production DB access.
+
 ## Blockers
 
 - Email: protected Resend/domain/sender/reply-to inputs are present and
@@ -137,7 +144,10 @@ send, or provider mutation.
   missing backup proof, created-by user key, `DATABASE_URL`, idempotency key,
   manual-review handling, exact operator authorization, private-manifest
   production-apply authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
-- Provider canaries: missing protected canary authorization manifest.
+- Provider canaries: W13-104 provider evidence is present, but all eight
+  non-email provider lanes remain not ready to run. The protected canary
+  manifest, exact operator authorization, provider runtime inputs, and
+  `ONE-TIME-PROVIDER-CANARIES-OK` confirmation are missing.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
 - Launch spine: current read-only production route proof passed, and consume
   readiness is preflighted, but consuming administrator/parent/student browser
@@ -225,6 +235,11 @@ digests remained unchanged.
   submits, no setup/reset links consumed, no production writes, no external
   sends, and no provider mutation. Required exact authorization:
   `APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production`.
+- Provider canary readiness preflight generated a sanitized blocked report with
+  W13-104 provider evidence present, all eight non-email provider lanes blocked
+  before external mutation, no provider calls, no sends, no provider writes, no
+  live charges, and no production DB access. Required exact authorization:
+  `APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production`.
 - Current OPS-06 production synthetic probes returned the expected blocked
   status: public/login/readiness/private-denial probes passed, and protected
   diagnostics remained blocked by missing `OPERATIONS_PROBE_TOKEN`. Synthetic
@@ -257,6 +272,9 @@ digests remained unchanged.
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json`
 - `scripts/w12-100/launch/launch-spine-consume-readiness-preflight.ts`
 - `tests/unit/w12-100-launch/launch-spine-consume-readiness-preflight.test.ts`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json`
+- `scripts/w12-100/providers/provider-canary-readiness-preflight.ts`
+- `tests/unit/w12-100-providers/provider-canary-readiness-preflight.test.ts`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/*`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md`

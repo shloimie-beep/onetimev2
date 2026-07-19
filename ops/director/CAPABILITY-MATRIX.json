@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T14:40:21.706Z",
+  "generated_at": "2026-07-19T14:47:51.237Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -59,15 +59,18 @@
     },
     {
       "id": "classes_zoom",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "content_vimeo",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "knowledge_helpers",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "gamification",
@@ -80,23 +83,28 @@
     },
     {
       "id": "whatsapp",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "telegram",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "stripe",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "buffer",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "bna_support",
-      "status": "BLOCKED"
+      "status": "BLOCKED",
+      "reason": "Provider canary readiness preflight is recorded and blocked before external mutation until protected provider inputs, exact authorization, and confirmation are present."
     },
     {
       "id": "diagnostics",

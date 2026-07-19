@@ -80,6 +80,11 @@ launch-spine proof.
   It confirms current read-only route proof and the W13-103 role baseline are
   present, then blocks before any form submit, production write, setup/reset
   link consumption, send, or provider mutation.
+- Provider canary readiness preflight is recorded in
+  `ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json`.
+  It covers WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe
+  TEST, and Buffer, then blocks before any provider call, send, write, charge,
+  or production DB access.
 - Current OPS-06 production synthetic probes passed public/login/readiness and
   private-denial checks; protected diagnostics remains blocked by missing
   `OPERATIONS_PROBE_TOKEN`.
@@ -95,8 +100,10 @@ launch-spine proof.
   proof, created-by user key, `DATABASE_URL`, idempotency key, manual-review
   handling, exact operator authorization, private-manifest production-apply
   authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
-- Provider canaries: missing
-  `C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json`.
+- Provider canaries: W13-104 provider evidence is present, but all eight
+  non-email provider lanes remain not ready to run. The protected canary
+  manifest, exact operator authorization, and
+  `ONE-TIME-PROVIDER-CANARIES-OK` confirmation are missing.
 - Protected diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
 - Consuming launch-spine proof: current read-only route proof is recorded, but
   readiness remains blocked by missing protected consume plan, cleanup
@@ -131,7 +138,10 @@ deployment IDs/messages, and image digests. Railway did not populate
    `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and terminal/exclusion handling for
    manual-review rows before any CRM production import apply.
 4. Activate provider canaries independently: Zoom, Vimeo/content, Stripe TEST,
-   WhatsApp, Telegram, OpenAI helper, Buffer, and BNA support bridge.
+   WhatsApp, Telegram, OpenAI helper, Buffer, and BNA support bridge. Required
+   exact authorization:
+   `APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production`.
+   Required confirmation: `ONE-TIME-PROVIDER-CANARIES-OK`.
 
 ## Safety Rules
 

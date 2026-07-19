@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T14:40:21.706Z",
+  "generated_at": "2026-07-19T14:47:51.237Z",
   "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -86,7 +86,8 @@
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
-    "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json"
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
   ],
   "blockers": [
     {
@@ -102,7 +103,7 @@
     {
       "id": "BLOCK-CANARY-AUTH",
       "lane": "providers",
-      "reason": "Missing protected CANARY-AUTHORIZATION.private.json."
+      "reason": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN."
     },
     {
       "id": "BLOCK-OPERATIONS-PROBE",

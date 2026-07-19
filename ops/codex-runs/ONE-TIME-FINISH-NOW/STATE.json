@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:40:21.706Z",
+  "generated_at": "2026-07-19T14:47:51.237Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -96,6 +96,14 @@
     {
       "path": "scripts/w12-100/launch/launch-spine-consume-readiness-preflight.ts",
       "used_for": "Safe launch-spine consume readiness preflight implementation."
+    },
+    {
+      "path": "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json",
+      "used_for": "Sanitized provider canary readiness preflight; exact non-email provider blocker list without provider calls or secret values."
+    },
+    {
+      "path": "scripts/w12-100/providers/provider-canary-readiness-preflight.ts",
+      "used_for": "Safe provider canary readiness preflight implementation."
     }
   ],
   "live_readback": {
@@ -209,6 +217,12 @@
       "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json generated sanitized readiness status blocked without printing or consuming protected setup/reset links, signup data, secrets, or private journey inputs.",
       "Required exact operator authorization statement: APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production",
       "Required production confirmation: ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK"
+    ],
+    "provider_canary_readiness": [
+      "ops/codex-runs/W13-104/PROVIDER-CANARIES.json remains the source provider canary report; SHA-256 072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json generated sanitized readiness status blocked with all eight non-email provider lanes present, no provider calls, no sends, no provider writes, no live charges, no production DB connection, and no raw values.",
+      "Required exact operator authorization statement: APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production",
+      "Required provider canary confirmation: ONE-TIME-PROVIDER-CANARIES-OK"
     ]
   },
   "core_safety_gate_blockers": [
@@ -227,8 +241,8 @@
     {
       "id": "BLOCK-CANARY-AUTH",
       "lane": "provider_canaries",
-      "reason": "Missing protected CANARY-AUTHORIZATION.private.json for Zoom, Vimeo, Stripe test, WhatsApp, Telegram, Buffer, OpenAI helper, and BNA support bridge canaries.",
-      "scope": "Blocks provider mutations and canaries only."
+      "reason": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN.",
+      "scope": "Blocks non-email provider canaries only; transactional email remains under the separate email-inputs/canary gate."
     },
     {
       "id": "BLOCK-OPERATIONS-PROBE",
@@ -265,12 +279,12 @@
     }
   },
   "validation": {
-    "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, launch-spine route-readback, and launch-spine consume-readiness JSON files after launch-spine consume readiness preflight",
-    "director_truth": "passed after launch-spine consume readiness preflight",
-    "director_truth_live": "passed against production and staging /version after launch-spine consume readiness preflight",
+    "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, launch-spine route-readback, launch-spine consume-readiness, and provider canary readiness JSON files after provider canary readiness preflight",
+    "director_truth": "passed after provider canary readiness preflight",
+    "director_truth_live": "passed against production and staging /version after provider canary readiness preflight",
     "staging_rollback_rehearsal": "accepted for PR #92 staging candidate; rollback to W13-104 and roll-forward to PR #92 both passed",
     "runtime_deployment_proof": "accepted in staging at PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93; final /version.deployment matched Railway web deployment c464ea23-649b-4c8d-b4af-0d10c5ce3022",
-    "secret_scan": "passed across 1717 repo text files after launch-spine consume readiness preflight",
+    "secret_scan": "passed across 1720 repo text files after provider canary readiness preflight",
     "node_check": "passed for scripts/check-director-truth.mjs",
     "eslint": "targeted eslint passed for touched runtime proof files",
     "unit": "real-source-preflight unit test passed in CRM evidence refresh; npm run unit passed earlier in PR #92 proof work",
@@ -280,16 +294,18 @@
     "diff_check": "passed after launch-spine consume readiness preflight with Windows line-ending warnings only",
     "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
-    "prettier_check": "passed for touched launch-spine preflight, director, and run Markdown/JSON/TypeScript files",
+    "prettier_check": "passed for touched provider preflight, director, and run Markdown/JSON/TypeScript files",
     "production_launch_spine_readonly": "passed current production GET-only route readback: 16/16 checks passed, no form submits, no setup/reset links consumed, no production writes, route-readback SHA-256 fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a",
     "ops06_production_synthetic_probes": "expected blocked status: public/login/readiness/private-denial probes passed and protected diagnostics blocked by missing OPERATIONS_PROBE_TOKEN, synthetic-probes SHA-256 25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
     "launch_spine_privacy_scan": "passed for synthetic-probes.json and route-readback.json with route-name-aware private-data patterns",
     "email_inputs_preflight": "passed focused unit test and generated sanitized report: protected Resend/sender/reply-to inputs present, canary destination missing, no raw values included",
-    "typecheck": "npm run typecheck passed after launch-spine consume readiness preflight",
-    "lint": "npm run lint passed after launch-spine consume readiness preflight",
+    "typecheck": "npm run typecheck passed after provider canary readiness preflight",
+    "lint": "npm run lint passed after provider canary readiness preflight",
     "crm_apply_readiness_preflight": "blocked safely with no production side effects; blockers: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED",
     "launch_spine_consume_readiness_preflight": "blocked safely with current read-only route proof and W13-103 role baseline accepted; blockers: BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_CLEANUP_INSTRUCTIONS_NOT_PROVIDED, BLOCKED_NO_CONSUMING_PROOF_PATH_READY, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PARENT_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_PRIVATE_CONSUME_PLAN_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_LEAD_INPUT_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_SUBMIT_NOT_AUTHORIZED, BLOCKED_ROLE_JOURNEYS_NOT_AUTHORIZED, BLOCKED_STUDENT_JOURNEY_INPUT_NOT_PROVIDED",
-    "launch_spine_consume_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-launch/launch-spine-consume-readiness-preflight.test.ts passed"
+    "launch_spine_consume_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-launch/launch-spine-consume-readiness-preflight.test.ts passed",
+    "provider_canary_readiness_preflight": "blocked safely with W13-104 provider report present and zero provider side effects; blockers: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN",
+    "provider_canary_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-providers/provider-canary-readiness-preflight.test.ts passed"
   },
   "resume": {
     "primary_resume_file": "ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md",
@@ -303,8 +319,12 @@
       "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CLEANUP-INSTRUCTIONS.private.json with post_run_cleanup_authorized=true and raw_values_included=false",
       "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-OPERATOR-AUTHORIZATION.private.txt containing APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production",
       "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-PRODUCTION-CONFIRMATION.private.txt containing ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK",
-      "Either administrator/parent/student launch-spine private journey input files or C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-SIGNUP-LEAD.private.json before consuming production launch-spine proof"
+      "Either administrator/parent/student launch-spine private journey input files or C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-SIGNUP-LEAD.private.json before consuming production launch-spine proof",
+      "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json with target_environment=production, provider_canaries_authorized=true, provider_canaries_report_sha256=072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac, authorized_providers covering whatsapp, telegram, zoom, vimeo, openai_helper, bna_support, stripe_test, and buffer, and raw_values_included=false",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-PROVIDER-CANARIES-OPERATOR-AUTHORIZATION.private.txt containing APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-PROVIDER-CANARIES-CONFIRMATION.private.txt containing ONE-TIME-PROVIDER-CANARIES-OK",
+      "Protected provider runtime inputs for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer as listed in ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
     ],
-    "next_executable_lane_without_private_inputs": "Launch-spine consume readiness preflight is now recorded. Remaining executable work without private inputs is limited to documentation/validation refreshes, CI/platform evidence, and additional safe preflight tooling; consuming role-link proof, production signup submit, email canary, provider canaries, diagnostics, and CRM apply still require exact protected authorization or runtime inputs."
+    "next_executable_lane_without_private_inputs": "Provider canary readiness preflight is now recorded. Remaining executable work without private inputs is limited to documentation/validation refreshes, CI/platform evidence, and additional safe preflight tooling; consuming role-link proof, production signup submit, email canary, provider canaries, diagnostics, and CRM apply still require exact protected authorization or runtime inputs."
   }
 }

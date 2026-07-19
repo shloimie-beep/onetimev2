@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:40:21.706Z",
+  "generated_at": "2026-07-19T14:47:51.237Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -123,20 +123,29 @@
     {
       "id": "classes_zoom",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "notes": "Classes/classroom core is integrated; live Zoom canary is blocked by missing protected canary manifest and provider configuration."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "notes": "Classes/classroom core is integrated; live Zoom canary is blocked by missing protected canary manifest and provider configuration. Provider canary readiness preflight is recorded and blocked before external mutation until protected inputs are present."
     },
     {
       "id": "content_vimeo",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "notes": "Content workspace/Vimeo seams are implemented; protected Vimeo/content canary is blocked by missing manifest and provider configuration."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "notes": "Content workspace/Vimeo seams are implemented; protected Vimeo/content canary is blocked by missing manifest and provider configuration. Provider canary readiness preflight is recorded and blocked before external mutation until protected inputs are present."
     },
     {
       "id": "knowledge_helpers",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "notes": "Helper runtime remains disabled without OPENAI_API_KEY and ONE_TIME_HELPER_RUNTIME_ENABLED."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "notes": "Helper runtime remains disabled without OPENAI_API_KEY and ONE_TIME_HELPER_RUNTIME_ENABLED. Provider canary readiness preflight is recorded and blocked before external mutation until protected inputs are present."
     },
     {
       "id": "gamification",
@@ -156,32 +165,47 @@
     {
       "id": "whatsapp",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "blocker": "Missing protected WhatsApp provider/account/recipient authorization."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "blocker": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN."
     },
     {
       "id": "telegram",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "blocker": "Missing protected Telegram runtime and bot/chat authorization."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "blocker": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN."
     },
     {
       "id": "stripe",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "blocker": "Stripe TEST canary is blocked by missing protected test account/webhook authorization. Live charges remain excluded."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "blocker": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN."
     },
     {
       "id": "buffer",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "blocker": "Missing protected Buffer account/channel and bounded draft/publish authorization."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "blocker": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN."
     },
     {
       "id": "bna_support",
       "status": "BLOCKED",
-      "evidence": ["ops/codex-runs/W13-104/PROVIDER-CANARIES.json"],
-      "blocker": "Support bridge is disabled until both endpoints, HMAC config, and a synthetic/operator-owned identity are configured."
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "blocker": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN."
     },
     {
       "id": "diagnostics",

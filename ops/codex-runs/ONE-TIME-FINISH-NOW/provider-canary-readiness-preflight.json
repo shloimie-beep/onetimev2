@@ -1,0 +1,187 @@
+{
+  "schema_version": "onetime.one_time_finish_now.provider_canary_readiness_preflight.v1",
+  "generated_at": "2026-07-19T14:47:18.378Z",
+  "status": "blocked",
+  "blocked_reasons": [
+    "BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED",
+    "BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED",
+    "BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED",
+    "BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN",
+    "BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN"
+  ],
+  "target_environment": "production",
+  "approved_scope": {
+    "provider_canaries_report_path": "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+    "provider_canaries_report_sha256": "072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac",
+    "expected_provider_canaries_report_sha256": "072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac",
+    "provider_canaries_report_status": "pending_private_authorization",
+    "required_provider_keys": [
+      "whatsapp",
+      "telegram",
+      "zoom",
+      "vimeo",
+      "openai_helper",
+      "bna_support",
+      "stripe_test",
+      "buffer"
+    ],
+    "required_authorization_statement": "APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production",
+    "required_confirmation": "ONE-TIME-PROVIDER-CANARIES-OK"
+  },
+  "providers": {
+    "whatsapp": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": [
+        "ONE_TIME_WHATSAPP_PROVIDER_ACCOUNT_KEY",
+        "ONE_TIME_WHATSAPP_PROVIDER_ENV",
+        "ONE_TIME_WHATSAPP_STAGING_ISOLATED",
+        "ONE_TIME_WHATSAPP_WEBHOOK_SECRET",
+        "ONE_TIME_WHATSAPP_VERIFY_TOKEN",
+        "ONETIME_CANARY_WHATSAPP_RECIPIENT_E164",
+        "ONETIME_WHATSAPP_CANARY_AUTHORIZED"
+      ],
+      "ready_to_run": false
+    },
+    "telegram": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": [
+        "ONE_TIME_TELEGRAM_WEBHOOK_ENABLED",
+        "ONE_TIME_TELEGRAM_WEBHOOK_SECRET",
+        "ONE_TIME_TELEGRAM_BOT_KEY",
+        "ONE_TIME_TELEGRAM_ENVIRONMENT"
+      ],
+      "ready_to_run": false
+    },
+    "zoom": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": [
+        "ZOOM_CLASSROOM_ENABLED",
+        "ZOOM_CLASSROOM_PROVIDER_MODE",
+        "ZOOM_MEETING_SDK_KEY",
+        "ZOOM_MEETING_SDK_SECRET",
+        "ZOOM_ACCOUNT_ID"
+      ],
+      "ready_to_run": false
+    },
+    "vimeo": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": [
+        "VIMEO_ACCESS_TOKEN",
+        "VIMEO_ACCOUNT_ID",
+        "VIMEO_WEBHOOK_SECRET"
+      ],
+      "ready_to_run": false
+    },
+    "openai_helper": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": ["OPENAI_API_KEY", "ONE_TIME_HELPER_RUNTIME_ENABLED"],
+      "ready_to_run": false
+    },
+    "bna_support": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": [
+        "OT89_SUPPORT_ENABLED",
+        "OT89_SUPPORT_DELIVERY_MODE",
+        "OT89_SUPPORT_BNA_BASE_URL",
+        "OT89_SUPPORT_HMAC_KEY_ID",
+        "OT89_SUPPORT_HMAC_SECRET",
+        "OT89_BNA_TO_ONETIME_HMAC_KEY_ID",
+        "OT89_BNA_TO_ONETIME_HMAC_SECRET"
+      ],
+      "ready_to_run": false
+    },
+    "stripe_test": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": [
+        "LIVE_STRIPE_CHARGES_AUTHORIZED",
+        "ONE_TIME_STRIPE_TEST_WEBHOOK_SECRET",
+        "ONE_TIME_STRIPE_TEST_ACCOUNT_REF"
+      ],
+      "ready_to_run": false
+    },
+    "buffer": {
+      "mode": "disabled_missing_manifest",
+      "canary": "not_run",
+      "kill_switch": "off",
+      "missing_or_blocking_names": [
+        "BUFFER_ACCESS_TOKEN",
+        "BUFFER_ORGANIZATION_ID",
+        "BUFFER_DESTINATION_IDS"
+      ],
+      "ready_to_run": false
+    }
+  },
+  "protected_sources": {
+    "private_canary_authorization_path": "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
+    "operator_authorization_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-PROVIDER-CANARIES-OPERATOR-AUTHORIZATION.private.txt",
+    "production_confirmation_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-PROVIDER-CANARIES-CONFIRMATION.private.txt",
+    "raw_values_included": false,
+    "secrets_printed": false,
+    "provider_canaries_run": 0,
+    "external_sends_performed": false,
+    "provider_writes_performed": false,
+    "live_charges_performed": false,
+    "production_database_connected": false,
+    "production_database_writes": 0
+  },
+  "inputs": {
+    "privateCanaryAuthorization": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "operatorAuthorization": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "productionConfirmation": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    }
+  },
+  "checks": {
+    "provider_canaries_report_available": true,
+    "provider_canaries_report_readable_json": true,
+    "provider_canaries_report_sha_matches_expected": true,
+    "provider_canaries_report_status_ready_to_run": false,
+    "provider_canaries_external_effects_safe": true,
+    "all_required_providers_present": true,
+    "all_required_providers_ready_to_run": false,
+    "private_authorization_manifest_present": false,
+    "private_authorization_manifest_readable_json": false,
+    "private_authorization_manifest_target_environment_matches": false,
+    "private_authorization_manifest_raw_values_excluded": false,
+    "private_authorization_manifest_provider_canaries_authorized": false,
+    "private_authorization_manifest_report_sha_matches": false,
+    "private_authorization_manifest_required_providers_authorized": false,
+    "operator_authorization_present": false,
+    "operator_authorization_matches_required": false,
+    "production_confirmation_present": false,
+    "production_confirmation_matches_required": false,
+    "no_raw_values_in_report": true,
+    "no_provider_side_effects": true
+  }
+}

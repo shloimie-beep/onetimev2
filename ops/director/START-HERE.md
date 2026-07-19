@@ -122,6 +122,13 @@ available, then blocks before any form submit, production write, setup/reset
 link consumption, send, or provider mutation because protected consuming-proof
 inputs are missing.
 
+Provider canary readiness evidence lives at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json`.
+It reads the W13-104 provider report and blocks WhatsApp, Telegram, Zoom,
+Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer before any provider
+call, send, write, charge, or production DB access. Transactional email stays
+under the separate email-inputs gate.
+
 ## What Not To Do From This Handoff
 
 - Do not print or commit secrets, private manifests, setup/reset links,
@@ -139,7 +146,9 @@ inputs are missing.
   exact authorization, production confirmation, and either role-journey inputs
   or signup-lead input are all present.
 - Do not run Zoom, Vimeo, Stripe TEST, WhatsApp, Telegram, Buffer, OpenAI
-  helper, or BNA support canaries without the protected manifest.
+  helper, or BNA support canaries until protected provider runtime inputs,
+  `CANARY-AUTHORIZATION.private.json`, exact operator authorization, and
+  `ONE-TIME-PROVIDER-CANARIES-OK` are present.
 - Do not use the dirty BNA checkout for One Time product edits.
 
 ## Fast Orientation
