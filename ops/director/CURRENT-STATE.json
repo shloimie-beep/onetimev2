@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T17:24:51.805Z",
+  "generated_at": "2026-07-19T17:32:01.523Z",
   "current_run": "ops/codex-runs/RABBI-DAY-ONE-CRM",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -98,7 +98,9 @@
     "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json",
-    "ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md"
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/RELEASE-UNBLOCK-PACKET.md"
   ],
   "blockers": [
     {
@@ -164,5 +166,11 @@
     "required_operator_confirmation": "ONE-TIME-CAMPAIGN-SEED-OK",
     "seed_send_performed": false,
     "broad_campaign_sends": 0
+  },
+  "release_unblock_packet": {
+    "status": "blocked_waiting_for_external_or_operator_inputs",
+    "packet_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json",
+    "markdown_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/RELEASE-UNBLOCK-PACKET.md",
+    "side_effects_performed": false
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T17:24:51.805Z",
+  "generated_at": "2026-07-19T17:32:01.523Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -296,6 +296,20 @@
     "broad_campaign_sends": 0,
     "seed_blocker": "Campaign seed approval packet is ready with exact proposed copy and required approval statement; no seed or broad campaign was sent. Awaiting operator approval statement and ONE-TIME-CAMPAIGN-SEED-OK before one protected seed send."
   },
+  "release_unblock_packet": {
+    "status": "blocked_waiting_for_external_or_operator_inputs",
+    "packet_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json",
+    "markdown_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/RELEASE-UNBLOCK-PACKET.md",
+    "side_effects_performed": false,
+    "covered_lanes": [
+      "github_actions",
+      "campaign_seed",
+      "production_admin_access_send_or_smoke",
+      "launch_spine_consuming_proof",
+      "provider_canaries",
+      "protected_diagnostics"
+    ]
+  },
   "tests_run": [
     "npm test",
     "npm run typecheck",
@@ -364,7 +378,12 @@
     "npm run director:truth:live passed after campaign seed approval packet handoff refresh",
     "npm run secret:scan passed across 1729 repo text files after campaign seed approval packet generator",
     "git diff --check passed after campaign seed approval packet generator with Windows line-ending warnings only",
-    "gh api check-run annotations on PR #92 head f46375cdbfea26700e6d6a181745b2c35705412b showed all five Actions jobs blocked before runner execution by GitHub account billing/spending-limit gating"
+    "gh api check-run annotations on PR #92 head f46375cdbfea26700e6d6a181745b2c35705412b showed all five Actions jobs blocked before runner execution by GitHub account billing/spending-limit gating",
+    "node JSON parse check passed for ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json and ops/director/CURRENT-STATE.json",
+    "npx prettier --check release unblock packet and director handoff files passed",
+    "git diff --check passed after release unblock packet with Windows line-ending warnings only",
+    "npm run director:truth:live passed after release unblock packet handoff refresh",
+    "npm run secret:scan passed across 1733 repo text files after release unblock packet"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",

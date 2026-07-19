@@ -1,6 +1,6 @@
 # RABBI-DAY-ONE-CRM
 
-Status: real One Time CRM import delivered to production; production signup proof delivered; campaign seed approval packet ready; WhatsApp and external sends remain gated; GitHub Actions blocked by account billing/spending limit.
+Status: real One Time CRM import delivered to production; production signup proof delivered; campaign seed approval packet ready; release unblock packet recorded; WhatsApp and external sends remain gated; GitHub Actions blocked by account billing/spending limit.
 
 Branch: `codex/one-time-finish-now-20260719`  
 PR: `https://github.com/webcraft-media/onetimev2/pull/92`  
@@ -20,6 +20,9 @@ CRM production evidence commit:
 - Generated a no-send campaign seed approval packet with exact proposed copy,
   snapshot hash `6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5`,
   required operator approval statement, and zero production side effects.
+- Generated a consolidated release unblock packet for the remaining external
+  and operator-gated lanes, with exact approval phrases where the repo already
+  computes them and zero side effects.
 
 ## Remaining Gates
 
@@ -43,6 +46,8 @@ CRM production evidence commit:
 - Transactional email release proof: `ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json`
 - GitHub Actions billing blocker: `ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json`
 - GitHub Actions billing blocker Markdown: `ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md`
+- Release unblock packet: `ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json`
+- Release unblock packet Markdown: `ops/codex-runs/RABBI-DAY-ONE-CRM/RELEASE-UNBLOCK-PACKET.md`
 
 External effects this slice: one Railway backup-proof deployment, one production DB migration, one production CRM import apply, one production signup submit, zero production external email sends from signup, zero WhatsApp sends, zero provider mutations, zero broad campaign sends.
 

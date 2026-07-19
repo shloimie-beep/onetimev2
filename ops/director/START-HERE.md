@@ -1,6 +1,6 @@
 # One Time Director Start Here
 
-Generated: 2026-07-19T17:24:51.805Z
+Generated: 2026-07-19T17:32:01.523Z
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
 sessions working on `webcraft-media/onetimev2`. It records the current release
@@ -136,6 +136,13 @@ GitHub Actions billing blocker evidence lives at
 PR #92 jobs failed before runner steps started because GitHub reported an
 account billing/spending-limit blocker. Fix Billing & plans or the spending
 limit, then rerun the checks.
+
+The consolidated release unblock packet lives at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json` and
+`ops/codex-runs/RABBI-DAY-ONE-CRM/RELEASE-UNBLOCK-PACKET.md`. It lists the
+remaining external/operator inputs and exact approval phrases for campaign seed,
+launch-spine consuming proof, and provider canaries. It does not authorize any
+production action by itself.
 
 Production launch-spine read-only evidence lives at
 `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`

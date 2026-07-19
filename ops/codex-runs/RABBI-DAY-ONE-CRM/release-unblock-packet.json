@@ -1,0 +1,172 @@
+{
+  "schema_version": "onetime.rabbi_day_one_crm.release_unblock_packet.v1",
+  "generated_at": "2026-07-19T17:32:01.523Z",
+  "status": "blocked_waiting_for_external_or_operator_inputs",
+  "repository": "webcraft-media/onetimev2",
+  "pull_request": {
+    "number": 92,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+    "branch": "codex/one-time-finish-now-20260719",
+    "head_at_generation": "8a9855cabd95227480bb013bd534786e56c25798",
+    "head_note": "This packet records the PR head observed at generation time. Use live PR state for later handoff-only commits."
+  },
+  "accepted_lanes": [
+    {
+      "id": "crm_real_data",
+      "status": "accepted",
+      "evidence": [
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json"
+      ]
+    },
+    {
+      "id": "production_signup_to_crm",
+      "status": "accepted",
+      "evidence": ["ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"]
+    },
+    {
+      "id": "admin_parent_student_access_baseline",
+      "status": "accepted_prior_proof",
+      "evidence": [
+        "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
+        "ops/codex-runs/W13-103/FINAL-REPORT.md"
+      ]
+    }
+  ],
+  "external_or_operator_unblockers": [
+    {
+      "id": "github_actions",
+      "status": "blocked_by_github_account_billing_or_spending_limit",
+      "unblock_type": "github_account_action",
+      "required_operator_action": "Fix GitHub Billing & plans or increase the spending limit for the account or organization that owns webcraft-media/onetimev2, then rerun all failed PR #92 checks.",
+      "proof_after_unblock": "All required PR #92 GitHub Actions checks complete successfully on the live head.",
+      "evidence": [
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md"
+      ],
+      "side_effects_from_packet": {
+        "database_writes": 0,
+        "external_sends": 0,
+        "provider_mutations": 0,
+        "deployments": 0
+      }
+    },
+    {
+      "id": "campaign_seed",
+      "status": "ready_for_operator_approval",
+      "unblock_type": "exact_operator_approval",
+      "required_operator_approval_statement": "APPROVE_ONE_TIME_CAMPAIGN_SEED:6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5:1357:email:seed-only",
+      "required_confirmation": "ONE-TIME-CAMPAIGN-SEED-OK",
+      "exact_action_after_approval": "Send exactly one seed email to the protected operator-approved destination; do not send to the 1,357-person real audience until separate broad-campaign approval is recorded.",
+      "proof_after_unblock": "One protected seed send result is recorded, broad campaign sends remain zero, and no raw recipient list is committed.",
+      "evidence": [
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md"
+      ],
+      "side_effects_from_packet": {
+        "database_writes": 0,
+        "external_sends": 0,
+        "provider_mutations": 0,
+        "broad_campaign_sends": 0
+      }
+    },
+    {
+      "id": "production_admin_access_send_or_smoke",
+      "status": "blocked_pending_fresh_exact_action_approval",
+      "unblock_type": "fresh_operator_decision_and_private_manifest",
+      "required_operator_action": "Provide a current explicit approval for the protected production admin/access recipient and action, plus any private W13-103 authorization material needed for a send, link extraction, or authenticated browser smoke.",
+      "required_repo_confirmation": "Do not create or refresh production administrator access, consume setup/reset links, or run authenticated CRM browser smokes from this packet alone.",
+      "proof_after_unblock": "A fresh production admin/access send or authenticated browser smoke is recorded without exposing private links, destinations, raw emails, or tokens.",
+      "evidence": [
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json",
+        "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
+        "ops/codex-runs/W13-103/FINAL-REPORT.md"
+      ],
+      "side_effects_from_packet": {
+        "database_writes": 0,
+        "external_sends": 0,
+        "setup_or_reset_links_consumed": 0,
+        "provider_mutations": 0
+      }
+    },
+    {
+      "id": "launch_spine_consuming_proof",
+      "status": "blocked_pending_private_inputs_and_exact_authorization",
+      "unblock_type": "private_plan_plus_exact_operator_approval",
+      "required_private_files": [
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CONSUME-PLAN.private.json",
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CLEANUP-INSTRUCTIONS.private.json",
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-OPERATOR-AUTHORIZATION.private.txt",
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-PRODUCTION-CONFIRMATION.private.txt",
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-ADMIN-JOURNEY.private.json",
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-PARENT-JOURNEY.private.json",
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-STUDENT-JOURNEY.private.json",
+        "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-SIGNUP-LEAD.private.json"
+      ],
+      "required_operator_approval_statement": "APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9:7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a:production",
+      "required_confirmation": "ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK",
+      "proof_after_unblock": "At least one consuming path is ready and proven: role journeys or production signup submit, with cleanup instructions and no raw values in repo artifacts.",
+      "evidence": [
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json"
+      ],
+      "side_effects_from_packet": {
+        "database_writes": 0,
+        "form_submits": 0,
+        "setup_or_reset_links_consumed": 0,
+        "external_sends": 0,
+        "provider_mutations": 0
+      }
+    },
+    {
+      "id": "provider_canaries",
+      "status": "blocked_pending_provider_runtime_inputs_and_exact_authorization",
+      "unblock_type": "provider_configuration_plus_exact_operator_approval",
+      "required_operator_approval_statement": "APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production",
+      "required_confirmation": "ONE-TIME-PROVIDER-CANARIES-OK",
+      "required_private_manifest": "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
+      "whatsapp_specific_action": "Configure Meta WhatsApp production webhook secrets and verify token, then run the approved canary.",
+      "proof_after_unblock": "Provider canary readiness becomes ready, then approved canaries run with sanitized evidence and no unapproved broad sends, live charges, or unrelated provider mutations.",
+      "evidence": [
+        "ops/codex-runs/W13-104/PROVIDER-CANARIES.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+      ],
+      "side_effects_from_packet": {
+        "provider_canaries_run": 0,
+        "external_sends": 0,
+        "provider_writes": false,
+        "live_charges": false,
+        "production_database_writes": 0
+      }
+    },
+    {
+      "id": "protected_diagnostics",
+      "status": "blocked_missing_operations_probe_token",
+      "unblock_type": "protected_runtime_input",
+      "required_operator_action": "Provide OPERATIONS_PROBE_TOKEN through the protected runtime path, then rerun the diagnostics proof.",
+      "proof_after_unblock": "Protected diagnostics probe succeeds without printing or committing the token.",
+      "evidence": [
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json"
+      ],
+      "side_effects_from_packet": {
+        "database_writes": 0,
+        "external_sends": 0,
+        "provider_mutations": 0
+      }
+    }
+  ],
+  "safety": {
+    "this_packet_authorizes_actions": false,
+    "raw_values_included": false,
+    "private_recipients_included": false,
+    "secrets_printed": false,
+    "database_writes_performed": 0,
+    "external_sends_performed": 0,
+    "provider_mutation_count": 0,
+    "setup_or_reset_links_consumed": 0,
+    "broad_campaign_sends": 0
+  }
+}
