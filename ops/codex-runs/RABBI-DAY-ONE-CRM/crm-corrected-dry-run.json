@@ -468,7 +468,7 @@
     "raw_row_contents_included": false,
     "production_side_effects": false,
     "database_writes_performed": false,
-    "apply_mode_implemented": false
+    "apply_mode_implemented": true
   },
   "privacy_and_safety": {
     "row_values_printed": false,

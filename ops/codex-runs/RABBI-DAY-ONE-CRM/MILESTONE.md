@@ -1,6 +1,6 @@
 # RABBI-DAY-ONE-CRM
 
-Status: CRM-first slice implemented locally with corrected real-source dry run and transactional lifecycle email mode.
+Status: CRM-first slice implemented locally with corrected real-source dry run, guarded CRM apply writer, and transactional lifecycle email mode.
 
 Branch: `codex/one-time-finish-now-20260719`  
 PR: `https://github.com/webcraft-media/onetimev2/pull/92`  
@@ -13,13 +13,15 @@ Base head at pivot: `92fd518ca66680543b80592b724d4fc492e544b6`
 - Narrowed communications-export quarantine to actual message-body/call-log exports, not ordinary audience metadata.
 - Added explicit lifecycle email mode: `disabled`, `canary`, `transactional`.
 - Transactional lifecycle email now fails closed unless production runtime, authorization id, Resend key, approved sender, reply-to, webhook secret, lifecycle encryption key, and positive budgets are configured.
+- Added guarded W12-100 real-source CRM apply writer and migration. It inserts CRM contacts/facts plus hashed import ledger/audit rows only after exact source hash validation, backup proof, idempotency key, created-by user key, exact authorization, and production confirmation when targeting production.
+- Updated the `--apply` CLI path from not implemented to protected apply/block mode. Missing guarded inputs now return a count-safe blocked apply report with no DB writes.
 - Verified signup-to-CRM and WhatsApp lead-capture tests for the first slice.
 
 ## Corrected CRM Counts
 
 Source packet: `C:/Users/User/.onetime-w13-104-private/crm-approved-source-packet`  
 Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json`  
-SHA-256: `2ef42a24d05f13a907405a7b4ae9fc5690885e471607c18004327a9a7ac73508`
+SHA-256: `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`
 
 | Field                      | Count |
 | -------------------------- | ----: |
@@ -37,7 +39,7 @@ SHA-256: `2ef42a24d05f13a907405a7b4ae9fc5690885e471607c18004327a9a7ac73508`
 
 ## Blockers
 
-- Real CRM production apply: current W12-100 apply path is dry-run-only; add/review production CRM writer and fresh backup/rollback proof before writing contacts.
+- Real CRM production apply: guarded writer is accepted locally, but production remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are present.
 - Production transactional email: configure production lifecycle email variables and run controlled operator-inbox send.
 - Rabbi/Admin access send: wait for production transactional email proof, then send final administrator access message.
 - WhatsApp production lead capture: configure Meta WhatsApp production webhook secrets and verify token, then run approved canary.
@@ -55,6 +57,15 @@ SHA-256: `2ef42a24d05f13a907405a7b4ae9fc5690885e471607c18004327a9a7ac73508`
 - `npm run integration -- tests/integration/accounts/account-lifecycle.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts`
 - `npm run integration -- tests/integration/lead-capture.test.ts tests/integration/whatsapp/ot85-assistant.test.ts tests/integration/whatsapp/ot85-webhook-route.test.ts`
 - `npm run unit -- tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/w13-10/delivery-activation-policy.test.ts`
+- `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/real-source-preflight.test.ts`
+- `npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts`
+- `npm run unit`
+- `npm run integration`
+- `npm run typecheck`
+- `npm run lint`
+- `npm run secret:scan`
+- `git diff --check`
+- `npx prettier --check scripts/w12-100/data/real-source-preflight.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts`
 
 Known non-blocking check: `npm run format` fails on 1205 unrelated pre-existing files; targeted changed-file Prettier check passed.
 

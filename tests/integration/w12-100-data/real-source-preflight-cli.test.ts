@@ -46,7 +46,7 @@ describe('W12-100-04 source preflight integration', () => {
     expect(serialized).not.toContain('private message text');
   });
 
-  it('CLI records apply mode as blocked instead of implementing it', async () => {
+  it('CLI records apply mode as guarded and blocked without protected inputs', async () => {
     const directory = await mkdtemp(path.join(os.tmpdir(), 'w12-100-cli-'));
     const outPath = path.join(directory, 'blocked-apply.json');
     await execFileAsync(process.execPath, [
@@ -59,15 +59,24 @@ describe('W12-100-04 source preflight integration', () => {
     const result = JSON.parse(await readFile(outPath, 'utf8')) as {
       status: string;
       blocked_reasons: string[];
-      w12_01_import_contract_compatibility: { apply_mode_implemented: boolean };
-      privacy_and_safety: { database_writes_performed: boolean; production_mutation_count: number };
+      schema_version: string;
+      safety: { database_writes_performed: boolean; production_side_effects: boolean };
     };
 
     expect(result.status).toBe('blocked');
-    expect(result.blocked_reasons).toContain('BLOCKED_APPLY_MODE_NOT_IMPLEMENTED_IN_W12_100_04');
-    expect(result.w12_01_import_contract_compatibility.apply_mode_implemented).toBe(false);
-    expect(result.privacy_and_safety.database_writes_performed).toBe(false);
-    expect(result.privacy_and_safety.production_mutation_count).toBe(0);
+    expect(result.schema_version).toBe('onetime.w12_100_04.real_source_crm_apply.v1');
+    expect(result.blocked_reasons).toEqual(
+      expect.arrayContaining([
+        'BLOCKED_BACKUP_PROOF_NOT_PROVIDED',
+        'BLOCKED_DATABASE_URL_NOT_CONFIGURED',
+        'BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED',
+        'BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED',
+        'BLOCKED_SANITIZED_SOURCE_PACKET_NOT_PROVIDED',
+        'BLOCKED_TARGET_ENVIRONMENT_NOT_PROVIDED',
+      ]),
+    );
+    expect(result.safety.database_writes_performed).toBe(false);
+    expect(result.safety.production_side_effects).toBe(false);
   });
 });
 

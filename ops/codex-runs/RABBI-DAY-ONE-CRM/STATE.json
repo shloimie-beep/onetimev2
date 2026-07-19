@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T13:41:00.000Z",
+  "generated_at": "2026-07-19T13:56:05.421Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -24,13 +24,39 @@
     "operator_chat_approval_recorded": true,
     "prior_private_checkpoint_path": "C:/Users/User/.onetime-w13-104-private/CRM-IMPORT-AUTHORIZATION.private.json",
     "source_packet_path": "C:/Users/User/.onetime-w13-104-private/crm-approved-source-packet",
+    "apply_writer_code_status": "accepted_local_guarded",
+    "apply_writer_migration": "packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
+    "apply_cli": "scripts/w12-100/data/real-source-preflight.ts --apply",
+    "required_exact_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
+    "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
     "production_apply_status": "blocked",
-    "production_apply_blocker": "Add/review a real production CRM writer with fresh backup/rollback proof; current W12-100 apply mode is dry-run-only by design."
+    "production_apply_blocker": "Run against production only after fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and production confirmation are all present."
+  },
+  "crm_apply_writer": {
+    "status": "accepted",
+    "production_database_writes_performed": false,
+    "external_sends_performed": false,
+    "provider_mutation_count": 0,
+    "guards": [
+      "exact source filename and hash validation",
+      "backup proof must match dry-run source group, total rows, crm_importable count, target environment, and raw_values_included=false",
+      "operator authorization must match APPROVE_RABBI_DAY_ONE_CRM_IMPORT:<dry-run-sha256>:<crm_importable>:<target>",
+      "production target requires RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
+      "idempotency key replay returns saved result without new writes",
+      "outbox sends stay at zero"
+    ],
+    "local_evidence": {
+      "integration_test": "tests/integration/w12-100-data/real-source-crm-apply.test.ts",
+      "synthetic_contacts_inserted": 3,
+      "synthetic_ledger_rows": 4,
+      "synthetic_outbox_events": 0,
+      "replay_status": "replayed"
+    }
   },
   "crm_corrected_dry_run": {
     "status": "done",
     "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
-    "sha256": "2ef42a24d05f13a907405a7b4ae9fc5690885e471607c18004327a9a7ac73508",
+    "sha256": "93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "total_rows": 2505,
     "unique_identity_count": 1596,
     "crm_importable": 1559,
@@ -42,6 +68,7 @@
     "identity_conflict": 37,
     "quarantined": 0,
     "manual_review_rows": 848,
+    "apply_mode_implemented": true,
     "production_database_connected": false,
     "database_writes_performed": false,
     "external_actions_count": 0
@@ -88,7 +115,13 @@
     "npm run unit -- tests/unit/w12-100-data/real-source-preflight.test.ts",
     "npm run integration -- tests/integration/accounts/account-lifecycle.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts",
     "npm run integration -- tests/integration/lead-capture.test.ts tests/integration/whatsapp/ot85-assistant.test.ts tests/integration/whatsapp/ot85-webhook-route.test.ts",
-    "npm run unit -- tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/w13-10/delivery-activation-policy.test.ts"
+    "npm run unit -- tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/w13-10/delivery-activation-policy.test.ts",
+    "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/real-source-preflight.test.ts",
+    "npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts",
+    "npm run unit",
+    "npm run integration",
+    "npx eslint scripts/w12-100/data/real-source-preflight.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts",
+    "npx prettier --check scripts/w12-100/data/real-source-preflight.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",

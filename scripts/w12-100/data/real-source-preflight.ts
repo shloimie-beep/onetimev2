@@ -4,7 +4,18 @@ import { mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { inflateRawSync } from 'node:zlib';
-import { normalizeEmail, normalizePhone } from '../../../packages/domain/src/lead/normalize.ts';
+import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
+import {
+  createPgPool,
+  inTransaction,
+  type DbPool,
+  type Queryable,
+} from '../../../packages/db/src/index.ts';
+import {
+  normalizeEmail,
+  normalizePhone,
+  stableKey,
+} from '../../../packages/domain/src/lead/normalize.ts';
 
 export const W12_100_04_APPROVED_SOURCES = [
   {
@@ -136,6 +147,28 @@ export type RunW12100SourcePreflightOptions = {
   now?: Date | undefined;
 };
 
+export type W12100CrmImportBackupProof = {
+  target_environment: 'local' | 'test' | 'staging' | 'production';
+  created_at: string;
+  dry_run_report_sha256: string;
+  approved_source_group_fingerprint: string;
+  total_rows: number;
+  crm_importable: number;
+  raw_values_included: false;
+};
+
+export type RunW12100CrmImportApplyOptions = RunW12100SourcePreflightOptions & {
+  pool: DbPool;
+  config: AppConfig;
+  backupProof: W12100CrmImportBackupProof;
+  idempotencyKey: string;
+  operatorAuthorizationStatement: string;
+  targetEnvironment: 'local' | 'test' | 'staging' | 'production';
+  confirmProductionApply?: string | undefined;
+  createdByUserKey: string;
+  now?: Date | undefined;
+};
+
 type ConsentState = 'opted_in' | 'opted_out' | 'unknown';
 type SuppressionState = 'active' | 'suppressed' | 'unknown';
 type Disposition =
@@ -152,6 +185,53 @@ type CorrectedCrmCounts = {
   duplicate: number;
   identity_conflict: number;
   quarantined: number;
+};
+
+type CrmApplyRowResult =
+  | 'inserted_contact'
+  | 'skipped_existing_contact'
+  | 'blocked_contact_schema'
+  | 'blocked_duplicate'
+  | 'blocked_identity_conflict'
+  | 'blocked_quarantined'
+  | 'blocked_invalid';
+
+export type W12100CrmImportApplyResult = {
+  schema_version: 'onetime.w12_100_04.real_source_crm_apply.v1';
+  generated_at: string;
+  status: 'blocked' | 'applied' | 'replayed';
+  blocked_reasons: string[];
+  batch_key: string;
+  target_environment: 'local' | 'test' | 'staging' | 'production';
+  dry_run_report_sha256: string;
+  approved_source_group_fingerprint: string;
+  counts: {
+    total_rows: number;
+    unique_identity_count: number;
+    crm_importable: number;
+    writable_candidates: number;
+    inserted_contacts: number;
+    skipped_existing_contacts: number;
+    blocked_contact_schema: number;
+    blocked_duplicate: number;
+    blocked_identity_conflict: number;
+    blocked_quarantined: number;
+    blocked_invalid: number;
+    email_campaign_eligible: number;
+    whatsapp_campaign_eligible: number;
+    suppressed: number;
+    sends_queued: 0;
+  };
+  safety: {
+    backup_proof_verified: boolean;
+    exact_authorization_verified: boolean;
+    raw_values_included: false;
+    raw_values_printed: false;
+    database_writes_performed: boolean;
+    production_side_effects: boolean;
+    external_sends_performed: false;
+    provider_mutation_count: 0;
+  };
 };
 
 type SourceValidationResult = {
@@ -193,6 +273,7 @@ type NormalizedRow = {
   rowNumber: number;
   sheetLabel: string;
   headerKeys: string[];
+  displayName: string | null;
   displayNameKey: string | null;
   emailKey: string | null;
   phoneKey: string | null;
@@ -315,7 +396,7 @@ export type W12100SourcePreflightReport = {
     raw_row_contents_included: false;
     production_side_effects: false;
     database_writes_performed: false;
-    apply_mode_implemented: false;
+    apply_mode_implemented: boolean;
   };
   privacy_and_safety: {
     row_values_printed: false;
@@ -348,6 +429,29 @@ const PRECEDENCE_ORDER = [
 export async function runW12100SourcePreflight(
   options: RunW12100SourcePreflightOptions = {},
 ): Promise<W12100SourcePreflightReport> {
+  return (await loadW12100VerifiedClassifications(options)).report;
+}
+
+export function exactW12100CrmImportAuthorizationStatement(input: {
+  dryRunReportSha256: string;
+  crmImportable: number;
+  targetEnvironment: 'local' | 'test' | 'staging' | 'production';
+}) {
+  return [
+    'APPROVE_RABBI_DAY_ONE_CRM_IMPORT',
+    input.dryRunReportSha256,
+    String(input.crmImportable),
+    input.targetEnvironment,
+  ].join(':');
+}
+
+async function loadW12100VerifiedClassifications(
+  options: RunW12100SourcePreflightOptions = {},
+): Promise<{
+  approvedSources: readonly ApprovedSource[];
+  report: W12100SourcePreflightReport;
+  classifications: RowClassification[];
+}> {
   const approvedSources = options.approvedSources ?? W12_100_04_APPROVED_SOURCES;
   const generatedAt = (options.now ?? new Date()).toISOString();
   const cleanupPaths: string[] = [];
@@ -359,12 +463,20 @@ export async function runW12100SourcePreflight(
 
   try {
     if (!options.sourceDir) {
-      return block(base, 'BLOCKED_SANITIZED_SOURCE_PACKET_NOT_PROVIDED');
+      return {
+        approvedSources,
+        report: block(base, 'BLOCKED_SANITIZED_SOURCE_PACKET_NOT_PROVIDED'),
+        classifications: [],
+      };
     }
     const sourceDirAvailable = await directoryExists(options.sourceDir);
     base.validation.source_dir_available = sourceDirAvailable;
     if (!sourceDirAvailable) {
-      return block(base, 'BLOCKED_SANITIZED_SOURCE_PACKET_NOT_FOUND');
+      return {
+        approvedSources,
+        report: block(base, 'BLOCKED_SANITIZED_SOURCE_PACKET_NOT_FOUND'),
+        classifications: [],
+      };
     }
 
     const validation = await validateApprovedFiles(options.sourceDir, approvedSources);
@@ -374,7 +486,11 @@ export async function runW12100SourcePreflight(
       validation.unapprovedSupportedFileFingerprintDigest;
 
     if (validation.blockedReasons.length) {
-      return block(base, ...validation.blockedReasons);
+      return {
+        approvedSources,
+        report: block(base, ...validation.blockedReasons),
+        classifications: [],
+      };
     }
 
     const parsedRecords = (
@@ -388,11 +504,671 @@ export async function runW12100SourcePreflight(
     const rowClassifications = classifyRows(normalizedRows, options.existingIdentitySnapshot ?? []);
     applyClassifiedRows(base, approvedSources, rowClassifications);
     base.status = 'done';
-    return base;
+    return { approvedSources, report: base, classifications: rowClassifications };
   } finally {
     await cleanupTemporaryPaths(cleanupPaths);
     base.privacy_and_safety.temporary_cleanup_performed = true;
   }
+}
+
+export async function runW12100CrmImportApply(
+  options: RunW12100CrmImportApplyOptions,
+): Promise<W12100CrmImportApplyResult> {
+  const loaded = await loadW12100VerifiedClassifications(options);
+  const report = loaded.report;
+  const accountKey = options.config.accountKey;
+  const productKey = options.config.productKey;
+  const requestHashValue = createCrmApplyRequestHash(options, report);
+  const batchKey = stableKey('crm_real_source_batch', [
+    accountKey,
+    productKey,
+    options.idempotencyKey,
+    requestHashValue,
+  ]);
+  const result = createBaseCrmApplyResult({
+    batchKey,
+    dryRunReportSha256: options.backupProof.dry_run_report_sha256,
+    generatedAt: report.generated_at,
+    report,
+    targetEnvironment: options.targetEnvironment,
+  });
+
+  if (report.status !== 'done') {
+    return blockCrmApplyResult(result, ...report.blocked_reasons);
+  }
+
+  const guardReasons = validateCrmApplyGuards(options, report);
+  if (guardReasons.length) {
+    return blockCrmApplyResult(result, ...guardReasons);
+  }
+
+  return inTransaction(options.pool, async (client) => {
+    await client.query('SELECT pg_advisory_xact_lock($1)', [
+      advisoryLockValue(
+        `w12-100-real-source-crm:${accountKey}:${productKey}:${options.idempotencyKey}`,
+      ),
+    ]);
+
+    const existing = await client.query(
+      `SELECT batch_key, request_hash, result_payload
+         FROM onetime.crm_real_source_import_batches
+        WHERE account_key = $1
+          AND product_key = $2
+          AND idempotency_key = $3
+        LIMIT 1`,
+      [accountKey, productKey, options.idempotencyKey],
+    );
+    if (existing.rowCount) {
+      const existingRow = existing.rows[0] as {
+        batch_key: string;
+        request_hash: string;
+        result_payload: unknown;
+      };
+      if (existingRow.request_hash !== requestHashValue) {
+        result.batch_key = existingRow.batch_key;
+        return blockCrmApplyResult(result, 'BLOCKED_IDEMPOTENCY_KEY_REUSED_WITH_DIFFERENT_REQUEST');
+      }
+      const replayed = parseJsonb<W12100CrmImportApplyResult>(existingRow.result_payload);
+      return {
+        ...replayed,
+        generated_at: report.generated_at,
+        status: 'replayed',
+        safety: {
+          ...replayed.safety,
+          database_writes_performed: false,
+          production_side_effects: false,
+        },
+      };
+    }
+
+    result.safety.backup_proof_verified = true;
+    result.safety.exact_authorization_verified = true;
+    await client.query(
+      `INSERT INTO onetime.crm_real_source_import_batches
+       (batch_key, account_key, product_key, target_environment, idempotency_key, request_hash,
+        dry_run_report_sha256, approved_source_group_fingerprint, status, planned_counts,
+        result_payload, backup_proof, operator_authorization_fingerprint,
+        production_side_effects, created_by_user_key, created_at, completed_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12::jsonb,$13,$14,$15,$16,$17)`,
+      [
+        batchKey,
+        accountKey,
+        productKey,
+        options.targetEnvironment,
+        options.idempotencyKey,
+        requestHashValue,
+        options.backupProof.dry_run_report_sha256,
+        report.approved_scope.approved_source_group_fingerprint,
+        'applied',
+        JSON.stringify(result.counts),
+        JSON.stringify(result),
+        JSON.stringify(options.backupProof),
+        sha256(options.operatorAuthorizationStatement),
+        options.targetEnvironment === 'production',
+        options.createdByUserKey,
+        report.generated_at,
+        report.generated_at,
+      ],
+    );
+
+    for (const classification of loaded.classifications) {
+      const rowResult = await applyCrmImportRow(client, {
+        accountKey,
+        batchKey,
+        classification,
+        createdAt: report.generated_at,
+        createdByUserKey: options.createdByUserKey,
+        productKey,
+      });
+      applyRowResultToCounts(result, classification, rowResult.result);
+      await insertCrmImportRowLedger(client, {
+        accountKey,
+        batchKey,
+        classification,
+        contactKey: rowResult.contactKey,
+        createdAt: report.generated_at,
+        productKey,
+        result: rowResult.result,
+        rollbackAction: rowResult.rollbackAction,
+      });
+      await insertCrmImportAuditEvent(client, {
+        accountKey,
+        batchKey,
+        classification,
+        contactKey: rowResult.contactKey,
+        createdAt: report.generated_at,
+        productKey,
+        result: rowResult.result,
+      });
+    }
+
+    result.status = 'applied';
+    result.safety.database_writes_performed = true;
+    result.safety.production_side_effects = options.targetEnvironment === 'production';
+    await client.query(
+      `UPDATE onetime.crm_real_source_import_batches
+          SET status = $2,
+              planned_counts = $3::jsonb,
+              result_payload = $4::jsonb,
+              completed_at = $5
+        WHERE batch_key = $1`,
+      [
+        batchKey,
+        result.status,
+        JSON.stringify(result.counts),
+        JSON.stringify(result),
+        report.generated_at,
+      ],
+    );
+    return result;
+  });
+}
+
+function createBaseCrmApplyResult(input: {
+  batchKey: string;
+  dryRunReportSha256: string;
+  generatedAt: string;
+  report: W12100SourcePreflightReport;
+  targetEnvironment: 'local' | 'test' | 'staging' | 'production';
+}): W12100CrmImportApplyResult {
+  return {
+    schema_version: 'onetime.w12_100_04.real_source_crm_apply.v1',
+    generated_at: input.generatedAt,
+    status: 'blocked',
+    blocked_reasons: [],
+    batch_key: input.batchKey,
+    target_environment: input.targetEnvironment,
+    dry_run_report_sha256: input.dryRunReportSha256,
+    approved_source_group_fingerprint:
+      input.report.approved_scope.approved_source_group_fingerprint,
+    counts: {
+      total_rows: input.report.summary.total_rows,
+      unique_identity_count: input.report.summary.unique_identity_count,
+      crm_importable: input.report.summary.crm_importable,
+      writable_candidates: 0,
+      inserted_contacts: 0,
+      skipped_existing_contacts: 0,
+      blocked_contact_schema: 0,
+      blocked_duplicate: 0,
+      blocked_identity_conflict: 0,
+      blocked_quarantined: 0,
+      blocked_invalid: 0,
+      email_campaign_eligible: input.report.summary.email_campaign_eligible,
+      whatsapp_campaign_eligible: input.report.summary.whatsapp_campaign_eligible,
+      suppressed: input.report.summary.suppressed,
+      sends_queued: 0,
+    },
+    safety: {
+      backup_proof_verified: false,
+      exact_authorization_verified: false,
+      raw_values_included: false,
+      raw_values_printed: false,
+      database_writes_performed: false,
+      production_side_effects: false,
+      external_sends_performed: false,
+      provider_mutation_count: 0,
+    },
+  };
+}
+
+function blockCrmApplyResult(
+  result: W12100CrmImportApplyResult,
+  ...reasons: string[]
+): W12100CrmImportApplyResult {
+  result.status = 'blocked';
+  result.blocked_reasons = Array.from(new Set([...result.blocked_reasons, ...reasons])).sort();
+  result.safety.database_writes_performed = false;
+  result.safety.production_side_effects = false;
+  return result;
+}
+
+function validateCrmApplyGuards(
+  options: RunW12100CrmImportApplyOptions,
+  report: W12100SourcePreflightReport,
+) {
+  const reasons: string[] = [];
+  const backupProof = options.backupProof;
+  const expectedAuthorization = exactW12100CrmImportAuthorizationStatement({
+    crmImportable: report.summary.crm_importable,
+    dryRunReportSha256: backupProof.dry_run_report_sha256,
+    targetEnvironment: options.targetEnvironment,
+  });
+
+  if (!options.idempotencyKey.trim()) reasons.push('BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED');
+  if (!options.createdByUserKey.trim()) reasons.push('BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED');
+  if (!/^[a-f0-9]{64}$/i.test(backupProof.dry_run_report_sha256)) {
+    reasons.push('BLOCKED_DRY_RUN_REPORT_SHA256_REQUIRED');
+  }
+  if (backupProof.raw_values_included !== false) {
+    reasons.push('BLOCKED_BACKUP_PROOF_MUST_EXCLUDE_RAW_VALUES');
+  }
+  if (backupProof.target_environment !== options.targetEnvironment) {
+    reasons.push('BLOCKED_BACKUP_PROOF_TARGET_ENVIRONMENT_MISMATCH');
+  }
+  if (
+    backupProof.approved_source_group_fingerprint !==
+    report.approved_scope.approved_source_group_fingerprint
+  ) {
+    reasons.push('BLOCKED_BACKUP_PROOF_SOURCE_GROUP_MISMATCH');
+  }
+  if (backupProof.total_rows !== report.summary.total_rows) {
+    reasons.push('BLOCKED_BACKUP_PROOF_TOTAL_ROWS_MISMATCH');
+  }
+  if (backupProof.crm_importable !== report.summary.crm_importable) {
+    reasons.push('BLOCKED_BACKUP_PROOF_CRM_IMPORTABLE_MISMATCH');
+  }
+  if (Number.isNaN(Date.parse(backupProof.created_at))) {
+    reasons.push('BLOCKED_BACKUP_PROOF_CREATED_AT_INVALID');
+  }
+  if (options.operatorAuthorizationStatement !== expectedAuthorization) {
+    reasons.push('BLOCKED_EXACT_OPERATOR_AUTHORIZATION_MISMATCH');
+  }
+  if (
+    options.targetEnvironment === 'production' &&
+    options.confirmProductionApply !== 'RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK'
+  ) {
+    reasons.push('BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED');
+  }
+  return reasons;
+}
+
+function createCrmApplyRequestHash(
+  options: RunW12100CrmImportApplyOptions,
+  report: W12100SourcePreflightReport,
+) {
+  return sha256(
+    JSON.stringify({
+      account_key: options.config.accountKey,
+      approved_source_group_fingerprint: report.approved_scope.approved_source_group_fingerprint,
+      backup_proof: options.backupProof,
+      crm_importable: report.summary.crm_importable,
+      dry_run_report_sha256: options.backupProof.dry_run_report_sha256,
+      idempotency_key: options.idempotencyKey,
+      operator_authorization_fingerprint: sha256(options.operatorAuthorizationStatement),
+      product_key: options.config.productKey,
+      target_environment: options.targetEnvironment,
+      total_rows: report.summary.total_rows,
+    }),
+  );
+}
+
+async function applyCrmImportRow(
+  client: Queryable,
+  input: {
+    accountKey: string;
+    batchKey: string;
+    classification: RowClassification;
+    createdAt: string;
+    createdByUserKey: string;
+    productKey: string;
+  },
+): Promise<{
+  contactKey: string | null;
+  result: CrmApplyRowResult;
+  rollbackAction: 'delete_inserted_contact' | 'none';
+}> {
+  const { classification } = input;
+  const blockedResult = crmApplyBlockedResult(classification.crmStorageStatus);
+  if (blockedResult) {
+    return { contactKey: null, result: blockedResult, rollbackAction: 'none' };
+  }
+  if (!classification.row.emailKey || !classification.row.identityFingerprint) {
+    return { contactKey: null, result: 'blocked_contact_schema', rollbackAction: 'none' };
+  }
+
+  const contactKey = stableKey('crm_real_source_contact', [
+    input.accountKey,
+    input.productKey,
+    classification.row.identityFingerprint,
+  ]);
+  const publicContactId = stableKey('crm_real_source_public', [
+    input.accountKey,
+    input.productKey,
+    classification.row.identityFingerprint,
+  ]);
+  const displayName = contactDisplayName(classification.row);
+  const reminderPreference = crmReminderPreference(classification);
+  const consentPolicyVersion =
+    reminderPreference === 'none' ? null : 'w12-100-real-source-channel-consent-v1';
+  const consentRecordedAt = reminderPreference === 'none' ? null : input.createdAt;
+  const suppressionState =
+    classification.row.suppressionState === 'suppressed' ||
+    classification.row.consentState === 'opted_out'
+      ? 'suppressed'
+      : 'active';
+  const inserted = await client.query(
+    `INSERT INTO onetime.contacts
+     (contact_key, account_key, product_key, display_name, family_school_classification,
+      family_or_school, location_text, timezone, email_normalized, phone_normalized,
+      reminder_preference, consent_policy_version, consent_recorded_at, suppression_state,
+      source, lead_status, internal_note, offer_version, content_version, last_activity_at,
+      public_contact_id, legacy_contact_key, identity_version, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25)
+     ON CONFLICT DO NOTHING
+     RETURNING contact_key`,
+    [
+      contactKey,
+      input.accountKey,
+      input.productKey,
+      displayName,
+      crmFamilySchoolClassification(classification.row),
+      displayName,
+      'Legacy One Time audience import',
+      'UTC',
+      classification.row.emailKey,
+      classification.row.phoneKey,
+      reminderPreference,
+      consentPolicyVersion,
+      consentRecordedAt,
+      suppressionState,
+      'one_time_real_source_import',
+      classification.communicationEligible ? 'new' : 'in_review',
+      '',
+      'w12-100-rabbi-day-one',
+      'w12-100-real-source-crm-import-v1',
+      input.createdAt,
+      publicContactId,
+      stableKey('crm_real_source_legacy', [input.accountKey, input.productKey, contactKey]),
+      1,
+      input.createdAt,
+      input.createdAt,
+    ],
+  );
+
+  if (inserted.rowCount) {
+    await insertCrmImportFacts(client, input, contactKey);
+    return { contactKey, result: 'inserted_contact', rollbackAction: 'delete_inserted_contact' };
+  }
+
+  const existingContactKey = await findExistingCrmContactKey(client, {
+    accountKey: input.accountKey,
+    contactKey,
+    emailKey: classification.row.emailKey,
+    phoneKey: classification.row.phoneKey,
+    productKey: input.productKey,
+  });
+  return {
+    contactKey: existingContactKey ?? contactKey,
+    result: 'skipped_existing_contact',
+    rollbackAction: 'none',
+  };
+}
+
+function crmApplyBlockedResult(status: CrmStorageStatus): CrmApplyRowResult | null {
+  if (status === 'crm_importable') return null;
+  if (status === 'duplicate') return 'blocked_duplicate';
+  if (status === 'identity_conflict') return 'blocked_identity_conflict';
+  if (status === 'quarantined') return 'blocked_quarantined';
+  return 'blocked_invalid';
+}
+
+async function findExistingCrmContactKey(
+  client: Queryable,
+  input: {
+    accountKey: string;
+    contactKey: string;
+    emailKey: string;
+    phoneKey: string | null;
+    productKey: string;
+  },
+) {
+  const existing = await client.query(
+    `SELECT contact_key
+       FROM onetime.contacts
+      WHERE account_key = $1
+        AND product_key = $2
+        AND (
+          contact_key = $3
+          OR email_normalized = $4
+          OR ($5::text IS NOT NULL AND phone_normalized = $5)
+        )
+      ORDER BY contact_key
+      LIMIT 1`,
+    [input.accountKey, input.productKey, input.contactKey, input.emailKey, input.phoneKey],
+  );
+  return existing.rows[0]?.contact_key ? String(existing.rows[0].contact_key) : null;
+}
+
+async function insertCrmImportFacts(
+  client: Queryable,
+  input: {
+    accountKey: string;
+    classification: RowClassification;
+    createdAt: string;
+    createdByUserKey: string;
+    productKey: string;
+  },
+  contactKey: string,
+) {
+  const facts: Array<{ dimension: string; valueCode: string }> = [
+    {
+      dimension: 'provenance_import_source',
+      valueCode: `w12_100_04:${input.classification.row.sourceId}`,
+    },
+    {
+      dimension: 'migration_eligibility',
+      valueCode: input.classification.emailCampaignEligible
+        ? 'email_campaign_eligible'
+        : 'crm_storage_only',
+    },
+  ];
+  if (input.classification.row.activeLegacyUser) {
+    facts.push({ dimension: 'legacy_membership', valueCode: 'active_legacy_user' });
+  }
+  for (const fact of facts) {
+    await client.query(
+      `INSERT INTO onetime.crm_contact_facts
+       (fact_key, account_key, product_key, contact_key, dimension, value_code, source,
+        observed_at, effective_at, producer_key, actor_user_key, created_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       ON CONFLICT DO NOTHING`,
+      [
+        stableKey('crm_real_source_fact', [
+          input.accountKey,
+          input.productKey,
+          contactKey,
+          fact.dimension,
+          fact.valueCode,
+        ]),
+        input.accountKey,
+        input.productKey,
+        contactKey,
+        fact.dimension,
+        fact.valueCode,
+        'w12_100_real_source_import',
+        input.createdAt,
+        input.createdAt,
+        'w12-100-04-real-source-crm-apply',
+        input.createdByUserKey,
+        input.createdAt,
+        input.createdAt,
+      ],
+    );
+  }
+}
+
+async function insertCrmImportRowLedger(
+  client: Queryable,
+  input: {
+    accountKey: string;
+    batchKey: string;
+    classification: RowClassification;
+    contactKey: string | null;
+    createdAt: string;
+    productKey: string;
+    result: CrmApplyRowResult;
+    rollbackAction: 'delete_inserted_contact' | 'none';
+  },
+) {
+  const { row } = input.classification;
+  const importRowKey = stableKey('crm_real_source_row', [
+    input.batchKey,
+    row.sourceId,
+    String(row.rowNumber),
+    row.rowFingerprint,
+  ]);
+  await client.query(
+    `INSERT INTO onetime.crm_real_source_import_rows
+     (import_row_key, batch_key, account_key, product_key, source_id, source_row_number,
+      source_sheet_label, row_fingerprint, identity_fingerprint, email_fingerprint,
+      phone_fingerprint, contact_key, result, consent_state, suppression_state,
+      email_campaign_eligible, whatsapp_campaign_eligible, rollback_action, metadata,
+      raw_values_included, created_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19::jsonb,false,$20)
+     ON CONFLICT DO NOTHING`,
+    [
+      importRowKey,
+      input.batchKey,
+      input.accountKey,
+      input.productKey,
+      row.sourceId,
+      row.rowNumber,
+      row.sheetLabel,
+      row.rowFingerprint,
+      row.identityFingerprint,
+      fingerprintNormalizedField('email', row.emailKey),
+      fingerprintNormalizedField('phone', row.phoneKey),
+      input.contactKey,
+      input.result,
+      row.consentState,
+      row.suppressionState,
+      input.classification.emailCampaignEligible,
+      input.classification.whatsappCampaignEligible,
+      input.rollbackAction,
+      JSON.stringify(crmImportRowMetadata(input.classification, input.result, importRowKey)),
+      input.createdAt,
+    ],
+  );
+}
+
+async function insertCrmImportAuditEvent(
+  client: Queryable,
+  input: {
+    accountKey: string;
+    batchKey: string;
+    classification: RowClassification;
+    contactKey: string | null;
+    createdAt: string;
+    productKey: string;
+    result: CrmApplyRowResult;
+  },
+) {
+  const eventKey = stableKey('audit_crm_real_source_import_row', [
+    input.batchKey,
+    input.classification.row.sourceId,
+    String(input.classification.row.rowNumber),
+    input.classification.row.rowFingerprint,
+  ]);
+  await client.query(
+    `INSERT INTO onetime.audit_events
+     (event_key, account_key, product_key, contact_key, event_type, metadata, created_at)
+     VALUES ($1,$2,$3,$4,$5,$6::jsonb,$7)
+     ON CONFLICT DO NOTHING`,
+    [
+      eventKey,
+      input.accountKey,
+      input.productKey,
+      input.contactKey,
+      'crm_real_source_import_row',
+      JSON.stringify(
+        crmImportRowMetadata(
+          input.classification,
+          input.result,
+          stableKey('crm_real_source_row', [
+            input.batchKey,
+            input.classification.row.sourceId,
+            String(input.classification.row.rowNumber),
+            input.classification.row.rowFingerprint,
+          ]),
+        ),
+      ),
+      input.createdAt,
+    ],
+  );
+}
+
+function crmImportRowMetadata(
+  classification: RowClassification,
+  result: CrmApplyRowResult,
+  importRowKey: string,
+) {
+  return {
+    schema_version: 'onetime.w12_100_04.real_source_crm_apply_row.v1',
+    import_row_key: importRowKey,
+    source_id: classification.row.sourceId,
+    crm_storage_status: classification.crmStorageStatus,
+    disposition: classification.disposition,
+    manual_categories: classification.manualCategories,
+    consent_state: classification.row.consentState,
+    suppression_state: classification.row.suppressionState,
+    email_campaign_eligible: classification.emailCampaignEligible,
+    whatsapp_campaign_eligible: classification.whatsappCampaignEligible,
+    matched_existing_contact: Boolean(classification.matchedExisting),
+    result,
+    raw_values_included: false,
+    sends_queued: 0,
+  };
+}
+
+function applyRowResultToCounts(
+  result: W12100CrmImportApplyResult,
+  classification: RowClassification,
+  rowResult: CrmApplyRowResult,
+) {
+  if (classification.crmStorageStatus === 'crm_importable' && classification.row.emailKey) {
+    result.counts.writable_candidates += 1;
+  }
+  if (rowResult === 'inserted_contact') result.counts.inserted_contacts += 1;
+  else if (rowResult === 'skipped_existing_contact') {
+    result.counts.skipped_existing_contacts += 1;
+  } else if (rowResult === 'blocked_contact_schema') {
+    result.counts.blocked_contact_schema += 1;
+  } else if (rowResult === 'blocked_duplicate') {
+    result.counts.blocked_duplicate += 1;
+  } else if (rowResult === 'blocked_identity_conflict') {
+    result.counts.blocked_identity_conflict += 1;
+  } else if (rowResult === 'blocked_quarantined') {
+    result.counts.blocked_quarantined += 1;
+  } else {
+    result.counts.blocked_invalid += 1;
+  }
+}
+
+function crmReminderPreference(classification: RowClassification) {
+  if (classification.emailCampaignEligible && classification.whatsappCampaignEligible)
+    return 'both';
+  if (classification.emailCampaignEligible) return 'email';
+  if (classification.whatsappCampaignEligible) return 'whatsapp';
+  return 'none';
+}
+
+function crmFamilySchoolClassification(row: NormalizedRow): 'family' | 'school' {
+  const schoolSignals = hasSignal(row, ['school', 'teacher', 'educator', 'principal', 'classroom']);
+  const familySignals = hasSignal(row, ['family', 'parent', 'guardian', 'household']);
+  return schoolSignals && !familySignals ? 'school' : 'family';
+}
+
+function contactDisplayName(row: NormalizedRow) {
+  const fallback = row.emailKey
+    ?.split('@')[0]
+    ?.replace(/[^a-z0-9]+/gi, ' ')
+    .trim();
+  const value = row.displayName ?? fallback ?? 'Legacy One Time Contact';
+  return value.slice(0, 160);
+}
+
+function fingerprintNormalizedField(kind: 'email' | 'phone', value: string | null) {
+  return value ? sha256(`w12-100-04-${kind}-v1\0${value}`) : null;
+}
+
+function parseJsonb<T>(value: unknown): T {
+  if (typeof value === 'string') return JSON.parse(value) as T;
+  return value as T;
+}
+
+function advisoryLockValue(value: string) {
+  const digest = createHash('sha256').update(value).digest();
+  return digest.readInt32BE(0);
 }
 
 export function fingerprintIdentityForW12100(input: {
@@ -629,6 +1405,7 @@ function normalizeParsedRecord(record: ParsedRecord): NormalizedRow {
     rowNumber: record.rowNumber,
     sheetLabel: record.sheetLabel,
     headerKeys: record.headerKeys,
+    displayName: displayName.trim() || null,
     displayNameKey: displayName.trim().toLowerCase() || null,
     emailKey,
     phoneKey,
@@ -1127,7 +1904,7 @@ function createBaseReport(input: {
       raw_row_contents_included: false,
       production_side_effects: false,
       database_writes_performed: false,
-      apply_mode_implemented: false,
+      apply_mode_implemented: true,
     },
     privacy_and_safety: {
       row_values_printed: false,
@@ -1496,16 +2273,35 @@ async function loadExistingSnapshot(filePath?: string) {
 
 function parseArgs(argv: string[]) {
   const parsed: {
+    backupProof?: string;
+    confirmProductionApply?: string;
+    createdByUserKey?: string;
+    idempotencyKey?: string;
+    operatorAuthorization?: string;
     sourceDir?: string;
     out?: string;
     existingSnapshot?: string;
+    targetEnvironment?: string;
     applyRequested: boolean;
   } = { applyRequested: false };
   for (const arg of argv) {
-    if (arg.startsWith('--source-dir=')) parsed.sourceDir = arg.slice('--source-dir='.length);
+    if (arg.startsWith('--backup-proof=')) {
+      parsed.backupProof = arg.slice('--backup-proof='.length);
+    } else if (arg.startsWith('--confirm-production-apply=')) {
+      parsed.confirmProductionApply = arg.slice('--confirm-production-apply='.length);
+    } else if (arg.startsWith('--created-by-user-key=')) {
+      parsed.createdByUserKey = arg.slice('--created-by-user-key='.length);
+    } else if (arg.startsWith('--idempotency-key=')) {
+      parsed.idempotencyKey = arg.slice('--idempotency-key='.length);
+    } else if (arg.startsWith('--operator-authorization=')) {
+      parsed.operatorAuthorization = arg.slice('--operator-authorization='.length);
+    } else if (arg.startsWith('--source-dir='))
+      parsed.sourceDir = arg.slice('--source-dir='.length);
     else if (arg.startsWith('--out=')) parsed.out = arg.slice('--out='.length);
     else if (arg.startsWith('--existing-snapshot=')) {
       parsed.existingSnapshot = arg.slice('--existing-snapshot='.length);
+    } else if (arg.startsWith('--target-environment=')) {
+      parsed.targetEnvironment = arg.slice('--target-environment='.length);
     } else if (arg === '--apply' || arg.startsWith('--mode=apply')) {
       parsed.applyRequested = true;
     }
@@ -1517,14 +2313,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   const existingIdentitySnapshot = await loadExistingSnapshot(args.existingSnapshot);
   const report = args.applyRequested
-    ? block(
-        createBaseReport({
-          generatedAt: new Date().toISOString(),
-          approvedSources: W12_100_04_APPROVED_SOURCES,
-          sourceDirProvided: Boolean(args.sourceDir),
-        }),
-        'BLOCKED_APPLY_MODE_NOT_IMPLEMENTED_IN_W12_100_04',
-      )
+    ? await runW12100CrmImportApplyFromCli(args, existingIdentitySnapshot)
     : await runW12100SourcePreflight({
         sourceDir: args.sourceDir,
         existingIdentitySnapshot,
@@ -1536,6 +2325,115 @@ async function main() {
   } else {
     process.stdout.write(output);
   }
+}
+
+async function runW12100CrmImportApplyFromCli(
+  args: ReturnType<typeof parseArgs>,
+  existingIdentitySnapshot: readonly ExistingIdentitySnapshot[],
+) {
+  const generatedAt = new Date().toISOString();
+  const config = loadConfig(process.env);
+  const targetEnvironment = cliTargetEnvironment(args.targetEnvironment);
+  const reasons: string[] = [];
+
+  if (!args.sourceDir) reasons.push('BLOCKED_SANITIZED_SOURCE_PACKET_NOT_PROVIDED');
+  if (!args.backupProof) reasons.push('BLOCKED_BACKUP_PROOF_NOT_PROVIDED');
+  if (!args.idempotencyKey) reasons.push('BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED');
+  if (!args.operatorAuthorization) reasons.push('BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED');
+  if (!args.createdByUserKey) reasons.push('BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED');
+  if (!args.targetEnvironment) reasons.push('BLOCKED_TARGET_ENVIRONMENT_NOT_PROVIDED');
+  if (!targetEnvironment) reasons.push('BLOCKED_TARGET_ENVIRONMENT_INVALID');
+  if (!config.databaseUrl) reasons.push('BLOCKED_DATABASE_URL_NOT_CONFIGURED');
+
+  let backupProof: W12100CrmImportBackupProof | null = null;
+  if (args.backupProof) {
+    try {
+      backupProof = JSON.parse(
+        await readFile(args.backupProof, 'utf8'),
+      ) as W12100CrmImportBackupProof;
+    } catch {
+      reasons.push('BLOCKED_BACKUP_PROOF_UNREADABLE');
+    }
+  }
+
+  if (reasons.length || !targetEnvironment || !backupProof) {
+    return createCliBlockedCrmApplyResult({
+      backupProof,
+      generatedAt,
+      reasons,
+      targetEnvironment: targetEnvironment ?? 'local',
+    });
+  }
+
+  const pool = createPgPool(config);
+  try {
+    return await runW12100CrmImportApply({
+      sourceDir: args.sourceDir,
+      existingIdentitySnapshot,
+      pool,
+      config,
+      backupProof,
+      idempotencyKey: args.idempotencyKey as string,
+      operatorAuthorizationStatement: args.operatorAuthorization as string,
+      targetEnvironment,
+      confirmProductionApply: args.confirmProductionApply,
+      createdByUserKey: args.createdByUserKey as string,
+    });
+  } finally {
+    await pool.end();
+  }
+}
+
+function cliTargetEnvironment(value?: string) {
+  if (value === 'local' || value === 'test' || value === 'staging' || value === 'production') {
+    return value;
+  }
+  return null;
+}
+
+function createCliBlockedCrmApplyResult(input: {
+  backupProof: W12100CrmImportBackupProof | null;
+  generatedAt: string;
+  reasons: string[];
+  targetEnvironment: 'local' | 'test' | 'staging' | 'production';
+}): W12100CrmImportApplyResult {
+  return {
+    schema_version: 'onetime.w12_100_04.real_source_crm_apply.v1',
+    generated_at: input.generatedAt,
+    status: 'blocked',
+    blocked_reasons: Array.from(new Set(input.reasons)).sort(),
+    batch_key: 'crm_real_source_batch_blocked',
+    target_environment: input.targetEnvironment,
+    dry_run_report_sha256: input.backupProof?.dry_run_report_sha256 ?? '',
+    approved_source_group_fingerprint: input.backupProof?.approved_source_group_fingerprint ?? '',
+    counts: {
+      total_rows: input.backupProof?.total_rows ?? 0,
+      unique_identity_count: 0,
+      crm_importable: input.backupProof?.crm_importable ?? 0,
+      writable_candidates: 0,
+      inserted_contacts: 0,
+      skipped_existing_contacts: 0,
+      blocked_contact_schema: 0,
+      blocked_duplicate: 0,
+      blocked_identity_conflict: 0,
+      blocked_quarantined: 0,
+      blocked_invalid: 0,
+      email_campaign_eligible: 0,
+      whatsapp_campaign_eligible: 0,
+      suppressed: 0,
+      sends_queued: 0,
+    },
+    safety: {
+      backup_proof_verified: false,
+      exact_authorization_verified: false,
+      raw_values_included: false,
+      raw_values_printed: false,
+      database_writes_performed: false,
+      production_side_effects: false,
+      external_sends_performed: false,
+      provider_mutation_count: 0,
+    },
+  };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
