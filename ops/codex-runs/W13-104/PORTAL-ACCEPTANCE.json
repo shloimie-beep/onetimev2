@@ -1,15 +1,24 @@
 {
   "schema_version": "onetime.w13_104.portal_acceptance.v1",
-  "status": "baseline_passed_pending_post_deploy_recheck",
+  "status": "w13_103_baseline_passed_post_deploy_routes_smoke_passed",
   "source_handoff": "C:\\Users\\User\\.onetime-w13-103-private\\LOGIN-HANDOFF.private.json",
-  "administrator": "passed_in_w13_103_private_handoff",
-  "parent": "passed_in_w13_103_private_handoff",
-  "student": "passed_in_w13_103_private_handoff",
-  "parent_controls": "passed_in_w13_103_private_handoff",
-  "gamification_once_only": "covered_by_local_unit_and_e2e_before_deploy",
-  "w13_103_committed_evidence": [
+  "baseline": {
+    "administrator": "passed",
+    "parent": "passed",
+    "student": "passed",
+    "parent_controls": "passed"
+  },
+  "w13_104_post_deploy": {
+    "runtime_change_scope": "public font loading and test fixture only",
+    "login_route_status": 200,
+    "activate_route_status": 200,
+    "private_browser_acceptance_rerun": "not_run_to_avoid_consuming_private_setup_reset_links"
+  },
+  "evidence": [
     "ops/codex-runs/W13-103/evidence/role-browser-acceptance.json",
-    "ops/codex-runs/W13-103/evidence/production-role-access-counts.json"
+    "ops/codex-runs/W13-103/evidence/production-role-access-counts.json",
+    "ops/codex-runs/W13-104/evidence/live-smoke.json"
   ],
-  "w13_104_recheck_status": "pending_exact_runtime_deployment"
+  "external_sends": 0,
+  "printed_private_links": false
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.w13_104.validation.v1",
-  "generated_at": "2026-07-19T06:25:59Z",
-  "status": "source_validation_passed_with_known_format_baseline_noise",
+  "generated_at": "2026-07-19T06:57:14Z",
+  "status": "local_and_remote_candidate_validation_passed",
   "commands": [
     {
       "command": "npm run secret:scan",
@@ -28,8 +28,8 @@
     },
     {
       "command": "npm run format",
-      "status": "baseline_failed",
-      "notes": "Local full-repo Prettier check reports 1058 pre-existing files; GitHub Node 24 verify had already progressed past format and failed later on performance before W13-104."
+      "status": "baseline_failed_locally_before_artifact_formatting",
+      "notes": "Local full-repo Prettier check reported pre-existing Windows line-ending/baseline noise; GitHub Node 24 verify later passed format on the pushed candidate."
     },
     {
       "command": "npm run test",
@@ -49,7 +49,17 @@
     {
       "command": "npm run performance",
       "status": "passed_after_single_transient_rerun",
-      "notes": "Final rerun passed 10 Playwright performance tests plus bundle audit. First full run exposed one transient OT-39 CRM detail LCP outlier; targeted OT-39 rerun passed."
+      "notes": "Final rerun passed 10 Playwright performance tests plus bundle audit. The original CLS failure was fixed by font loading changes."
+    },
+    {
+      "command": "gh pr checks 91",
+      "status": "passed",
+      "notes": "PR #91 head 688fc70cf64b72bc52f4ea7511d8593750d7ab45 passed Node 24 verify, OPS-06 deterministic checks, PostgreSQL 16 assurance, PostgreSQL 16 learner-seat proof, and PostgreSQL 18 assurance."
+    },
+    {
+      "command": "Railway staging and production smoke",
+      "status": "passed",
+      "notes": "Staging and production /version, /health, /ready, and login route smoke passed after W13-104 deploy. Production signup/activate/forgot-password routes also returned 200."
     }
   ],
   "performance_evidence": [
@@ -65,6 +75,11 @@
     "ops/codex-runs/W13-104/evidence/screenshots/parent-390x844.png",
     "ops/codex-runs/W13-104/evidence/screenshots/student-390x844.png"
   ],
-  "production_writes": 0,
+  "deployment_evidence": [
+    "ops/codex-runs/W13-104/evidence/production-pg18-backup-restore-summary.json",
+    "ops/codex-runs/W13-104/evidence/deployment-summary.json",
+    "ops/codex-runs/W13-104/evidence/live-smoke.json"
+  ],
+  "production_writes_from_smoke": 0,
   "external_sends": 0
 }

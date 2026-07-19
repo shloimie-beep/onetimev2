@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.w13_104.external_effects.v1",
-  "updated_at": "2026-07-19T06:19:44Z",
+  "updated_at": "2026-07-19T06:57:14Z",
   "production_database_writes": 0,
   "crm_imports_applied": 0,
   "email_sends": 0,
@@ -14,11 +14,18 @@
   "stripe_live_charges": 0,
   "dns_changes": 0,
   "secrets_printed_or_committed": false,
-  "production_runtime_deployments": 0,
-  "staging_runtime_deployments": 0,
-  "railway_backup_proof_deployments": 0,
+  "staging_runtime_deployments": 2,
+  "production_runtime_deployments": 2,
+  "railway_backup_proof_deployments": 1,
+  "railway_runtime_variable_updates": {
+    "staging_services": 2,
+    "production_services": 2,
+    "proof_service_variables_set_then_deleted": 3
+  },
   "notes": [
-    "W13-104 has not run production signup, CRM import apply, provider canaries, or production deployment.",
-    "Production write/deploy lanes remain gated on a fresh W13-104 production backup/restore proof."
+    "W13-104 ran a fresh production PG18 native backup/restore proof and deployed the green runtime to staging and production.",
+    "Production smoke used GET routes only and did not submit a production signup or mutate application data.",
+    "No CRM import apply, provider canary, email send, Stripe session, Buffer publication, DNS change, or external third-party contact occurred.",
+    "Missing optional provider inputs blocked only their provider lanes."
   ]
 }

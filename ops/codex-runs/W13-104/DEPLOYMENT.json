@@ -1,21 +1,62 @@
 {
   "schema_version": "onetime.w13_104.deployment.v1",
-  "status": "blocked_pending_fresh_backup_proof",
-  "runtime_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
-  "evidence_head_sha": "commit_containing_this_report",
+  "status": "production_deployed_smoke_passed_external_lanes_pending",
+  "runtime_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+  "evidence_head_sha": "pending_post_deploy_evidence_commit",
+  "release_tag": "onetime-w13-104-production-20260719T0656Z",
   "staging": {
-    "status": "not_run",
-    "blocker": "Staging deployment was not run before the production safety gate was resolved; local candidate validation passed."
+    "status": "deployed_smoke_passed",
+    "url": "https://ot99-web-staging.up.railway.app",
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "web_deployment_id": "b4d5fe88-b2a3-4f7f-9e90-a8fe62802958",
+    "worker_deployment_id": "d0e2153c-6b08-4935-b8a5-f7742a4cd2d0",
+    "web_image_digest": "sha256:4f8a8e76f62ad24318f87ba496cdbf79a122d8b66905a34969304d96b7bee5d5",
+    "worker_image_digest": "sha256:da62398c2a4163393558935c30656f09936fb433a0db00b2deb52a026f35154a",
+    "smoke": {
+      "version": 200,
+      "health": 200,
+      "ready": 200,
+      "login": 200
+    }
   },
   "production": {
-    "status": "preserved_healthy_runtime",
+    "status": "deployed_smoke_passed",
     "url": "https://join.onetimeonetime.com",
-    "web_deployment_id": "9334b362-f00d-4170-9713-ecee0d22b85c",
-    "worker_deployment_id": "f81e56ba-cf4d-4f92-99e5-f5f6be360494",
-    "version": "w13-102-resend-webhook-007e021",
-    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
-    "w13_104_deploy": "not_run",
-    "blocker": "fresh W13-104 production backup/restore proof is required before production deployment or production signup writes"
+    "web_deployment_id": "74a6b736-dd67-4966-bdf6-b7dd80280d1a",
+    "worker_deployment_id": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "web_image_digest": "sha256:739f56ba921af8ac4d1f829db179c73e1028a91c4d3fa05506a5397f44e3c7cc",
+    "worker_image_digest": "sha256:da68b6adb377856d0612b5e97bceafb03435115250262065cc3305c232712370",
+    "smoke": {
+      "version": 200,
+      "health": 200,
+      "ready": 200,
+      "login": 200,
+      "signup": 200,
+      "activate": 200,
+      "forgot_password": 200
+    },
+    "worker_log_sample": {
+      "claimed": 0,
+      "delivered": 0,
+      "sink_delivered": 0,
+      "dead_lettered": 0
+    }
   },
-  "release_tag": null
+  "backup_restore_proof": {
+    "status": "passed",
+    "deployment_id": "209c4849-fab1-4786-9514-cbddd28155e1",
+    "run_id": "w13-104-prod-pg18-20260719T064642Z",
+    "dump_sha256": "735c0e385f1b472fab0c962371177917fad2ef30fe7a78bdfd303978f9a20bde",
+    "latest_migration": "2203_w13_100_student_gamification",
+    "row_count_hash_match": true,
+    "migration_ledger_hash_match": true
+  },
+  "remaining_release_caveats": [
+    "staging rollback and roll-forward rehearsal was not rerun after the W13-104 staging deploy",
+    "internal operations diagnostics probe token was unavailable to this session",
+    "provider/email/CRM apply lanes remain pending private W13-104 manifests"
+  ]
 }

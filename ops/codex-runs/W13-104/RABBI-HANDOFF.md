@@ -1,18 +1,27 @@
 # W13-104 Rabbi Handoff
 
-Status: not ready to send externally.
+Status: sanitized operational handoff only. Do not send as an activation email
+until the operator supplies the exact approved recipient, copy, sender action,
+and email/provider authorization.
 
-The current live site remains available at `https://join.onetimeonetime.com`,
-but W13-104 has not been deployed. Production is still running the previous
-healthy runtime source `007e0215d1186ca51163dea3b1c15303bf52a860`.
+The live site is now W13-104 at `https://join.onetimeonetime.com`. Public
+health, readiness, login, signup, activation, and forgot-password route smoke
+checks passed after production deployment.
 
-Before sending an external Rabbi handoff:
+What changed in W13-104:
 
-- Complete the fresh W13-104 production backup/restore proof.
-- Deploy the exact green W13-104 candidate.
-- Re-run post-deploy public signup, admin, parent, and student acceptance.
-- Confirm the intended support path and any approved login/send details through
-  private operator handoff only.
+- The public page font load was stabilized so the launch performance/CLS gate
+  passes.
+- The automated production-role test fixture was updated so test sessions do
+  not expire before the run begins.
+- The release was deployed after a fresh production backup/restore proof and
+  green PR validation.
 
-No private links, passwords, contact details, provider credentials, CRM rows, or
-student/family data belong in this sanitized file.
+What did not happen:
+
+- No Rabbi email was sent.
+- No CRM import was applied.
+- No provider canary changed Zoom, Vimeo, Telegram, WhatsApp, OpenAI, Buffer,
+  Stripe, or BNA support state.
+- No private links, passwords, contact details, provider credentials, CRM rows,
+  or student/family data belong in this sanitized file.

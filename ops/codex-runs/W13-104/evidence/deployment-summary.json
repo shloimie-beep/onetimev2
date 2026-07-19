@@ -1,0 +1,85 @@
+{
+  "schema_version": "onetime.w13_104.deployment_summary.v1",
+  "run_id": "W13-104",
+  "updated_at": "2026-07-19T06:57:14Z",
+  "status": "production_deployed_smoke_passed_external_lanes_pending",
+  "runtime_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+  "release_tag": "onetime-w13-104-production-20260719T0656Z",
+  "staging": {
+    "url": "https://ot99-web-staging.up.railway.app",
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "web": {
+      "service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "deployment_id": "b4d5fe88-b2a3-4f7f-9e90-a8fe62802958",
+      "status": "SUCCESS",
+      "image_digest": "sha256:4f8a8e76f62ad24318f87ba496cdbf79a122d8b66905a34969304d96b7bee5d5"
+    },
+    "worker": {
+      "service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+      "deployment_id": "d0e2153c-6b08-4935-b8a5-f7742a4cd2d0",
+      "status": "SUCCESS",
+      "image_digest": "sha256:da62398c2a4163393558935c30656f09936fb433a0db00b2deb52a026f35154a"
+    },
+    "smoke": {
+      "version": 200,
+      "health": 200,
+      "ready": 200,
+      "login": 200
+    }
+  },
+  "production": {
+    "url": "https://join.onetimeonetime.com",
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "web": {
+      "service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+      "deployment_id": "74a6b736-dd67-4966-bdf6-b7dd80280d1a",
+      "status": "SUCCESS",
+      "image_digest": "sha256:739f56ba921af8ac4d1f829db179c73e1028a91c4d3fa05506a5397f44e3c7cc"
+    },
+    "worker": {
+      "service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+      "deployment_id": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+      "status": "SUCCESS",
+      "image_digest": "sha256:da68b6adb377856d0612b5e97bceafb03435115250262065cc3305c232712370"
+    },
+    "smoke": {
+      "version": 200,
+      "health": 200,
+      "ready": 200,
+      "login": 200,
+      "signup": 200,
+      "activate": 200,
+      "forgot_password": 200
+    },
+    "worker_log_sample": {
+      "deployment_id": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+      "event": "delivery_batch_completed",
+      "claimed": 0,
+      "delivered": 0,
+      "sink_delivered": 0,
+      "dead_lettered": 0,
+      "suppressed": 0,
+      "skipped": 0
+    }
+  },
+  "backup_restore_proof": {
+    "status": "passed",
+    "deployment_id": "209c4849-fab1-4786-9514-cbddd28155e1",
+    "run_id": "w13-104-prod-pg18-20260719T064642Z",
+    "latest_migration": "2203_w13_100_student_gamification",
+    "row_count_hash_match": true,
+    "migration_ledger_hash_match": true
+  },
+  "not_rerun_in_w13_104": [
+    "staging rollback and roll-forward rehearsal",
+    "production admin/parent/student browser acceptance with private links",
+    "production synthetic signup submit"
+  ],
+  "notes": [
+    "Staging and production deploys used detached worktrees at the green PR head with service-specific Railway manifest overlays.",
+    "Provider transports, CRM import apply, and external sends remained off because W13-104 private manifests are absent.",
+    "No secrets, PII, raw provider payloads, activation/reset URLs, CRM rows, or credentials are included."
+  ]
+}

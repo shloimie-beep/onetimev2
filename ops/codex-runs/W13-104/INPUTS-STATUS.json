@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.w13_104.inputs_status.v1",
-  "generated_at": "2026-07-19T06:19:44Z",
+  "generated_at": "2026-07-19T06:57:14Z",
   "private_directory": "C:\\Users\\User\\.onetime-w13-104-private",
   "required_private_manifests": {
     "EMAIL-INPUTS.private.json": "missing",
@@ -21,12 +21,16 @@
     "identity-authorization.private.json": "present"
   },
   "production_write_gates": {
-    "fresh_w13_104_native_backup_restore_proof": "missing",
-    "effect": "blocks production signup, CRM import apply, and production deployment until proven"
+    "fresh_w13_104_native_backup_restore_proof": "passed",
+    "proof_run_id": "w13-104-prod-pg18-20260719T064642Z",
+    "proof_deployment_id": "209c4849-fab1-4786-9514-cbddd28155e1",
+    "dump_sha256": "735c0e385f1b472fab0c962371177917fad2ef30fe7a78bdfd303978f9a20bde",
+    "effect": "production deployment was authorized after proof; production write lanes still require their own private authorization manifests"
   },
   "interpretation": [
     "A configured address, provider variable, source hash, or private file is not authorization by itself.",
     "Missing private provider manifests block only their dependent lanes.",
-    "The missing fresh W13-104 production backup proof blocks production writes and deployment, not local/source validation."
+    "The fresh W13-104 production backup/restore proof passed before production runtime deployment.",
+    "Production signup submit, CRM import apply, email send, Stripe TEST, provider canary, Buffer publication, DNS, or protected diagnostics require their lane-specific inputs."
   ]
 }

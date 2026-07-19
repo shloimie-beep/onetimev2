@@ -1,12 +1,20 @@
 {
   "schema_version": "onetime.w13_104.signup_journey.v1",
-  "status": "blocked_pending_fresh_production_backup_and_deployment",
-  "production_family_signup": "not_run",
-  "synthetic_school_inquiry": "not_run",
-  "email_dependent_checks": "blocked_until_email_green",
-  "local_signup_coverage": "npm run e2e and npm run test passed synthetic signup and CRM vertical-slice coverage without production writes.",
-  "external_effects": {
-    "broad_campaigns_sent": 0,
-    "automatic_outreach_to_imported_contacts": 0
-  }
+  "status": "route_smoke_passed_local_submit_covered",
+  "production_route_smoke": {
+    "/signup": 200,
+    "/api/v1/leads": "not_called_in_production_w13_104",
+    "reason": "Avoided creating a new production lead/outbox row because external email/provider authorization manifests are absent and local e2e/integration coverage already passed."
+  },
+  "local_coverage": {
+    "e2e": "passed",
+    "integration": "passed",
+    "performance": "passed"
+  },
+  "fresh_backup_restore_before_possible_writes": {
+    "status": "passed",
+    "deployment_id": "209c4849-fab1-4786-9514-cbddd28155e1"
+  },
+  "production_database_writes": 0,
+  "external_sends": 0
 }
