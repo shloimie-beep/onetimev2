@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T14:12:49.678Z",
+  "generated_at": "2026-07-19T14:24:16.296Z",
   "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -84,7 +84,8 @@
     "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.md",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
-    "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json"
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json"
   ],
   "blockers": [
     {
@@ -95,7 +96,7 @@
     {
       "id": "BLOCK-CRM-IMPORT-AUTH",
       "lane": "crm_real_data",
-      "reason": "Operator approval was recorded, corrected dry-run counts are available, and the guarded apply writer is implemented locally. Production apply remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK are all present; 848 manual-review rows remain excluded pending terminal decisions."
+      "reason": "CRM apply readiness preflight records source packet and corrected dry-run proof present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
     },
     {
       "id": "BLOCK-CANARY-AUTH",

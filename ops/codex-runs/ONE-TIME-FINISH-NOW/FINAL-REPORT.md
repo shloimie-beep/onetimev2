@@ -94,6 +94,11 @@ preflight completed with status `done`, and the guarded apply writer is
 implemented locally with synthetic integration evidence. No production CRM apply
 was performed.
 
+The CRM production apply readiness preflight is now recorded at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`. It
+confirms the source packet and corrected dry-run proof are present, then blocks
+before any DB connection, write, send, or provider mutation.
+
 CRM preflight summary:
 
 - Report JSON:
@@ -120,11 +125,10 @@ manual-review rows are all present.
   email inputs manifest, production variable configuration, and canary send
   proof.
 - CRM apply: operator approval, corrected dry-run preflight, and guarded local
-  apply code are recorded, but production apply remains blocked until fresh
-  backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL,
-  idempotency key, created-by user key,
-  `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and exclusion/terminal handling for
-  848 manual-review rows are present.
+  apply code are recorded, but production apply readiness remains blocked by
+  missing backup proof, created-by user key, `DATABASE_URL`, idempotency key,
+  manual-review handling, exact operator authorization, private-manifest
+  production-apply authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
 - Provider canaries: missing protected canary authorization manifest.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
 - Launch spine: current read-only production route proof passed, but consuming
@@ -194,6 +198,9 @@ digests remained unchanged.
   `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`.
 - Guarded real-source CRM apply writer passed synthetic integration evidence;
   production apply performed zero writes.
+- CRM apply readiness preflight generated a sanitized blocked report with source
+  packet and corrected dry-run proof present, no production DB connection, no DB
+  writes, no external sends, and no provider mutation.
 - Email-inputs preflight passed focused unit coverage and generated a sanitized
   report: protected Resend/sender/reply-to inputs present, canary destination
   missing, no raw values included.
@@ -229,6 +236,7 @@ digests remained unchanged.
 - `ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json`
 - `ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md`
 - `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json`
+- `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
 - `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/*`

@@ -59,9 +59,33 @@ Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 
 Email blocker: `BLOCKED_CANARY_DESTINATION_FILE_NOT_PROVIDED`
 
+## CRM Apply Readiness
+
+Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
+
+Ready checks accepted:
+
+- Source packet exists.
+- Corrected dry-run report exists, is `done`, and SHA-256 matches
+  `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`.
+- Private CRM authorization manifest exists and is readable JSON.
+- Report includes no raw values, printed secrets, DB connection, DB read/write,
+  external send, or provider mutation.
+
+Production apply blockers:
+
+- `BLOCKED_BACKUP_PROOF_NOT_PROVIDED`
+- `BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED`
+- `BLOCKED_DATABASE_URL_NOT_CONFIGURED`
+- `BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED`
+- `BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED`
+- `BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED`
+- `BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED`
+- `BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED`
+
 ## Blockers
 
-- Real CRM production apply: guarded writer is accepted locally, but production remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are present.
+- Real CRM production apply: guarded writer is accepted locally, and readiness preflight confirms source packet plus corrected dry-run proof are present. Production remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, manual-review handling, private manifest production-apply authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are present.
 - Production transactional email: protected Resend/sender/reply-to inputs are present and policy-matching; provide protected operator canary destination file, generate the private email inputs manifest, configure production variables, and run controlled operator-inbox send.
 - Rabbi/Admin access send: wait for production transactional email proof, then send final administrator access message.
 - WhatsApp production lead capture: configure Meta WhatsApp production webhook secrets and verify token, then run approved canary.
@@ -92,6 +116,9 @@ Email blocker: `BLOCKED_CANARY_DESTINATION_FILE_NOT_PROVIDED`
 - `npx prettier --check scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 - `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts`
 - `node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
+- `npx prettier --write scripts/w12-100/data/crm-apply-readiness-preflight.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts`
+- `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts`
+- `node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
 
 Known non-blocking check: `npm run format` fails on 1205 unrelated pre-existing files; targeted changed-file Prettier check passed.
 

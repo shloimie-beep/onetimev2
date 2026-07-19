@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:12:49.678Z",
+  "generated_at": "2026-07-19T14:24:16.296Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -61,7 +61,8 @@
         "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
         "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
-        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json"
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json"
       ],
       "notes": "CRM surfaces and domain services are deployed; operator approval, corrected counts-only dry-run, and guarded local apply writer are recorded. Production import apply remains blocked by protected production apply gates."
     },
@@ -76,9 +77,10 @@
         "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md",
         "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
-        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json"
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
+        "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json"
       ],
-      "blocker": "Corrected counts-only dry-run passed and guarded apply writer is implemented locally; production apply remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK are all present. The 848 manual-review rows remain excluded pending terminal decisions."
+      "blocker": "CRM apply readiness preflight records source packet and corrected dry-run proof present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
     },
     {
       "id": "communications",

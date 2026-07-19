@@ -92,6 +92,12 @@ email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, and
 accepted with synthetic integration evidence. No production CRM apply was
 performed.
 
+CRM production apply readiness evidence lives at
+`ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`. It
+confirms source packet and corrected dry-run proof are present, then blocks
+before any DB connection, write, send, or provider mutation because protected
+production-apply inputs are still missing.
+
 Transactional email preflight evidence lives at
 `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`. Protected Resend
 key, webhook secret, domain, sender, and reply-to inputs are present and

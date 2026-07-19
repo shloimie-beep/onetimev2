@@ -57,6 +57,10 @@ launch-spine proof.
   WhatsApp-campaign-eligible contacts, and 848 manual-review rows.
 - Guarded real-source CRM apply writer is implemented locally and accepted with
   synthetic integration evidence; production apply performed zero writes.
+- CRM production apply readiness preflight is recorded in
+  `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`. It
+  confirms the source packet and corrected dry-run proof are present, and blocks
+  before any DB connection, write, send, or provider mutation.
 - Sanitized email-inputs preflight verifies protected Resend/domain/sender/
   reply-to inputs are present and policy-matching. It is blocked only by missing
   protected operator canary destination file; no private manifest was written
@@ -81,10 +85,10 @@ launch-spine proof.
   destination file and `EMAIL-INPUTS.private.json` are missing; production
   variables and controlled canary send proof are not configured.
 - Real CRM import apply: corrected dry-run and guarded local apply code are
-  recorded, but production apply remains blocked until fresh backup proof JSON,
-  exact dry-run SHA/count authorization, DATABASE_URL, idempotency key,
-  created-by user key, `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and
-  exclusion/terminal handling for 848 manual-review rows are present.
+  recorded, but production apply readiness remains blocked by missing backup
+  proof, created-by user key, `DATABASE_URL`, idempotency key, manual-review
+  handling, exact operator authorization, private-manifest production-apply
+  authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
 - Provider canaries: missing
   `C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json`.
 - Protected diagnostics: missing `OPERATIONS_PROBE_TOKEN`.

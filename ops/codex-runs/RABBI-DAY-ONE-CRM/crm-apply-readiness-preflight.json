@@ -1,0 +1,122 @@
+{
+  "schema_version": "onetime.rabbi_day_one_crm_apply_readiness_preflight.v1",
+  "generated_at": "2026-07-19T14:24:03.006Z",
+  "status": "blocked",
+  "blocked_reasons": [
+    "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
+    "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
+    "BLOCKED_DATABASE_URL_NOT_CONFIGURED",
+    "BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED",
+    "BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED",
+    "BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED",
+    "BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED",
+    "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
+  ],
+  "target_environment": "production",
+  "approved_scope": {
+    "dry_run_report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
+    "dry_run_report_sha256": "93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
+    "expected_dry_run_report_sha256": "93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
+    "approved_source_group_fingerprint": "0bee9ddd75358d7eb987c2581c79ff1e555a848d7830e002c80d3d34cf3e1e32",
+    "total_rows": 2505,
+    "crm_importable": 1559,
+    "manual_review_rows": 848,
+    "required_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
+    "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK"
+  },
+  "protected_sources": {
+    "source_packet_path": "C:/Users/User/.onetime-w13-104-private/crm-approved-source-packet",
+    "private_authorization_path": "C:/Users/User/.onetime-w13-104-private/CRM-IMPORT-AUTHORIZATION.private.json",
+    "backup_proof_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-BACKUP-PROOF.private.json",
+    "operator_authorization_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-OPERATOR-AUTHORIZATION.private.txt",
+    "idempotency_key_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-IDEMPOTENCY.private.txt",
+    "created_by_user_key_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-CREATED-BY-USER.private.txt",
+    "production_confirmation_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-PRODUCTION-CONFIRMATION.private.txt",
+    "manual_review_handling_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-MANUAL-REVIEW-HANDLING.private.json",
+    "raw_values_included": false,
+    "secrets_printed": false,
+    "production_database_connected": false,
+    "production_database_read": false,
+    "database_writes_performed": false,
+    "external_sends_performed": false,
+    "provider_mutation_count": 0
+  },
+  "inputs": {
+    "sourcePacket": {
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "381af89d427ed35baadb10b2c3db436f7cb6622fd112748cd0f655da9cec82f9"
+    },
+    "privateAuthorization": {
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "fd9a15dfd25ee5fb8f78970e1ed857c4e632d8b447c8341a7da9c28f3dc386d5"
+    },
+    "backupProof": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "operatorAuthorization": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "idempotencyKey": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "createdByUserKey": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "productionConfirmation": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "manualReviewHandling": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "databaseUrl": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    }
+  },
+  "checks": {
+    "source_packet_available": true,
+    "dry_run_report_available": true,
+    "dry_run_report_status_done": true,
+    "dry_run_report_sha_matches_expected": true,
+    "private_authorization_manifest_present": true,
+    "private_authorization_manifest_readable_json": true,
+    "private_authorization_manifest_production_apply_authorized": false,
+    "backup_proof_present": false,
+    "backup_proof_readable_json": false,
+    "backup_proof_target_environment_matches": false,
+    "backup_proof_dry_run_sha_matches": false,
+    "backup_proof_source_group_matches": false,
+    "backup_proof_total_rows_matches": false,
+    "backup_proof_crm_importable_matches": false,
+    "backup_proof_raw_values_excluded": false,
+    "operator_authorization_present": false,
+    "operator_authorization_matches_required": false,
+    "idempotency_key_present": false,
+    "created_by_user_key_present": false,
+    "production_confirmation_present": false,
+    "production_confirmation_matches_required": false,
+    "manual_review_handling_present": false,
+    "manual_review_handling_readable_json": false,
+    "manual_review_rows_match": false,
+    "manual_review_rows_excluded_or_terminal": false,
+    "manual_review_raw_values_excluded": false,
+    "database_url_configured": false,
+    "no_raw_values_in_report": true,
+    "no_production_side_effects": true
+  }
+}

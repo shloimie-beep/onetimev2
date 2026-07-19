@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T14:12:49.678Z",
+  "generated_at": "2026-07-19T14:24:16.296Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -39,7 +39,7 @@
       "id": "real_data",
       "status": "BLOCKED",
       "runtime_mode": "PREVIEW_READY",
-      "reason": "Corrected CRM-first dry-run and guarded local apply writer are recorded; runtime mode remains PREVIEW_READY because production apply is still blocked by protected backup, exact authorization, DATABASE_URL, idempotency, created-by user, production confirmation, and manual-review exclusion gates."
+      "reason": "CRM apply readiness preflight records source packet and corrected dry-run proof present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
     },
     {
       "id": "communications",

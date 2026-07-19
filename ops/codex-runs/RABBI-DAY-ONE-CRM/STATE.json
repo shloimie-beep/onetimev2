@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T14:08:28.240Z",
+  "generated_at": "2026-07-19T14:24:16.296Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -30,7 +30,39 @@
     "required_exact_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
     "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
     "production_apply_status": "blocked",
-    "production_apply_blocker": "Run against production only after fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and production confirmation are all present."
+    "production_apply_blocker": "CRM apply readiness preflight is blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED.",
+    "apply_readiness_preflight": {
+      "status": "blocked",
+      "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+      "schema_version": "onetime.rabbi_day_one_crm_apply_readiness_preflight.v1",
+      "source_packet_available": true,
+      "dry_run_report_available": true,
+      "dry_run_report_sha_matches_expected": true,
+      "private_authorization_manifest_present": true,
+      "private_authorization_manifest_readable_json": true,
+      "private_authorization_manifest_production_apply_authorized": false,
+      "backup_proof_present": false,
+      "operator_authorization_present": false,
+      "idempotency_key_present": false,
+      "created_by_user_key_present": false,
+      "production_confirmation_present": false,
+      "manual_review_handling_present": false,
+      "database_url_configured": false,
+      "no_raw_values_in_report": true,
+      "no_production_side_effects": true,
+      "blocked_reasons": [
+        "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
+        "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
+        "BLOCKED_DATABASE_URL_NOT_CONFIGURED",
+        "BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED",
+        "BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED",
+        "BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED",
+        "BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED",
+        "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
+      ],
+      "required_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
+      "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK"
+    }
   },
   "crm_apply_writer": {
     "status": "accepted",
@@ -144,7 +176,11 @@
     "npx prettier --write scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts",
     "npx prettier --check scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
     "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts",
-    "node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json"
+    "node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+    "npx prettier --write scripts/w12-100/data/crm-apply-readiness-preflight.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts",
+    "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts",
+    "node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+    "npm run director:truth:live"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",

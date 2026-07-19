@@ -3,14 +3,17 @@ packages/db/migrations/2204_w12_100_real_source_crm_apply.sql
 packages/config/src/index.ts
 packages/domain/src/accounts/lifecycle-delivery.ts
 scripts/w12-100/data/real-source-preflight.ts
+scripts/w12-100/data/crm-apply-readiness-preflight.ts
 scripts/w12-100/email/email-inputs-preflight.ts
 tests/integration/accounts/account-lifecycle.test.ts
 tests/integration/w12-100-data/real-source-crm-apply.test.ts
 tests/integration/w12-100-data/real-source-preflight-cli.test.ts
+tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts
 tests/unit/w12-100-data/email-inputs-preflight.test.ts
 tests/unit/w12-100-data/real-source-preflight.test.ts
 ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json
 ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md
 ops/codex-runs/RABBI-DAY-ONE-CRM/CHANGED-FILES.txt
 ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json
 ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json

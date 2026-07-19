@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:12:49.678Z",
+  "generated_at": "2026-07-19T14:24:16.296Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -80,6 +80,14 @@
     {
       "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
       "used_for": "Sanitized protected email inputs preflight; fingerprints only, no raw values."
+    },
+    {
+      "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+      "used_for": "Sanitized CRM production apply readiness preflight; exact blocker list without DB connection or raw values."
+    },
+    {
+      "path": "scripts/w12-100/data/crm-apply-readiness-preflight.ts",
+      "used_for": "Safe CRM apply readiness preflight implementation."
     }
   ],
   "live_readback": {
@@ -165,7 +173,8 @@
       "A protected private checkpoint manifest exists with dry_run_authorized=true and production_apply_authorized=false; manifest content is not committed or printed.",
       "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json records the corrected CRM-first dry-run, guarded apply writer, and email preflight state.",
       "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json passed corrected counts-only dry-run with SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8: 2,505 rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, and 848 manual-review rows.",
-      "Guarded real-source CRM apply writer is implemented locally and accepted with synthetic integration evidence; production apply performed zero writes and remains gated."
+      "Guarded real-source CRM apply writer is implemented locally and accepted with synthetic integration evidence; production apply performed zero writes and remains gated.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json records production CRM apply readiness as blocked with source packet and dry-run proof present, no production DB connection, no writes, no external sends, and exact missing protected inputs."
     ],
     "runtime_deployment_proof_code": [
       "PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93 adds non-secret Railway deployment proof fields to /version.",
@@ -197,7 +206,7 @@
     {
       "id": "BLOCK-CRM-IMPORT-AUTH",
       "lane": "crm_real_data",
-      "reason": "Operator approval was recorded, corrected dry-run counts are available, and the guarded apply writer is implemented locally. Production apply remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, and RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK are all present; 848 manual-review rows remain excluded pending terminal decisions.",
+      "reason": "CRM apply readiness preflight records source packet and corrected dry-run proof present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED.",
       "scope": "Blocks real CRM production import apply only; corrected counts-only preview and guarded local apply evidence are available."
     },
     {
@@ -243,17 +252,17 @@
   "validation": {
     "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, and launch-spine route-readback JSON files after launch-spine read-only evidence refresh",
     "director_truth": "passed after current CRM/email truth refresh",
-    "director_truth_live": "passed against production and staging /version after current CRM/email truth refresh",
+    "director_truth_live": "passed against production and staging /version after CRM apply readiness preflight",
     "staging_rollback_rehearsal": "accepted for PR #92 staging candidate; rollback to W13-104 and roll-forward to PR #92 both passed",
     "runtime_deployment_proof": "accepted in staging at PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93; final /version.deployment matched Railway web deployment c464ea23-649b-4c8d-b4af-0d10c5ce3022",
-    "secret_scan": "passed across 1711 repo text files after email inputs preflight",
+    "secret_scan": "passed across 1714 repo text files after CRM apply readiness preflight",
     "node_check": "passed for scripts/check-director-truth.mjs",
     "eslint": "targeted eslint passed for touched runtime proof files",
     "unit": "real-source-preflight unit test passed in CRM evidence refresh; npm run unit passed earlier in PR #92 proof work",
     "integration": "real-source-preflight CLI integration test passed in CRM evidence refresh; runtime-version-proof integration passed earlier in PR #92 proof work",
     "build": "npm run build passed",
     "github_pr_92": "GitHub checks failed before workflow steps/logs at CRM/email evidence head 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c; local focused gates passed. Read the PR or git rev-parse HEAD for the current branch head after later docs-only truth refresh commits.",
-    "diff_check": "passed after email inputs preflight with Windows line-ending warnings only",
+    "diff_check": "passed after CRM apply readiness preflight with Windows line-ending warnings only",
     "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
     "prettier_check": "passed for touched CRM/email truth-refresh director/run Markdown and JSON files",
@@ -261,8 +270,9 @@
     "ops06_production_synthetic_probes": "expected blocked status: public/login/readiness/private-denial probes passed and protected diagnostics blocked by missing OPERATIONS_PROBE_TOKEN, synthetic-probes SHA-256 25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
     "launch_spine_privacy_scan": "passed for synthetic-probes.json and route-readback.json with route-name-aware private-data patterns",
     "email_inputs_preflight": "passed focused unit test and generated sanitized report: protected Resend/sender/reply-to inputs present, canary destination missing, no raw values included",
-    "typecheck": "npm run typecheck passed after email inputs preflight",
-    "lint": "npm run lint passed after email inputs preflight"
+    "typecheck": "npm run typecheck passed after CRM apply readiness preflight",
+    "lint": "npm run lint passed after CRM apply readiness preflight",
+    "crm_apply_readiness_preflight": "blocked safely with no production side effects; blockers: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
   },
   "resume": {
     "primary_resume_file": "ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md",
@@ -270,8 +280,9 @@
       "Protected operator canary destination file, then C:/Users/User/.onetime-w13-104-private/EMAIL-INPUTS.private.json generated from sanitized email preflight without committing or printing contents",
       "C:/Users/User/.onetime-w13-104-private/CRM-IMPORT-AUTHORIZATION.private.json with exact dry-run SHA/count production apply acceptance after fresh backup proof, idempotency key, created-by user key, DATABASE_URL, and RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
       "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
-      "OPERATIONS_PROBE_TOKEN in protected production/staging runtime config"
+      "OPERATIONS_PROBE_TOKEN in protected production/staging runtime config",
+      "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-MANUAL-REVIEW-HANDLING.private.json with 848 rows excluded or terminal and raw_values_included=false"
     ],
-    "next_executable_lane_without_private_inputs": "Handoff truth is refreshed through the CRM-first pivot. Remaining executable work without private inputs is limited to documentation/validation refreshes; consuming role-link proof, production signup submit, email canary, provider canaries, diagnostics, and CRM apply still require exact protected authorization or runtime inputs."
+    "next_executable_lane_without_private_inputs": "CRM apply readiness preflight is now recorded. Remaining executable work without private inputs is limited to documentation/validation refreshes and additional safe preflight tooling; consuming role-link proof, production signup submit, email canary, provider canaries, diagnostics, and CRM apply still require exact protected authorization or runtime inputs."
   }
 }
