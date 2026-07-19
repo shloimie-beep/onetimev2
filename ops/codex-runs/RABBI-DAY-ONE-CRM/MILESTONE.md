@@ -1,138 +1,51 @@
 # RABBI-DAY-ONE-CRM
 
-Status: CRM-first slice implemented locally with corrected real-source dry run, guarded CRM apply writer, and transactional lifecycle email mode.
+Status: CRM-first slice is deployed to staging and production at `ed77a04`; staging transactional lifecycle email is provider-delivered. Production transactional email is configured and smoked, but the production controlled send/admin access is blocked by missing bootstrap identity.
 
 Branch: `codex/one-time-finish-now-20260719`  
 PR: `https://github.com/webcraft-media/onetimev2/pull/92`  
-Base head at pivot: `92fd518ca66680543b80592b724d4fc492e544b6`
+Current head: `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`
 
 ## Delivered
 
-- Corrected W12-100 CRM dry-run model so valid owned contacts can be stored in private CRM even when email/WhatsApp marketing consent is unknown.
-- Split CRM storage counts from channel-send eligibility counts.
-- Narrowed communications-export quarantine to actual message-body/call-log exports, not ordinary audience metadata.
-- Added explicit lifecycle email mode: `disabled`, `canary`, `transactional`.
-- Transactional lifecycle email now fails closed unless production runtime, authorization id, Resend key, approved sender, reply-to, webhook secret, lifecycle encryption key, and positive budgets are configured.
-- Added guarded W12-100 real-source CRM apply writer and migration. It inserts CRM contacts/facts plus hashed import ledger/audit rows only after exact source hash validation, backup proof, idempotency key, created-by user key, exact authorization, and production confirmation when targeting production.
-- Updated the `--apply` CLI path from not implemented to protected apply/block mode. Missing guarded inputs now return a count-safe blocked apply report with no DB writes.
-- Added sanitized Resend/email inputs preflight. It verifies protected keyholder files, approved domain, sender, reply-to, and private manifest readiness without printing raw values or writing secrets to the repo.
-- Recorded same-window CRM production-apply authorization in protected local inputs. The readiness gate now accepts operator authorization, private manifest production approval, idempotency, and manual-review exclusion/handling.
-- Generated the protected transactional email private manifest using the protected operator-owned inbox file. No email was sent.
-- Fixed the delivery cron launch gate so fixed lifecycle transactional Resend mail can run in production sink-worker mode while generic provider/campaign sends remain disabled.
-- Fixed the admin email challenge delivery gate so production transactional admin login email can use the same guarded Resend path without requiring the canary-only recipient variable.
-- Verified signup-to-CRM and WhatsApp lead-capture tests for the first slice.
+- Corrected W12-100 CRM dry-run/import logic and added guarded production apply writer.
+- Recorded CRM import approval inputs; refreshed readiness now removes the database URL blocker.
+- Added/verified transactional lifecycle and admin email challenge delivery gates with generic campaign/provider modes still sink/off.
+- Set protected One Time Resend variables on staging web/worker and production web/worker.
+- Deployed staging web `0bf927dd-bab7-407b-afd2-35983d8c7351` and worker `385e3b5b-41f4-417d-996b-09e3b1a1f8e3`; staging `/version`, `/health`, and `/ready` passed.
+- Sent one controlled staging account-lifecycle transactional email to the protected operator inbox. Outbox state became `provider_delivered`, attempts=1, raw token omitted, and Resend API readback reported `delivered`.
+- Deployed production clean web `a3a9328c-3fb5-41c6-b8d4-cf402f400ca7` and worker `37ce9edf-d7aa-40fc-a013-87dde0f29e72`; production `/version`, `/health`, and `/ready` passed at `rabbi-day-one-crm-ed77a04`.
 
-## Corrected CRM Counts
+## Current Blockers
 
-Source packet: `C:/Users/User/.onetime-w13-104-private/crm-approved-source-packet`  
-Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json`  
-SHA-256: `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`
+- Real CRM production apply: blocked by `BLOCKED_BACKUP_PROOF_NOT_PROVIDED`, `BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED`, and `BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED`.
+- Production controlled transactional email/Admin access: blocked because production has zero active owner/admin users; issuing a product-native admin invitation requires fresh bootstrap/role-access authorization.
+- WhatsApp production lead capture: provider remains off until Meta WhatsApp production webhook secrets and verify token are configured and canaried.
+- Campaign seed: waiting on CRM production apply and production admin access/test-send proof. No broad campaign was sent.
 
-| Field                      | Count |
-| -------------------------- | ----: |
-| total_rows                 |  2505 |
-| unique_identity_count      |  1596 |
-| crm_importable             |  1559 |
-| email_campaign_eligible    |  1357 |
-| whatsapp_campaign_eligible |     0 |
-| suppressed                 |   152 |
-| invalid                    |   811 |
-| duplicate                  |    98 |
-| identity_conflict          |    37 |
-| quarantined                |     0 |
-| manual_review_rows         |   848 |
+## Evidence
 
-## Email Inputs Preflight
+- Transactional email release proof: `ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json`
+- CRM corrected dry run: `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json`
+- CRM apply readiness: `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
+- Email inputs preflight: `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 
-Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
+## Tests And Smokes
 
-| Field                         | Status |
-| ----------------------------- | ------ |
-| keyholder_dir_available       | true   |
-| resend_api_key_present        | true   |
-| resend_webhook_secret_present | true   |
-| approved_domain_matches       | true   |
-| approved_sender_matches       | true   |
-| approved_reply_to_matches     | true   |
-| authorization_id_present      | true   |
-| canary_destination_present    | true   |
-| private_manifest_written      | true   |
-| raw_values_included           | false  |
-| secrets_printed               | false  |
-| railway_variables_ready       | true   |
-
-Protected manifest: `C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json`
-
-Email next action: deploy the worker/web candidate with exact staging/production Railway variables from the protected manifest, then run one controlled operator-inbox transactional test.
-
-## CRM Apply Readiness
-
-Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
-
-Ready checks accepted:
-
-- Source packet exists.
-- Corrected dry-run report exists, is `done`, and SHA-256 matches
-  `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`.
-- Private CRM authorization manifest exists and is readable JSON.
-- Private manifest production apply authorization, exact operator authorization, idempotency key, and manual-review exclusion/handling are present.
-- Report includes no raw values, printed secrets, DB connection, DB read/write,
-  external send, or provider mutation.
-
-Production apply blockers:
-
-- `BLOCKED_BACKUP_PROOF_NOT_PROVIDED`
-- `BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED`
-- `BLOCKED_DATABASE_URL_NOT_CONFIGURED`
-- `BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED`
-
-## Blockers
-
-- Real CRM production apply: guarded writer is accepted locally, and readiness preflight confirms source packet, corrected dry-run proof, operator authorization, idempotency, and manual-review handling are present. Production remains blocked until fresh backup proof JSON, `DATABASE_URL`, created-by user key, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are present.
-- Production transactional email: protected Resend/sender/reply-to/operator-inbox inputs are present and policy-matching, and a protected private manifest was generated. The worker launch gate and admin email challenge gate now permit lifecycle transactional email without opening generic provider/campaign sends or requiring a canary recipient. Deploy the exact candidate with staging/production Railway variables from the protected manifest and run one controlled operator-inbox send.
-- Rabbi/Admin access send: wait for production transactional email proof, then send final administrator access message.
-- WhatsApp production lead capture: configure Meta WhatsApp production webhook secrets and verify token, then run approved canary.
-- Campaign seed: wait for CRM production apply and transactional email proof; no broad campaign sent.
-
-## Tests
-
-- `npm test`
-- `npm run typecheck`
-- `npm run lint`
+- `npm ci`
+- `npm run director:truth:live`
 - `npm run secret:scan`
-- `git diff --check`
-- Targeted Prettier check for changed parseable files passed.
-- `npm run unit -- tests/unit/w12-100-data/real-source-preflight.test.ts`
-- `npm run integration -- tests/integration/accounts/account-lifecycle.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts`
-- `npm run integration -- tests/integration/lead-capture.test.ts tests/integration/whatsapp/ot85-assistant.test.ts tests/integration/whatsapp/ot85-webhook-route.test.ts`
-- `npm run unit -- tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/w13-10/delivery-activation-policy.test.ts`
-- `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/real-source-preflight.test.ts`
-- `npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts`
+- `npm run brand:check`
+- `npm run lint`
+- `npm run typecheck`
 - `npm run unit`
 - `npm run integration`
-- `npm run typecheck`
-- `npm run lint`
-- `npm run secret:scan`
-- `git diff --check`
-- `npx prettier --check scripts/w12-100/data/real-source-preflight.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts`
-- `npx prettier --write scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts`
-- `npx prettier --check scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
-- `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts`
-- `node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
-- `node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --canary-email-file=C:/Users/User/BNA-Keyholder/zoom-account-owner.txt --create-private-manifest --private-manifest-out=C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
-- `npx prettier --write scripts/w12-100/data/crm-apply-readiness-preflight.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts`
-- `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts`
-- `node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
-- `node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
-- `npx vitest run --config vitest.unit.config.ts tests/unit/delivery/config.test.ts`
-- `npx prettier --write packages/domain/src/auth/service.ts tests/integration/accounts/account-lifecycle.test.ts`
-- `npx vitest run --config vitest.integration.config.ts tests/integration/accounts/account-lifecycle.test.ts`
-- `npx vitest run --config vitest.unit.config.ts tests/unit/delivery/config.test.ts`
-- `npm run typecheck`
-- `npm run lint`
-- `npm run secret:scan`
-- `git diff --check`
+- `npm run build`
+- `npm run e2e`
+- `npm run accessibility`
+- `npm run performance`
+- Staging and production `/version`, `/health`, `/ready` smokes
 
-Known non-blocking check: `npm run format` fails on 1205 unrelated pre-existing files; targeted changed-file Prettier check passed.
+Known non-blocking check: `npm run format` still fails on unrelated pre-existing repo-wide formatting debt.
 
-External effects: none.
+External effects this slice: staging DB write for one lifecycle invitation/test, one staging email send, 64 Railway variable writes, 5 Railway deployments created including one superseded production web hygiene deploy. Production DB writes: 0. Production email sends: 0. Broad campaign sends: 0.

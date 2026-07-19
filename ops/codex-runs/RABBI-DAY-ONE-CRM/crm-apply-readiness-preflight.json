@@ -1,11 +1,10 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm_apply_readiness_preflight.v1",
-  "generated_at": "2026-07-19T14:52:25.630Z",
+  "generated_at": "2026-07-19T15:42:14.327Z",
   "status": "blocked",
   "blocked_reasons": [
     "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
     "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
-    "BLOCKED_DATABASE_URL_NOT_CONFIGURED",
     "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
   ],
   "target_environment": "production",
@@ -79,9 +78,9 @@
       "fingerprint": "3e4ab00d8ca3f5f9836162f157ca79ae9980a187646a32bb1bcbd9f844991b74"
     },
     "databaseUrl": {
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "2b775d3796dbbac24740fc67c25e56c353b3648852203f7aed68b6be828fee9a"
     }
   },
   "checks": {
@@ -111,7 +110,7 @@
     "manual_review_rows_match": true,
     "manual_review_rows_excluded_or_terminal": true,
     "manual_review_raw_values_excluded": true,
-    "database_url_configured": false,
+    "database_url_configured": true,
     "no_raw_values_in_report": true,
     "no_production_side_effects": true
   }

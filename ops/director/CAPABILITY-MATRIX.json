@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T14:47:51.237Z",
+  "generated_at": "2026-07-19T15:47:39.209Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -13,8 +13,8 @@
     "BLOCKED",
     "EXCLUDED"
   ],
-  "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
-  "production_version": "w13-104-public-cls-688fc70",
+  "production_runtime_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+  "production_version": "rabbi-day-one-crm-ed77a04",
   "canonical_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
   "capabilities": [
     {
@@ -39,7 +39,7 @@
       "id": "real_data",
       "status": "BLOCKED",
       "runtime_mode": "PREVIEW_READY",
-      "reason": "CRM apply readiness preflight records source packet and corrected dry-run proof present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
+      "reason": "CRM apply readiness preflight records source packet, corrected dry-run proof, private authorization, operator authorization, idempotency, manual-review handling, and production DB configuration present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
     },
     {
       "id": "communications",
@@ -79,7 +79,7 @@
     {
       "id": "email",
       "status": "BLOCKED",
-      "reason": "Protected Resend/domain/sender/reply-to inputs are present and policy-matching; blocked by missing operator canary destination file, private EMAIL-INPUTS manifest, production variable configuration, and canary send proof."
+      "reason": "Protected One Time Resend inputs are present, Railway variables are configured on staging and production, staging controlled transactional email was delivered to the protected operator inbox, and production is deployed/smoked. Production controlled send and final admin access are blocked because production has no active owner/admin actor; a fresh bootstrap or role-access authorization is required before creating or refreshing administrator access."
     },
     {
       "id": "whatsapp",

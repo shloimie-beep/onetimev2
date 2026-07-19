@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T15:09:36.702Z",
+  "generated_at": "2026-07-19T15:43:28.344Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -30,7 +30,7 @@
     "required_exact_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
     "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
     "production_apply_status": "blocked",
-    "production_apply_blocker": "CRM apply readiness preflight is blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED.",
+    "production_apply_blocker": "CRM apply readiness preflight is blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED.",
     "apply_readiness_preflight": {
       "status": "blocked",
       "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
@@ -47,13 +47,12 @@
       "created_by_user_key_present": false,
       "production_confirmation_present": false,
       "manual_review_handling_present": true,
-      "database_url_configured": false,
+      "database_url_configured": true,
       "no_raw_values_in_report": true,
       "no_production_side_effects": true,
       "blocked_reasons": [
         "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
         "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
-        "BLOCKED_DATABASE_URL_NOT_CONFIGURED",
         "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
       ],
       "required_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
@@ -106,7 +105,7 @@
     "mode_variable": "ONE_TIME_LIFECYCLE_EMAIL_MODE",
     "modes": ["disabled", "canary", "transactional"],
     "production_external_send_performed": false,
-    "production_blocker": "Protected transactional email private manifest is ready, the worker lifecycle gate now supports production transactional Resend in sink-worker mode, and admin email challenge delivery now supports production transactional mode without a canary-only recipient gate; deploy the exact candidate with staging/production Railway variables from that protected manifest, then run one controlled operator-inbox transactional test before any Rabbi/Admin access message.",
+    "production_blocker": "Production has no active owner/admin actor, so a product-native owner/admin lifecycle invitation cannot be issued without fresh bootstrap or role-access authorization.",
     "worker_lifecycle_gate": {
       "status": "fixed",
       "code": "apps/worker/src/delivery/config.ts",
@@ -139,13 +138,100 @@
       "private_manifest_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json",
       "blocker": null,
       "next_exact_action": "Deploy the exact candidate with staging/production Railway variables from the protected private manifest and run one controlled operator-inbox transactional test."
+    },
+    "release_proof": {
+      "status": "staging_delivered_production_deployed_production_test_blocked",
+      "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json",
+      "staging_controlled_test_status": "provider_delivered",
+      "production_deploy_status": "deployed_and_smoked",
+      "production_controlled_test_status": "blocked_no_active_owner_admin_actor"
+    },
+    "staging": {
+      "railway": {
+        "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+        "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+        "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+        "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+        "variable_updates": 32,
+        "web_deployment_id": "0bf927dd-bab7-407b-afd2-35983d8c7351",
+        "worker_deployment_id": "385e3b5b-41f4-417d-996b-09e3b1a1f8e3",
+        "web_image_digest": "sha256:0f70e2002127851826d74a51ec8a3671105b955f55b0667e0a6907c63d095ae6",
+        "worker_image_digest": "sha256:9c97c969816bc928e52bdec5bce39fdb5d8734e524e7d208568bf1da2c878ffe"
+      },
+      "smokes": {
+        "version_status": 200,
+        "health_status": 200,
+        "ready_status": 200,
+        "version": "rabbi-day-one-crm-ed77a04",
+        "ready_blockers": []
+      },
+      "controlled_test": {
+        "status": "provider_delivered",
+        "token_type": "owner_admin_invitation",
+        "target_role": "admin",
+        "destination_ref": "email_fab156df2719852d",
+        "outbox_created_at": "2026-07-19T15:31:45.609Z",
+        "outbox_delivered_at": "2026-07-19T15:32:00.176Z",
+        "attempts": 1,
+        "provider_message_ref_present": true,
+        "raw_token_included": false,
+        "external_send_performed": true,
+        "resend_api_readback": {
+          "status": 200,
+          "id_ref": "b4914755b4055ce7",
+          "created_at": "2026-07-19 15:32:00.466287+00",
+          "last_event": "delivered",
+          "to_authorized": true,
+          "from_domain": "onetimeonetime.com",
+          "reply_to_domain": ["onetimeonetime.com"]
+        },
+        "provider_event_ledger": {
+          "rows_after_60s": 0,
+          "note": "No webhook ledger row had arrived during the proof window; Resend sent-email API readback showed delivered."
+        }
+      }
+    },
+    "production": {
+      "railway": {
+        "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+        "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+        "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+        "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+        "variable_updates": 32,
+        "superseded_web_deployment_id": "1bb92930-53f2-4c48-be5f-f8681247258a",
+        "web_deployment_id": "a3a9328c-3fb5-41c6-b8d4-cf402f400ca7",
+        "worker_deployment_id": "37ce9edf-d7aa-40fc-a013-87dde0f29e72",
+        "web_image_digest": "sha256:074d98ee85b47b6c4d9e7da12d709858452962f0e0094328b47581d60b3520aa",
+        "worker_image_digest": "sha256:69e95b261899044411e252327e89e570b2d71ab60578eb0f7ef8890f28a1fc1c"
+      },
+      "smokes": {
+        "version_status": 200,
+        "health_status": 200,
+        "ready_status": 200,
+        "version": "rabbi-day-one-crm-ed77a04",
+        "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+        "ready_blockers": [],
+        "latest_migration": "2203_w13_100_student_gamification"
+      },
+      "queue_preflight": {
+        "account_users": 0,
+        "active_owner_admin_candidates": 0,
+        "lifecycle_pending_rows": 0,
+        "auth_email_pending_rows": 0,
+        "provider_event_ledger_rows": 0
+      },
+      "controlled_test": {
+        "status": "blocked",
+        "external_send_performed": false,
+        "blocker": "Production has no active owner/admin actor, so a product-native owner/admin lifecycle invitation cannot be issued without fresh bootstrap or role-access authorization."
+      }
     }
   },
   "admin_access": {
     "code_status": "accepted",
     "latest_existing_proof_path": "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
     "production_external_send_performed": false,
-    "production_blocker": "Admin email challenge code now supports transactional production delivery, but send final administrator access message only after production transactional email is configured and controlled send passes."
+    "production_blocker": "Production is deployed for transactional email, but final admin access is blocked because production has zero active owner/admin users. A fresh bootstrap/role-access authorization is required before Codex creates or refreshes the administrator access message."
   },
   "signup_to_crm": {
     "code_status": "accepted",
@@ -164,7 +250,7 @@
   "campaign_seed": {
     "status": "ready_for_operator_approval",
     "broad_campaign_status": "not_sent_pending_seed_approval",
-    "seed_blocker": "CRM production apply is not complete and transactional email candidate has not been deployed/tested."
+    "seed_blocker": "CRM production apply is not complete, and production admin access/test send is blocked by missing active production owner/admin actor."
   },
   "tests_run": [
     "npm test",
@@ -200,18 +286,34 @@
     "npm run lint",
     "npm run secret:scan",
     "git diff --check",
-    "npm run director:truth:live"
+    "npm run director:truth:live",
+    "npm ci",
+    "npm run brand:check",
+    "npm run build",
+    "npm run e2e",
+    "npm run accessibility",
+    "npm run performance",
+    "GET staging /version /health /ready after ed77a04 deployment",
+    "staging controlled lifecycle transactional email: provider_delivered with Resend API delivered readback",
+    "GET production /version /health /ready after ed77a04 deployment",
+    "production queue/user preflight before controlled send"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",
     "status": "failed_preexisting",
-    "reason": "Repo-wide Prettier check reports 1205 unrelated pre-existing files; changed parseable files pass targeted Prettier check."
+    "reason": "Repo-wide Prettier check reports unrelated pre-existing files; targeted changed-file Prettier and final formatting for edited artifacts passed."
   },
   "external_effects": {
+    "staging_database_writes": 1,
     "production_database_writes": 0,
-    "external_email_sends": 0,
+    "external_email_sends": 1,
+    "staging_external_email_sends": 1,
+    "production_external_email_sends": 0,
     "external_whatsapp_sends": 0,
     "provider_mutations": 0,
+    "railway_variable_updates": 64,
+    "railway_deployments_created": 5,
     "broad_campaign_sends": 0
-  }
+  },
+  "current_head": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9"
 }

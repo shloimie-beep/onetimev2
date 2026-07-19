@@ -1,24 +1,24 @@
 {
   "schema_version": "onetime.director.deployments.v2",
-  "generated_at": "2026-07-19T12:21:14.1995821Z",
+  "generated_at": "2026-07-19T15:47:39.209Z",
   "production": {
     "url": "https://join.onetimeonetime.com",
     "project": "one-time-production",
     "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
     "environment": "production",
     "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
-    "version": "w13-104-public-cls-688fc70",
-    "runtime_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "version": "rabbi-day-one-crm-ed77a04",
+    "runtime_source_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
     "web_service": "one-time-web",
     "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
-    "web_deployment": "74a6b736-dd67-4966-bdf6-b7dd80280d1a",
+    "web_deployment": "a3a9328c-3fb5-41c6-b8d4-cf402f400ca7",
     "web_deployment_status": "SUCCESS",
-    "web_digest": "sha256:739f56ba921af8ac4d1f829db179c73e1028a91c4d3fa05506a5397f44e3c7cc",
+    "web_digest": "sha256:074d98ee85b47b6c4d9e7da12d709858452962f0e0094328b47581d60b3520aa",
     "worker_service": "one-time-delivery-cron",
     "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
-    "worker_deployment": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+    "worker_deployment": "37ce9edf-d7aa-40fc-a013-87dde0f29e72",
     "worker_deployment_status": "SUCCESS",
-    "worker_digest": "sha256:da68b6adb377856d0612b5e97bceafb03435115250262065cc3305c232712370",
+    "worker_digest": "sha256:69e95b261899044411e252327e89e570b2d71ab60578eb0f7ef8890f28a1fc1c",
     "database_service": "Postgres-j9Pi",
     "database_service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746",
     "latest_migration": "2203_w13_100_student_gamification",
@@ -30,7 +30,8 @@
     "evidence_paths": [
       "ops/codex-runs/W13-104/DEPLOYMENT.json",
       "ops/codex-runs/W13-104/evidence/live-smoke.json",
-      "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
     ]
   },
   "staging": {
@@ -39,18 +40,18 @@
     "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
     "environment": "staging",
     "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
-    "version": "w13-104-public-cls-688fc70",
-    "runtime_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "version": "rabbi-day-one-crm-ed77a04",
+    "runtime_source_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
     "web_service": "ot99-web",
     "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
-    "web_deployment": "c464ea23-649b-4c8d-b4af-0d10c5ce3022",
+    "web_deployment": "0bf927dd-bab7-407b-afd2-35983d8c7351",
     "web_deployment_status": "SUCCESS",
-    "web_digest": "sha256:25d58d4a0661393a3d3d81e172dde87b610d8b97437162969615646e5c943234",
+    "web_digest": "sha256:0f70e2002127851826d74a51ec8a3671105b955f55b0667e0a6907c63d095ae6",
     "worker_service": "ot99-worker",
     "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
-    "worker_deployment": "17f1970a-ec19-4fa8-8152-573b47f470ab",
+    "worker_deployment": "385e3b5b-41f4-417d-996b-09e3b1a1f8e3",
     "worker_deployment_status": "SUCCESS",
-    "worker_digest": "sha256:b213c58070b8d40b612351c5748bdf82e72b655014f8cc83e35a1ab0501a616d",
+    "worker_digest": "sha256:9c97c969816bc928e52bdec5bce39fdb5d8734e524e7d208568bf1da2c878ffe",
     "database_service": "Postgres",
     "database_service_id": "e6671cb7-178a-4821-b977-7b6e24c0c052",
     "latest_migration": "2203_w13_100_student_gamification",
@@ -62,7 +63,8 @@
     "evidence_paths": [
       "ops/codex-runs/W13-104/DEPLOYMENT.json",
       "ops/codex-runs/W13-104/evidence/live-smoke.json",
-      "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
     ]
   },
   "rollback": {
@@ -73,11 +75,15 @@
     "database_restore_rule": "Do not restore production DB unless corruption is proven and operator-approved."
   },
   "external_effects_this_run": {
-    "production_deployments": 0,
-    "staging_deployments": 10,
-    "database_writes": 0,
+    "production_deployments": 3,
+    "staging_deployments": 2,
+    "database_writes": 1,
     "provider_mutations": 0,
-    "sends": 0,
-    "dns_changes": 0
+    "sends": 1,
+    "dns_changes": 0,
+    "database_writes_scope": "staging lifecycle invitation/test only; production database writes were 0",
+    "production_database_writes": 0,
+    "sends_scope": "one staging controlled transactional email; production sends were 0",
+    "production_sends": 0
   }
 }

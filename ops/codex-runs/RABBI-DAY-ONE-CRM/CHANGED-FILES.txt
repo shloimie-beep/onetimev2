@@ -20,3 +20,4 @@ ops/codex-runs/RABBI-DAY-ONE-CRM/CHANGED-FILES.txt
 ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json
 ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json
 ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json

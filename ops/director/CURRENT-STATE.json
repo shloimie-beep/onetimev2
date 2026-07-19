@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T14:47:51.237Z",
+  "generated_at": "2026-07-19T15:47:39.209Z",
   "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -15,11 +15,11 @@
     "CRM_REAL_DATA": "PREVIEW_READY",
     "production_url": "https://join.onetimeonetime.com",
     "staging_url": "https://ot99-web-staging.up.railway.app",
-    "version": "w13-104-public-cls-688fc70",
-    "runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "version": "rabbi-day-one-crm-ed77a04",
+    "runtime_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
     "target_app": "one-time",
     "latest_migration": "2203_w13_100_student_gamification",
-    "release_tag": "onetime-w13-104-production-20260719T0656Z"
+    "release_tag": "pending-post-pr92-transactional-email-release-tag"
   },
   "canonical_draft_pr": {
     "number": 91,
@@ -38,25 +38,26 @@
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
     "head_ref": "codex/one-time-finish-now-20260719",
-    "head_ref_oid": "123827a745be2531425e124085db6f5c53e5e82e",
-    "checks_at_inspection": "GitHub checks failed before workflow steps/logs at launch-spine consume evidence head 123827a745be2531425e124085db6f5c53e5e82e; local focused gates passed. All five jobs on that head completed with steps: []. Read the PR or git rev-parse HEAD for the current branch head after later docs-only check-note commits.",
-    "note": "Runtime deployment proof, PR #92 staging rollback/roll-forward, corrected CRM dry-run, guarded CRM apply writer, sanitized email-inputs preflight, production read-only route proof, and launch-spine consume readiness preflight are recorded. The recorded head_ref_oid is the launch-spine consume evidence head captured before docs-only check-note commits; read the PR for the current branch head. Full release remains blocked by consuming launch-spine protected inputs, transactional email canary/manifest, CRM production apply, provider, and protected diagnostic gates."
+    "head_ref_oid": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+    "checks_at_inspection": "PR #92 advanced to transactional email deployment evidence head ed77a04dd24391d5b79be7f839d7f5752a57e0f9; local gates and live smokes passed, while CRM apply/admin access remain blocked by the explicit safety gates in this file.",
+    "note": "Transactional email code/config is deployed to staging and production. Staging controlled test delivered; production controlled send/admin access are blocked by no active production owner/admin actor. Real CRM production apply remains blocked by fresh backup proof, created-by user key, and production confirmation."
   },
   "live_readback": {
     "production": {
-      "version": "w13-104-public-cls-688fc70",
-      "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+      "version": "rabbi-day-one-crm-ed77a04",
+      "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
       "health": "ok",
       "ready": "ok",
       "optional_runtime_flags": {
-        "email_transport": "disabled",
-        "whatsapp_transport": "disabled",
-        "support_bridge": "disabled"
+        "email_transport": "ok",
+        "whatsapp_transport": "ok",
+        "support_bridge": "disabled",
+        "note": "Generic campaign/provider modes remain sink; only One Time lifecycle/auth transactional email is enabled."
       }
     },
     "staging": {
-      "version": "w13-104-public-cls-688fc70",
-      "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+      "version": "rabbi-day-one-crm-ed77a04",
+      "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
       "health": "ok",
       "ready": "ok"
     }
@@ -87,18 +88,19 @@
     "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
     "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json",
-    "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
   ],
   "blockers": [
     {
       "id": "BLOCK-EMAIL-INPUTS",
       "lane": "transactional_email",
-      "reason": "Protected Resend/domain/sender/reply-to keyholder inputs are present and policy-matching, but the protected operator canary destination file and EMAIL-INPUTS.private.json manifest are not present; production variables and a controlled operator-inbox canary are not configured."
+      "reason": "Protected One Time Resend inputs are present, Railway variables are configured on staging and production, staging controlled transactional email was delivered to the protected operator inbox, and production is deployed/smoked. Production controlled send and final admin access are blocked because production has no active owner/admin actor; a fresh bootstrap or role-access authorization is required before creating or refreshing administrator access."
     },
     {
       "id": "BLOCK-CRM-IMPORT-AUTH",
       "lane": "crm_real_data",
-      "reason": "CRM apply readiness preflight records source packet and corrected dry-run proof present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
+      "reason": "CRM apply readiness preflight records source packet, corrected dry-run proof, private authorization, operator authorization, idempotency, manual-review handling, and production DB configuration present, but production apply remains blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED."
     },
     {
       "id": "BLOCK-CANARY-AUTH",
