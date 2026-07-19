@@ -1,4 +1,10 @@
-import { createCipheriv, createHash, randomBytes, timingSafeEqual } from 'node:crypto';
+import {
+  createCipheriv,
+  createDecipheriv,
+  createHash,
+  randomBytes,
+  timingSafeEqual,
+} from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { z } from 'zod';
@@ -21,7 +27,14 @@ const PRODUCTION_ENVIRONMENT_ID = 'f911acfc-e206-44df-a569-9d69d709b94b';
 const PRODUCTION_WEB_SERVICE_ID = 'd175ad94-5e3c-41c2-8cbc-daa1a299077d';
 const COMMAND_LOCK_ID = 13103;
 
-const modes = ['counts', 'dry-run', 'apply-initial', 'apply-student', 'final-reset'] as const;
+const modes = [
+  'counts',
+  'dry-run',
+  'apply-initial',
+  'apply-student',
+  'final-reset',
+  'extract-admin-login-challenge',
+] as const;
 type Mode = (typeof modes)[number];
 type Role = 'administrator' | 'parent' | 'student';
 type LinkPurpose =
@@ -29,7 +42,8 @@ type LinkPurpose =
   | 'owner_admin_invitation'
   | 'parent_activation'
   | 'student_setup'
-  | 'student_reset';
+  | 'student_reset'
+  | 'admin_login_challenge';
 
 const recipientSchema = z
   .object({
@@ -195,8 +209,37 @@ export async function runW13ProductionRoleAccessTask(input: {
       });
     }
 
+    if (input.mode === 'extract-admin-login-challenge') {
+      const extracted = await extractAdminLoginChallenge(pool, config, manifest);
+      const after = await countsOnly(pool, config);
+      return {
+        ...baseReport(input.mode, now, manifest, before, candidates, {
+          status: 'extracted',
+          blockers: [],
+          roles: extracted.roles,
+        }),
+        counts_after: after,
+        mutation_deltas: mutationDeltas(before, after, extracted),
+        encrypted_handoff: encryptHandoff(encryptedLinks, {
+          schema: 'onetime.w13_103.encrypted_role_access_handoff.v1',
+          generated_at: now.toISOString(),
+          run_id: RUN_ID,
+          mode: input.mode,
+          production_login_url: 'https://join.onetimeonetime.com/login',
+          links: extracted.links,
+          roles: extracted.roles,
+        }),
+      };
+    }
+
     const applied = await withCommandLock(pool, () =>
-      applyMode(pool, config, manifest, input.mode as Exclude<Mode, 'counts' | 'dry-run'>, now),
+      applyMode(
+        pool,
+        config,
+        manifest,
+        input.mode as Exclude<Mode, 'counts' | 'dry-run' | 'extract-admin-login-challenge'>,
+        now,
+      ),
     );
     const after = await countsOnly(pool, config);
     return {
@@ -451,7 +494,7 @@ async function applyMode(
   pool: DbPool,
   config: AppConfig,
   manifest: Manifest,
-  mode: Exclude<Mode, 'counts' | 'dry-run'>,
+  mode: Exclude<Mode, 'counts' | 'dry-run' | 'extract-admin-login-challenge'>,
   now: Date,
 ) {
   if (mode === 'apply-initial') return applyInitial(pool, config, manifest, now);
@@ -1034,6 +1077,101 @@ async function discoverOwnerAdminActor(
     role: String(row.role) as UserRecord['role'],
     status: String(row.status),
   };
+}
+
+async function extractAdminLoginChallenge(
+  pool: DbPool,
+  config: AppConfig,
+  manifest: Manifest,
+): Promise<ApplyResult> {
+  if (!config.lifecycleDeliveryKey) throw new Error('lifecycle_delivery_key_missing');
+  const email = normalizeEmail(
+    required(manifest.recipients.administrator.destination, 'administrator.destination'),
+  );
+  const user = await findUserByEmail(pool, config, email);
+  if (!user || !['owner', 'admin'].includes(user.role) || user.status !== 'active') {
+    throw new Error('active_administrator_required_for_login_challenge_extract');
+  }
+  const result = await pool.query(
+    `SELECT outbox.challenge_key, outbox.nonce, outbox.ciphertext, outbox.auth_tag,
+            challenges.expires_at
+       FROM onetime.auth_email_challenge_delivery_outbox AS outbox
+       JOIN onetime.auth_email_challenges AS challenges
+         ON challenges.account_key = outbox.account_key
+        AND challenges.product_key = outbox.product_key
+        AND challenges.challenge_key = outbox.challenge_key
+      WHERE outbox.account_key = $1
+        AND outbox.product_key = $2
+        AND outbox.destination_ref = $3
+        AND outbox.purpose = 'owner_admin_login_step_up'
+        AND outbox.state IN ('queued','sink_delivered','provider_delivered')
+        AND challenges.consumed_at IS NULL
+        AND challenges.superseded_at IS NULL
+        AND challenges.expires_at > now()
+      ORDER BY outbox.created_at DESC
+      LIMIT 1`,
+    [config.accountKey, config.productKey, sha256(email)],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  if (!row) throw new Error('admin_login_challenge_not_found');
+  const payload = decryptAdminLoginChallengePayload(config, {
+    nonce: String(row.nonce),
+    ciphertext: String(row.ciphertext),
+    auth_tag: String(row.auth_tag),
+  });
+  const loginUrl = typeof payload.login_url === 'string' ? payload.login_url : null;
+  if (!loginUrl) throw new Error('admin_login_challenge_url_missing');
+  const expiresAt =
+    typeof payload.expires_at === 'string'
+      ? payload.expires_at
+      : new Date(String(row.expires_at)).toISOString();
+  const destinationRef = digestRef('email', email);
+  const tokenRef = digestRef('auth_email_challenge', String(row.challenge_key));
+  return {
+    roles: [
+      {
+        role: 'administrator',
+        operation: 'admin_login_challenge',
+        status: 'applied',
+        reason_code: null,
+        destination_ref: destinationRef,
+        token_ref: tokenRef,
+        delivery_state: 'queued',
+      },
+    ],
+    links: [
+      {
+        role: 'administrator',
+        purpose: 'admin_login_challenge',
+        token_ref: tokenRef,
+        expires_at: expiresAt,
+        url: loginUrl,
+      },
+    ],
+    foundation: false,
+  };
+}
+
+function decryptAdminLoginChallengePayload(
+  config: AppConfig,
+  row: { nonce: string; ciphertext: string; auth_tag: string },
+): Record<string, unknown> {
+  if (!config.lifecycleDeliveryKey) throw new Error('lifecycle_delivery_key_missing');
+  const decipher = createDecipheriv(
+    'aes-256-gcm',
+    createHash('sha256').update(config.lifecycleDeliveryKey).digest(),
+    Buffer.from(row.nonce, 'base64url'),
+  );
+  decipher.setAuthTag(Buffer.from(row.auth_tag, 'base64url'));
+  const text = Buffer.concat([
+    decipher.update(Buffer.from(row.ciphertext, 'base64url')),
+    decipher.final(),
+  ]).toString('utf8');
+  const parsed = JSON.parse(text) as unknown;
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('admin_login_challenge_payload_invalid');
+  }
+  return parsed as Record<string, unknown>;
 }
 
 async function activeSessionCount(pool: DbPool, config: AppConfig, userKey: string) {
