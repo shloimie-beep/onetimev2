@@ -1,4 +1,4 @@
-﻿{
+{
   "buckets": {
     "edges": []
   },
@@ -71,9 +71,7 @@
                           }
                         },
                         "skipBuildCache": true,
-                        "volumeMounts": [
-                          "/var/lib/postgresql/data"
-                        ]
+                        "volumeMounts": ["/var/lib/postgresql/data"]
                       },
                       "status": "SUCCESS"
                     }
@@ -141,9 +139,7 @@
                         }
                       },
                       "skipBuildCache": true,
-                      "volumeMounts": [
-                        "/var/lib/postgresql/data"
-                      ]
+                      "volumeMounts": ["/var/lib/postgresql/data"]
                     },
                     "status": "SUCCESS"
                   },
@@ -590,9 +586,7 @@
                             "useLegacyStacker": false
                           }
                         },
-                        "volumeMounts": [
-                          "/var/lib/postgresql/data"
-                        ]
+                        "volumeMounts": ["/var/lib/postgresql/data"]
                       },
                       "status": "SUCCESS"
                     }
@@ -658,9 +652,7 @@
                           "useLegacyStacker": false
                         }
                       },
-                      "volumeMounts": [
-                        "/var/lib/postgresql/data"
-                      ]
+                      "volumeMounts": ["/var/lib/postgresql/data"]
                     },
                     "status": "SUCCESS"
                   },

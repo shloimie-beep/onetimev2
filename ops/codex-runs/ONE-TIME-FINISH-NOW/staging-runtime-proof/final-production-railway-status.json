@@ -266,9 +266,7 @@
                             "useLegacyStacker": false
                           }
                         },
-                        "volumeMounts": [
-                          "/var/lib/postgresql/data"
-                        ]
+                        "volumeMounts": ["/var/lib/postgresql/data"]
                       },
                       "status": "SUCCESS"
                     }
@@ -334,9 +332,7 @@
                           "useLegacyStacker": false
                         }
                       },
-                      "volumeMounts": [
-                        "/var/lib/postgresql/data"
-                      ]
+                      "volumeMounts": ["/var/lib/postgresql/data"]
                     },
                     "status": "SUCCESS"
                   },
@@ -407,9 +403,7 @@
                             "useLegacyStacker": false
                           }
                         },
-                        "volumeMounts": [
-                          "/var/lib/postgresql/data"
-                        ]
+                        "volumeMounts": ["/var/lib/postgresql/data"]
                       },
                       "status": "SUCCESS"
                     }
@@ -475,9 +469,7 @@
                           "useLegacyStacker": false
                         }
                       },
-                      "volumeMounts": [
-                        "/var/lib/postgresql/data"
-                      ]
+                      "volumeMounts": ["/var/lib/postgresql/data"]
                     },
                     "status": "SUCCESS"
                   },
@@ -570,9 +562,7 @@
                             "useLegacyStacker": false
                           }
                         },
-                        "volumeMounts": [
-                          "/backup"
-                        ]
+                        "volumeMounts": ["/backup"]
                       },
                       "status": "SUCCESS"
                     }
@@ -660,9 +650,7 @@
                           "useLegacyStacker": false
                         }
                       },
-                      "volumeMounts": [
-                        "/backup"
-                      ]
+                      "volumeMounts": ["/backup"]
                     },
                     "status": "SUCCESS"
                   },

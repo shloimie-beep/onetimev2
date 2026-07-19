@@ -1,4 +1,4 @@
-﻿{
+{
   "operation": "rollback-staging-source-status",
   "rollback_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
   "web_worktree": "C:/Users/User/OneTimeOneTime-w13-104-web-688fc70",
