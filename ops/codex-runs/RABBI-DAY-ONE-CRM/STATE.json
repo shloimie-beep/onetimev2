@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T13:56:05.421Z",
+  "generated_at": "2026-07-19T14:08:28.240Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -78,7 +78,26 @@
     "mode_variable": "ONE_TIME_LIFECYCLE_EMAIL_MODE",
     "modes": ["disabled", "canary", "transactional"],
     "production_external_send_performed": false,
-    "production_blocker": "Deploy production with transactional lifecycle email variables and run a controlled operator-inbox send."
+    "production_blocker": "Provide protected operator canary destination file, generate private email inputs manifest, configure production variables, and run controlled operator-inbox send.",
+    "email_inputs_preflight": {
+      "status": "blocked",
+      "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+      "schema_version": "onetime.rabbi_day_one_email_inputs_preflight.v1",
+      "keyholder_dir_available": true,
+      "resend_api_key_present": true,
+      "resend_webhook_secret_present": true,
+      "approved_domain_matches": true,
+      "approved_sender_matches": true,
+      "approved_reply_to_matches": true,
+      "canary_destination_present": false,
+      "authorization_id_present": true,
+      "private_manifest_written": false,
+      "raw_values_included": false,
+      "secrets_printed": false,
+      "railway_variables_ready": false,
+      "blocker": "BLOCKED_CANARY_DESTINATION_FILE_NOT_PROVIDED",
+      "next_exact_action": "Create protected operator canary destination file and rerun email-inputs-preflight with private manifest output."
+    }
   },
   "admin_access": {
     "code_status": "accepted",
@@ -121,7 +140,11 @@
     "npm run unit",
     "npm run integration",
     "npx eslint scripts/w12-100/data/real-source-preflight.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts",
-    "npx prettier --check scripts/w12-100/data/real-source-preflight.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts"
+    "npx prettier --check scripts/w12-100/data/real-source-preflight.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts",
+    "npx prettier --write scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts",
+    "npx prettier --check scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+    "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts",
+    "node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json"
   ],
   "known_non_blocking_check": {
     "command": "npm run format",
