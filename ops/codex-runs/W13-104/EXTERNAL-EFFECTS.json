@@ -1,0 +1,24 @@
+{
+  "schema_version": "onetime.w13_104.external_effects.v1",
+  "updated_at": "2026-07-19T06:19:44Z",
+  "production_database_writes": 0,
+  "crm_imports_applied": 0,
+  "email_sends": 0,
+  "whatsapp_sends": 0,
+  "telegram_writes": 0,
+  "zoom_meetings_created": 0,
+  "vimeo_uploads": 0,
+  "buffer_drafts": 0,
+  "buffer_publications": 0,
+  "stripe_test_checkout_sessions": 0,
+  "stripe_live_charges": 0,
+  "dns_changes": 0,
+  "secrets_printed_or_committed": false,
+  "production_runtime_deployments": 0,
+  "staging_runtime_deployments": 0,
+  "railway_backup_proof_deployments": 0,
+  "notes": [
+    "W13-104 has not run production signup, CRM import apply, provider canaries, or production deployment.",
+    "Production write/deploy lanes remain gated on a fresh W13-104 production backup/restore proof."
+  ]
+}

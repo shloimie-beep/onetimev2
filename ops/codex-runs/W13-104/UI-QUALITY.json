@@ -1,0 +1,35 @@
+{
+  "schema_version": "onetime.w13_104.ui_quality.v1",
+  "status": "passed_local_candidate",
+  "fixed_issue": {
+    "source": "PR #91 Node 24 verify",
+    "route_group": "public pages",
+    "metric": "CLS",
+    "expected_max": 0.1,
+    "observed": 0.3084989208984375,
+    "test": "tests/performance/w12-100/seo-bundle-performance.spec.ts",
+    "fix": "Preload the self-hosted DM Serif Display font and switch font-display to optional to prevent late display-font layout shift."
+  },
+  "viewports_required": ["360x800", "390x844", "768x1024", "1440x1000"],
+  "local_results": {
+    "brand_check": "passed",
+    "e2e": "50 passed",
+    "accessibility": "23 passed",
+    "performance": "10 passed after one transient OT-39 rerun",
+    "final_public_cls_max": 0
+  },
+  "visual_evidence": [
+    "ops/codex-runs/W13-104/evidence/screenshots/landing-top-fold-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/signup-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/login-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/crm-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/parent-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/student-390x844.png"
+  ],
+  "performance_evidence": [
+    "ops/codex-runs/W13-104/evidence/final-performance-seo-bundle-report.json",
+    "ops/codex-runs/W13-104/evidence/crm-performance-report.json",
+    "ops/codex-runs/W13-104/evidence/ot81-performance-30-sample.json"
+  ],
+  "production_visual_acceptance": "pending_deployment"
+}

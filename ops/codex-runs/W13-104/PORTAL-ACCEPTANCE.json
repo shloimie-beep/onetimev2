@@ -1,0 +1,15 @@
+{
+  "schema_version": "onetime.w13_104.portal_acceptance.v1",
+  "status": "baseline_passed_pending_post_deploy_recheck",
+  "source_handoff": "C:\\Users\\User\\.onetime-w13-103-private\\LOGIN-HANDOFF.private.json",
+  "administrator": "passed_in_w13_103_private_handoff",
+  "parent": "passed_in_w13_103_private_handoff",
+  "student": "passed_in_w13_103_private_handoff",
+  "parent_controls": "passed_in_w13_103_private_handoff",
+  "gamification_once_only": "covered_by_local_unit_and_e2e_before_deploy",
+  "w13_103_committed_evidence": [
+    "ops/codex-runs/W13-103/evidence/role-browser-acceptance.json",
+    "ops/codex-runs/W13-103/evidence/production-role-access-counts.json"
+  ],
+  "w13_104_recheck_status": "pending_exact_runtime_deployment"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": "onetime.w13_104.deployment.v1",
+  "status": "blocked_pending_fresh_backup_proof",
+  "runtime_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "evidence_head_sha": "commit_containing_this_report",
+  "staging": {
+    "status": "not_run",
+    "blocker": "Staging deployment was not run before the production safety gate was resolved; local candidate validation passed."
+  },
+  "production": {
+    "status": "preserved_healthy_runtime",
+    "url": "https://join.onetimeonetime.com",
+    "web_deployment_id": "9334b362-f00d-4170-9713-ecee0d22b85c",
+    "worker_deployment_id": "f81e56ba-cf4d-4f92-99e5-f5f6be360494",
+    "version": "w13-102-resend-webhook-007e021",
+    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "w13_104_deploy": "not_run",
+    "blocker": "fresh W13-104 production backup/restore proof is required before production deployment or production signup writes"
+  },
+  "release_tag": null
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "onetime.w13_104.email.v1",
+  "status": "pending_private_inputs",
+  "provider": "resend",
+  "required_manifest": "C:\\Users\\User\\.onetime-w13-104-private\\EMAIL-INPUTS.private.json",
+  "email_inputs_needed_report": "ops/codex-runs/W13-104/EMAIL-INPUTS-NEEDED.md",
+  "missing_variable_names": [
+    "RESEND_API_KEY",
+    "RESEND_WEBHOOK_SECRET",
+    "ONE_TIME_EMAIL_FROM",
+    "ONE_TIME_EMAIL_REPLY_TO"
+  ],
+  "controlled_transactional_messages_sent": 0,
+  "broad_campaigns_sent": 0,
+  "passwords_emailed": 0,
+  "notes": "Transactional email cannot be claimed delivered until protected provider configuration, allowlist, and provider readback are proven without printing secrets."
+}

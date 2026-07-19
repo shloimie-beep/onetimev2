@@ -1,0 +1,104 @@
+{
+  "schema_version": "onetime.codex_run_state.v1",
+  "run_id": "W13-104",
+  "title": "Final Day-One production operations conductor",
+  "status": "blocked_production_gate_after_local_validation",
+  "terminal_status": "BLOCKED_CRITICAL_PRODUCTION_GATE",
+  "created_at": "2026-07-19T05:56:00Z",
+  "updated_at": "2026-07-19T06:25:59Z",
+  "repository": "webcraft-media/onetimev2",
+  "pr": 91,
+  "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+  "starting_pr_head": "2a6b3a58167dd99a35b925062b0127fcf7660946",
+  "starting_deployed_runtime_source": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "production_url": "https://join.onetimeonetime.com",
+  "production_login_url": "https://join.onetimeonetime.com/login",
+  "private_directory": "C:\\Users\\User\\.onetime-w13-104-private",
+  "source_pack": {
+    "path": "C:\\Users\\User\\Downloads\\W13-104-FINAL-DAY-ONE-OPERATIONS-PACK.zip",
+    "sha256": "90D7384864C7E2A87B3B3A75C566FFEDF1A528E086419D2BF1759A6F064922EA",
+    "entry_count": 3,
+    "prompt_sha256": "B16BFCEFA28331B09B9336C7F5453CE66A8804A413E23999D5892C4CE1DEEE1B"
+  },
+  "live_runtime": {
+    "version": "w13-102-resend-webhook-007e021",
+    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "target_app": "one-time",
+    "health": "ok",
+    "ready": "ok"
+  },
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Preserve healthy live baseline",
+      "status": "baseline_preserved_backup_missing_for_w13_104_writes"
+    },
+    {
+      "phase": 2,
+      "name": "Transactional email and login email",
+      "status": "blocked_pending_inputs"
+    },
+    { "phase": 3, "name": "Approved CRM import rehearsal", "status": "blocked_pending_inputs" },
+    {
+      "phase": 4,
+      "name": "Signup, lead capture, lifecycle",
+      "status": "blocked_pending_fresh_backup_and_deployment"
+    },
+    {
+      "phase": 5,
+      "name": "Administrator, parent, student product journeys",
+      "status": "baseline_passed_pending_post_deploy_recheck"
+    },
+    { "phase": 6, "name": "Zoom classroom canary", "status": "blocked_pending_inputs" },
+    {
+      "phase": 7,
+      "name": "Vimeo, content, knowledge, social drafts",
+      "status": "blocked_pending_inputs"
+    },
+    { "phase": 8, "name": "Telegram and WhatsApp operations", "status": "blocked_pending_inputs" },
+    { "phase": 9, "name": "BNA support bridge", "status": "blocked_pending_inputs" },
+    {
+      "phase": 10,
+      "name": "Grounded helper and Buffer readiness",
+      "status": "blocked_pending_inputs"
+    },
+    { "phase": 11, "name": "Stripe TEST billing", "status": "blocked_pending_inputs" },
+    { "phase": 12, "name": "UI and usability acceptance", "status": "passed_local_candidate" },
+    {
+      "phase": 13,
+      "name": "Staging, production, complete journey",
+      "status": "blocked_pending_fresh_backup_proof"
+    },
+    {
+      "phase": 14,
+      "name": "Release governance and handoff",
+      "status": "sanitized_handoff_ready_with_production_gate_blocker"
+    }
+  ],
+  "global_blockers": [
+    "Fresh W13-104 native production backup/restore proof is missing; production deployment and production writes were not run."
+  ],
+  "lane_blockers": [
+    "EMAIL-INPUTS.private.json is missing.",
+    "CANARY-AUTHORIZATION.private.json is missing.",
+    "CRM-IMPORT-AUTHORIZATION.private.json is missing."
+  ],
+  "safety": {
+    "print_secrets_or_pii": false,
+    "broad_sends": false,
+    "live_stripe_charges": false,
+    "buffer_publication": false,
+    "provider_canaries_require_private_authorization": true,
+    "crm_import_requires_private_authorization": true,
+    "production_writes": 0,
+    "external_sends": 0
+  },
+  "evidence": [
+    "ops/codex-runs/W13-104/ORIGINAL-PROMPT.md",
+    "ops/codex-runs/W13-104/BASELINE.json",
+    "ops/codex-runs/W13-104/INPUTS-STATUS.json",
+    "ops/codex-runs/W13-104/VALIDATION.json",
+    "ops/codex-runs/W13-104/UI-QUALITY.json",
+    "ops/codex-runs/W13-104/DEPLOYMENT.json"
+  ]
+}

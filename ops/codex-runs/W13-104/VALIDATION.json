@@ -1,0 +1,70 @@
+{
+  "schema_version": "onetime.w13_104.validation.v1",
+  "generated_at": "2026-07-19T06:25:59Z",
+  "status": "source_validation_passed_with_known_format_baseline_noise",
+  "commands": [
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "notes": "Final pass after W13-104 artifacts: passed across 1626 repo text files."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run brand:check",
+      "status": "passed",
+      "notes": "Manifest, token drift, ticker allowlist, and raw source scan passed."
+    },
+    {
+      "command": "npx prettier --check <W13-104 touched source and run artifacts>",
+      "status": "passed",
+      "notes": "Scoped formatting check passed for W13-104-touched source files and generated run artifacts."
+    },
+    {
+      "command": "npm run format",
+      "status": "baseline_failed",
+      "notes": "Local full-repo Prettier check reports 1058 pre-existing files; GitHub Node 24 verify had already progressed past format and failed later on performance before W13-104."
+    },
+    {
+      "command": "npm run test",
+      "status": "passed_after_fixture_fix",
+      "notes": "46 unit files and 47 integration files passed. The W13-103 production-role test was fixed to seed non-expired sessions relative to the current test clock."
+    },
+    {
+      "command": "npm run e2e",
+      "status": "passed",
+      "notes": "50 Playwright e2e tests passed."
+    },
+    {
+      "command": "npm run accessibility",
+      "status": "passed",
+      "notes": "23 Playwright accessibility tests passed."
+    },
+    {
+      "command": "npm run performance",
+      "status": "passed_after_single_transient_rerun",
+      "notes": "Final rerun passed 10 Playwright performance tests plus bundle audit. First full run exposed one transient OT-39 CRM detail LCP outlier; targeted OT-39 rerun passed."
+    }
+  ],
+  "performance_evidence": [
+    "ops/codex-runs/W13-104/evidence/final-performance-seo-bundle-report.json",
+    "ops/codex-runs/W13-104/evidence/crm-performance-report.json",
+    "ops/codex-runs/W13-104/evidence/ot81-performance-30-sample.json"
+  ],
+  "visual_evidence": [
+    "ops/codex-runs/W13-104/evidence/screenshots/landing-top-fold-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/signup-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/login-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/crm-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/parent-390x844.png",
+    "ops/codex-runs/W13-104/evidence/screenshots/student-390x844.png"
+  ],
+  "production_writes": 0,
+  "external_sends": 0
+}

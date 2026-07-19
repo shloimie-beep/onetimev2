@@ -307,6 +307,7 @@ async function seedUser(
 
 async function seedSessionFor(email: string, label: string) {
   const normalized = normalizeEmail(email);
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
   const user = await pool.query(
     `SELECT user_key FROM onetime.account_users
       WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3`,
@@ -325,7 +326,7 @@ async function seedSessionFor(email: string, label: string) {
       userKey,
       sha256(`token-${label}`),
       sha256(`csrf-${label}`),
-      new Date('2026-07-19T06:00:00.000Z'),
+      expiresAt,
       NOW,
     ],
   );

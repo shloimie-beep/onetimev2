@@ -1,0 +1,12 @@
+{
+  "schema_version": "onetime.w13_104.signup_journey.v1",
+  "status": "blocked_pending_fresh_production_backup_and_deployment",
+  "production_family_signup": "not_run",
+  "synthetic_school_inquiry": "not_run",
+  "email_dependent_checks": "blocked_until_email_green",
+  "local_signup_coverage": "npm run e2e and npm run test passed synthetic signup and CRM vertical-slice coverage without production writes.",
+  "external_effects": {
+    "broad_campaigns_sent": 0,
+    "automatic_outreach_to_imported_contacts": 0
+  }
+}
