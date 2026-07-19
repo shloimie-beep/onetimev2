@@ -16,6 +16,8 @@ Base head at pivot: `92fd518ca66680543b80592b724d4fc492e544b6`
 - Added guarded W12-100 real-source CRM apply writer and migration. It inserts CRM contacts/facts plus hashed import ledger/audit rows only after exact source hash validation, backup proof, idempotency key, created-by user key, exact authorization, and production confirmation when targeting production.
 - Updated the `--apply` CLI path from not implemented to protected apply/block mode. Missing guarded inputs now return a count-safe blocked apply report with no DB writes.
 - Added sanitized Resend/email inputs preflight. It verifies protected keyholder files, approved domain, sender, reply-to, and private manifest readiness without printing raw values or writing secrets to the repo.
+- Recorded same-window CRM production-apply authorization in protected local inputs. The readiness gate now accepts operator authorization, private manifest production approval, idempotency, and manual-review exclusion/handling.
+- Generated the protected transactional email private manifest using the protected operator-owned inbox file. No email was sent.
 - Verified signup-to-CRM and WhatsApp lead-capture tests for the first slice.
 
 ## Corrected CRM Counts
@@ -51,13 +53,15 @@ Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 | approved_sender_matches       | true   |
 | approved_reply_to_matches     | true   |
 | authorization_id_present      | true   |
-| canary_destination_present    | false  |
-| private_manifest_written      | false  |
+| canary_destination_present    | true   |
+| private_manifest_written      | true   |
 | raw_values_included           | false  |
 | secrets_printed               | false  |
-| railway_variables_ready       | false  |
+| railway_variables_ready       | true   |
 
-Email blocker: `BLOCKED_CANARY_DESTINATION_FILE_NOT_PROVIDED`
+Protected manifest: `C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json`
+
+Email next action: configure exact staging/production Railway variables from the protected manifest, then run one controlled operator-inbox transactional test.
 
 ## CRM Apply Readiness
 
@@ -69,6 +73,7 @@ Ready checks accepted:
 - Corrected dry-run report exists, is `done`, and SHA-256 matches
   `93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8`.
 - Private CRM authorization manifest exists and is readable JSON.
+- Private manifest production apply authorization, exact operator authorization, idempotency key, and manual-review exclusion/handling are present.
 - Report includes no raw values, printed secrets, DB connection, DB read/write,
   external send, or provider mutation.
 
@@ -77,16 +82,12 @@ Production apply blockers:
 - `BLOCKED_BACKUP_PROOF_NOT_PROVIDED`
 - `BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED`
 - `BLOCKED_DATABASE_URL_NOT_CONFIGURED`
-- `BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED`
-- `BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED`
-- `BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED`
-- `BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED`
 - `BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED`
 
 ## Blockers
 
-- Real CRM production apply: guarded writer is accepted locally, and readiness preflight confirms source packet plus corrected dry-run proof are present. Production remains blocked until fresh backup proof JSON, exact dry-run SHA/count authorization, DATABASE_URL, idempotency key, created-by user key, manual-review handling, private manifest production-apply authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are present.
-- Production transactional email: protected Resend/sender/reply-to inputs are present and policy-matching; provide protected operator canary destination file, generate the private email inputs manifest, configure production variables, and run controlled operator-inbox send.
+- Real CRM production apply: guarded writer is accepted locally, and readiness preflight confirms source packet, corrected dry-run proof, operator authorization, idempotency, and manual-review handling are present. Production remains blocked until fresh backup proof JSON, `DATABASE_URL`, created-by user key, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are present.
+- Production transactional email: protected Resend/sender/reply-to/operator-inbox inputs are present and policy-matching, and a protected private manifest was generated. Configure staging/production Railway variables from the protected manifest and run one controlled operator-inbox send.
 - Rabbi/Admin access send: wait for production transactional email proof, then send final administrator access message.
 - WhatsApp production lead capture: configure Meta WhatsApp production webhook secrets and verify token, then run approved canary.
 - Campaign seed: wait for CRM production apply and transactional email proof; no broad campaign sent.
@@ -116,8 +117,10 @@ Production apply blockers:
 - `npx prettier --check scripts/w12-100/email/email-inputs-preflight.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 - `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/email-inputs-preflight.test.ts`
 - `node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
+- `node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --canary-email-file=C:/Users/User/BNA-Keyholder/zoom-account-owner.txt --create-private-manifest --private-manifest-out=C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 - `npx prettier --write scripts/w12-100/data/crm-apply-readiness-preflight.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts`
 - `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts`
+- `node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
 - `node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
 
 Known non-blocking check: `npm run format` fails on 1205 unrelated pre-existing files; targeted changed-file Prettier check passed.

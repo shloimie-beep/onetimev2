@@ -1,15 +1,11 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm_apply_readiness_preflight.v1",
-  "generated_at": "2026-07-19T14:24:03.006Z",
+  "generated_at": "2026-07-19T14:52:25.630Z",
   "status": "blocked",
   "blocked_reasons": [
     "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
     "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
     "BLOCKED_DATABASE_URL_NOT_CONFIGURED",
-    "BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED",
-    "BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED",
-    "BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED",
-    "BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED",
     "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
   ],
   "target_environment": "production",
@@ -50,7 +46,7 @@
     "privateAuthorization": {
       "present": true,
       "nonempty": true,
-      "fingerprint": "fd9a15dfd25ee5fb8f78970e1ed857c4e632d8b447c8341a7da9c28f3dc386d5"
+      "fingerprint": "ab3c5a282cb405f5417f9abd68c360e091b7b3127d566bc5a84146f738299727"
     },
     "backupProof": {
       "present": false,
@@ -58,14 +54,14 @@
       "fingerprint": null
     },
     "operatorAuthorization": {
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "6eaa51f2535697e33c844093e86315f874c5017998bf83b889f0bd89d2506736"
     },
     "idempotencyKey": {
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "e44f520f3a36ea819a6cf6e07d5d249d3315ed0daed300c0474042e12aeefafc"
     },
     "createdByUserKey": {
       "present": false,
@@ -78,9 +74,9 @@
       "fingerprint": null
     },
     "manualReviewHandling": {
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "3e4ab00d8ca3f5f9836162f157ca79ae9980a187646a32bb1bcbd9f844991b74"
     },
     "databaseUrl": {
       "present": false,
@@ -95,7 +91,7 @@
     "dry_run_report_sha_matches_expected": true,
     "private_authorization_manifest_present": true,
     "private_authorization_manifest_readable_json": true,
-    "private_authorization_manifest_production_apply_authorized": false,
+    "private_authorization_manifest_production_apply_authorized": true,
     "backup_proof_present": false,
     "backup_proof_readable_json": false,
     "backup_proof_target_environment_matches": false,
@@ -104,17 +100,17 @@
     "backup_proof_total_rows_matches": false,
     "backup_proof_crm_importable_matches": false,
     "backup_proof_raw_values_excluded": false,
-    "operator_authorization_present": false,
-    "operator_authorization_matches_required": false,
-    "idempotency_key_present": false,
+    "operator_authorization_present": true,
+    "operator_authorization_matches_required": true,
+    "idempotency_key_present": true,
     "created_by_user_key_present": false,
     "production_confirmation_present": false,
     "production_confirmation_matches_required": false,
-    "manual_review_handling_present": false,
-    "manual_review_handling_readable_json": false,
-    "manual_review_rows_match": false,
-    "manual_review_rows_excluded_or_terminal": false,
-    "manual_review_raw_values_excluded": false,
+    "manual_review_handling_present": true,
+    "manual_review_handling_readable_json": true,
+    "manual_review_rows_match": true,
+    "manual_review_rows_excluded_or_terminal": true,
+    "manual_review_raw_values_excluded": true,
     "database_url_configured": false,
     "no_raw_values_in_report": true,
     "no_production_side_effects": true

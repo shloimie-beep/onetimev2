@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.rabbi_day_one_crm.state.v1",
   "run_id": "RABBI-DAY-ONE-CRM",
-  "generated_at": "2026-07-19T14:24:16.296Z",
+  "generated_at": "2026-07-19T14:52:25.630Z",
   "branch": "codex/one-time-finish-now-20260719",
   "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
   "pull_request": {
@@ -30,7 +30,7 @@
     "required_exact_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
     "required_production_confirmation": "RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
     "production_apply_status": "blocked",
-    "production_apply_blocker": "CRM apply readiness preflight is blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED.",
+    "production_apply_blocker": "CRM apply readiness preflight is blocked by: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED.",
     "apply_readiness_preflight": {
       "status": "blocked",
       "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
@@ -40,13 +40,13 @@
       "dry_run_report_sha_matches_expected": true,
       "private_authorization_manifest_present": true,
       "private_authorization_manifest_readable_json": true,
-      "private_authorization_manifest_production_apply_authorized": false,
+      "private_authorization_manifest_production_apply_authorized": true,
       "backup_proof_present": false,
-      "operator_authorization_present": false,
-      "idempotency_key_present": false,
+      "operator_authorization_present": true,
+      "idempotency_key_present": true,
       "created_by_user_key_present": false,
       "production_confirmation_present": false,
-      "manual_review_handling_present": false,
+      "manual_review_handling_present": true,
       "database_url_configured": false,
       "no_raw_values_in_report": true,
       "no_production_side_effects": true,
@@ -54,10 +54,6 @@
         "BLOCKED_BACKUP_PROOF_NOT_PROVIDED",
         "BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED",
         "BLOCKED_DATABASE_URL_NOT_CONFIGURED",
-        "BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED",
-        "BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED",
-        "BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED",
-        "BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED",
         "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
       ],
       "required_authorization_statement": "APPROVE_RABBI_DAY_ONE_CRM_IMPORT:93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8:1559:production",
@@ -110,9 +106,9 @@
     "mode_variable": "ONE_TIME_LIFECYCLE_EMAIL_MODE",
     "modes": ["disabled", "canary", "transactional"],
     "production_external_send_performed": false,
-    "production_blocker": "Provide protected operator canary destination file, generate private email inputs manifest, configure production variables, and run controlled operator-inbox send.",
+    "production_blocker": "Protected transactional email private manifest is ready; configure the exact staging/production Railway variables from that protected manifest, then run one controlled operator-inbox transactional test before any Rabbi/Admin access message.",
     "email_inputs_preflight": {
-      "status": "blocked",
+      "status": "ready",
       "report_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
       "schema_version": "onetime.rabbi_day_one_email_inputs_preflight.v1",
       "keyholder_dir_available": true,
@@ -121,14 +117,15 @@
       "approved_domain_matches": true,
       "approved_sender_matches": true,
       "approved_reply_to_matches": true,
-      "canary_destination_present": false,
+      "canary_destination_present": true,
       "authorization_id_present": true,
-      "private_manifest_written": false,
+      "private_manifest_written": true,
       "raw_values_included": false,
       "secrets_printed": false,
-      "railway_variables_ready": false,
-      "blocker": "BLOCKED_CANARY_DESTINATION_FILE_NOT_PROVIDED",
-      "next_exact_action": "Create protected operator canary destination file and rerun email-inputs-preflight with private manifest output."
+      "railway_variables_ready": true,
+      "private_manifest_path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json",
+      "blocker": null,
+      "next_exact_action": "Configure the exact staging/production Railway variables from the protected private manifest and run one controlled operator-inbox transactional test."
     }
   },
   "admin_access": {
@@ -154,7 +151,7 @@
   "campaign_seed": {
     "status": "ready_for_operator_approval",
     "broad_campaign_status": "not_sent_pending_seed_approval",
-    "seed_blocker": "CRM production apply and transactional email production canary are not complete."
+    "seed_blocker": "CRM production apply is not complete and transactional email variables have not been deployed/tested."
   },
   "tests_run": [
     "npm test",
@@ -179,6 +176,8 @@
     "node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
     "npx prettier --write scripts/w12-100/data/crm-apply-readiness-preflight.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts",
     "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts",
+    "node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+    "node --import tsx scripts/w12-100/email/email-inputs-preflight.ts --keyholder-dir=C:/Users/User/BNA-Keyholder --canary-email-file=C:/Users/User/BNA-Keyholder/zoom-account-owner.txt --create-private-manifest --private-manifest-out=C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json --out=ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
     "node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
     "npm run director:truth:live"
   ],

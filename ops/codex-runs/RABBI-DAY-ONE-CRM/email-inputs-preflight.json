@@ -1,8 +1,8 @@
 {
   "schema_version": "onetime.rabbi_day_one_email_inputs_preflight.v1",
-  "generated_at": "2026-07-19T14:08:28.240Z",
-  "status": "blocked",
-  "blocked_reasons": ["BLOCKED_CANARY_DESTINATION_FILE_NOT_PROVIDED"],
+  "generated_at": "2026-07-19T14:52:25.423Z",
+  "status": "ready",
+  "blocked_reasons": [],
   "approved_policy": {
     "provider": "resend",
     "domain": "onetimeonetime.com",
@@ -12,7 +12,7 @@
   },
   "protected_sources": {
     "keyholder_dir_available": true,
-    "private_manifest_written": false,
+    "private_manifest_written": true,
     "raw_values_included": false,
     "secrets_printed": false
   },
@@ -54,10 +54,10 @@
       "fingerprint": "76388bf9c69444382d6b6941350ae5d97582a9c70914eca5abfd4422009f8ac7"
     },
     "canaryEmail": {
-      "file_name": "",
-      "present": false,
-      "nonempty": false,
-      "fingerprint": null
+      "file_name": "zoom-account-owner.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "72694eb79624deda86dce731dbc75e89033c1cabb15f08ebe9d5af185f3422cd"
     }
   },
   "checks": {
@@ -67,17 +67,17 @@
     "approved_domain_matches": true,
     "approved_sender_matches": true,
     "approved_reply_to_matches": true,
-    "canary_destination_present": false,
+    "canary_destination_present": true,
     "authorization_id_present": true,
-    "lifecycle_delivery_key_generated_for_manifest": false,
+    "lifecycle_delivery_key_generated_for_manifest": true,
     "no_raw_values_in_report": true
   },
   "private_manifest": {
-    "path": null,
+    "path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json",
     "schema_version": "onetime.rabbi_day_one_email_inputs.private.v1",
-    "contains_secret_values": false,
-    "contains_canary_destination": false,
-    "railway_variables_ready": false,
+    "contains_secret_values": true,
+    "contains_canary_destination": true,
+    "railway_variables_ready": true,
     "variable_names": [
       "DELIVERY_PROVIDER_AUTHORIZATION_ID",
       "DELIVERY_PROVIDER_PER_PROVIDER_BUDGET",
