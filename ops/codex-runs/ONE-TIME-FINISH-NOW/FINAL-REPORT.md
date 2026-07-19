@@ -1,6 +1,6 @@
 # ONE-TIME-FINISH-NOW Final Report
 
-Generated: 2026-07-19T13:40:35.8894527+03:00
+Generated: 2026-07-19T14:16:03.6873451+03:00
 
 CORE_RELEASE: BLOCKED_BY_CORE_SAFETY_GATE
 ADMIN_ACCESS: ACCEPTED
@@ -14,7 +14,7 @@ The One Time core runtime is already live and healthy on production and staging
 at W13-104, but the full release definition in the attached prompt cannot be
 truthfully closed yet. The remaining gaps are exact safety-gate blockers:
 normal transactional email configuration, protected CRM import authorization,
-provider canary authorization, protected diagnostics token, current W13-104
+provider canary authorization, protected diagnostics token, source-authoritative
 rollback proof, and current launch-spine proof.
 
 This is not a product-code failure. The app is fail-closed in the right places.
@@ -35,8 +35,8 @@ Railway readback:
 
 - Production web deployment: `74a6b736-dd67-4966-bdf6-b7dd80280d1a`
 - Production worker deployment: `0a0d730c-fa00-4338-b446-a8dcb8832c17`
-- Staging web deployment: `b4d5fe88-da36-4f24-9a32-a6f8f666804b`
-- Staging worker deployment: `d0e2153c-8288-4d19-ab7a-bc348f9cdd0b`
+- Staging web deployment: `e32187d8-a32b-401d-ae8a-37d87af1a203`
+- Staging worker deployment: `9f49ae76-3daf-4813-b01d-20e11867564a`
 
 ## Access And CRM
 
@@ -60,15 +60,18 @@ tag map, and apply authorization.
 - CRM apply: missing protected import authorization manifest.
 - Provider canaries: missing protected canary authorization manifest.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
-- Rollback: W13-104 staging rollback/roll-forward was not rerun.
+- Rollback: W13-104 staging source-rebuild rollback and roll-forward were
+  exercised, but the gate is not accepted because `/version` stayed W13-104
+  during the rollback-source deploy.
 - Launch spine: W13-104 production signup submit and current role browser
   acceptance were not rerun.
 
 ## External Effects
 
-This ONE-TIME-FINISH-NOW session performed no production deployment, staging
-deployment, production database write, CRM import apply, email send, WhatsApp or
-Telegram send, Stripe charge, DNS change, provider mutation, or secret print.
+This ONE-TIME-FINISH-NOW session performed four staging deployments for the
+rollback/roll-forward rehearsal. It performed no production deployment,
+production database write, CRM import apply, email send, WhatsApp or Telegram
+send, Stripe charge, DNS change, provider mutation, or secret print.
 
 The W13-104 evidence inspected during this run records the prior successful
 staging and production deployments.
@@ -79,8 +82,12 @@ staging and production deployments.
 - `npm run director:truth` passed.
 - `npm run director:truth:live` passed against production and staging
   `/version`.
-- `npm run secret:scan` passed across 1636 repo text files.
+- `npm run secret:scan` passed across 1660 repo text files.
 - `node --check scripts/check-director-truth.mjs` passed.
+- W13-104 staging roll-forward smoke passed `/version`, `/health`, `/ready`,
+  `/`, `/signup`, `/login`, `/activate`, and `/forgot-password`.
+- Staging rollback rehearsal is recorded as
+  `partial_not_accepted_version_endpoint_not_source_authoritative`.
 - `npx --no-install eslint scripts/check-director-truth.mjs` did not run:
   local `node_modules` is absent and `npx` resolved an incompatible global
   ESLint before loading `@eslint/js`.
@@ -94,6 +101,8 @@ staging and production deployments.
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/*`
 - `ops/director/START-HERE.md`
 - `ops/director/CURRENT-STATE.json`
 - `ops/director/CAPABILITY-MATRIX.json`

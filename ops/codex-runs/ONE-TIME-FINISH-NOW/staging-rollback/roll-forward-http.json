@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-07-19T14:07:52.6493032+03:00",
+  "phase": "roll_forward_acceptance",
+  "expected_commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+  "url": "https://ot99-web-staging.up.railway.app",
+  "version": {
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "target_app": "one-time"
+  },
+  "health": {
+    "ok": true,
+    "service": "onetime-web"
+  },
+  "ready": {
+    "ok": true,
+    "service": "onetime-web",
+    "generated_at": "2026-07-19T11:07:51.154Z",
+    "dependencies": [
+      {
+        "name": "database",
+        "ok": true,
+        "essential": true,
+        "status": "ok",
+        "latency_ms": 81,
+        "blocker_code": null,
+        "detail": "query ok"
+      },
+      {
+        "name": "schema_migrations",
+        "ok": true,
+        "essential": true,
+        "status": "ok",
+        "latency_ms": 3,
+        "blocker_code": null,
+        "detail": "latest=2203_w13_100_student_gamification"
+      }
+    ],
+    "optional_dependencies": [
+      {
+        "name": "email_transport",
+        "ok": true,
+        "essential": false,
+        "status": "disabled",
+        "latency_ms": null,
+        "blocker_code": null,
+        "detail": "disabled by runtime flag"
+      },
+      {
+        "name": "whatsapp_transport",
+        "ok": true,
+        "essential": false,
+        "status": "disabled",
+        "latency_ms": null,
+        "blocker_code": null,
+        "detail": "disabled by runtime flag"
+      },
+      {
+        "name": "support_bridge",
+        "ok": true,
+        "essential": false,
+        "status": "disabled",
+        "latency_ms": null,
+        "blocker_code": null,
+        "detail": "disabled by runtime flag"
+      }
+    ],
+    "blockers": []
+  },
+  "route_statuses": [
+    {
+      "route": "/",
+      "status": -1
+    },
+    {
+      "route": "/signup",
+      "status": -1
+    },
+    {
+      "route": "/login",
+      "status": -1
+    },
+    {
+      "route": "/activate",
+      "status": -1
+    },
+    {
+      "route": "/forgot-password",
+      "status": -1
+    }
+  ]
+}

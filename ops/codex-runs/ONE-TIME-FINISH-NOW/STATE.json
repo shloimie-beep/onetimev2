@@ -81,12 +81,12 @@
         "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
         "web_deployment_id": "74a6b736-dd67-4966-bdf6-b7dd80280d1a",
         "web_deployment_status": "SUCCESS",
-        "web_image_digest": "sha256:739f56f3fb93c93002602005150a254af3b6303585673d6401cf51275a3421d3",
+        "web_image_digest": "sha256:739f56ba921af8ac4d1f829db179c73e1028a91c4d3fa05506a5397f44e3c7cc",
         "worker_service": "one-time-delivery-cron",
         "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
         "worker_deployment_id": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
         "worker_deployment_status": "SUCCESS",
-        "worker_image_digest": "sha256:da68b66c5b4b3c3b8d02267891248f51a2a5e8621430362bd0382680552682d4",
+        "worker_image_digest": "sha256:da68b6adb377856d0612b5e97bceafb03435115250262065cc3305c232712370",
         "database_service": "Postgres-j9Pi",
         "database_service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746"
       }
@@ -106,14 +106,14 @@
         "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
         "web_service": "ot99-web",
         "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
-        "web_deployment_id": "b4d5fe88-da36-4f24-9a32-a6f8f666804b",
+        "web_deployment_id": "e32187d8-a32b-401d-ae8a-37d87af1a203",
         "web_deployment_status": "SUCCESS",
-        "web_image_digest": "sha256:4f8a8ec73bb7a7c8b5804075903b6534558098c40bb4cf92fa81bef80be0c4e3",
+        "web_image_digest": "sha256:4f8a8e76f62ad24318f87ba496cdbf79a122d8b66905a34969304d96b7bee5d5",
         "worker_service": "ot99-worker",
         "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
-        "worker_deployment_id": "d0e2153c-8288-4d19-ab7a-bc348f9cdd0b",
+        "worker_deployment_id": "9f49ae76-3daf-4813-b01d-20e11867564a",
         "worker_deployment_status": "SUCCESS",
-        "worker_image_digest": "sha256:da623939c57e81784421e30674c245aaf7621fbfcc2f09af2e812a49270cd1f4",
+        "worker_image_digest": "sha256:da62398c2a4163393558935c30656f09936fb433a0db00b2deb52a026f35154a",
         "database_service": "Postgres",
         "database_service_id": "e6671cb7-178a-4821-b977-7b6e24c0c052"
       }
@@ -166,8 +166,8 @@
     {
       "id": "BLOCK-CURRENT-ROLLBACK",
       "lane": "rollback",
-      "reason": "Staging rollback/roll-forward was not rerun after the W13-104 staging deployment.",
-      "scope": "Blocks full release claim until current candidate rollback proof is refreshed."
+      "reason": "Staging source-rebuild rollback and roll-forward were exercised, and W13-104 was restored, but rollback is not accepted because /version remained W13-104 during the rollback source deploy.",
+      "scope": "Blocks full release claim until /version is source-authoritative for source-rebuild rollback or an accepted equivalent runtime source proof exists."
     },
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",
@@ -179,7 +179,7 @@
   "safety_ledger": {
     "this_session": {
       "production_deployments": 0,
-      "staging_deployments": 0,
+      "staging_deployments": 4,
       "production_database_writes": 0,
       "crm_import_applies": 0,
       "emails_sent": 0,
@@ -201,7 +201,8 @@
     "json_parse": "passed for run and refreshed director JSON files",
     "director_truth": "passed",
     "director_truth_live": "passed against production and staging /version",
-    "secret_scan": "passed across 1636 repo text files",
+    "staging_rollback_rehearsal": "partial_not_accepted; source deploy and roll-forward ran, but rollback /version did not prove the rollback source",
+    "secret_scan": "passed across 1660 repo text files",
     "node_check": "passed for scripts/check-director-truth.mjs",
     "eslint": "not run; local node_modules is absent and npx resolved an incompatible global ESLint before loading @eslint/js",
     "diff_check": "passed with Windows line-ending warnings only"

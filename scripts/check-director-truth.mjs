@@ -53,6 +53,8 @@ const directorDeployments = readJson(files.directorDeployments);
 const expectedVersion = state.live_readback.production.version;
 const expectedSha = state.live_readback.production.commit_sha;
 const expectedTopline = state.topline;
+const expectedProductionRailway = state.live_readback.production.railway;
+const expectedStagingRailway = state.live_readback.staging.railway;
 
 assertEqual(
   'state production/staging version',
@@ -103,6 +105,46 @@ assertEqual(
 );
 assertEqual('deployment staging sha', directorDeployments.staging.runtime_source_sha, expectedSha);
 assertEqual('deployment staging version', directorDeployments.staging.version, expectedVersion);
+assertEqual(
+  'deployment production web id',
+  directorDeployments.production.web_deployment,
+  expectedProductionRailway.web_deployment_id,
+);
+assertEqual(
+  'deployment production worker id',
+  directorDeployments.production.worker_deployment,
+  expectedProductionRailway.worker_deployment_id,
+);
+assertEqual(
+  'deployment production web digest',
+  directorDeployments.production.web_digest,
+  expectedProductionRailway.web_image_digest,
+);
+assertEqual(
+  'deployment production worker digest',
+  directorDeployments.production.worker_digest,
+  expectedProductionRailway.worker_image_digest,
+);
+assertEqual(
+  'deployment staging web id',
+  directorDeployments.staging.web_deployment,
+  expectedStagingRailway.web_deployment_id,
+);
+assertEqual(
+  'deployment staging worker id',
+  directorDeployments.staging.worker_deployment,
+  expectedStagingRailway.worker_deployment_id,
+);
+assertEqual(
+  'deployment staging web digest',
+  directorDeployments.staging.web_digest,
+  expectedStagingRailway.web_image_digest,
+);
+assertEqual(
+  'deployment staging worker digest',
+  directorDeployments.staging.worker_digest,
+  expectedStagingRailway.worker_image_digest,
+);
 
 for (const filePath of Object.values(files)) {
   assertTextExcludes(filePath, staleTokens);

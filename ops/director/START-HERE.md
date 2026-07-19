@@ -49,8 +49,14 @@ CRM_REAL_DATA: PREVIEW_READY
 
 The safe core is live, but the full release gate remains blocked by exact
 private-input/current-proof blockers: email inputs, CRM import authorization,
-provider canary authorization, protected diagnostics token, W13-104 rollback
-proof, and current W13-104 launch-spine proof.
+provider canary authorization, protected diagnostics token, source-authoritative
+rollback proof, and current W13-104 launch-spine proof.
+
+The latest staging rollback exercise lives at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`. It exercised
+source-rebuild rollback and roll-forward, restored staging to W13-104, and kept
+production untouched, but it is not accepted as rollback proof because
+`/version` stayed W13-104 during the rollback-source deploy.
 
 ## What Not To Do From This Handoff
 

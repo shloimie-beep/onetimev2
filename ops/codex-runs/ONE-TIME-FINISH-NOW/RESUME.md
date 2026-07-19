@@ -47,8 +47,10 @@ release claim remains blocked by protected-input and current-proof gates.
 - Provider canaries: missing
   `C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json`.
 - Protected diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
-- Current rollback proof: W13-104 staging rollback/roll-forward has not been
-  rerun.
+- Current rollback proof: W13-104 staging source-rebuild rollback and
+  roll-forward were exercised, but rollback is not accepted because `/version`
+  stayed W13-104 during the rollback-source deploy. See
+  `STAGING-ROLLBACK-REPORT.md`.
 - Current launch-spine proof: W13-104 did not rerun consuming role-link browser
   acceptance or production signup submit.
 
@@ -56,7 +58,9 @@ release claim remains blocked by protected-input and current-proof gates.
 
 1. Add or verify protected email inputs, then run exactly one allowlisted
    transactional access email canary.
-2. Rerun staging rollback and roll-forward against the W13-104 candidate.
+2. Make runtime source proof source-authoritative for rollback, or update the
+   rollback procedure to bind deployment metadata, image digest, and runtime
+   source readback in one accepted proof; then rerun staging rollback.
 3. Build or run non-consuming role acceptance fixtures; consume production
    setup/reset links only if the protected manifest explicitly permits it.
 4. Run a production-safe signup proof, or one approved test lead submit with

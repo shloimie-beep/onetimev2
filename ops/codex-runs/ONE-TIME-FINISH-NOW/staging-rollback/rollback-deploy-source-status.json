@@ -1,0 +1,14 @@
+{
+  "generated_at": "2026-07-19T13:56:45.7943808+03:00",
+  "operation": "rollback-staging-deploy",
+  "rollback_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "rollback_worker_source_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+  "web_worktree": "C:\\Users\\User\\OneTimeOneTime-w13-102-production-web-007e021",
+  "worker_worktree": "C:\\Users\\User\\OneTimeOneTime-w13-102-production-worker-007e021",
+  "target_project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+  "target_environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+  "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+  "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+  "web_worktree_status": " M railway.json",
+  "worker_worktree_status": " M railway.json"
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "route": "/",
+    "status": 200
+  },
+  {
+    "route": "/signup",
+    "status": 200
+  },
+  {
+    "route": "/login",
+    "status": 200
+  },
+  {
+    "route": "/activate",
+    "status": 200
+  },
+  {
+    "route": "/forgot-password",
+    "status": 200
+  }
+]

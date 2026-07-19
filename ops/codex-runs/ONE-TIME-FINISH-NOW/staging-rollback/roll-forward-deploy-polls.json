@@ -1,0 +1,182 @@
+[
+  {
+    "at": "2026-07-19T14:04:14.6000064+03:00",
+    "attempt": 0,
+    "web_status": ["BUILDING", "SUCCESS", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["DEPLOYING", "SUCCESS", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:04:31.9276048+03:00",
+    "attempt": 1,
+    "web_status": ["SUCCESS", "REMOVING", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:04:49.2244100+03:00",
+    "attempt": 2,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:05:06.4828432+03:00",
+    "attempt": 3,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:05:23.7584403+03:00",
+    "attempt": 4,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:05:41.0578020+03:00",
+    "attempt": 5,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:05:58.3049546+03:00",
+    "attempt": 6,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:06:15.6835237+03:00",
+    "attempt": 7,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:06:33.4904042+03:00",
+    "attempt": 8,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:06:50.7586521+03:00",
+    "attempt": 9,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:07:08.0368628+03:00",
+    "attempt": 10,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:07:25.3766050+03:00",
+    "attempt": 11,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:07:42.6324334+03:00",
+    "attempt": 12,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:07:59.9577477+03:00",
+    "attempt": 13,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:08:17.4169393+03:00",
+    "attempt": 14,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:08:34.6507647+03:00",
+    "attempt": 15,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:08:51.9332792+03:00",
+    "attempt": 16,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:09:09.2281551+03:00",
+    "attempt": 17,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:09:26.6198688+03:00",
+    "attempt": 18,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:09:44.0041348+03:00",
+    "attempt": 19,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:10:01.3404196+03:00",
+    "attempt": 20,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:10:18.7200770+03:00",
+    "attempt": 21,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:10:36.0786293+03:00",
+    "attempt": 22,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:10:53.4168763+03:00",
+    "attempt": 23,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:11:10.9736250+03:00",
+    "attempt": 24,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:11:28.4520784+03:00",
+    "attempt": 25,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:11:45.8491114+03:00",
+    "attempt": 26,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:12:03.5768685+03:00",
+    "attempt": 27,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:12:20.8245227+03:00",
+    "attempt": 28,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  },
+  {
+    "at": "2026-07-19T14:12:38.1324669+03:00",
+    "attempt": 29,
+    "web_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"],
+    "worker_status": ["SUCCESS", "REMOVED", "REMOVED", "REMOVED", "REMOVED"]
+  }
+]

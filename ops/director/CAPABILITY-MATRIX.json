@@ -38,7 +38,11 @@
     { "id": "bna_support", "status": "BLOCKED" },
     { "id": "diagnostics", "status": "DEPLOYED" },
     { "id": "backup_restore", "status": "ACCEPTED" },
-    { "id": "rollback", "status": "BLOCKED" }
+    {
+      "id": "rollback",
+      "status": "BLOCKED",
+      "reason": "Source-rebuild rollback/roll-forward exercised; not accepted because /version is not source-authoritative for rollback."
+    }
   ],
   "notes": "Expanded evidence and blocker text live in ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json."
 }

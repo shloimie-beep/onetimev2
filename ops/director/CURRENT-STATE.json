@@ -86,7 +86,7 @@
     {
       "id": "BLOCK-CURRENT-ROLLBACK",
       "lane": "rollback",
-      "reason": "Staging rollback/roll-forward was not rerun after W13-104."
+      "reason": "Staging source-rebuild rollback and roll-forward were exercised, but rollback is not accepted because /version stayed W13-104 during the rollback-source deploy."
     },
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",

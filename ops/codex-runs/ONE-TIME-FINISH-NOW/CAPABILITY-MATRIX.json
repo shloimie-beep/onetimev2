@@ -177,9 +177,11 @@
       "status": "BLOCKED",
       "evidence": [
         "ops/codex-runs/W13-104/DEPLOYMENT.json",
-        "ops/codex-runs/W13-102/FINAL-REPORT.md"
+        "ops/codex-runs/W13-102/FINAL-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/SUMMARY.json"
       ],
-      "blocker": "Staging rollback/roll-forward passed in W13-102 but was not rerun after W13-104."
+      "blocker": "W13-104 staging source-rebuild rollback and roll-forward were exercised, but rollback remains unaccepted because /version stayed W13-104 during the rollback-source deploy."
     }
   ]
 }

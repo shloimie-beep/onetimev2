@@ -1,0 +1,129 @@
+{
+  "schema_version": "onetime.one_time_finish_now.staging_rollback_rehearsal.v1",
+  "generated_at": "2026-07-19T14:09:28.9494464+03:00",
+  "status": "partial_not_accepted_version_endpoint_not_source_authoritative",
+  "staging_url": "https://ot99-web-staging.up.railway.app",
+  "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+  "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+  "services": {
+    "web": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+    "worker": "76e7fdc2-99b9-4a82-ba55-5dff3723398f"
+  },
+  "rollback_source": {
+    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "worktrees": [
+      "C:/Users/User/OneTimeOneTime-w13-102-production-web-007e021",
+      "C:/Users/User/OneTimeOneTime-w13-102-production-worker-007e021"
+    ]
+  },
+  "roll_forward_source": {
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "worktrees": [
+      "C:/Users/User/OneTimeOneTime-w13-104-web-688fc70",
+      "C:/Users/User/OneTimeOneTime-w13-104-worker-688fc70"
+    ]
+  },
+  "pre_rollback_http": {
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "health_ok": true,
+    "ready_ok": true
+  },
+  "rollback_deployments": {
+    "web": {
+      "deployment_id": "fb17f301-0442-45a8-ae81-77e8a932ee63",
+      "final_status_after_roll_forward": "REMOVED",
+      "image_digest": "sha256:82b539cfc174f37f407a3b5f4ef65b9bfce6cf4bf3e39916d3d1b9758272927e",
+      "message": "ONE-TIME-FINISH-NOW rollback-staging web 007e021",
+      "config_file": "/railway.web.staging.json"
+    },
+    "worker": {
+      "deployment_id": "cf5d7d66-478a-4582-afb1-c5a474effff0",
+      "final_status_after_roll_forward": "REMOVED",
+      "image_digest": "sha256:95d985bb5600fbffe4a24f669a7ccbbf00171835fd1161b75ef6b2ceb47e6c83",
+      "message": "ONE-TIME-FINISH-NOW rollback-staging worker 007e021",
+      "config_file": "/railway.worker.staging.json"
+    }
+  },
+  "rollback_http": {
+    "expected_commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "actual_version": "w13-104-public-cls-688fc70",
+    "actual_commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "health_ok": true,
+    "ready_ok": true,
+    "version_commit_matched_expected": false,
+    "acceptance": "not_accepted",
+    "caveat": "Deployment metadata shows rollback source deploy records, but /version remained W13-104 because APP_VERSION and COMMIT_SHA are environment-provided runtime values rather than source-authoritative build metadata."
+  },
+  "roll_forward_deployments": {
+    "web": {
+      "deployment_id": "e32187d8-a32b-401d-ae8a-37d87af1a203",
+      "status": "SUCCESS",
+      "image_digest": "sha256:4f8a8e76f62ad24318f87ba496cdbf79a122d8b66905a34969304d96b7bee5d5",
+      "message": "ONE-TIME-FINISH-NOW roll-forward-staging web 688fc70",
+      "config_file": "/railway.web.staging.json"
+    },
+    "worker": {
+      "deployment_id": "9f49ae76-3daf-4813-b01d-20e11867564a",
+      "status": "SUCCESS",
+      "image_digest": "sha256:da62398c2a4163393558935c30656f09936fb433a0db00b2deb52a026f35154a",
+      "message": "ONE-TIME-FINISH-NOW roll-forward-staging worker 688fc70",
+      "config_file": "/railway.worker.staging.json"
+    }
+  },
+  "roll_forward_http": {
+    "expected_commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "actual_version": "w13-104-public-cls-688fc70",
+    "actual_commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "health_ok": true,
+    "ready_ok": true,
+    "version_commit_matched_expected": true,
+    "route_statuses": [
+      { "route": "/", "status": 200 },
+      { "route": "/signup", "status": 200 },
+      { "route": "/login", "status": 200 },
+      { "route": "/activate", "status": 200 },
+      { "route": "/forgot-password", "status": 200 }
+    ]
+  },
+  "production_readonly_after": {
+    "version": "w13-104-public-cls-688fc70",
+    "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "health_ok": true,
+    "ready_ok": true
+  },
+  "external_effects": {
+    "staging_deployments": 4,
+    "production_deployments": 0,
+    "production_database_writes": 0,
+    "crm_import_applies": 0,
+    "provider_mutations": 0,
+    "external_sends": 0,
+    "live_stripe_charges": 0,
+    "dns_changes": 0
+  },
+  "acceptance_result": {
+    "rollback_source_deploy_exercised": true,
+    "roll_forward_restored_w13_104": true,
+    "rollback_gate_accepted": false,
+    "blocking_follow_up": "Make runtime /version source-authoritative for source-rebuild rollback, or update the staging rollback procedure to bind deployment metadata, image digest, and runtime-reported source in one accepted proof."
+  },
+  "evidence_files": [
+    "staging-rollback/pre-rollback-http.json",
+    "staging-rollback/pre-rollback-deployments.web.json",
+    "staging-rollback/pre-rollback-deployments.worker.json",
+    "staging-rollback/rollback-deploy-source-status.json",
+    "staging-rollback/rollback-deploy.web.output.txt",
+    "staging-rollback/rollback-deploy.worker.output.txt",
+    "staging-rollback/rollback-http.json",
+    "staging-rollback/roll-forward-deploy-source-status.json",
+    "staging-rollback/roll-forward-deploy.web.output.txt",
+    "staging-rollback/roll-forward-deploy.worker.output.txt",
+    "staging-rollback/final-deployments.web.json",
+    "staging-rollback/final-deployments.worker.json",
+    "staging-rollback/roll-forward-http.json",
+    "staging-rollback/roll-forward-route-statuses.curl.json",
+    "staging-rollback/final-railway-status.json",
+    "staging-rollback/post-rehearsal-production-readonly.json"
+  ]
+}
