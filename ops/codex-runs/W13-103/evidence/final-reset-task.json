@@ -1,0 +1,42 @@
+{
+  "schema_version": "onetime.w13_103.final_reset_task_summary.v1",
+  "run_id": "W13-103",
+  "deployment_id": "503041cb-abf3-46b6-bc41-4e23399fc60a",
+  "mode": "final-reset",
+  "status": "applied",
+  "blockers": [],
+  "roles": [
+    {
+      "role": "administrator",
+      "operation": "password_reset",
+      "status": "applied",
+      "delivery_state": "sink_queued",
+      "sessions_revoked": 1
+    },
+    {
+      "role": "parent",
+      "operation": "password_reset",
+      "status": "applied",
+      "delivery_state": "sink_queued",
+      "sessions_revoked": 0
+    },
+    {
+      "role": "student",
+      "operation": "student_reset",
+      "status": "applied",
+      "delivery_state": "sink_queued",
+      "sessions_revoked": 0
+    }
+  ],
+  "mutation_deltas": {
+    "account_users_delta": 0,
+    "external_sends": 0,
+    "foundation_checked": false,
+    "household_delta": 0,
+    "learner_delta": 0,
+    "lifecycle_outbox_delta": 3,
+    "lifecycle_token_delta": 3,
+    "private_handoff_links": 3
+  },
+  "private_report_path": "C:\\Users\\User\\.onetime-w13-103-private\\task-final-reset.private.json"
+}

@@ -1,0 +1,91 @@
+{
+  "schema_version": "onetime.w13_103.production_role_access_counts.v1",
+  "run_id": "W13-103",
+  "captured_after": "final-reset",
+  "account_users_by_role_status": [
+    {
+      "role": "admin",
+      "status": "active",
+      "count": 2
+    },
+    {
+      "role": "parent",
+      "status": "active",
+      "count": 1
+    },
+    {
+      "role": "student",
+      "status": "active",
+      "count": 1
+    }
+  ],
+  "household_count": 1,
+  "learner_count": 1,
+  "student_access_by_status": [
+    {
+      "status": "reset_requested",
+      "count": 1
+    }
+  ],
+  "lifecycle_tokens_by_type_state": [
+    {
+      "token_type": "owner_admin_invitation",
+      "token_state": "consumed",
+      "count": 2
+    },
+    {
+      "token_type": "owner_admin_invitation",
+      "token_state": "revoked",
+      "count": 1
+    },
+    {
+      "token_type": "parent_activation",
+      "token_state": "consumed",
+      "count": 1
+    },
+    {
+      "token_type": "password_reset",
+      "token_state": "outstanding",
+      "count": 2
+    },
+    {
+      "token_type": "student_reset",
+      "token_state": "outstanding",
+      "count": 1
+    },
+    {
+      "token_type": "student_reset",
+      "token_state": "revoked",
+      "count": 1
+    },
+    {
+      "token_type": "student_setup",
+      "token_state": "consumed",
+      "count": 1
+    }
+  ],
+  "lifecycle_outbox_by_state": [
+    {
+      "state": "provider_delivered",
+      "count": 1
+    },
+    {
+      "state": "queued",
+      "count": 3
+    },
+    {
+      "state": "sink_delivered",
+      "count": 4
+    },
+    {
+      "state": "superseded",
+      "count": 1
+    }
+  ],
+  "active_sessions_by_role": [],
+  "latest_migration": "2203_w13_100_student_gamification",
+  "notes": [
+    "Counts are scoped to the W13-103 account/product lane and exclude emails, usernames, raw token values, and private identifiers.",
+    "The baseline already had one active admin and historical lifecycle rows; production_mutation_counts in PROVISIONING-RESULT.json records W13-103 deltas."
+  ]
+}

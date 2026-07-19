@@ -1,0 +1,27 @@
+{
+  "schema_version": "onetime.w13_103.backup_restore_summary.v1",
+  "run_id": "W13-103",
+  "status": "passed",
+  "generated_at": "2026-07-19T04:26:29Z",
+  "deployment_id": "7bfb281b-9166-421b-9410-9bf6b5280f36",
+  "ops_run_id": "w13-103-prod-pg18-20260719T0428Z",
+  "database_service": "Postgres-j9Pi",
+  "postgres_version": "18.4",
+  "dump_path": "/backup/w13-103-prod-pg18-20260719T0428Z/production-pg18.dump",
+  "dump_size_bytes": 3217741,
+  "dump_sha256": "0c839090ca962711fc3aac0878ecae9741a510ed19d771e61e8f8280610cc189",
+  "archive_list_entries": 4956,
+  "table_count": 182,
+  "index_count": 675,
+  "constraint_count": 3287,
+  "migration_rows": 39,
+  "latest_migration": "2203_w13_100_student_gamification",
+  "source_restored_table_hash": "7de50718b1287f3c3c5d355d140026cb6bfffbc23272d90cd1b6a7060ba72466",
+  "source_restored_migration_ledger_hash": "ab04ea724074dac521254497f642ccd28b1dfd0f107316bb5104d504e7a49d07",
+  "hard_failures": [],
+  "external_mutations": {
+    "production_database": false,
+    "provider_sends": false,
+    "railway": true
+  }
+}

@@ -2,10 +2,11 @@
   "schema_version": "onetime.w13_103.external_effects.v1",
   "run_id": "W13-103",
   "effects": {
-    "production_database_writes": 0,
-    "production_database_reads": "counts_only_pending",
-    "railway_deployments": 0,
-    "railway_one_off_tasks": 0,
+    "production_database_writes": "bounded W13-103 identity, household, learner, student-access, lifecycle-token, auth-challenge, session, outbox, and audit writes only",
+    "production_database_reads": "counts-only plus scoped role-access verification",
+    "railway_web_replacement_deployments": 0,
+    "railway_one_off_task_deployments_with_database_mutation": 3,
+    "railway_one_off_task_deployments_without_database_mutation": 4,
     "provider_sends": 0,
     "email_sends": 0,
     "whatsapp_sends": 0,
@@ -17,12 +18,18 @@
     "rabbi_contacts": 0
   },
   "transport_state": {
-    "email": "disabled",
+    "email": "disabled_private_handoff",
     "whatsapp": "disabled",
-    "support_bridge": "disabled"
+    "support_bridge": "disabled",
+    "payment": "disabled"
+  },
+  "railway_task_service_cleanup": {
+    "targeted_variables_deleted": 32,
+    "lingering_targeted_keys": []
   },
   "notes": [
-    "Private local setup-link handoff is preferred if Resend remains unavailable.",
-    "No secrets, PII, raw setup links, or private destination identifiers are committed here."
+    "Protected local setup/reset handoff was used because Resend remained unavailable/disabled.",
+    "No secrets, PII, raw setup/reset links, private destination identifiers, database URLs, or raw provider credentials are committed here.",
+    "The healthy production web runtime remained deployment 9334b362-f00d-4170-9713-ecee0d22b85c at source 007e0215d1186ca51163dea3b1c15303bf52a860."
   ]
 }

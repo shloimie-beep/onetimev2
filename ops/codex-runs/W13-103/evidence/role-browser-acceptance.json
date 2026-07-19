@@ -1,0 +1,65 @@
+{
+  "schema_version": "onetime.w13_103.role_browser_acceptance.v1",
+  "run_id": "W13-103",
+  "status": "passed",
+  "private_evidence": {
+    "administrator": "C:\\Users\\User\\.onetime-w13-103-private\\acceptance-admin.private.json",
+    "parent": "C:\\Users\\User\\.onetime-w13-103-private\\acceptance-parent.private.json",
+    "student_and_parent_controls": "C:\\Users\\User\\.onetime-w13-103-private\\acceptance-student-parent-controls.private.json"
+  },
+  "administrator": {
+    "logged_in_via_email_link_ui": true,
+    "session_role": "admin",
+    "mfa_capable": false,
+    "crm_contacts_status": 200,
+    "parent_dashboard_boundary_status": 403,
+    "student_route_boundary_status": 403,
+    "dashboard_viewports_passed": 4,
+    "crm_viewports_passed": 4,
+    "logout_status": 200
+  },
+  "parent": {
+    "activated_via_ui": true,
+    "session_role": "parent",
+    "mfa_capable": false,
+    "dashboard_status": 200,
+    "household_count": 1,
+    "learner_count": 1,
+    "student_access_state_count": 1,
+    "crm_boundary_status": 403,
+    "viewports_passed": 4,
+    "logout_status": 200
+  },
+  "student": {
+    "activated_via_ui": true,
+    "session_role": "student",
+    "dashboard_status": 200,
+    "learner_count": 1,
+    "crm_boundary_status": 403,
+    "parent_dashboard_boundary_status": 403,
+    "viewports_passed": 4,
+    "after_parent_suspend_dashboard_status": 401,
+    "session_invalidated_by_parent_suspend": true
+  },
+  "parent_controls": {
+    "logged_in_via_ui": true,
+    "session_role": "parent",
+    "dashboard_status": 200,
+    "household_count": 1,
+    "learner_count": 1,
+    "access_status_before": "active",
+    "suspend_status": 200,
+    "suspend_access_status": "suspended",
+    "restore_status": 200,
+    "restore_access_status": "active",
+    "reset_status": 200,
+    "reset_access_status": "reset_requested",
+    "logout_status": 200
+  },
+  "safety": {
+    "external_sends": 0,
+    "printed_secrets": false,
+    "printed_pii": false,
+    "rabbi_contacted": false
+  }
+}

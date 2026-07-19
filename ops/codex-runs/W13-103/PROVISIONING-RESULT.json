@@ -1,37 +1,95 @@
 {
   "schema_version": "onetime.w13_103.provisioning_result.v1",
   "run_id": "W13-103",
-  "status": "pending",
-  "delivery_mode": null,
+  "status": "ready",
+  "terminal_status": "PRODUCTION_ROLE_ACCESS_READY",
+  "delivery_mode": "protected_local_handoff",
+  "private_handoff_path": "C:\\Users\\User\\.onetime-w13-103-private\\LOGIN-HANDOFF.private.json",
+  "production_login_url": "https://join.onetimeonetime.com/login",
   "production_mutation_counts": {
-    "users_created": 0,
+    "users_created": 3,
     "users_recovered": 0,
-    "households_created": 0,
-    "learners_created": 0,
-    "student_access_created": 0,
-    "activation_or_reset_tokens_issued": 0,
-    "tokens_revoked": 0,
-    "sessions_revoked": 0,
-    "outbox_rows_created": 0,
+    "households_created": 1,
+    "learners_created": 1,
+    "student_access_created": 1,
+    "lifecycle_tokens_issued": 7,
+    "lifecycle_tokens_consumed_by_browser_acceptance": 3,
+    "lifecycle_tokens_superseded_or_revoked": 1,
+    "lifecycle_outbox_rows_created": 7,
+    "auth_email_challenges_created": 1,
+    "auth_email_challenge_outbox_rows_created": 1,
+    "final_reset_sessions_revoked": 1,
+    "parent_suspend_invalidated_active_student_browser_session": true,
+    "active_sessions_after_final_reset": 0,
     "provider_sends": 0,
     "billing_rows_created": 0,
     "crm_import_rows_created": 0
   },
+  "final_counts_after": {
+    "account_users_by_role_status": [
+      {
+        "role": "admin",
+        "status": "active",
+        "count": 2
+      },
+      {
+        "role": "parent",
+        "status": "active",
+        "count": 1
+      },
+      {
+        "role": "student",
+        "status": "active",
+        "count": 1
+      }
+    ],
+    "household_count": 1,
+    "learner_count": 1,
+    "student_access_by_status": [
+      {
+        "status": "reset_requested",
+        "count": 1
+      }
+    ],
+    "active_sessions_by_role": [],
+    "latest_migration": "2203_w13_100_student_gamification"
+  },
   "roles": {
     "administrator": {
-      "status": "pending",
-      "delivery": null
+      "status": "ready",
+      "delivery": "protected_local_final_password_reset",
+      "browser_acceptance": "passed",
+      "crm_contacts_status": 200,
+      "role_boundaries": {
+        "parent_dashboard_status": 403,
+        "student_route_status": 403
+      }
     },
     "parent": {
-      "status": "pending",
-      "delivery": null
+      "status": "ready",
+      "delivery": "protected_local_final_password_reset",
+      "browser_acceptance": "passed",
+      "household_count": 1,
+      "learner_count": 1,
+      "student_access_state_count": 1,
+      "role_boundaries": {
+        "crm_contacts_status": 403
+      }
     },
     "student": {
-      "status": "pending",
-      "delivery": null
+      "status": "ready",
+      "delivery": "protected_local_final_student_reset",
+      "browser_acceptance": "passed",
+      "dashboard_status": 200,
+      "parent_managed_reset_status": "reset_requested",
+      "role_boundaries": {
+        "crm_contacts_status": 403,
+        "parent_dashboard_status": 403
+      }
     }
   },
   "notes": [
-    "This committed result file intentionally excludes emails, usernames, setup URLs, tokens, and raw private identifiers."
+    "This committed result file intentionally excludes emails, usernames, setup/reset URLs, tokens, passwords, raw private identifiers, database URLs, and private destination values.",
+    "Consumed setup links remain only as historical protected-local evidence; the final usable handoff fields are the unconsumed reset links in the protected local file."
   ]
 }

@@ -1,24 +1,56 @@
 {
   "schema_version": "onetime.w13_103.role_acceptance.v1",
   "run_id": "W13-103",
-  "status": "pending",
+  "status": "passed",
+  "private_evidence": {
+    "administrator": "C:\\Users\\User\\.onetime-w13-103-private\\acceptance-admin.private.json",
+    "parent": "C:\\Users\\User\\.onetime-w13-103-private\\acceptance-parent.private.json",
+    "student_and_parent_controls": "C:\\Users\\User\\.onetime-w13-103-private\\acceptance-student-parent-controls.private.json"
+  },
   "browser_contexts": {
-    "administrator": "pending",
-    "parent": "pending",
-    "student": "pending"
+    "administrator": "passed",
+    "parent": "passed",
+    "student": "passed"
   },
   "viewports": {
-    "360x800": "pending",
-    "390x844": "pending",
-    "tablet": "pending",
-    "desktop": "pending"
+    "360x800": "passed",
+    "390x844": "passed",
+    "tablet_768x1024": "passed",
+    "desktop_1440x1000": "passed"
   },
   "role_isolation": {
-    "administrator": "pending",
-    "parent": "pending",
-    "student": "pending"
+    "administrator": {
+      "crm_contacts_status": 200,
+      "parent_dashboard_boundary_status": 403,
+      "student_route_boundary_status": 403
+    },
+    "parent": {
+      "dashboard_status": 200,
+      "crm_boundary_status": 403,
+      "household_count": 1,
+      "learner_count": 1,
+      "student_access_state_count": 1
+    },
+    "student": {
+      "dashboard_status": 200,
+      "crm_boundary_status": 403,
+      "parent_dashboard_boundary_status": 403,
+      "learner_count": 1
+    }
+  },
+  "parent_managed_student_access": {
+    "initial_access_status": "active",
+    "suspend_status": 200,
+    "suspend_access_status": "suspended",
+    "restore_status": 200,
+    "restore_access_status": "active",
+    "reset_status": 200,
+    "reset_access_status": "reset_requested",
+    "student_session_invalidated_by_suspend": true,
+    "parent_logout_status": 200
   },
   "notes": [
-    "Acceptance evidence must stay sanitized and must not include private browser URLs containing setup or reset tokens."
+    "Acceptance evidence is sanitized and contains no private browser URLs containing setup/reset tokens.",
+    "The parent admin-route check reached the public app shell, but parent CRM API authorization correctly returned 403."
   ]
 }

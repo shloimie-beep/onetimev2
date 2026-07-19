@@ -2,52 +2,87 @@
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "W13-103",
   "title": "Production role access",
-  "status": "in_progress",
-  "terminal_status": null,
+  "status": "complete",
+  "terminal_status": "PRODUCTION_ROLE_ACCESS_READY",
   "created_at": "2026-07-19",
+  "closed_at": "2026-07-19T05:20:57Z",
   "repository": "webcraft-media/onetimev2",
   "pr": 91,
   "branch": "release/w13-100-controlled-day-one-20260717T182046Z",
   "starting_checkpoint": "333ebd23376ea29edcbd6b5ba19c4dfa2125a03a",
+  "latest_task_source_checkpoint": "50aabf46a5fd5e9c0260ed3528e73ac7e2219d1e",
   "starting_deployed_runtime_source": "007e0215d1186ca51163dea3b1c15303bf52a860",
   "production_url": "https://join.onetimeonetime.com",
+  "production_login_url": "https://join.onetimeonetime.com/login",
   "private_directory": "C:\\Users\\User\\.onetime-w13-103-private",
+  "private_handoff_path": "C:\\Users\\User\\.onetime-w13-103-private\\LOGIN-HANDOFF.private.json",
   "source_pack": {
     "path": "C:\\Users\\User\\Downloads\\W13-103-PRODUCTION-ROLE-ACCESS-PACK.zip",
     "sha256": "6AA32FDC14169887922894619D5AE84344E475442386A25271ADF12CD9CEDB35",
     "entry_count": 2,
     "path_safety": "passed"
   },
+  "live_runtime": {
+    "url": "https://join.onetimeonetime.com",
+    "version": "w13-102-resend-webhook-007e021",
+    "commit_sha": "007e0215d1186ca51163dea3b1c15303bf52a860",
+    "target_app": "one-time",
+    "health": "ok",
+    "web_deployment_id": "9334b362-f00d-4170-9713-ecee0d22b85c",
+    "replacement_deployed": false,
+    "preserved_runtime": true
+  },
+  "backup_restore": {
+    "status": "passed",
+    "deployment_id": "7bfb281b-9166-421b-9410-9bf6b5280f36",
+    "run_id": "w13-103-prod-pg18-20260719T0428Z",
+    "postgres_version": "18.4",
+    "dump_sha256": "0c839090ca962711fc3aac0878ecae9741a510ed19d771e61e8f8280610cc189",
+    "archive_list_entries": 4956,
+    "table_count": 182,
+    "index_count": 675,
+    "constraint_count": 3287,
+    "migration_rows": 39,
+    "latest_migration": "2203_w13_100_student_gamification",
+    "source_restored_table_hash_match": true,
+    "source_restored_migration_ledger_hash_match": true
+  },
+  "task_deployments": {
+    "initial_apply": "c9eaf917-a635-42cf-b865-67477a0efb6a",
+    "admin_login_challenge_extract": "d1ffa912-af84-49b4-8b22-eee62b9b2578",
+    "student_apply": "d6516cfe-971a-4d2d-9fb0-69c8403e4fc4",
+    "final_reset": "503041cb-abf3-46b6-bc41-4e23399fc60a"
+  },
   "phases": [
     {
       "phase": 1,
       "name": "Live baseline and backup",
-      "status": "in_progress"
+      "status": "complete"
     },
     {
       "phase": 2,
       "name": "Private authorization manifest",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "phase": 3,
       "name": "Production-safe one-off execution",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "phase": 4,
       "name": "Setup handoff",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "phase": 5,
       "name": "Role acceptance",
-      "status": "pending"
+      "status": "complete"
     },
     {
       "phase": 6,
       "name": "Cleanup, governance, and handoff",
-      "status": "pending"
+      "status": "complete"
     }
   ],
   "global_blockers": [],
@@ -58,6 +93,16 @@
     "broad_sends": false,
     "live_charges": false,
     "crm_import": false,
-    "provider_canaries": false
-  }
+    "provider_canaries": false,
+    "provider_sends": false,
+    "task_service_targeted_variable_cleanup": "complete"
+  },
+  "evidence": [
+    "ops/codex-runs/W13-103/evidence/backup-restore-summary.json",
+    "ops/codex-runs/W13-103/evidence/runtime-health.json",
+    "ops/codex-runs/W13-103/evidence/role-browser-acceptance.json",
+    "ops/codex-runs/W13-103/evidence/final-reset-task.json",
+    "ops/codex-runs/W13-103/evidence/production-role-access-counts.json",
+    "ops/codex-runs/W13-103/evidence/task-service-cleanup.json"
+  ]
 }
