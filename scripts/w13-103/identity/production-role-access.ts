@@ -53,6 +53,7 @@ const manifestSchema = z
   .object({
     schema_version: z.string().optional(),
     run_id: z.literal(RUN_ID),
+    generated_at: z.string().optional(),
     expires_at: z.string(),
     expected_runtime_source_sha: z.literal(EXPECTED_RUNTIME_SHA),
     authorization_phrase_sha256: z.string().regex(/^[a-f0-9]{64}$/i),
