@@ -1,0 +1,489 @@
+{
+  "schema_version": "onetime.w12_100_04.real_source_preflight.v1",
+  "lane_id": "W12-100-04",
+  "generated_at": "2026-07-19T13:37:23.677Z",
+  "status": "done",
+  "blocked_reasons": [],
+  "approved_scope": {
+    "source_files": 6,
+    "one_time_rabbi_followers_sources": 1,
+    "email_audience_sources": 5,
+    "expected_naive_rows": 2509,
+    "approved_source_group_fingerprint": "0bee9ddd75358d7eb987c2581c79ff1e555a848d7830e002c80d3d34cf3e1e32"
+  },
+  "validation": {
+    "source_dir_provided": true,
+    "source_dir_available": true,
+    "exact_filename_match_required": true,
+    "exact_hash_match_required": true,
+    "unapproved_supported_file_count": 0,
+    "unapproved_supported_file_fingerprint_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_results": [
+      {
+        "id": "DL-SHEET-f93f34d98e",
+        "file_name": "Rabbi Scheller Followers.xlsx",
+        "status": "verified",
+        "expected_rows": 812,
+        "expected_columns": 2,
+        "approved_hash_fingerprint": "611779c0c04371afe739408b86081d03dc086b205f86d4ce12a06a2858c1ad7c",
+        "detected_hash_fingerprint": "611779c0c04371afe739408b86081d03dc086b205f86d4ce12a06a2858c1ad7c"
+      },
+      {
+        "id": "DL-SHEET-3d4dceeb1b",
+        "file_name": "subscribed_email_audience_export_HASH.csv",
+        "status": "verified",
+        "expected_rows": 1311,
+        "expected_columns": 31,
+        "approved_hash_fingerprint": "f983ca203a064ee64d0f0719b784bfc732a7dad50eadf905ee13ccc8a50bdda1",
+        "detected_hash_fingerprint": "f983ca203a064ee64d0f0719b784bfc732a7dad50eadf905ee13ccc8a50bdda1"
+      },
+      {
+        "id": "DL-SHEET-8c69f34fcd",
+        "file_name": "unsubscribed_email_audience_export_HASH.csv",
+        "status": "verified",
+        "expected_rows": 152,
+        "expected_columns": 35,
+        "approved_hash_fingerprint": "2badb1f6096f8d4186a4ce490958ec8b7c1ba8aca58f2831aaa6899f334a7e6f",
+        "detected_hash_fingerprint": "2badb1f6096f8d4186a4ce490958ec8b7c1ba8aca58f2831aaa6899f334a7e6f"
+      },
+      {
+        "id": "DL-SHEET-ead777c4b0",
+        "file_name": "cleaned_email_audience_export_HASH.csv",
+        "status": "verified",
+        "expected_rows": 60,
+        "expected_columns": 33,
+        "approved_hash_fingerprint": "75ca42a88eced5a9af1d087e75e7ccb395f7909d1339861142fe8afced084c52",
+        "detected_hash_fingerprint": "75ca42a88eced5a9af1d087e75e7ccb395f7909d1339861142fe8afced084c52"
+      },
+      {
+        "id": "DL-SHEET-25eb3cb2d6",
+        "file_name": "subscribers_detailed.csv",
+        "status": "verified",
+        "expected_rows": 86,
+        "expected_columns": 8,
+        "approved_hash_fingerprint": "e2589fd4589df36ae1732e2143906e5e820f0cb976bf53e1af9c3071c5f983d1",
+        "detected_hash_fingerprint": "e2589fd4589df36ae1732e2143906e5e820f0cb976bf53e1af9c3071c5f983d1"
+      },
+      {
+        "id": "DL-SHEET-2900326013",
+        "file_name": "subscribers.csv",
+        "status": "verified",
+        "expected_rows": 88,
+        "expected_columns": 5,
+        "approved_hash_fingerprint": "f5b6f777969d6e48836d5ef8b81d620fd5d9f326ccd3ff6bbf2c35f35c9b764f",
+        "detected_hash_fingerprint": "f5b6f777969d6e48836d5ef8b81d620fd5d9f326ccd3ff6bbf2c35f35c9b764f"
+      }
+    ]
+  },
+  "summary": {
+    "total_rows": 2505,
+    "expected_naive_rows": 2509,
+    "unique_identity_count": 1596,
+    "duplicate_identity_rows": 98,
+    "disposition_counts": {
+      "matched_existing_contact": 0,
+      "stage_new_contact": 1559,
+      "duplicate_input": 98,
+      "no_op": 0,
+      "manual_review": 848
+    },
+    "w12_01_compatible_disposition_counts": {
+      "matched_existing_contact": 0,
+      "stage_new_contact": 1559,
+      "duplicate_input": 98,
+      "manual_review": 848,
+      "no_op": 0
+    },
+    "communication_eligible_rows": 1357,
+    "crm_importable": 1559,
+    "email_campaign_eligible": 1357,
+    "whatsapp_campaign_eligible": 0,
+    "suppressed": 152,
+    "invalid": 811,
+    "duplicate": 98,
+    "identity_conflict": 37,
+    "quarantined": 0,
+    "do_not_contact_rows": 152,
+    "matched_existing_rows": 0,
+    "staged_new_rows": 1559,
+    "no_op_rows": 0,
+    "manual_review_rows": 848
+  },
+  "source_summaries": [
+    {
+      "id": "DL-SHEET-f93f34d98e",
+      "file_name": "Rabbi Scheller Followers.xlsx",
+      "classification": "one_time_rabbi_scheller_followers",
+      "readiness": "dry_run_candidate_only",
+      "source_owner": "operator local Downloads",
+      "file_fingerprint": "611779c0c04371afe739408b86081d03dc086b205f86d4ce12a06a2858c1ad7c",
+      "expected_rows": 812,
+      "observed_rows": 811,
+      "expected_columns": 2,
+      "observed_column_count": 2,
+      "row_fingerprint_set_digest": "b70e37bbfeb4c76b99a431a48f63df4519076e615831050b5a099e3e809682e5",
+      "identity_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "disposition_counts": {
+        "matched_existing_contact": 0,
+        "stage_new_contact": 0,
+        "duplicate_input": 0,
+        "no_op": 0,
+        "manual_review": 811
+      },
+      "consent_counts": {
+        "opted_in": 0,
+        "opted_out": 0,
+        "unknown": 811
+      },
+      "suppression_counts": {
+        "active": 0,
+        "suppressed": 0,
+        "unknown": 811
+      },
+      "corrected_crm_counts": {
+        "crm_importable": 0,
+        "email_campaign_eligible": 0,
+        "whatsapp_campaign_eligible": 0,
+        "suppressed": 0,
+        "invalid": 811,
+        "duplicate": 0,
+        "identity_conflict": 0,
+        "quarantined": 0
+      },
+      "manual_review_rows": 811
+    },
+    {
+      "id": "DL-SHEET-3d4dceeb1b",
+      "file_name": "subscribed_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "readiness": "dry_run_candidate_only",
+      "source_owner": "operator local Downloads",
+      "file_fingerprint": "f983ca203a064ee64d0f0719b784bfc732a7dad50eadf905ee13ccc8a50bdda1",
+      "expected_rows": 1311,
+      "observed_rows": 1311,
+      "expected_columns": 31,
+      "observed_column_count": 31,
+      "row_fingerprint_set_digest": "d085e30c64644aa6d63629a23f2f39d67632e007d623cd0f4d27b92512c0cff1",
+      "identity_fingerprint_set_digest": "6c614f225c7abb76d2382595d6eceab47b3854dbc54dc47e2a0b5c63ea6bcb76",
+      "disposition_counts": {
+        "matched_existing_contact": 0,
+        "stage_new_contact": 1282,
+        "duplicate_input": 0,
+        "no_op": 0,
+        "manual_review": 29
+      },
+      "consent_counts": {
+        "opted_in": 1311,
+        "opted_out": 0,
+        "unknown": 0
+      },
+      "suppression_counts": {
+        "active": 1311,
+        "suppressed": 0,
+        "unknown": 0
+      },
+      "corrected_crm_counts": {
+        "crm_importable": 1282,
+        "email_campaign_eligible": 1282,
+        "whatsapp_campaign_eligible": 0,
+        "suppressed": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "identity_conflict": 29,
+        "quarantined": 0
+      },
+      "manual_review_rows": 29
+    },
+    {
+      "id": "DL-SHEET-8c69f34fcd",
+      "file_name": "unsubscribed_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "readiness": "suppression_precedence_source",
+      "source_owner": "operator local Downloads",
+      "file_fingerprint": "2badb1f6096f8d4186a4ce490958ec8b7c1ba8aca58f2831aaa6899f334a7e6f",
+      "expected_rows": 152,
+      "observed_rows": 152,
+      "expected_columns": 35,
+      "observed_column_count": 35,
+      "row_fingerprint_set_digest": "6c3545977ae60fc2e00b42391cb79370b6e69be8ae6cfd3d2de36b5205ff7a44",
+      "identity_fingerprint_set_digest": "19862493c8f7d2ee14e48628bdce82b79605aa8c8ec4eb9247eac82777e6614a",
+      "disposition_counts": {
+        "matched_existing_contact": 0,
+        "stage_new_contact": 150,
+        "duplicate_input": 0,
+        "no_op": 0,
+        "manual_review": 2
+      },
+      "consent_counts": {
+        "opted_in": 0,
+        "opted_out": 152,
+        "unknown": 0
+      },
+      "suppression_counts": {
+        "active": 0,
+        "suppressed": 152,
+        "unknown": 0
+      },
+      "corrected_crm_counts": {
+        "crm_importable": 150,
+        "email_campaign_eligible": 0,
+        "whatsapp_campaign_eligible": 0,
+        "suppressed": 152,
+        "invalid": 0,
+        "duplicate": 0,
+        "identity_conflict": 2,
+        "quarantined": 0
+      },
+      "manual_review_rows": 2
+    },
+    {
+      "id": "DL-SHEET-ead777c4b0",
+      "file_name": "cleaned_email_audience_export_HASH.csv",
+      "classification": "email_audience_export",
+      "readiness": "dry_run_candidate_only",
+      "source_owner": "operator local Downloads",
+      "file_fingerprint": "75ca42a88eced5a9af1d087e75e7ccb395f7909d1339861142fe8afced084c52",
+      "expected_rows": 60,
+      "observed_rows": 57,
+      "expected_columns": 33,
+      "observed_column_count": 33,
+      "row_fingerprint_set_digest": "f0d6e9d5583285e6f81bef04ac524f16169fc9191a478afdfca122fc3f71f28f",
+      "identity_fingerprint_set_digest": "6a6c27c791ef62782cc74789c03a821c0c659d65124cf272244d73078f385e3d",
+      "disposition_counts": {
+        "matched_existing_contact": 0,
+        "stage_new_contact": 52,
+        "duplicate_input": 0,
+        "no_op": 0,
+        "manual_review": 5
+      },
+      "consent_counts": {
+        "opted_in": 0,
+        "opted_out": 0,
+        "unknown": 57
+      },
+      "suppression_counts": {
+        "active": 0,
+        "suppressed": 0,
+        "unknown": 57
+      },
+      "corrected_crm_counts": {
+        "crm_importable": 52,
+        "email_campaign_eligible": 0,
+        "whatsapp_campaign_eligible": 0,
+        "suppressed": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "identity_conflict": 5,
+        "quarantined": 0
+      },
+      "manual_review_rows": 5
+    },
+    {
+      "id": "DL-SHEET-25eb3cb2d6",
+      "file_name": "subscribers_detailed.csv",
+      "classification": "email_audience_export",
+      "readiness": "dry_run_candidate_only",
+      "source_owner": "operator local Downloads",
+      "file_fingerprint": "e2589fd4589df36ae1732e2143906e5e820f0cb976bf53e1af9c3071c5f983d1",
+      "expected_rows": 86,
+      "observed_rows": 86,
+      "expected_columns": 8,
+      "observed_column_count": 8,
+      "row_fingerprint_set_digest": "4c1c45e47a3197bb9cbc0e53ededf72374f077ed72ce771839d71eabcdfb516e",
+      "identity_fingerprint_set_digest": "8b797bc663e91da15d5bba344412e352116d72b7556368869ff1a3669f250927",
+      "disposition_counts": {
+        "matched_existing_contact": 0,
+        "stage_new_contact": 72,
+        "duplicate_input": 13,
+        "no_op": 0,
+        "manual_review": 1
+      },
+      "consent_counts": {
+        "opted_in": 86,
+        "opted_out": 0,
+        "unknown": 0
+      },
+      "suppression_counts": {
+        "active": 86,
+        "suppressed": 0,
+        "unknown": 0
+      },
+      "corrected_crm_counts": {
+        "crm_importable": 72,
+        "email_campaign_eligible": 72,
+        "whatsapp_campaign_eligible": 0,
+        "suppressed": 0,
+        "invalid": 0,
+        "duplicate": 13,
+        "identity_conflict": 1,
+        "quarantined": 0
+      },
+      "manual_review_rows": 1
+    },
+    {
+      "id": "DL-SHEET-2900326013",
+      "file_name": "subscribers.csv",
+      "classification": "email_audience_export",
+      "readiness": "dry_run_candidate_only",
+      "source_owner": "operator local Downloads",
+      "file_fingerprint": "f5b6f777969d6e48836d5ef8b81d620fd5d9f326ccd3ff6bbf2c35f35c9b764f",
+      "expected_rows": 88,
+      "observed_rows": 88,
+      "expected_columns": 5,
+      "observed_column_count": 5,
+      "row_fingerprint_set_digest": "cf983b3793a0c908bc43bb5046c12d2d08da18d3e77bd63db10c7364e4b0bea5",
+      "identity_fingerprint_set_digest": "d4ac5fe9dc6ab91da6f0b1ee785b129d2116e793c79ee32eb04fb1e35b8adc6a",
+      "disposition_counts": {
+        "matched_existing_contact": 0,
+        "stage_new_contact": 3,
+        "duplicate_input": 85,
+        "no_op": 0,
+        "manual_review": 0
+      },
+      "consent_counts": {
+        "opted_in": 88,
+        "opted_out": 0,
+        "unknown": 0
+      },
+      "suppression_counts": {
+        "active": 88,
+        "suppressed": 0,
+        "unknown": 0
+      },
+      "corrected_crm_counts": {
+        "crm_importable": 3,
+        "email_campaign_eligible": 3,
+        "whatsapp_campaign_eligible": 0,
+        "suppressed": 0,
+        "invalid": 0,
+        "duplicate": 85,
+        "identity_conflict": 0,
+        "quarantined": 0
+      },
+      "manual_review_rows": 0
+    }
+  ],
+  "manual_review_categories": {
+    "missing_email_and_missing_phone": {
+      "count": 811,
+      "row_fingerprint_set_digest": "b70e37bbfeb4c76b99a431a48f63df4519076e615831050b5a099e3e809682e5"
+    },
+    "duplicate_input_same_identity": {
+      "count": 98,
+      "row_fingerprint_set_digest": "05cf824a2adb90fee2333baf8cd4268317001db9671bcab65e963cbf36f635d6"
+    },
+    "email_match_phone_conflict": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "phone_match_email_conflict": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "same_name_different_identity": {
+      "count": 38,
+      "row_fingerprint_set_digest": "3854bef748f9914dfa16a7fa41655cc605dcfcc86b3d8cbce693a099521e4f1d"
+    },
+    "conflicting_consent_or_suppression": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "legacy_member_without_current_consent": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pipeline_stage_ambiguous": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "school_vs_family_classification_ambiguous": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "household_guardian_role_ambiguous": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "learner_without_guardian": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "minor_or_student_safety_unclear": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "source_ownership_unclear": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "external_lead_source_requires_operator_approval": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "existing_production_record_conflict": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "private_message_or_note_requires_exclusion": {
+      "count": 0,
+      "row_fingerprint_set_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_ownership_and_consent_blockers": {
+    "approved_operator_owned_sources": 6,
+    "source_ownership_blockers": [],
+    "consent_blocker_counts": {
+      "suppressed_or_opted_out": 152,
+      "unknown_consent": 868,
+      "channel_specific_consent_absent": 1020,
+      "conflicting_consent_or_suppression": 0
+    }
+  },
+  "consent_suppression_precedence": {
+    "applied_before_eligibility": true,
+    "precedence_order": [
+      "manual/legal suppression, abuse suppression, complaint, hard bounce, or provider suppression",
+      "explicit unsubscribe, STOP, opt-out, or unsubscribed export",
+      "private CRM storage allowed for owned valid contacts even when channel consent is unknown",
+      "subscribed or opted-in source with no stronger suppression",
+      "unknown consent blocks campaign audiences, not private CRM contact storage"
+    ]
+  },
+  "excluded_sources_policy": {
+    "communications_exports_excluded": true,
+    "message_bodies_excluded": true,
+    "external_lead_lists_excluded": true,
+    "unknown_spreadsheets_excluded": true
+  },
+  "w12_01_import_contract_compatibility": {
+    "dry_run_tables_available": [
+      "onetime.legacy_audience_import_batches",
+      "onetime.legacy_audience_import_rows",
+      "onetime.legacy_audience_match_candidates",
+      "onetime.legacy_audience_segment_snapshots",
+      "onetime.legacy_audience_rollback_records",
+      "onetime.legacy_audience_audit_events"
+    ],
+    "source_kinds": ["xlsx_normalized", "csv_normalized"],
+    "raw_row_contents_included": false,
+    "production_side_effects": false,
+    "database_writes_performed": false,
+    "apply_mode_implemented": false
+  },
+  "privacy_and_safety": {
+    "row_values_printed": false,
+    "emails_printed": false,
+    "phones_printed": false,
+    "names_printed": false,
+    "addresses_printed": false,
+    "notes_or_messages_printed": false,
+    "production_database_connected": false,
+    "production_database_read": false,
+    "database_writes_performed": false,
+    "external_actions_count": 0,
+    "provider_mutation_count": 0,
+    "production_mutation_count": 0,
+    "temporary_files_created": 0,
+    "temporary_cleanup_performed": true
+  }
+}

@@ -84,12 +84,20 @@ describe('W12-100-04 real source preflight runner', () => {
     expect(result.summary.total_rows).toBe(6);
     expect(result.summary.disposition_counts).toMatchObject({
       matched_existing_contact: 1,
-      stage_new_contact: 1,
+      stage_new_contact: 2,
       duplicate_input: 1,
-      no_op: 1,
+      no_op: 0,
       manual_review: 2,
     });
     expect(result.summary.communication_eligible_rows).toBe(2);
+    expect(result.summary.crm_importable).toBe(3);
+    expect(result.summary.email_campaign_eligible).toBe(2);
+    expect(result.summary.whatsapp_campaign_eligible).toBe(0);
+    expect(result.summary.suppressed).toBe(1);
+    expect(result.summary.invalid).toBe(1);
+    expect(result.summary.duplicate).toBe(1);
+    expect(result.summary.identity_conflict).toBe(0);
+    expect(result.summary.quarantined).toBe(1);
     expect(result.summary.do_not_contact_rows).toBe(1);
     for (const category of W12_100_04_MANUAL_REVIEW_CATEGORIES) {
       expect(result.manual_review_categories[category]).toBeDefined();
@@ -105,6 +113,33 @@ describe('W12-100-04 real source preflight runner', () => {
     expect(serialized).not.toContain('matched@example.test');
     expect(serialized).not.toContain('052-555-0101');
     expect(serialized).not.toContain('Student Person');
+  });
+
+  it('allows private CRM storage when campaign channel consent is unknown', async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'w12-100-unknown-consent-'));
+    const csv = [
+      'Name,Email,Phone,Tags',
+      'Unknown Consent,unknown@example.test,052-555-0201,family',
+    ].join('\n');
+    await writeFile(path.join(directory, 'synthetic-audience.csv'), csv, 'utf8');
+
+    const result = await runW12100SourcePreflight({
+      sourceDir: directory,
+      approvedSources: [syntheticApproval('synthetic-audience.csv', csv)],
+      now: new Date('2026-07-17T12:00:00.000Z'),
+    });
+    const serialized = JSON.stringify(result);
+
+    expect(result.status).toBe('done');
+    expect(result.summary.crm_importable).toBe(1);
+    expect(result.summary.email_campaign_eligible).toBe(0);
+    expect(result.summary.whatsapp_campaign_eligible).toBe(0);
+    expect(result.summary.manual_review_rows).toBe(0);
+    expect(result.summary.disposition_counts.stage_new_contact).toBe(1);
+    expect(result.manual_review_categories.legacy_member_without_current_consent.count).toBe(0);
+    expect(serialized).not.toContain('Unknown Consent');
+    expect(serialized).not.toContain('unknown@example.test');
+    expect(serialized).not.toContain('052-555-0201');
   });
 });
 

@@ -140,6 +140,19 @@ type ConsentState = 'opted_in' | 'opted_out' | 'unknown';
 type SuppressionState = 'active' | 'suppressed' | 'unknown';
 type Disposition =
   'matched_existing_contact' | 'stage_new_contact' | 'duplicate_input' | 'no_op' | 'manual_review';
+type CrmStorageStatus =
+  'crm_importable' | 'invalid' | 'duplicate' | 'identity_conflict' | 'quarantined';
+
+type CorrectedCrmCounts = {
+  crm_importable: number;
+  email_campaign_eligible: number;
+  whatsapp_campaign_eligible: number;
+  suppressed: number;
+  invalid: number;
+  duplicate: number;
+  identity_conflict: number;
+  quarantined: number;
+};
 
 type SourceValidationResult = {
   id: string;
@@ -167,6 +180,7 @@ type SourceSummary = {
   disposition_counts: Record<Disposition, number>;
   consent_counts: Record<ConsentState, number>;
   suppression_counts: Record<SuppressionState, number>;
+  corrected_crm_counts: CorrectedCrmCounts;
   manual_review_rows: number;
 };
 
@@ -198,6 +212,9 @@ type RowClassification = {
   row: NormalizedRow;
   disposition: Disposition;
   manualCategories: ManualReviewCategory[];
+  crmStorageStatus: CrmStorageStatus;
+  emailCampaignEligible: boolean;
+  whatsappCampaignEligible: boolean;
   communicationEligible: boolean;
   matchedExisting: ExistingIdentitySnapshot | null;
 };
@@ -253,6 +270,14 @@ export type W12100SourcePreflightReport = {
       no_op: number;
     };
     communication_eligible_rows: number;
+    crm_importable: number;
+    email_campaign_eligible: number;
+    whatsapp_campaign_eligible: number;
+    suppressed: number;
+    invalid: number;
+    duplicate: number;
+    identity_conflict: number;
+    quarantined: number;
     do_not_contact_rows: number;
     matched_existing_rows: number;
     staged_new_rows: number;
@@ -315,9 +340,9 @@ const EMPTY_DIGEST = digestFingerprints([]);
 const PRECEDENCE_ORDER = [
   'manual/legal suppression, abuse suppression, complaint, hard bounce, or provider suppression',
   'explicit unsubscribe, STOP, opt-out, or unsubscribed export',
-  'missing channel-specific consent',
+  'private CRM storage allowed for owned valid contacts even when channel consent is unknown',
   'subscribed or opted-in source with no stronger suppression',
-  'unknown consent',
+  'unknown consent blocks campaign audiences, not private CRM contact storage',
 ];
 
 export async function runW12100SourcePreflight(
@@ -683,9 +708,7 @@ function classifyRows(
     ) {
       categories.add('conflicting_consent_or_suppression');
     }
-    if (row.activeLegacyUser && row.consentState !== 'opted_in') {
-      categories.add('legacy_member_without_current_consent');
-    }
+    // Unknown campaign consent is not a private CRM storage blocker.
     if (
       hasSignal(row, ['pipeline', 'opportunity', 'stage']) &&
       !hasSignal(row, ['family', 'school'])
@@ -714,7 +737,16 @@ function classifyRows(
     if (row.sourceClassification === 'external_lead_list') {
       categories.add('external_lead_source_requires_operator_approval');
     }
-    if (hasSignal(row, ['message', 'note', 'sms', 'call_log', 'communication_log'])) {
+    if (
+      row.sourceClassification === 'communications_export' ||
+      hasSignal(row, [
+        'message_body',
+        'private_message',
+        'sms_body',
+        'call_log',
+        'communication_log',
+      ])
+    ) {
       categories.add('private_message_or_note_requires_exclusion');
     }
     const matchedExisting = row.identityFingerprint
@@ -729,38 +761,85 @@ function classifyRows(
     }
 
     const manualCategories = Array.from(categories).sort() as ManualReviewCategory[];
-    const hasManualCategoryOtherThanDuplicate = manualCategories.some(
-      (category) => category !== 'duplicate_input_same_identity',
-    );
-    const suppressedOrOptedOut =
-      row.suppressionState === 'suppressed' || row.consentState === 'opted_out';
-    const communicationEligible =
+    const identityConflict = hasIdentityConflictCategory(manualCategories);
+    const quarantined = hasQuarantineCategory(manualCategories);
+    const invalid = !row.identityFingerprint;
+    let crmStorageStatus: CrmStorageStatus = 'crm_importable';
+    if (invalid) crmStorageStatus = 'invalid';
+    else if (duplicateIdentity || duplicateRow) crmStorageStatus = 'duplicate';
+    else if (identityConflict) crmStorageStatus = 'identity_conflict';
+    else if (quarantined) crmStorageStatus = 'quarantined';
+
+    const contactStorageAllowed = crmStorageStatus === 'crm_importable';
+    const emailCampaignEligible =
       row.consentState === 'opted_in' &&
       row.suppressionState === 'active' &&
-      Boolean(row.identityFingerprint) &&
-      !hasManualCategoryOtherThanDuplicate &&
-      !duplicateIdentity &&
-      !duplicateRow &&
+      Boolean(row.emailKey) &&
+      contactStorageAllowed &&
       !matchedExisting?.new_system_activated;
+    const whatsappCampaignEligible =
+      row.consentState === 'opted_in' &&
+      row.suppressionState === 'active' &&
+      Boolean(row.phoneKey) &&
+      hasWhatsappConsentSignal(row) &&
+      contactStorageAllowed &&
+      !matchedExisting?.new_system_activated;
+    const communicationEligible = emailCampaignEligible || whatsappCampaignEligible;
 
     let disposition: Disposition;
-    if (hasManualCategoryOtherThanDuplicate) {
-      disposition = 'manual_review';
-    } else if (duplicateIdentity || duplicateRow) {
+    if (crmStorageStatus === 'duplicate') {
       disposition = 'duplicate_input';
-    } else if (
-      suppressedOrOptedOut ||
-      matchedExisting?.new_system_activated ||
-      matchedExisting?.no_op
-    ) {
+    } else if (crmStorageStatus !== 'crm_importable') {
+      disposition = 'manual_review';
+    } else if (matchedExisting?.new_system_activated || matchedExisting?.no_op) {
       disposition = 'no_op';
     } else if (matchedExisting) {
       disposition = 'matched_existing_contact';
     } else {
       disposition = 'stage_new_contact';
     }
-    return { row, disposition, manualCategories, communicationEligible, matchedExisting };
+    return {
+      row,
+      disposition,
+      manualCategories,
+      crmStorageStatus,
+      emailCampaignEligible,
+      whatsappCampaignEligible,
+      communicationEligible,
+      matchedExisting,
+    };
   });
+}
+
+function hasIdentityConflictCategory(categories: readonly ManualReviewCategory[]) {
+  return categories.some((category) =>
+    [
+      'email_match_phone_conflict',
+      'phone_match_email_conflict',
+      'same_name_different_identity',
+      'conflicting_consent_or_suppression',
+      'existing_production_record_conflict',
+    ].includes(category),
+  );
+}
+
+function hasQuarantineCategory(categories: readonly ManualReviewCategory[]) {
+  return categories.some((category) =>
+    [
+      'pipeline_stage_ambiguous',
+      'school_vs_family_classification_ambiguous',
+      'household_guardian_role_ambiguous',
+      'learner_without_guardian',
+      'minor_or_student_safety_unclear',
+      'source_ownership_unclear',
+      'external_lead_source_requires_operator_approval',
+      'private_message_or_note_requires_exclusion',
+    ].includes(category),
+  );
+}
+
+function hasWhatsappConsentSignal(row: NormalizedRow) {
+  return row.explicitOptIn && hasSignal(row, ['whatsapp']);
 }
 
 function applyClassifiedRows(
@@ -783,6 +862,32 @@ function applyClassifiedRows(
   ).length;
   report.summary.communication_eligible_rows = classifications.filter(
     (classification) => classification.communicationEligible,
+  ).length;
+  report.summary.crm_importable = classifications.filter(
+    (classification) => classification.crmStorageStatus === 'crm_importable',
+  ).length;
+  report.summary.email_campaign_eligible = classifications.filter(
+    (classification) => classification.emailCampaignEligible,
+  ).length;
+  report.summary.whatsapp_campaign_eligible = classifications.filter(
+    (classification) => classification.whatsappCampaignEligible,
+  ).length;
+  report.summary.suppressed = classifications.filter(
+    (classification) =>
+      classification.row.suppressionState === 'suppressed' ||
+      classification.row.consentState === 'opted_out',
+  ).length;
+  report.summary.invalid = classifications.filter(
+    (classification) => classification.crmStorageStatus === 'invalid',
+  ).length;
+  report.summary.duplicate = classifications.filter(
+    (classification) => classification.crmStorageStatus === 'duplicate',
+  ).length;
+  report.summary.identity_conflict = classifications.filter(
+    (classification) => classification.crmStorageStatus === 'identity_conflict',
+  ).length;
+  report.summary.quarantined = classifications.filter(
+    (classification) => classification.crmStorageStatus === 'quarantined',
   ).length;
   report.summary.do_not_contact_rows = classifications.filter(
     (classification) =>
@@ -867,8 +972,40 @@ function summarizeSource(
     disposition_counts: dispositionCounts,
     consent_counts: consentCounts,
     suppression_counts: suppressionCounts,
+    corrected_crm_counts: correctedCrmCounts(classifications),
     manual_review_rows: classifications.filter(
       (classification) => classification.disposition === 'manual_review',
+    ).length,
+  };
+}
+
+function correctedCrmCounts(classifications: RowClassification[]): CorrectedCrmCounts {
+  return {
+    crm_importable: classifications.filter(
+      (classification) => classification.crmStorageStatus === 'crm_importable',
+    ).length,
+    email_campaign_eligible: classifications.filter(
+      (classification) => classification.emailCampaignEligible,
+    ).length,
+    whatsapp_campaign_eligible: classifications.filter(
+      (classification) => classification.whatsappCampaignEligible,
+    ).length,
+    suppressed: classifications.filter(
+      (classification) =>
+        classification.row.suppressionState === 'suppressed' ||
+        classification.row.consentState === 'opted_out',
+    ).length,
+    invalid: classifications.filter(
+      (classification) => classification.crmStorageStatus === 'invalid',
+    ).length,
+    duplicate: classifications.filter(
+      (classification) => classification.crmStorageStatus === 'duplicate',
+    ).length,
+    identity_conflict: classifications.filter(
+      (classification) => classification.crmStorageStatus === 'identity_conflict',
+    ).length,
+    quarantined: classifications.filter(
+      (classification) => classification.crmStorageStatus === 'quarantined',
     ).length,
   };
 }
@@ -931,6 +1068,14 @@ function createBaseReport(input: {
         no_op: 0,
       },
       communication_eligible_rows: 0,
+      crm_importable: 0,
+      email_campaign_eligible: 0,
+      whatsapp_campaign_eligible: 0,
+      suppressed: 0,
+      invalid: 0,
+      duplicate: 0,
+      identity_conflict: 0,
+      quarantined: 0,
       do_not_contact_rows: 0,
       matched_existing_rows: 0,
       staged_new_rows: 0,
@@ -1234,8 +1379,6 @@ function tagsFor(record: ParsedRecord) {
     'pipeline',
     'opportunity',
     'stage',
-    'message',
-    'note',
     'communication_log',
   ]) {
     if (joinedHeaders.includes(signal)) tags.add(signal);

@@ -97,6 +97,9 @@ const envSchema = z.object({
   DELIVERY_PROVIDER_TIMEOUT_LEASE_SAFETY_MS: numberFromString.default(5_000),
   ONE_TIME_EMAIL_FROM: z.string().optional(),
   ONE_TIME_EMAIL_REPLY_TO: z.string().optional(),
+  ONE_TIME_LIFECYCLE_EMAIL_MODE: z
+    .enum(['disabled', 'canary', 'transactional'])
+    .default('disabled'),
   ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: booleanFromString,
   ONE_TIME_RESEND_TRANSPORT_ENABLED: booleanFromString,
   ONE_TIME_RESEND_WEBHOOK_ENABLED: booleanFromString,
@@ -366,6 +369,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     deliveryProviderTimeoutLeaseSafetyMs: parsed.DELIVERY_PROVIDER_TIMEOUT_LEASE_SAFETY_MS,
     emailFrom: parsed.ONE_TIME_EMAIL_FROM,
     emailReplyTo: parsed.ONE_TIME_EMAIL_REPLY_TO,
+    lifecycleEmailMode: parsed.ONE_TIME_LIFECYCLE_EMAIL_MODE,
     deliveryProviderTransportEnabled: parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED,
     resendTransportEnabled: parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED,
     resendWebhookEnabled: parsed.ONE_TIME_RESEND_WEBHOOK_ENABLED,

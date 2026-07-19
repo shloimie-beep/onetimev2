@@ -1,0 +1,10 @@
+.env.example
+packages/config/src/index.ts
+packages/domain/src/accounts/lifecycle-delivery.ts
+scripts/w12-100/data/real-source-preflight.ts
+tests/integration/accounts/account-lifecycle.test.ts
+tests/unit/w12-100-data/real-source-preflight.test.ts
+ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json
+ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md
+ops/codex-runs/RABBI-DAY-ONE-CRM/CHANGED-FILES.txt
+ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json

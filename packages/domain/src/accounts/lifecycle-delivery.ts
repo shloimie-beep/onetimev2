@@ -8,6 +8,7 @@ import { stableKey } from '../lead/normalize.ts';
 const KEY_VERSION = 1;
 const DEFAULT_BATCH_SIZE = 10;
 const DEFAULT_LEASE_MS = 120_000;
+const TRANSACTIONAL_LIFECYCLE_SENDER = 'info@onetimeonetime.com';
 
 type LifecycleDeliveryState =
   | 'queued'
@@ -151,7 +152,7 @@ export async function runLifecycleDeliveryOutboxBatch(input: {
   const expired = await expireLifecycleDeliveries(input.pool, input.config, now);
   const claims = await claimLifecycleDeliveries(input.pool, input.config, {
     now,
-    limit: input.limit ?? DEFAULT_BATCH_SIZE,
+    limit: lifecycleDeliveryClaimLimit(input.config, input.limit ?? DEFAULT_BATCH_SIZE),
     leaseMs: input.leaseMs ?? DEFAULT_LEASE_MS,
     workerId: input.workerId ?? `lifecycle-worker-${randomUUID()}`,
   });
@@ -254,16 +255,23 @@ async function deliverLifecyclePayload(
   claim: ClaimedLifecycleDelivery,
   payload: Record<string, unknown>,
 ): Promise<string | null> {
+  if (config.lifecycleEmailMode === 'disabled') return null;
   if (!config.deliveryProviderTransportEnabled && !config.resendTransportEnabled) return null;
   if (!config.deliveryProviderTransportEnabled || !config.resendTransportEnabled) {
     throw new Error('lifecycle_resend_transport_not_fully_enabled');
   }
   if (!config.resendApiKey) throw new Error('lifecycle_resend_api_key_missing');
   if (!config.emailFrom) throw new Error('lifecycle_email_from_missing');
-  const canary = config.deliveryTestCanaryEmail;
-  if (!canary) throw new Error('lifecycle_canary_email_missing');
-  if (claim.destination_email.toLowerCase() !== canary) {
-    throw new Error('lifecycle_canary_destination_not_authorized');
+  if (config.lifecycleEmailMode === 'canary') {
+    const canary = config.deliveryTestCanaryEmail;
+    if (!canary) throw new Error('lifecycle_canary_email_missing');
+    if (claim.destination_email.toLowerCase() !== canary) {
+      throw new Error('lifecycle_canary_destination_not_authorized');
+    }
+  } else if (config.lifecycleEmailMode === 'transactional') {
+    assertTransactionalLifecycleEmailReady(config);
+  } else {
+    throw new Error('lifecycle_email_mode_invalid');
   }
   const activationUrl = requiredPayloadString(payload, 'activation_url');
   const purpose = requiredPayloadString(payload, 'purpose') as AccountLifecycleTokenType;
@@ -291,6 +299,39 @@ async function deliverLifecyclePayload(
   const body = (await response.json().catch(() => ({}))) as { id?: unknown };
   const messageId = typeof body.id === 'string' && body.id ? body.id : `status_${response.status}`;
   return destinationReference(`resend:${messageId}`);
+}
+
+function assertTransactionalLifecycleEmailReady(config: AppConfig) {
+  if (config.oneTimeRuntimeEnvironment !== 'production') {
+    throw new Error('lifecycle_transactional_requires_production_runtime');
+  }
+  if (!config.deliveryProviderAuthorizationId) {
+    throw new Error('lifecycle_transactional_authorization_missing');
+  }
+  if (!config.lifecycleDeliveryKeyConfigured) {
+    throw new Error('lifecycle_transactional_key_missing');
+  }
+  if (!config.resendWebhookEnabled || !config.resendWebhookSecretConfigured) {
+    throw new Error('lifecycle_transactional_webhook_missing');
+  }
+  if (!config.emailReplyTo) throw new Error('lifecycle_transactional_reply_to_missing');
+  if (normalizedAddress(config.emailFrom) !== TRANSACTIONAL_LIFECYCLE_SENDER) {
+    throw new Error('lifecycle_transactional_sender_mismatch');
+  }
+  if (config.deliveryProviderPerRunBudget <= 0 || config.deliveryProviderPerProviderBudget <= 0) {
+    throw new Error('lifecycle_transactional_budget_missing');
+  }
+}
+
+function lifecycleDeliveryClaimLimit(config: AppConfig, requestedLimit: number) {
+  if (config.lifecycleEmailMode !== 'transactional') return requestedLimit;
+  if (config.deliveryProviderPerRunBudget <= 0) return 0;
+  return Math.min(requestedLimit, config.deliveryProviderPerRunBudget);
+}
+
+function normalizedAddress(value?: string) {
+  const trimmed = value?.trim().toLowerCase() ?? '';
+  return trimmed.match(/<([^<>]+)>/)?.[1]?.trim() ?? trimmed;
 }
 
 function lifecycleEmailSubject(purpose: AccountLifecycleTokenType) {

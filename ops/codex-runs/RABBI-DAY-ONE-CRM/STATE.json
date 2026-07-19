@@ -1,0 +1,105 @@
+{
+  "schema_version": "onetime.rabbi_day_one_crm.state.v1",
+  "run_id": "RABBI-DAY-ONE-CRM",
+  "generated_at": "2026-07-19T13:41:00.000Z",
+  "branch": "codex/one-time-finish-now-20260719",
+  "base_head_at_pivot": "92fd518ca66680543b80592b724d4fc492e544b6",
+  "pull_request": {
+    "number": 92,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/92"
+  },
+  "steering_source": {
+    "path": "C:/Users/User/.codex/attachments/eddb6dce-5dc8-4977-b580-1bb5682ce27a/pasted-text.txt",
+    "summary": "CRM-first same-window pivot; compact state only; preserve current branch and PR."
+  },
+  "binding_product_decisions_recorded": [
+    "Parent owns billing/login and manages learners.",
+    "Student does not need email and uses restricted portal access.",
+    "No parent-launched Learner Mode in this slice.",
+    "Rabbi/Admin moderates class-visible student activity.",
+    "No student private messaging.",
+    "Buffer, AI helper/content generation, Vimeo, Zoom, Stripe, classroom board, gamification, and BNA support are deferred."
+  ],
+  "crm_import_authorization": {
+    "operator_chat_approval_recorded": true,
+    "prior_private_checkpoint_path": "C:/Users/User/.onetime-w13-104-private/CRM-IMPORT-AUTHORIZATION.private.json",
+    "source_packet_path": "C:/Users/User/.onetime-w13-104-private/crm-approved-source-packet",
+    "production_apply_status": "blocked",
+    "production_apply_blocker": "Add/review a real production CRM writer with fresh backup/rollback proof; current W12-100 apply mode is dry-run-only by design."
+  },
+  "crm_corrected_dry_run": {
+    "status": "done",
+    "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
+    "sha256": "2ef42a24d05f13a907405a7b4ae9fc5690885e471607c18004327a9a7ac73508",
+    "total_rows": 2505,
+    "unique_identity_count": 1596,
+    "crm_importable": 1559,
+    "email_campaign_eligible": 1357,
+    "whatsapp_campaign_eligible": 0,
+    "suppressed": 152,
+    "invalid": 811,
+    "duplicate": 98,
+    "identity_conflict": 37,
+    "quarantined": 0,
+    "manual_review_rows": 848,
+    "production_database_connected": false,
+    "database_writes_performed": false,
+    "external_actions_count": 0
+  },
+  "transactional_email": {
+    "code_status": "accepted",
+    "mode_variable": "ONE_TIME_LIFECYCLE_EMAIL_MODE",
+    "modes": ["disabled", "canary", "transactional"],
+    "production_external_send_performed": false,
+    "production_blocker": "Deploy production with transactional lifecycle email variables and run a controlled operator-inbox send."
+  },
+  "admin_access": {
+    "code_status": "accepted",
+    "latest_existing_proof_path": "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
+    "production_external_send_performed": false,
+    "production_blocker": "Send final administrator access message only after production transactional email is configured and controlled send passes."
+  },
+  "signup_to_crm": {
+    "code_status": "accepted",
+    "tests": ["tests/integration/lead-capture.test.ts"],
+    "production_signup_submitted": false
+  },
+  "whatsapp_lead_capture": {
+    "code_status": "accepted",
+    "tests": [
+      "tests/integration/whatsapp/ot85-assistant.test.ts",
+      "tests/integration/whatsapp/ot85-webhook-route.test.ts"
+    ],
+    "provider_status": "provider_off",
+    "provider_off_action": "Configure Meta WhatsApp production webhook secrets and verify token, then run the approved canary."
+  },
+  "campaign_seed": {
+    "status": "ready_for_operator_approval",
+    "broad_campaign_status": "not_sent_pending_seed_approval",
+    "seed_blocker": "CRM production apply and transactional email production canary are not complete."
+  },
+  "tests_run": [
+    "npm test",
+    "npm run typecheck",
+    "npm run lint",
+    "npm run secret:scan",
+    "git diff --check",
+    "npx prettier --check packages/config/src/index.ts packages/domain/src/accounts/lifecycle-delivery.ts scripts/w12-100/data/real-source-preflight.ts tests/integration/accounts/account-lifecycle.test.ts tests/unit/w12-100-data/real-source-preflight.test.ts ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
+    "npm run unit -- tests/unit/w12-100-data/real-source-preflight.test.ts",
+    "npm run integration -- tests/integration/accounts/account-lifecycle.test.ts tests/integration/w12-100-data/real-source-preflight-cli.test.ts",
+    "npm run integration -- tests/integration/lead-capture.test.ts tests/integration/whatsapp/ot85-assistant.test.ts tests/integration/whatsapp/ot85-webhook-route.test.ts",
+    "npm run unit -- tests/unit/whatsapp/ot85-intent-contract.test.ts tests/unit/delivery/eligibility.test.ts tests/unit/w13-10/delivery-activation-policy.test.ts"
+  ],
+  "known_non_blocking_check": {
+    "command": "npm run format",
+    "status": "failed_preexisting",
+    "reason": "Repo-wide Prettier check reports 1205 unrelated pre-existing files; changed parseable files pass targeted Prettier check."
+  },
+  "external_effects": {
+    "production_database_writes": 0,
+    "external_email_sends": 0,
+    "external_whatsapp_sends": 0,
+    "provider_mutations": 0,
+    "broad_campaign_sends": 0
+  }
+}
