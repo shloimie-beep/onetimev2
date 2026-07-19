@@ -118,6 +118,12 @@ SHA/count authorization, DATABASE_URL, idempotency key, created-by user key,
 `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and exclusion/terminal handling for
 manual-review rows are all present.
 
+Launch-spine consume readiness is now preflighted at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json`.
+It accepts the current read-only route proof and W13-103 role baseline, then
+blocks before any form submit, production write, setup/reset link consumption,
+send, or provider mutation.
+
 ## Blockers
 
 - Email: protected Resend/domain/sender/reply-to inputs are present and
@@ -131,10 +137,11 @@ manual-review rows are all present.
   production-apply authorization, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`.
 - Provider canaries: missing protected canary authorization manifest.
 - Diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
-- Launch spine: current read-only production route proof passed, but consuming
-  administrator/parent/student role-link browser journeys and production signup
-  submit were not rerun. Those actions still require exact protected
-  authorization and cleanup instructions.
+- Launch spine: current read-only production route proof passed, and consume
+  readiness is preflighted, but consuming administrator/parent/student browser
+  journeys or production signup submit remain blocked by missing protected
+  consume plan, cleanup instructions, exact operator authorization, production
+  confirmation, and private journey/signup inputs.
 
 ## External Effects
 
@@ -211,6 +218,11 @@ digests remained unchanged.
   GET-only checks passed, no form submits, no setup/reset links consumed, no
   production writes, route-readback SHA-256
   `fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a`.
+- Launch-spine consume readiness preflight generated a sanitized blocked report
+  with current read-only route proof and W13-103 role baseline present, no form
+  submits, no setup/reset links consumed, no production writes, no external
+  sends, and no provider mutation. Required exact authorization:
+  `APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production`.
 - Current OPS-06 production synthetic probes returned the expected blocked
   status: public/login/readiness/private-denial probes passed, and protected
   diagnostics remained blocked by missing `OPERATIONS_PROBE_TOKEN`. Synthetic
@@ -240,6 +252,9 @@ digests remained unchanged.
 - `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/*`
+- `ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json`
+- `scripts/w12-100/launch/launch-spine-consume-readiness-preflight.ts`
+- `tests/unit/w12-100-launch/launch-spine-consume-readiness-preflight.test.ts`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-ROLLBACK-REPORT.md`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/staging-rollback/*`
 - `ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md`

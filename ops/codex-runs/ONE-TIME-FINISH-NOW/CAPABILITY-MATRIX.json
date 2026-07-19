@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:24:16.296Z",
+  "generated_at": "2026-07-19T14:38:14.487Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -28,9 +28,10 @@
         "ops/codex-runs/W13-104/SIGNUP-JOURNEY.json",
         "ops/codex-runs/W13-104/evidence/live-smoke.json",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
-        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json"
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json"
       ],
-      "notes": "Public landing/signup routes are live. Current production read-only route proof passed; production signup submit remains blocked without exact authorization and cleanup instructions."
+      "notes": "Public landing/signup routes are live. Current production read-only route proof passed; production signup submit remains blocked without exact authorization and cleanup instructions. Launch-spine consume readiness is now preflighted and blocked before mutation until exact protected inputs are present."
     },
     {
       "id": "auth_recovery",
@@ -39,9 +40,10 @@
         "ops/codex-runs/W13-104/evidence/live-smoke.json",
         "ops/codex-runs/W13-103/FINAL-REPORT.md",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
-        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json"
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json"
       ],
-      "notes": "Login, forgot-password, activate, and reset routes are live in current production read-only proof. Normal transactional email remains blocked separately."
+      "notes": "Login, forgot-password, activate, and reset routes are live in current production read-only proof. Normal transactional email remains blocked separately. Launch-spine consume readiness is now preflighted and blocked before mutation until exact protected inputs are present."
     },
     {
       "id": "administrator",
@@ -187,7 +189,8 @@
       "evidence": [
         "ops/codex-runs/W13-104/evidence/live-smoke.json",
         "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
-        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json"
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json",
+        "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json"
       ],
       "notes": "Public /health, /ready, and /version are live. Current OPS-06 synthetic probe confirms protected internal diagnostics remain blocked by missing OPERATIONS_PROBE_TOKEN."
     },

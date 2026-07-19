@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:24:16.296Z",
+  "generated_at": "2026-07-19T14:38:14.487Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -88,6 +88,14 @@
     {
       "path": "scripts/w12-100/data/crm-apply-readiness-preflight.ts",
       "used_for": "Safe CRM apply readiness preflight implementation."
+    },
+    {
+      "path": "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json",
+      "used_for": "Sanitized launch-spine consume readiness preflight; exact protected-input blocker list without consuming setup/reset links or submitting signup."
+    },
+    {
+      "path": "scripts/w12-100/launch/launch-spine-consume-readiness-preflight.ts",
+      "used_for": "Safe launch-spine consume readiness preflight implementation."
     }
   ],
   "live_readback": {
@@ -189,11 +197,18 @@
       "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md records current production read-only route proof and safety boundaries.",
       "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json passed 16 of 16 GET-only route checks with JSON SHA-256 fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a.",
       "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json passed public/login/readiness/private-denial probes and blocked protected diagnostics due to missing OPERATIONS_PROBE_TOKEN.",
-      "W13-103 sanitized role acceptance remains the accepted non-consuming administrator/parent/student baseline."
+      "W13-103 sanitized role acceptance remains the accepted non-consuming administrator/parent/student baseline.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json records launch-spine consuming proof readiness as blocked with read-only route proof and role baseline present, no form submits, no setup/reset links consumed, no production writes, and exact missing protected inputs."
     ],
     "transactional_email": [
       "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json verifies protected Resend key, webhook secret, approved domain, approved sender, and approved reply-to are present and policy-matching without printing raw values.",
       "Email inputs preflight is blocked only by missing protected operator canary destination file; no private manifest was written and no email was sent."
+    ],
+    "launch_spine_consume_readiness": [
+      "Current production read-only route proof is available with route-readback SHA-256 fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a and synthetic-probes SHA-256 25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json generated sanitized readiness status blocked without printing or consuming protected setup/reset links, signup data, secrets, or private journey inputs.",
+      "Required exact operator authorization statement: APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production",
+      "Required production confirmation: ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK"
     ]
   },
   "core_safety_gate_blockers": [
@@ -224,8 +239,8 @@
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",
       "lane": "launch_spine",
-      "reason": "Current production read-only launch-spine proof passed for public/account lifecycle routes, anonymous private-route denial, and readiness. Full launch-spine acceptance remains blocked because this run did not consume administrator/parent/student setup or reset links and did not submit a production signup lead; those actions still require exact protected authorization and cleanup instructions.",
-      "scope": "Blocks full launch-spine acceptance only; current read-only production route proof is recorded."
+      "reason": "Launch-spine consume readiness preflight records current production read-only route proof and W13-103 role baseline present, but consuming proof remains blocked by: BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_CLEANUP_INSTRUCTIONS_NOT_PROVIDED, BLOCKED_NO_CONSUMING_PROOF_PATH_READY, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PARENT_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_PRIVATE_CONSUME_PLAN_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_LEAD_INPUT_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_SUBMIT_NOT_AUTHORIZED, BLOCKED_ROLE_JOURNEYS_NOT_AUTHORIZED, BLOCKED_STUDENT_JOURNEY_INPUT_NOT_PROVIDED.",
+      "scope": "Blocks full launch-spine acceptance only; current read-only production route proof and consume readiness blocker evidence are recorded."
     }
   ],
   "safety_ledger": {
@@ -250,29 +265,31 @@
     }
   },
   "validation": {
-    "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, and launch-spine route-readback JSON files after launch-spine read-only evidence refresh",
-    "director_truth": "passed after current CRM/email truth refresh",
-    "director_truth_live": "passed against production and staging /version after CRM apply readiness preflight",
+    "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, launch-spine route-readback, and launch-spine consume-readiness JSON files after launch-spine consume readiness preflight",
+    "director_truth": "passed after launch-spine consume readiness preflight",
+    "director_truth_live": "passed against production and staging /version after launch-spine consume readiness preflight",
     "staging_rollback_rehearsal": "accepted for PR #92 staging candidate; rollback to W13-104 and roll-forward to PR #92 both passed",
     "runtime_deployment_proof": "accepted in staging at PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93; final /version.deployment matched Railway web deployment c464ea23-649b-4c8d-b4af-0d10c5ce3022",
-    "secret_scan": "passed across 1714 repo text files after CRM apply readiness preflight",
+    "secret_scan": "passed across 1717 repo text files after launch-spine consume readiness preflight",
     "node_check": "passed for scripts/check-director-truth.mjs",
     "eslint": "targeted eslint passed for touched runtime proof files",
     "unit": "real-source-preflight unit test passed in CRM evidence refresh; npm run unit passed earlier in PR #92 proof work",
     "integration": "real-source-preflight CLI integration test passed in CRM evidence refresh; runtime-version-proof integration passed earlier in PR #92 proof work",
     "build": "npm run build passed",
     "github_pr_92": "GitHub checks failed before workflow steps/logs at CRM/email evidence head 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c; local focused gates passed. Read the PR or git rev-parse HEAD for the current branch head after later docs-only truth refresh commits.",
-    "diff_check": "passed after CRM apply readiness preflight with Windows line-ending warnings only",
+    "diff_check": "passed after launch-spine consume readiness preflight with Windows line-ending warnings only",
     "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
-    "prettier_check": "passed for touched CRM/email truth-refresh director/run Markdown and JSON files",
+    "prettier_check": "passed for touched launch-spine preflight, director, and run Markdown/JSON/TypeScript files",
     "production_launch_spine_readonly": "passed current production GET-only route readback: 16/16 checks passed, no form submits, no setup/reset links consumed, no production writes, route-readback SHA-256 fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a",
     "ops06_production_synthetic_probes": "expected blocked status: public/login/readiness/private-denial probes passed and protected diagnostics blocked by missing OPERATIONS_PROBE_TOKEN, synthetic-probes SHA-256 25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
     "launch_spine_privacy_scan": "passed for synthetic-probes.json and route-readback.json with route-name-aware private-data patterns",
     "email_inputs_preflight": "passed focused unit test and generated sanitized report: protected Resend/sender/reply-to inputs present, canary destination missing, no raw values included",
-    "typecheck": "npm run typecheck passed after CRM apply readiness preflight",
-    "lint": "npm run lint passed after CRM apply readiness preflight",
-    "crm_apply_readiness_preflight": "blocked safely with no production side effects; blockers: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED"
+    "typecheck": "npm run typecheck passed after launch-spine consume readiness preflight",
+    "lint": "npm run lint passed after launch-spine consume readiness preflight",
+    "crm_apply_readiness_preflight": "blocked safely with no production side effects; blockers: BLOCKED_BACKUP_PROOF_NOT_PROVIDED, BLOCKED_CREATED_BY_USER_KEY_NOT_PROVIDED, BLOCKED_DATABASE_URL_NOT_CONFIGURED, BLOCKED_IDEMPOTENCY_KEY_NOT_PROVIDED, BLOCKED_MANUAL_REVIEW_HANDLING_NOT_PROVIDED, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_MANIFEST_PRODUCTION_APPLY_NOT_AUTHORIZED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED",
+    "launch_spine_consume_readiness_preflight": "blocked safely with current read-only route proof and W13-103 role baseline accepted; blockers: BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_CLEANUP_INSTRUCTIONS_NOT_PROVIDED, BLOCKED_NO_CONSUMING_PROOF_PATH_READY, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PARENT_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_PRIVATE_CONSUME_PLAN_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_LEAD_INPUT_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_SUBMIT_NOT_AUTHORIZED, BLOCKED_ROLE_JOURNEYS_NOT_AUTHORIZED, BLOCKED_STUDENT_JOURNEY_INPUT_NOT_PROVIDED",
+    "launch_spine_consume_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-launch/launch-spine-consume-readiness-preflight.test.ts passed"
   },
   "resume": {
     "primary_resume_file": "ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md",
@@ -281,8 +298,13 @@
       "C:/Users/User/.onetime-w13-104-private/CRM-IMPORT-AUTHORIZATION.private.json with exact dry-run SHA/count production apply acceptance after fresh backup proof, idempotency key, created-by user key, DATABASE_URL, and RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK",
       "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
       "OPERATIONS_PROBE_TOKEN in protected production/staging runtime config",
-      "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-MANUAL-REVIEW-HANDLING.private.json with 848 rows excluded or terminal and raw_values_included=false"
+      "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-CRM-MANUAL-REVIEW-HANDLING.private.json with 848 rows excluded or terminal and raw_values_included=false",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CONSUME-PLAN.private.json with target_environment=production, raw_values_included=false, and either role_journeys_authorized=true or production_signup_submit_authorized=true",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CLEANUP-INSTRUCTIONS.private.json with post_run_cleanup_authorized=true and raw_values_included=false",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-OPERATOR-AUTHORIZATION.private.txt containing APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-PRODUCTION-CONFIRMATION.private.txt containing ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK",
+      "Either administrator/parent/student launch-spine private journey input files or C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-SIGNUP-LEAD.private.json before consuming production launch-spine proof"
     ],
-    "next_executable_lane_without_private_inputs": "CRM apply readiness preflight is now recorded. Remaining executable work without private inputs is limited to documentation/validation refreshes and additional safe preflight tooling; consuming role-link proof, production signup submit, email canary, provider canaries, diagnostics, and CRM apply still require exact protected authorization or runtime inputs."
+    "next_executable_lane_without_private_inputs": "Launch-spine consume readiness preflight is now recorded. Remaining executable work without private inputs is limited to documentation/validation refreshes, CI/platform evidence, and additional safe preflight tooling; consuming role-link proof, production signup submit, email canary, provider canaries, diagnostics, and CRM apply still require exact protected authorization or runtime inputs."
   }
 }

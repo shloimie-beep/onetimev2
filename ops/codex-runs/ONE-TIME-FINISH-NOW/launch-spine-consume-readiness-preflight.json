@@ -1,0 +1,134 @@
+{
+  "schema_version": "onetime.one_time_finish_now.launch_spine_consume_readiness_preflight.v1",
+  "generated_at": "2026-07-19T14:35:10.989Z",
+  "status": "blocked",
+  "blocked_reasons": [
+    "BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED",
+    "BLOCKED_CLEANUP_INSTRUCTIONS_NOT_PROVIDED",
+    "BLOCKED_NO_CONSUMING_PROOF_PATH_READY",
+    "BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED",
+    "BLOCKED_PARENT_JOURNEY_INPUT_NOT_PROVIDED",
+    "BLOCKED_PRIVATE_CONSUME_PLAN_NOT_PROVIDED",
+    "BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED",
+    "BLOCKED_PRODUCTION_SIGNUP_LEAD_INPUT_NOT_PROVIDED",
+    "BLOCKED_PRODUCTION_SIGNUP_SUBMIT_NOT_AUTHORIZED",
+    "BLOCKED_ROLE_JOURNEYS_NOT_AUTHORIZED",
+    "BLOCKED_STUDENT_JOURNEY_INPUT_NOT_PROVIDED"
+  ],
+  "target_environment": "production",
+  "readonly_evidence": {
+    "route_readback_path": "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
+    "route_readback_sha256": "fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a",
+    "expected_route_readback_sha256": "fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a",
+    "route_readback_status": "passed",
+    "route_count": 16,
+    "passed_count": 16,
+    "synthetic_probes_path": "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json",
+    "synthetic_probes_sha256": "25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
+    "expected_synthetic_probes_sha256": "25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc",
+    "synthetic_probes_status": "blocked",
+    "role_baseline_path": "ops/codex-runs/W13-103/ROLE-ACCEPTANCE.json",
+    "role_baseline_status": "passed",
+    "required_authorization_statement": "APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production",
+    "required_production_confirmation": "ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK"
+  },
+  "protected_sources": {
+    "private_consume_plan_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CONSUME-PLAN.private.json",
+    "cleanup_instructions_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CLEANUP-INSTRUCTIONS.private.json",
+    "operator_authorization_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-OPERATOR-AUTHORIZATION.private.txt",
+    "production_confirmation_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-PRODUCTION-CONFIRMATION.private.txt",
+    "admin_journey_input_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-ADMIN-JOURNEY.private.json",
+    "parent_journey_input_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-PARENT-JOURNEY.private.json",
+    "student_journey_input_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-STUDENT-JOURNEY.private.json",
+    "signup_lead_input_path": "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-SIGNUP-LEAD.private.json",
+    "raw_values_included": false,
+    "secrets_printed": false,
+    "production_database_connected": false,
+    "production_database_read": false,
+    "production_database_writes": 0,
+    "form_submits_performed": 0,
+    "setup_or_reset_links_consumed": 0,
+    "external_sends_performed": false,
+    "provider_mutation_count": 0
+  },
+  "inputs": {
+    "privateConsumePlan": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "cleanupInstructions": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "operatorAuthorization": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "productionConfirmation": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "adminJourneyInput": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "parentJourneyInput": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "studentJourneyInput": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    },
+    "signupLeadInput": {
+      "present": false,
+      "nonempty": false,
+      "fingerprint": null
+    }
+  },
+  "consuming_paths": {
+    "role_journeys_ready": false,
+    "production_signup_submit_ready": false,
+    "at_least_one_path_ready": false
+  },
+  "checks": {
+    "route_readback_available": true,
+    "route_readback_status_passed": true,
+    "route_readback_sha_matches_expected": true,
+    "route_readback_safety_readonly": true,
+    "synthetic_probes_available": true,
+    "synthetic_probes_required_readonly_checks_passed": true,
+    "synthetic_probes_external_mutations_safe": true,
+    "synthetic_probes_sha_matches_expected": true,
+    "role_baseline_available": true,
+    "role_baseline_status_passed": true,
+    "role_baseline_browser_contexts_passed": true,
+    "private_consume_plan_present": false,
+    "private_consume_plan_readable_json": false,
+    "private_consume_plan_target_environment_matches": false,
+    "private_consume_plan_raw_values_excluded": false,
+    "private_consume_plan_role_journeys_authorized": false,
+    "private_consume_plan_production_signup_submit_authorized": false,
+    "cleanup_instructions_present": false,
+    "cleanup_instructions_readable_json": false,
+    "cleanup_instructions_raw_values_excluded": false,
+    "cleanup_instructions_authorized": false,
+    "operator_authorization_present": false,
+    "operator_authorization_matches_required": false,
+    "production_confirmation_present": false,
+    "production_confirmation_matches_required": false,
+    "admin_journey_input_present": false,
+    "parent_journey_input_present": false,
+    "student_journey_input_present": false,
+    "signup_lead_input_present": false,
+    "no_raw_values_in_report": true,
+    "no_production_side_effects": true
+  }
+}

@@ -114,6 +114,13 @@ blocked only for protected worker diagnostics because `OPERATIONS_PROBE_TOKEN`
 is absent. No production write, form submit, provider mutation, deployment, or
 setup/reset-link consumption was performed.
 
+Launch-spine consume readiness evidence lives at
+`ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json`.
+It confirms the current read-only route proof and W13-103 role baseline are
+available, then blocks before any form submit, production write, setup/reset
+link consumption, send, or provider mutation because protected consuming-proof
+inputs are missing.
+
 ## What Not To Do From This Handoff
 
 - Do not print or commit secrets, private manifests, setup/reset links,
@@ -126,6 +133,10 @@ setup/reset-link consumption was performed.
   exact dry-run SHA/count authorization, DATABASE_URL, idempotency key,
   created-by user key, `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK`, and
   exclusion/terminal handling for manual-review rows are all present.
+- Do not consume production setup/reset links or submit a production signup
+  lead until the protected launch-spine consume plan, cleanup instructions,
+  exact authorization, production confirmation, and either role-journey inputs
+  or signup-lead input are all present.
 - Do not run Zoom, Vimeo, Stripe TEST, WhatsApp, Telegram, Buffer, OpenAI
   helper, or BNA support canaries without the protected manifest.
 - Do not use the dirty BNA checkout for One Time product edits.

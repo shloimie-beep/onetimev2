@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.current_state.v2",
-  "generated_at": "2026-07-19T14:24:16.296Z",
+  "generated_at": "2026-07-19T14:38:14.487Z",
   "current_run": "ops/codex-runs/ONE-TIME-FINISH-NOW",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
@@ -85,7 +85,8 @@
     "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
     "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
-    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json"
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json"
   ],
   "blockers": [
     {
@@ -111,7 +112,7 @@
     {
       "id": "BLOCK-CURRENT-LAUNCH-SPINE",
       "lane": "launch_spine",
-      "reason": "Current production read-only launch-spine proof passed for public/account lifecycle routes, anonymous private-route denial, and readiness. Full launch-spine acceptance remains blocked because this run did not consume administrator/parent/student setup or reset links and did not submit a production signup lead; those actions still require exact protected authorization and cleanup instructions."
+      "reason": "Launch-spine consume readiness preflight records current production read-only route proof and W13-103 role baseline present, but consuming proof remains blocked by: BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_CLEANUP_INSTRUCTIONS_NOT_PROVIDED, BLOCKED_NO_CONSUMING_PROOF_PATH_READY, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PARENT_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_PRIVATE_CONSUME_PLAN_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_LEAD_INPUT_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_SUBMIT_NOT_AUTHORIZED, BLOCKED_ROLE_JOURNEYS_NOT_AUTHORIZED, BLOCKED_STUDENT_JOURNEY_INPUT_NOT_PROVIDED."
     }
   ],
   "safety_contract": {

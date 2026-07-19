@@ -74,6 +74,11 @@ launch-spine proof.
 - Current production read-only launch-spine proof passed for 16 of 16 GET-only
   route checks, including public/account lifecycle routes, known 404 behavior,
   and anonymous denial for private app routes.
+- Launch-spine consume readiness preflight is recorded in
+  `ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json`.
+  It confirms current read-only route proof and the W13-103 role baseline are
+  present, then blocks before any form submit, production write, setup/reset
+  link consumption, send, or provider mutation.
 - Current OPS-06 production synthetic probes passed public/login/readiness and
   private-denial checks; protected diagnostics remains blocked by missing
   `OPERATIONS_PROBE_TOKEN`.
@@ -93,9 +98,11 @@ launch-spine proof.
   `C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json`.
 - Protected diagnostics: missing `OPERATIONS_PROBE_TOKEN`.
 - Consuming launch-spine proof: current read-only route proof is recorded, but
-  this run did not consume role-link browser journeys or submit a production
-  signup lead. Those actions still require exact protected authorization and
-  cleanup instructions.
+  readiness remains blocked by missing protected consume plan, cleanup
+  instructions, exact operator authorization, production confirmation,
+  administrator/parent/student journey inputs, and production signup lead input.
+  Either a complete role-journey path or a complete production-signup path must
+  be present before any consuming browser action.
 
 ## Runtime Proof Caveat
 
@@ -108,9 +115,11 @@ deployment IDs/messages, and image digests. Railway did not populate
 ## Next Executable Packets
 
 1. Complete the consuming production launch-spine proof only with exact
-   protected authorization and cleanup instructions: administrator, parent, and
-   student browser journeys using setup/reset links, or one production signup
-   submit.
+   protected authorization and cleanup instructions. The required exact
+   authorization statement is
+   `APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:fb76363c92af59a4c8a62121b93fb4f229e1a60313f4df6a4b0f8ab14639151a:25e296346076b7d4d7444b2ead1174f87d49012628e6cd206b8a2ed8ecb4e3cc:production`,
+   and the required production confirmation is
+   `ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK`.
 2. Provide the protected operator canary destination file, generate
    `EMAIL-INPUTS.private.json` from the sanitized preflight without committing
    or printing it, configure production variables, then run exactly one

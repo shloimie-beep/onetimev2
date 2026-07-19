@@ -1,6 +1,6 @@
 {
   "schema_version": "onetime.director.capability_matrix.v2",
-  "generated_at": "2026-07-19T14:24:16.296Z",
+  "generated_at": "2026-07-19T14:38:14.487Z",
   "source": "ops/codex-runs/ONE-TIME-FINISH-NOW/CAPABILITY-MATRIX.json",
   "allowed_statuses": [
     "ABSENT",
@@ -20,12 +20,12 @@
     {
       "id": "public_landing_signup",
       "status": "DEPLOYED",
-      "reason": "Current production read-only route proof passed; production signup submit remains blocked without exact authorization and cleanup instructions."
+      "reason": "Current production read-only route proof passed; launch-spine consume readiness preflight blocks production signup submit until exact protected inputs are present."
     },
     {
       "id": "auth_recovery",
       "status": "DEPLOYED",
-      "reason": "Current production read-only route proof passed for login, activate, forgot-password, and reset-password; transactional email inputs are partially preflighted but still blocked before canary."
+      "reason": "Current production read-only route proof passed for login, activate, forgot-password, and reset-password; consume readiness preflight blocks setup/reset link journeys until exact protected inputs are present."
     },
     {
       "id": "administrator",
