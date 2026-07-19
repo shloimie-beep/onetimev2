@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_capability_matrix.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:38:14.487Z",
+  "generated_at": "2026-07-19T14:40:21.706Z",
   "allowed_statuses": [
     "ABSENT",
     "SPECIFIED",
@@ -17,7 +17,7 @@
     "production_runtime_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
     "production_version": "w13-104-public-cls-688fc70",
     "release_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
-    "evidence_head": "0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c",
+    "evidence_head": "123827a745be2531425e124085db6f5c53e5e82e",
     "run_state": "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json"
   },
   "capabilities": [

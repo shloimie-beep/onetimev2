@@ -27,11 +27,12 @@ launch-spine proof.
 - Production and staging runtime SHA:
   `688fc70cf64b72bc52f4ea7511d8593750d7ab45`
 - Canonical draft PR: `https://github.com/webcraft-media/onetimev2/pull/91`
-- PR #92 CRM/email evidence head before this truth-refresh commit:
-  `0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c`
-- PR #92 checks at that evidence head failed before workflow steps/logs; local
-  focused gates passed. Read the PR or `git rev-parse HEAD` for the current
-  branch head after later docs-only truth refresh commits.
+- PR #92 launch-spine consume evidence head before this check-note commit:
+  `123827a745be2531425e124085db6f5c53e5e82e`
+- PR #92 checks at that evidence head failed before workflow steps/logs; all
+  five jobs completed with `steps: []`, and local focused gates passed. Read
+  the PR or `git rev-parse HEAD` for the current branch head after later
+  docs-only check-note commits.
 - Final staging PR #92 web deployment:
   `c464ea23-649b-4c8d-b4af-0d10c5ce3022`
 - Final staging PR #92 worker deployment:

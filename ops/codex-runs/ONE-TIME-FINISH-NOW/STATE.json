@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.codex_run_state.v1",
   "run_id": "ONE-TIME-FINISH-NOW",
-  "generated_at": "2026-07-19T14:38:14.487Z",
+  "generated_at": "2026-07-19T14:40:21.706Z",
   "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
   "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
   "topline": {
@@ -17,8 +17,8 @@
     "isolated_worktree": "C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW",
     "branch": "codex/one-time-finish-now-20260719",
     "branch_base": "origin/release/w13-100-controlled-day-one-20260717T182046Z",
-    "worktree_head": "0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c",
-    "worktree_head_subject": "chore: add email inputs preflight",
+    "worktree_head": "123827a745be2531425e124085db6f5c53e5e82e",
+    "worktree_head_subject": "chore: add launch-spine consume readiness preflight",
     "canonical_draft_pr": {
       "number": 91,
       "url": "https://github.com/webcraft-media/onetimev2/pull/91",
@@ -36,11 +36,11 @@
       "is_draft": true,
       "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
       "head_ref": "codex/one-time-finish-now-20260719",
-      "head_ref_oid": "0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c",
-      "checks_at_inspection": "GitHub checks failed before workflow steps/logs at CRM/email evidence head 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c; local focused gates passed. Read the PR or git rev-parse HEAD for the current branch head after later docs-only truth refresh commits.",
+      "head_ref_oid": "123827a745be2531425e124085db6f5c53e5e82e",
+      "checks_at_inspection": "GitHub checks failed before workflow steps/logs at launch-spine consume evidence head 123827a745be2531425e124085db6f5c53e5e82e; local focused gates passed. All five jobs on that head completed with steps: []. Read the PR or git rev-parse HEAD for the current branch head after later docs-only check-note commits.",
       "role": "Release-gate remediation and durable ONE-TIME-FINISH-NOW evidence branch."
     },
-    "worktree_head_note": "CRM/email evidence head captured before docs-only truth-refresh commits; use git rev-parse HEAD for the current branch head."
+    "worktree_head_note": "Launch-spine consume evidence head captured before docs-only check-note commits; use git rev-parse HEAD for the current branch head."
   },
   "raw_prompt": {
     "source_path": "C:/Users/User/.codex/attachments/bac984fb-2e71-49d4-a897-1066788fd6c3/pasted-text.txt",
@@ -276,7 +276,7 @@
     "unit": "real-source-preflight unit test passed in CRM evidence refresh; npm run unit passed earlier in PR #92 proof work",
     "integration": "real-source-preflight CLI integration test passed in CRM evidence refresh; runtime-version-proof integration passed earlier in PR #92 proof work",
     "build": "npm run build passed",
-    "github_pr_92": "GitHub checks failed before workflow steps/logs at CRM/email evidence head 0a93e82062e06d01ca50b3e79ffdfc9d40fcd87c; local focused gates passed. Read the PR or git rev-parse HEAD for the current branch head after later docs-only truth refresh commits.",
+    "github_pr_92": "GitHub checks failed before workflow steps/logs at launch-spine consume evidence head 123827a745be2531425e124085db6f5c53e5e82e; local focused gates passed. All five jobs on that head completed with steps: []. Read the PR or git rev-parse HEAD for the current branch head after later docs-only check-note commits.",
     "diff_check": "passed after launch-spine consume readiness preflight with Windows line-ending warnings only",
     "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
     "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
