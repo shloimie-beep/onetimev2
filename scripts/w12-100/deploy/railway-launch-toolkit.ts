@@ -618,6 +618,7 @@ export async function verifyHttpEndpoints(input: {
     const actualCommit = stringValue(version.body.commit_sha);
     const actualVersion = stringValue(version.body.version);
     const expectedCommit = expectedVersionCommit(input.manifest, input.operation);
+    checks.push(...evaluateVersionDeploymentProof(input.manifest, input.operation, version.body));
     checks.push({
       id: 'version_commit_match',
       status: expectedCommit && actualCommit === expectedCommit ? 'passed' : 'blocked',
@@ -670,6 +671,108 @@ export async function verifyHttpEndpoints(input: {
   checks.push(httpStatusCheck('ops_diagnostics_http', diagnostics.status));
   checks.push(...workerHeartbeatChecks(input.manifest, diagnostics.body));
   checks.push(...queueChecks(input.manifest, diagnostics.body));
+  return checks;
+}
+
+export function evaluateVersionDeploymentProof(
+  manifest: LaunchManifest,
+  operation: LaunchOperation,
+  versionBody: unknown,
+): CheckResult[] {
+  const root = optionalRecord(versionBody);
+  const deployment = optionalRecord(root?.deployment);
+  if (!deployment) {
+    return [
+      warning(
+        'version_deployment_proof_present',
+        'Version endpoint does not expose runtime deployment proof; falling back to legacy commit check.',
+      ),
+    ];
+  }
+
+  const provider = stringValue(deployment.provider);
+  const deploymentId = stringValue(deployment.deployment_id);
+  const snapshotId = stringValue(deployment.snapshot_id);
+  const projectId = stringValue(deployment.project_id);
+  const environmentId = stringValue(deployment.environment_id);
+  const serviceId = stringValue(deployment.service_id);
+  const gitCommitSha = stringValue(deployment.git_commit_sha);
+  const expectedCommit = expectedVersionCommit(manifest, operation);
+
+  const checks: CheckResult[] = [
+    {
+      id: 'version_deployment_provider',
+      status: provider === 'railway' ? 'passed' : 'blocked',
+      summary:
+        provider === 'railway'
+          ? 'Version deployment proof identifies Railway as the runtime provider.'
+          : 'Version deployment proof does not identify Railway as the runtime provider.',
+      detail: `actual=${provider || 'missing'}; expected=railway`,
+    },
+    {
+      id: 'version_deployment_id_present',
+      status: deploymentId ? 'passed' : 'blocked',
+      summary: deploymentId
+        ? 'Version deployment proof includes the serving deployment ID.'
+        : 'Version deployment proof is missing the serving deployment ID.',
+    },
+    {
+      id: 'version_snapshot_id_present',
+      status: snapshotId ? 'passed' : 'blocked',
+      summary: snapshotId
+        ? 'Version deployment proof includes the serving snapshot ID.'
+        : 'Version deployment proof is missing the serving snapshot ID.',
+    },
+    {
+      id: 'version_project_id_match',
+      status: projectId === manifest.target.railway.project_id ? 'passed' : 'blocked',
+      summary:
+        projectId === manifest.target.railway.project_id
+          ? 'Version deployment proof project ID matches the manifest.'
+          : 'Version deployment proof project ID does not match the manifest.',
+      detail: `actual=${projectId || 'missing'}; expected=${manifest.target.railway.project_id}`,
+    },
+    {
+      id: 'version_environment_id_match',
+      status: environmentId === manifest.target.railway.environment_id ? 'passed' : 'blocked',
+      summary:
+        environmentId === manifest.target.railway.environment_id
+          ? 'Version deployment proof environment ID matches the manifest.'
+          : 'Version deployment proof environment ID does not match the manifest.',
+      detail: `actual=${environmentId || 'missing'}; expected=${
+        manifest.target.railway.environment_id
+      }`,
+    },
+    {
+      id: 'version_web_service_id_match',
+      status: serviceId === manifest.target.railway.web_service_id ? 'passed' : 'blocked',
+      summary:
+        serviceId === manifest.target.railway.web_service_id
+          ? 'Version deployment proof web service ID matches the manifest.'
+          : 'Version deployment proof web service ID does not match the manifest.',
+      detail: `actual=${serviceId || 'missing'}; expected=${manifest.target.railway.web_service_id}`,
+    },
+  ];
+
+  if (!gitCommitSha) {
+    checks.push(
+      warning(
+        'version_git_commit_sha_present',
+        'Railway git commit SHA is absent; CLI/source rebuild proof must bind deployment ID to Railway deployment metadata.',
+      ),
+    );
+  } else {
+    checks.push({
+      id: 'version_git_commit_sha_match',
+      status: expectedCommit && gitCommitSha === expectedCommit ? 'passed' : 'blocked',
+      summary:
+        expectedCommit && gitCommitSha === expectedCommit
+          ? 'Railway git commit SHA matches the required source.'
+          : 'Railway git commit SHA does not match the required source.',
+      detail: `actual=${gitCommitSha}; expected=${expectedCommit ?? 'missing'}`,
+    });
+  }
+
   return checks;
 }
 
@@ -1188,6 +1291,10 @@ function equalsCheck(id: string, actual: string, expected: string): CheckResult 
 
 function passed(id: string, summary: string): CheckResult {
   return { id, status: 'passed', summary };
+}
+
+function warning(id: string, summary: string): CheckResult {
+  return { id, status: 'warning', summary };
 }
 
 function blocked(id: string, summary: string): CheckResult {

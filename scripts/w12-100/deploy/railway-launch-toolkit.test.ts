@@ -6,6 +6,7 @@ import {
   evaluateDeploymentRecords,
   evaluateMigrationStatusForOperation,
   evaluateRailwayStatus,
+  evaluateVersionDeploymentProof,
   type Fetcher,
   type LaunchManifest,
   parseLaunchManifest,
@@ -159,6 +160,16 @@ describe('W12-100 Railway launch toolkit', () => {
             version: 'candidate',
             commit_sha: CANDIDATE_SHA,
             target_app: 'one-time',
+            deployment: {
+              provider: 'railway',
+              deployment_id: 'deploy-web-123',
+              snapshot_id: 'snapshot-web-123',
+              project_id: 'railway-project-123',
+              environment_id: 'railway-env-staging-123',
+              service_id: 'railway-web-service-123',
+              service_name: 'one-time-web',
+              git_commit_sha: CANDIDATE_SHA,
+            },
           }),
         };
       }
@@ -210,6 +221,28 @@ describe('W12-100 Railway launch toolkit', () => {
       'https://w12-100-staging.example.test/ready',
       'https://w12-100-staging.example.test/api/internal/ops/diagnostics',
     ]);
+  });
+
+  it('validates /version runtime deployment proof without requiring raw env values', () => {
+    const checks = evaluateVersionDeploymentProof(manifest(), 'verify-staging', {
+      version: 'candidate',
+      commit_sha: CANDIDATE_SHA,
+      target_app: 'one-time',
+      deployment: {
+        provider: 'railway',
+        deployment_id: 'deploy-web-123',
+        snapshot_id: 'snapshot-web-123',
+        project_id: 'railway-project-123',
+        environment_id: 'railway-env-staging-123',
+        service_id: 'railway-web-service-123',
+        service_name: 'one-time-web',
+      },
+    });
+    expect(checks.filter((check) => check.status === 'blocked')).toEqual([]);
+    expect(checks.find((check) => check.id === 'version_git_commit_sha_present')).toMatchObject({
+      status: 'warning',
+    });
+    expect(JSON.stringify(checks)).not.toMatch(/DATABASE_URL|SECRET|TOKEN|PASSWORD/);
   });
 
   it('records deployment IDs and digests without environment values', () => {
