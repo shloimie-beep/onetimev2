@@ -18,6 +18,7 @@ Base head at pivot: `92fd518ca66680543b80592b724d4fc492e544b6`
 - Added sanitized Resend/email inputs preflight. It verifies protected keyholder files, approved domain, sender, reply-to, and private manifest readiness without printing raw values or writing secrets to the repo.
 - Recorded same-window CRM production-apply authorization in protected local inputs. The readiness gate now accepts operator authorization, private manifest production approval, idempotency, and manual-review exclusion/handling.
 - Generated the protected transactional email private manifest using the protected operator-owned inbox file. No email was sent.
+- Fixed the delivery cron launch gate so fixed lifecycle transactional Resend mail can run in production sink-worker mode while generic provider/campaign sends remain disabled.
 - Verified signup-to-CRM and WhatsApp lead-capture tests for the first slice.
 
 ## Corrected CRM Counts
@@ -61,7 +62,7 @@ Report: `ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json`
 
 Protected manifest: `C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json`
 
-Email next action: configure exact staging/production Railway variables from the protected manifest, then run one controlled operator-inbox transactional test.
+Email next action: deploy the worker/web candidate with exact staging/production Railway variables from the protected manifest, then run one controlled operator-inbox transactional test.
 
 ## CRM Apply Readiness
 
@@ -87,7 +88,7 @@ Production apply blockers:
 ## Blockers
 
 - Real CRM production apply: guarded writer is accepted locally, and readiness preflight confirms source packet, corrected dry-run proof, operator authorization, idempotency, and manual-review handling are present. Production remains blocked until fresh backup proof JSON, `DATABASE_URL`, created-by user key, and `RABBI-DAY-ONE-CRM-PRODUCTION-APPLY-OK` are present.
-- Production transactional email: protected Resend/sender/reply-to/operator-inbox inputs are present and policy-matching, and a protected private manifest was generated. Configure staging/production Railway variables from the protected manifest and run one controlled operator-inbox send.
+- Production transactional email: protected Resend/sender/reply-to/operator-inbox inputs are present and policy-matching, and a protected private manifest was generated. The worker launch gate now permits lifecycle transactional email without opening generic provider/campaign sends. Deploy the exact candidate with staging/production Railway variables from the protected manifest and run one controlled operator-inbox send.
 - Rabbi/Admin access send: wait for production transactional email proof, then send final administrator access message.
 - WhatsApp production lead capture: configure Meta WhatsApp production webhook secrets and verify token, then run approved canary.
 - Campaign seed: wait for CRM production apply and transactional email proof; no broad campaign sent.
@@ -122,6 +123,11 @@ Production apply blockers:
 - `npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts`
 - `node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
 - `node --import tsx scripts/w12-100/data/crm-apply-readiness-preflight.ts --out=ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json`
+- `npx vitest run --config vitest.unit.config.ts tests/unit/delivery/config.test.ts`
+- `npm run typecheck`
+- `npm run lint`
+- `npm run secret:scan`
+- `git diff --check`
 
 Known non-blocking check: `npm run format` fails on 1205 unrelated pre-existing files; targeted changed-file Prettier check passed.
 

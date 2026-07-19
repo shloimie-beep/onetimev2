@@ -64,6 +64,12 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
   });
   const providerFlagsWithoutProviderMode =
     transportMode === 'sink' &&
+    !isLifecycleTransactionalEmailSinkMode({
+      appConfig,
+      provider,
+      source,
+      transportMode,
+    }) &&
     (provider.transportEnabled ||
       provider.resendEnabled ||
       provider.wapiEnabled ||
@@ -77,6 +83,16 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
 
   if (providerFlagsWithoutProviderMode) {
     throw new Error('Delivery provider flags require explicit provider transport mode.');
+  }
+  if (
+    isLifecycleTransactionalEmailSinkMode({
+      appConfig,
+      provider,
+      source,
+      transportMode,
+    })
+  ) {
+    assertLifecycleTransactionalEmailWorkerConfig(appConfig);
   }
   if (transportMode === 'provider' && appConfig.deliveryEnvironment === 'production') {
     throw new Error('Production delivery provider mode is disabled pending a reviewed release.');
@@ -155,4 +171,58 @@ export function loadDeliveryWorkerConfig(source: NodeJS.ProcessEnv): DeliveryWor
       ...(protectedOwnerEmail ? { protectedOwnerEmail } : {}),
     },
   };
+}
+
+function isLifecycleTransactionalEmailSinkMode(input: {
+  appConfig: AppConfig;
+  provider: DeliveryProviderFeatureConfig;
+  source: NodeJS.ProcessEnv;
+  transportMode: DeliveryTransportMode;
+}) {
+  return (
+    input.transportMode === 'sink' &&
+    input.appConfig.lifecycleEmailMode === 'transactional' &&
+    input.provider.transportEnabled &&
+    input.provider.resendEnabled &&
+    !input.provider.resendAuthorized &&
+    !input.provider.wapiEnabled &&
+    !input.provider.wapiAuthorized &&
+    !booleanValue(input.source.DELIVERY_PROVIDER_ACTIVATION_ENABLED) &&
+    !booleanValue(input.source.ENABLE_REAL_EMAIL_TRANSPORT) &&
+    !booleanValue(input.source.ENABLE_REAL_WHATSAPP_TRANSPORT) &&
+    !booleanValue(input.source.ENABLE_REAL_TELEGRAM_TRANSPORT) &&
+    !booleanValue(input.source.ENABLE_PAYMENT_TRANSPORT)
+  );
+}
+
+function assertLifecycleTransactionalEmailWorkerConfig(config: AppConfig) {
+  const missing: string[] = [];
+  if (config.oneTimeRuntimeEnvironment !== 'production') {
+    missing.push('ONE_TIME_RUNTIME_ENVIRONMENT=production');
+  }
+  if (!config.deliveryProviderAuthorizationId) missing.push('DELIVERY_PROVIDER_AUTHORIZATION_ID');
+  if (!config.lifecycleDeliveryKeyConfigured) missing.push('ONE_TIME_LIFECYCLE_DELIVERY_KEY');
+  if (!config.resendApiKey) missing.push('RESEND_API_KEY');
+  if (!config.resendWebhookEnabled || !config.resendWebhookSecretConfigured) {
+    missing.push('ONE_TIME_RESEND_WEBHOOK_ENABLED and RESEND_WEBHOOK_SECRET');
+  }
+  if (!config.emailFrom) {
+    missing.push('ONE_TIME_EMAIL_FROM');
+  } else if (normalizedAddress(config.emailFrom) !== 'info@onetimeonetime.com') {
+    missing.push('ONE_TIME_EMAIL_FROM=info@onetimeonetime.com');
+  }
+  if (!config.emailReplyTo) missing.push('ONE_TIME_EMAIL_REPLY_TO');
+  if (config.deliveryProviderPerRunBudget <= 0 || config.deliveryProviderPerProviderBudget <= 0) {
+    missing.push(
+      'positive DELIVERY_PROVIDER_PER_RUN_BUDGET and DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
+    );
+  }
+  if (missing.length) {
+    throw new Error(`Lifecycle transactional email worker config missing: ${missing.join(', ')}`);
+  }
+}
+
+function normalizedAddress(value?: string) {
+  const trimmed = value?.trim().toLowerCase() ?? '';
+  return trimmed.match(/<([^<>]+)>/)?.[1]?.trim() ?? trimmed;
 }
