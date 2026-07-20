@@ -1,0 +1,86 @@
+{
+  "schema_version": "hybrid_pivot_handoff.v1",
+  "window_id": "LEARNING_PRODUCT",
+  "status": "ready_for_review_with_blocker",
+  "updated_at": "2026-07-20T13:50:34+03:00",
+  "branch": "codex/learning-product-portals-media",
+  "target_base_branch": "codex/one-time-finish-now-20260719",
+  "base_sha": "0d50e0f07afbc0d0d143a45e76e73821ca25178f",
+  "source_prompt_sha256": "50d850e3625f5f53e9e5013bb8227eca0a62f095b19bed150fd0a7444db9a24a",
+  "summary": [
+    "Parent-managed student username/password credential projection replaces student email delivery in the portal setup and reset path.",
+    "Student/parent portal projections now include safe credential state, featured lesson summaries, approved lesson conversation summaries, and class-only all-time leaderboards.",
+    "Classroom and class summaries now project the Mishnah class at 19:00 Asia/Jerusalem with protected launch requirements.",
+    "New migrations add credential audit/projection tables plus lesson publication, conversation moderation, leaderboard publication, and provider projection tables.",
+    "Local validation used mocked/no-provider-call tests only; no Vimeo, Zoom, production database, Railway, DNS, or account changes were made."
+  ],
+  "changed_areas": [
+    "apps/web/src/client/app/portal-api.ts",
+    "apps/web/src/client/app/portal-entry.tsx",
+    "apps/web/src/client/features/portals/PortalFeatures.tsx",
+    "packages/brand-system/src/styles/portal.css",
+    "packages/contracts/src/gamification/index.ts",
+    "packages/contracts/src/portals/index.ts",
+    "packages/db/migrations/2206_student_non_email_credentials.sql",
+    "packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
+    "packages/db/src/gamification/repository.ts",
+    "packages/db/src/portals/repository.ts",
+    "packages/domain/src/classes/service.ts",
+    "packages/domain/src/classroom/service.ts",
+    "packages/domain/src/content/service.ts",
+    "packages/domain/src/gamification/service.ts",
+    "packages/domain/src/portals/account-lifecycle-adapter.ts",
+    "packages/domain/src/portals/services.ts",
+    "tests/e2e/ot-83r-portals.spec.ts",
+    "tests/e2e/w12-03-portal-test-lab.spec.ts",
+    "tests/integration/portals/portal-mount.test.ts",
+    "tests/unit/learning-product-portals.test.ts",
+    "ops/codex-runs/LEARNING-PRODUCT/STATE.json",
+    "ops/codex-runs/LEARNING-PRODUCT/FINAL-REPORT.md"
+  ],
+  "validation": {
+    "passed": [
+      "npx vitest run tests/unit/learning-product-portals.test.ts",
+      "npm run unit",
+      "npx vitest run --config vitest.integration.config.ts tests/integration/portals/portal-mount.test.ts tests/integration/classroom/zoom-learner-classroom.test.ts tests/integration/content/content-library.test.ts --reporter=dot",
+      "npx playwright test tests/e2e/ot-83r-portals.spec.ts tests/e2e/ot88-zoom-classroom.spec.ts --reporter=line",
+      "npx playwright test tests/accessibility/ot88-zoom-classroom-a11y.spec.ts --reporter=line",
+      "npx playwright test tests/performance/ot88-zoom-classroom-performance.spec.ts --reporter=line",
+      "npm run typecheck",
+      "npm run lint",
+      "npm run build",
+      "npm run brand:check",
+      "npm run secret:scan",
+      "git diff --check",
+      "npx prettier --check <touched files>"
+    ],
+    "blocked": [
+      {
+        "command": "npm run db:verify",
+        "reason": "DATABASE_URL is required for PostgreSQL-backed runtime."
+      },
+      {
+        "command": "username/password student session issuance",
+        "reason": "The existing app-wide login route remains email-based in apps/web/src/server/app.ts, which this window was explicitly forbidden to edit."
+      }
+    ],
+    "known_baseline_failures": [
+      {
+        "command": "npm run format",
+        "reason": "Repo-wide pre-existing formatting drift; scoped touched-file Prettier check passed."
+      }
+    ]
+  },
+  "external_effects": {
+    "vimeo_calls": false,
+    "zoom_calls": false,
+    "production_db_mutations": false,
+    "provider_account_mutations": false,
+    "railway_or_dns_changes": false
+  },
+  "next_actions": [
+    "Run npm run db:verify with an approved non-production DATABASE_URL before live migration promotion.",
+    "Convergence owner should wire username/password credential verification into the app-wide student session login path with the proper auth/app ownership.",
+    "Convergence owner should merge this branch into the final One Time finish branch after review."
+  ]
+}

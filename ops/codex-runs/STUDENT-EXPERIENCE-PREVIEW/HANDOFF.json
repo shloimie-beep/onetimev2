@@ -1,0 +1,39 @@
+{
+  "schema_version": "onetime.student_experience_preview.handoff.v1",
+  "status": "local_preview_ready_staging_blocked",
+  "branch": "codex/student-experience-preview",
+  "public_artifacts": {
+    "state": "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/STATE.json",
+    "milestone": "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/MILESTONE.md",
+    "screenshots": [
+      "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/screenshots/admin-preview-1440x1000.png",
+      "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/screenshots/parent-preview-1440x1000.png",
+      "ops/codex-runs/STUDENT-EXPERIENCE-PREVIEW/screenshots/student-preview-1440x1000.png"
+    ]
+  },
+  "private_handoff_path": "C:/Users/User/.onetime-student-preview/PREVIEW-HANDOFF.private.json",
+  "safe_preview_summary": {
+    "admin": "Synthetic admin-only portal lab evidence captured locally.",
+    "parent": "Synthetic parent portal journey captured locally.",
+    "student": "Synthetic student portal journey captured locally."
+  },
+  "staging": {
+    "deployment_status": "blocked",
+    "url_status": "not_available",
+    "migration_status": "not_run",
+    "credential_status": "not_created",
+    "blocker_ids": [
+      "BLOCKED_STAGING_DEPLOYMENT",
+      "BLOCKED_STAGING_MIGRATIONS",
+      "BLOCKED_PROTECTED_OPERATOR_INBOX",
+      "BLOCKED_REAL_PREVIEW_CREDENTIALS"
+    ]
+  },
+  "privacy": {
+    "credentials_in_git": false,
+    "private_values_in_git": false,
+    "student_contacts_sent_to_provider": false,
+    "student_credentials_sent_to_provider": false,
+    "ghl_or_leadconnector_used": false
+  }
+}

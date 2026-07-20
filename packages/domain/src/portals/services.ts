@@ -2,6 +2,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import type {
   AdministrativeUpdate,
   BillingSummary,
+  ClassLeaderboardSummary,
   HelperAnswer,
   CreateLearnerPayload,
   HelperAvailability,
@@ -29,7 +30,10 @@ import type {
   UpcomingClassSummary,
 } from '../../../contracts/src/portals/index.ts';
 import type { GamificationSummary } from '../../../contracts/src/gamification/index.ts';
-import { hasPortalCapability } from '../../../contracts/src/portals/index.ts';
+import {
+  hasPortalCapability,
+  normalizeStudentUsername,
+} from '../../../contracts/src/portals/index.ts';
 
 export type { StudentAccessOperationType } from '../../../contracts/src/portals/index.ts';
 
@@ -59,6 +63,14 @@ export type CredentialLifecycleResult = {
   status: StudentAccessState['status'];
   expires_at: string | null;
   delivery_hint: string | null;
+  student_user_ref?: string | null;
+  username_display?: string | null;
+  credential_status?: StudentAccessState['credential_status'];
+  password_hash_ref?: string | null;
+  password_version?: number;
+  security_version?: number;
+  last_reset_at?: string | null;
+  last_session_revoked_at?: string | null;
 };
 
 export type RewardWriteInput = {
@@ -256,6 +268,7 @@ export type LearnerGamificationAdapter = {
     actor: PortalActorContext;
     learner: LearnerProfile;
   }): Promise<GamificationSummary>;
+  classLeaderboard?(args: { actor: PortalActorContext }): Promise<ClassLeaderboardSummary>;
 };
 
 export type PortalServiceDeps = {
@@ -326,6 +339,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
           await mergedUpdates(deps.repository, deps, actor, learner, 'parent'),
         ]),
       );
+      const leaderboard = await leaderboardFor(gamification, actor);
       return {
         household,
         learners: visibleLearners,
@@ -333,6 +347,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
         upcoming_classes: Object.fromEntries(upcomingEntries),
         rewards: Object.fromEntries(rewardEntries),
         gamification: Object.fromEntries(gamificationEntries),
+        leaderboard,
         updates: Object.fromEntries(updateEntries),
         helper: await helper.availability({ actor, household }),
         billing: await billing.summaryForHousehold({ actor, household }),
@@ -417,6 +432,7 @@ export function createParentPortalService(deps: PortalServiceDeps) {
     ) {
       requireParentHousehold(actor, householdKey, 'parent:student-access:manage');
       const learner = await requireLearner(deps.repository, actor, householdKey, learnerKey);
+      validateStudentAccessCredentialPayload(operationType, payload);
       const adapterResult = await runCredentialOperation(
         deps.credentialLifecycle,
         operationType,
@@ -544,6 +560,7 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         updates,
         questions,
         helperState,
+        leaderboard,
       ] = await Promise.all([
         deps.classAccess.upcomingForLearner({ actor, learner }),
         deps.contentAccess.publishedLibraryForLearner({ actor, learner }),
@@ -554,11 +571,15 @@ export function createStudentPortalService(deps: PortalServiceDeps) {
         mergedUpdates(deps.repository, deps, actor, learner, 'student'),
         deps.repository.listStudentQuestions({ actor, learner_key: learner.learner_key }),
         helper.availability({ actor, learner }),
+        leaderboardFor(gamification, actor),
       ]);
+      const safeLibrary = safeLibraryItems([...library, ...reviewSheets]);
       return {
         learner,
         upcoming_classes: safeClassSummaries(upcoming),
-        library_items: safeLibraryItems([...library, ...reviewSheets]),
+        library_items: safeLibrary,
+        featured_lesson: safeLibrary.find((item) => item.lesson?.featured)?.lesson ?? null,
+        leaderboard,
         progress,
         rewards,
         gamification: gamificationSummary,
@@ -784,15 +805,66 @@ async function runCredentialOperation(
 }
 
 function assertNoCredentialLeak(result: CredentialLifecycleResult) {
-  const serialized = JSON.stringify(result).toLowerCase();
-  for (const forbidden of ['password', 'secret', 'token', 'credential', 'hash']) {
-    if (serialized.includes(forbidden)) {
+  const stack: unknown[] = [result];
+  while (stack.length > 0) {
+    const entry = stack.pop();
+    if (Array.isArray(entry)) {
+      stack.push(...entry);
+      continue;
+    }
+    if (entry && typeof entry === 'object') {
+      stack.push(...Object.values(entry as Record<string, unknown>));
+      continue;
+    }
+    if (typeof entry !== 'string') continue;
+    const normalized = entry.toLowerCase();
+    if (
+      /^https?:\/\//.test(normalized) ||
+      normalized.includes('raw_join_url') ||
+      normalized.includes('raw_private_url') ||
+      normalized.includes('plain_password') ||
+      normalized.includes('password:')
+    ) {
       throw new PortalServiceError(
         'SERVER_ERROR',
         'Credential lifecycle adapter returned forbidden credential material.',
       );
     }
   }
+}
+
+function validateStudentAccessCredentialPayload(
+  operationType: StudentAccessOperationType,
+  payload: StudentAccessOperationPayload,
+) {
+  if (operationType !== 'setup' && operationType !== 'reset') return;
+  if (operationType === 'setup' && !payload.username) {
+    throw new PortalServiceError('VALIDATION_ERROR', 'Student username is required for setup.');
+  }
+  if (!payload.password) {
+    throw new PortalServiceError('PASSWORD_POLICY_FAILED', 'Student password is required.');
+  }
+  if (
+    payload.username &&
+    reservedStudentUsernames.has(normalizeStudentUsername(payload.username))
+  ) {
+    throw new PortalServiceError('USERNAME_UNAVAILABLE', 'Choose a different student username.');
+  }
+}
+
+const reservedStudentUsernames = new Set([
+  'admin',
+  'administrator',
+  'billing',
+  'parent',
+  'rabbi',
+  'root',
+  'student',
+  'support',
+]);
+
+async function leaderboardFor(gamification: LearnerGamificationAdapter, actor: PortalActorContext) {
+  return gamification.classLeaderboard ? gamification.classLeaderboard({ actor }) : undefined;
 }
 
 async function contentOpenForLearner(
@@ -944,8 +1016,13 @@ function localGamification(): LearnerGamificationAdapter {
       celebration: null,
       guardrails: {
         no_public_rankings: true,
+        leaderboard_scope: 'authenticated_class_only',
+        leaderboard_time_basis: 'all_time_no_reset',
+        no_negative_labels: true,
         no_random_rewards: true,
         meaningful_learning_only: true,
+        rabbi_corrections_audited: true,
+        publication_controlled_by_rabbi: true,
         student_scope:
           actor.actor_role === 'student'
             ? 'self_only'
@@ -953,6 +1030,20 @@ function localGamification(): LearnerGamificationAdapter {
               ? 'household'
               : 'authorized_staff',
       },
+    }),
+    classLeaderboard: async () => ({
+      board_key: 'leaderboard_one_time_daily_empty',
+      class_series_key: 'class_series_one_time_daily',
+      title: 'Daily One Time Mishnayos',
+      scope: 'authenticated_class_only',
+      time_basis: 'all_time_no_reset',
+      published: false,
+      actual_names_visible: true,
+      negative_labels_present: false,
+      ai_judgment_present: false,
+      corrected_by_rabbi_audit_available: true,
+      updated_at: null,
+      entries: [],
     }),
   };
 }

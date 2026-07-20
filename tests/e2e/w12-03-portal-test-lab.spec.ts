@@ -69,8 +69,9 @@ test('W12-03 parent and three separate learners complete portal journeys', async
 
   await parentPage.getByRole('button', { name: 'Reset' }).click();
   let dialog = parentPage.getByRole('dialog', { name: 'Reset student access' });
+  await dialog.getByLabel('Student password').fill('W12Learner123');
   await dialog.getByRole('button', { name: 'Reset' }).click();
-  await expect(parentPage.getByText('Status: Reset requested')).toBeVisible();
+  await expect(parentPage.getByText('Status: Active')).toBeVisible();
 
   await parentPage.getByRole('button', { name: 'Suspend' }).click();
   dialog = parentPage.getByRole('dialog', { name: 'Suspend student access' });
@@ -98,7 +99,11 @@ test('W12-03 parent and three separate learners complete portal journeys', async
     const studentContext = await browser.newContext();
     const studentPage = await studentContext.newPage();
     const requests = collectRequests(studentPage);
-    await loginAs(studentPage, learner.email, '/app/student');
+    const studentPassword =
+      learner.learnerKey === W12_PORTAL_TEST_LAB.learners[0].learnerKey
+        ? 'W12Learner123'
+        : undefined;
+    await loginAs(studentPage, learner.email, '/app/student', { password: studentPassword });
     await expect(
       studentPage.locator('#app-main').getByRole('heading', { name: 'Student Portal' }),
     ).toBeVisible();
@@ -150,16 +155,17 @@ async function loginAs(
   page: Page,
   roleOrEmail: 'admin' | 'parent' | string,
   returnTo: string,
-  options: { waitForReturnTo?: boolean } = {},
+  options: { waitForReturnTo?: boolean; password?: string | undefined } = {},
 ) {
   const credentials: Record<string, [string, string]> = {
     admin: [W12_PORTAL_TEST_LAB.admin.email, W12_PORTAL_TEST_LAB.admin.defaultPassword],
     parent: [W12_PORTAL_TEST_LAB.parent.email, W12_PORTAL_TEST_LAB.parent.defaultPassword],
   };
-  const [email, password] = credentials[roleOrEmail] ?? [
+  const [email, defaultPassword] = credentials[roleOrEmail] ?? [
     roleOrEmail,
     W12_PORTAL_TEST_LAB.learners.find((learner) => learner.email === roleOrEmail)?.defaultPassword,
   ];
+  const password = options.password ?? defaultPassword;
   if (!password) throw new Error(`Missing W12 test credential for ${roleOrEmail}`);
   await page.goto(`/login?return_to=${encodeURIComponent(returnTo)}`);
   await page.getByLabel('Email').fill(email);

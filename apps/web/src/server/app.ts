@@ -552,18 +552,13 @@ export function createApp({
 
   app.get('/login', (req, res) => {
     const csrf = createLoginCsrf(config);
+    const requestedReturnTo = String(req.query.return_to ?? '');
+    const loginReturnTo =
+      safeReturnPath(requestedReturnTo, config) ?? (requestedReturnTo ? '/app/crm' : '');
     setCsrfCookie(res, config, csrf.csrf_cookie);
     setPrivateNoStore(res);
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res
-      .status(200)
-      .type('html')
-      .send(
-        loginPageHtml(
-          csrf.csrf_token,
-          safeReturnPath(String(req.query.return_to ?? ''), config) ?? '/app/crm',
-        ),
-      );
+    res.status(200).type('html').send(loginPageHtml(csrf.csrf_token, loginReturnTo));
   });
 
   app.get('/activate', (_req, res) => {
@@ -873,7 +868,7 @@ export function createApp({
         authenticateUser({
           pool,
           config,
-          email: payload.email,
+          identifier: payload.identifier ?? payload.email ?? '',
           password: payload.password,
           ip: req.ip,
           userAgent: req.header('user-agent') ?? undefined,
@@ -891,7 +886,7 @@ export function createApp({
           res.setHeader('retry-after', String(login.retry_after_seconds));
         res.status(status).json({
           success: false,
-          code: login.code,
+          code: login.code === 'DISABLED' ? 'INVALID_CREDENTIALS' : login.code,
           message:
             login.code === 'EMAIL_CHALLENGE_REQUIRED'
               ? 'Check your email for a six-digit login code.'
@@ -928,7 +923,8 @@ export function createApp({
         success: true,
         user: session.user,
         csrf_token: session.csrf_token,
-        return_to: safeReturnPath(payload.return_to, config) ?? '/app/crm',
+        return_to:
+          safeReturnPath(payload.return_to, config) ?? defaultRouteForRole(session.user.role),
       });
     } catch (error) {
       if (error instanceof ZodError) {
@@ -3548,9 +3544,9 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
         <input type="hidden" name="csrf_token" value="${escapeHtml(csrfToken)}">
         <input type="hidden" name="return_to" value="${escapeHtml(returnTo)}">
         <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" autocomplete="username" required>
-          <p tabindex="-1" class="error" data-error-for="email"></p>
+          <label for="identifier">Email or student username</label>
+          <input id="identifier" name="identifier" type="text" autocomplete="username" required>
+          <p tabindex="-1" class="error" data-error-for="identifier"></p>
         </div>
         <div class="field">
           <label for="password">Password</label>

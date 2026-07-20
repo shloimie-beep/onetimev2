@@ -324,8 +324,7 @@ if (loginForm) {
     loginForm
       .querySelectorAll<HTMLElement>('[data-error-for]')
       .forEach((node) => (node.textContent = ''));
-  const returnTo = () =>
-    String(new FormData(loginForm).get('return_to') ?? '/app/crm') || '/app/crm';
+  const returnTo = () => String(new FormData(loginForm).get('return_to') ?? '');
   const revealEmailChallenge = (token: string) => {
     challengeToken = token;
     if (emailPanel) emailPanel.hidden = false;
@@ -414,10 +413,10 @@ if (loginForm) {
           'x-csrf-token': String(data.get('csrf_token') ?? ''),
         },
         body: JSON.stringify({
-          email: String(data.get('email') ?? ''),
+          identifier: String(data.get('identifier') ?? ''),
           password: String(data.get('password') ?? ''),
           csrf_token: String(data.get('csrf_token') ?? ''),
-          return_to: String(data.get('return_to') ?? '/app/crm'),
+          return_to: String(data.get('return_to') ?? ''),
         }),
       });
       const json = await response.json();

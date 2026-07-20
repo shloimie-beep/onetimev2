@@ -3,11 +3,15 @@ import { z } from 'zod';
 export const gamificationReasonCodeSchema = z.enum([
   'attendance_present',
   'attendance_streak',
+  'lesson_completed',
+  'worksheet_completed',
   'review_completed',
   'review_streak',
   'retention_review',
   'mishnah_completed',
   'question_approved',
+  'excellent_question',
+  'consistency_bonus',
   'personal_milestone',
   'class_milestone',
   'parent_reward_completed',
@@ -108,15 +112,32 @@ export type ClassMilestone = z.infer<typeof classMilestoneSchema>;
 
 export const gamificationGuardrailsSchema = z.object({
   no_public_rankings: z.literal(true),
+  leaderboard_scope: z.literal('authenticated_class_only').optional(),
+  leaderboard_time_basis: z.literal('all_time_no_reset').optional(),
+  no_negative_labels: z.literal(true).optional(),
   no_random_rewards: z.literal(true),
   meaningful_learning_only: z.literal(true),
+  rabbi_corrections_audited: z.literal(true).optional(),
+  publication_controlled_by_rabbi: z.literal(true).optional(),
   student_scope: z.enum(['self_only', 'household', 'authorized_staff']),
 });
 export type GamificationGuardrails = z.infer<typeof gamificationGuardrailsSchema>;
 
+export const gamificationPointsPolicySchema = z.object({
+  policy_version: z.literal('ot-learning-points-v2'),
+  attendance_present: z.literal(5),
+  lesson_completed: z.literal(10),
+  worksheet_completed: z.literal(10),
+  question_approved: z.literal(3),
+  excellent_question: z.literal(5),
+  consistency_bonus_default: z.literal(5),
+});
+export type GamificationPointsPolicy = z.infer<typeof gamificationPointsPolicySchema>;
+
 export const gamificationSummarySchema = z.object({
   learner_key: z.string().trim().min(1).max(180),
   learning_points: z.number().int(),
+  points_policy: gamificationPointsPolicySchema.optional(),
   level: learningLevelSchema,
   progress: learningProgressDetailSchema,
   streaks: z.array(learningStreakSchema).max(2),
