@@ -1,0 +1,88 @@
+{
+  "schema_version": "onetime.hybrid_pivot.ownership.v1",
+  "generated_at": "2026-07-20T11:17:44.8984447+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "pull_request": 92,
+  "lanes": {
+    "BUSINESS_HIGHLEVEL": {
+      "purpose": "One Time business operations through HighLevel.",
+      "owned_paths": [
+        "integrations/highlevel/**",
+        "packages/contracts/src/highlevel/**",
+        "packages/domain/src/highlevel/**",
+        "packages/db/src/highlevel/**",
+        "apps/web/src/server/features/highlevel/**",
+        "scripts/highlevel/**",
+        "HighLevel-specific tests",
+        "Admin CRM projection files",
+        "public signup HighLevel outbox integration",
+        "packages/config/**",
+        ".env.example",
+        "packages/db/migrations/2205_highlevel_business_projection.sql"
+      ],
+      "reserved_migrations": ["2205_highlevel_business_projection.sql"],
+      "must_not_own": [
+        "Student source of record",
+        "learning progress",
+        "student credentials",
+        "Zoom/Vimeo classroom source of record",
+        "HighLevel Courses",
+        "HighLevel Communities"
+      ]
+    },
+    "LEARNING_PRODUCT": {
+      "purpose": "One Time parent, student, classroom, content, and gamification product.",
+      "owned_paths": [
+        "packages/contracts/src/portals/**",
+        "packages/contracts/src/gamification/**",
+        "packages/contracts/src/classroom/**",
+        "packages/domain/src/portals/**",
+        "packages/domain/src/gamification/**",
+        "packages/domain/src/classes/**",
+        "packages/domain/src/classroom/**",
+        "packages/domain/src/content/**",
+        "packages/domain/src/providers/zoom*",
+        "packages/db/src/portals/**",
+        "packages/db/src/gamification/**",
+        "classroom/content repositories",
+        "portal and classroom client files",
+        "portal/classroom tests",
+        "packages/db/migrations/2206_student_non_email_credentials.sql",
+        "packages/db/migrations/2207_classroom_board_and_lesson_projection.sql"
+      ],
+      "reserved_migrations": [
+        "2206_student_non_email_credentials.sql",
+        "2207_classroom_board_and_lesson_projection.sql"
+      ],
+      "must_not_own": [
+        "HighLevel contact operations",
+        "marketing suppression source of truth",
+        "GHL-operated billing operations",
+        "custom direct WhatsApp transport"
+      ]
+    },
+    "CONVERGENCE_ONLY": {
+      "purpose": "Shared hotspot reconciliation, final verification, and release operations.",
+      "owned_paths": [
+        "apps/web/src/server/app.ts",
+        "packages/domain/src/index.ts",
+        "packages/contracts/src/index.ts",
+        "packages/db/src/index.ts",
+        "root package files/lockfile",
+        "shared navigation",
+        "shared route branding",
+        "visible-action registry",
+        "final migration verification",
+        "Railway",
+        "production database writes",
+        "provider canaries",
+        "deployment"
+      ],
+      "rules": [
+        "Convergence-only changes wait until the business and learning windows return or explicitly coordinate.",
+        "Production database writes, provider canaries, Railway mutations, and deployment remain blocked without exact protected authorization.",
+        "Final migration verification must include the reserved 2205, 2206, and 2207 ordering once those migrations are created in later prompts."
+      ]
+    }
+  }
+}

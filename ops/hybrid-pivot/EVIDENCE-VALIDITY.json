@@ -1,0 +1,53 @@
+{
+  "schema_version": "onetime.hybrid_pivot.evidence_validity.v1",
+  "generated_at": "2026-07-20T11:17:44.8984447+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "pull_request": 92,
+  "policy": {
+    "new_window_does_not_force_full_retest": true,
+    "broad_provider_or_production_proof_required_for_prompt_01": false
+  },
+  "proof_invalidation_rules": {
+    "postgresql_proof": {
+      "invalidates_only_on": [
+        "migrations affecting database behavior",
+        "database configuration changes",
+        "database access-path changes",
+        "schema or repository changes affecting database proof assumptions"
+      ]
+    },
+    "auth_proof": {
+      "invalidates_only_on": [
+        "authentication code changes",
+        "account lifecycle changes",
+        "portal/session/CSRF changes",
+        "configuration changes affecting auth flows"
+      ]
+    },
+    "public_ui_proof": {
+      "invalidates_only_on": [
+        "changed public routes",
+        "changed public styles",
+        "changed public components",
+        "changed assets affecting the proved route"
+      ]
+    },
+    "provider_canary": {
+      "invalidates_only_on": [
+        "provider adapter changes",
+        "provider configuration changes",
+        "provider account changes",
+        "provider call-path changes"
+      ]
+    }
+  },
+  "freshness_rules": {
+    "backup": "Backup must be fresh before production data apply and final promotion.",
+    "rollback": "Rollback proof must be fresh for the final integrated candidate only."
+  },
+  "ci_rules": {
+    "github_no_step_no_log_failures": "CI_PLATFORM_BLOCKED",
+    "current_pr_92_state": "CI_PLATFORM_BLOCKED",
+    "current_pr_92_reason": "GitHub Actions jobs failed before runner execution with empty steps and billing/spending-limit annotation."
+  }
+}

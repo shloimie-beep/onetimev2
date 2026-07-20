@@ -1,0 +1,105 @@
+{
+  "schema_version": "onetime.hybrid_pivot.base.v1",
+  "generated_at": "2026-07-20T11:17:44.8984447+03:00",
+  "repository": {
+    "full_name": "webcraft-media/onetimev2",
+    "remote": "https://github.com/webcraft-media/onetimev2.git"
+  },
+  "pull_request": {
+    "number": 92,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+    "state": "OPEN",
+    "is_draft": true,
+    "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "head_ref": "codex/one-time-finish-now-20260719"
+  },
+  "current_branch": "codex/one-time-finish-now-20260719",
+  "exact_current_head_at_checkpoint_start": "0d50e0f07afbc0d0d143a45e76e73821ca25178f",
+  "known_head_at_prompt_generation": "0d50e0f07afbc0d0d143a45e76e73821ca25178f",
+  "fetched_remote_head": "0d50e0f07afbc0d0d143a45e76e73821ca25178f",
+  "production": {
+    "source": "ops/director/CURRENT-STATE.json live_readback.production",
+    "url": "https://join.onetimeonetime.com",
+    "version": "rabbi-day-one-crm-ed77a04",
+    "runtime_source_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+    "latest_migration": "2204_w12_100_real_source_crm_apply",
+    "readback_note": "No broad production proof rerun was performed in this checkpoint; values are carried from the current director handoff and accepted PR #92 evidence."
+  },
+  "latest_repo_migration": {
+    "file": "packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
+    "id": "2204_w12_100_real_source_crm_apply"
+  },
+  "github_check_state": {
+    "state": "CI_PLATFORM_BLOCKED",
+    "merge_state_status": "UNSTABLE",
+    "code_failure": false,
+    "ci_platform_failure": true,
+    "reason": "All five PR #92 GitHub Actions checks on head 0d50e0f07afbc0d0d143a45e76e73821ca25178f completed as failures before runner execution. The jobs report empty steps and blank runner names, and the Checks API annotation reports GitHub account billing or spending-limit gating.",
+    "inspected_at": "2026-07-20T11:17:44.8984447+03:00",
+    "checks": [
+      {
+        "name": "Node 24 verify",
+        "workflow": "CI",
+        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099515",
+        "job_id": "88219620645",
+        "conclusion": "FAILURE",
+        "steps_reported": 0
+      },
+      {
+        "name": "OPS-06 deterministic checks",
+        "workflow": "OPS-06 Reliability Observability",
+        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099500",
+        "job_id": "88219620560",
+        "conclusion": "FAILURE",
+        "steps_reported": 0
+      },
+      {
+        "name": "PostgreSQL 18 assurance and restore clone",
+        "workflow": "OPS-11 PostgreSQL 18 Assurance",
+        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099474",
+        "job_id": "88219620423",
+        "conclusion": "FAILURE",
+        "steps_reported": 0
+      },
+      {
+        "name": "PostgreSQL 16 assurance harness",
+        "workflow": "OT-37 PostgreSQL Assurance",
+        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099479",
+        "job_id": "88219620733",
+        "conclusion": "FAILURE",
+        "steps_reported": 0
+      },
+      {
+        "name": "PostgreSQL 16 learner-seat proof",
+        "workflow": "OT-83 PostgreSQL Concurrency",
+        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099491",
+        "job_id": "88219620746",
+        "conclusion": "FAILURE",
+        "steps_reported": 0
+      }
+    ]
+  },
+  "allowed_parallel_branches": {
+    "business_window": {
+      "branch": "codex/pr92-window-a-highlevel-business-foundation-20260720",
+      "base": "Use the checkpoint commit SHA returned as BASE_SHA after this checkpoint is pushed.",
+      "ownership_lane": "BUSINESS_HIGHLEVEL"
+    },
+    "learning_window": {
+      "branch": "codex/pr92-window-b-learning-product-foundation-20260720",
+      "base": "Use the checkpoint commit SHA returned as BASE_SHA after this checkpoint is pushed.",
+      "ownership_lane": "LEARNING_PRODUCT"
+    },
+    "convergence_window": {
+      "branch": "codex/one-time-finish-now-20260719",
+      "base": "Current PR #92 branch; convergence-only changes after both windows return.",
+      "ownership_lane": "CONVERGENCE_ONLY"
+    }
+  },
+  "checkpoint_constraints": {
+    "external_provider_mutations_performed": false,
+    "production_database_writes_performed": false,
+    "migrations_created": false,
+    "broad_provider_or_production_proof_rerun": false
+  }
+}
