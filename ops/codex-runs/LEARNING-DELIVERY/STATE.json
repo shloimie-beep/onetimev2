@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "window_id": "LEARNING-DELIVERY",
-  "updated_at": "2026-07-20T15:11:10.9910937+03:00",
+  "updated_at": "2026-07-20T15:29:14.7697909+03:00",
   "repo": "webcraft-media/onetimev2",
   "worktree": "C:\\Users\\User\\.onetime-worktrees\\LEARNING-DELIVERY",
   "git": {
@@ -33,6 +33,9 @@
       "OpenAI transcription adapter boundary with fake-fetch coverage",
       "provider-neutral HighLevel-safe business event payloads",
       "opt-in delivery worker hook with provider calls disabled",
+      "local FFmpeg video review canary",
+      "OpenAI transcription transport canary using openaiv2.txt",
+      "private Vimeo TUS upload, project add, and processing canary",
       "compact run records"
     ],
     "excluded": [
@@ -41,15 +44,16 @@
       "Telegram",
       "Buffer",
       "Stripe custom code",
-      "production DB or provider account mutations"
+      "production DB mutations",
+      "Zoom meeting creation"
     ]
   },
   "status_lines": {
-    "VIMEO_DRIVE_INGESTION": "BLOCKED(add Google Drive folder ID and service-account/OAuth credential at private keyholder paths)",
-    "VIDEO_TRIM_WORKFLOW": "BLOCKED(run one approved operator-owned video through ffprobe/FFmpeg review canary)",
-    "CLASS_TRANSCRIPTION": "BLOCKED(add a non-empty OpenAI API key at the protected keyholder path or approve using the alternate protected OpenAI key path)",
-    "VIMEO_UPLOAD_PLAYBACK": "BLOCKED(add Vimeo webhook secret/upload confirmation and explicitly approve one private upload canary)",
-    "ZOOM_CLASSROOM": "BLOCKED(add Zoom SDK key/secret and freshly approve one isolated Zoom canary)",
+    "VIMEO_DRIVE_INGESTION": "BLOCKED(no Google Drive folder/auth credential file names found under BNA-Keyholder; provide exact protected path names for the BNA auth ID)",
+    "VIDEO_TRIM_WORKFLOW": "ACCEPTED",
+    "CLASS_TRANSCRIPTION": "ACCEPTED",
+    "VIMEO_UPLOAD_PLAYBACK": "ACCEPTED",
+    "ZOOM_CLASSROOM": "BLOCKED(fresh explicit approval is still needed for Zoom meeting creation; zoom-sdk-key.txt and zoom-sdk-secret.txt are still not present)",
     "GHL_RECORDING_EVENT": "ACCEPTED",
     "GHL_CLASS_REMINDER_EVENT": "ACCEPTED",
     "TELEGRAM": "DEFERRED",
@@ -74,6 +78,7 @@
     "C:\\Users\\User\\BNA-Keyholder\\zoom-webhook-secret.txt",
     "C:\\Users\\User\\BNA-Keyholder\\zoom-sdk-key.txt",
     "C:\\Users\\User\\BNA-Keyholder\\zoom-sdk-secret.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\openaiv2.txt",
     "C:\\Users\\User\\BNA-Keyholder\\openai-api-key.txt",
     "C:\\Users\\User\\BNA-Keyholder\\learning-delivery-missing-values.private.template.json"
   ],
@@ -84,7 +89,52 @@
     { "name": "zoom_client_id", "bytes": 23, "sha256_prefix": "99678bb988b2" },
     { "name": "zoom_client_secret", "bytes": 33, "sha256_prefix": "52ead9813f18" },
     { "name": "zoom_webhook_secret", "bytes": 23, "sha256_prefix": "ef219f1667b3" },
-    { "name": "openai_api_key", "bytes": 0, "sha256_prefix": "e3b0c44298fc" }
+    { "name": "openai_api_key_later", "bytes": 164, "sha256_prefix": "f74957cf4b14" },
+    { "name": "openai_api_key_legacy_empty", "bytes": 0, "sha256_prefix": "e3b0c44298fc" }
+  ],
+  "canaries": [
+    {
+      "name": "video_review_ffmpeg",
+      "status": "accepted",
+      "external_call_performed": false,
+      "source_video_path": "C:\\Users\\User\\Documents\\Codex\\2026-06-22\\goal-c-users-user-downloads-codex-2\\work\\bnei-neviim-academy-pr5-shallow\\public\\video-edit-assets\\20260603-162505-remotion-source-smoke-input\\source.mp4",
+      "source_video_bytes": 52065,
+      "duration_seconds": 3,
+      "rendered_video_path": "tmp\\learning-delivery-canary\\20260720-1512\\rendered-reviewed-no-trim.mp4",
+      "rendered_video_bytes": 52695,
+      "rendered_video_sha256_prefix": "d3ff9e5163de",
+      "audio_extract_sha256_prefix": "a710507df15e",
+      "trim_decision": "reviewed_no_trim",
+      "auto_cut_performed": false
+    },
+    {
+      "name": "openai_transcription_transport",
+      "status": "accepted",
+      "external_call_performed": true,
+      "key_path_name": "C:\\Users\\User\\BNA-Keyholder\\openaiv2.txt",
+      "model": "whisper-1",
+      "audio_sha256_prefix": "a710507df15e",
+      "text_chars": 0,
+      "segment_count": 0,
+      "raw_transcript_saved": false
+    },
+    {
+      "name": "vimeo_private_upload_playback",
+      "status": "accepted",
+      "external_call_performed": true,
+      "provider_account_mutation_performed": true,
+      "source_video_sha256_prefix": "d3ff9e5163de",
+      "provider_video_uri_sha256_prefix": "5e8dc5a72ef4",
+      "privacy_view": "nobody",
+      "upload_approach": "tus",
+      "tus_patch_status": 204,
+      "project_add_ok": true,
+      "transcode_status": "complete",
+      "duration_seconds": 3,
+      "width": 640,
+      "height": 360,
+      "raw_link_saved": false
+    }
   ],
   "validation": [
     {
@@ -105,7 +155,7 @@
     {
       "command": "npm run secret:scan",
       "status": "passed",
-      "evidence": "Secret scan passed across 1744 repo text files."
+      "evidence": "Secret scan passed across 1748 repo text files."
     },
     {
       "command": "npm run lint",
@@ -125,34 +175,41 @@
     {
       "command": "npx tsx scripts/media/learning-delivery-readiness.ts",
       "status": "passed",
-      "evidence": "No external calls; Drive, Vimeo webhook, Zoom SDK, and OpenAI key blockers recorded."
+      "evidence": "No external calls; OpenAI accepted via openaiv2.txt; Drive, Vimeo webhook, and Zoom SDK blockers recorded."
+    },
+    {
+      "command": "FFmpeg/ffprobe local canary using node_modules ffmpeg-static and ffprobe-static",
+      "status": "passed",
+      "evidence": "3-second MP4 probed, reviewed no-trim render created, WAV extracted."
+    },
+    {
+      "command": "OpenAI audio transcription canary using C:\\Users\\User\\BNA-Keyholder\\openaiv2.txt",
+      "status": "passed",
+      "evidence": "External call accepted; zero transcript chars from non-speech fixture; no raw transcript saved."
+    },
+    {
+      "command": "Vimeo private TUS upload canary using C:\\Users\\User\\BNA-Keyholder\\vimeo-access-token.txt",
+      "status": "passed",
+      "evidence": "Account readback ok, TUS upload 204, project add ok, privacy=nobody, transcode=complete."
     }
   ],
   "external_effects": {
-    "vimeo_calls": false,
+    "vimeo_calls": true,
     "zoom_calls": false,
-    "openai_calls": false,
+    "openai_calls": true,
     "google_drive_calls": false,
     "highlevel_calls": false,
     "production_db_mutations": false,
-    "provider_account_mutations": false
+    "provider_account_mutations": true
   },
   "blockers": [
     {
       "provider": "drive",
-      "operator_action": "Add the approved Google Drive folder ID and service-account or OAuth credential to the protected keyholder paths."
-    },
-    {
-      "provider": "vimeo",
-      "operator_action": "Add Vimeo webhook secret/upload confirmation and explicitly approve one private upload canary."
+      "operator_action": "Provide the exact protected path names for the existing BNA Google Drive auth ID, folder ID, and service-account/OAuth credential."
     },
     {
       "provider": "zoom",
-      "operator_action": "Add Zoom SDK key/secret and freshly approve one isolated Zoom canary."
-    },
-    {
-      "provider": "openai",
-      "operator_action": "Add a non-empty OpenAI API key at C:\\Users\\User\\BNA-Keyholder\\openai-api-key.txt or explicitly approve the alternate protected key path."
+      "operator_action": "Say exactly: approve one isolated Zoom canary meeting now; also provide the SDK key/secret path names or confirm which existing BNA auth files map to SDK key/secret."
     }
   ]
 }

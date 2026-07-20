@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "window_id": "LEARNING-DELIVERY",
-  "status": "ready_for_review_with_provider_canary_blockers",
+  "status": "ready_for_review_with_drive_zoom_blockers",
   "repo": "webcraft-media/onetimev2",
   "branch": "codex/learning-delivery-vimeo-zoom",
   "base_branch": "codex/learning-product-portals-media",
@@ -20,12 +20,15 @@
     "opt-in delivery worker hook with provider calls disabled",
     "safe keyholder readiness diagnostic script"
   ],
+  "canaries_completed": [
+    "local FFmpeg/ffprobe video review canary: 3-second MP4, reviewed no-trim render, WAV extract",
+    "OpenAI transcription transport canary: openaiv2.txt accepted, non-speech fixture returned zero text, no raw transcript saved",
+    "Vimeo private upload/playback canary: TUS upload 204, project add ok, privacy nobody, transcode complete"
+  ],
   "not_implemented": [
     "real Google Drive polling/downloading",
-    "real FFmpeg canary on operator-owned media",
-    "real OpenAI transcription canary",
-    "real Vimeo TUS upload/playback canary",
     "real Zoom meeting/SDK canary",
+    "Vimeo webhook ingress canary",
     "HighLevel consumer integration from PR #93 internals"
   ],
   "validation": [
@@ -36,21 +39,22 @@
     "npm run lint",
     "npx prettier --check <touched TypeScript files>",
     "git diff --check",
-    "npx tsx scripts/media/learning-delivery-readiness.ts"
+    "npx tsx scripts/media/learning-delivery-readiness.ts",
+    "FFmpeg/ffprobe local canary using node_modules ffmpeg-static and ffprobe-static",
+    "OpenAI audio transcription canary using C:\\Users\\User\\BNA-Keyholder\\openaiv2.txt",
+    "Vimeo private TUS upload canary using C:\\Users\\User\\BNA-Keyholder\\vimeo-access-token.txt"
   ],
   "external_effects": {
-    "vimeo_calls": false,
+    "vimeo_calls": true,
     "zoom_calls": false,
-    "openai_calls": false,
+    "openai_calls": true,
     "google_drive_calls": false,
     "highlevel_calls": false,
     "production_db_mutations": false,
-    "provider_account_mutations": false
+    "provider_account_mutations": true
   },
   "next_operator_actions": [
-    "Add approved Drive folder ID and service-account/OAuth credential to protected keyholder paths.",
-    "Add Vimeo webhook secret/upload confirmation and explicitly approve one private Vimeo upload canary.",
-    "Add Zoom SDK key/secret and freshly approve one isolated Zoom canary.",
-    "Add a non-empty OpenAI API key at the protected keyholder path or explicitly approve using the alternate protected OpenAI key path."
+    "Provide the exact protected path names for the existing BNA Google Drive auth ID, folder ID, and service-account/OAuth credential.",
+    "Say exactly: approve one isolated Zoom canary meeting now; also provide the SDK key/secret path names or confirm which existing BNA auth files map to SDK key/secret."
   ]
 }
