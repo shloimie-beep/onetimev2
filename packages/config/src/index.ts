@@ -69,6 +69,23 @@ const envSchema = z.object({
   ONE_TIME_PRODUCT_KEY: z.string().min(1).default('one_time_mishnah_class'),
   ONE_TIME_OWNER_INTERNAL_LABEL: z.string().min(1).default('Rabbi'),
   ONE_TIME_ADMIN_CUSTOMER_LABEL: z.string().min(1).default('Admin'),
+  HIGHLEVEL_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
+  HIGHLEVEL_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
+  HIGHLEVEL_LOCATION_ID: optionalTrimmedString(4, 120),
+  HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN: optionalTrimmedString(8, 1000),
+  HIGHLEVEL_OUTBOUND_WEBHOOK_SECRET: optionalTrimmedString(16, 500),
+  HIGHLEVEL_SYNC_ENABLED: booleanFromString,
+  HIGHLEVEL_RECONCILIATION_ENABLED: booleanFromString,
+  HIGHLEVEL_RECONCILIATION_CRON: z.string().trim().min(1).max(80).default('0 3 * * *'),
+  HIGHLEVEL_RECONCILIATION_MAX_PAGES: numberFromString.default(5),
+  HIGHLEVEL_RECONCILIATION_MAX_ITEMS: numberFromString.default(500),
+  HIGHLEVEL_REQUEST_TIMEOUT_MS: numberFromString.default(10_000),
+  HIGHLEVEL_MAX_RETRIES: numberFromString.default(2),
+  HIGHLEVEL_TEST_CONTACT_ID: optionalTrimmedString(4, 160),
+  HIGHLEVEL_WORKFLOW_NEW_LEAD_ID: optionalTrimmedString(4, 160),
+  HIGHLEVEL_WORKFLOW_PAYMENT_ACTIVE_ID: optionalTrimmedString(4, 160),
+  HIGHLEVEL_WORKFLOW_PAYMENT_FAILED_ID: optionalTrimmedString(4, 160),
+  HIGHLEVEL_WORKFLOW_CANCELED_ID: optionalTrimmedString(4, 160),
   LEAD_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
   LEAD_RATE_LIMIT_MAX: numberFromString.default(5),
   LEAD_IDENTIFIER_RATE_LIMIT_MAX: numberFromString.default(3),
@@ -194,6 +211,36 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   const oneTimeRuntimeEnvironment =
     parsed.ONE_TIME_RUNTIME_ENVIRONMENT ?? (parsed.NODE_ENV === 'test' ? 'test' : 'local');
+
+  if (
+    parsed.HIGHLEVEL_MODE === 'disabled' &&
+    (parsed.HIGHLEVEL_SYNC_ENABLED || parsed.HIGHLEVEL_RECONCILIATION_ENABLED)
+  ) {
+    throw new Error('HighLevel sync and reconciliation require HIGHLEVEL_MODE mock or provider.');
+  }
+
+  if (parsed.HIGHLEVEL_MODE === 'provider') {
+    if (
+      !parsed.HIGHLEVEL_LOCATION_ID ||
+      !parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN ||
+      !parsed.HIGHLEVEL_OUTBOUND_WEBHOOK_SECRET
+    ) {
+      throw new Error(
+        'HIGHLEVEL_LOCATION_ID, HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN, and HIGHLEVEL_OUTBOUND_WEBHOOK_SECRET are required for provider mode.',
+      );
+    }
+  }
+
+  if (parsed.NODE_ENV === 'production' && parsed.HIGHLEVEL_MODE === 'mock') {
+    throw new Error('HighLevel mock mode is forbidden in production.');
+  }
+
+  if (
+    parsed.HIGHLEVEL_RECONCILIATION_ENABLED &&
+    parsed.HIGHLEVEL_RECONCILIATION_CRON !== '0 3 * * *'
+  ) {
+    throw new Error('HighLevel reconciliation is fixed at 03:00 Asia/Jerusalem.');
+  }
 
   if (oneTimeRuntimeEnvironment === 'production' && parsed.DELIVERY_PROVIDER_MODE !== 'sink') {
     throw new Error('Production delivery provider mode requires a separate exact authorization.');
@@ -336,6 +383,25 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     productKey: parsed.ONE_TIME_PRODUCT_KEY,
     ownerInternalLabel: parsed.ONE_TIME_OWNER_INTERNAL_LABEL,
     adminCustomerLabel: parsed.ONE_TIME_ADMIN_CUSTOMER_LABEL,
+    highLevelMode: parsed.HIGHLEVEL_MODE,
+    highLevelBaseUrl: parsed.HIGHLEVEL_BASE_URL,
+    highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
+    highLevelPrivateIntegrationToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN,
+    highLevelPrivateIntegrationTokenConfigured: Boolean(parsed.HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN),
+    highLevelOutboundWebhookSecret: parsed.HIGHLEVEL_OUTBOUND_WEBHOOK_SECRET,
+    highLevelOutboundWebhookSecretConfigured: Boolean(parsed.HIGHLEVEL_OUTBOUND_WEBHOOK_SECRET),
+    highLevelSyncEnabled: parsed.HIGHLEVEL_SYNC_ENABLED,
+    highLevelReconciliationEnabled: parsed.HIGHLEVEL_RECONCILIATION_ENABLED,
+    highLevelReconciliationCron: parsed.HIGHLEVEL_RECONCILIATION_CRON,
+    highLevelReconciliationMaxPages: parsed.HIGHLEVEL_RECONCILIATION_MAX_PAGES,
+    highLevelReconciliationMaxItems: parsed.HIGHLEVEL_RECONCILIATION_MAX_ITEMS,
+    highLevelRequestTimeoutMs: parsed.HIGHLEVEL_REQUEST_TIMEOUT_MS,
+    highLevelMaxRetries: parsed.HIGHLEVEL_MAX_RETRIES,
+    highLevelTestContactId: parsed.HIGHLEVEL_TEST_CONTACT_ID,
+    highLevelWorkflowNewLeadId: parsed.HIGHLEVEL_WORKFLOW_NEW_LEAD_ID,
+    highLevelWorkflowPaymentActiveId: parsed.HIGHLEVEL_WORKFLOW_PAYMENT_ACTIVE_ID,
+    highLevelWorkflowPaymentFailedId: parsed.HIGHLEVEL_WORKFLOW_PAYMENT_FAILED_ID,
+    highLevelWorkflowCanceledId: parsed.HIGHLEVEL_WORKFLOW_CANCELED_ID,
     leadRateLimitWindowMs: parsed.LEAD_RATE_LIMIT_WINDOW_MS,
     leadRateLimitMax: parsed.LEAD_RATE_LIMIT_MAX,
     leadIdentifierRateLimitMax: parsed.LEAD_IDENTIFIER_RATE_LIMIT_MAX,

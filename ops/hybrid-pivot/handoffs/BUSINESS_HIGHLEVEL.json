@@ -1,0 +1,189 @@
+{
+  "schema_version": "onetime.hybrid_pivot.business_highlevel_handoff.v1",
+  "generated_at": "2026-07-20T12:42:54.9816256+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "base": {
+    "source_branch": "codex/one-time-finish-now-20260719",
+    "source_pr": 92,
+    "base_sha": "5ddd7b604c01744dd562050ae9b51124f7732594",
+    "base_file_note": "ops/hybrid-pivot/BASE.json in PR #92 still records checkpoint-start 0d50e0f; this lane used the pushed Prompt 01 checkpoint descendant 5ddd7b604c01744dd562050ae9b51124f7732594."
+  },
+  "branch": {
+    "name": "codex/highlevel-business-foundation",
+    "draft_pr_target": "codex/one-time-finish-now-20260719",
+    "head_sha_at_handoff_generation": "pending_commit_contains_this_handoff",
+    "final_head_sha_source": "Final response HEAD after commit and push"
+  },
+  "migration": {
+    "id": "2205_highlevel_business_projection",
+    "file": "packages/db/migrations/2205_highlevel_business_projection.sql",
+    "mode": "additive_forward_only",
+    "creates": [
+      "onetime.highlevel_parent_links",
+      "onetime.highlevel_outbox_events",
+      "onetime.highlevel_event_inbox",
+      "onetime.highlevel_entitlement_projection"
+    ]
+  },
+  "owned_files": [
+    ".env.example",
+    "integrations/highlevel/CREDENTIALS.private.template.json",
+    "integrations/highlevel/README.md",
+    "integrations/highlevel/SETUP-CHECKLIST.md",
+    "integrations/highlevel/workflows.yaml",
+    "packages/contracts/src/highlevel/index.ts",
+    "packages/config/src/index.ts",
+    "packages/db/migrations/2205_highlevel_business_projection.sql",
+    "packages/db/src/highlevel/index.ts",
+    "packages/db/src/highlevel/repository.ts",
+    "packages/domain/src/highlevel/admin-projection.ts",
+    "packages/domain/src/highlevel/client.ts",
+    "packages/domain/src/highlevel/config.ts",
+    "packages/domain/src/highlevel/constants.ts",
+    "packages/domain/src/highlevel/entitlements.ts",
+    "packages/domain/src/highlevel/index.ts",
+    "packages/domain/src/highlevel/mapping.ts",
+    "packages/domain/src/highlevel/normalization.ts",
+    "packages/domain/src/highlevel/outbox.ts",
+    "packages/domain/src/highlevel/reconciliation.ts",
+    "packages/domain/src/highlevel/resend-backlog.ts",
+    "packages/domain/src/highlevel/support-producer.ts",
+    "packages/domain/src/highlevel/webhook.ts",
+    "packages/domain/src/lead/service.ts",
+    "apps/web/src/server/features/highlevel/router.ts",
+    "scripts/highlevel/manual-contact-mapping.ts",
+    "scripts/highlevel/reconcile-household.ts",
+    "scripts/highlevel/resend-backfill-plan.ts",
+    "scripts/highlevel/resend-backlog-inventory.ts",
+    "tests/unit/highlevel/highlevel-foundation.test.ts",
+    "tests/integration/highlevel/highlevel-migration-and-signup.test.ts",
+    "ops/hybrid-pivot/handoffs/BUSINESS_HIGHLEVEL.json"
+  ],
+  "config_keys": [
+    "HIGHLEVEL_MODE",
+    "HIGHLEVEL_BASE_URL",
+    "HIGHLEVEL_LOCATION_ID",
+    "HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN",
+    "HIGHLEVEL_OUTBOUND_WEBHOOK_SECRET",
+    "HIGHLEVEL_SYNC_ENABLED",
+    "HIGHLEVEL_RECONCILIATION_ENABLED",
+    "HIGHLEVEL_RECONCILIATION_CRON",
+    "HIGHLEVEL_RECONCILIATION_MAX_PAGES",
+    "HIGHLEVEL_RECONCILIATION_MAX_ITEMS",
+    "HIGHLEVEL_REQUEST_TIMEOUT_MS",
+    "HIGHLEVEL_MAX_RETRIES",
+    "HIGHLEVEL_TEST_CONTACT_ID",
+    "HIGHLEVEL_WORKFLOW_NEW_LEAD_ID",
+    "HIGHLEVEL_WORKFLOW_PAYMENT_ACTIVE_ID",
+    "HIGHLEVEL_WORKFLOW_PAYMENT_FAILED_ID",
+    "HIGHLEVEL_WORKFLOW_CANCELED_ID"
+  ],
+  "tests": [
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/highlevel/highlevel-foundation.test.ts",
+      "status": "passed",
+      "coverage": "config modes, redaction, normalization, matching, student exclusion, mock client, retry/error mapping, webhook verification, entitlements, mapping dry run, reconciliation budgets, Resend inventory/backfill model, support event redaction"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/highlevel/highlevel-migration-and-signup.test.ts",
+      "status": "passed",
+      "coverage": "migration 2205, disabled signup behavior, mock HighLevel outbox, webhook inbox dedupe/replay"
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/lead-capture.test.ts",
+      "status": "passed",
+      "coverage": "existing public signup regression"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/delivery/config.test.ts",
+      "status": "passed",
+      "coverage": "shared config regression"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed"
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed"
+    },
+    {
+      "command": "npx prettier --write --ignore-unknown <touched HighLevel/config/signup/test files>",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "shared_app_router_export_delta": [
+    {
+      "status": "recorded_not_applied",
+      "file": "apps/web/src/server/app.ts",
+      "delta": "Register apps/web/src/server/features/highlevel/router.ts only in a convergence lane after provider credentials and webhook contract are approved."
+    },
+    {
+      "status": "recorded_not_applied",
+      "file": "packages/domain/src/index.ts",
+      "delta": "Root export was not edited in this business lane. Import HighLevel modules directly or add a root export in convergence if the app shell needs it."
+    },
+    {
+      "status": "recorded_not_applied",
+      "file": "packages/contracts/src/index.ts",
+      "delta": "Root export was not edited in this business lane. Import HighLevel contracts directly or add a root export in convergence if required."
+    },
+    {
+      "status": "recorded_not_applied",
+      "file": "packages/db/src/index.ts",
+      "delta": "Root DB barrel was not edited in this business lane. Import packages/db/src/highlevel directly or add a root export in convergence if required."
+    }
+  ],
+  "credential_activation_checklist": [
+    "Create One Time HighLevel account/location.",
+    "Create Private Integration Token with least-required scopes.",
+    "Store HIGHLEVEL_LOCATION_ID, HIGHLEVEL_PRIVATE_INTEGRATION_TOKEN, and HIGHLEVEL_OUTBOUND_WEBHOOK_SECRET in protected runtime config.",
+    "Set HIGHLEVEL_MODE=provider only in an approved test or isolated_staging runtime first.",
+    "Set HIGHLEVEL_SYNC_ENABLED=true only after workflow IDs and custom field IDs are recorded.",
+    "Do not upload production contacts by code. Operator uploads manually, then runs dry-run mapping.",
+    "Run manual-contact-mapping.ts in dry-run before any local link apply.",
+    "Enable webhook router only in convergence after signed webhook samples are verified."
+  ],
+  "ghl_account_setup_checklist": [
+    "Create custom fields from integrations/highlevel/workflows.yaml.",
+    "Create initial OT tags from integrations/highlevel/workflows.yaml.",
+    "Create pipeline/stages for lead, checkout started, active, grace, canceled, and former states.",
+    "Build OT-01 through OT-10 workflows in the HighLevel UI.",
+    "Record location ID, field IDs, pipeline/stage IDs, workflow IDs, last-tested date, test contact reference, and setup evidence in workflows.yaml.",
+    "Use API enrollment only after workflow IDs exist."
+  ],
+  "no_credential_status": {
+    "mode_default": "disabled",
+    "mock_mode_available": true,
+    "provider_mode_fail_closed": true,
+    "live_highlevel_calls": 0,
+    "production_mutations": 0,
+    "existing_production_contacts_uploaded_by_code": false,
+    "students_enter_highlevel": false
+  },
+  "blockers": [
+    "Provider activation requires HighLevel account, Private Integration Token, location ID, workflow IDs, custom field IDs, and signed webhook evidence.",
+    "Webhook router exists but is intentionally not registered in app.ts in this lane."
+  ],
+  "external_effects": {
+    "live_highlevel_calls": 0,
+    "live_resend_reads": 0,
+    "production_database_writes": 0,
+    "stripe_mutations": 0,
+    "whatsapp_mutations": 0,
+    "railway_mutations": 0
+  },
+  "source_notes": [
+    "HighLevel Private Integration Token docs confirm bearer-token use for v2/v3 APIs.",
+    "HighLevel contact upsert and dedicated tag update docs are the basis for the typed client contract.",
+    "Resend receiving docs confirm GET /emails/receiving returns received email references without downloading bodies or attachments."
+  ]
+}

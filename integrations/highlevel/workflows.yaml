@@ -1,0 +1,173 @@
+version: 1
+status: planned_ui_setup
+location_id: ''
+last_tested_date: null
+test_contact_reference: ''
+setup_evidence: []
+custom_fields:
+  one_time_parent_id:
+    label: 'One Time Parent ID'
+    field_id: ''
+  one_time_household_id:
+    label: 'One Time Household ID'
+    field_id: ''
+  one_time_customer_status:
+    label: 'One Time Customer Status'
+    field_id: ''
+  one_time_portal_status:
+    label: 'One Time Portal Status'
+    field_id: ''
+  one_time_access_status:
+    label: 'One Time Access Status'
+    field_id: ''
+  one_time_grace_until:
+    label: 'One Time Grace Until'
+    field_id: ''
+  one_time_complimentary_until:
+    label: 'One Time Complimentary Until'
+    field_id: ''
+  one_time_last_sync:
+    label: 'One Time Last Sync'
+    field_id: ''
+  one_time_signup_source:
+    label: 'One Time Signup Source'
+    field_id: ''
+tags:
+  - 'OT | Lead'
+  - 'OT | Prelaunch'
+  - 'OT | Checkout Started'
+  - 'OT | Active'
+  - 'OT | Grace'
+  - 'OT | Canceled'
+  - 'OT | Former'
+  - 'OT | Complimentary'
+  - 'OT | Portal Invited'
+  - 'OT | Portal Active'
+  - 'OT | Email Opt-In'
+  - 'OT | WhatsApp Opt-In'
+  - 'OT | Marketing Suppressed'
+  - 'OT | Signup Website'
+  - 'OT | Signup WhatsApp'
+pipeline:
+  id: ''
+  stages:
+    lead: ''
+    checkout_started: ''
+    active_customer: ''
+    grace: ''
+    canceled: ''
+    former: ''
+webhook_event_contract:
+  endpoint_not_registered_in_this_lane: true
+  content_type: 'application/json'
+  headers:
+    signature: 'x-highlevel-signature or x-ghl-signature'
+    timestamp: 'x-highlevel-timestamp or x-ghl-timestamp'
+    event_id: 'x-highlevel-event-id or x-ghl-event-id'
+  allowed_events:
+    - 'subscription.active'
+    - 'payment.succeeded'
+    - 'payment.failed'
+    - 'payment.recovered'
+    - 'subscription.canceled'
+    - 'refund.full'
+    - 'chargeback'
+  payload_shape:
+    provider_event_id: 'required stable provider event ID'
+    event_type: 'required allowlisted event'
+    location_id: 'required HighLevel location ID'
+    contact_id: 'optional HighLevel contact ID'
+    subscription_id: 'optional HighLevel subscription ID'
+    transaction_id: 'optional HighLevel transaction ID'
+    opportunity_id: 'optional HighLevel opportunity ID'
+    occurred_at: 'required ISO timestamp'
+    current_period_end: 'optional ISO timestamp'
+    amount_ref: 'optional redacted amount reference'
+workflows:
+  - key: OT-01
+    name: 'OT-01 New Lead Intake'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create workflow in HighLevel UI after PIT/location exist.'
+      - 'Trigger only from One Time API enrollment after contact upsert succeeds.'
+      - 'Use tags OT | Lead, OT | Prelaunch, and signup source tags.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-02
+    name: 'OT-02 Prelaunch Nurture'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create nurture workflow in HighLevel UI.'
+      - 'Filter by OT | Prelaunch and marketing consent fields.'
+      - 'Respect suppression and opt-out state.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-03
+    name: 'OT-03 Checkout Started / Abandoned'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create checkout started and abandoned follow-up workflow in HighLevel UI.'
+      - 'Trigger from GHL/Stripe checkout state, not One Time local learning data.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-04
+    name: 'OT-04 Payment Active'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create payment active workflow in HighLevel UI.'
+      - 'Set Active customer tags and owner-visible opportunity stage.'
+      - 'One Time entitlement unlock remains webhook/projection based.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-05
+    name: 'OT-05 Payment Failed / Seven-Day Grace'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create failed-payment workflow in HighLevel UI.'
+      - 'Send seven-day grace reminders without exposing student data.'
+      - 'Use OT | Grace tag for humans and workflow routing only.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-06
+    name: 'OT-06 Subscription Canceled'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create cancellation workflow in HighLevel UI.'
+      - 'Leave access active through current_period_end unless refund or chargeback event arrives.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-07
+    name: 'OT-07 Parent Portal Invitation'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create portal invitation workflow in HighLevel UI.'
+      - 'Use activation email from One Time/Resend for security-critical email.'
+      - 'Use HighLevel only for business follow-up visibility.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-08
+    name: 'OT-08 Parent Portal Activated'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create portal activated workflow in HighLevel UI.'
+      - 'Mark OT | Portal Active for business visibility.'
+      - 'Never use tag alone to unlock One Time portal access.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-09
+    name: 'OT-09 Class Reminder'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create class reminder workflow in HighLevel UI.'
+      - 'Send parent-facing reminders only.'
+      - 'No student email addresses or student GHL contacts.'
+    api_enrollment_allowed_after_id_exists: true
+  - key: OT-10
+    name: 'OT-10 New Recording Available'
+    workflow_id: ''
+    status: planned_ui_setup
+    expected_ghl_ui_actions:
+      - 'Create recording available workflow in HighLevel UI.'
+      - 'Reference parent portal availability, not raw Vimeo credentials.'
+    api_enrollment_allowed_after_id_exists: true

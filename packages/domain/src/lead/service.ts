@@ -10,6 +10,7 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../legal/policies.ts';
 import { scheduleClassFulfillmentForLead } from '../classes/service.ts';
+import { buildHighLevelLeadOutboxIntent, enqueueHighLevelOutbox } from '../highlevel/outbox.ts';
 import {
   normalizeEmail,
   normalizePhone,
@@ -301,6 +302,26 @@ async function insertOutboxIntents(
       ],
     );
   }
+
+  if (!shouldQueueHighLevelSignup(config)) return;
+  await enqueueHighLevelOutbox(
+    client,
+    buildHighLevelLeadOutboxIntent({
+      config,
+      contactKey,
+      signupKey,
+      email,
+      phone,
+      source: 'website',
+      marketing: {
+        emailOptIn: hasOptionalReminderConsent(payload),
+        whatsappOptIn:
+          hasOptionalReminderConsent(payload) &&
+          (payload.reminder_preference === 'whatsapp' || payload.reminder_preference === 'both'),
+        suppressed: false,
+      },
+    }),
+  );
 }
 
 function outboxDeliveryKeys(
@@ -387,6 +408,10 @@ function outboxEvents(
 
 function hasOptionalReminderConsent(payload: LeadPayload) {
   return payload.reminder_preference !== 'none' && payload.reminder_consent === true;
+}
+
+function shouldQueueHighLevelSignup(config: AppConfig) {
+  return config.highLevelMode !== 'disabled' && config.highLevelSyncEnabled;
 }
 
 function consentRecord(payload: LeadPayload, capturedAt: string) {
