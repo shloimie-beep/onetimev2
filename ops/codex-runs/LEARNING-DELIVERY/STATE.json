@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "window_id": "LEARNING-DELIVERY",
-  "updated_at": "2026-07-20T15:07:33.7717060+03:00",
+  "updated_at": "2026-07-20T15:11:10.9910937+03:00",
   "repo": "webcraft-media/onetimev2",
   "worktree": "C:\\Users\\User\\.onetime-worktrees\\LEARNING-DELIVERY",
   "git": {
@@ -9,7 +9,8 @@
     "base_head_oid": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
     "working_branch": "codex/learning-delivery-vimeo-zoom",
     "working_head_before_changes": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
-    "stacked_pr_url": null
+    "stacked_pr_number": 95,
+    "stacked_pr_url": "https://github.com/webcraft-media/onetimev2/pull/95"
   },
   "upstream_prs": [
     {

@@ -6,7 +6,8 @@
   "branch": "codex/learning-delivery-vimeo-zoom",
   "base_branch": "codex/learning-product-portals-media",
   "base_head_oid": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
-  "stacked_pr_url": null,
+  "stacked_pr_number": 95,
+  "stacked_pr_url": "https://github.com/webcraft-media/onetimev2/pull/95",
   "migration_prefix": "2208",
   "migration_path": "packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
   "implemented": [

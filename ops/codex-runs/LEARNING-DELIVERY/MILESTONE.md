@@ -1,10 +1,11 @@
 # Learning Delivery Vimeo + Zoom Milestone
 
-Updated: 2026-07-20T15:07:33.7717060+03:00
+Updated: 2026-07-20T15:11:10.9910937+03:00
 
 ## Scope Completed
 
 - Created isolated branch `codex/learning-delivery-vimeo-zoom` from PR #94 head `ebd28c65fab5f11b2a334937ef10bdf1da7b62f3`.
+- Opened draft stacked PR #95: https://github.com/webcraft-media/onetimev2/pull/95.
 - Reserved migration `2208_learning_delivery_media_pipeline.sql` after confirming PR #93 owns `2205` and PR #94 owns `2206`/`2207`.
 - Added learning delivery contracts and domain helpers for the conductor state order:
   `discovered -> downloading -> probing -> transcribing -> transcript_ready -> trim_review -> rendering -> vimeo_uploading -> vimeo_processing -> content_review -> ready_to_publish -> published -> failed`.
