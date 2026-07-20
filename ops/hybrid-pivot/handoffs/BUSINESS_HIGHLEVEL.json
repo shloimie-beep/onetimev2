@@ -11,8 +11,8 @@
   "branch": {
     "name": "codex/highlevel-business-foundation",
     "draft_pr_target": "codex/one-time-finish-now-20260719",
-    "head_sha_at_handoff_generation": "pending_commit_contains_this_handoff",
-    "final_head_sha_source": "Final response HEAD after commit and push"
+    "implementation_head_sha": "c5f3d33432a57b72346496c44bcf652edc9d7db8",
+    "final_head_sha_source": "Final response HEAD after handoff-head update commit and push"
   },
   "migration": {
     "id": "2205_highlevel_business_projection",
