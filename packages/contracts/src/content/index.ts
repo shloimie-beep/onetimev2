@@ -3,6 +3,7 @@ export * from './pipeline.ts';
 export * from './vimeo-runtime.ts';
 export * from './publisher.ts';
 export * from './admin-workspace.ts';
+export * from './learning-delivery.ts';
 
 export const contentLifecycleStateSchema = z.enum([
   'received',

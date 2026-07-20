@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "window_id": "LEARNING-DELIVERY",
+  "status": "ready_for_review_with_provider_canary_blockers",
+  "repo": "webcraft-media/onetimev2",
+  "branch": "codex/learning-delivery-vimeo-zoom",
+  "base_branch": "codex/learning-product-portals-media",
+  "base_head_oid": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
+  "stacked_pr_url": null,
+  "migration_prefix": "2208",
+  "migration_path": "packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
+  "implemented": [
+    "learning delivery media state and safe payload contracts",
+    "Drive recording metadata normalization and raw URL rejection",
+    "ffprobe parse and FFmpeg render plan helpers",
+    "operator-approved trim decision helper",
+    "OpenAI audio transcription adapter boundary",
+    "HighLevel-safe provider-neutral business event builder",
+    "opt-in delivery worker hook with provider calls disabled",
+    "safe keyholder readiness diagnostic script"
+  ],
+  "not_implemented": [
+    "real Google Drive polling/downloading",
+    "real FFmpeg canary on operator-owned media",
+    "real OpenAI transcription canary",
+    "real Vimeo TUS upload/playback canary",
+    "real Zoom meeting/SDK canary",
+    "HighLevel consumer integration from PR #93 internals"
+  ],
+  "validation": [
+    "npx vitest run --config vitest.unit.config.ts tests/unit/content/learning-delivery.test.ts --reporter=dot",
+    "npm run unit",
+    "npm run typecheck",
+    "npm run secret:scan",
+    "npm run lint",
+    "npx prettier --check <touched TypeScript files>",
+    "git diff --check",
+    "npx tsx scripts/media/learning-delivery-readiness.ts"
+  ],
+  "external_effects": {
+    "vimeo_calls": false,
+    "zoom_calls": false,
+    "openai_calls": false,
+    "google_drive_calls": false,
+    "highlevel_calls": false,
+    "production_db_mutations": false,
+    "provider_account_mutations": false
+  },
+  "next_operator_actions": [
+    "Add approved Drive folder ID and service-account/OAuth credential to protected keyholder paths.",
+    "Add Vimeo webhook secret/upload confirmation and explicitly approve one private Vimeo upload canary.",
+    "Add Zoom SDK key/secret and freshly approve one isolated Zoom canary.",
+    "Add a non-empty OpenAI API key at the protected keyholder path or explicitly approve using the alternate protected OpenAI key path."
+  ]
+}

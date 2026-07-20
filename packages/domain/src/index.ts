@@ -156,6 +156,25 @@ export {
   type Ot109VimeoStatus,
 } from './content/publisher.ts';
 export {
+  LEARNING_DELIVERY_ALLOWED_TRANSITIONS,
+  LEARNING_DELIVERY_MEDIA_STATES,
+  LearningDeliveryError,
+  assertSafeLearningDeliveryBusinessEvent,
+  assertLearningDeliveryTransition,
+  buildLearningDeliveryBusinessEvent,
+  buildLearningDeliveryFfmpegRenderPlan,
+  buildLearningDeliveryFfprobePlan,
+  buildLearningDeliveryWebVtt,
+  createLearningDeliveryOpenAiTranscriptionAdapter,
+  learningDeliverySha256Hex,
+  normalizeLearningDeliveryDriveFile,
+  normalizeLearningDeliveryTranscriptSegments,
+  parseLearningDeliveryFfprobeJson,
+  recordLearningDeliveryBusinessEvent,
+  sanitizeLearningDeliveryMetadata,
+  suggestLearningDeliveryTrim,
+} from './content/learning-delivery.ts';
+export {
   OT86B_ALLOWED_TRANSITIONS,
   Ot86bSocialPublishingError,
   approveAndScheduleOt86bDraft,
