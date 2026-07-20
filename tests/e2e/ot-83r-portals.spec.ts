@@ -61,7 +61,7 @@ test('OT83R parent portal routes add, fourth-seat denial, edit, archive, restore
   await page.getByRole('button', { name: /E2E Alpha Learner/i }).click();
   await page.getByRole('button', { name: 'Reset' }).click();
   dialog = page.getByRole('dialog', { name: 'Reset student access' });
-  await dialog.getByLabel('Student password').fill('AlphaStudent123');
+  await dialog.getByLabel('Student password').fill('StudentPassword!234');
   await dialog.getByRole('button', { name: 'Reset' }).click();
   await expect(page.getByText('Status: Active')).toBeVisible();
 
