@@ -28,8 +28,10 @@
   "owned_files": [
     ".env.example",
     "integrations/highlevel/CREDENTIALS.private.template.json",
+    "integrations/highlevel/LC-EMAIL-DNS-CHECKLIST.md",
     "integrations/highlevel/README.md",
     "integrations/highlevel/SETUP-CHECKLIST.md",
+    "integrations/highlevel/WORKFLOW-UI-CHECKLIST.md",
     "integrations/highlevel/workflows.yaml",
     "packages/contracts/src/highlevel/index.ts",
     "packages/config/src/index.ts",
@@ -51,6 +53,7 @@
     "packages/domain/src/highlevel/webhook.ts",
     "packages/domain/src/lead/service.ts",
     "apps/web/src/server/features/highlevel/router.ts",
+    "scripts/highlevel/activate-assets.ts",
     "scripts/highlevel/manual-contact-mapping.ts",
     "scripts/highlevel/reconcile-household.ts",
     "scripts/highlevel/resend-backfill-plan.ts",
@@ -79,6 +82,21 @@
     "HIGHLEVEL_WORKFLOW_CANCELED_ID"
   ],
   "tests": [
+    {
+      "command": "npx tsx scripts/highlevel/activate-assets.ts --private-report C:\\Users\\User\\.onetime-highlevel-private\\activation-dry-run.json",
+      "status": "passed",
+      "coverage": "read-only GHL connectivity, asset inventory, workflow inventory, safe fingerprints, no provider mutation"
+    },
+    {
+      "command": "npx tsx scripts/highlevel/activate-assets.ts --apply --create-pipeline --private-report C:\\Users\\User\\.onetime-highlevel-private\\activation-report.json",
+      "status": "passed",
+      "coverage": "created missing One Time custom fields, tags, and minimal business pipeline through official GHL APIs"
+    },
+    {
+      "command": "npx tsx scripts/highlevel/activate-assets.ts --apply --create-pipeline --private-report C:\\Users\\User\\.onetime-highlevel-private\\activation-report-idempotent.json",
+      "status": "passed",
+      "coverage": "idempotency verification for One Time custom fields, tags, and pipeline; zero additional provider mutations"
+    },
     {
       "command": "npx vitest run --config vitest.unit.config.ts tests/unit/highlevel/highlevel-foundation.test.ts",
       "status": "passed",
@@ -160,21 +178,189 @@
     "Record location ID, field IDs, pipeline/stage IDs, workflow IDs, last-tested date, test contact reference, and setup evidence in workflows.yaml.",
     "Use API enrollment only after workflow IDs exist."
   ],
+  "activation_2026_07_20": {
+    "status": "assets_verified_workflows_ui_required",
+    "generated_at_source": "Private activation reports under C:\\Users\\User\\.onetime-highlevel-private\\",
+    "location": {
+      "configured": true,
+      "safe_ref": "31fcbd2792f131dc",
+      "timezone": "Asia/Jerusalem",
+      "country": "US"
+    },
+    "private_integration_token": {
+      "configured": true,
+      "valid": true,
+      "safe_ref": "0b09c8a280cd4349",
+      "scope_note": "Connectivity and required asset endpoints verified for the configured location token; token value is outside Git."
+    },
+    "outbound_webhook_secret": {
+      "configured": true,
+      "safe_ref": "bf83bebe2818fdac"
+    },
+    "custom_fields": {
+      "status": "verified_9",
+      "ids": {
+        "one_time_parent_id": {
+          "label": "One Time Parent ID",
+          "field_id": "xHPAvxHOpvZ6GbrRZBvn",
+          "field_key": "contact.one_time_parent_id"
+        },
+        "one_time_household_id": {
+          "label": "One Time Household ID",
+          "field_id": "PIuJBPvZGI3FTp4ZRpay",
+          "field_key": "contact.one_time_household_id"
+        },
+        "one_time_customer_status": {
+          "label": "One Time Customer Status",
+          "field_id": "eyXioXxAMuaZpxSaRcEN",
+          "field_key": "contact.one_time_customer_status"
+        },
+        "one_time_portal_status": {
+          "label": "One Time Portal Status",
+          "field_id": "hxancKIMgrEWUeVSSUYF",
+          "field_key": "contact.one_time_portal_status"
+        },
+        "one_time_access_status": {
+          "label": "One Time Access Status",
+          "field_id": "FvcsWZAo4OunHogLHyui",
+          "field_key": "contact.one_time_access_status"
+        },
+        "one_time_grace_until": {
+          "label": "One Time Grace Until",
+          "field_id": "JLxk8AOC5lapj3rU6aIi",
+          "field_key": "contact.one_time_grace_until"
+        },
+        "one_time_complimentary_until": {
+          "label": "One Time Complimentary Until",
+          "field_id": "dJZx75HDus1L7oz87MQt",
+          "field_key": "contact.one_time_complimentary_until"
+        },
+        "one_time_last_sync": {
+          "label": "One Time Last Sync",
+          "field_id": "GQ94IylDxfFf1nbv4Lkw",
+          "field_key": "contact.one_time_last_sync"
+        },
+        "one_time_signup_source": {
+          "label": "One Time Signup Source",
+          "field_id": "kRNVyi6Fm5N5dobXU9ZL",
+          "field_key": "contact.one_time_signup_source"
+        }
+      }
+    },
+    "tags": {
+      "status": "verified_15",
+      "ids": {
+        "OT | Lead": "W3sICvTUAAGOQ6Lduu7a",
+        "OT | Prelaunch": "lPRxePKusizYZ5qjlKv2",
+        "OT | Checkout Started": "BadNHkr6A08m8RhGZCK1",
+        "OT | Active": "SXtHZVNE0aWL7nqfSuaI",
+        "OT | Grace": "TN597GG04kP6DsVBiF9d",
+        "OT | Canceled": "aKupBqdvXV91W2eI4H7f",
+        "OT | Former": "E6TzEbLkL4SRrQnVLbpL",
+        "OT | Complimentary": "Bb2F5nNvc7asUyc4kgRh",
+        "OT | Portal Invited": "RvjIOKjtueWAdezLN4Ar",
+        "OT | Portal Active": "lPSHRPcLiURAMyVCrEJO",
+        "OT | Email Opt-In": "beGT917lbxgGc99QQ7jO",
+        "OT | WhatsApp Opt-In": "qN2B1ZWs2saXmTudBgzo",
+        "OT | Marketing Suppressed": "uYfDohCdnW4nYiqFbVi6",
+        "OT | Signup Website": "Ladbs8RIkwqNYLd3Zg2s",
+        "OT | Signup WhatsApp": "j9vlQDQ5XFUrj5SVtdve"
+      }
+    },
+    "pipeline": {
+      "status": "verified",
+      "name": "One Time Business",
+      "pipeline_id": "T8xEp9woujGVqvNJlqoz",
+      "stage_ids": {
+        "lead": "a59ea712-d1e0-44e6-ac57-419fb3c71367",
+        "checkout_started": "00cf536c-25ce-46a5-a292-1a72822d565f",
+        "active_customer": "3177add5-e536-4a5f-a969-fc4f2cb00f83",
+        "grace": "3e567591-4cc9-403c-a4b8-b843712ddd86",
+        "canceled": "3cebc246-f63f-4cb1-87f3-72e139efd455",
+        "former": "68680d55-15d4-42c3-b5be-dbb26a27c9cc"
+      }
+    },
+    "workflows": {
+      "status": "ui_required_10_missing",
+      "present_count": 0,
+      "missing_count": 10,
+      "ui_checklist": "integrations/highlevel/WORKFLOW-UI-CHECKLIST.md",
+      "ids_recorded": false
+    },
+    "test_contact": {
+      "status": "missing",
+      "safe_ref": null,
+      "email_configured": false,
+      "phone_configured": false
+    },
+    "stripe_test": {
+      "status": "not_run",
+      "blocker": "ghl_stripe_test_connection_and_test_contact_missing",
+      "live_charges": 0,
+      "test_charges": 0
+    },
+    "manual_contact_mapping": {
+      "status": "not_run",
+      "blocker": "operator_manual_legacy_upload_not_confirmed",
+      "counts_only": true
+    },
+    "resend_backlog": {
+      "status": "not_run",
+      "blocker": "resend_api_key_or_receiving_source_missing",
+      "live_reads": 0,
+      "public_output": "counts_only_when_run"
+    },
+    "lc_email_dns": {
+      "status": "checklist_prepared_dns_not_changed",
+      "checklist": "integrations/highlevel/LC-EMAIL-DNS-CHECKLIST.md",
+      "sender": "info@onetimeonetime.com",
+      "reply_to": "info@onetimeonetime.com",
+      "planned_sending_subdomain": "mail.onetimeonetime.com",
+      "dns_mutations": 0,
+      "campaign_sends": 0
+    },
+    "remaining_ui_workflow_actions": [
+      "Build and publish OT-01 through OT-10 in the HighLevel UI using integrations/highlevel/WORKFLOW-UI-CHECKLIST.md.",
+      "Paste published workflow IDs into integrations/highlevel/workflows.yaml.",
+      "Provide an operator-owned test contact email and phone in the private credential directory.",
+      "Verify API enrollment only after the workflow IDs exist."
+    ],
+    "external_effects": {
+      "live_highlevel_calls": "yes_asset_activation_only",
+      "highlevel_custom_fields_created": 9,
+      "highlevel_tags_created": 15,
+      "highlevel_pipelines_created": 1,
+      "contacts_created": 0,
+      "workflow_enrollments": 0,
+      "stripe_mutations": 0,
+      "live_resend_reads": 0,
+      "production_database_writes": 0,
+      "deployments": 0
+    }
+  },
   "no_credential_status": {
     "mode_default": "disabled",
     "mock_mode_available": true,
     "provider_mode_fail_closed": true,
-    "live_highlevel_calls": 0,
+    "live_highlevel_calls": "0_before_prompt_04_activation",
     "production_mutations": 0,
     "existing_production_contacts_uploaded_by_code": false,
     "students_enter_highlevel": false
   },
   "blockers": [
-    "Provider activation requires HighLevel account, Private Integration Token, location ID, workflow IDs, custom field IDs, and signed webhook evidence.",
+    "Workflow IDs require operator UI setup for OT-01 through OT-10 before form-to-GHL enrollment and billing event canaries can be completed.",
+    "Operator-owned test contact email and phone are not configured in the private credential directory.",
+    "GHL Stripe TEST connection and product/price are not configured or verified.",
+    "Resend API key or actual Receiving source is not configured for the inbound backlog inventory.",
     "Webhook router exists but is intentionally not registered in app.ts in this lane."
   ],
   "external_effects": {
-    "live_highlevel_calls": 0,
+    "live_highlevel_calls": "yes_asset_activation_only",
+    "highlevel_custom_fields_created": 9,
+    "highlevel_tags_created": 15,
+    "highlevel_pipelines_created": 1,
+    "contacts_created": 0,
+    "workflow_enrollments": 0,
     "live_resend_reads": 0,
     "production_database_writes": 0,
     "stripe_mutations": 0,

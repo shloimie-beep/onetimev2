@@ -34,6 +34,10 @@ Workflow creation is treated as a HighLevel UI setup task. API enrollment is
 allowed only after an operator records an existing workflow ID in
 `workflows.yaml` and protected config.
 
+Prompt 04 activation setup lives in `WORKFLOW-UI-CHECKLIST.md` and
+`LC-EMAIL-DNS-CHECKLIST.md`. DNS changes, broad sends, and workflow ID claims
+require operator evidence; do not infer them from API connectivity alone.
+
 ## Signup Flow
 
 `browser -> One Time validates -> local receipt -> HighLevel outbox -> GHL upsert

@@ -27,6 +27,14 @@
 - Test with the configured test contact only.
 - Record last-tested date and setup evidence links in `workflows.yaml`.
 
+## LC Email DNS
+
+- Use `LC-EMAIL-DNS-CHECKLIST.md` for the dedicated sending subdomain setup.
+- Prepare `mail.onetimeonetime.com` for LC Email.
+- Keep visible sender and reply-to as `info@onetimeonetime.com`.
+- Do not change DNS or send a broad campaign without exact operator
+  authorization.
+
 ## Webhooks
 
 - Configure HighLevel outbound webhooks only after the isolated router is wired
