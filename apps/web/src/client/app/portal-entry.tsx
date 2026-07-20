@@ -49,6 +49,11 @@ type LearnerFormValues = {
   gradeLabel: string;
 };
 
+type StudentAccessFormValues = {
+  username: string;
+  password: string;
+};
+
 type PortalDialog =
   | {
       type: 'learner-form';
@@ -263,9 +268,12 @@ function PortalApp() {
     }
   }
 
-  async function submitStudentAccessForm(email: string) {
+  async function submitStudentAccessForm(values: StudentAccessFormValues) {
     if (!dialog || dialog.type !== 'student-access-form') return;
-    await submitStudentAccess(dialog.learner, dialog.action, trimOptional(email));
+    await submitStudentAccess(dialog.learner, dialog.action, {
+      username: trimOptional(values.username),
+      password: values.password,
+    });
   }
 
   async function submitStudentAccessConfirm() {
@@ -276,7 +284,7 @@ function PortalApp() {
   async function submitStudentAccess(
     learner: LearnerProfile,
     action: StudentAccessOperationType,
-    email?: string | undefined,
+    credentials?: { username?: string | undefined; password?: string | undefined } | undefined,
   ) {
     if (!session || !parentDashboard) return;
     setDialogSaving(true);
@@ -287,7 +295,8 @@ function PortalApp() {
         householdKey: parentDashboard.household.household_key,
         learnerKey: learner.learner_key,
         operation: action,
-        email,
+        username: credentials?.username,
+        password: credentials?.password,
         displayName: learner.display_name,
       });
       await reloadParentAfterMutation(learner.learner_key);
@@ -533,7 +542,7 @@ function PortalApp() {
         }}
         onSubmitLearner={submitLearnerForm}
         onSubmitLearnerStatus={() => void submitLearnerStatusDialog()}
-        onSubmitStudentAccessForm={(email) => void submitStudentAccessForm(email)}
+        onSubmitStudentAccessForm={(values) => void submitStudentAccessForm(values)}
         onSubmitStudentAccessConfirm={() => void submitStudentAccessConfirm()}
       />
     </AppShell>
@@ -556,7 +565,7 @@ function PortalDialogRenderer({
   onClose: () => void;
   onSubmitLearner: (values: LearnerFormValues) => void | Promise<void>;
   onSubmitLearnerStatus: () => void;
-  onSubmitStudentAccessForm: (email: string) => void;
+  onSubmitStudentAccessForm: (values: StudentAccessFormValues) => void;
   onSubmitStudentAccessConfirm: () => void;
 }) {
   if (!dialog) return null;
@@ -701,15 +710,19 @@ function StudentAccessFormDialog({
   saving: boolean;
   error: string;
   onClose: () => void;
-  onSubmit: (email: string) => void;
+  onSubmit: (values: StudentAccessFormValues) => void;
 }) {
-  const [email, setEmail] = useState('');
-  const emailRequired = action === 'setup';
-  const canSave = !saving && (!emailRequired || email.trim().length > 0);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const usernameRequired = action === 'setup';
+  const usernameReady = !usernameRequired || username.trim().length >= 3;
+  const passwordReady =
+    password.length >= 10 && /[A-Za-z]/.test(password) && /[0-9]/.test(password);
+  const canSave = !saving && usernameReady && passwordReady;
   return (
     <DialogFrame
       title={`${studentAccessLabel(action)} student access`}
-      description={`${studentAccessLabel(action)} login access for ${learner.display_name}.`}
+      description={`${studentAccessLabel(action)} parent-managed login access for ${learner.display_name}.`}
       error={error}
       onClose={onClose}
     >
@@ -718,20 +731,38 @@ function StudentAccessFormDialog({
         onSubmit={(event) => {
           event.preventDefault();
           if (!canSave) return;
-          onSubmit(email);
+          onSubmit({ username, password });
         }}
       >
         <label className="ot-field">
-          <span>{emailRequired ? 'Student email' : 'Student email optional'}</span>
+          <span>{usernameRequired ? 'Student username' : 'Student username optional'}</span>
           <input
-            type="email"
-            value={email}
+            value={username}
             autoFocus
-            required={emailRequired}
-            maxLength={254}
-            onChange={(event) => setEmail(event.currentTarget.value)}
+            required={usernameRequired}
+            autoComplete="username"
+            inputMode="text"
+            maxLength={24}
+            pattern="[A-Za-z0-9][A-Za-z0-9._-]*[A-Za-z0-9]"
+            onChange={(event) => setUsername(event.currentTarget.value)}
           />
         </label>
+        <label className="ot-field">
+          <span>Student password</span>
+          <input
+            type="password"
+            value={password}
+            required
+            minLength={10}
+            maxLength={128}
+            autoComplete="new-password"
+            onChange={(event) => setPassword(event.currentTarget.value)}
+          />
+        </label>
+        <p className="ot-muted">
+          These parent-managed credentials are stored for student access. No student email is used
+          in this setup.
+        </p>
         <DialogActions
           saving={saving}
           confirmLabel={studentAccessLabel(action)}

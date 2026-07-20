@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type {
   AdministrativeUpdate,
+  ClassLeaderboardSummary,
   HelperAnswer,
   HelperAvailability,
   LearnerProfile,
@@ -268,6 +269,10 @@ export function ParentPortalFeature({
                   : undefined
               }
             />
+            <LeaderboardPanel
+              leaderboard={dashboard.leaderboard}
+              ownLearnerKey={selectedLearner.learner_key}
+            />
             <UpdatesList updates={dashboard.updates[selectedLearner.learner_key] ?? []} />
           </section>
         )}
@@ -445,6 +450,7 @@ export function StudentPortalFeature({
         </section>
         <section className="ot-panel" aria-labelledby="student-library-heading">
           <h2 id="student-library-heading">Library</h2>
+          {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
           <ContentList items={dashboard.library_items} onOpen={onOpenContent} />
         </section>
         <section className="ot-panel" aria-labelledby="student-helper-heading">
@@ -458,6 +464,10 @@ export function StudentPortalFeature({
             progress={dashboard.progress}
             history={[]}
             gamification={dashboard.gamification}
+          />
+          <LeaderboardPanel
+            leaderboard={dashboard.leaderboard}
+            ownLearnerKey={dashboard.learner.learner_key}
           />
         </section>
         <section className="ot-panel" aria-labelledby="student-questions-heading">
@@ -590,6 +600,13 @@ function StudentAccessControls({
             ? 'Paused while learner is archived'
             : label(status)}
         </p>
+        {access?.username_display && <p>Username: {access.username_display}</p>}
+        {access?.credential_status && (
+          <p>
+            Credentials: {label(access.credential_status)}
+            {access.password_version ? ` - version ${access.password_version}` : ''}
+          </p>
+        )}
       </div>
       {onAction && actions.length > 0 && (
         <div className="ot-action-row">
@@ -705,6 +722,12 @@ function ContentList({
             <div>
               <strong>{item.title}</strong>
               <span>{label(item.item_type)}</span>
+              {item.lesson && (
+                <span>
+                  {item.lesson.approved_messages.length} approved messages,{' '}
+                  {item.lesson.resource_count} resources
+                </span>
+              )}
             </div>
             {action && onOpen && (
               <button
@@ -822,6 +845,15 @@ function QuestionPanel({
     classKey?: string | undefined;
   } | null>(null);
   const trimmed = draft.trim();
+  useEffect(() => {
+    if (upcoming.length === 0) {
+      setClassKey('');
+      return;
+    }
+    if (!upcoming.some((item) => item.class_key === classKey)) {
+      setClassKey(upcoming[0]?.class_key ?? '');
+    }
+  }, [classKey, upcoming]);
   return (
     <div className="ot-stack">
       <form
@@ -833,22 +865,15 @@ function QuestionPanel({
         }}
       >
         {upcoming.length > 0 && (
-          <label className="ot-field">
-            <span>Class</span>
-            <select
-              value={classKey}
-              onChange={(event) => {
-                setClassKey(event.currentTarget.value);
-                setPreview(null);
-              }}
-            >
-              {upcoming.map((item) => (
-                <option key={item.class_key} value={item.class_key}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          </label>
+          <ClassPicker
+            label="Class"
+            items={upcoming}
+            value={classKey}
+            onChange={(nextClassKey) => {
+              setClassKey(nextClassKey);
+              setPreview(null);
+            }}
+          />
         )}
         <label className="ot-field">
           <span>Ask privately</span>
@@ -908,6 +933,120 @@ function QuestionPanel({
         ))
       )}
     </div>
+  );
+}
+
+function ClassPicker({
+  label: pickerLabel,
+  items,
+  value,
+  onChange,
+}: {
+  label: string;
+  items: UpcomingClassSummary[];
+  value: string;
+  onChange: (classKey: string) => void;
+}) {
+  return (
+    <fieldset className="ot-choice-field">
+      <legend>{pickerLabel}</legend>
+      <div className="ot-choice-list" role="radiogroup" aria-label={pickerLabel}>
+        {items.map((item) => (
+          <button
+            type="button"
+            className="ot-choice"
+            role="radio"
+            aria-checked={item.class_key === value}
+            key={item.class_key}
+            onClick={() => onChange(item.class_key)}
+          >
+            <strong>{item.title}</strong>
+            <span>{item.starts_at ? formatDate(item.starts_at) : label(item.status)}</span>
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+function FeaturedLesson({
+  lesson,
+}: {
+  lesson: NonNullable<StudentPortalDashboard['featured_lesson']>;
+}) {
+  return (
+    <article className="ot-featured-lesson">
+      <div>
+        <p className="ot-kicker">Featured lesson</p>
+        <strong>{lesson.title}</strong>
+        {lesson.description && <span>{lesson.description}</span>}
+      </div>
+      <dl className="ot-mini-metrics">
+        <div>
+          <dt>Resources</dt>
+          <dd>{lesson.resource_count}</dd>
+        </div>
+        <div>
+          <dt>Questions</dt>
+          <dd>{lesson.approved_messages.length}</dd>
+        </div>
+      </dl>
+    </article>
+  );
+}
+
+function LeaderboardPanel({
+  leaderboard,
+  ownLearnerKey,
+}: {
+  leaderboard?: ClassLeaderboardSummary | undefined;
+  ownLearnerKey?: string | undefined;
+}) {
+  if (!leaderboard) return null;
+  if (!leaderboard.published) {
+    return (
+      <section className="ot-leaderboard" aria-label="Class leaderboard">
+        <div className="ot-section-title">
+          <h3>{leaderboard.title}</h3>
+          <span>Rabbi review</span>
+        </div>
+        <p className="ot-muted">The class board is waiting for Rabbi publication.</p>
+      </section>
+    );
+  }
+  return (
+    <section className="ot-leaderboard" aria-label="Class leaderboard">
+      <div className="ot-section-title">
+        <h3>{leaderboard.title}</h3>
+        <span>All time</span>
+      </div>
+      {leaderboard.entries.length === 0 ? (
+        <p className="ot-muted">Class progress will appear after approved learning events.</p>
+      ) : (
+        <ol className="ot-leaderboard-list">
+          {leaderboard.entries.map((entry, index) => (
+            <li
+              key={entry.learner_key}
+              className="ot-leaderboard-row"
+              data-own={entry.own_entry || entry.learner_key === ownLearnerKey}
+            >
+              <span className="ot-rank">{index + 1}</span>
+              <div>
+                <strong>{entry.display_name}</strong>
+                <span>
+                  {entry.attendance_count} classes, {entry.completed_lessons} lessons,{' '}
+                  {entry.approved_questions} approved questions
+                </span>
+              </div>
+              <b>{entry.points} pts</b>
+            </li>
+          ))}
+        </ol>
+      )}
+      <p className="ot-guardrail-note">
+        Authenticated class board. Actual names are class-only; Rabbi corrections are audited.
+      </p>
+    </section>
   );
 }
 

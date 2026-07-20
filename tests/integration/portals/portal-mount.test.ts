@@ -109,7 +109,8 @@ describe('OT-71 mounted parent and student portals', () => {
           },
           body: JSON.stringify({
             idempotency_key: 'portal-student-setup-001',
-            email: 'new.student@example.test',
+            username: 'setup_learner',
+            password: 'Mishnah12345',
             display_name: 'Setup Learner',
           }),
         },
@@ -117,21 +118,33 @@ describe('OT-71 mounted parent and student portals', () => {
       const setupText = await setup.text();
       expect(setup.status, setupText).toBe(200);
       expect(setupText).not.toContain('token_for_local_proof');
+      expect(setupText).not.toContain('Mishnah12345');
       expect(JSON.parse(setupText)).toMatchObject({
         success: true,
-        data: { learner_key: 'learner_setup', status: 'setup_requested' },
+        data: {
+          learner_key: 'learner_setup',
+          status: 'active',
+          username_display: 'setup_learner',
+          credential_status: 'parent_managed',
+        },
       });
       const repairedAccessRows = await pool.query(
-        `SELECT status, last_operation_type
+        `SELECT status, last_operation_type, username_display, credential_status,
+                password_hash_ref
            FROM onetime.portal_student_access_state
           WHERE account_key = $1
             AND product_key = $2
             AND learner_key = 'learner_setup'`,
         [config.accountKey, config.productKey],
       );
-      expect(repairedAccessRows.rows).toEqual([
-        { status: 'setup_requested', last_operation_type: 'setup' },
-      ]);
+      expect(repairedAccessRows.rows[0]).toMatchObject({
+        status: 'active',
+        last_operation_type: 'setup',
+        username_display: 'setup_learner',
+        credential_status: 'parent_managed',
+      });
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).toMatch(/^scrypt:v1:/);
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).not.toContain('Mishnah12345');
 
       const tokenRows = await pool.query(
         `SELECT token_hash, metadata
@@ -139,8 +152,7 @@ describe('OT-71 mounted parent and student portals', () => {
           WHERE token_type = 'student_setup'
             AND learner_key = 'learner_setup'`,
       );
-      expect(tokenRows.rows).toHaveLength(1);
-      expect(tokenRows.rows[0].token_hash).toMatch(/^[a-f0-9]{64}$/);
+      expect(tokenRows.rows).toHaveLength(0);
       expect(JSON.stringify(tokenRows.rows)).not.toContain('token_for_local_proof');
 
       const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');

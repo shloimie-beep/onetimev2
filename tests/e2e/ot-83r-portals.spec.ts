@@ -52,15 +52,18 @@ test('OT83R parent portal routes add, fourth-seat denial, edit, archive, restore
   await page.getByRole('button', { name: /E2E Beta Learner/i }).click();
   await page.getByRole('button', { name: 'Setup' }).click();
   dialog = page.getByRole('dialog', { name: 'Setup student access' });
-  await dialog.getByLabel('Student email').fill(`beta-student-${Date.now()}@example.test`);
+  await dialog.getByLabel('Student username').fill(`beta.student.${Date.now()}`);
+  await dialog.getByLabel('Student password').fill('BetaStudent123');
   await dialog.getByRole('button', { name: 'Setup' }).click();
-  await expect(page.getByText('Status: Setup requested')).toBeVisible();
+  await expect(page.getByText('Status: Active')).toBeVisible();
+  await expect(page.getByText('Credentials: Parent managed')).toBeVisible();
 
   await page.getByRole('button', { name: /E2E Alpha Learner/i }).click();
   await page.getByRole('button', { name: 'Reset' }).click();
   dialog = page.getByRole('dialog', { name: 'Reset student access' });
+  await dialog.getByLabel('Student password').fill('AlphaStudent123');
   await dialog.getByRole('button', { name: 'Reset' }).click();
-  await expect(page.getByText('Status: Reset requested')).toBeVisible();
+  await expect(page.getByText('Status: Active')).toBeVisible();
 
   await page.getByRole('button', { name: 'Suspend' }).click();
   dialog = page.getByRole('dialog', { name: 'Suspend student access' });

@@ -187,7 +187,9 @@
   padding: 10px 12px;
 }
 .ot-helper-answer,
-.ot-private-preview {
+.ot-private-preview,
+.ot-featured-lesson,
+.ot-leaderboard {
   background: #191919;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
@@ -197,6 +199,114 @@
 .ot-private-preview p {
   margin: 0;
   overflow-wrap: anywhere;
+}
+.ot-section-title,
+.ot-featured-lesson {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ot-section-title h3,
+.ot-featured-lesson p,
+.ot-featured-lesson strong,
+.ot-featured-lesson span {
+  margin: 0;
+}
+.ot-section-title span {
+  color: var(--ot-portal-ice);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.ot-choice-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+.ot-choice-field legend {
+  color: var(--ot-portal-yellow);
+  font-weight: 800;
+}
+.ot-choice-list {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+.ot-choice {
+  display: grid;
+  gap: 3px;
+  min-height: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  background: #111111;
+  color: var(--ot-portal-ink);
+  padding: 10px 12px;
+  text-align: left;
+}
+.ot-choice[aria-checked='true'] {
+  border-color: var(--ot-portal-yellow);
+  box-shadow: 0 0 0 2px rgba(255, 210, 31, 0.18);
+}
+.ot-choice strong,
+.ot-choice span {
+  overflow-wrap: anywhere;
+}
+.ot-choice span {
+  color: var(--ot-portal-muted);
+  font-size: 0.86rem;
+}
+.ot-leaderboard {
+  display: grid;
+  gap: 10px;
+}
+.ot-leaderboard-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ot-leaderboard-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #111111;
+  padding: 10px;
+}
+.ot-leaderboard-row[data-own='true'] {
+  border-color: rgba(255, 210, 31, 0.5);
+  background: rgba(255, 210, 31, 0.08);
+}
+.ot-leaderboard-row div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.ot-leaderboard-row strong,
+.ot-leaderboard-row span {
+  overflow-wrap: anywhere;
+}
+.ot-leaderboard-row span {
+  color: var(--ot-portal-muted);
+  font-size: 0.86rem;
+}
+.ot-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(255, 210, 31, 0.16);
+  color: #ffffff;
+  font-weight: 800;
 }
 .ot-citation-list {
   display: grid;
@@ -438,7 +548,9 @@
   .ot-panel-head,
   .ot-dialog-head,
   .ot-subsection,
-  .ot-item {
+  .ot-item,
+  .ot-section-title,
+  .ot-featured-lesson {
     align-items: stretch;
     flex-direction: column;
   }
@@ -447,7 +559,9 @@
     grid-template-columns: 1fr;
   }
   .ot-streak-grid,
-  .ot-progress-meter {
+  .ot-progress-meter,
+  .ot-choice-list,
+  .ot-leaderboard-row {
     grid-template-columns: 1fr;
   }
 }

@@ -69,8 +69,9 @@ test('W12-03 parent and three separate learners complete portal journeys', async
 
   await parentPage.getByRole('button', { name: 'Reset' }).click();
   let dialog = parentPage.getByRole('dialog', { name: 'Reset student access' });
+  await dialog.getByLabel('Student password').fill('W12Learner123');
   await dialog.getByRole('button', { name: 'Reset' }).click();
-  await expect(parentPage.getByText('Status: Reset requested')).toBeVisible();
+  await expect(parentPage.getByText('Status: Active')).toBeVisible();
 
   await parentPage.getByRole('button', { name: 'Suspend' }).click();
   dialog = parentPage.getByRole('dialog', { name: 'Suspend student access' });

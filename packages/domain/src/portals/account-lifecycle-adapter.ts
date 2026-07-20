@@ -1,11 +1,14 @@
-import { createHash } from 'node:crypto';
+import { createHash, scryptSync } from 'node:crypto';
 import type { AppConfig } from '../../../config/src/index.ts';
 import type { DbPool } from '../../../db/src/index.ts';
-import type { LearnerProfile, PortalActorContext } from '../../../contracts/src/portals/index.ts';
+import {
+  normalizeStudentUsername,
+  type LearnerProfile,
+  type PortalActorContext,
+  type StudentAccessOperationPayload,
+} from '../../../contracts/src/portals/index.ts';
 import {
   AccountLifecycleError,
-  createStudentReset,
-  createStudentSetup,
   revokeStudentIdentitySessions,
   restoreStudentIdentity,
   suspendStudentIdentity,
@@ -24,36 +27,11 @@ export function createAccountLifecycleCredentialAdapter(input: {
   return {
     requestSetup: async ({ actor, learner, payload }) =>
       mapLifecycleErrors(async () => {
-        if (!payload.email) {
-          throw new PortalServiceError('VALIDATION_ERROR', 'Student email is required for setup.');
-        }
-        const issued = await createStudentSetup({
-          pool: input.pool,
-          config: input.config,
-          actor: lifecycleActor(actor),
-          payload: {
-            idempotency_key: payload.idempotency_key,
-            household_key: learner.household_key,
-            learner_key: learner.learner_key,
-            email: payload.email,
-            display_name: payload.display_name ?? learner.display_name,
-          },
-        });
-        return issueResult('setup', issued.token_ref, issued.expires_at);
+        return parentManagedCredentialResult('setup', input.config, actor, learner, payload);
       }),
     requestReset: async ({ actor, learner, payload }) =>
       mapLifecycleErrors(async () => {
-        const issued = await createStudentReset({
-          pool: input.pool,
-          config: input.config,
-          actor: lifecycleActor(actor),
-          payload: {
-            idempotency_key: payload.idempotency_key,
-            learner_key: learner.learner_key,
-            ...(payload.email ? { email: payload.email } : {}),
-          },
-        });
-        return issueResult('reset', issued.token_ref, issued.expires_at);
+        return parentManagedCredentialResult('reset', input.config, actor, learner, payload);
       }),
     requestSuspend: async ({ actor, learner }) =>
       mapLifecycleErrors(async () => {
@@ -90,6 +68,7 @@ export function createAccountLifecycleCredentialAdapter(input: {
           status: state.access_status,
           expires_at: null,
           delivery_hint: null,
+          last_session_revoked_at: new Date().toISOString(),
         };
       }),
   };
@@ -99,16 +78,49 @@ function lifecycleActor(actor: PortalActorContext) {
   return { userKey: actor.actor_user_ref, role: actor.actor_role };
 }
 
-function issueResult(
+function parentManagedCredentialResult(
   operationType: Extract<StudentAccessOperationType, 'setup' | 'reset'>,
-  tokenRef: string,
-  expiresAt: string,
+  config: Pick<AppConfig, 'accountKey' | 'productKey'>,
+  actor: PortalActorContext,
+  learner: LearnerProfile,
+  payload: StudentAccessOperationPayload,
 ): CredentialLifecycleResult {
+  if (!payload.password) {
+    throw new PortalServiceError('PASSWORD_POLICY_FAILED', 'Student password is required.');
+  }
+  const normalizedUsername = payload.username ? normalizeStudentUsername(payload.username) : null;
+  const usernameForHash = normalizedUsername ?? `learner:${learner.learner_key}`;
+  const hashRef = studentPasswordHashRef({
+    accountKey: actor.account_key || config.accountKey,
+    productKey: actor.product_key || config.productKey,
+    learnerKey: learner.learner_key,
+    username: usernameForHash,
+    password: payload.password,
+    idempotencyKey: payload.idempotency_key,
+  });
+  const studentUserRef = normalizedUsername
+    ? `student_user_${digest(
+        [actor.account_key, actor.product_key, learner.learner_key, normalizedUsername].join(':'),
+      ).slice(0, 32)}`
+    : null;
+  const now = new Date().toISOString();
   return {
-    operation_ref: `student_${operationType}_${digest(tokenRef).slice(0, 24)}`,
-    status: operationType === 'setup' ? 'setup_requested' : 'reset_requested',
-    expires_at: expiresAt,
-    delivery_hint: 'Local sink delivery queued',
+    operation_ref: `student_${operationType}_${digest(
+      [learner.learner_key, usernameForHash, payload.idempotency_key, hashRef].join(':'),
+    ).slice(0, 24)}`,
+    status: 'active',
+    expires_at: null,
+    delivery_hint:
+      operationType === 'setup'
+        ? 'Parent-managed student username created. No student email delivery queued.'
+        : 'Parent-managed student password reset. Existing student sessions should re-authenticate.',
+    student_user_ref: studentUserRef,
+    username_display: normalizedUsername,
+    credential_status: 'parent_managed',
+    password_hash_ref: hashRef,
+    password_version: 1,
+    security_version: 1,
+    last_reset_at: operationType === 'reset' ? now : null,
   };
 }
 
@@ -149,4 +161,26 @@ function portalCode(code: AccountLifecycleError['code']) {
 
 function digest(value: string) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function studentPasswordHashRef(input: {
+  accountKey: string;
+  productKey: string;
+  learnerKey: string;
+  username: string;
+  password: string;
+  idempotencyKey: string;
+}) {
+  const salt = digest(
+    [
+      'student-password-salt-v1',
+      input.accountKey,
+      input.productKey,
+      input.learnerKey,
+      input.username,
+      input.idempotencyKey,
+    ].join(':'),
+  );
+  const derived = scryptSync(input.password, salt, 32).toString('base64url');
+  return `scrypt:v1:${salt}:${derived}`;
 }

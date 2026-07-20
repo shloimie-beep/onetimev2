@@ -11,6 +11,7 @@ import {
   type ContentOutcomePayload,
 } from '../../../contracts/src/content/index.ts';
 import type {
+  LessonConversationMessage,
   LibraryItem,
   ProtectedActionDescriptor,
 } from '../../../contracts/src/portals/index.ts';
@@ -458,12 +459,26 @@ async function portalItemsForLearner(input: {
   itemTypes: ContentItemType[];
 }): Promise<LibraryItem[]> {
   const result = await input.pool.query(
-    `SELECT items.*
+    `SELECT items.*,
+            lessons.lesson_key,
+            lessons.occurrence_key AS lesson_occurrence_key,
+            lessons.title AS lesson_title,
+            lessons.description AS lesson_description,
+            lessons.publication_state AS lesson_publication_state,
+            lessons.featured AS lesson_featured,
+            lessons.published_at AS lesson_published_at,
+            lessons.transcript_state AS lesson_transcript_state,
+            lessons.resource_count AS lesson_resource_count
        FROM onetime.content_items AS items
        JOIN onetime.content_item_entitlements AS entitlements
          ON entitlements.account_key = items.account_key
         AND entitlements.product_key = items.product_key
         AND entitlements.content_item_key = items.content_item_key
+       LEFT JOIN onetime.classroom_lesson_publications AS lessons
+         ON lessons.account_key = items.account_key
+        AND lessons.product_key = items.product_key
+        AND lessons.content_item_key = items.content_item_key
+        AND lessons.publication_state = 'published'
       WHERE items.account_key = $1
         AND items.product_key = $2
         AND items.retention_state = 'active'
@@ -479,19 +494,98 @@ async function portalItemsForLearner(input: {
       LIMIT 25`,
     [input.accountKey, input.productKey, input.itemTypes, input.learnerKey, input.householdKey],
   );
-  return result.rows.map((row) => ({
-    item_key: String(row.content_item_key),
-    title: String(row.title),
-    item_type: String(row.item_type) as LibraryItem['item_type'],
-    status: 'published' as const,
-    open_action: contentOpenAction(
-      String(row.content_item_key),
-      String(row.item_type),
-      input.actorRole,
-      input.householdKey,
-      input.learnerKey,
-    ),
-  }));
+  const messagesByLesson = await approvedMessagesByLesson(
+    input.pool,
+    input.accountKey,
+    input.productKey,
+    result.rows
+      .map((row) => nullableString((row as Record<string, unknown>).lesson_key))
+      .filter((lessonKey): lessonKey is string => Boolean(lessonKey)),
+  );
+  return result.rows.map((row) => {
+    const lessonKey = nullableString(row.lesson_key);
+    return {
+      item_key: String(row.content_item_key),
+      title: String(row.title),
+      item_type: String(row.item_type) as LibraryItem['item_type'],
+      status: 'published' as const,
+      open_action: contentOpenAction(
+        String(row.content_item_key),
+        String(row.item_type),
+        input.actorRole,
+        input.householdKey,
+        input.learnerKey,
+      ),
+      featured: Boolean(row.lesson_featured),
+      published_at: nullableIso(row.published_at),
+      lesson: lessonKey
+        ? {
+            lesson_key: lessonKey,
+            class_key: nullableString(row.lesson_occurrence_key),
+            title: String(row.lesson_title),
+            description: nullableString(row.lesson_description),
+            publication_state: 'published' as const,
+            featured: Boolean(row.lesson_featured),
+            published_at: nullableIso(row.lesson_published_at),
+            video_provider: 'vimeo' as const,
+            raw_private_url_present: false as const,
+            transcript_available: row.lesson_transcript_state === 'available',
+            resource_count: Number(row.lesson_resource_count ?? 0),
+            approved_messages: messagesByLesson.get(lessonKey) ?? [],
+          }
+        : null,
+    };
+  });
+}
+
+async function approvedMessagesByLesson(
+  pool: DbPool,
+  accountKey: string,
+  productKey: string,
+  lessonKeys: string[],
+) {
+  const messages = new Map<string, LessonConversationMessage[]>();
+  const uniqueLessonKeys = [...new Set(lessonKeys)];
+  if (uniqueLessonKeys.length === 0) return messages;
+  const result = await pool.query(
+    `SELECT submissions.lesson_key,
+            submissions.submission_key,
+            submissions.learner_key,
+            learners.display_name,
+            submissions.display_body_redacted,
+            submissions.moderation_state,
+            submissions.pinned,
+            submissions.approved_at
+       FROM onetime.classroom_lesson_conversation_submissions AS submissions
+       JOIN onetime.portal_learners AS learners
+         ON learners.account_key = submissions.account_key
+        AND learners.product_key = submissions.product_key
+        AND learners.learner_key = submissions.learner_key
+      WHERE submissions.account_key = $1
+        AND submissions.product_key = $2
+        AND submissions.lesson_key = ANY($3)
+        AND submissions.visibility_state = 'approved'
+        AND submissions.moderation_state IN ('approved_exact', 'approved_edited', 'redacted')
+      ORDER BY submissions.pinned DESC, submissions.approved_at DESC NULLS LAST
+      LIMIT 200`,
+    [accountKey, productKey, uniqueLessonKeys],
+  );
+  for (const row of result.rows) {
+    const lessonKey = String(row.lesson_key);
+    const current = messages.get(lessonKey) ?? [];
+    if (current.length >= 20) continue;
+    current.push({
+      message_key: String(row.submission_key),
+      learner_key: String(row.learner_key),
+      display_name: String(row.display_name),
+      body: String(row.display_body_redacted ?? 'Approved class question'),
+      moderation_state: row.moderation_state as LessonConversationMessage['moderation_state'],
+      pinned: Boolean(row.pinned),
+      approved_at: asDate(row.approved_at).toISOString(),
+    });
+    messages.set(lessonKey, current);
+  }
+  return messages;
 }
 
 function sanitizeOutcome(payload: ContentOutcomePayload): SanitizedOutcome {

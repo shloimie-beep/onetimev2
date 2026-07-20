@@ -593,6 +593,15 @@ export function createClassroomPortalAccessAdapter(input: {
           class_key: projection.class_key,
           title: projection.title,
           starts_at: projection.starts_at,
+          local_time: '19:00' as const,
+          timezone: 'Asia/Jerusalem' as const,
+          protected_launch_required: true as const,
+          provider_state:
+            projection.provider_state === 'sink_ready'
+              ? ('sink_ready' as const)
+              : projection.provider_state === 'disabled'
+                ? ('disabled' as const)
+                : ('not_configured' as const),
           status:
             projection.state === 'open'
               ? 'live'
