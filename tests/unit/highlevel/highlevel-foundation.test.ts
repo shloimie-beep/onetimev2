@@ -41,6 +41,15 @@ import {
   isHighLevelReconciliationCronAllowed,
   runHighLevelReconciliation,
 } from '../../../packages/domain/src/highlevel/reconciliation.ts';
+import {
+  botActionWorkflows,
+  businessWorkflows,
+  contactFields,
+  customValues,
+  lowercaseTagDeprecations,
+  registryMetadata,
+  tags,
+} from '../../../scripts/highlevel/canonical-registry-data.ts';
 import { createMemoryPool, runMigrations } from '../../../packages/db/src/index.ts';
 
 const baseEnv = {
@@ -473,6 +482,51 @@ describe('HighLevel recovery and import models', () => {
   });
 });
 
+describe('HighLevel canonical registry model', () => {
+  it('converges One Time bot, workflow, field, tag, and pricing boundaries', () => {
+    expect(registryMetadata).toMatchObject({
+      schemaId: 'one-time-highlevel',
+      schemaVersion: '1.0.0',
+      status: 'active',
+    });
+    expect(duplicates(contactFields.map((field) => field.normalizedName))).toEqual([]);
+    expect(duplicates(tags.map((tag) => tag.normalizedName))).toEqual([]);
+    expect(contactFields.some((field) => /student/i.test(field.canonicalName))).toBe(false);
+    expect(tags.some((tag) => /student/i.test(tag.canonicalName))).toBe(false);
+    expect(businessWorkflows.map((workflow) => workflow.key)).not.toContain('OT-11');
+    expect(businessWorkflows.map((workflow) => workflow.key)).not.toContain('OT-12');
+    expect(botActionWorkflows.map((workflow) => workflow.key)).toEqual([
+      'OT-B01',
+      'OT-B02',
+      'OT-B03',
+      'OT-B04',
+      'OT-B05',
+    ]);
+    expect(tags.find((tag) => tag.canonicalName === 'OT | Support Requested')).toMatchObject({
+      deprecationState: 'deprecated_existing',
+    });
+    expect(
+      customValues.find((value) => value.canonicalName === 'One Time Pricing Display Status'),
+    ).toMatchObject({ value: 'hidden' });
+    expect(
+      customValues.find((value) => value.canonicalName === 'One Time Published Price Label'),
+    ).toMatchObject({ value: '' });
+    expect(lowercaseTagDeprecations.map((entry) => entry.legacy)).toContain(
+      'one-time-human-handoff',
+    );
+  });
+});
+
 function rowCount(value: unknown) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function duplicates(values: string[]) {
+  const seen = new Set<string>();
+  const repeated = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) repeated.add(value);
+    seen.add(value);
+  }
+  return Array.from(repeated).sort();
 }

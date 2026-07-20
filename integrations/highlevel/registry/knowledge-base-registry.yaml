@@ -1,0 +1,33 @@
+- prompt_id: 'OT-KB-PUBLIC-1'
+  semantic_version: '1.0.0'
+  status: 'active'
+  title: 'One Time Mishnayos - Public Program and Support'
+  file_path: 'integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md'
+  sha256: 'c515025b586083659c43c45cb829699b0b097728459936c1004df6118def6472'
+  source: 'Corrected public knowledge base from incoming bot pack direction'
+  created_date: '2026-07-20'
+  approved_date: '2026-07-20'
+  ghl_asset_id: ''
+  required_fields:
+    - 'One Time Email Consent'
+    - 'One Time WhatsApp Consent'
+    - 'One Time Suppression State'
+    - 'One Time Signup Status'
+  required_tags:
+    - 'OT | Lead'
+    - 'OT | Marketing Suppressed'
+  required_custom_values:
+    - 'One Time Class Time Israel'
+    - 'One Time Pricing Display Status'
+    - 'One Time Published Price Label'
+    - 'One Time Support Email'
+  required_workflows:
+    - 'OT-B01'
+    - 'OT-B02'
+    - 'OT-B03'
+    - 'OT-B04'
+    - 'OT-B05'
+  test_contact_reference: 'protected_operator_owned_test_contact'
+  last_tested_date: ''
+  supersedes: []
+  superseded_by: ''

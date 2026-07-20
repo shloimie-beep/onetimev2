@@ -1,0 +1,593 @@
+- canonicalName: 'One Time Brand Name'
+  normalizedName: 'one_time_brand_name'
+  ghlId: ''
+  ghlKey: 'one_time_brand_name'
+  folder: 'One Time - Brand'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_brand'
+  purpose: 'Public brand name.'
+  value: 'One Time Mishnayos'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Rabbi Name'
+  normalizedName: 'one_time_rabbi_name'
+  ghlId: ''
+  ghlKey: 'one_time_rabbi_name'
+  folder: 'One Time - Brand'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_brand'
+  purpose: 'Public teacher name.'
+  value: 'Rabbi Eli Scheller'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Sender Name'
+  normalizedName: 'one_time_sender_name'
+  ghlId: ''
+  ghlKey: 'one_time_sender_name'
+  folder: 'One Time - Brand'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_brand'
+  purpose: 'Sender display name.'
+  value: 'One Time Mishnayos'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Sender Email'
+  normalizedName: 'one_time_sender_email'
+  ghlId: ''
+  ghlKey: 'one_time_sender_email'
+  folder: 'One Time - Brand'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_brand'
+  purpose: 'Sender email.'
+  value: 'info@onetimeonetime.com'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Reply-To Email'
+  normalizedName: 'one_time_reply_to_email'
+  ghlId: ''
+  ghlKey: 'one_time_reply_to_email'
+  folder: 'One Time - Brand'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_brand'
+  purpose: 'Reply-to email.'
+  value: 'info@onetimeonetime.com'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Program Short Description'
+  normalizedName: 'one_time_program_short_description'
+  ghlId: ''
+  ghlKey: 'one_time_program_short_description'
+  folder: 'One Time - Brand'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_brand'
+  purpose: 'Approved program summary.'
+  value: 'A live hybrid Mishnayos experience from Eretz Yisrael designed to build consistency, accountability, understanding, and excitement in Torah learning.'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Home URL'
+  normalizedName: 'one_time_home_url'
+  ghlId: ''
+  ghlKey: 'one_time_home_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Public home URL.'
+  value: 'https://join.onetimeonetime.com/'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Signup URL'
+  normalizedName: 'one_time_signup_url'
+  ghlId: ''
+  ghlKey: 'one_time_signup_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Signup URL.'
+  value: 'https://join.onetimeonetime.com/signup'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Member Login URL'
+  normalizedName: 'one_time_member_login_url'
+  ghlId: ''
+  ghlKey: 'one_time_member_login_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Login URL.'
+  value: 'https://join.onetimeonetime.com/login'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Password Help URL'
+  normalizedName: 'one_time_password_help_url'
+  ghlId: ''
+  ghlKey: 'one_time_password_help_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Password-help URL.'
+  value: 'https://join.onetimeonetime.com/forgot-password'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Parent Portal URL'
+  normalizedName: 'one_time_parent_portal_url'
+  ghlId: ''
+  ghlKey: 'one_time_parent_portal_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Parent portal URL.'
+  value: 'https://join.onetimeonetime.com/app/parent'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Student Portal URL'
+  normalizedName: 'one_time_student_portal_url'
+  ghlId: ''
+  ghlKey: 'one_time_student_portal_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Student portal URL; not collected by OT-A1.'
+  value: 'https://join.onetimeonetime.com/app/student'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Early Access URL'
+  normalizedName: 'one_time_early_access_url'
+  ghlId: ''
+  ghlKey: 'one_time_early_access_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Pending accepted early-access route.'
+  value: 'PENDING_ACCEPTED_ROUTE'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Checkout URL'
+  normalizedName: 'one_time_checkout_url'
+  ghlId: ''
+  ghlKey: 'one_time_checkout_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Pending verified checkout URL.'
+  value: 'PENDING_VERIFIED_GHL_CHECKOUT_URL'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Recording Portal URL'
+  normalizedName: 'one_time_recording_portal_url'
+  ghlId: ''
+  ghlKey: 'one_time_recording_portal_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Pending protected portal route.'
+  value: 'PENDING_PROTECTED_PORTAL_ROUTE'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time WhatsApp Entry URL'
+  normalizedName: 'one_time_whatsapp_entry_url'
+  ghlId: ''
+  ghlKey: 'one_time_whatsapp_entry_url'
+  folder: 'One Time - URLs'
+  objectType: 'custom_value'
+  dataType: 'URL'
+  category: 'one_time_urls'
+  purpose: 'Pending verified WhatsApp entry URL.'
+  value: 'PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Complimentary Access Label'
+  normalizedName: 'one_time_complimentary_access_label'
+  ghlId: ''
+  ghlKey: 'one_time_complimentary_access_label'
+  folder: 'One Time - Offer'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_offer'
+  purpose: 'Complimentary access label.'
+  value: 'A complimentary month of early access'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Promotion Status'
+  normalizedName: 'one_time_promotion_status'
+  ghlId: ''
+  ghlKey: 'one_time_promotion_status'
+  folder: 'One Time - Offer'
+  objectType: 'custom_value'
+  dataType: 'STATUS'
+  category: 'one_time_offer'
+  purpose: 'Promotion status.'
+  value: 'inactive'
+  sourceOfTruth: 'Shared'
+  allowedValues:
+    - 'active'
+    - 'inactive'
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Promotion End Date Label'
+  normalizedName: 'one_time_promotion_end_date_label'
+  ghlId: ''
+  ghlKey: 'one_time_promotion_end_date_label'
+  folder: 'One Time - Offer'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_offer'
+  purpose: 'Approved promotion end date label.'
+  value: ''
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Pricing Display Status'
+  normalizedName: 'one_time_pricing_display_status'
+  ghlId: ''
+  ghlKey: 'one_time_pricing_display_status'
+  folder: 'One Time - Offer'
+  objectType: 'custom_value'
+  dataType: 'STATUS'
+  category: 'one_time_offer'
+  purpose: 'Price display gate.'
+  value: 'hidden'
+  sourceOfTruth: 'Shared'
+  allowedValues:
+    - 'hidden'
+    - 'published'
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Published Price Label'
+  normalizedName: 'one_time_published_price_label'
+  ghlId: ''
+  ghlKey: 'one_time_published_price_label'
+  folder: 'One Time - Offer'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_offer'
+  purpose: 'Approved price label when published.'
+  value: ''
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies:
+    - 'One Time Pricing Display Status'
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Default Time Zone'
+  normalizedName: 'one_time_default_time_zone'
+  ghlId: ''
+  ghlKey: 'one_time_default_time_zone'
+  folder: 'One Time - Class'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_class'
+  purpose: 'Default class timezone.'
+  value: 'Asia/Jerusalem'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Class Time Israel'
+  normalizedName: 'one_time_class_time_israel'
+  ghlId: ''
+  ghlKey: 'one_time_class_time_israel'
+  folder: 'One Time - Class'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_class'
+  purpose: 'Approved normal class time.'
+  value: '7:00 p.m. Israel time'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Schedule Notice'
+  normalizedName: 'one_time_schedule_notice'
+  ghlId: ''
+  ghlKey: 'one_time_schedule_notice'
+  folder: 'One Time - Class'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_class'
+  purpose: 'Approved schedule notice.'
+  value: ''
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Support Email'
+  normalizedName: 'one_time_support_email'
+  ghlId: ''
+  ghlKey: 'one_time_support_email'
+  folder: 'One Time - Support'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_support'
+  purpose: 'Support email.'
+  value: 'info@onetimeonetime.com'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Public Bot Name'
+  normalizedName: 'one_time_public_bot_name'
+  ghlId: ''
+  ghlKey: 'one_time_public_bot_name'
+  folder: 'One Time - Bot'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_bot'
+  purpose: 'Canonical public bot name.'
+  value: 'OT-A1 One Time Enrollment Assistant'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Public Bot Version'
+  normalizedName: 'one_time_public_bot_version'
+  ghlId: ''
+  ghlKey: 'one_time_public_bot_version'
+  folder: 'One Time - Bot'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_bot'
+  purpose: 'Canonical bot version.'
+  value: '1.0.0'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''
+- canonicalName: 'One Time Knowledge Base Version'
+  normalizedName: 'one_time_knowledge_base_version'
+  ghlId: ''
+  ghlKey: 'one_time_knowledge_base_version'
+  folder: 'One Time - Bot'
+  objectType: 'custom_value'
+  dataType: 'TEXT'
+  category: 'one_time_bot'
+  purpose: 'Canonical knowledge-base version.'
+  value: '1.0.0'
+  sourceOfTruth: 'Shared'
+  allowedValues: []
+  workflowsAllowedToWrite: []
+  oneTimeAllowedToWrite: false
+  humansMayEdit: true
+  dependencies: []
+  aliases: []
+  deprecationState: 'pending_creation'
+  createdDate: '2026-07-20'
+  lastVerifiedDate: ''
+  lastTestedDate: ''

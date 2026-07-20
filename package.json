@@ -50,7 +50,11 @@
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",
     "version:print": "tsx scripts/print-version.ts",
     "director:truth": "node scripts/check-director-truth.mjs",
-    "director:truth:live": "node scripts/check-director-truth.mjs --live"
+    "director:truth:live": "node scripts/check-director-truth.mjs --live",
+    "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
+    "highlevel:registry:export": "tsx scripts/highlevel/export-current-registry.ts",
+    "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-assets.ts",
+    "highlevel:contacts:reconcile": "tsx scripts/highlevel/reconcile-contact-import.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

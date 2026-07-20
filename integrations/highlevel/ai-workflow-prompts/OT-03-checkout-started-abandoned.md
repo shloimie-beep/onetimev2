@@ -1,58 +1,25 @@
-# OT-03 Checkout Started / Abandoned AI Builder Prompt
+# OT-03 Checkout Started / Abandoned Prompt
 
-Copy the text below into HighLevel AI Builder. Build in Draft state only.
+Build in HighLevel Draft state only. Do not publish, send messages, enroll production contacts, mutate Stripe, or create Student contacts from this prompt.
 
-```text
-Create a HighLevel workflow named "OT-03 Checkout Started / Abandoned".
-Place it in folder "20 - Billing & Access".
+Canonical registry: one-time-highlevel@1.0.0
+Folder: 20 - Billing & Access
+Purpose: Checkout started and abandoned checkout handling.
 
-Trigger: GHL checkout started event, GHL Stripe state, or manual move to Checkout Started.
-Trigger filters: Parent/lead contact only. Not suppressed. No active payment already processed.
-Re-entry: Allow once per checkout attempt or subscription ID.
-Stop on response: Stop reminder sequence on reply and create task.
-Timezone/business window: Asia/Jerusalem; Sunday-Thursday 9:00-20:30.
-Tags to use: OT | Checkout Started, OT | Lead, OT | Prelaunch
-Custom fields to use: One Time Customer Status, One Time Subscription ID, One Time Last Sync
+Required boundaries:
 
-Build these If/Else branches:
-- If payment succeeds, stop and hand off to OT-04.
-- If suppressed, stop.
-- If no consent, create task only.
+- Use only registered One Time fields, tags and custom values from `integrations/highlevel/registry/current.json`.
+- Preserve unrelated existing tags on contacts.
+- Check suppression and consent before any non-transactional communication.
+- Do not create human tasks or Human Handoff actions.
+- Do not expose raw Zoom links, raw Vimeo links, tokens, payment-card data, internal IDs, usernames or passwords.
+- A GHL tag or field is not authorization for One Time portal access.
 
-Add these waits:
-- Wait 30 minutes before first abandoned-checkout reminder.
-- Wait 24 hours before final internal task.
+Handle checkout-started and abandoned-checkout state after verified checkout events exist.
+Do not state a price unless One Time Pricing Display Status is published and One Time Published Price Label is populated.
 
-Messages/templates by exact safe name:
-- OT Checkout Reminder - DRAFT; no pricing promise unless configured in GHL checkout.
+Test state:
 
-Workflow-to-workflow handoffs: Payment active to OT-04. Payment failure to OT-05.
-Opportunity stage changes: Move opportunity to One Time Business / Checkout Started.
-Tasks/internal notifications: Create abandoned checkout follow-up task after final wait.
-Custom webhook actions to One Time: Optional checkout.started webhook only after One Time endpoint is registered.
-Stop conditions: Payment active, cancellation, suppression, reply, manual review.
-
-Consent and suppression gates:
-- Check OT | Marketing Suppressed before any outbound message.
-- Check One Time Email Consent and OT | Email Opt-In before email.
-- Check One Time WhatsApp Consent and OT | WhatsApp Opt-In before WhatsApp.
-- Unknown consent may create an internal task, but must not send a campaign message.
-- STOP, unsubscribe, complaint, hard bounce, and manual suppression win over every other branch.
-
-Safety boundaries:
-- Never create or message Student contacts.
-- Never include Student names, ages, passwords, private notes, progress, attendance, Vimeo credentials, Zoom links, reset links, or raw internal IDs.
-- Never unlock One Time portal access from a HighLevel tag alone.
-- Never send a campaign, publish the workflow, or enroll production contacts from this prompt.
-
-Test procedure:
-- Move test opportunity to Checkout Started.
-- Confirm no class link or portal credentials are sent.
-
-Publish checklist:
-- Leave workflow in Draft.
-- Review every trigger, filter, branch, wait, message, task, webhook, and stop condition.
-- Test with the protected operator-owned test contact only.
-- Record the workflow ID in integrations/highlevel/WORKFLOW-ID-CAPTURE.md and workflows.yaml after it exists.
-- Publish only after separate operator approval.
-```
+- Use only a protected operator-owned test contact.
+- Record the workflow ID only after it exists in the verified location.
+- Keep publish toggle off until explicit separate approval.

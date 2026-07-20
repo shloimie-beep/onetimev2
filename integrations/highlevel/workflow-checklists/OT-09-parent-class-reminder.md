@@ -1,0 +1,13 @@
+# OT-09 Parent Class Reminder UI Checklist
+
+Folder: 40 - Classes & Content
+Registry: integrations/highlevel/registry/workflow-registry.yaml
+
+- Build only in Draft.
+- Confirm every field, tag and custom value exists in `registry/current.json` before use.
+- No Human Handoff action.
+- No human task creation.
+- No production contact enrollment.
+- No outbound message send in this lane.
+- No Student contact, Student field or Student tag.
+- Record the workflow ID in `WORKFLOW-ID-CAPTURE.md` after creation.

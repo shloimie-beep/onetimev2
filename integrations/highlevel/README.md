@@ -1,61 +1,19 @@
-# One Time HighLevel Business Integration
+# One Time HighLevel Integration
 
-HighLevel is the One Time business operating system for parent/lead contacts,
-marketing consent and suppression, marketing email, WhatsApp, conversations,
-opportunities, ordinary follow-up, marketing workflows, and GHL-operated Stripe
-billing operations.
+Canonical registry: one-time-highlevel@1.0.0
 
-One Time remains authoritative for parent authentication, household and student
-records, portal access, class/content/progress, leaderboard data, Rabbi-moderated
-questions, local entitlement projection, and security email through Resend.
-Students never enter HighLevel.
+Start here before changing any HighLevel asset:
 
-## Modes
+- `integrations/highlevel/registry/AGENT-HANDOFF.md`
+- `integrations/highlevel/registry/current.json`
+- `integrations/highlevel/registry/schema.yaml`
 
-- `disabled`: default. No HighLevel sync, reconciliation, provider calls, or live
-  route registration.
-- `mock`: local/test only. Exercises typed operations without external effects.
-- `provider`: fails closed unless location ID, Private Integration Token, webhook
-  secret, and protected runtime mode are present.
+Active bot prompt:
 
-The code path in this lane never performs a live HighLevel call automatically.
-The webhook router is isolated in `apps/web/src/server/features/highlevel/router.ts`
-and is not registered in `app.ts`.
+- `integrations/highlevel/prompts/active/OT-A1-v1.0.0.md`
 
-## Official API Surface
+Active public knowledge base:
 
-The provider client is a small typed HTTP client using documented HighLevel API
-operations. Private Integration Tokens are sent as server-side bearer tokens.
-Contact upsert uses the documented `/contacts/upsert` endpoint. Tags are added
-or removed through dedicated tag operations so ordinary contact upsert never
-overwrites a complete tag set.
+- `integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md`
 
-Workflow creation is treated as a HighLevel UI setup task. API enrollment is
-allowed only after an operator records an existing workflow ID in
-`workflows.yaml` and protected config.
-
-Prompt 04 activation setup lives in `WORKFLOW-UI-CHECKLIST.md` and
-`LC-EMAIL-DNS-CHECKLIST.md`. DNS changes, broad sends, and workflow ID claims
-require operator evidence; do not infer them from API connectivity alone.
-
-## Signup Flow
-
-`browser -> One Time validates -> local receipt -> HighLevel outbox -> GHL upsert
--> custom fields/tags -> workflow enrollment`
-
-Matching is email first, phone second, and never by name. Email/phone conflicts
-become `sync_conflict`. A tag alone must never unlock the One Time portal.
-
-## Manual Upload Policy
-
-The existing production CRM contacts are not uploaded by code in this lane.
-Operators may upload contacts manually in HighLevel. The later mapping tool can
-dry-run matches, detect conflicts, and store `ghl_contact_id` locally without
-creating duplicate HighLevel contacts or changing HighLevel records by default.
-
-## Resend Backlog
-
-The Resend backlog inventory tool is read-only and counts-only in public output.
-It does not download attachments by default and does not commit message bodies.
-Backfill into HighLevel conversations is a later credentialed step with
-idempotency, import tagging, and automation suppression.
+Safety line: no messages, workflow publishing, production enrollment, Stripe mutation, Student contact creation or raw private link exposure is authorized by this registry package.

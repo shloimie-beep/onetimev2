@@ -1,56 +1,25 @@
-# OT-08 Parent Portal Activated AI Builder Prompt
+# OT-08 Parent Portal Activated Prompt
 
-Copy the text below into HighLevel AI Builder. Build in Draft state only.
+Build in HighLevel Draft state only. Do not publish, send messages, enroll production contacts, mutate Stripe, or create Student contacts from this prompt.
 
-```text
-Create a HighLevel workflow named "OT-08 Parent Portal Activated".
-Place it in folder "30 - Portal Lifecycle".
+Canonical registry: one-time-highlevel@1.0.0
+Folder: 30 - Portal Lifecycle
+Purpose: Parent portal activation projection.
 
-Trigger: One Time emits portal activated business event.
-Trigger filters: Parent contact only.
-Re-entry: Do not re-enter unless Portal Status changes from inactive to active again.
-Stop on response: Create task on reply.
-Timezone/business window: Asia/Jerusalem; Sunday-Thursday 9:00-20:30.
-Tags to use: OT | Portal Active
-Custom fields to use: One Time Portal Status, One Time Last Sync
+Required boundaries:
 
-Build these If/Else branches:
-- If active customer, optional welcome branch.
-- If complimentary, optional internal review branch.
+- Use only registered One Time fields, tags and custom values from `integrations/highlevel/registry/current.json`.
+- Preserve unrelated existing tags on contacts.
+- Check suppression and consent before any non-transactional communication.
+- Do not create human tasks or Human Handoff actions.
+- Do not expose raw Zoom links, raw Vimeo links, tokens, payment-card data, internal IDs, usernames or passwords.
+- A GHL tag or field is not authorization for One Time portal access.
 
-Add these waits:
-- Optional welcome wait 1 hour after activation.
+Record parent portal activation after One Time emits the event.
+Do not expose Student data or learning progress in HighLevel.
 
-Messages/templates by exact safe name:
-- OT Portal Activated Welcome - DRAFT.
+Test state:
 
-Workflow-to-workflow handoffs: None.
-Opportunity stage changes: No billing stage change.
-Tasks/internal notifications: Create task only when activation conflicts with access status.
-Custom webhook actions to One Time: None.
-Stop conditions: Suppression for optional messages, reply, access inactive.
-
-Consent and suppression gates:
-- Check OT | Marketing Suppressed before any outbound message.
-- Check One Time Email Consent and OT | Email Opt-In before email.
-- Check One Time WhatsApp Consent and OT | WhatsApp Opt-In before WhatsApp.
-- Unknown consent may create an internal task, but must not send a campaign message.
-- STOP, unsubscribe, complaint, hard bounce, and manual suppression win over every other branch.
-
-Safety boundaries:
-- Never create or message Student contacts.
-- Never include Student names, ages, passwords, private notes, progress, attendance, Vimeo credentials, Zoom links, reset links, or raw internal IDs.
-- Never unlock One Time portal access from a HighLevel tag alone.
-- Never send a campaign, publish the workflow, or enroll production contacts from this prompt.
-
-Test procedure:
-- Emit test portal activated event.
-- Confirm tag only; no auth mutation.
-
-Publish checklist:
-- Leave workflow in Draft.
-- Review every trigger, filter, branch, wait, message, task, webhook, and stop condition.
-- Test with the protected operator-owned test contact only.
-- Record the workflow ID in integrations/highlevel/WORKFLOW-ID-CAPTURE.md and workflows.yaml after it exists.
-- Publish only after separate operator approval.
-```
+- Use only a protected operator-owned test contact.
+- Record the workflow ID only after it exists in the verified location.
+- Keep publish toggle off until explicit separate approval.

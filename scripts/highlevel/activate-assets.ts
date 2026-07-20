@@ -1,6 +1,12 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import {
+  botActionWorkflows,
+  businessWorkflows,
+  contactFields,
+  tags as canonicalTags,
+} from './canonical-registry-data.ts';
 
 type Args = {
   apply: boolean;
@@ -39,77 +45,17 @@ type GhlWorkflow = {
 
 const args = parseArgs(process.argv.slice(2));
 
-const requiredCustomFields = [
-  'One Time Parent ID',
-  'One Time Household ID',
-  'One Time Customer Status',
-  'One Time Portal Status',
-  'One Time Access Status',
-  'One Time Grace Until',
-  'One Time Complimentary Until',
-  'One Time Last Sync',
-  'One Time Signup Source',
-  'One Time CRM Contact ID',
-  'One Time Import Batch',
-  'One Time Source Classification',
-  'One Time Email Consent',
-  'One Time WhatsApp Consent',
-  'One Time Suppression State',
-  'One Time Suppression Reason',
-  'One Time Current Period End',
-  'One Time Subscription ID',
-  'One Time Next Class At',
-  'One Time Class Time Zone',
-  'One Time Support Status',
-];
+const requiredCustomFields = contactFields
+  .filter((field) => field.deprecationState !== 'deprecated_existing')
+  .map((field) => field.canonicalName);
 
-const requiredTags = [
-  'OT | Lead',
-  'OT | Prelaunch',
-  'OT | Checkout Started',
-  'OT | Active',
-  'OT | Grace',
-  'OT | Canceled',
-  'OT | Former',
-  'OT | Complimentary',
-  'OT | Portal Invited',
-  'OT | Portal Active',
-  'OT | Email Opt-In',
-  'OT | WhatsApp Opt-In',
-  'OT | Marketing Suppressed',
-  'OT | Signup Website',
-  'OT | Signup WhatsApp',
-  'OT | Consent Unknown',
-  'OT | Payment Failed',
-  'OT | Refunded',
-  'OT | Chargeback',
-  'OT | Support Requested',
-  'OT | Source | Rabbi Followers',
-  'OT | Source | Subscribed Audience',
-  'OT | Source | Cleaned Audience',
-  'OT | Source | Legacy Subscriber',
-  'OT | Source | Existing One Time CRM',
-  'OT | Duplicate Merged',
-  'OT | Identity Conflict',
-  'OT | Class Reminder Pending',
-  'OT | Recording Available',
-];
+const requiredTags = canonicalTags
+  .filter((tag) => tag.deprecationState !== 'deprecated_existing')
+  .map((tag) => tag.canonicalName);
 
-const requiredWorkflows = [
-  'OT-01 New Lead Intake',
-  'OT-02 Prelaunch Nurture',
-  'OT-03 Checkout Started / Abandoned',
-  'OT-04 Payment Active',
-  'OT-05 Payment Failed / Seven-Day Grace',
-  'OT-06 Subscription Canceled',
-  'OT-07 Parent Portal Invitation',
-  'OT-08 Parent Portal Activated',
-  'OT-09 Class Reminder',
-  'OT-10 New Recording Available',
-  'OT-11 WhatsApp Lead Qualification',
-  'OT-12 Support Intake / Technical Escalation',
-  'OT-13 Refund / Chargeback',
-];
+const requiredWorkflows = [...businessWorkflows, ...botActionWorkflows].map(
+  (workflow) => workflow.canonicalName,
+);
 
 const oneTimePipeline = {
   name: 'One Time Business',

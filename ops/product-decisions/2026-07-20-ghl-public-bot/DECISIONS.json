@@ -1,0 +1,22 @@
+{
+  "decision_date": "2026-07-20",
+  "source": "Codex pasted direction",
+  "decisions": {
+    "one_public_bot": "OT-A1 One Time Enrollment Assistant",
+    "channels": ["Website Live Chat", "WhatsApp"],
+    "voice_launch": "deferred",
+    "human_handoff_workflow": false,
+    "human_tasks": false,
+    "duplicate_lead_qualification_workflow": false,
+    "price_proactively_stated": false,
+    "canonical_schema_required_before_workflow_creation": true,
+    "imported_contacts_must_not_be_reimported": true,
+    "student_data_excluded_from_highlevel": true,
+    "future_agent_prompts_versioned_and_diffed": true
+  },
+  "safety": {
+    "messages_sent": 0,
+    "workflows_published": 0,
+    "stripe_mutations": 0
+  }
+}
