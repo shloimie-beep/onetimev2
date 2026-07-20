@@ -21,11 +21,15 @@ Generated: 2026-07-20T17:16:25.5728777+03:00
 - BLOCKED_PROTECTED_OPERATOR_INBOX: no protected operator inbox/send path was available.
 - BLOCKED_REAL_PREVIEW_CREDENTIALS: no staging preview was deployed, so no real staging credentials were generated.
 - BLOCKED_GITHUB_ACTIONS_ACCOUNT_BILLING: GitHub Actions did not start PR #96 jobs because repository account billing or spending limit requires owner action.
+- BLOCKED_REPO_WIDE_FORMAT_BASELINE: repo-wide `npm run format` reports historical formatting drift in 1316 files; changed non-SQL PR files pass Prettier and the broad cleanup was not folded into this preview branch.
 
 ## Verification
 
 - `npm ci`: passed.
 - `npm run typecheck`: passed.
+- `npx prettier --check <changed non-SQL, non-PNG PR files>`: passed.
+- `npm run format`: blocked by existing repo-wide formatting baseline, 1316 files.
+- `npm run lint`: passed.
 - `npm run unit -- tests/unit/learning-product-portals.test.ts`: passed, 4 tests.
 - `npm run integration -- tests/integration/portals/portal-mount.test.ts tests/integration/auth-crm.test.ts`: passed, 2 files and 14 tests.
 - `npm run build`: passed.

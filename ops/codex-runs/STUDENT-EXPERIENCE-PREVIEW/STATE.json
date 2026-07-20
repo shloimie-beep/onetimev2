@@ -87,6 +87,12 @@
       "reason": "GitHub Actions did not start PR #96 jobs because repository account billing or spending limit requires owner action.",
       "evidence": "Each failed check annotation said: The job was not started because recent account payments have failed or your spending limit needs to be increased.",
       "needed_action": "Repository owner must resolve GitHub Billing & plans / Actions spending-limit state, then rerun PR #96 checks."
+    },
+    {
+      "id": "BLOCKED_REPO_WIDE_FORMAT_BASELINE",
+      "reason": "Repo-wide Prettier check fails across historical files outside this branch's scoped changes.",
+      "evidence": "npm run format reported style issues in 1316 files; changed non-SQL PR files pass npx prettier --check.",
+      "needed_action": "Do not include unrelated formatting churn in this preview branch; handle repo-wide Prettier baseline in a separate dedicated cleanup."
     }
   ],
   "verification": [
@@ -99,6 +105,21 @@
       "command": "npm run typecheck",
       "status": "passed",
       "summary": "TypeScript no-emit check passed after final edits."
+    },
+    {
+      "command": "npx prettier --check <changed non-SQL, non-PNG PR files>",
+      "status": "passed",
+      "summary": "All changed branch text files that Prettier can parse use Prettier style."
+    },
+    {
+      "command": "npm run format",
+      "status": "blocked_existing_repo_wide_format_baseline",
+      "summary": "Repo-wide check reports 1316 historical files needing formatting; this was not remediated to avoid unrelated churn."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "summary": "ESLint passed after formatting the integrated PR payload."
     },
     {
       "command": "npm run unit -- tests/unit/learning-product-portals.test.ts",
