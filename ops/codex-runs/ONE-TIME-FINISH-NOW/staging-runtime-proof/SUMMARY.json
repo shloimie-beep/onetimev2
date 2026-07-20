@@ -1,0 +1,188 @@
+{
+  "schema_version": "onetime.one_time_finish_now.staging_runtime_proof.v1",
+  "generated_at": "2026-07-19T12:22:50.497Z",
+  "status": "accepted_for_pr92_staging_candidate",
+  "candidate": {
+    "source_sha": "ee9929008fc0068b3dcf9b86d11e7c21d1331c93",
+    "branch": "codex/one-time-finish-now-20260719",
+    "pr": "https://github.com/webcraft-media/onetimev2/pull/92",
+    "note": "APP_VERSION and COMMIT_SHA remain runtime env values; PR92 source binding uses exact checked-out deploy worktrees, Railway deployment IDs/messages/image digests, and /version.deployment."
+  },
+  "initial_pr92_deploy": {
+    "web": {
+      "id": "e067ebfb-e8c5-42ca-bb71-01432a6e3e9a",
+      "status": "SUCCESS",
+      "created_at": "2026-07-19T12:13:08.147Z",
+      "image_digest": "sha256:25d58d4a0661393a3d3d81e172dde87b610d8b97437162969615646e5c943234",
+      "cli_message": "ONE-TIME-FINISH-NOW pr92 runtime-proof web ee99290",
+      "config_file": "/railway.web.staging.json"
+    },
+    "worker": {
+      "id": "d19e7000-da9d-47bc-a57a-3a673aa15c6c",
+      "status": "SUCCESS",
+      "created_at": "2026-07-19T12:13:46.056Z",
+      "image_digest": "sha256:b213c58070b8d40b612351c5748bdf82e72b655014f8cc83e35a1ab0501a616d",
+      "cli_message": "ONE-TIME-FINISH-NOW pr92 runtime-proof worker ee99290",
+      "config_file": "/railway.worker.staging.json"
+    },
+    "version_deployment": {
+      "provider": "railway",
+      "deployment_id": "e067ebfb-e8c5-42ca-bb71-01432a6e3e9a",
+      "snapshot_id": "a7775757-4728-4743-b004-785b28aab364",
+      "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+      "service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "service_name": "ot99-web",
+      "git_commit_sha": null
+    },
+    "staging_route_statuses": {
+      "/version": 200,
+      "/health": 200,
+      "/ready": 200,
+      "/": 200,
+      "/signup": 200,
+      "/login": 200,
+      "/activate": 200,
+      "/forgot-password": 200
+    }
+  },
+  "rollback": {
+    "source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+    "web": {
+      "id": "d892a8fa-92a1-4b73-aa38-b4b0ad063894",
+      "status": "SUCCESS",
+      "created_at": "2026-07-19T12:17:32.091Z",
+      "image_digest": "sha256:4f8a8e76f62ad24318f87ba496cdbf79a122d8b66905a34969304d96b7bee5d5",
+      "cli_message": "ONE-TIME-FINISH-NOW rollback-staging web 688fc70 after-pr92-proof",
+      "config_file": "/railway.web.staging.json"
+    },
+    "worker": {
+      "id": "a296f5ec-b069-4fb2-ac8a-c0d7568f04a7",
+      "status": "SUCCESS",
+      "created_at": "2026-07-19T12:18:01.139Z",
+      "image_digest": "sha256:da62398c2a4163393558935c30656f09936fb433a0db00b2deb52a026f35154a",
+      "cli_message": "ONE-TIME-FINISH-NOW rollback-staging worker 688fc70 after-pr92-proof",
+      "config_file": "/railway.worker.staging.json"
+    },
+    "version_body": {
+      "version": "w13-104-public-cls-688fc70",
+      "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+      "target_app": "one-time"
+    },
+    "version_commit_matched_expected": true,
+    "version_deployment_present": false,
+    "staging_route_statuses": {
+      "/version": 200,
+      "/health": 200,
+      "/ready": 200,
+      "/": 200,
+      "/signup": 200,
+      "/login": 200,
+      "/activate": 200,
+      "/forgot-password": 200
+    },
+    "routes_all_200": true
+  },
+  "roll_forward": {
+    "source_sha": "ee9929008fc0068b3dcf9b86d11e7c21d1331c93",
+    "web": {
+      "id": "c464ea23-649b-4c8d-b4af-0d10c5ce3022",
+      "status": "SUCCESS",
+      "created_at": "2026-07-19T12:19:41.762Z",
+      "image_digest": "sha256:25d58d4a0661393a3d3d81e172dde87b610d8b97437162969615646e5c943234",
+      "cli_message": "ONE-TIME-FINISH-NOW roll-forward-staging web ee99290 runtime-proof",
+      "config_file": "/railway.web.staging.json"
+    },
+    "worker": {
+      "id": "17f1970a-ec19-4fa8-8152-573b47f470ab",
+      "status": "SUCCESS",
+      "created_at": "2026-07-19T12:20:04.961Z",
+      "image_digest": "sha256:b213c58070b8d40b612351c5748bdf82e72b655014f8cc83e35a1ab0501a616d",
+      "cli_message": "ONE-TIME-FINISH-NOW roll-forward-staging worker ee99290 runtime-proof",
+      "config_file": "/railway.worker.staging.json"
+    },
+    "version_deployment": {
+      "provider": "railway",
+      "deployment_id": "c464ea23-649b-4c8d-b4af-0d10c5ce3022",
+      "snapshot_id": "14354877-0df6-45e1-806a-47dbcf53b61c",
+      "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+      "service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "service_name": "ot99-web",
+      "git_commit_sha": null
+    },
+    "version_deployment_matched_web_deploy": true,
+    "staging_route_statuses": {
+      "/version": 200,
+      "/health": 200,
+      "/ready": 200,
+      "/": 200,
+      "/signup": 200,
+      "/login": 200,
+      "/activate": 200,
+      "/forgot-password": 200
+    },
+    "routes_all_200": true,
+    "git_commit_sha_reported": null
+  },
+  "production_readonly": {
+    "web_deployment": "74a6b736-dd67-4966-bdf6-b7dd80280d1a",
+    "web_status": "SUCCESS",
+    "web_image_digest": "sha256:739f56ba921af8ac4d1f829db179c73e1028a91c4d3fa05506a5397f44e3c7cc",
+    "worker_deployment": "0a0d730c-fa00-4338-b446-a8dcb8832c17",
+    "worker_status": "SUCCESS",
+    "worker_image_digest": "sha256:da68b6adb377856d0612b5e97bceafb03435115250262065cc3305c232712370",
+    "version_body": {
+      "version": "w13-104-public-cls-688fc70",
+      "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+      "target_app": "one-time"
+    },
+    "route_statuses": {
+      "/version": 200,
+      "/health": 200,
+      "/ready": 200,
+      "/": 200,
+      "/signup": 200,
+      "/login": 200,
+      "/activate": 200,
+      "/forgot-password": 200
+    }
+  },
+  "external_effects": {
+    "staging_deployments": 6,
+    "production_deployments": 0,
+    "production_database_writes": 0,
+    "crm_import_applies": 0,
+    "provider_mutations": 0,
+    "external_sends": 0,
+    "live_stripe_charges": 0,
+    "dns_changes": 0
+  },
+  "acceptance": {
+    "rollback_gate_accepted_for_pr92_staging_candidate": true,
+    "reason": "Staging deployed PR92, rolled back to W13-104 with expected /version commit and W13-104 image digests, then rolled forward to PR92 with /version.deployment matching the serving Railway web deployment and PR92 image digests; all smoke routes passed.",
+    "remaining_release_blockers": [
+      "EMAIL-INPUTS.private.json and email runtime vars",
+      "CRM-IMPORT-AUTHORIZATION.private.json",
+      "CANARY-AUTHORIZATION.private.json",
+      "OPERATIONS_PROBE_TOKEN",
+      "current production launch-spine proof"
+    ]
+  },
+  "evidence_files": [
+    "pre-deploy-http.json",
+    "post-deploy-http.json",
+    "post-deploy-deployments.web.json",
+    "post-deploy-deployments.worker.json",
+    "rollback-deployments.web.json",
+    "rollback-deployments.worker.json",
+    "rollback-http.json",
+    "roll-forward-deployments.web.json",
+    "roll-forward-deployments.worker.json",
+    "roll-forward-http.json",
+    "final-deployments.web.json",
+    "final-deployments.worker.json",
+    "final-production-deployments.web.json",
+    "final-production-deployments.worker.json"
+  ]
+}

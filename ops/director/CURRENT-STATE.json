@@ -1,376 +1,176 @@
 {
-  "schema_version": "onetime.director.current_state.v1",
-  "generated_at": "2026-07-17T17:17:56.257Z",
+  "schema_version": "onetime.director.current_state.v2",
+  "generated_at": "2026-07-19T17:32:01.523Z",
+  "current_run": "ops/codex-runs/RABBI-DAY-ONE-CRM",
   "repository": {
     "full_name": "webcraft-media/onetimev2",
-    "remote": "https://github.com/webcraft-media/onetimev2.git",
-    "default_branch": "main",
-    "default_branch_sha": "610b585f3d221addd4e7b824c92a5cc256cffcf9"
+    "remote": "https://github.com/webcraft-media/onetimev2.git"
   },
-  "selected_base": {
-    "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
-    "short_sha": "c7d4606",
-    "branch": "origin/release/ops10-full-staged-production-launch-20260717T050800Z",
-    "local_branch": "codex/w12-00-canonical-director-handoff",
-    "reason_path": "ops/codex-runs/W12-00/BASE-SELECTION.md"
-  },
-  "deployed_runtime": {
-    "source_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-    "version": "ops11-1197673",
-    "target_app": "one-time",
+  "release_truth": {
+    "status": "crm_real_data_delivered_campaign_seed_ready_external_lanes_pending",
+    "CORE_RELEASE": "BLOCKED_BY_CORE_SAFETY_GATE",
+    "ADMIN_ACCESS": "ACCEPTED",
+    "PARENT_ACCESS": "ACCEPTED",
+    "STUDENT_ACCESS": "ACCEPTED",
+    "CRM_REAL_DATA": "ACCEPTED",
     "production_url": "https://join.onetimeonetime.com",
-    "w12_00_readback": {
-      "version_endpoint": {
-        "status": 200,
-        "body": {
-          "version": "ops11-1197673",
-          "commit_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-          "target_app": "one-time"
-        }
-      },
-      "ready_status": 200,
-      "login_status": 200,
-      "root_status": 200,
-      "signup_status": 200
-    },
-    "repo_evidence": [
-      "ops/codex-runs/OPS-11/FINAL-REPORT.md",
-      "ops/codex-runs/OPS-11/STATE.json",
-      "ops/codex-runs/OPS-11/ARTIFACT-PROMOTION.md",
-      "ops/codex-runs/OPS-11/RESUME.md"
-    ]
+    "staging_url": "https://ot99-web-staging.up.railway.app",
+    "version": "rabbi-day-one-crm-ed77a04",
+    "runtime_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+    "target_app": "one-time",
+    "latest_migration": "2204_w12_100_real_source_crm_apply",
+    "release_tag": "pending-post-pr92-transactional-email-release-tag"
   },
-  "release_pr": {
-    "number": 61,
-    "url": "https://github.com/webcraft-media/onetimev2/pull/61",
-    "title": "OPS-10 full staged production launch candidate",
+  "canonical_draft_pr": {
+    "number": 91,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/91",
     "state": "OPEN",
     "is_draft": true,
-    "base_ref": "main",
-    "base_ref_oid": "610b585f3d221addd4e7b824c92a5cc256cffcf9",
-    "head_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
-    "head_ref_oid": "c7d46066517d7a458d189f2c782cc06200f7861c",
-    "updated_at": "2026-07-17T09:04:08Z",
-    "checks": [
-      {
-        "name": "Node 24 verify",
-        "workflow": "CI",
-        "status": "COMPLETED",
-        "conclusion": "SUCCESS",
-        "completed_at": "2026-07-17T09:14:32Z"
-      },
-      {
-        "name": "OPS-06 deterministic checks",
-        "workflow": "OPS-06 Reliability Observability",
-        "status": "COMPLETED",
-        "conclusion": "SUCCESS",
-        "completed_at": "2026-07-17T09:05:27Z"
-      },
-      {
-        "name": "PostgreSQL 18 assurance and restore clone",
-        "workflow": "OPS-11 PostgreSQL 18 Assurance",
-        "status": "COMPLETED",
-        "conclusion": "SUCCESS",
-        "completed_at": "2026-07-17T09:05:33Z"
-      },
-      {
-        "name": "PostgreSQL 16 assurance harness",
-        "workflow": "OT-37 PostgreSQL Assurance",
-        "status": "COMPLETED",
-        "conclusion": "SUCCESS",
-        "completed_at": "2026-07-17T09:05:15Z"
-      },
-      {
-        "name": "Static release readiness gates",
-        "workflow": "OT-75 Release Readiness",
-        "status": "COMPLETED",
-        "conclusion": "SUCCESS",
-        "completed_at": "2026-07-17T09:04:34Z"
-      },
-      {
-        "name": "PostgreSQL 16 learner-seat proof",
-        "workflow": "OT-83 PostgreSQL Concurrency",
-        "status": "COMPLETED",
-        "conclusion": "SUCCESS",
-        "completed_at": "2026-07-17T09:04:53Z"
-      }
-    ]
+    "base_ref": "integration/w12-final-convergence-20260717T123715Z",
+    "head_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "head_ref_oid": "e3d3736546f48b3834d6698838befe20884005f1",
+    "checks_at_inspection": "green"
   },
-  "post_runtime_commits_in_selected_base": [
+  "finish_now_pr": {
+    "number": 92,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+    "state": "OPEN",
+    "is_draft": true,
+    "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "head_ref": "codex/one-time-finish-now-20260719",
+    "head_ref_oid": "f46375cdbfea26700e6d6a181745b2c35705412b",
+    "checks_at_inspection": "GitHub Actions on pushed head f46375cdbfea26700e6d6a181745b2c35705412b failed before runner execution. Checks API annotations report a GitHub account billing/spending-limit blocker, not an observed application-code failure. Fix Billing & plans or the spending limit, then rerun all failed PR #92 checks.",
+    "note": "CRM-first pivot delivered the real production CRM import and one production signup proof. Deployed runtime remains ed77a04dd24391d5b79be7f839d7f5752a57e0f9; production schema now has 2204_w12_100_real_source_crm_apply. Transactional email production final/admin send, WhatsApp provider canary, campaign seed approval, and full authenticated Admin CRM browser smoke remain separate gated actions."
+  },
+  "live_readback": {
+    "production": {
+      "version": "rabbi-day-one-crm-ed77a04",
+      "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+      "health": "ok",
+      "ready": "ok",
+      "optional_runtime_flags": {
+        "email_transport": "ok",
+        "whatsapp_transport": "ok",
+        "support_bridge": "disabled",
+        "note": "Generic campaign/provider modes remain sink; only One Time lifecycle/auth transactional email is enabled."
+      },
+      "latest_migration": "2204_w12_100_real_source_crm_apply"
+    },
+    "staging": {
+      "version": "rabbi-day-one-crm-ed77a04",
+      "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+      "health": "ok",
+      "ready": "ok"
+    }
+  },
+  "accepted_evidence": [
+    "ops/codex-runs/W13-104/FINAL-REPORT.md",
+    "ops/codex-runs/W13-104/STATE.json",
+    "ops/codex-runs/W13-104/DEPLOYMENT.json",
+    "ops/codex-runs/W13-104/evidence/live-smoke.json",
+    "ops/codex-runs/W13-103/FINAL-REPORT.md",
+    "ops/codex-runs/W13-103/PORTAL-ACCEPTANCE.json",
+    "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
+    "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/STATE.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/FINAL-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.md",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.md",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json",
+    "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/GITHUB-ACTIONS-BILLING-BLOCKER.md",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json",
+    "ops/codex-runs/RABBI-DAY-ONE-CRM/RELEASE-UNBLOCK-PACKET.md"
+  ],
+  "blockers": [
     {
-      "sha": "16221ba",
-      "summary": "chore: close OPS-11 production gate evidence",
-      "classification": "non_product_release_evidence"
+      "id": "BLOCK-GITHUB-ACTIONS-BILLING",
+      "lane": "ci",
+      "reason": "PR #92 GitHub Actions failed before runner execution because GitHub reported account billing or spending-limit gating. No job steps ran, so no code/test failure logs exist. Fix GitHub Billing & plans or increase the spending limit, then rerun all failed checks."
     },
     {
-      "sha": "c7d4606",
-      "summary": "test: pin OT111 canary queue time",
-      "classification": "test_only"
+      "id": "BLOCK-EMAIL-INPUTS",
+      "lane": "transactional_email",
+      "reason": "Transactional email is configured and staging-delivered; production final admin/access send was not rerun in the CRM import slice and requires a deliberate fresh send/browser-smoke decision. Existing W13-103 admin acceptance remains protected evidence."
+    },
+    {
+      "id": "BLOCK-CAMPAIGN-SEED-APPROVAL",
+      "lane": "campaign_seed",
+      "reason": "Campaign seed approval packet is ready with exact proposed copy and required approval statement; no seed or broad campaign was sent. Awaiting operator approval statement and ONE-TIME-CAMPAIGN-SEED-OK before one protected seed send."
+    },
+    {
+      "id": "BLOCK-CANARY-AUTH",
+      "lane": "providers",
+      "reason": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN."
+    },
+    {
+      "id": "BLOCK-OPERATIONS-PROBE",
+      "lane": "diagnostics",
+      "reason": "Missing OPERATIONS_PROBE_TOKEN."
+    },
+    {
+      "id": "BLOCK-CURRENT-LAUNCH-SPINE",
+      "lane": "launch_spine",
+      "reason": "Launch-spine consume readiness preflight records current production read-only route proof and W13-103 role baseline present, but consuming proof remains blocked by: BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_CLEANUP_INSTRUCTIONS_NOT_PROVIDED, BLOCKED_NO_CONSUMING_PROOF_PATH_READY, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PARENT_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_PRIVATE_CONSUME_PLAN_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_LEAD_INPUT_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_SUBMIT_NOT_AUTHORIZED, BLOCKED_ROLE_JOURNEYS_NOT_AUTHORIZED, BLOCKED_STUDENT_JOURNEY_INPUT_NOT_PROVIDED."
     }
   ],
   "safety_contract": {
-    "deployments_authorized_by_w12_00": false,
     "secrets_allowed_in_artifacts": false,
-    "provider_calls_authorized": false,
-    "database_mutations_authorized": false,
-    "user_mutations_authorized": false,
-    "broad_sends_authorized": false
+    "broad_sends_authorized": false,
+    "live_stripe_charges_authorized": false,
+    "dns_changes_authorized": false,
+    "production_import_apply_authorized_without_manifest": false,
+    "provider_mutations_authorized_without_manifest": false,
+    "dirty_bna_checkout_edits_authorized": false
   },
-  "w12_99_candidate": {
-    "branch": "integration/w12-final-convergence-20260717T123715Z",
-    "head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "status": "pushed_draft_pr_open",
-    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
-    "pr": {
-      "number": 73,
-      "url": "https://github.com/webcraft-media/onetimev2/pull/73",
-      "state": "OPEN",
-      "is_draft": true,
-      "base_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
-      "base_ref_oid": "c7d46066517d7a458d189f2c782cc06200f7861c",
-      "head_ref": "integration/w12-final-convergence-20260717T123715Z",
-      "head_ref_oid": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-      "mergeable": "MERGEABLE",
-      "merge_state_status": "CLEAN",
-      "checks": [
-        {
-          "name": "Node 24 verify",
-          "workflow": "CI",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:23:01Z"
-        },
-        {
-          "name": "OPS-06 deterministic checks",
-          "workflow": "OPS-06 Reliability Observability",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:13:51Z"
-        },
-        {
-          "name": "PostgreSQL 18 assurance and restore clone",
-          "workflow": "OPS-11 PostgreSQL 18 Assurance",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:13:35Z"
-        },
-        {
-          "name": "PostgreSQL 16 assurance harness",
-          "workflow": "OT-37 PostgreSQL Assurance",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:13:36Z"
-        },
-        {
-          "name": "PostgreSQL 16 learner-seat proof",
-          "workflow": "OT-83 PostgreSQL Concurrency",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:13:08Z"
-        }
-      ],
-      "check_summary": {
-        "total": 5,
-        "success": 5,
-        "failure": 0,
-        "pending": 0
-      }
-    },
-    "included_lanes": [
-      "W12-00",
-      "W12-01",
-      "W12-02",
-      "W12-03",
-      "W12-04",
-      "W12-05",
-      "W12-06",
-      "W12-07",
-      "W12-08"
+  "github_actions": {
+    "crm_production_evidence_head": "25c271576be675c36261465e51d4f176a923b007",
+    "latest_inspected_pr_head": "f46375cdbfea26700e6d6a181745b2c35705412b",
+    "status": "blocked_by_github_account_billing_or_spending_limit",
+    "evidence_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/github-actions-billing-blocker.json",
+    "checks": [
+      "Node 24 verify",
+      "OPS-06 deterministic checks",
+      "PostgreSQL 18 assurance and restore clone",
+      "PostgreSQL 16 assurance harness",
+      "PostgreSQL 16 learner-seat proof"
     ],
-    "excluded_lanes": ["W12-09", "BNA P1/P2/P3"],
-    "record": "ops/director/W12-99-CANDIDATE.json",
-    "staging_deploy_performed": false,
-    "real_import_performed": false,
-    "provider_acceptance_performed": false,
-    "production_runtime_is_distinct_from_candidate": true,
-    "production_runtime_sha": "1197673fa409bfc4c649c2683f782e86775caa5e",
-    "launch_readiness_owner": "W12-100"
+    "summary": "All five PR #92 GitHub Actions checks failed before runner execution on inspected head f46375cdbfea26700e6d6a181745b2c35705412b. The Checks API annotations report account billing or spending-limit gating, so the next action is GitHub Billing & plans/spending-limit repair followed by check rerun; local validation and production smokes previously passed."
   },
-  "primary_evidence_paths": [
-    "ops/codex-runs/OPS-10/CAPABILITY-MATRIX.json",
-    "ops/codex-runs/OPS-10/FINAL-REPORT.md",
-    "ops/codex-runs/OPS-10/STATE.json",
-    "ops/codex-runs/OPS-11/FINAL-REPORT.md",
-    "ops/codex-runs/OPS-11/STATE.json",
-    "ops/codex-runs/OPS-11/MUTATION-LEDGER.json",
-    "apps/web/src/server/app.ts",
-    "packages/db/migrations",
-    "tests",
-    "ops/codex-runs/W12-99/STATE.json",
-    "ops/codex-runs/W12-99/FINAL-REPORT.md",
-    "ops/codex-runs/W12-99/CAPABILITY-MATRIX.json",
-    "ops/codex-runs/W12-99/IMPORT-PREVIEW.json",
-    "ops/codex-runs/W12-99/CANARY-REPORT.json",
-    "ops/codex-runs/OPS-13A/STATE.json",
-    "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
-    "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
-    "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
-    "ops/codex-runs/W12-100-00/STATE.json"
-  ],
-  "ops_13a_preflight": {
-    "status": "available_preflight_input_not_acceptance_proof",
-    "branch": "codex/ops13a-real-data-provider-preflight",
-    "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
-    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/72",
-    "pr": {
-      "number": 72,
-      "url": "https://github.com/webcraft-media/onetimev2/pull/72",
-      "state": "OPEN",
-      "is_draft": true,
-      "base_ref": "release/ops10-full-staged-production-launch-20260717T050800Z",
-      "base_ref_oid": "c7d46066517d7a458d189f2c782cc06200f7861c",
-      "head_ref": "codex/ops13a-real-data-provider-preflight",
-      "head_ref_oid": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
-      "mergeable": "MERGEABLE",
-      "merge_state_status": "CLEAN",
-      "checks": [
-        {
-          "name": "Node 24 verify",
-          "workflow": "CI",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:13:47Z"
-        },
-        {
-          "name": "OPS-06 deterministic checks",
-          "workflow": "OPS-06 Reliability Observability",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:04:52Z"
-        },
-        {
-          "name": "PostgreSQL 18 assurance and restore clone",
-          "workflow": "OPS-11 PostgreSQL 18 Assurance",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:04:35Z"
-        },
-        {
-          "name": "PostgreSQL 16 assurance harness",
-          "workflow": "OT-37 PostgreSQL Assurance",
-          "status": "COMPLETED",
-          "conclusion": "SUCCESS",
-          "completed_at": "2026-07-17T13:04:40Z"
-        }
-      ],
-      "check_summary": {
-        "total": 4,
-        "success": 4,
-        "failure": 0,
-        "pending": 0
-      },
-      "changed_files": [
-        "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
-        "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
-        "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
-        "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
-        "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
-        "ops/codex-runs/OPS-13A/RESUME.md",
-        "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
-        "ops/codex-runs/OPS-13A/STATE.json"
-      ],
-      "changed_file_count": 8,
-      "changed_file_set_verdict": "only_ops_codex_runs_ops_13a_artifacts"
-    },
-    "integrated_by_lane": "W12-100-00",
-    "artifacts": [
-      "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
-      "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
-      "ops/codex-runs/OPS-13A/OPS-13B-CODEX-PROMPT.md",
-      "ops/codex-runs/OPS-13A/ORIGINAL-PROMPT.md",
-      "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
-      "ops/codex-runs/OPS-13A/RESUME.md",
-      "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
-      "ops/codex-runs/OPS-13A/STATE.json"
-    ],
-    "evidence": [
-      "ops/codex-runs/OPS-13A/STATE.json",
-      "ops/codex-runs/OPS-13A/SOURCE-INVENTORY.json",
-      "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
-      "ops/codex-runs/OPS-13A/PROVIDER-READINESS.json",
-      "ops/codex-runs/OPS-13A/FINAL-REPORT.md"
-    ],
-    "guardrail_summary": {
-      "deployments": 0,
-      "imports": 0,
-      "production_private_data_reads": 0,
-      "production_data_writes": 0,
-      "sends": 0,
-      "provider_mutations": 0,
-      "meetings_created": 0,
-      "videos_uploaded": 0,
-      "payments_or_charges": 0
-    },
-    "caveats": [
-      "Sanitized source metadata counts are naive source-row counts, not deduplicated people counts.",
-      "OPS-13A did not run a dry-run batch, real import, or provider acceptance canary.",
-      "OPS-13B was not run in W12-100-00."
-    ]
+  "campaign_seed": {
+    "status": "ready_for_operator_approval",
+    "packet_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+    "markdown_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/CAMPAIGN-SEED-APPROVAL.md",
+    "snapshot_hash": "6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5",
+    "required_operator_approval_statement": "APPROVE_ONE_TIME_CAMPAIGN_SEED:6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5:1357:email:seed-only",
+    "required_operator_confirmation": "ONE-TIME-CAMPAIGN-SEED-OK",
+    "seed_send_performed": false,
+    "broad_campaign_sends": 0
   },
-  "w12_100_launch_readiness": {
-    "owning_train": "W12-100",
-    "current_lane": "W12-100-00",
-    "current_branch": "codex/w12-100-00-director-and-ops13a-convergence",
-    "staging_and_launch_proof_owner": "W12-100",
-    "no_w12_staging_deploy_yet": true,
-    "no_real_import_yet": true,
-    "no_provider_acceptance_yet": true,
-    "bna_convergence_train": "separate_not_integrated"
-  },
-  "w12_100_convergence": {
-    "schema_version": "onetime.director.w12_100_convergence_ref.v1",
-    "generated_at": "2026-07-17T17:17:56.257Z",
-    "branch": "integration/w12-100-launch-readiness-convergence-20260717",
-    "base_w12_99_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "integrated_head_before_closeout": "4112930380fc9ae5bcdac9f316246e285cc93b35",
-    "accepted_lanes": [
-      "W12-100-00",
-      "W12-100-01",
-      "W12-100-02",
-      "W12-100-03",
-      "W12-100-04",
-      "W12-100-06",
-      "W12-100-07",
-      "W12-100-08",
-      "W12-100-09",
-      "W12-100-10",
-      "W12-100-11",
-      "W12-100-12",
-      "W12-100-13-assessment-only"
-    ],
-    "skipped_lanes": [
-      {
-        "lane": "W12-100-05",
-        "reason": "Skipped because lane STATE/FINAL-REPORT classify it blocked_environment_or_rehearsal."
-      },
-      {
-        "lane": "PR-71 / W12-09 gamification product code",
-        "reason": "Skipped because W12-100-13 recommends deferral and the operator did not explicitly approve PR #71 integration."
-      },
-      {
-        "lane": "PR-72 direct merge",
-        "reason": "Not merged directly; the exact eight OPS-13A files entered through W12-100-00 as requested."
-      }
-    ],
-    "draft_pr_target_base_branch": "integration/w12-final-convergence-20260717T123715Z",
-    "deploy_performed": false,
-    "marked_ready": false,
-    "artifacts_dir": "ops/codex-runs/W12-100-CONVERGENCE",
-    "validation_summary": {
-      "local_non_database_gates": "passed",
-      "db_verify": "blocked_missing_database_url",
-      "postgres_16": "blocked_missing_local_postgres_docker_psql",
-      "postgres_18": "blocked_missing_local_postgres_docker_psql"
-    }
+  "release_unblock_packet": {
+    "status": "blocked_waiting_for_external_or_operator_inputs",
+    "packet_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/release-unblock-packet.json",
+    "markdown_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/RELEASE-UNBLOCK-PACKET.md",
+    "side_effects_performed": false
   }
 }

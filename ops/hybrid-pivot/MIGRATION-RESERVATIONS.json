@@ -1,0 +1,41 @@
+{
+  "schema_version": "onetime.hybrid_pivot.migration_reservations.v1",
+  "generated_at": "2026-07-20T11:17:44.8984447+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "pull_request": 92,
+  "latest_existing_migration": "2204_w12_100_real_source_crm_apply",
+  "policy": {
+    "created_in_this_checkpoint": false,
+    "do_not_create_reserved_migrations_in_prompt_01": true,
+    "reserved_numbers_are_binding_for_parallel_windows": true,
+    "final_order_verification_owner": "CONVERGENCE_ONLY"
+  },
+  "reservations": [
+    {
+      "number": 2205,
+      "file": "2205_highlevel_business_projection.sql",
+      "owner_lane": "BUSINESS_HIGHLEVEL",
+      "purpose": "HighLevel business projection.",
+      "status": "reserved_not_created"
+    },
+    {
+      "number": 2206,
+      "file": "2206_student_non_email_credentials.sql",
+      "owner_lane": "LEARNING_PRODUCT",
+      "purpose": "Student username/password credentials without email.",
+      "status": "reserved_not_created"
+    },
+    {
+      "number": 2207,
+      "file": "2207_classroom_board_and_lesson_projection.sql",
+      "owner_lane": "LEARNING_PRODUCT",
+      "purpose": "Classroom board and lesson projection.",
+      "status": "reserved_not_created"
+    }
+  ],
+  "constraints": [
+    "Migrations must be additive and forward-only.",
+    "No migration may delete imported production contacts, historical data, authentication data, portal data, or existing migration evidence.",
+    "Checksum/final order verification belongs to the convergence lane."
+  ]
+}

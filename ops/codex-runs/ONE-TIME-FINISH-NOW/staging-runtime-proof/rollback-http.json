@@ -1,0 +1,100 @@
+{
+  "generated_at": "2026-07-19T12:19:33.090Z",
+  "phase": "rollback_to_w13_104",
+  "expected_source_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+  "routes": {
+    "/version": {
+      "status": 200,
+      "body": {
+        "version": "w13-104-public-cls-688fc70",
+        "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+        "target_app": "one-time"
+      }
+    },
+    "/health": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "service": "onetime-web"
+      }
+    },
+    "/ready": {
+      "status": 200,
+      "body": {
+        "ok": true,
+        "service": "onetime-web",
+        "generated_at": "2026-07-19T12:19:34.149Z",
+        "dependencies": [
+          {
+            "name": "database",
+            "ok": true,
+            "essential": true,
+            "status": "ok",
+            "latency_ms": 68,
+            "blocker_code": null,
+            "detail": "query ok"
+          },
+          {
+            "name": "schema_migrations",
+            "ok": true,
+            "essential": true,
+            "status": "ok",
+            "latency_ms": 3,
+            "blocker_code": null,
+            "detail": "latest=2203_w13_100_student_gamification"
+          }
+        ],
+        "optional_dependencies": [
+          {
+            "name": "email_transport",
+            "ok": true,
+            "essential": false,
+            "status": "disabled",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "disabled by runtime flag"
+          },
+          {
+            "name": "whatsapp_transport",
+            "ok": true,
+            "essential": false,
+            "status": "disabled",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "disabled by runtime flag"
+          },
+          {
+            "name": "support_bridge",
+            "ok": true,
+            "essential": false,
+            "status": "disabled",
+            "latency_ms": null,
+            "blocker_code": null,
+            "detail": "disabled by runtime flag"
+          }
+        ],
+        "blockers": []
+      }
+    },
+    "/": {
+      "status": 200,
+      "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Give Your Son A Love For Learning Torah | One Time Mishnayos</title>\n  <meta name=\"description\" content=\"A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and steady progress.\">\n  <meta name=\"robots\" content=\"index, follow\">\n  <link rel=\"canonical\" href=\"https://ot99-web-staging.up."
+    },
+    "/signup": {
+      "status": 200,
+      "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Sign Up Now | One Time Mishnayos</title>\n  <meta name=\"description\" content=\"A live worldwide Mishnayos class with Rabbi Eli Scheller, built for boys to love learning Torah with clarity, excitement, and steady progress.\">\n  <meta name=\"robots\" content=\"index, follow\">\n  <link rel=\"canonical\" href=\"https://ot99-web-staging.up.railway.app/signup\">\n  <meta"
+    },
+    "/login": {
+      "status": 200,
+      "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Login | One Time Mishnayos</title>\n  <meta name=\"robots\" content=\"noindex, nofollow\">\n  <meta name=\"theme-color\" content=\"#050505\">\n  <link rel=\"stylesheet\" href=\"/assets/public.css\">\n</head>\n<body>\n  <main class=\"login-page\">\n    <section class=\"login-panel\">\n      <a class=\"brand-lockup login-brand\" href=\"/\" aria-label=\"One Time Mishnayos home\">\n     "
+    },
+    "/activate": {
+      "status": 200,
+      "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Activate account | One Time Mishnayos</title>\n  <meta name=\"robots\" content=\"noindex, nofollow\">\n  <meta name=\"referrer\" content=\"no-referrer\">\n  <meta name=\"theme-color\" content=\"#050505\">\n  <link rel=\"stylesheet\" href=\"/assets/public.css\">\n</head>\n<body>\n  <main class=\"login-page account-flow-page\">\n    <section class=\"login-panel account-flow-panel\" "
+    },
+    "/forgot-password": {
+      "status": 200,
+      "body": "<!doctype html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Forgot password | One Time Mishnayos</title>\n  <meta name=\"robots\" content=\"noindex, nofollow\">\n  <meta name=\"referrer\" content=\"no-referrer\">\n  <meta name=\"theme-color\" content=\"#050505\">\n  <link rel=\"stylesheet\" href=\"/assets/public.css\">\n</head>\n<body>\n  <main class=\"login-page account-flow-page\">\n    <section class=\"login-panel account-flow-panel\">\n"
+    }
+  }
+}

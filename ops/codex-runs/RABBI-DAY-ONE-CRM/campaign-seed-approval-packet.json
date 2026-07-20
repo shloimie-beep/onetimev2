@@ -1,0 +1,52 @@
+{
+  "schema_version": "onetime.rabbi_day_one_crm.campaign_seed_approval_packet.v1",
+  "generated_at": "2026-07-19T17:20:00.000Z",
+  "status": "ready_for_operator_approval",
+  "blocked_reasons": [],
+  "source_evidence": {
+    "crm_apply_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+    "crm_apply_sha256": "5ae2ad1e364f5e5c5e9b6c4fa524fd310405db559b50ea5867e2dd41db0cfe01",
+    "crm_reconcile_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json",
+    "crm_reconcile_sha256": "59eed6bc4f8a60706dd2be588cad8da21a33f02e59c1cdde6e5975b0ba88414c",
+    "production_signup_proof_path": "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json",
+    "production_signup_proof_sha256": "d5abd52ad945e0a3aa9777b3ccfb91d67867b30ae8b4fba6790f5cfe537f7d65",
+    "runtime_version": "rabbi-day-one-crm-ed77a04",
+    "runtime_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+    "latest_production_migration": "2204_w12_100_real_source_crm_apply"
+  },
+  "audience": {
+    "segment": "one_time_real_crm_email_campaign_eligible",
+    "channel": "email",
+    "eligible_count": 1357,
+    "seed_requested_count": 1,
+    "broad_requested_count": 0,
+    "whatsapp_eligible_count": 0,
+    "suppressed_count": 152,
+    "raw_recipient_list_included": false
+  },
+  "proposed_seed_copy": {
+    "template_revision": "rabbi-day-one-email-seed-v1",
+    "subject": "Join One Time Mishnayos with Rabbi Eli Scheller",
+    "preheader": "Live daily Mishnayos at 7:00 p.m. Israel time - free until Rosh Hashanah.",
+    "text": "Hello,\n\nOne Time Mishnayos with Rabbi Eli Scheller is open for signup.\n\nGive your son a love for learning Torah with a live daily Mishnayos class at 7:00 p.m. Israel time, live from Eretz Yisrael.\n\nJoin now - free until Rosh Hashanah.\n\nSign up: https://join.onetimeonetime.com/signup\n\n- One Time Mishnayos",
+    "cta_url": "https://join.onetimeonetime.com/signup",
+    "message_body_included_for_operator_approval": true
+  },
+  "approval": {
+    "seed_send_authorized": false,
+    "broad_campaign_authorized": false,
+    "required_operator_approval_statement": "APPROVE_ONE_TIME_CAMPAIGN_SEED:6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5:1357:email:seed-only",
+    "required_operator_confirmation": "ONE-TIME-CAMPAIGN-SEED-OK",
+    "exact_action_after_approval": "Send exactly one seed email to the protected operator-approved destination; do not send to the 1,357-person real audience until separate broad-campaign approval is recorded."
+  },
+  "safety": {
+    "production_side_effects": false,
+    "database_writes_performed": false,
+    "external_send_performed": false,
+    "provider_mutation_count": 0,
+    "private_destination_included": false,
+    "raw_values_included": false,
+    "broad_campaign_sends": 0
+  },
+  "snapshot_hash": "6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5"
+}

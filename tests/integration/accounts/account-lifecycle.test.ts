@@ -19,6 +19,7 @@ import {
   requestPasswordReset,
   restoreStudentIdentity,
   revokeStudentIdentitySessions,
+  runAuthEmailChallengeDeliveryOutboxBatch,
   runLifecycleDeliveryOutboxBatch,
   suspendStudentIdentity,
 } from '../../../packages/domain/src/index.ts';
@@ -248,6 +249,7 @@ describe('OT-71 account lifecycle', () => {
       APP_VERSION: 'test',
       COMMIT_SHA: 'test',
       OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_LIFECYCLE_EMAIL_MODE: 'canary',
       ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
       ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
       ONE_TIME_DELIVERY_TEST_CANARY_EMAIL: 'canary@example.test',
@@ -311,6 +313,194 @@ describe('OT-71 account lifecycle', () => {
 
     const deliveredOutbox = await lifecycleDeliveryRows();
     expect(deliveredOutbox[0]).toMatchObject({
+      state: 'provider_delivered',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
+  });
+
+  it('delivers transactional lifecycle email in production mode without the canary destination gate', async () => {
+    const transactionalConfig = loadConfig({
+      NODE_ENV: 'production',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      AUTH_CSRF_SECRET: 'test-auth-csrf-secret-for-transactional-lifecycle',
+      MFA_SECRET_ENCRYPTION_KEY: 'test-mfa-secret-key-for-transactional-lifecycle',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+      ONE_TIME_LIFECYCLE_EMAIL_MODE: 'transactional',
+      ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'test-lifecycle-delivery-key-for-transactional-mode',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
+      ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+      ONE_TIME_EMAIL_REPLY_TO: 'reply@example.test',
+      DELIVERY_PROVIDER_AUTHORIZATION_ID: 'auth_transactional_email_001',
+      DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
+      DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
+      RESEND_API_KEY: 'test_resend_key',
+      RESEND_WEBHOOK_SECRET: 'test-resend-webhook-secret',
+    });
+    const requests: Array<{ body: Record<string, unknown>; headers: Headers }> = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+        requests.push({
+          body: JSON.parse(String(init?.body ?? '{}')) as Record<string, unknown>,
+          headers: new Headers(init?.headers),
+        });
+        return new Response(JSON.stringify({ id: 'email_provider_message_002' }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      }),
+    );
+
+    await createOwnerAdminInvitation({
+      pool,
+      config: transactionalConfig,
+      actor: ownerActor(),
+      payload: {
+        idempotency_key: 'invite-admin-transactional-001',
+        email: 'admin@example.test',
+        display_name: 'Transactional Admin',
+        role: 'admin',
+      },
+      now: new Date('2026-07-15T10:00:00.000Z'),
+    });
+
+    const summary = await runLifecycleDeliveryOutboxBatch({
+      pool,
+      config: transactionalConfig,
+      now: new Date('2026-07-15T10:01:00.000Z'),
+      workerId: 'account-lifecycle-transactional-worker',
+      limit: 5,
+    });
+
+    expect(summary).toMatchObject({
+      claimed: 1,
+      provider_delivered: 1,
+      sink_delivered: 0,
+      external_send_performed: true,
+      raw_token_logged: false,
+    });
+    expect(requests).toHaveLength(1);
+    expect(requests[0]?.body).toMatchObject({
+      from: 'One Time <info@onetimeonetime.com>',
+      to: ['admin@example.test'],
+      reply_to: ['reply@example.test'],
+      subject: 'Activate your One Time account',
+    });
+    expect(String(requests[0]?.body.text)).toContain('/activate#token=');
+
+    const deliveredOutbox = await lifecycleDeliveryRows();
+    expect(deliveredOutbox[0]).toMatchObject({
+      state: 'provider_delivered',
+      nonce: null,
+      ciphertext: null,
+      auth_tag: null,
+    });
+  });
+
+  it('delivers transactional admin email challenges in production mode without the canary destination gate', async () => {
+    const transactionalConfig = loadConfig({
+      NODE_ENV: 'production',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      APP_VERSION: 'test',
+      COMMIT_SHA: 'test',
+      AUTH_CSRF_SECRET: 'test-auth-csrf-secret-for-transactional-auth-email',
+      MFA_SECRET_ENCRYPTION_KEY: 'test-mfa-secret-key-for-transactional-auth-email',
+      OUTBOX_TRANSPORT_MODE: 'sink',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+      ONE_TIME_LIFECYCLE_EMAIL_MODE: 'transactional',
+      ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'test-lifecycle-delivery-key-for-transactional-auth-email',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
+      ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+      ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+      DELIVERY_PROVIDER_AUTHORIZATION_ID: 'auth_transactional_email_002',
+      DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
+      DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
+      RESEND_API_KEY: 'test_resend_key',
+      RESEND_WEBHOOK_SECRET: 'test-resend-webhook-secret',
+    });
+    expect(transactionalConfig.deliveryTestCanaryEmail).toBeUndefined();
+    const requests: Array<{ body: Record<string, unknown>; headers: Headers }> = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (_url: string | URL | Request, init?: RequestInit) => {
+        requests.push({
+          body: JSON.parse(String(init?.body ?? '{}')) as Record<string, unknown>,
+          headers: new Headers(init?.headers),
+        });
+        return new Response(JSON.stringify({ id: 'email_provider_message_003' }), {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        });
+      }),
+    );
+
+    await createAccountUser({
+      pool,
+      config: transactionalConfig,
+      email: 'challenge.admin@example.test',
+      password: 'AdminPass!234',
+      displayName: 'Challenge Admin',
+      role: 'admin',
+      mfaCapable: true,
+    });
+
+    const login = await authenticateUser({
+      pool,
+      config: transactionalConfig,
+      email: 'challenge.admin@example.test',
+      password: 'AdminPass!234',
+      ip: '127.0.0.1',
+      userAgent: 'vitest',
+    });
+    expect(login).toMatchObject({
+      ok: false,
+      code: 'EMAIL_CHALLENGE_REQUIRED',
+      delivery_state: 'queued',
+    });
+
+    const queuedOutbox = await authEmailChallengeDeliveryRows();
+    expect(queuedOutbox).toHaveLength(1);
+    expect(queuedOutbox[0]).toMatchObject({ state: 'queued' });
+    expect(requiredRowString(queuedOutbox[0], 'nonce')).toBeTruthy();
+    expect(requiredRowString(queuedOutbox[0], 'ciphertext')).toBeTruthy();
+    expect(requiredRowString(queuedOutbox[0], 'auth_tag')).toBeTruthy();
+
+    const summary = await runAuthEmailChallengeDeliveryOutboxBatch({
+      pool,
+      config: transactionalConfig,
+      now: new Date(Date.now() + 60_000),
+      workerId: 'auth-email-transactional-worker',
+      limit: 5,
+    });
+
+    expect(summary).toMatchObject({
+      claimed: 1,
+      provider_delivered: 1,
+      sink_delivered: 0,
+      external_send_performed: true,
+      raw_token_logged: false,
+    });
+    expect(requests).toHaveLength(1);
+    expect(requests[0]?.headers.get('authorization')).toBe('Bearer test_resend_key');
+    expect(requests[0]?.body).toMatchObject({
+      from: 'One Time <info@onetimeonetime.com>',
+      to: ['challenge.admin@example.test'],
+      reply_to: ['info@onetimeonetime.com'],
+      subject: 'Your One Time login code',
+    });
+    expect(String(requests[0]?.body.text)).toContain('/login#email_challenge_token=');
+
+    const [delivery] = await authEmailChallengeDeliveryRows();
+    expect(delivery).toMatchObject({
       state: 'provider_delivered',
       nonce: null,
       ciphertext: null,
@@ -622,6 +812,18 @@ async function lifecycleDeliveryRows() {
             state, attempts, max_attempts, idempotency_key, provider_message_ref_hash,
             delivered_at, dead_lettered_at, cleared_at, metadata
        FROM onetime.account_lifecycle_delivery_outbox
+      ORDER BY created_at ASC, delivery_key ASC`,
+  );
+  return rows.rows as Array<Record<string, unknown>>;
+}
+
+async function authEmailChallengeDeliveryRows() {
+  const rows = await pool.query(
+    `SELECT delivery_key, challenge_key, purpose, transport_mode, destination_ref,
+            key_id, key_version, nonce, ciphertext, auth_tag, encrypted_payload_expires_at,
+            state, attempts, max_attempts, idempotency_key, provider_message_ref_hash,
+            delivered_at, dead_lettered_at, cleared_at, metadata
+       FROM onetime.auth_email_challenge_delivery_outbox
       ORDER BY created_at ASC, delivery_key ASC`,
   );
   return rows.rows as Array<Record<string, unknown>>;

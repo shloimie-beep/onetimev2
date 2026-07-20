@@ -1,0 +1,347 @@
+{
+  "schema_version": "onetime.codex_run_state.v1",
+  "run_id": "ONE-TIME-FINISH-NOW",
+  "generated_at": "2026-07-19T17:19:44.167Z",
+  "objective": "Finish, prove, and release the One Time product within the attached safety ceiling, or record exact release-gate blockers with durable resume evidence.",
+  "terminal_status": "BLOCKED_BY_CORE_SAFETY_GATE",
+  "topline": {
+    "CORE_RELEASE": "BLOCKED_BY_CORE_SAFETY_GATE",
+    "ADMIN_ACCESS": "ACCEPTED",
+    "PARENT_ACCESS": "ACCEPTED",
+    "STUDENT_ACCESS": "ACCEPTED",
+    "CRM_REAL_DATA": "ACCEPTED"
+  },
+  "repository": {
+    "full_name": "webcraft-media/onetimev2",
+    "remote": "https://github.com/webcraft-media/onetimev2.git",
+    "isolated_worktree": "C:/Users/User/.onetime-worktrees/ONE-TIME-FINISH-NOW",
+    "branch": "codex/one-time-finish-now-20260719",
+    "branch_base": "origin/release/w13-100-controlled-day-one-20260717T182046Z",
+    "worktree_head": "25c271576be675c36261465e51d4f176a923b007",
+    "worktree_head_subject": "chore: record crm production import delivery",
+    "canonical_draft_pr": {
+      "number": 91,
+      "url": "https://github.com/webcraft-media/onetimev2/pull/91",
+      "state": "OPEN",
+      "is_draft": true,
+      "base_ref": "integration/w12-final-convergence-20260717T123715Z",
+      "head_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+      "head_ref_oid": "e3d3736546f48b3834d6698838befe20884005f1",
+      "checks_at_inspection": "green"
+    },
+    "finish_now_pr": {
+      "number": 92,
+      "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+      "state": "OPEN",
+      "is_draft": true,
+      "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
+      "head_ref": "codex/one-time-finish-now-20260719",
+      "head_ref_oid": "25c271576be675c36261465e51d4f176a923b007",
+      "checks_at_inspection": "GitHub Actions on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007 completed as failure for all five jobs, with job logs unavailable/log not found for each job id through the gh-fix-ci inspector; local validation and production smokes passed. Use PR #92 for the current branch head after later handoff/status commits.",
+      "role": "Release-gate remediation and durable ONE-TIME-FINISH-NOW evidence branch."
+    },
+    "worktree_head_note": "This records the CRM production evidence commit; use git rev-parse HEAD or PR #92 for the latest branch head after follow-up handoff/status commits."
+  },
+  "raw_prompt": {
+    "source_path": "C:/Users/User/.codex/attachments/bac984fb-2e71-49d4-a897-1066788fd6c3/pasted-text.txt",
+    "preserved_copy": "ops/codex-runs/ONE-TIME-FINISH-NOW/ORIGINAL-PROMPT.md",
+    "sha256": "D1A0BA582FF519F6146D969EC2B57A83B3C16839AA8836A5884E5E54099E8754"
+  },
+  "source_material": [
+    {
+      "path": "C:/Users/User/OneTimeOneTime-w13-100-final-launch/ops/audits/2026-07-19-production-readiness/ONE-TIME-PRODUCTION-READINESS-GAME-PLAN.md",
+      "sha256": "36E3CEEC12343A036E826819E46141F8E0805C5EB435619E4A30A799789E0B86",
+      "used_for": "Binding high-level release verdict and production-readiness gap list."
+    },
+    {
+      "path": "ops/codex-runs/W13-104/FINAL-REPORT.md",
+      "used_for": "Latest deployed runtime, validation, deployment, and known caveats."
+    },
+    {
+      "path": "ops/codex-runs/W13-104/STATE.json",
+      "used_for": "Latest release-state blockers and safety ledger."
+    },
+    {
+      "path": "ops/codex-runs/W13-103/FINAL-REPORT.md",
+      "used_for": "Protected role-access acceptance baseline for admin, parent, and student identities."
+    },
+    {
+      "path": "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",
+      "used_for": "CRM real-data preflight source inventory and counts-only preview state."
+    },
+    {
+      "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json",
+      "used_for": "Current CRM-first pivot state: corrected CRM counts, guarded production apply writer, and sanitized transactional email preflight."
+    },
+    {
+      "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/MILESTONE.md",
+      "used_for": "Compact CRM-first milestone and narrowed blockers."
+    },
+    {
+      "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json",
+      "used_for": "Sanitized protected email inputs preflight; fingerprints only, no raw values."
+    },
+    {
+      "path": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json",
+      "used_for": "Sanitized CRM production apply readiness preflight; exact blocker list without DB connection or raw values."
+    },
+    {
+      "path": "scripts/w12-100/data/crm-apply-readiness-preflight.ts",
+      "used_for": "Safe CRM apply readiness preflight implementation."
+    },
+    {
+      "path": "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json",
+      "used_for": "Sanitized launch-spine consume readiness preflight; exact protected-input blocker list without consuming setup/reset links or submitting signup."
+    },
+    {
+      "path": "scripts/w12-100/launch/launch-spine-consume-readiness-preflight.ts",
+      "used_for": "Safe launch-spine consume readiness preflight implementation."
+    },
+    {
+      "path": "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json",
+      "used_for": "Sanitized provider canary readiness preflight; exact non-email provider blocker list without provider calls or secret values."
+    },
+    {
+      "path": "scripts/w12-100/providers/provider-canary-readiness-preflight.ts",
+      "used_for": "Safe provider canary readiness preflight implementation."
+    }
+  ],
+  "live_readback": {
+    "production": {
+      "url": "https://join.onetimeonetime.com",
+      "version": "rabbi-day-one-crm-ed77a04",
+      "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+      "target_app": "one-time",
+      "health": "ok",
+      "ready": "ok",
+      "latest_migration": "2204_w12_100_real_source_crm_apply",
+      "optional_runtime_flags": {
+        "email_transport": "ok",
+        "whatsapp_transport": "ok",
+        "support_bridge": "disabled",
+        "note": "Generic campaign/provider modes remain sink; only One Time lifecycle/auth transactional email is enabled."
+      },
+      "railway": {
+        "project": "one-time-production",
+        "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+        "environment": "production",
+        "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+        "web_service": "one-time-web",
+        "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+        "web_deployment_id": "a3a9328c-3fb5-41c6-b8d4-cf402f400ca7",
+        "web_deployment_status": "SUCCESS",
+        "web_image_digest": "sha256:074d98ee85b47b6c4d9e7da12d709858452962f0e0094328b47581d60b3520aa",
+        "worker_service": "one-time-delivery-cron",
+        "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+        "worker_deployment_id": "37ce9edf-d7aa-40fc-a013-87dde0f29e72",
+        "worker_deployment_status": "SUCCESS",
+        "worker_image_digest": "sha256:69e95b261899044411e252327e89e570b2d71ab60578eb0f7ef8890f28a1fc1c",
+        "database_service": "Postgres-j9Pi",
+        "database_service_id": "db590e4a-7dc5-40cb-a243-5206ce21b746"
+      }
+    },
+    "staging": {
+      "url": "https://ot99-web-staging.up.railway.app",
+      "version": "rabbi-day-one-crm-ed77a04",
+      "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+      "target_app": "one-time",
+      "health": "ok",
+      "ready": "ok",
+      "latest_migration": "2203_w13_100_student_gamification",
+      "railway": {
+        "project": "one-time-ot99-staging-96b42905",
+        "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+        "environment": "staging",
+        "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+        "web_service": "ot99-web",
+        "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+        "web_deployment_id": "0bf927dd-bab7-407b-afd2-35983d8c7351",
+        "web_deployment_status": "SUCCESS",
+        "web_image_digest": "sha256:0f70e2002127851826d74a51ec8a3671105b955f55b0667e0a6907c63d095ae6",
+        "worker_service": "ot99-worker",
+        "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+        "worker_deployment_id": "385e3b5b-41f4-417d-996b-09e3b1a1f8e3",
+        "worker_deployment_status": "SUCCESS",
+        "worker_image_digest": "sha256:9c97c969816bc928e52bdec5bce39fdb5d8734e524e7d208568bf1da2c878ffe",
+        "database_service": "Postgres",
+        "database_service_id": "e6671cb7-178a-4821-b977-7b6e24c0c052"
+      }
+    }
+  },
+  "accepted_evidence": {
+    "core_runtime": [
+      "Production and staging /version read back rabbi-day-one-crm-ed77a04 commit ed77a04dd24391d5b79be7f839d7f5752a57e0f9.",
+      "Production and staging /health and /ready returned ok after protected Railway variable configuration and deployment.",
+      "Production /ready reported latest migration 2204_w12_100_real_source_crm_apply and no blockers after the CRM import migration."
+    ],
+    "role_access": [
+      "W13-103 production protected browser acceptance passed for administrator, parent, and student.",
+      "W13-103 protected handoff exists outside git; public evidence records no setup tokens, passwords, private email addresses, or links.",
+      "W13-104 did not rerun consuming production reset/activation links to avoid invalidating the protected handoff."
+    ],
+    "backup_restore": [
+      "W13-104 records fresh PG18 backup/restore proof before production deployment.",
+      "RABBI-DAY-ONE-CRM records fresh protected PG18 backup/restore proof before production CRM apply via Railway deployment 4e58755e-1991-4ce5-b05f-0a5e8b4f25e7."
+    ],
+    "crm_real_data": [
+      "OPS-13A provides sanitized source inventory and counts-only preview input.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-IMPORT-APPROVAL-RAW.md preserves the operator chat approval exactly.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT.json passed counts-only real-source preflight with report SHA-256 0bf8ad1c72f2855a22dc42899873b88cceb8a29187db4be86610403ac7a3e22c.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/CRM-REAL-DATA-PREFLIGHT-REPORT.md records sanitized counts, safety assertions, and remaining production-apply blockers.",
+      "A protected private checkpoint manifest exists with dry_run_authorized=true and production_apply_authorized=false; manifest content is not committed or printed.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/STATE.json records the corrected CRM-first dry-run, guarded apply writer, and email preflight state.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-corrected-dry-run.json passed corrected counts-only dry-run with SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8: 2,505 rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, and 848 manual-review rows.",
+      "Guarded real-source CRM apply writer is implemented and accepted with synthetic integration evidence.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-apply-readiness-preflight.json records production CRM apply readiness as ready with backup proof, created-by user key, exact operator authorization, idempotency, manual-review handling, and production confirmation present.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json records production apply status applied: 1,555 contacts inserted, 4 existing contacts skipped, 2,505 import rows recorded, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, and zero sends queued.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply-replay.json records idempotency replay status replayed with database_writes_performed=false.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-reconcile.json records production DB reconciliation for the applied batch.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json records one protected operator-owned production signup with idempotent replay, one contact, one signup, two sink outbox intents, and zero external sends."
+    ],
+    "runtime_deployment_proof_code": [
+      "PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93 adds non-secret Railway deployment proof fields to /version.",
+      "The launch toolkit validates /version.deployment when present and falls back with a warning for older deployed code.",
+      "The code was deployed to staging, rollback to W13-104 passed, and roll-forward to PR #92 passed with /version.deployment matching the serving Railway web deployment."
+    ],
+    "rollback_rollforward": [
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/STAGING-RUNTIME-PROOF-REPORT.md",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/staging-runtime-proof/SUMMARY.json"
+    ],
+    "launch_spine_readonly": [
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/PRODUCTION-LAUNCH-SPINE-READONLY-REPORT.md records current production read-only route proof and safety boundaries.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/route-readback.json passed 16 of 16 GET-only route checks with JSON SHA-256 120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/production-launch-spine-readonly/synthetic-probes.json passed public/login/readiness/private-denial probes and blocked protected diagnostics due to missing OPERATIONS_PROBE_TOKEN; JSON SHA-256 7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a.",
+      "W13-103 sanitized role acceptance remains the accepted non-consuming administrator/parent/student baseline.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json records launch-spine consuming proof readiness as blocked with read-only route proof and role baseline present, no form submits, no setup/reset links consumed, no production writes, and exact missing protected inputs."
+    ],
+    "transactional_email": [
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/email-inputs-preflight.json verifies protected Resend key, webhook secret, approved domain, approved sender, approved reply-to, protected operator canary destination, authorization id, and private Railway manifest are present without printing raw values.",
+      "Commit ed77a04dd24391d5b79be7f839d7f5752a57e0f9 allows transactional owner/admin auth email challenge in production mode while generic campaign/provider sends remain off.",
+      "Staging Railway web 0bf927dd-bab7-407b-afd2-35983d8c7351 and worker 385e3b5b-41f4-417d-996b-09e3b1a1f8e3 deployed with protected variables and /version, /health, /ready smokes ok.",
+      "One controlled staging owner/admin lifecycle email was provider_delivered at 2026-07-19T15:32:00.176Z, with Resend API readback last_event=delivered and sanitized destination/provider refs only.",
+      "Production Railway web a3a9328c-3fb5-41c6-b8d4-cf402f400ca7 and worker 37ce9edf-d7aa-40fc-a013-87dde0f29e72 deployed with protected variables and /version, /health, /ready smokes ok.",
+      "Production controlled transactional send and final admin/access browser smoke were not rerun in the CRM import slice; prior W13-103 admin acceptance remains protected evidence and no setup/reset link was consumed here.",
+      "ops/codex-runs/RABBI-DAY-ONE-CRM/transactional-email-release.json"
+    ],
+    "launch_spine_consume_readiness": [
+      "Current production read-only route proof is available with route-readback SHA-256 120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9 and synthetic-probes SHA-256 7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/launch-spine-consume-readiness-preflight.json generated sanitized readiness status blocked without printing or consuming protected setup/reset links, signup data, secrets, or private journey inputs.",
+      "Required exact operator authorization statement: APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9:7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a:production",
+      "Required production confirmation: ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK"
+    ],
+    "provider_canary_readiness": [
+      "ops/codex-runs/W13-104/PROVIDER-CANARIES.json remains the source provider canary report; SHA-256 072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac.",
+      "ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json generated sanitized readiness status blocked with all eight non-email provider lanes present, no provider calls, no sends, no provider writes, no live charges, no production DB connection, and no raw values.",
+      "Required exact operator authorization statement: APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production",
+      "Required provider canary confirmation: ONE-TIME-PROVIDER-CANARIES-OK"
+    ]
+  },
+  "core_safety_gate_blockers": [
+    {
+      "id": "BLOCK-EMAIL-INPUTS",
+      "lane": "transactional_email",
+      "reason": "Transactional email is configured and staging-delivered; production final admin/access send was not rerun in the CRM import slice and requires a deliberate fresh send/browser-smoke decision. Existing W13-103 admin acceptance remains protected evidence.",
+      "scope": "Blocks fresh production final admin/access send only."
+    },
+    {
+      "id": "BLOCK-CAMPAIGN-SEED-APPROVAL",
+      "lane": "campaign_seed",
+      "reason": "Campaign seed approval packet is ready with exact proposed copy and required approval statement; no seed or broad campaign was sent. Awaiting operator approval statement and ONE-TIME-CAMPAIGN-SEED-OK before one protected seed send.",
+      "scope": "Blocks seed and broad campaign sends only; exact seed approval packet is ready."
+    },
+    {
+      "id": "BLOCK-CANARY-AUTH",
+      "lane": "provider_canaries",
+      "reason": "Provider canary readiness preflight records W13-104 provider evidence for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer, but remains blocked by: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN.",
+      "scope": "Blocks non-email provider canaries only; transactional email remains under the separate email-inputs/canary gate."
+    },
+    {
+      "id": "BLOCK-OPERATIONS-PROBE",
+      "lane": "diagnostics",
+      "reason": "Missing OPERATIONS_PROBE_TOKEN for protected production diagnostics smoke.",
+      "scope": "Public /health, /ready, and /version are ok; protected internal diagnostics remain unaccepted."
+    },
+    {
+      "id": "BLOCK-CURRENT-LAUNCH-SPINE",
+      "lane": "launch_spine",
+      "reason": "Launch-spine consume readiness preflight records current production read-only route proof and W13-103 role baseline present, but consuming proof remains blocked by: BLOCKED_ADMIN_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_CLEANUP_INSTRUCTIONS_NOT_PROVIDED, BLOCKED_NO_CONSUMING_PROOF_PATH_READY, BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PARENT_JOURNEY_INPUT_NOT_PROVIDED, BLOCKED_PRIVATE_CONSUME_PLAN_NOT_PROVIDED, BLOCKED_PRODUCTION_CONFIRMATION_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_LEAD_INPUT_NOT_PROVIDED, BLOCKED_PRODUCTION_SIGNUP_SUBMIT_NOT_AUTHORIZED, BLOCKED_ROLE_JOURNEYS_NOT_AUTHORIZED, BLOCKED_STUDENT_JOURNEY_INPUT_NOT_PROVIDED.",
+      "scope": "Blocks full launch-spine acceptance only; current read-only production route proof and consume readiness blocker evidence are recorded."
+    }
+  ],
+  "safety_ledger": {
+    "this_session": {
+      "production_deployments": 3,
+      "staging_deployments": 12,
+      "production_database_writes": 0,
+      "crm_import_applies": 0,
+      "emails_sent": 1,
+      "whatsapp_or_telegram_sends": 0,
+      "stripe_charges": 0,
+      "provider_mutations": 0,
+      "dns_changes": 0,
+      "secrets_printed_or_committed": false,
+      "bna_product_checkout_modified": false
+    },
+    "prior_w13_104": {
+      "production_deployments": 2,
+      "staging_deployments": 2,
+      "external_sends_or_provider_mutations": 0,
+      "production_database_writes_for_role_or_import": 0
+    }
+  },
+  "validation": {
+    "json_parse": "passed for run, director, capability, CRM preflight, synthetic probe, launch-spine route-readback, launch-spine consume-readiness, and provider canary readiness JSON files after provider canary readiness preflight",
+    "director_truth": "passed after transactional email deployment evidence refresh",
+    "director_truth_live": "passed against production and staging /version after campaign seed approval packet handoff refresh",
+    "staging_rollback_rehearsal": "accepted for PR #92 staging candidate; rollback to W13-104 and roll-forward to PR #92 both passed",
+    "runtime_deployment_proof": "accepted in staging at PR #92 head ee9929008fc0068b3dcf9b86d11e7c21d1331c93; final /version.deployment matched Railway web deployment c464ea23-649b-4c8d-b4af-0d10c5ce3022",
+    "secret_scan": "passed across 1729 repo text files after campaign seed approval packet generator",
+    "node_check": "passed for scripts/check-director-truth.mjs",
+    "eslint": "targeted eslint passed for touched runtime proof files",
+    "unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts tests/unit/w12-100-data/real-source-preflight.test.ts passed: 2 files, 6 tests",
+    "integration": "npx vitest run --config vitest.integration.config.ts tests/integration/w12-100-data/real-source-crm-apply.test.ts tests/integration/lead-capture.test.ts passed: 2 files, 8 tests",
+    "build": "npm run build passed",
+    "github_pr_92": "GitHub Actions on CRM production evidence head 25c271576be675c36261465e51d4f176a923b007 completed as failure for all five jobs, with job logs unavailable/log not found for each job id through the gh-fix-ci inspector; local validation and production smokes passed.",
+    "diff_check": "passed after campaign seed approval packet generator with Windows line-ending warnings only",
+    "crm_real_data_preflight": "corrected CRM-first counts-only dry-run passed: status done, 2,505 total rows, 1,596 unique identities, 1,559 CRM-importable contacts, 1,357 email-campaign-eligible contacts, 0 WhatsApp-campaign-eligible contacts, 848 manual-review rows, 152 suppressed rows, report SHA-256 93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
+    "crm_private_checkpoint": "created outside git with dry_run_authorized=true and production_apply_authorized=false; contents not printed or committed",
+    "prettier_check": "passed for touched campaign, CRM, director, and run Markdown/JSON files",
+    "production_launch_spine_readonly": "passed refreshed current production GET-only route readback: 16/16 checks passed, no form submits, no setup/reset links consumed, no production writes, route-readback SHA-256 120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9",
+    "ops06_production_synthetic_probes": "expected blocked status after refresh: public/login/readiness/private-denial probes passed and protected diagnostics blocked by missing OPERATIONS_PROBE_TOKEN, synthetic-probes SHA-256 7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a",
+    "launch_spine_privacy_scan": "passed for synthetic-probes.json and route-readback.json with route-name-aware private-data patterns",
+    "email_inputs_preflight": "ready: protected Resend/sender/reply-to/canary/private manifest inputs present without raw values; staging controlled transactional email delivered; production configured and deployed.",
+    "typecheck": "npm run typecheck passed after campaign seed approval packet generator",
+    "lint": "npm run lint passed after campaign seed approval packet generator",
+    "crm_apply_readiness_preflight": "ready: source packet, corrected dry-run proof, private/operator authorization, fresh backup proof, idempotency, created-by user key, manual-review handling, production DB configuration, and production confirmation are present; no blockers.",
+    "launch_spine_consume_readiness_preflight": "blocked safely with refreshed current read-only route proof and W13-103 role baseline accepted; protected consume plan, cleanup instructions, operator authorization, production confirmation, role journey inputs, and signup lead input remain absent.",
+    "launch_spine_consume_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-launch/launch-spine-consume-readiness-preflight.test.ts passed after refreshed read-only proof",
+    "provider_canary_readiness_preflight": "blocked safely with W13-104 provider report present and zero provider side effects; blockers: BLOCKED_OPERATOR_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PRIVATE_CANARY_AUTHORIZATION_NOT_PROVIDED, BLOCKED_PROVIDER_BNA_SUPPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_BUFFER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARIES_REPORT_NOT_READY_TO_RUN, BLOCKED_PROVIDER_CANARY_CONFIRMATION_NOT_PROVIDED, BLOCKED_PROVIDER_OPENAI_HELPER_NOT_READY_TO_RUN, BLOCKED_PROVIDER_STRIPE_TEST_NOT_READY_TO_RUN, BLOCKED_PROVIDER_TELEGRAM_NOT_READY_TO_RUN, BLOCKED_PROVIDER_VIMEO_NOT_READY_TO_RUN, BLOCKED_PROVIDER_WHATSAPP_NOT_READY_TO_RUN, BLOCKED_PROVIDER_ZOOM_NOT_READY_TO_RUN",
+    "provider_canary_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-providers/provider-canary-readiness-preflight.test.ts passed",
+    "transactional_email_release": "staging controlled transactional email provider_delivered; production web/worker deployed and smoked; production controlled send/final admin browser smoke were not rerun in this CRM import slice.",
+    "crm_apply_readiness_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-data/crm-apply-readiness-preflight.test.ts passed",
+    "crm_production_apply": "applied once with idempotency replay: 1,555 inserted contacts, 4 skipped existing contacts, 2,505 import rows, zero sends queued, zero provider mutations.",
+    "production_signup_to_crm": "accepted: protected operator-owned production signup returned 200 twice with idempotent replay, one contact, one signup, two sink outbox intents, and zero external sends.",
+    "campaign_seed_approval_packet": "ready_for_operator_approval: exact proposed copy, snapshot hash, required seed approval statement, and zero-send safety evidence recorded in ops/codex-runs/RABBI-DAY-ONE-CRM/campaign-seed-approval-packet.json",
+    "campaign_seed_approval_unit": "npx vitest run --config vitest.unit.config.ts tests/unit/w12-100-campaign/campaign-seed-approval-packet.test.ts passed: 1 file, 2 tests"
+  },
+  "resume": {
+    "primary_resume_file": "ops/codex-runs/ONE-TIME-FINISH-NOW/RESUME.md",
+    "private_inputs_needed": [
+      "Operator approval for the exact campaign seed packet: APPROVE_ONE_TIME_CAMPAIGN_SEED:6e215ab2d0493f3e4175ca1bfb24d07099293f8da63e02d793e5ba4250246bd5:1357:email:seed-only plus ONE-TIME-CAMPAIGN-SEED-OK before any seed send; broad campaign still requires separate approval.",
+      "Fresh production final admin/access send or authenticated CRM browser-smoke authorization if that lane should be rerun.",
+      "Fresh bootstrap or role-access authorization for a production owner/admin actor before final production admin access or controlled production transactional email send.",
+      "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json",
+      "OPERATIONS_PROBE_TOKEN in protected production/staging runtime config",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CONSUME-PLAN.private.json with target_environment=production, raw_values_included=false, and either role_journeys_authorized=true or production_signup_submit_authorized=true",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-CLEANUP-INSTRUCTIONS.private.json with post_run_cleanup_authorized=true and raw_values_included=false",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-OPERATOR-AUTHORIZATION.private.txt containing APPROVE_ONE_TIME_PRODUCTION_LAUNCH_SPINE_CONSUME:120b0a9129c8937b679cb7016b0be510e855eead26d689561e7781db8988f1e9:7c342640c2ff7bb886e0b79f43ec9f3466283279e7bbfcf3cd65ee39f976e41a:production",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-PRODUCTION-CONFIRMATION.private.txt containing ONE-TIME-PRODUCTION-LAUNCH-SPINE-CONSUME-OK",
+      "Either administrator/parent/student launch-spine private journey input files or C:/Users/User/.onetime-w13-104-private/ONE-TIME-LAUNCH-SPINE-SIGNUP-LEAD.private.json before consuming production launch-spine proof",
+      "C:/Users/User/.onetime-w13-104-private/CANARY-AUTHORIZATION.private.json with target_environment=production, provider_canaries_authorized=true, provider_canaries_report_sha256=072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac, authorized_providers covering whatsapp, telegram, zoom, vimeo, openai_helper, bna_support, stripe_test, and buffer, and raw_values_included=false",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-PROVIDER-CANARIES-OPERATOR-AUTHORIZATION.private.txt containing APPROVE_ONE_TIME_PROVIDER_CANARIES:072c4f00a22a7ca406792b55208b827c16c9dc39e651894ba708dc30777524ac:whatsapp,telegram,zoom,vimeo,openai_helper,bna_support,stripe_test,buffer:production",
+      "C:/Users/User/.onetime-w13-104-private/ONE-TIME-PROVIDER-CANARIES-CONFIRMATION.private.txt containing ONE-TIME-PROVIDER-CANARIES-OK",
+      "Protected provider runtime inputs for WhatsApp, Telegram, Zoom, Vimeo, OpenAI helper, BNA support, Stripe TEST, and Buffer as listed in ops/codex-runs/ONE-TIME-FINISH-NOW/provider-canary-readiness-preflight.json"
+    ],
+    "next_executable_lane_without_private_inputs": "CRM production apply and one signup-to-CRM canary are delivered. Remaining executable work without private inputs is limited to documentation/validation refreshes, CI/platform evidence, and additional safe preflight tooling; production final admin/access send, provider canaries, diagnostics, launch-spine consuming proof, campaign seed, and broad campaign sends require exact protected authorization or runtime inputs."
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "schema_version": "onetime.one_time_finish_now.production_launch_spine_readonly.v1",
+  "generated_at": "2026-07-19T15:56:29.135Z",
+  "target_base_url": "https://join.onetimeonetime.com",
+  "method": "GET with redirect=manual; response bodies discarded except sanitized /version and /ready fields",
+  "status": "passed",
+  "duration_ms": 4884,
+  "route_count": 16,
+  "passed_count": 16,
+  "failed_count": 0,
+  "results": [
+    {
+      "id": "version",
+      "path": "/version",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 563,
+      "committed_response_body": false,
+      "safe_json": {
+        "version": "rabbi-day-one-crm-ed77a04",
+        "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+        "target_app": "one-time",
+        "deployment_present": true,
+        "deployment_id": "a3a9328c-3fb5-41c6-b8d4-cf402f400ca7"
+      }
+    },
+    {
+      "id": "health",
+      "path": "/health",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 493,
+      "committed_response_body": false
+    },
+    {
+      "id": "ready",
+      "path": "/ready",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 294,
+      "committed_response_body": false,
+      "safe_json": {
+        "status": null,
+        "latest_migration": null,
+        "dependencies_count": 2
+      }
+    },
+    {
+      "id": "public_landing",
+      "path": "/",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 231,
+      "committed_response_body": false
+    },
+    {
+      "id": "public_signup",
+      "path": "/signup",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 260,
+      "committed_response_body": false
+    },
+    {
+      "id": "login",
+      "path": "/login",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 424,
+      "committed_response_body": false
+    },
+    {
+      "id": "activate",
+      "path": "/activate",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 236,
+      "committed_response_body": false
+    },
+    {
+      "id": "forgot_password",
+      "path": "/forgot-password",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 231,
+      "committed_response_body": false
+    },
+    {
+      "id": "reset_password",
+      "path": "/reset-password",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 230,
+      "committed_response_body": false
+    },
+    {
+      "id": "privacy",
+      "path": "/privacy",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 250,
+      "committed_response_body": false
+    },
+    {
+      "id": "terms",
+      "path": "/terms",
+      "expected_http_statuses": [200],
+      "http_status": 200,
+      "status": "passed",
+      "latency_ms": 273,
+      "committed_response_body": false
+    },
+    {
+      "id": "missing_route_404",
+      "path": "/one-time-finish-now-missing-route-readonly",
+      "expected_http_statuses": [404],
+      "http_status": 404,
+      "status": "passed",
+      "latency_ms": 428,
+      "committed_response_body": false
+    },
+    {
+      "id": "anonymous_dashboard_denial",
+      "path": "/app/dashboard",
+      "expected_http_statuses": [302, 401, 403],
+      "http_status": 302,
+      "status": "passed",
+      "latency_ms": 254,
+      "committed_response_body": false
+    },
+    {
+      "id": "anonymous_crm_denial",
+      "path": "/app/crm",
+      "expected_http_statuses": [302, 401, 403],
+      "http_status": 302,
+      "status": "passed",
+      "latency_ms": 226,
+      "committed_response_body": false
+    },
+    {
+      "id": "anonymous_parent_denial",
+      "path": "/app/parent",
+      "expected_http_statuses": [302, 401, 403],
+      "http_status": 302,
+      "status": "passed",
+      "latency_ms": 229,
+      "committed_response_body": false
+    },
+    {
+      "id": "anonymous_student_denial",
+      "path": "/app/student",
+      "expected_http_statuses": [302, 401, 403],
+      "http_status": 302,
+      "status": "passed",
+      "latency_ms": 259,
+      "committed_response_body": false
+    }
+  ],
+  "safety": {
+    "production_database_writes": 0,
+    "crm_import_applies": 0,
+    "emails_sent": 0,
+    "provider_mutations": 0,
+    "deployments": 0,
+    "form_submits": 0,
+    "setup_or_reset_links_consumed": 0,
+    "response_bodies_committed": false
+  }
+}

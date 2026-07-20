@@ -1,0 +1,156 @@
+{
+  "generated_at": "2026-07-19T12:12:37.108Z",
+  "phase": "pre_pr92_staging_deploy",
+  "targets": {
+    "production": {
+      "/version": {
+        "status": 200,
+        "body": {
+          "version": "w13-104-public-cls-688fc70",
+          "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+          "target_app": "one-time"
+        }
+      },
+      "/health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "service": "onetime-web"
+        }
+      },
+      "/ready": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "service": "onetime-web",
+          "generated_at": "2026-07-19T12:12:38.232Z",
+          "dependencies": [
+            {
+              "name": "database",
+              "ok": true,
+              "essential": true,
+              "status": "ok",
+              "latency_ms": 44,
+              "blocker_code": null,
+              "detail": "query ok"
+            },
+            {
+              "name": "schema_migrations",
+              "ok": true,
+              "essential": true,
+              "status": "ok",
+              "latency_ms": 4,
+              "blocker_code": null,
+              "detail": "latest=2203_w13_100_student_gamification"
+            }
+          ],
+          "optional_dependencies": [
+            {
+              "name": "email_transport",
+              "ok": true,
+              "essential": false,
+              "status": "disabled",
+              "latency_ms": null,
+              "blocker_code": null,
+              "detail": "disabled by runtime flag"
+            },
+            {
+              "name": "whatsapp_transport",
+              "ok": true,
+              "essential": false,
+              "status": "disabled",
+              "latency_ms": null,
+              "blocker_code": null,
+              "detail": "disabled by runtime flag"
+            },
+            {
+              "name": "support_bridge",
+              "ok": true,
+              "essential": false,
+              "status": "disabled",
+              "latency_ms": null,
+              "blocker_code": null,
+              "detail": "disabled by runtime flag"
+            }
+          ],
+          "blockers": []
+        }
+      }
+    },
+    "staging": {
+      "/version": {
+        "status": 200,
+        "body": {
+          "version": "w13-104-public-cls-688fc70",
+          "commit_sha": "688fc70cf64b72bc52f4ea7511d8593750d7ab45",
+          "target_app": "one-time"
+        }
+      },
+      "/health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "service": "onetime-web"
+        }
+      },
+      "/ready": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "service": "onetime-web",
+          "generated_at": "2026-07-19T12:12:39.638Z",
+          "dependencies": [
+            {
+              "name": "database",
+              "ok": true,
+              "essential": true,
+              "status": "ok",
+              "latency_ms": 39,
+              "blocker_code": null,
+              "detail": "query ok"
+            },
+            {
+              "name": "schema_migrations",
+              "ok": true,
+              "essential": true,
+              "status": "ok",
+              "latency_ms": 3,
+              "blocker_code": null,
+              "detail": "latest=2203_w13_100_student_gamification"
+            }
+          ],
+          "optional_dependencies": [
+            {
+              "name": "email_transport",
+              "ok": true,
+              "essential": false,
+              "status": "disabled",
+              "latency_ms": null,
+              "blocker_code": null,
+              "detail": "disabled by runtime flag"
+            },
+            {
+              "name": "whatsapp_transport",
+              "ok": true,
+              "essential": false,
+              "status": "disabled",
+              "latency_ms": null,
+              "blocker_code": null,
+              "detail": "disabled by runtime flag"
+            },
+            {
+              "name": "support_bridge",
+              "ok": true,
+              "essential": false,
+              "status": "disabled",
+              "latency_ms": null,
+              "blocker_code": null,
+              "detail": "disabled by runtime flag"
+            }
+          ],
+          "blockers": []
+        }
+      }
+    }
+  }
+}

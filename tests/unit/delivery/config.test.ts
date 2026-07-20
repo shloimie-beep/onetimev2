@@ -55,6 +55,63 @@ describe('delivery worker config', () => {
     );
   });
 
+  it('allows production lifecycle transactional email while generic outbox delivery remains sink', () => {
+    const config = loadDeliveryWorkerConfig({
+      ...baseEnv,
+      NODE_ENV: 'production',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+      AUTH_CSRF_SECRET: 'production-test-auth-csrf-secret-32-bytes',
+      MFA_SECRET_ENCRYPTION_KEY: 'production-test-mfa-secret-32-bytes',
+      ONE_TIME_LIFECYCLE_EMAIL_MODE: 'transactional',
+      ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'production-lifecycle-delivery-key-32-bytes',
+      ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+      ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
+      ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+      ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+      DELIVERY_PROVIDER_AUTHORIZATION_ID: 'auth_rabbi_day_one_email_fixture',
+      DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
+      DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
+      RESEND_API_KEY: 'test-resend-key',
+      RESEND_WEBHOOK_SECRET: 'test-resend-webhook-secret',
+    });
+
+    expect(config.transportMode).toBe('sink');
+    expect(config.appConfig.lifecycleEmailMode).toBe('transactional');
+    expect(config.appConfig.deliveryProviderTransportEnabled).toBe(true);
+    expect(config.appConfig.resendTransportEnabled).toBe(true);
+    expect(config.provider.snapshot).toMatchObject({
+      mode: 'sink',
+      productionProviderMode: 'disabled',
+      resend: 'authorized',
+    });
+  });
+
+  it('does not allow lifecycle transactional email to smuggle generic provider sends', () => {
+    expect(() =>
+      loadDeliveryWorkerConfig({
+        ...baseEnv,
+        NODE_ENV: 'production',
+        ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+        AUTH_CSRF_SECRET: 'production-test-auth-csrf-secret-32-bytes',
+        MFA_SECRET_ENCRYPTION_KEY: 'production-test-mfa-secret-32-bytes',
+        ONE_TIME_LIFECYCLE_EMAIL_MODE: 'transactional',
+        ONE_TIME_LIFECYCLE_DELIVERY_KEY: 'production-lifecycle-delivery-key-32-bytes',
+        ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED: 'true',
+        ONE_TIME_RESEND_TRANSPORT_ENABLED: 'true',
+        ONE_TIME_RESEND_CANARY_AUTHORIZED: 'true',
+        ONE_TIME_RESEND_WEBHOOK_ENABLED: 'true',
+        ONE_TIME_EMAIL_FROM: 'One Time <info@onetimeonetime.com>',
+        ONE_TIME_EMAIL_REPLY_TO: 'info@onetimeonetime.com',
+        DELIVERY_PROVIDER_AUTHORIZATION_ID: 'auth_rabbi_day_one_email_fixture',
+        DELIVERY_PROVIDER_PER_RUN_BUDGET: '1',
+        DELIVERY_PROVIDER_PER_PROVIDER_BUDGET: '1',
+        RESEND_API_KEY: 'test-resend-key',
+        RESEND_WEBHOOK_SECRET: 'test-resend-webhook-secret',
+      }),
+    ).toThrow(/provider flags require explicit provider transport mode/i);
+  });
+
   it('loads explicit provider mode readiness for test canaries without defaulting to production', () => {
     const config = loadDeliveryWorkerConfig({
       ...baseEnv,

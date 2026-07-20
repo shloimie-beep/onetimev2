@@ -1,0 +1,37 @@
+{
+  "counts": {
+    "suppressed": 152,
+    "total_rows": 2505,
+    "sends_queued": 0,
+    "crm_importable": 1559,
+    "blocked_invalid": 811,
+    "blocked_duplicate": 98,
+    "inserted_contacts": 1555,
+    "blocked_quarantined": 0,
+    "writable_candidates": 1559,
+    "unique_identity_count": 1596,
+    "blocked_contact_schema": 0,
+    "email_campaign_eligible": 1357,
+    "blocked_identity_conflict": 37,
+    "skipped_existing_contacts": 4,
+    "whatsapp_campaign_eligible": 0
+  },
+  "safety": {
+    "raw_values_printed": false,
+    "raw_values_included": false,
+    "backup_proof_verified": true,
+    "production_side_effects": false,
+    "provider_mutation_count": 0,
+    "external_sends_performed": false,
+    "database_writes_performed": false,
+    "exact_authorization_verified": true
+  },
+  "status": "replayed",
+  "batch_key": "crm_real_source_batch_214a8882392b37e950387f6b",
+  "generated_at": "2026-07-19T16:55:08.278Z",
+  "schema_version": "onetime.w12_100_04.real_source_crm_apply.v1",
+  "blocked_reasons": [],
+  "target_environment": "production",
+  "dry_run_report_sha256": "93be5a0837d3d90f8995e873c2ea302987f45e0e52de79f08170f01a6223f1d8",
+  "approved_source_group_fingerprint": "0bee9ddd75358d7eb987c2581c79ff1e555a848d7830e002c80d3d34cf3e1e32"
+}

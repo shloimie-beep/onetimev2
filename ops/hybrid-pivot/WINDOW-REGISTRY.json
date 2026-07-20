@@ -1,0 +1,77 @@
+{
+  "schema_version": "onetime.hybrid_pivot.window_registry.v1",
+  "generated_at": "2026-07-20T11:17:44.8984447+03:00",
+  "repository": "webcraft-media/onetimev2",
+  "pull_request": {
+    "number": 92,
+    "url": "https://github.com/webcraft-media/onetimev2/pull/92"
+  },
+  "base_head_before_checkpoint": "0d50e0f07afbc0d0d143a45e76e73821ca25178f",
+  "checkpoint_base_sha": "Use the pushed checkpoint commit SHA returned in the prompt-01 final response.",
+  "windows": [
+    {
+      "id": "WINDOW-A-HIGHLEVEL-BUSINESS",
+      "prompt": "02-WINDOW-A-HIGHLEVEL-BUSINESS-FOUNDATION-NO-CREDENTIALS",
+      "branch": "codex/pr92-window-a-highlevel-business-foundation-20260720",
+      "ownership_lane": "BUSINESS_HIGHLEVEL",
+      "may_start_after_checkpoint": true,
+      "must_start_from": "checkpoint_base_sha",
+      "reserved_migrations": ["2205_highlevel_business_projection.sql"],
+      "allowed_scope_summary": "HighLevel business projection, config contracts, Admin CRM projection, signup HighLevel outbox integration, and no-credentials-safe tests.",
+      "blocked_actions": [
+        "external HighLevel mutations",
+        "provider sends",
+        "production database writes",
+        "GHL Courses",
+        "GHL Communities"
+      ]
+    },
+    {
+      "id": "WINDOW-B-LEARNING-PRODUCT",
+      "prompt": "TBD-WINDOW-B-LEARNING-PRODUCT",
+      "branch": "codex/pr92-window-b-learning-product-foundation-20260720",
+      "ownership_lane": "LEARNING_PRODUCT",
+      "may_start_after_checkpoint": true,
+      "must_start_from": "checkpoint_base_sha",
+      "reserved_migrations": [
+        "2206_student_non_email_credentials.sql",
+        "2207_classroom_board_and_lesson_projection.sql"
+      ],
+      "allowed_scope_summary": "Parent/student portal, non-email Student credentials, classroom/lesson projection, Zoom/Vimeo access projection, gamification, leaderboard, and Rabbi-moderated questions.",
+      "blocked_actions": [
+        "parent-launched Learner Mode",
+        "student email credentials",
+        "student direct messaging",
+        "external provider mutations",
+        "production database writes"
+      ]
+    },
+    {
+      "id": "CONVERGENCE-ONLY",
+      "prompt": "Run only after parallel windows return or an explicit convergence checkpoint is issued.",
+      "branch": "codex/one-time-finish-now-20260719",
+      "ownership_lane": "CONVERGENCE_ONLY",
+      "may_start_after_checkpoint": false,
+      "must_start_from": "merged business and learning window results",
+      "allowed_scope_summary": "Shared hotspot reconciliation, final migration verification, Railway/deployment, provider canaries, production data writes, route branding, navigation, registries, and final release evidence.",
+      "blocked_actions": [
+        "uncoordinated package/lockfile changes",
+        "Railway mutations without exact authorization",
+        "provider canaries without exact authorization",
+        "production database writes without fresh backup and explicit approval"
+      ]
+    }
+  ],
+  "stopped_conflicting_lanes": [
+    "custom full-CRM",
+    "custom campaign engine",
+    "direct WhatsApp transport",
+    "custom Stripe checkout/admin",
+    "Buffer",
+    "HighLevel Courses",
+    "HighLevel Communities",
+    "parent-launched Learner Mode",
+    "broad AI helper",
+    "automated content generation"
+  ]
+}

@@ -533,6 +533,16 @@ export function createApp({
       version: config.appVersion,
       commit_sha: config.commitSha,
       target_app: 'one-time',
+      deployment: {
+        provider: 'railway',
+        deployment_id: config.railwayDeploymentId ?? null,
+        snapshot_id: config.railwaySnapshotId ?? null,
+        project_id: config.railwayProjectId ?? null,
+        environment_id: config.railwayEnvironmentId ?? null,
+        service_id: config.railwayServiceId ?? null,
+        service_name: config.railwayServiceName ?? null,
+        git_commit_sha: config.railwayGitCommitSha ?? null,
+      },
     });
   });
 

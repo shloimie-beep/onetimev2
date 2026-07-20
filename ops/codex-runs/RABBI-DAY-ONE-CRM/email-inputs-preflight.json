@@ -1,0 +1,96 @@
+{
+  "schema_version": "onetime.rabbi_day_one_email_inputs_preflight.v1",
+  "generated_at": "2026-07-19T14:52:25.423Z",
+  "status": "ready",
+  "blocked_reasons": [],
+  "approved_policy": {
+    "provider": "resend",
+    "domain": "onetimeonetime.com",
+    "sender": "info@onetimeonetime.com",
+    "reply_to": "info@onetimeonetime.com",
+    "transactional_mode": "transactional"
+  },
+  "protected_sources": {
+    "keyholder_dir_available": true,
+    "private_manifest_written": true,
+    "raw_values_included": false,
+    "secrets_printed": false
+  },
+  "inputs": {
+    "resendApiKey": {
+      "file_name": "resend-api-key.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "94cdda4f270905bcf6bcbe1d6de70beb6de781bc10d021f88bd7c76fcf1bc93f"
+    },
+    "resendWebhookSecret": {
+      "file_name": "resend-webhook-secret.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "ab0958413826cbe126007061c3958a76c05ffd55a4dfd554b64def5f38b4bc69"
+    },
+    "resendDomain": {
+      "file_name": "resend-domain.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "81d232c3f1242e407425ead0041b92b91df515e7ba30f9bccb007d66910752f0"
+    },
+    "resendFromEmail": {
+      "file_name": "resend-from-email.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "1256ff51d9eed2c350b97a1a867b326bb72cb080d3c5be72402aecee17e6c819"
+    },
+    "resendReplyTo": {
+      "file_name": "resend-reply-to.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "359a77e2fc6a3ea497dd2eb1103fad12eda714a5e6255c2f69f133a0c2a8f49e"
+    },
+    "resendFromName": {
+      "file_name": "resend-from-name.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "76388bf9c69444382d6b6941350ae5d97582a9c70914eca5abfd4422009f8ac7"
+    },
+    "canaryEmail": {
+      "file_name": "zoom-account-owner.txt",
+      "present": true,
+      "nonempty": true,
+      "fingerprint": "72694eb79624deda86dce731dbc75e89033c1cabb15f08ebe9d5af185f3422cd"
+    }
+  },
+  "checks": {
+    "keyholder_dir_available": true,
+    "resend_api_key_present": true,
+    "resend_webhook_secret_present": true,
+    "approved_domain_matches": true,
+    "approved_sender_matches": true,
+    "approved_reply_to_matches": true,
+    "canary_destination_present": true,
+    "authorization_id_present": true,
+    "lifecycle_delivery_key_generated_for_manifest": true,
+    "no_raw_values_in_report": true
+  },
+  "private_manifest": {
+    "path": "C:/Users/User/.onetime-w13-104-private/RABBI-DAY-ONE-EMAIL-INPUTS.private.json",
+    "schema_version": "onetime.rabbi_day_one_email_inputs.private.v1",
+    "contains_secret_values": true,
+    "contains_canary_destination": true,
+    "railway_variables_ready": true,
+    "variable_names": [
+      "DELIVERY_PROVIDER_AUTHORIZATION_ID",
+      "DELIVERY_PROVIDER_PER_PROVIDER_BUDGET",
+      "DELIVERY_PROVIDER_PER_RUN_BUDGET",
+      "ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED",
+      "ONE_TIME_EMAIL_FROM",
+      "ONE_TIME_EMAIL_REPLY_TO",
+      "ONE_TIME_LIFECYCLE_DELIVERY_KEY",
+      "ONE_TIME_LIFECYCLE_EMAIL_MODE",
+      "ONE_TIME_RESEND_TRANSPORT_ENABLED",
+      "ONE_TIME_RESEND_WEBHOOK_ENABLED",
+      "RESEND_API_KEY",
+      "RESEND_WEBHOOK_SECRET"
+    ]
+  }
+}

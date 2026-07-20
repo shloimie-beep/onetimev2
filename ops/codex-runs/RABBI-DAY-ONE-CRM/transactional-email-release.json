@@ -1,0 +1,99 @@
+{
+  "schema_version": "onetime.rabbi_day_one_transactional_email_release.v1",
+  "generated_at": "2026-07-19T17:14:06.418Z",
+  "branch": "codex/one-time-finish-now-20260719",
+  "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+  "staging": {
+    "railway": {
+      "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+      "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+      "variable_updates": 32,
+      "web_deployment_id": "0bf927dd-bab7-407b-afd2-35983d8c7351",
+      "worker_deployment_id": "385e3b5b-41f4-417d-996b-09e3b1a1f8e3",
+      "web_image_digest": "sha256:0f70e2002127851826d74a51ec8a3671105b955f55b0667e0a6907c63d095ae6",
+      "worker_image_digest": "sha256:9c97c969816bc928e52bdec5bce39fdb5d8734e524e7d208568bf1da2c878ffe"
+    },
+    "smokes": {
+      "version_status": 200,
+      "health_status": 200,
+      "ready_status": 200,
+      "version": "rabbi-day-one-crm-ed77a04",
+      "ready_blockers": []
+    },
+    "controlled_test": {
+      "status": "provider_delivered",
+      "token_type": "owner_admin_invitation",
+      "target_role": "admin",
+      "destination_ref": "email_fab156df2719852d",
+      "outbox_created_at": "2026-07-19T15:31:45.609Z",
+      "outbox_delivered_at": "2026-07-19T15:32:00.176Z",
+      "attempts": 1,
+      "provider_message_ref_present": true,
+      "raw_token_included": false,
+      "external_send_performed": true,
+      "resend_api_readback": {
+        "status": 200,
+        "id_ref": "b4914755b4055ce7",
+        "created_at": "2026-07-19 15:32:00.466287+00",
+        "last_event": "delivered",
+        "to_authorized": true,
+        "from_domain": "onetimeonetime.com",
+        "reply_to_domain": ["onetimeonetime.com"]
+      },
+      "provider_event_ledger": {
+        "rows_after_60s": 0,
+        "note": "No webhook ledger row had arrived during the proof window; Resend sent-email API readback showed delivered."
+      }
+    }
+  },
+  "production": {
+    "railway": {
+      "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+      "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+      "variable_updates": 32,
+      "superseded_web_deployment_id": "1bb92930-53f2-4c48-be5f-f8681247258a",
+      "web_deployment_id": "a3a9328c-3fb5-41c6-b8d4-cf402f400ca7",
+      "worker_deployment_id": "37ce9edf-d7aa-40fc-a013-87dde0f29e72",
+      "web_image_digest": "sha256:074d98ee85b47b6c4d9e7da12d709858452962f0e0094328b47581d60b3520aa",
+      "worker_image_digest": "sha256:69e95b261899044411e252327e89e570b2d71ab60578eb0f7ef8890f28a1fc1c"
+    },
+    "smokes": {
+      "version_status": 200,
+      "health_status": 200,
+      "ready_status": 200,
+      "version": "rabbi-day-one-crm-ed77a04",
+      "commit_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+      "ready_blockers": [],
+      "latest_migration": "2204_w12_100_real_source_crm_apply"
+    },
+    "queue_preflight": {
+      "account_users": 4,
+      "active_owner_admin_candidates": 2,
+      "lifecycle_pending_rows": 0,
+      "auth_email_pending_rows": 0,
+      "provider_event_ledger_rows": 0,
+      "note": "Counts-only production read after CRM migration/apply showed active administrator candidates; no raw user values recorded."
+    },
+    "controlled_test": {
+      "status": "not_rerun_in_crm_import_slice",
+      "external_send_performed": false,
+      "blocker": "Production transactional send/final admin message still need a deliberate fresh admin-access send decision; existing prior admin acceptance is recorded under W13-103 and no setup link was consumed in this CRM import slice."
+    }
+  },
+  "safety": {
+    "raw_values_printed": false,
+    "secrets_committed": false,
+    "generic_provider_campaign_sends_enabled": false,
+    "broad_campaign_sends": 0,
+    "production_crm_import_performed": true,
+    "production_email_sends_performed": 0,
+    "staging_email_sends_performed": 1,
+    "production_crm_import_evidence": "ops/codex-runs/RABBI-DAY-ONE-CRM/crm-production-apply.json",
+    "production_signup_to_crm_performed": true,
+    "production_signup_to_crm_evidence": "ops/codex-runs/RABBI-DAY-ONE-CRM/production-signup-proof.json"
+  }
+}
