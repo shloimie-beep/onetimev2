@@ -3223,14 +3223,15 @@ function statusForPortalError(code: string) {
   if (code === 'UNAUTHENTICATED') return 401;
   if (code === 'FORBIDDEN' || code === 'CSRF_REQUIRED') return 403;
   if (code === 'NOT_FOUND') return 404;
-  if (code === 'VALIDATION_ERROR') return 400;
+  if (code === 'VALIDATION_ERROR' || code === 'PASSWORD_POLICY_FAILED') return 400;
   if (code === 'RATE_LIMITED') return 429;
   if (
     code === 'IDEMPOTENCY_CONFLICT' ||
     code === 'VERSION_CONFLICT' ||
     code === 'LEARNER_LIMIT_REACHED' ||
     code === 'ENTITLEMENT_REQUIRED' ||
-    code === 'CONSENT_REQUIRED'
+    code === 'CONSENT_REQUIRED' ||
+    code === 'USERNAME_UNAVAILABLE'
   ) {
     return 409;
   }
