@@ -1,13 +1,24 @@
-version: 2
-status: assets_verified_workflows_ui_required
+version: 3
+status: 'operating_pack_ready_workflows_ui_required'
 location_id: 'pBSnOK2nkdxp6gf9Rg3o'
-last_tested_date: '2026-07-20'
-test_contact_reference: ''
+last_reconciled_at: '2026-07-20T12:48:18.539Z'
+messages_sent_authorized: false
+workflow_publish_authorized: false
+production_workflow_enrollment_authorized: false
 setup_evidence:
   - '2026-07-20: PIT connectivity verified for the configured sub-account/location.'
   - '2026-07-20: Required One Time custom fields and tags created, then idempotency-verified.'
   - '2026-07-20: Minimal One Time Business pipeline created, then idempotency-verified.'
-  - 'Private raw activation reports are stored outside Git under C:/Users/User/.onetime-highlevel-private/.'
+  - '2026-07-20T12:48:18.539Z: Launch operating prompt pack generated; workflows still require Draft UI build and ID capture.'
+  - 'Private raw activation and import reports are stored outside Git under C:/Users/User/.onetime-highlevel-private/.'
+workflow_folders:
+  - name: '00 - Intake & Data'
+  - name: '10 - Nurture & Sales'
+  - name: '20 - Billing & Access'
+  - name: '30 - Portal Lifecycle'
+  - name: '40 - Classes & Content'
+  - name: '50 - Support'
+  - name: '90 - Internal Operations'
 custom_fields:
   one_time_parent_id:
     label: 'One Time Parent ID'
@@ -54,6 +65,66 @@ custom_fields:
     field_id: 'kRNVyi6Fm5N5dobXU9ZL'
     field_key: 'contact.one_time_signup_source'
     data_type: 'TEXT'
+  one_time_crm_contact_id:
+    label: 'One Time CRM Contact ID'
+    field_id: 'TRZGYm5rfFdjpYHM0HLL'
+    field_key: 'contact.one_time_crm_contact_id'
+    data_type: 'TEXT'
+  one_time_import_batch:
+    label: 'One Time Import Batch'
+    field_id: 'ixTF2XqjPTUn40LLcYTU'
+    field_key: 'contact.one_time_import_batch'
+    data_type: 'TEXT'
+  one_time_source_classification:
+    label: 'One Time Source Classification'
+    field_id: 'XoW0UWbGFkwUplKydjZI'
+    field_key: 'contact.one_time_source_classification'
+    data_type: 'TEXT'
+  one_time_email_consent:
+    label: 'One Time Email Consent'
+    field_id: 'olSxPkya7mkkB61vSXHx'
+    field_key: 'contact.one_time_email_consent'
+    data_type: 'TEXT'
+  one_time_whatsapp_consent:
+    label: 'One Time WhatsApp Consent'
+    field_id: 'XhBuFbkwtbpD9gyVNDdG'
+    field_key: 'contact.one_time_whatsapp_consent'
+    data_type: 'TEXT'
+  one_time_suppression_state:
+    label: 'One Time Suppression State'
+    field_id: 'rdWsApvquRfHwkzvp5mS'
+    field_key: 'contact.one_time_suppression_state'
+    data_type: 'TEXT'
+  one_time_suppression_reason:
+    label: 'One Time Suppression Reason'
+    field_id: '16pDBLnVVV1RyMKgY7wh'
+    field_key: 'contact.one_time_suppression_reason'
+    data_type: 'TEXT'
+  one_time_current_period_end:
+    label: 'One Time Current Period End'
+    field_id: '9dSeNRbmHqRRtQhjJgbx'
+    field_key: 'contact.one_time_current_period_end'
+    data_type: 'TEXT'
+  one_time_subscription_id:
+    label: 'One Time Subscription ID'
+    field_id: 'OYbKjnswrDnv9q06tyNG'
+    field_key: 'contact.one_time_subscription_id'
+    data_type: 'TEXT'
+  one_time_next_class_at:
+    label: 'One Time Next Class At'
+    field_id: 'yH9qCXXoeIMKIltiiBZM'
+    field_key: 'contact.one_time_next_class_at'
+    data_type: 'TEXT'
+  one_time_class_time_zone:
+    label: 'One Time Class Time Zone'
+    field_id: 'rUGmHIqjE5XVZxOmy79V'
+    field_key: 'contact.one_time_class_time_zone'
+    data_type: 'TEXT'
+  one_time_support_status:
+    label: 'One Time Support Status'
+    field_id: '73LVTry3sBVEUBeMUIAY'
+    field_key: 'contact.one_time_support_status'
+    data_type: 'TEXT'
 tags:
   - name: 'OT | Lead'
     tag_id: 'W3sICvTUAAGOQ6Lduu7a'
@@ -85,6 +156,34 @@ tags:
     tag_id: 'Ladbs8RIkwqNYLd3Zg2s'
   - name: 'OT | Signup WhatsApp'
     tag_id: 'j9vlQDQ5XFUrj5SVtdve'
+  - name: 'OT | Consent Unknown'
+    tag_id: '7j9yCOCNunGFfhmm0TaX'
+  - name: 'OT | Payment Failed'
+    tag_id: 'TLM5NIIYZLTELU5u7Lx1'
+  - name: 'OT | Refunded'
+    tag_id: 'z1Fw6MV2gTXkMhREsD4c'
+  - name: 'OT | Chargeback'
+    tag_id: '4Qk836BtHCz2BMSo2ZOe'
+  - name: 'OT | Support Requested'
+    tag_id: 'HGoilQNAKGJ1L6OVi8K7'
+  - name: 'OT | Source | Rabbi Followers'
+    tag_id: 'F3kxEGC93isu7v4RaE5V'
+  - name: 'OT | Source | Subscribed Audience'
+    tag_id: 'qqqWZ0BDxagiBHiQhg06'
+  - name: 'OT | Source | Cleaned Audience'
+    tag_id: 'JDTcyLwjRDImxzwna1M5'
+  - name: 'OT | Source | Legacy Subscriber'
+    tag_id: 'AJsgTeWZcIaSP7S7JRLJ'
+  - name: 'OT | Source | Existing One Time CRM'
+    tag_id: 'gZ210QaOkEZcUy8LDr6p'
+  - name: 'OT | Duplicate Merged'
+    tag_id: 'Wc1KT4pP2GE7XN9UE3pU'
+  - name: 'OT | Identity Conflict'
+    tag_id: 'q2toHtyOUCEuttsHRBZQ'
+  - name: 'OT | Class Reminder Pending'
+    tag_id: 'lxbShmvQw86lJlrHB2B5'
+  - name: 'OT | Recording Available'
+    tag_id: 'vfTzZAYNcHEZrJzNzDOi'
 pipeline:
   name: 'One Time Business'
   id: 'T8xEp9woujGVqvNJlqoz'
@@ -98,10 +197,6 @@ pipeline:
 webhook_event_contract:
   endpoint_not_registered_in_this_lane: true
   content_type: 'application/json'
-  headers:
-    signature: 'x-highlevel-signature or x-ghl-signature'
-    timestamp: 'x-highlevel-timestamp or x-ghl-timestamp'
-    event_id: 'x-highlevel-event-id or x-ghl-event-id'
   allowed_events:
     - 'subscription.active'
     - 'payment.succeeded'
@@ -110,102 +205,135 @@ webhook_event_contract:
     - 'subscription.canceled'
     - 'refund.full'
     - 'chargeback'
-  payload_shape:
-    provider_event_id: 'required stable provider event ID'
-    event_type: 'required allowlisted event'
-    location_id: 'required HighLevel location ID'
-    contact_id: 'optional HighLevel contact ID'
-    subscription_id: 'optional HighLevel subscription ID'
-    transaction_id: 'optional HighLevel transaction ID'
-    opportunity_id: 'optional HighLevel opportunity ID'
-    occurred_at: 'required ISO timestamp'
-    current_period_end: 'optional ISO timestamp'
-    amount_ref: 'optional redacted amount reference'
+agent_prompts:
+  - key: OT-A1
+    name: 'OT-A1 One Time Enrollment Concierge'
+    prompt_file: 'integrations/highlevel/agent-prompts/OT-A1-one-time-enrollment-concierge.md'
+workflow_prompt_files:
+  OT-01: 'integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md'
+  OT-02: 'integrations/highlevel/ai-workflow-prompts/OT-02-prelaunch-nurture.md'
+  OT-03: 'integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md'
+  OT-04: 'integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md'
+  OT-05: 'integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-seven-day-grace.md'
+  OT-06: 'integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md'
+  OT-07: 'integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md'
+  OT-08: 'integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md'
+  OT-09: 'integrations/highlevel/ai-workflow-prompts/OT-09-class-reminder.md'
+  OT-10: 'integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md'
+  OT-11: 'integrations/highlevel/ai-workflow-prompts/OT-11-whatsapp-lead-qualification.md'
+  OT-12: 'integrations/highlevel/ai-workflow-prompts/OT-12-support-intake-technical-escalation.md'
+  OT-13: 'integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md'
 workflows:
   - key: OT-01
     name: 'OT-01 New Lead Intake'
+    folder: '00 - Intake & Data'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create workflow in HighLevel UI after PIT/location exist.'
-      - 'Trigger only from One Time API enrollment after contact upsert succeeds.'
-      - 'Use tags OT | Lead, OT | Prelaunch, and signup source tags.'
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md'
     api_enrollment_allowed_after_id_exists: true
   - key: OT-02
     name: 'OT-02 Prelaunch Nurture'
+    folder: '10 - Nurture & Sales'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create nurture workflow in HighLevel UI.'
-      - 'Filter by OT | Prelaunch and marketing consent fields.'
-      - 'Respect suppression and opt-out state.'
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-02-prelaunch-nurture.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-02-prelaunch-nurture.md'
     api_enrollment_allowed_after_id_exists: true
   - key: OT-03
     name: 'OT-03 Checkout Started / Abandoned'
+    folder: '20 - Billing & Access'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create checkout started and abandoned follow-up workflow in HighLevel UI.'
-      - 'Trigger from GHL/Stripe checkout state, not One Time local learning data.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md'
+    api_enrollment_allowed_after_id_exists: false
   - key: OT-04
     name: 'OT-04 Payment Active'
+    folder: '20 - Billing & Access'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create payment active workflow in HighLevel UI.'
-      - 'Set Active customer tags and owner-visible opportunity stage.'
-      - 'One Time entitlement unlock remains webhook/projection based.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-04-payment-active.md'
+    api_enrollment_allowed_after_id_exists: false
   - key: OT-05
     name: 'OT-05 Payment Failed / Seven-Day Grace'
+    folder: '20 - Billing & Access'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create failed-payment workflow in HighLevel UI.'
-      - 'Send seven-day grace reminders without exposing student data.'
-      - 'Use OT | Grace tag for humans and workflow routing only.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-seven-day-grace.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-05-payment-failed-seven-day-grace.md'
+    api_enrollment_allowed_after_id_exists: false
   - key: OT-06
     name: 'OT-06 Subscription Canceled'
+    folder: '20 - Billing & Access'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create cancellation workflow in HighLevel UI.'
-      - 'Leave access active through current_period_end unless refund or chargeback event arrives.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md'
+    api_enrollment_allowed_after_id_exists: false
   - key: OT-07
     name: 'OT-07 Parent Portal Invitation'
+    folder: '30 - Portal Lifecycle'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create portal invitation workflow in HighLevel UI.'
-      - 'Use activation email from One Time/Resend for security-critical email.'
-      - 'Use HighLevel only for business follow-up visibility.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md'
+    api_enrollment_allowed_after_id_exists: false
   - key: OT-08
     name: 'OT-08 Parent Portal Activated'
+    folder: '30 - Portal Lifecycle'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create portal activated workflow in HighLevel UI.'
-      - 'Mark OT | Portal Active for business visibility.'
-      - 'Never use tag alone to unlock One Time portal access.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md'
+    api_enrollment_allowed_after_id_exists: false
   - key: OT-09
     name: 'OT-09 Class Reminder'
+    folder: '40 - Classes & Content'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create class reminder workflow in HighLevel UI.'
-      - 'Send parent-facing reminders only.'
-      - 'No student email addresses or student GHL contacts.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-09-class-reminder.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-09-class-reminder.md'
+    api_enrollment_allowed_after_id_exists: false
   - key: OT-10
     name: 'OT-10 New Recording Available'
+    folder: '40 - Classes & Content'
     workflow_id: ''
-    status: planned_ui_setup
-    expected_ghl_ui_actions:
-      - 'Create recording available workflow in HighLevel UI.'
-      - 'Reference parent portal availability, not raw Vimeo credentials.'
-    api_enrollment_allowed_after_id_exists: true
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md'
+    api_enrollment_allowed_after_id_exists: false
+  - key: OT-11
+    name: 'OT-11 WhatsApp Lead Qualification'
+    folder: '00 - Intake & Data'
+    workflow_id: ''
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-11-whatsapp-lead-qualification.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-11-whatsapp-lead-qualification.md'
+    api_enrollment_allowed_after_id_exists: false
+  - key: OT-12
+    name: 'OT-12 Support Intake / Technical Escalation'
+    folder: '50 - Support'
+    workflow_id: ''
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-12-support-intake-technical-escalation.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-12-support-intake-technical-escalation.md'
+    api_enrollment_allowed_after_id_exists: false
+  - key: OT-13
+    name: 'OT-13 Refund / Chargeback'
+    folder: '20 - Billing & Access'
+    workflow_id: ''
+    status: 'planned_ui_setup'
+    prompt_file: 'integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md'
+    checklist_file: 'integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md'
+    api_enrollment_allowed_after_id_exists: false
+contact_import:
+  protected_output_dir: 'C:/Users/User/.onetime-highlevel-private/imports'
+  csv: 'C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-contacts.csv'
+  manifest: 'C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-import-manifest.private.json'
+  contact_map: 'C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-contact-map.private.json'
+  errors: 'C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-import-errors.private.json'
+  script: 'scripts/highlevel/contact-import-package.ts'
+  sends_authorized: false
+  workflow_enrollment_authorized: false

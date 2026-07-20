@@ -49,6 +49,18 @@ const requiredCustomFields = [
   'One Time Complimentary Until',
   'One Time Last Sync',
   'One Time Signup Source',
+  'One Time CRM Contact ID',
+  'One Time Import Batch',
+  'One Time Source Classification',
+  'One Time Email Consent',
+  'One Time WhatsApp Consent',
+  'One Time Suppression State',
+  'One Time Suppression Reason',
+  'One Time Current Period End',
+  'One Time Subscription ID',
+  'One Time Next Class At',
+  'One Time Class Time Zone',
+  'One Time Support Status',
 ];
 
 const requiredTags = [
@@ -67,6 +79,20 @@ const requiredTags = [
   'OT | Marketing Suppressed',
   'OT | Signup Website',
   'OT | Signup WhatsApp',
+  'OT | Consent Unknown',
+  'OT | Payment Failed',
+  'OT | Refunded',
+  'OT | Chargeback',
+  'OT | Support Requested',
+  'OT | Source | Rabbi Followers',
+  'OT | Source | Subscribed Audience',
+  'OT | Source | Cleaned Audience',
+  'OT | Source | Legacy Subscriber',
+  'OT | Source | Existing One Time CRM',
+  'OT | Duplicate Merged',
+  'OT | Identity Conflict',
+  'OT | Class Reminder Pending',
+  'OT | Recording Available',
 ];
 
 const requiredWorkflows = [
@@ -80,6 +106,9 @@ const requiredWorkflows = [
   'OT-08 Parent Portal Activated',
   'OT-09 Class Reminder',
   'OT-10 New Recording Available',
+  'OT-11 WhatsApp Lead Qualification',
+  'OT-12 Support Intake / Technical Escalation',
+  'OT-13 Refund / Chargeback',
 ];
 
 const oneTimePipeline = {
