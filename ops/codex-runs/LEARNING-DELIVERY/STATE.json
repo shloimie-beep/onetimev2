@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "window_id": "LEARNING-DELIVERY",
+  "updated_at": "2026-07-20T15:07:33.7717060+03:00",
+  "repo": "webcraft-media/onetimev2",
+  "worktree": "C:\\Users\\User\\.onetime-worktrees\\LEARNING-DELIVERY",
+  "git": {
+    "base_branch": "codex/learning-product-portals-media",
+    "base_head_oid": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
+    "working_branch": "codex/learning-delivery-vimeo-zoom",
+    "working_head_before_changes": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
+    "stacked_pr_url": null
+  },
+  "upstream_prs": [
+    {
+      "number": 94,
+      "title": "Add Learning Product portal credentials and leaderboard",
+      "base": "codex/one-time-finish-now-20260719",
+      "base_oid": "5ddd7b604c01744dd562050ae9b51124f7732594",
+      "head": "codex/learning-product-portals-media",
+      "head_oid": "ebd28c65fab5f11b2a334937ef10bdf1da7b62f3",
+      "state": "OPEN",
+      "draft": true,
+      "url": "https://github.com/webcraft-media/onetimev2/pull/94"
+    }
+  ],
+  "scope": {
+    "included": [
+      "learning delivery media state contracts",
+      "Drive recording metadata normalization without raw URLs",
+      "ffprobe/FFmpeg trim planning without blind auto-cut",
+      "OpenAI transcription adapter boundary with fake-fetch coverage",
+      "provider-neutral HighLevel-safe business event payloads",
+      "opt-in delivery worker hook with provider calls disabled",
+      "compact run records"
+    ],
+    "excluded": [
+      "HighLevel internals and migration 2205",
+      "PR94 migrations 2206 and 2207",
+      "Telegram",
+      "Buffer",
+      "Stripe custom code",
+      "production DB or provider account mutations"
+    ]
+  },
+  "status_lines": {
+    "VIMEO_DRIVE_INGESTION": "BLOCKED(add Google Drive folder ID and service-account/OAuth credential at private keyholder paths)",
+    "VIDEO_TRIM_WORKFLOW": "BLOCKED(run one approved operator-owned video through ffprobe/FFmpeg review canary)",
+    "CLASS_TRANSCRIPTION": "BLOCKED(add a non-empty OpenAI API key at the protected keyholder path or approve using the alternate protected OpenAI key path)",
+    "VIMEO_UPLOAD_PLAYBACK": "BLOCKED(add Vimeo webhook secret/upload confirmation and explicitly approve one private upload canary)",
+    "ZOOM_CLASSROOM": "BLOCKED(add Zoom SDK key/secret and freshly approve one isolated Zoom canary)",
+    "GHL_RECORDING_EVENT": "ACCEPTED",
+    "GHL_CLASS_REMINDER_EVENT": "ACCEPTED",
+    "TELEGRAM": "DEFERRED",
+    "STRIPE_CUSTOM_CODE": "NOT_IN_SCOPE_GHL_OWNS"
+  },
+  "migrations": [
+    {
+      "path": "packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
+      "reason": "Next unused prefix after PR93 reserved 2205 and PR94 reserved 2206/2207."
+    }
+  ],
+  "protected_input_paths": [
+    "C:\\Users\\User\\BNA-Keyholder\\google-drive-folder-id.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\google-drive-service-account.json",
+    "C:\\Users\\User\\BNA-Keyholder\\google-drive-oauth.json",
+    "C:\\Users\\User\\BNA-Keyholder\\vimeo-access-token.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\vimeo-test-project-uri.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\vimeo-webhook-secret.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\zoom-account-id.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\zoom-client-id.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\zoom-client-secret.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\zoom-webhook-secret.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\zoom-sdk-key.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\zoom-sdk-secret.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\openai-api-key.txt",
+    "C:\\Users\\User\\BNA-Keyholder\\learning-delivery-missing-values.private.template.json"
+  ],
+  "protected_input_fingerprints": [
+    { "name": "vimeo_access_token", "bytes": 35, "sha256_prefix": "93c597f0feaf" },
+    { "name": "vimeo_test_project_uri", "bytes": 35, "sha256_prefix": "b910dc615871" },
+    { "name": "zoom_account_id", "bytes": 23, "sha256_prefix": "e5d46dd3d1a8" },
+    { "name": "zoom_client_id", "bytes": 23, "sha256_prefix": "99678bb988b2" },
+    { "name": "zoom_client_secret", "bytes": 33, "sha256_prefix": "52ead9813f18" },
+    { "name": "zoom_webhook_secret", "bytes": 23, "sha256_prefix": "ef219f1667b3" },
+    { "name": "openai_api_key", "bytes": 0, "sha256_prefix": "e3b0c44298fc" }
+  ],
+  "validation": [
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/content/learning-delivery.test.ts --reporter=dot",
+      "status": "passed",
+      "evidence": "1 test file passed, 8 tests passed"
+    },
+    {
+      "command": "npm run unit",
+      "status": "passed",
+      "evidence": "53 test files passed, 264 tests passed"
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed",
+      "evidence": "tsc --noEmit -p tsconfig.typecheck.json"
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "evidence": "Secret scan passed across 1744 repo text files."
+    },
+    {
+      "command": "npm run lint",
+      "status": "passed",
+      "evidence": "eslint ."
+    },
+    {
+      "command": "npx prettier --check <touched TypeScript files>",
+      "status": "passed",
+      "evidence": "All matched files use Prettier code style."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "evidence": "No whitespace errors."
+    },
+    {
+      "command": "npx tsx scripts/media/learning-delivery-readiness.ts",
+      "status": "passed",
+      "evidence": "No external calls; Drive, Vimeo webhook, Zoom SDK, and OpenAI key blockers recorded."
+    }
+  ],
+  "external_effects": {
+    "vimeo_calls": false,
+    "zoom_calls": false,
+    "openai_calls": false,
+    "google_drive_calls": false,
+    "highlevel_calls": false,
+    "production_db_mutations": false,
+    "provider_account_mutations": false
+  },
+  "blockers": [
+    {
+      "provider": "drive",
+      "operator_action": "Add the approved Google Drive folder ID and service-account or OAuth credential to the protected keyholder paths."
+    },
+    {
+      "provider": "vimeo",
+      "operator_action": "Add Vimeo webhook secret/upload confirmation and explicitly approve one private upload canary."
+    },
+    {
+      "provider": "zoom",
+      "operator_action": "Add Zoom SDK key/secret and freshly approve one isolated Zoom canary."
+    },
+    {
+      "provider": "openai",
+      "operator_action": "Add a non-empty OpenAI API key at C:\\Users\\User\\BNA-Keyholder\\openai-api-key.txt or explicitly approve the alternate protected key path."
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+apps/worker/src/main/index.ts
+ops/codex-runs/LEARNING-DELIVERY/CHANGED-FILES.txt
+ops/codex-runs/LEARNING-DELIVERY/HANDOFF.json
+ops/codex-runs/LEARNING-DELIVERY/MILESTONE.md
+ops/codex-runs/LEARNING-DELIVERY/STATE.json
+packages/contracts/src/content/index.ts
+packages/contracts/src/content/learning-delivery.ts
+packages/db/migrations/2208_learning_delivery_media_pipeline.sql
+packages/domain/src/content/learning-delivery.ts
+packages/domain/src/index.ts
+scripts/media/learning-delivery-readiness.ts
+tests/unit/content/learning-delivery.test.ts
