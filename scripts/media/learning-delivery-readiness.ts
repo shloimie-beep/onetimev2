@@ -55,7 +55,13 @@ const requiredInputs = [
     path: join(keyholderDir, 'zoom-sdk-secret.txt'),
     provider: 'zoom',
   },
-  { name: 'openai_api_key', path: join(keyholderDir, 'openai-api-key.txt'), provider: 'openai' },
+  { name: 'openai_api_key_later', path: join(keyholderDir, 'openaiv2.txt'), provider: 'openai' },
+  {
+    name: 'openai_api_key_legacy_empty',
+    path: join(keyholderDir, 'openai-api-key.txt'),
+    provider: 'openai',
+    optional: true,
+  },
 ] as const;
 
 type ProviderName = (typeof requiredInputs)[number]['provider'];
@@ -101,7 +107,8 @@ function writeTemplate(path: string) {
     vimeo_webhook_secret_path: join(keyholderDir, 'vimeo-webhook-secret.txt'),
     zoom_sdk_key_path: join(keyholderDir, 'zoom-sdk-key.txt'),
     zoom_sdk_secret_path: join(keyholderDir, 'zoom-sdk-secret.txt'),
-    openai_api_key_path: join(keyholderDir, 'openai-api-key.txt'),
+    openai_api_key_path: join(keyholderDir, 'openaiv2.txt'),
+    openai_legacy_empty_key_path: join(keyholderDir, 'openai-api-key.txt'),
     approvals_needed: [
       'explicit private Vimeo upload canary approval',
       'fresh explicit Zoom meeting canary approval',
