@@ -81,6 +81,12 @@
       "reason": "No staging deployment was created, so no real staging identities or credentials were generated.",
       "evidence": "Private handoff records blocker status only and contains no real credentials.",
       "needed_action": "After staging deployment and migrations, create protected operator-only identities and store credentials only in the private handoff file."
+    },
+    {
+      "id": "BLOCKED_GITHUB_ACTIONS_ACCOUNT_BILLING",
+      "reason": "GitHub Actions did not start PR #96 jobs because repository account billing or spending limit requires owner action.",
+      "evidence": "Each failed check annotation said: The job was not started because recent account payments have failed or your spending limit needs to be increased.",
+      "needed_action": "Repository owner must resolve GitHub Billing & plans / Actions spending-limit state, then rerun PR #96 checks."
     }
   ],
   "verification": [
@@ -123,6 +129,11 @@
       "command": "npx playwright test tests/e2e/w12-03-portal-test-lab.spec.ts",
       "status": "passed",
       "summary": "2 browser tests passed and produced admin, parent, and student screenshots with zero critical/serious a11y findings."
+    },
+    {
+      "command": "gh pr view 96 --json statusCheckRollup plus check-run annotations",
+      "status": "blocked_external_account_billing",
+      "summary": "All five GitHub Actions checks failed before any runner steps because GitHub reported account payment/spending-limit blockage."
     }
   ],
   "screenshots": [
