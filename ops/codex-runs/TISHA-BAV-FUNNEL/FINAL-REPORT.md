@@ -32,9 +32,10 @@ Validation:
 - Scoped Prettier check for touched files: passed.
 - Intent preservation validation: passed, 22/22 hard signals and 5/5 actionable spans covered.
 - BNA PQC validation fixtures and 8/8 evals: passed; watchdog retains 17 pre-existing findings outside this packet.
-- Railway PR environment: deployed commit `0c45134b1a8e890e28e7fd06312b6bb881f556fb` successfully before the provider-scoped preview registration fix.
+- Railway PR environment: deployed commit `b986237c42ddb44a80c7917cbb96d62875494632` successfully with the provider-scoped preview registration fix.
 - Railway preview database migration: `2211_tisha_bav_provider_event_scope.sql` applied through the existing PR environment database service using `DATABASE_PUBLIC_URL`.
 - Railway preview registration domain smoke: passed with `success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`, and `duplicate_submission=false`.
+- Railway preview HTTP registration smoke: passed at `POST /api/v1/events/tisha-bav-2026/register` with `success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`, and the branded thank-you copy.
 - Live preview smoke: `https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav` returned HTTP 200 with the event title and registration CTA, and exposed no raw Zoom URL.
 - Full local `npm run format`: still shows the existing broad Windows-worktree formatting backlog outside this funnel change; CI's named format blockers were formatted.
 
