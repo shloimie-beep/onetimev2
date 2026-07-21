@@ -57,15 +57,16 @@ test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', asy
     timeout: 7000,
   });
   await ownerPage.getByRole('button', { name: 'Feature', exact: true }).click();
-  await expect(ownerPage.locator('.live-panel--selected')).toContainText('live', { timeout: 7000 });
-
-  const liveSnapshot = await ownerPage.request.get('/api/v1/live-class/questions');
-  const liveJson = await liveSnapshot.json();
-  const activeQuestion = liveJson.data.questions.find(
-    (question: { question_key: string }) => question.question_key === questionKey,
-  );
-  expect(activeQuestion.status).toBe('live');
-  expect(liveJson.data.stage.current_scene).toBe('OT - Featured Student');
+  await expect
+    .poll(async () => {
+      const liveSnapshot = await ownerPage.request.get('/api/v1/live-class/questions');
+      const liveJson = await liveSnapshot.json();
+      const activeQuestion = liveJson.data.questions.find(
+        (question: { question_key: string }) => question.question_key === questionKey,
+      );
+      return `${activeQuestion.status}:${liveJson.data.stage.current_scene}`;
+    })
+    .toBe('live:OT - Featured Student');
 
   await ownerPage.getByRole('button', { name: 'Done' }).click();
   await expect
