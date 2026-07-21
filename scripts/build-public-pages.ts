@@ -286,44 +286,32 @@ function signupPage() {
 
 function tishaBavLandingPage() {
   return pageShell(
-    "A Live Tisha B'Av Program with Rabbi Eli Scheller | One Time Mishnayos",
+    "Filling the World with Knowledge of Hashem | Tisha B'Av VIP Zoom Class",
     `<main class="event-page tisha-bav-page">
   <section class="event-hero" aria-labelledby="tisha-bav-title">
-    <div class="event-brand-row">${renderLogo({
-      label: 'One Time Mishnayos home',
-      subtitle: "Tisha B'Av live program",
-      href: '/',
-      size: 64,
-    })}</div>
     <div class="event-layout">
       <div class="event-copy">
-        <p class="event-kicker">Live Zoom event</p>
-        <h1 id="tisha-bav-title">A Live Tisha B'Av Program with Rabbi Eli Scheller</h1>
+        <h1 id="tisha-bav-title">Filling the World with Knowledge of Hashem</h1>
+        <p class="event-hebrew" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
+        <p class="event-intro">Special Tisha B'Av VIP Zoom Class with Rabbi Elly Scheller</p>
         <p class="event-time"><span>Thursday, July 23, 2026</span><strong>3:00 PM Eastern / 10:00 PM Israel</strong></p>
-        <p class="event-intro">Reserve a place for this focused One Time program. The private access details will be emailed before the program.</p>
-        <div class="event-visual-placeholder" role="img" aria-label="One Time Tisha B'Av live program">
-          <span>One Time Mishnayos</span>
-          <strong>Tisha B'Av</strong>
-          <small>Live with Rabbi Eli Scheller</small>
-        </div>
       </div>
       <section class="event-register-shell" aria-labelledby="event-register-title">
-        <h2 id="event-register-title">Get the Zoom link</h2>
-        <p class="event-form-note">Enter your email and we will send the private access details before the program.</p>
+        <h2 id="event-register-title">Reserve My Spot</h2>
+        <p class="event-form-note">Join an international live Zoom class and receive the event link by email.</p>
         <div class="noscript-panel" role="status" data-event-noscript><strong>JavaScript is required for secure event registration.</strong><span>Please use a browser with JavaScript enabled.</span></div>
         <form class="event-form" action="/api/v1/events/tisha-bav-2026/register" method="post" data-event-registration-form novalidate>
           <input type="text" name="homepage" autocomplete="off" tabindex="-1" aria-hidden="true" class="honeypot-field">
           <div class="field"><label for="event_email">Email</label><input id="event_email" name="email" type="email" inputmode="email" autocomplete="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
           <div class="field"><label for="event_first_name">First name <span>optional</span></label><input id="event_first_name" name="first_name" autocomplete="given-name"><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
           <label class="consent event-consent"><input id="event_newsletter" name="newsletter_opt_in" type="checkbox" value="yes"><span>Send me future One Time emails.</span></label>
-          <button class="button button-primary" type="submit" data-event-submit hidden>Send Me the Zoom Link</button>
+          <button class="button button-primary" type="submit" data-event-submit hidden>Reserve My Spot</button>
           <p class="event-privacy">We will use this email for this event's access details. Optional future emails are separate, and you can unsubscribe from marketing emails.</p>
           <p class="form-status" role="status" data-form-status></p>
         </form>
         <div class="event-success-panel" data-event-success-panel hidden tabindex="-1">
-          <h2>You're registered.</h2>
-          <p>We'll email the private access details before the program.</p>
-          <p>Thursday, July 23<br>3:00 PM Eastern / 10:00 PM Israel</p>
+          <h2>Thank you — your spot has been reserved.</h2>
+          <p>We'll send your Zoom link and event details by email.</p>
           <a class="form-link" href="/tisha-bav/live">Open private access page</a>
         </div>
       </section>
@@ -333,7 +321,7 @@ function tishaBavLandingPage() {
     {
       canonicalPath: '/tisha-bav',
       description:
-        "Register for A Live Tisha B'Av Program with Rabbi Eli Scheller on Thursday, July 23, 2026.",
+        "Reserve a spot for a special Tisha B'Av VIP Zoom class with Rabbi Elly Scheller.",
     },
   );
 }

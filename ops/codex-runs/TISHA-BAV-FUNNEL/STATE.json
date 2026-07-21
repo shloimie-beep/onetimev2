@@ -10,6 +10,12 @@
   "event_start": "2026-07-23T15:00:00-04:00",
   "event_start_israel": "2026-07-23T22:00:00+03:00",
   "preview_url": "https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav",
+  "landing_assets": {
+    "desktop_hero": "apps/web/public/assets/events/tisha-bav-2026/hero-desktop.png",
+    "mobile_hero": "apps/web/public/assets/events/tisha-bav-2026/hero-mobile.png",
+    "desktop_visual_evidence": "ops/codex-runs/TISHA-BAV-FUNNEL/screenshots/tisha-bav-desktop-final.png",
+    "mobile_visual_evidence": "ops/codex-runs/TISHA-BAV-FUNNEL/screenshots/tisha-bav-mobile-final.png"
+  },
   "provider_scope": {
     "account_key": "rabbi_sheller_provider",
     "product_key": "one_time_mishnah_class",
@@ -43,6 +49,8 @@
     "railway_preview_registration_domain_smoke": "passed_success_confirmation_queued_provider_off",
     "railway_preview_http_registration": "passed_success_confirmation_queued_provider_off",
     "railway_preview_smoke": "passed_http_200_no_raw_zoom_url",
+    "final_landing_copy_and_hero": "passed_desktop_mobile_form_thank_you",
+    "preview_zoom_runtime": "configured_without_committing_raw_url",
     "git_diff_check": "passed",
     "scoped_prettier": "passed",
     "full_repo_prettier": "pre_existing_backlog"
@@ -50,6 +58,8 @@
   "notes": [
     "Original prompt preserved in ORIGINAL-PROMPT.md.",
     "Preview provider-scoped registration required migration 2211 and runtime event_definition_key event_tisha_bav_2026_rabbi_sheller_provider.",
+    "Final landing hero assets are committed as desktop and mobile PNGs; no final artwork blocker remains for the preview route.",
+    "Operator-provided Zoom join URL was stored only in the protected Railway PR runtime and is not present in repo files.",
     "Exact event email copy is preserved and implemented through EMAIL-COPY-MANIFEST.json and the versioned communication catalog.",
     "Warm invitation audience selection and any external send remain unapproved; no email was sent.",
     "The current base branch lacks the divergent HighLevel integration branch; this run keeps GHL work scoped to event registration intents and provider-off safe defaults.",

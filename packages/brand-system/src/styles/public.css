@@ -1522,6 +1522,92 @@ small {
   margin-top: 10px;
 }
 
+.tisha-bav-page {
+  background: #050505;
+}
+
+.tisha-bav-page .event-hero {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  align-content: stretch;
+  margin: 0;
+  padding: clamp(24px, 5vw, 56px);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.16) 46%, rgba(0, 0, 0, 0.64)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.46), transparent 44%, rgba(0, 0, 0, 0.74)),
+    url('/assets/events/tisha-bav-2026/hero-desktop.png') center center / cover no-repeat;
+}
+
+.tisha-bav-page .event-layout {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, 100%);
+  min-height: calc(100svh - clamp(48px, 10vw, 112px));
+  margin: 0 auto;
+  align-items: end;
+  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 410px);
+}
+
+.tisha-bav-page .event-copy {
+  align-self: start;
+  max-width: 520px;
+  padding-top: clamp(18px, 7vh, 76px);
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.78);
+}
+
+.tisha-bav-page .event-copy h1 {
+  max-width: 9ch;
+  font-size: clamp(3rem, 5.4vw, 5.35rem);
+}
+
+.event-hebrew {
+  margin: -4px 0 0;
+  color: var(--color-yellow-soft);
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.6vw, 3.1rem);
+  line-height: 1.08;
+}
+
+.tisha-bav-page .event-intro {
+  max-width: 510px;
+  color: #fff8dc;
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
+  font-weight: 850;
+}
+
+.tisha-bav-page .event-time {
+  gap: 4px;
+  color: rgba(255, 248, 220, 0.88);
+  font-size: 0.98rem;
+}
+
+.tisha-bav-page .event-time strong {
+  color: var(--color-yellow-soft);
+  font-size: 1.12rem;
+}
+
+.tisha-bav-page .event-register-shell,
+.tisha-bav-page .event-success-panel {
+  background:
+    linear-gradient(145deg, rgba(255, 210, 31, 0.12), transparent 38%), rgba(8, 8, 6, 0.86);
+  backdrop-filter: blur(16px);
+}
+
+.tisha-bav-page .event-register-shell {
+  align-self: end;
+  border-color: rgba(255, 210, 31, 0.38);
+}
+
+.tisha-bav-page .event-register-shell h2 {
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+}
+
+.tisha-bav-page .event-form-note {
+  color: rgba(255, 248, 220, 0.86);
+}
+
 :focus-visible {
   outline: 3px solid var(--color-cyan);
   outline-offset: 3px;
@@ -1555,6 +1641,45 @@ small {
 
   .event-copy h1 {
     font-size: clamp(2.7rem, 13vw, 4rem);
+  }
+
+  .tisha-bav-page .event-hero {
+    min-height: 100svh;
+    padding: 18px 16px 34px;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.66), rgba(0, 0, 0, 0.14) 44%, rgba(0, 0, 0, 0.82)),
+      url('/assets/events/tisha-bav-2026/hero-mobile.png') left top / cover no-repeat;
+  }
+
+  .tisha-bav-page .event-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    gap: 0;
+  }
+
+  .tisha-bav-page .event-copy {
+    max-width: min(62vw, 250px);
+    margin-left: auto;
+    padding-top: 0;
+    justify-items: end;
+    text-align: right;
+  }
+
+  .tisha-bav-page .event-copy h1 {
+    max-width: 9ch;
+    font-size: clamp(1.9rem, 8vw, 2.65rem);
+  }
+
+  .tisha-bav-page .event-intro {
+    max-width: 240px;
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .tisha-bav-page .event-register-shell {
+    width: 100%;
+    margin-top: clamp(300px, 40vh, 420px);
   }
 }
 
@@ -1666,6 +1791,10 @@ small {
   .event-copy h1,
   .event-live-shell h1 {
     font-size: 2.35rem;
+  }
+
+  .tisha-bav-page .event-copy h1 {
+    font-size: clamp(1.85rem, 8vw, 2.55rem);
   }
 
   .event-time strong {

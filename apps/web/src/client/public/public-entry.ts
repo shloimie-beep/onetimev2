@@ -347,7 +347,7 @@ if (eventRegistrationForm) {
     } finally {
       if (submit) {
         submit.disabled = false;
-        submit.textContent = 'Send Me the Zoom Link';
+        submit.textContent = 'Reserve My Spot';
       }
     }
   });
