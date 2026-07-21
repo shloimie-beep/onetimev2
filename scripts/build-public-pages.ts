@@ -3,6 +3,7 @@ import path from 'node:path';
 import {
   escapeHtml,
   renderCampaignTicker,
+  renderLogo,
   renderPageShell,
   renderPublicFooter,
   renderPublicHeader,
@@ -283,6 +284,95 @@ function signupPage() {
   );
 }
 
+function tishaBavLandingPage() {
+  return pageShell(
+    "A Live Tisha B'Av Program with Rabbi Eli Scheller | One Time Mishnayos",
+    `<main class="event-page tisha-bav-page">
+  <section class="event-hero" aria-labelledby="tisha-bav-title">
+    <div class="event-brand-row">${renderLogo({
+      label: 'One Time Mishnayos home',
+      subtitle: "Tisha B'Av live program",
+      href: '/',
+      size: 64,
+    })}</div>
+    <div class="event-layout">
+      <div class="event-copy">
+        <p class="event-kicker">Live Zoom event</p>
+        <h1 id="tisha-bav-title">A Live Tisha B'Av Program with Rabbi Eli Scheller</h1>
+        <p class="event-time"><span>Thursday, July 23, 2026</span><strong>3:00 PM Eastern / 10:00 PM Israel</strong></p>
+        <p class="event-intro">Reserve a place for this focused One Time program. The private access details will be emailed before the program.</p>
+        <div class="event-visual-placeholder" role="img" aria-label="One Time Tisha B'Av live program">
+          <span>One Time Mishnayos</span>
+          <strong>Tisha B'Av</strong>
+          <small>Live with Rabbi Eli Scheller</small>
+        </div>
+      </div>
+      <section class="event-register-shell" aria-labelledby="event-register-title">
+        <h2 id="event-register-title">Get the Zoom link</h2>
+        <p class="event-form-note">Enter your email and we will send the private access details before the program.</p>
+        <div class="noscript-panel" role="status" data-event-noscript><strong>JavaScript is required for secure event registration.</strong><span>Please use a browser with JavaScript enabled.</span></div>
+        <form class="event-form" action="/api/v1/events/tisha-bav-2026/register" method="post" data-event-registration-form novalidate>
+          <input type="text" name="homepage" autocomplete="off" tabindex="-1" aria-hidden="true" class="honeypot-field">
+          <div class="field"><label for="event_email">Email</label><input id="event_email" name="email" type="email" inputmode="email" autocomplete="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
+          <div class="field"><label for="event_first_name">First name <span>optional</span></label><input id="event_first_name" name="first_name" autocomplete="given-name"><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
+          <label class="consent event-consent"><input id="event_newsletter" name="newsletter_opt_in" type="checkbox" value="yes"><span>Send me future One Time emails.</span></label>
+          <button class="button button-primary" type="submit" data-event-submit hidden>Send Me the Zoom Link</button>
+          <p class="event-privacy">We will use this email for this event's access details. Optional future emails are separate, and you can unsubscribe from marketing emails.</p>
+          <p class="form-status" role="status" data-form-status></p>
+        </form>
+        <div class="event-success-panel" data-event-success-panel hidden tabindex="-1">
+          <h2>You're registered.</h2>
+          <p>We'll email the private access details before the program.</p>
+          <p>Thursday, July 23<br>3:00 PM Eastern / 10:00 PM Israel</p>
+          <a class="form-link" href="/tisha-bav/live">Open private access page</a>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>`,
+    {
+      canonicalPath: '/tisha-bav',
+      description:
+        "Register for A Live Tisha B'Av Program with Rabbi Eli Scheller on Thursday, July 23, 2026.",
+    },
+  );
+}
+
+function tishaBavLivePage() {
+  return pageShell(
+    "Private Access | Tisha B'Av Program",
+    `<main class="event-page event-live-page">
+  <section class="event-live-shell" aria-labelledby="event-live-title">
+    ${renderLogo({
+      label: 'One Time Mishnayos home',
+      subtitle: 'Private event access',
+      href: '/',
+      size: 60,
+    })}
+    <p class="event-kicker">Private Zoom access</p>
+    <h1 id="event-live-title">A Live Tisha B'Av Program with Rabbi Eli Scheller</h1>
+    <p class="event-time"><span>Thursday, July 23, 2026</span><strong>3:00 PM Eastern / 10:00 PM Israel</strong></p>
+    <form class="event-form event-join-form" action="/api/v1/events/tisha-bav-2026/join" method="post" data-event-join-form novalidate>
+      <input type="hidden" name="idempotency_key" value="join-page-form">
+      <input type="text" name="homepage" autocomplete="off" tabindex="-1" aria-hidden="true" class="honeypot-field">
+      <div class="field"><label for="join_email">Registered email</label><input id="join_email" name="email" type="email" inputmode="email" autocomplete="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
+      <button class="button button-primary" type="submit">Join the Live Program</button>
+      <p class="form-status" role="status" data-form-status>Access opens shortly before the program.</p>
+    </form>
+  </section>
+</main>`,
+    {
+      canonicalPath: '/tisha-bav/live',
+      description: "Private access page for the One Time Tisha B'Av live program.",
+    },
+  )
+    .replace('index, follow', 'noindex, nofollow')
+    .replace(
+      '<meta name="theme-color"',
+      '<meta name="referrer" content="no-referrer">\n  <meta name="theme-color"',
+    );
+}
+
 function simplePage(
   title: string,
   heading: string,
@@ -388,6 +478,8 @@ await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
+await writeFile(path.join(outDir, 'tisha-bav.html'), tishaBavLandingPage());
+await writeFile(path.join(outDir, 'tisha-bav-live.html'), tishaBavLivePage());
 await writeFile(
   path.join(outDir, 'login.html'),
   simplePage(

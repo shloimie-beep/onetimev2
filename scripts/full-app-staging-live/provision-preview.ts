@@ -26,9 +26,7 @@ import {
   createPortalGamificationAdapter,
   createStudentPortalService,
   ONE_TIME_CLASS_SERIES_KEY,
-  ONE_TIME_CLASS_TITLE,
   PortalServiceError,
-  stableKey,
   type PortalServiceDeps,
 } from '../../packages/domain/src/index.ts';
 import { AesGcmPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
@@ -132,7 +130,7 @@ export async function runFullAppProvision(
   const parentPassword = strongPassword('Par');
   const studentPasswords = previewLearners.map((_, index) => strongPassword(`Stu${index + 1}`));
 
-  const adminUserKey = await createAccountUser({
+  await createAccountUser({
     pool: input.pool,
     config: input.config,
     email: destinations.adminDestination,
@@ -174,7 +172,13 @@ export async function runFullAppProvision(
   });
   await verifyParentOperations(parentService, parentActor, firstLearner, runId);
 
-  const classKey = await ensureOpenDemoClass(input.pool, input.config, parentActor, firstLearner, now);
+  const classKey = await ensureOpenDemoClass(
+    input.pool,
+    input.config,
+    parentActor,
+    firstLearner,
+    now,
+  );
   await seedLearningContent(input.pool, input.config, classKey, now);
   await seedProgressAndRewards(input.pool, input.config, parentUserKey, classKey, learners, now);
 
@@ -182,7 +186,9 @@ export async function runFullAppProvision(
   const liveParentService = createParentPortalService(deps);
   const studentService = createStudentPortalService(deps);
   const parentDashboard = await liveParentService.dashboard(parentActor, HOUSEHOLD_KEY);
-  if (parentDashboard.learners.filter((learner) => learner.learner_status === 'active').length !== 3) {
+  if (
+    parentDashboard.learners.filter((learner) => learner.learner_status === 'active').length !== 3
+  ) {
     throw new Error('Preview parent dashboard did not expose exactly three active learners.');
   }
 
@@ -603,9 +609,15 @@ async function verifyParentOperations(
   if (restored.status !== 'active') {
     throw new Error('Student restore operation did not leave the preview learner active.');
   }
-  await service.studentAccessOperation(actor, HOUSEHOLD_KEY, learner.learner_key, 'revoke_sessions', {
-    idempotency_key: `full-app-revoke-sessions-${runId}`,
-  });
+  await service.studentAccessOperation(
+    actor,
+    HOUSEHOLD_KEY,
+    learner.learner_key,
+    'revoke_sessions',
+    {
+      idempotency_key: `full-app-revoke-sessions-${runId}`,
+    },
+  );
 }
 
 async function ensureOpenDemoClass(
@@ -1018,10 +1030,7 @@ function studentActorContext(
   };
 }
 
-function resolveDestinations(
-  config: AppConfig,
-  options: { requirePrivateDestinations: boolean },
-) {
+function resolveDestinations(config: AppConfig, options: { requirePrivateDestinations: boolean }) {
   const adminDestination =
     firstEmail(
       process.env.FULL_APP_ADMIN_EMAIL,
@@ -1048,7 +1057,10 @@ function resolveDestinations(
 }
 
 function assertStagingScope(config: AppConfig, requirePrivateDestinations: boolean) {
-  if (config.deliveryEnvironment === 'production' || config.oneTimeRuntimeEnvironment === 'production') {
+  if (
+    config.deliveryEnvironment === 'production' ||
+    config.oneTimeRuntimeEnvironment === 'production'
+  ) {
     throw new Error('Refusing full app preview provisioning in production runtime scope.');
   }
   if (config.accountKey !== EXPECTED_ACCOUNT_KEY || config.productKey !== EXPECTED_PRODUCT_KEY) {
@@ -1063,7 +1075,9 @@ function assertStagingScope(config: AppConfig, requirePrivateDestinations: boole
     throw new Error('ZOOM_CLASSROOM_PROVIDER_MODE must be sink for the managed staging fallback.');
   }
   if (requirePrivateDestinations && config.deliveryEnvironment !== 'isolated_staging') {
-    throw new Error('Full app preview provisioning requires DELIVERY_ENVIRONMENT=isolated_staging.');
+    throw new Error(
+      'Full app preview provisioning requires DELIVERY_ENVIRONMENT=isolated_staging.',
+    );
   }
 }
 
@@ -1127,8 +1141,10 @@ function mapLearner(row: Record<string, unknown>): LearnerProfile {
     learner_key: String(row.learner_key),
     household_key: String(row.household_key),
     display_name: String(row.display_name),
-    hebrew_name: row.hebrew_name === null || row.hebrew_name === undefined ? null : String(row.hebrew_name),
-    grade_label: row.grade_label === null || row.grade_label === undefined ? null : String(row.grade_label),
+    hebrew_name:
+      row.hebrew_name === null || row.hebrew_name === undefined ? null : String(row.hebrew_name),
+    grade_label:
+      row.grade_label === null || row.grade_label === undefined ? null : String(row.grade_label),
     learner_status: String(row.learner_status) as LearnerProfile['learner_status'],
     version: Number(row.version ?? 1),
     created_at: new Date(String(row.created_at)).toISOString(),
@@ -1151,7 +1167,10 @@ function strongPassword(prefix: string) {
 }
 
 function compactDate(value: Date) {
-  return value.toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
+  return value
+    .toISOString()
+    .replace(/[-:T.Z]/g, '')
+    .slice(0, 14);
 }
 
 function addDays(value: Date, days: number) {
@@ -1194,7 +1213,7 @@ async function main() {
       writePrivateHandoff: true,
       requirePrivateDestinations: true,
     });
-    console.log(JSON.stringify(publicSummary(result), null, 2));
+    process.stdout.write(`${JSON.stringify(publicSummary(result), null, 2)}\n`);
   } finally {
     await pool.end();
   }

@@ -305,6 +305,91 @@ if (form) {
   });
 }
 
+const eventRegistrationForm = document.querySelector<HTMLFormElement>(
+  '[data-event-registration-form]',
+);
+if (eventRegistrationForm) {
+  const status = eventRegistrationForm.querySelector<HTMLElement>('[data-form-status]');
+  const submit = eventRegistrationForm.querySelector<HTMLButtonElement>('[data-event-submit]');
+  const success = document.querySelector<HTMLElement>('[data-event-success-panel]');
+  const noScriptFallback = document.querySelector<HTMLElement>('[data-event-noscript]');
+  const idempotencyKey = `tisha-bav-${crypto.randomUUID()}`;
+  if (noScriptFallback) noScriptFallback.hidden = true;
+  if (submit) submit.hidden = false;
+
+  eventRegistrationForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(eventRegistrationForm);
+    if (!eventRegistrationForm.reportValidity()) return;
+    const data = new FormData(eventRegistrationForm);
+    if (submit) submit.disabled = true;
+    if (status) status.textContent = '';
+    try {
+      const response = await postJson('/api/v1/events/tisha-bav-2026/register', {
+        email: String(data.get('email') ?? ''),
+        first_name: String(data.get('first_name') ?? ''),
+        newsletter_opt_in: data.get('newsletter_opt_in') === 'yes',
+        source: 'tisha_bav_2026_landing',
+        idempotency_key: idempotencyKey,
+        homepage: String(data.get('homepage') ?? ''),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(eventRegistrationForm, response.json);
+        return;
+      }
+      eventRegistrationForm.hidden = true;
+      if (success) {
+        success.hidden = false;
+        success.focus();
+      }
+    } catch {
+      setFormStatus(eventRegistrationForm, 'We could not save that registration yet.');
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = 'Send Me the Zoom Link';
+      }
+    }
+  });
+}
+
+const eventJoinForm = document.querySelector<HTMLFormElement>('[data-event-join-form]');
+if (eventJoinForm) {
+  const submit = eventJoinForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const idempotencyKey = `tisha-bav-join-${crypto.randomUUID()}`;
+  eventJoinForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(eventJoinForm);
+    if (!eventJoinForm.reportValidity()) return;
+    const data = new FormData(eventJoinForm);
+    setSubmitBusy(eventJoinForm, true, 'Opening...');
+    try {
+      const response = await postJson('/api/v1/events/tisha-bav-2026/join', {
+        email: String(data.get('email') ?? ''),
+        idempotency_key: idempotencyKey,
+        homepage: String(data.get('homepage') ?? ''),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(eventJoinForm, response.json);
+        return;
+      }
+      const redirectPath = String(response.json.redirect_path ?? '');
+      if (redirectPath.startsWith('/api/v1/events/tisha-bav-2026/redirect')) {
+        window.location.assign(redirectPath);
+        return;
+      }
+      setFormStatus(eventJoinForm, 'Private access is not available yet.');
+    } catch {
+      setFormStatus(eventJoinForm, 'Private access is not available yet.');
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = 'Join the Live Program';
+      }
+    }
+  });
+}
+
 const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
 if (loginForm) {
   const status = loginForm.querySelector<HTMLElement>('[data-form-status]');

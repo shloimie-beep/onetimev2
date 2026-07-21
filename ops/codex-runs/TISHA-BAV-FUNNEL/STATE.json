@@ -1,0 +1,31 @@
+{
+  "run_id": "TISHA-BAV-FUNNEL",
+  "status": "ready_for_operator_review",
+  "raw_prompt_sha256": "9EB1D52CC26C3C858E19502DA3FBABEB44E13A2EE9DB12B5B4C2742FD8C8BC94",
+  "repo": "shloimie-beep/onetimev2",
+  "base_branch": "codex/full-app-staging-live",
+  "branch": "codex/tisha-bav-2026-funnel",
+  "worktree": "C:/Users/User/.onetime-worktrees/TISHA-BAV-2026-FUNNEL",
+  "event_code": "tisha-bav-2026",
+  "event_start": "2026-07-23T15:00:00-04:00",
+  "event_start_israel": "2026-07-23T22:00:00+03:00",
+  "production_changed": false,
+  "external_provider_mutations_performed": false,
+  "validation": {
+    "build": "passed",
+    "lint": "passed",
+    "focused_unit": "passed",
+    "focused_integration": "passed",
+    "mobile_browser_smoke": "passed",
+    "secret_scan": "passed",
+    "brand_check": "passed",
+    "git_diff_check": "passed",
+    "scoped_prettier": "passed",
+    "full_repo_prettier": "pre_existing_backlog"
+  },
+  "notes": [
+    "Original prompt preserved in ORIGINAL-PROMPT.md.",
+    "The current base branch lacks the divergent HighLevel integration branch; this run keeps GHL work scoped to event registration intents and provider-off safe defaults.",
+    "No raw Zoom URL or secret is stored in repo files."
+  ]
+}

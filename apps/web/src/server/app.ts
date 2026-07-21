@@ -132,6 +132,7 @@ import {
   buildWhatsAppPublicAssistantStatus,
   inspectAccountLifecycleToken,
   buildOwnerDashboard,
+  captureTishaBavRegistration,
   listClassOccurrences,
   listContentLibrary,
   listAssignableUsers,
@@ -157,6 +158,8 @@ import {
   rotateSessionCsrf,
   removeCrmTag,
   receiveWhatsAppWebhook,
+  requestTishaBavJoin,
+  resolveTishaBavRedirect,
   updateContact,
   verifyEmailChallengeCode,
   verifyEmailChallengeLink,
@@ -165,6 +168,8 @@ import {
   verifyRecentEmailAssurance,
   verifySessionCsrf,
   verifyWhatsAppWebhookChallenge,
+  TishaBavIdempotencyConflictError,
+  TishaBavJoinError,
   type AuthenticatedSession,
   PortalServiceError,
   type PortalServiceDeps,
@@ -204,7 +209,7 @@ import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.t
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
-import { leadRateLimit } from './rate-limit.ts';
+import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
 
 type AppDeps = {
@@ -217,6 +222,7 @@ type AppDeps = {
 const SESSION_COOKIE = 'otcrm_session';
 const CSRF_COOKIE = 'otcrm_csrf';
 const TRUSTED_DEVICE_COOKIE = 'otcrm_trusted_device';
+const TISHA_BAV_EVENT_COOKIE = 'ot_tisha_bav_2026_session';
 type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
 const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
   (tokenType) => tokenType !== 'password_reset',
@@ -847,6 +853,75 @@ export function createApp({
 
   app.post('/api/v1/leads', leadRateLimit(config, pool), handleLeadPost);
   app.post('/api/one-time/interest', leadRateLimit(config, pool), handleLeadPost);
+
+  app.post(
+    '/api/v1/events/tisha-bav-2026/register',
+    eventRateLimit(config, pool),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      try {
+        const result = await withTiming(req, 'tisha_bav_register', () =>
+          captureTishaBavRegistration({ pool, config, payload: req.body }),
+        );
+        res.status(200).json(result);
+      } catch (error) {
+        handleTishaBavRouteError(error, req, res, 'We could not save that event registration yet.');
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/events/tisha-bav-2026/join',
+    eventRateLimit(config, pool),
+    async (req: RequestWithTrace, res) => {
+      setEventAccessNoStore(res);
+      try {
+        const userAgent = req.header('user-agent') ?? undefined;
+        const result = await withTiming(req, 'tisha_bav_join', () =>
+          requestTishaBavJoin({
+            pool,
+            config,
+            payload: req.body,
+            ...(req.ip ? { ip: req.ip } : {}),
+            ...(userAgent ? { userAgent } : {}),
+            ...(clock ? { now: clock() } : {}),
+          }),
+        );
+        res.cookie(TISHA_BAV_EVENT_COOKIE, result.sessionToken, {
+          httpOnly: true,
+          secure: config.isProduction,
+          sameSite: 'strict',
+          path: '/',
+          maxAge: Math.max(1, new Date(result.response.expires_at).getTime() - Date.now()),
+        });
+        if (req.accepts(['json', 'html']) === 'html') {
+          res.redirect(303, result.response.redirect_path);
+          return;
+        }
+        res.status(200).json(result.response);
+      } catch (error) {
+        handleTishaBavRouteError(error, req, res, 'Private access is not available yet.');
+      }
+    },
+  );
+
+  app.get('/api/v1/events/tisha-bav-2026/redirect', async (req: RequestWithTrace, res) => {
+    setEventAccessNoStore(res);
+    try {
+      const sessionToken = getCookie(req, TISHA_BAV_EVENT_COOKIE);
+      const result = await withTiming(req, 'tisha_bav_redirect', () =>
+        resolveTishaBavRedirect({
+          pool,
+          config,
+          ...(sessionToken ? { sessionToken } : {}),
+          ...(clock ? { now: clock() } : {}),
+        }),
+      );
+      res.redirect(302, result.joinUrl);
+    } catch (error) {
+      handleTishaBavRouteError(error, req, res, 'Private access is not available yet.');
+    }
+  });
 
   app.post('/api/v1/auth/login', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
@@ -2354,6 +2429,15 @@ export function createApp({
     distDir,
   });
 
+  app.get('/tisha-bav/live', async (_req, res) => {
+    await sendNoStorePublicHtml(
+      res,
+      path.join(distDir, 'tisha-bav-live.html'),
+      config,
+      '/tisha-bav/live',
+    );
+  });
+
   app.use(async (req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       next();
@@ -2383,6 +2467,7 @@ function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
   const staticPages = new Set([
     '/signup',
+    '/tisha-bav',
     '/login',
     '/privacy',
     '/terms',
@@ -2414,6 +2499,23 @@ async function sendPublicHtml(
   res
     .type('html')
     .set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache')
+    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+}
+
+async function sendNoStorePublicHtml(
+  res: Response,
+  filePath: string,
+  config: AppConfig,
+  canonicalPath: string,
+) {
+  const html = await readFile(filePath, 'utf8');
+  res
+    .type('html')
+    .set('Cache-Control', 'no-store, private')
+    .set('Pragma', 'no-cache')
+    .set('Expires', '0')
+    .set('Referrer-Policy', 'no-referrer')
+    .set('X-Robots-Tag', 'noindex, nofollow')
     .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
 }
 
@@ -3377,6 +3479,12 @@ function setPrivateNoStore(res: Response) {
   res.removeHeader('Last-Modified');
 }
 
+function setEventAccessNoStore(res: Response) {
+  setPrivateNoStore(res);
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+}
+
 function toIso(value: unknown) {
   if (value instanceof Date) return value.toISOString();
   return new Date(String(value)).toISOString();
@@ -3459,6 +3567,44 @@ function handleLifecycleRouteError(
       success: false,
       code: error.code,
       message: lifecycleMessage(error.code),
+      request_id: req.traceId,
+    });
+    return;
+  }
+  res.status(500).json(publicError('SERVER_ERROR', fallbackMessage, req.traceId));
+}
+
+function handleTishaBavRouteError(
+  error: unknown,
+  req: RequestWithTrace,
+  res: Response,
+  fallbackMessage: string,
+) {
+  if (res.headersSent) return;
+  if (error instanceof ZodError) {
+    res.status(400).json({
+      success: false,
+      code: 'VALIDATION_ERROR',
+      message: 'Please check the event form.',
+      field_errors: publicFieldErrors(error),
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof TishaBavIdempotencyConflictError) {
+    res.status(409).json({
+      success: false,
+      code: 'IDEMPOTENCY_CONFLICT',
+      message: 'This request key was already used. Refresh and try again.',
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof TishaBavJoinError) {
+    res.status(error.status).json({
+      success: false,
+      code: error.code,
+      message: error.publicMessage,
       request_id: req.traceId,
     });
     return;

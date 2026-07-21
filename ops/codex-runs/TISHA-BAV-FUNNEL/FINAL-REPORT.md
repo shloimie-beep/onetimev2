@@ -1,0 +1,35 @@
+# Tisha B'Av Funnel Final Report
+
+Status: ready for operator review with provider/runtime blockers.
+
+Implemented:
+
+- Canonical event config at `config/events/tisha-bav-2026.json`.
+- Additive migration `2210_tisha_bav_event_funnel.sql` for event definitions, registrations, delivery intents, and short-lived event sessions.
+- Public landing page `/tisha-bav` with exact `Send Me the Zoom Link` button copy and no student/payment/password/GHL iframe fields.
+- Registration API `POST /api/v1/events/tisha-bav-2026/register` with normalization, honeypot, durable rate limit, idempotency, duplicate update behavior, separate event-service and newsletter consent, and first-party event storage.
+- Event-scoped HighLevel adapter and delivery intent with provider-off default, mock coverage, exact event/source tags, and newsletter tag only on explicit consent.
+- Private access page `/tisha-bav/live`, join API, short-lived event session cookie, no-store/no-referrer headers, and server-side redirect endpoint.
+- Registry coverage in the visible action registry, brand route registry, and action/route inventory.
+
+Validation:
+
+- `npm run build`: passed.
+- `npm run lint`: passed after unrelated CI baseline cleanup in the preview provisioning scripts.
+- `npx vitest run --config vitest.unit.config.ts tests/unit/day-one/visible-action-registry.test.ts tests/unit/brand-system/brand-system.test.ts`: passed.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/tisha-bav-event-funnel.test.ts`: passed, 8 tests.
+- `npx playwright test tests/e2e/tisha-bav-funnel.spec.ts --project=chromium`: passed.
+- `npm run secret:scan`: passed.
+- `npm run brand:check`: passed.
+- `git diff --check`: passed with line-ending warnings only.
+- Scoped Prettier check for touched files: passed.
+- Full local `npm run format`: still shows the existing broad Windows-worktree formatting backlog outside this funnel change; CI's named format blockers were formatted.
+
+Known blockers:
+
+- Zoom event is not created/mapped in protected runtime. See `ZOOM-PROTECTED-HANDOFF.md`.
+- HighLevel provider sync is off unless `HIGHLEVEL_EVENT_SYNC_MODE=provider`, token, and workflow ID are configured.
+- Railway preview URL is pending draft PR creation and Railway PR environment provisioning.
+- Final operator graphic is not present; replacement path is `apps/web/public/assets/events/tisha-bav-2026/final-hero.webp`.
+
+Production changed: no.
