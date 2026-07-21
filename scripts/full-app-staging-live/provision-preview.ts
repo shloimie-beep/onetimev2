@@ -78,7 +78,7 @@ type FullAppPreviewResult = {
   household_key: string;
   class_key: string;
   lesson_key: string;
-  latest_required_migration: '2208_learning_delivery_media_pipeline';
+  latest_required_migration: '2209_class_series_scope_unique';
   students: PreviewStudent[];
 };
 
@@ -280,7 +280,7 @@ export async function runFullAppProvision(
     household_key: HOUSEHOLD_KEY,
     class_key: classKey,
     lesson_key: LESSON_KEY,
-    latest_required_migration: '2208_learning_delivery_media_pipeline',
+    latest_required_migration: '2209_class_series_scope_unique',
     students,
   };
 
