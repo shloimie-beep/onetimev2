@@ -308,6 +308,62 @@ if (form) {
 const eventRegistrationForm = document.querySelector<HTMLFormElement>(
   '[data-event-registration-form]',
 );
+const eventModal = document.querySelector<HTMLElement>('[data-event-modal]');
+const eventModalBackdrop = document.querySelector<HTMLElement>('[data-event-modal-backdrop]');
+const eventModalOpen = document.querySelector<HTMLButtonElement>('[data-event-open-modal]');
+const eventRegistrationContent = document.querySelector<HTMLElement>(
+  '[data-event-registration-content]',
+);
+let eventModalPreviousFocus: HTMLElement | null = null;
+
+function closeEventModal() {
+  if (!eventModal || !eventModalBackdrop) return;
+  eventModal.hidden = true;
+  eventModalBackdrop.hidden = true;
+  delete document.documentElement.dataset.eventModalOpen;
+  eventModalOpen?.setAttribute('aria-expanded', 'false');
+  (eventModalPreviousFocus ?? eventModalOpen)?.focus();
+}
+
+function openEventModal() {
+  if (!eventModal || !eventModalBackdrop) return;
+  eventModalPreviousFocus = document.activeElement as HTMLElement | null;
+  eventModal.hidden = false;
+  eventModalBackdrop.hidden = false;
+  document.documentElement.dataset.eventModalOpen = 'true';
+  eventModalOpen?.setAttribute('aria-expanded', 'true');
+  window.setTimeout(() => {
+    eventModal.querySelector<HTMLElement>('input[name="email"], button, a')?.focus();
+  }, 0);
+}
+
+eventModalOpen?.addEventListener('click', openEventModal);
+eventModalBackdrop?.addEventListener('click', closeEventModal);
+document
+  .querySelectorAll<HTMLButtonElement>('[data-event-close-modal]')
+  .forEach((button) => button.addEventListener('click', closeEventModal));
+eventModal?.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeEventModal();
+    return;
+  }
+  if (event.key !== 'Tab') return;
+  const focusables = [...eventModal.querySelectorAll<HTMLElement>(focusableSelector)].filter(
+    (node) => !node.hidden && node.offsetParent !== null,
+  );
+  const first = focusables[0];
+  const last = focusables.at(-1);
+  if (!first || !last) return;
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
 if (eventRegistrationForm) {
   const status = eventRegistrationForm.querySelector<HTMLElement>('[data-form-status]');
   const submit = eventRegistrationForm.querySelector<HTMLButtonElement>('[data-event-submit]');
@@ -338,6 +394,7 @@ if (eventRegistrationForm) {
         return;
       }
       eventRegistrationForm.hidden = true;
+      if (eventRegistrationContent) eventRegistrationContent.hidden = true;
       if (success) {
         success.hidden = false;
         success.focus();
@@ -350,6 +407,45 @@ if (eventRegistrationForm) {
         submit.textContent = 'Reserve My Spot';
       }
     }
+  });
+}
+
+const eventShareUrl =
+  eventModal?.dataset.eventShareUrl ?? 'https://join.onetimeonetime.com/tisha-bav';
+const eventCopyLink = document.querySelector<HTMLButtonElement>('[data-event-copy-link]');
+const eventCopyStatus = document.querySelector<HTMLElement>('[data-event-copy-status]');
+eventCopyLink?.addEventListener('click', async () => {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(eventShareUrl);
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = eventShareUrl;
+      textArea.setAttribute('readonly', '');
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      document.body.append(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      textArea.remove();
+    }
+    if (eventCopyStatus) eventCopyStatus.textContent = 'Link copied.';
+  } catch {
+    if (eventCopyStatus) eventCopyStatus.textContent = 'Copy was not available in this browser.';
+  }
+});
+
+const eventNativeShare = document.querySelector<HTMLButtonElement>('[data-event-native-share]');
+if (eventNativeShare && typeof navigator.share === 'function') {
+  eventNativeShare.hidden = false;
+  eventNativeShare.addEventListener('click', async () => {
+    await navigator
+      .share({
+        title: "Tisha B'Av VIP Zoom Class",
+        text: "Reserve your spot for the Tisha B'Av VIP Zoom class with Rabbi Elly Scheller.",
+        url: eventShareUrl,
+      })
+      .catch(() => undefined);
   });
 }
 

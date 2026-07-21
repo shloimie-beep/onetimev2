@@ -138,12 +138,77 @@
       "readiness_state": "ready",
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
-      "test_evidence": ["tests/integration/tisha-bav-event-funnel.test.ts"]
+      "test_evidence": [
+        "tests/integration/tisha-bav-event-funnel.test.ts",
+        "tests/e2e/tisha-bav-funnel.spec.ts"
+      ]
+    },
+    {
+      "action_id": "public.tisha_bav.registration_modal.open",
+      "label": "Reserve My Spot",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:register:open",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_registration_modal_open"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Registration modal is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.registration_modal.close",
+      "label": "Close registration modal",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:register:close",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_registration_modal_close"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Registration modal is closed.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
     },
     {
       "action_id": "public.tisha_bav.register.form",
       "label": "Reserve My Spot",
-      "surface": "form",
+      "surface": "modal_form",
       "route": "/tisha-bav",
       "roles": ["anonymous"],
       "capability": "events:register",
@@ -169,7 +234,134 @@
       "readiness_state": "ready",
       "provider_mode": "event_sync_provider_default_off",
       "external_mutation": false,
-      "test_evidence": ["tests/integration/tisha-bav-event-funnel.test.ts"]
+      "test_evidence": [
+        "tests/integration/tisha-bav-event-funnel.test.ts",
+        "tests/e2e/tisha-bav-funnel.spec.ts"
+      ]
+    },
+    {
+      "action_id": "public.tisha_bav.share.whatsapp.link",
+      "label": "WhatsApp share",
+      "surface": "link",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "GET",
+        "path": "https://wa.me/?text=:encoded_public_event_url"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_whatsapp_share_open"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The browser opens the WhatsApp share target.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.share.email_friend.link",
+      "label": "Email a Friend",
+      "surface": "link",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "GET",
+        "path": "mailto:?subject=:event_subject&body=:public_event_url"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_email_friend_open"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The browser opens the email share target.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.share.copy_link.button",
+      "label": "Copy Link",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_copy_share_link"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The canonical public event link is copied.",
+        "error": "A local copy-unavailable message is shown.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.share.native.button",
+      "label": "Share",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_native_share"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The browser native share sheet opens when supported.",
+        "error": "A local share-unavailable state is shown.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
     },
     {
       "action_id": "public.tisha_bav.live.route",
