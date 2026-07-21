@@ -7,12 +7,12 @@ Login URL: https://ot99-web-staging.up.railway.app/login
 
 Branch: `codex/full-app-staging-live`
 Base: `codex/one-time-finish-now-20260719`
-Head: `c93db419b0f95df4abd4696df407cc3293ee638d`
+Deployed source: `944f46b5435d648e6e175c69746ca7a4895ffec4`
 
 Staging deployment:
-- Web: `e4be7e7a-1315-4798-a553-1809178c067a`
-- Worker: `7fb57e78-c16b-4419-ad27-89b9429330ca`
-- Version: `full-app-staging-live-c93db41`
+- Web: `59112f43-29be-4a14-a2da-d932d798d78e`
+- Worker: `4f823e75-aee6-4524-bb36-8a7ced027355`
+- Version: `full-app-staging-live-944f46b`
 - Latest migration: `2209_class_series_scope_unique`
 
 Preview status:

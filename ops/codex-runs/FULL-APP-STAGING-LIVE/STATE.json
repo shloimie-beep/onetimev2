@@ -5,14 +5,14 @@
   "repository": "shloimie-beep/onetimev2",
   "branch": "codex/full-app-staging-live",
   "base_branch": "codex/one-time-finish-now-20260719",
-  "head_commit": "c93db419b0f95df4abd4696df407cc3293ee638d",
+  "head_commit": "944f46b5435d648e6e175c69746ca7a4895ffec4",
   "staging": {
     "url": "https://ot99-web-staging.up.railway.app",
     "login_url": "https://ot99-web-staging.up.railway.app/login",
-    "version": "full-app-staging-live-c93db41",
-    "commit_sha": "c93db419b0f95df4abd4696df407cc3293ee638d",
-    "web_deployment_id": "e4be7e7a-1315-4798-a553-1809178c067a",
-    "worker_deployment_id": "7fb57e78-c16b-4419-ad27-89b9429330ca",
+    "version": "full-app-staging-live-944f46b",
+    "commit_sha": "944f46b5435d648e6e175c69746ca7a4895ffec4",
+    "web_deployment_id": "59112f43-29be-4a14-a2da-d932d798d78e",
+    "worker_deployment_id": "4f823e75-aee6-4524-bb36-8a7ced027355",
     "latest_migration": "2209_class_series_scope_unique"
   },
   "provisioning": {
