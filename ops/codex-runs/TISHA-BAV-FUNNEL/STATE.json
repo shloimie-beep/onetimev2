@@ -9,6 +9,7 @@
   "event_code": "tisha-bav-2026",
   "event_start": "2026-07-23T15:00:00-04:00",
   "event_start_israel": "2026-07-23T22:00:00+03:00",
+  "preview_url": "https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav",
   "email_copy": {
     "raw_id": "RAW-20260721-010",
     "raw_sha256": "c970d6cae8311ace88c20bb0702e4a1f022f36ef165ad554bffa7af5b10a050f",
@@ -32,6 +33,8 @@
     "intent_preservation": "passed_22_of_22_hard_signals",
     "email_copy_contract": "passed_2_tests",
     "pqc_validators_and_evals": "passed_with_pre_existing_watchdog_findings",
+    "railway_preview_deploy": "passed_f5b573863ddc01d9c48d61d1f04f6239d958eca7",
+    "railway_preview_smoke": "passed_http_200_no_raw_zoom_url",
     "git_diff_check": "passed",
     "scoped_prettier": "passed",
     "full_repo_prettier": "pre_existing_backlog"

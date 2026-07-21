@@ -16,6 +16,7 @@
 - `npm run brand:check`
 - `npx vitest run --config vitest.unit.config.ts tests/unit/tisha-bav-email-copy.test.ts`
 - Intent preservation validation (22/22 hard signals)
+- Railway preview smoke at `https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav` (HTTP 200; event title and CTA present; no raw Zoom URL)
 - `git diff --check`
 - Scoped Prettier check for touched files
 

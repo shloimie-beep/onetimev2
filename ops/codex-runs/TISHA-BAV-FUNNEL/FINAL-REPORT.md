@@ -31,6 +31,8 @@ Validation:
 - Scoped Prettier check for touched files: passed.
 - Intent preservation validation: passed, 22/22 hard signals and 5/5 actionable spans covered.
 - BNA PQC validation fixtures and 8/8 evals: passed; watchdog retains 17 pre-existing findings outside this packet.
+- Railway PR environment: deployed commit `f5b573863ddc01d9c48d61d1f04f6239d958eca7` successfully.
+- Live preview smoke: `https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav` returned HTTP 200 with the event title and registration CTA, and exposed no raw Zoom URL.
 - Full local `npm run format`: still shows the existing broad Windows-worktree formatting backlog outside this funnel change; CI's named format blockers were formatted.
 
 Known blockers:
@@ -38,7 +40,6 @@ Known blockers:
 - Zoom event is not created/mapped in protected runtime. See `ZOOM-PROTECTED-HANDOFF.md`.
 - HighLevel provider sync is off unless `HIGHLEVEL_EVENT_SYNC_MODE=provider`, token, and workflow ID are configured.
 - Warm invitation audience selection and the external send are not authorized; the copy is prepared only.
-- Railway preview URL is pending draft PR creation and Railway PR environment provisioning.
 - Final operator graphic is not present; replacement path is `apps/web/public/assets/events/tisha-bav-2026/final-hero.webp`.
 
 Production changed: no.
