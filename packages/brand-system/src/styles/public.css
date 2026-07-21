@@ -1523,69 +1523,105 @@ small {
 }
 
 .tisha-bav-page {
+  min-height: 100svh;
   background: #050505;
 }
 
 .tisha-bav-page .event-hero {
-  position: relative;
   width: 100%;
-  min-height: 100svh;
-  align-content: stretch;
+  min-height: auto;
   margin: 0;
-  padding: clamp(24px, 5vw, 56px);
-  overflow: hidden;
-  background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.16) 46%, rgba(0, 0, 0, 0.64)),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.46), transparent 44%, rgba(0, 0, 0, 0.74)),
-    url('/assets/events/tisha-bav-2026/hero-desktop.png') center center / cover no-repeat;
+  padding: clamp(24px, 4vw, 52px) clamp(18px, 4vw, 48px) clamp(42px, 6vw, 72px);
 }
 
 .tisha-bav-page .event-layout {
-  position: relative;
-  z-index: 1;
-  width: min(1180px, 100%);
-  min-height: calc(100svh - clamp(48px, 10vw, 112px));
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(16px, 3vw, 28px);
   margin: 0 auto;
-  align-items: end;
-  grid-template-columns: minmax(0, 0.95fr) minmax(320px, 410px);
 }
 
 .tisha-bav-page .event-copy {
-  align-self: start;
-  max-width: 520px;
-  padding-top: clamp(18px, 7vh, 76px);
-  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.78);
+  max-width: 920px;
+  justify-self: center;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
 }
 
 .tisha-bav-page .event-copy h1 {
-  max-width: 9ch;
-  font-size: clamp(3rem, 5.4vw, 5.35rem);
+  max-width: 18ch;
+  font-size: clamp(2.75rem, 5.4vw, 4.8rem);
+  line-height: 1.02;
 }
 
 .event-hebrew {
-  margin: -4px 0 0;
+  margin: 0;
   color: var(--color-yellow-soft);
   font-family: var(--font-display);
-  font-size: clamp(1.7rem, 3.6vw, 3.1rem);
-  line-height: 1.08;
+  font-size: clamp(1.7rem, 3vw, 2.65rem);
+  line-height: 1.12;
+  text-align: center;
+}
+
+.event-artwork {
+  position: relative;
+  width: min(100%, 1100px);
+  margin-inline: auto;
+  background: #0b0b08;
+  box-shadow: 0 20px 64px rgba(0, 0, 0, 0.44);
+}
+
+.event-artwork-picture,
+.event-artwork img {
+  display: block;
+  width: 100%;
+}
+
+.event-artwork img {
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+.event-artwork-safe-face-region {
+  display: none;
+  pointer-events: none;
+}
+
+.event-details {
+  width: min(860px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .tisha-bav-page .event-intro {
-  max-width: 510px;
+  max-width: 760px;
+  margin: 0;
   color: #fff8dc;
   font-size: clamp(1rem, 1.5vw, 1.25rem);
   font-weight: 850;
 }
 
 .tisha-bav-page .event-time {
-  gap: 4px;
+  justify-items: center;
+  gap: 5px;
   color: rgba(255, 248, 220, 0.88);
-  font-size: 0.98rem;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
 }
 
 .tisha-bav-page .event-time strong {
   color: var(--color-yellow-soft);
-  font-size: 1.12rem;
+  font-size: clamp(1.2rem, 1.8vw, 1.4rem);
+}
+
+.event-primary-cta {
+  min-width: 220px;
+  margin-top: 4px;
 }
 
 .tisha-bav-page .event-register-shell,
@@ -1596,7 +1632,7 @@ small {
 }
 
 .tisha-bav-page .event-register-shell {
-  align-self: end;
+  position: relative;
   border-color: rgba(255, 210, 31, 0.38);
 }
 
@@ -1606,6 +1642,106 @@ small {
 
 .tisha-bav-page .event-form-note {
   color: rgba(255, 248, 220, 0.86);
+}
+
+html[data-event-modal-open] {
+  overflow: hidden;
+}
+
+.event-modal-layer {
+  position: fixed;
+  z-index: 120;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(18px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+
+.event-modal-layer[hidden] {
+  display: none;
+}
+
+.event-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.event-modal-dialog {
+  z-index: 1;
+  width: min(520px, 100%);
+  max-height: calc(
+    100svh - max(36px, env(safe-area-inset-top)) - max(36px, env(safe-area-inset-bottom))
+  );
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.event-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #fff8dc;
+  background: rgba(255, 248, 220, 0.1);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.event-modal-dialog [data-event-form-panel] {
+  display: grid;
+  gap: 14px;
+}
+
+.event-share {
+  display: grid;
+  gap: 12px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 210, 31, 0.22);
+}
+
+.event-share h3 {
+  margin: 0;
+  color: var(--color-yellow-soft);
+  font-size: 1.2rem;
+}
+
+.event-share-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.event-share-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-color: rgba(255, 210, 31, 0.42);
+  color: #fff8dc;
+  background: rgba(255, 248, 220, 0.08);
+  text-align: center;
+  text-decoration: none;
+}
+
+.event-copy-status {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--color-yellow-soft);
+  font-weight: 800;
+}
+
+.event-done-button {
+  width: 100%;
 }
 
 :focus-visible {
@@ -1644,42 +1780,77 @@ small {
   }
 
   .tisha-bav-page .event-hero {
-    min-height: 100svh;
-    padding: 18px 16px 34px;
-    background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.66), rgba(0, 0, 0, 0.14) 44%, rgba(0, 0, 0, 0.82)),
-      url('/assets/events/tisha-bav-2026/hero-mobile.png') left top / cover no-repeat;
+    min-height: auto;
+    padding: 22px 14px 38px;
   }
 
   .tisha-bav-page .event-layout {
-    display: flex;
-    flex-direction: column;
-    min-height: auto;
-    gap: 0;
+    gap: 16px;
   }
 
   .tisha-bav-page .event-copy {
-    max-width: min(62vw, 250px);
-    margin-left: auto;
-    padding-top: 0;
-    justify-items: end;
-    text-align: right;
+    max-width: 100%;
+    padding-inline: 6px;
   }
 
   .tisha-bav-page .event-copy h1 {
-    max-width: 9ch;
-    font-size: clamp(1.9rem, 8vw, 2.65rem);
+    max-width: 18ch;
+    font-size: clamp(1.75rem, 8vw, 2.4rem);
+    line-height: 1.08;
+  }
+
+  .event-hebrew {
+    font-size: clamp(1.35rem, 6vw, 1.9rem);
+  }
+
+  .event-artwork {
+    width: min(100%, 480px);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.42);
+  }
+
+  .event-artwork-safe-face-region {
+    position: absolute;
+    top: 28%;
+    left: 0;
+    width: 49%;
+    height: 55%;
+    display: block;
   }
 
   .tisha-bav-page .event-intro {
-    max-width: 240px;
-    font-size: 0.88rem;
-    line-height: 1.45;
+    max-width: 34ch;
+    font-size: clamp(1rem, 4.7vw, 1.15rem);
+    line-height: 1.42;
   }
 
-  .tisha-bav-page .event-register-shell {
-    width: 100%;
-    margin-top: clamp(300px, 40vh, 420px);
+  .tisha-bav-page .event-time {
+    font-size: clamp(1rem, 4.5vw, 1.15rem);
+  }
+
+  .tisha-bav-page .event-time strong {
+    font-size: clamp(1.2rem, 5.5vw, 1.4rem);
+  }
+
+  .event-primary-cta {
+    width: min(100%, 320px);
+  }
+
+  .event-modal-layer {
+    place-items: end center;
+    padding: max(12px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .event-modal-dialog {
+    width: min(520px, 100%);
+    max-height: calc(
+      100svh - max(22px, env(safe-area-inset-top)) - max(10px, env(safe-area-inset-bottom))
+    );
+    border-radius: 18px 18px 8px 8px;
+  }
+
+  .event-share-actions {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1794,7 +1965,7 @@ small {
   }
 
   .tisha-bav-page .event-copy h1 {
-    font-size: clamp(1.85rem, 8vw, 2.55rem);
+    font-size: clamp(1.75rem, 8vw, 2.4rem);
   }
 
   .event-time strong {

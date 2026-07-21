@@ -285,20 +285,45 @@ function signupPage() {
 }
 
 function tishaBavLandingPage() {
+  const canonicalEventUrl = 'https://join.onetimeonetime.com/tisha-bav';
+  const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(
+    `Join Rabbi Elly Scheller for a special live Tisha B'Av Zoom class:\n\n${canonicalEventUrl}`,
+  )}`;
+  const emailShareUrl = `mailto:?subject=${encodeURIComponent(
+    "Special live Tisha B'Av Zoom class",
+  )}&body=${encodeURIComponent(
+    `I thought you might be interested in this special live Tisha B'Av Zoom class with Rabbi Elly Scheller:\n\n${canonicalEventUrl}`,
+  )}`;
   return pageShell(
     "Filling the World with Knowledge of Hashem | Tisha B'Av VIP Zoom Class",
     `<main class="event-page tisha-bav-page">
   <section class="event-hero" aria-labelledby="tisha-bav-title">
     <div class="event-layout">
-      <div class="event-copy">
+      <header class="event-copy">
         <h1 id="tisha-bav-title">Filling the World with Knowledge of Hashem</h1>
         <p class="event-hebrew" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
+      </header>
+      <div class="event-artwork" data-testid="event-artwork">
+        <picture class="event-artwork-picture">
+          <source media="(max-width: 820px)" srcset="/assets/events/tisha-bav-2026/hero-mobile.png" width="1080" height="1350">
+          <img src="/assets/events/tisha-bav-2026/hero-desktop.png" width="1366" height="768" alt="Rabbi Elly Scheller with a lion, wolf, sheep, and Jerusalem at sunrise" data-event-artwork-image>
+        </picture>
+        <span class="event-artwork-safe-face-region" data-testid="mobile-artwork-safe-face-region" aria-hidden="true"></span>
+      </div>
+      <div class="event-details">
         <p class="event-intro">Special Tisha B'Av VIP Zoom Class with Rabbi Elly Scheller</p>
         <p class="event-time"><span>Thursday, July 23, 2026</span><strong>3:00 PM Eastern / 10:00 PM Israel</strong></p>
+        <button class="button button-primary event-primary-cta" type="button" data-event-modal-open aria-haspopup="dialog" aria-controls="tisha-bav-registration-dialog">Reserve My Spot</button>
       </div>
-      <section class="event-register-shell" aria-labelledby="event-register-title">
-        <h2 id="event-register-title">Reserve My Spot</h2>
-        <p class="event-form-note">Join an international live Zoom class and receive the event link by email.</p>
+    </div>
+  </section>
+  <div class="event-modal-layer" data-event-modal hidden>
+    <div class="event-modal-backdrop" data-event-modal-backdrop aria-hidden="true"></div>
+    <section class="event-register-shell event-modal-dialog" id="tisha-bav-registration-dialog" role="dialog" aria-modal="true" aria-labelledby="event-register-title" tabindex="-1">
+      <button class="event-modal-close" type="button" data-event-modal-close aria-label="Close registration">×</button>
+      <h2 id="event-register-title">Special Tisha B'Av VIP Zoom Class</h2>
+      <div data-event-form-panel>
+        <p class="event-form-note">Reserve your place and receive the event link by email.</p>
         <div class="noscript-panel" role="status" data-event-noscript><strong>JavaScript is required for secure event registration.</strong><span>Please use a browser with JavaScript enabled.</span></div>
         <form class="event-form" action="/api/v1/events/tisha-bav-2026/register" method="post" data-event-registration-form novalidate>
           <input type="text" name="homepage" autocomplete="off" tabindex="-1" aria-hidden="true" class="honeypot-field">
@@ -309,14 +334,24 @@ function tishaBavLandingPage() {
           <p class="event-privacy">We will use this email for this event's access details. Optional future emails are separate, and you can unsubscribe from marketing emails.</p>
           <p class="form-status" role="status" data-form-status></p>
         </form>
-        <div class="event-success-panel" data-event-success-panel hidden tabindex="-1">
-          <h2>Thank you — your spot has been reserved.</h2>
-          <p>We'll send your Zoom link and event details by email.</p>
-          <a class="form-link" href="/tisha-bav/live">Open private access page</a>
+      </div>
+      <div class="event-success-panel" data-event-success-panel hidden tabindex="-1">
+        <h2>We got your request.</h2>
+        <p>Your spot has been reserved. We’ll send the Zoom link and event details to your email.</p>
+        <div class="event-share" aria-labelledby="event-share-title">
+          <h3 id="event-share-title">Invite a friend</h3>
+          <div class="event-share-actions">
+            <a class="button event-share-action" href="${escapeHtml(whatsappShareUrl)}" target="_blank" rel="noreferrer" data-event-share-whatsapp>Share on WhatsApp</a>
+            <a class="button event-share-action" href="${escapeHtml(emailShareUrl)}" data-event-share-email>Email a Friend</a>
+            <button class="button event-share-action" type="button" data-event-copy-link data-copy-value="${canonicalEventUrl}">Copy Link</button>
+            <button class="button event-share-action" type="button" data-event-native-share hidden>Share</button>
+          </div>
+          <p class="event-copy-status" role="status" aria-live="polite" data-event-copy-status></p>
         </div>
-      </section>
-    </div>
-  </section>
+        <button class="button button-primary event-done-button" type="button" data-event-modal-close>Done</button>
+      </div>
+    </section>
+  </div>
 </main>`,
     {
       canonicalPath: '/tisha-bav',

@@ -305,6 +305,118 @@ if (form) {
   });
 }
 
+const eventModal = document.querySelector<HTMLElement>('[data-event-modal]');
+const eventModalOpen = document.querySelector<HTMLButtonElement>('[data-event-modal-open]');
+const eventModalDialog = eventModal?.querySelector<HTMLElement>('[role="dialog"]') ?? null;
+const eventModalBackdrop = eventModal?.querySelector<HTMLElement>('[data-event-modal-backdrop]');
+const eventCopyLink = eventModal?.querySelector<HTMLButtonElement>('[data-event-copy-link]');
+const eventCopyStatus = eventModal?.querySelector<HTMLElement>('[data-event-copy-status]');
+const eventNativeShare = eventModal?.querySelector<HTMLButtonElement>('[data-event-native-share]');
+const canonicalTishaBavUrl = 'https://join.onetimeonetime.com/tisha-bav';
+let eventModalReturnFocus: HTMLElement | null = null;
+let eventCopyStatusTimer: number | undefined;
+
+const eventModalFocusables = () =>
+  eventModalDialog
+    ? [...eventModalDialog.querySelectorAll<HTMLElement>(focusableSelector)].filter(
+        (element) =>
+          !element.hidden &&
+          element.tabIndex !== -1 &&
+          element.getAttribute('aria-hidden') !== 'true' &&
+          element.getClientRects().length > 0,
+      )
+    : [];
+
+const openEventModal = () => {
+  if (!eventModal || !eventModalDialog) return;
+  eventModalReturnFocus = document.activeElement as HTMLElement | null;
+  eventModal.hidden = false;
+  document.documentElement.dataset.eventModalOpen = 'true';
+  window.requestAnimationFrame(() => {
+    eventModalDialog.querySelector<HTMLInputElement>('#event_email')?.focus();
+  });
+};
+
+const closeEventModal = () => {
+  if (!eventModal || eventModal.hidden) return;
+  eventModal.hidden = true;
+  delete document.documentElement.dataset.eventModalOpen;
+  const focusTarget = eventModalReturnFocus ?? eventModalOpen;
+  eventModalReturnFocus = null;
+  focusTarget?.focus();
+};
+
+eventModalOpen?.addEventListener('click', openEventModal);
+eventModalBackdrop?.addEventListener('click', closeEventModal);
+eventModal?.querySelectorAll<HTMLButtonElement>('[data-event-modal-close]').forEach((button) => {
+  button.addEventListener('click', closeEventModal);
+});
+
+document.addEventListener('keydown', (event) => {
+  if (!eventModal || eventModal.hidden) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeEventModal();
+    return;
+  }
+  if (event.key !== 'Tab') return;
+  const focusables = eventModalFocusables();
+  const first = focusables[0];
+  const last = focusables.at(-1);
+  if (!first || !last) {
+    event.preventDefault();
+    eventModalDialog?.focus();
+    return;
+  }
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
+eventCopyLink?.addEventListener('click', async () => {
+  const value = eventCopyLink.dataset.copyValue ?? canonicalTishaBavUrl;
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(value);
+    copied = true;
+  } catch {
+    const fallback = document.createElement('textarea');
+    fallback.value = value;
+    fallback.setAttribute('readonly', '');
+    fallback.style.position = 'fixed';
+    fallback.style.opacity = '0';
+    document.body.append(fallback);
+    fallback.select();
+    copied = document.execCommand('copy');
+    fallback.remove();
+  }
+  if (!eventCopyStatus) return;
+  eventCopyStatus.textContent = copied ? 'Link copied' : 'Copy the link from the address bar.';
+  window.clearTimeout(eventCopyStatusTimer);
+  eventCopyStatusTimer = window.setTimeout(() => {
+    eventCopyStatus.textContent = '';
+  }, 2400);
+});
+
+if (eventNativeShare && typeof navigator.share === 'function') {
+  eventNativeShare.hidden = false;
+  eventNativeShare.addEventListener('click', async () => {
+    try {
+      await navigator.share({
+        title: "Special live Tisha B'Av Zoom class",
+        text: "Join Rabbi Elly Scheller for a special live Tisha B'Av Zoom class.",
+        url: canonicalTishaBavUrl,
+      });
+    } catch {
+      // A visitor cancelling the operating-system share sheet is not an error state.
+    }
+  });
+}
+
 const eventRegistrationForm = document.querySelector<HTMLFormElement>(
   '[data-event-registration-form]',
 );
@@ -312,6 +424,7 @@ if (eventRegistrationForm) {
   const status = eventRegistrationForm.querySelector<HTMLElement>('[data-form-status]');
   const submit = eventRegistrationForm.querySelector<HTMLButtonElement>('[data-event-submit]');
   const success = document.querySelector<HTMLElement>('[data-event-success-panel]');
+  const formPanel = document.querySelector<HTMLElement>('[data-event-form-panel]');
   const noScriptFallback = document.querySelector<HTMLElement>('[data-event-noscript]');
   const idempotencyKey = `tisha-bav-${crypto.randomUUID()}`;
   if (noScriptFallback) noScriptFallback.hidden = true;
@@ -337,7 +450,7 @@ if (eventRegistrationForm) {
         applyApiErrors(eventRegistrationForm, response.json);
         return;
       }
-      eventRegistrationForm.hidden = true;
+      if (formPanel) formPanel.hidden = true;
       if (success) {
         success.hidden = false;
         success.focus();
