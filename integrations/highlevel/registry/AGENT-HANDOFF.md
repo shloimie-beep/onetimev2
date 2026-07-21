@@ -4,6 +4,15 @@ Before creating or changing a One Time HighLevel field, tag, custom value, workf
 
 Canonical schema: one-time-highlevel@1.0.0
 
+Required start files:
+
+- integrations/highlevel/registry/current.json
+- integrations/highlevel/registry/custom-fields.yaml
+- integrations/highlevel/registry/tag-taxonomy.yaml
+- integrations/highlevel/registry/custom-values.yaml
+- integrations/highlevel/registry/workflow-registry.yaml
+- integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json
+
 Canonical bot:
 
 - OT-A1 One Time Enrollment Assistant.
@@ -24,3 +33,5 @@ Safety:
 - Do not create Student contacts, Student fields or Student tags in HighLevel.
 - Do not send messages, publish workflows, enroll production contacts, mutate Stripe or expose private One Time links unless a later task explicitly authorizes the exact action.
 - Reconcile protected import manifest and contact map before any contact import write.
+- Do not overwrite an active prompt with another agent prompt. Store incoming prompts, diff against the active prompt, then promote explicitly.
+- Agent Mode jobs must save UI work, capture safe GHL IDs, return to the BNA Agent Action drop-off page, save the result JSON and verify readback.

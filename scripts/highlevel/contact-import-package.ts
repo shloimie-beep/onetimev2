@@ -665,10 +665,8 @@ async function applyContacts(input: {
     const tagResult = await ghlRequest<Record<string, unknown>>(
       input.credentials,
       'POST',
-      '/contacts/bulk/tags/update/add',
+      `/contacts/${encodeURIComponent(contactId)}/tags`,
       {
-        locationId: input.credentials.locationId,
-        contactIds: [contactId],
         tags: contact.tags,
       },
     );

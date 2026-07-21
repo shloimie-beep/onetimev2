@@ -112,7 +112,12 @@ async function main() {
   record(
     'public URL check',
     publicUrlsAreCanonical(current) && activeText.includes('https://join.onetimeonetime.com/login'),
-    'active URLs use join.onetimeonetime.com or pending placeholders',
+    'active URLs use join.onetimeonetime.com or blocked unresolved empty values',
+  );
+  record(
+    'forbidden placeholder custom values',
+    !current.custom_values.some((value) => hasForbiddenPlaceholder(value.value)),
+    'no PENDING_, TODO or CHANGEME custom values are exported',
   );
   record(
     'old route/reference scan',
@@ -204,8 +209,17 @@ function publicUrlsAreCanonical(current: CurrentRegistry) {
     .every(
       (value) =>
         value.value.startsWith('https://join.onetimeonetime.com') ||
-        value.value.startsWith('PENDING_'),
+        (value.value === '' && value.deprecationState === 'blocked_ui_or_business_value'),
     );
+}
+
+function hasForbiddenPlaceholder(value: string) {
+  const normalized = value.trim().toUpperCase();
+  return (
+    normalized.startsWith('PENDING_') ||
+    normalized === 'TODO' ||
+    normalized === 'CHANGEME'
+  );
 }
 
 function hasUncorrectedOldReferences(text: string) {
@@ -277,5 +291,9 @@ function writeStdoutJson(value: unknown) {
 }
 
 function sha256(value: string) {
-  return createHash('sha256').update(value).digest('hex');
+  return createHash('sha256').update(canonicalHashText(value)).digest('hex');
+}
+
+function canonicalHashText(value: string) {
+  return value.replace(/\r\n/g, '\n');
 }

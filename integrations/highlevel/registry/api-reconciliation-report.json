@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-07-21T08:42:49.171Z",
+  "mode": "dry_run",
+  "location": {
+    "status": "blocked",
+    "locationId": "pBSnOK2nkdxp6gf9Rg3o",
+    "safeRef": "31fcbd2792f131dc",
+    "blocker": "location_verify_failed:429:retry_exhausted:Too Many Requests"
+  },
+  "customFields": {
+    "total": 34,
+    "idsRecorded": 21,
+    "created": 0,
+    "blocked": 34,
+    "blocker": "custom_field_read_failed:429:retry_exhausted:Too Many Requests"
+  },
+  "tags": {
+    "total": 38,
+    "idsRecorded": 29,
+    "created": 0,
+    "blocked": 38,
+    "blocker": "tag_read_failed:429:retry_exhausted:Too Many Requests"
+  },
+  "customValues": {
+    "total": 28,
+    "created": 0,
+    "updated": 0,
+    "blocked": 28,
+    "blocker": "custom_value_read_failed:429:retry_exhausted:Too Many Requests"
+  },
+  "pipeline": {
+    "name": "One Time Business",
+    "status": "blocked",
+    "blocker": "pipeline_read_failed:429:retry_exhausted:Too Many Requests"
+  },
+  "contacts": {
+    "status": "blocked",
+    "count": null,
+    "blocker": "contact_read_failed:429:retry_exhausted:Too Many Requests"
+  },
+  "workflows": {
+    "status": "blocked",
+    "present": 0,
+    "missing": 17,
+    "blocker": "workflow_read_failed:429:retry_exhausted:Too Many Requests"
+  },
+  "externalEffects": {
+    "highLevelCustomFieldsCreated": 0,
+    "highLevelTagsCreated": 0,
+    "highLevelCustomValuesCreated": 0,
+    "highLevelCustomValuesUpdated": 0,
+    "contactsCreated": 0,
+    "workflowEnrollments": 0,
+    "messagesSent": 0,
+    "stripeMutations": 0
+  },
+  "protectedOutputs": {
+    "privateReport": "C:/Users/User/.onetime-highlevel-private/activation-api-finalize-readonly-retry.private.json",
+    "importDirectory": "C:/Users/User/.onetime-highlevel-private/imports",
+    "manifest": "C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-import-manifest.private.json",
+    "contactMap": "C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-contact-map.private.json",
+    "errors": "C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-import-errors.private.json",
+    "reconciliation": "C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-import-reconciliation.private.json"
+  },
+  "safety": {
+    "pitPrinted": false,
+    "messagesSent": 0,
+    "workflowEnrollments": 0,
+    "workflowsPublished": 0,
+    "stripeMutations": 0,
+    "studentContactsCreated": 0
+  }
+}

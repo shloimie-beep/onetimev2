@@ -53,7 +53,8 @@
     "director:truth:live": "node scripts/check-director-truth.mjs --live",
     "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
     "highlevel:registry:export": "tsx scripts/highlevel/export-current-registry.ts",
-    "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-assets.ts",
+    "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
+    "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "highlevel:contacts:reconcile": "tsx scripts/highlevel/reconcile-contact-import.ts"
   },
   "dependencies": {

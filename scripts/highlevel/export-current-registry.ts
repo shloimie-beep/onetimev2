@@ -21,19 +21,21 @@ const repoRoot = process.cwd();
 const currentPath = path.join(repoRoot, 'integrations/highlevel/registry/current.json');
 
 const current = JSON.parse(await readFile(currentPath, 'utf8')) as CurrentRegistry;
-await refreshHashes(current.prompts ?? []);
-await refreshHashes(current.knowledge_bases ?? []);
-await writeFile(currentPath, `${JSON.stringify(current, null, 2)}\n`, 'utf8');
-await writeFile(
-  path.join(repoRoot, 'integrations/highlevel/registry/prompt-registry.yaml'),
-  yaml(current.prompts ?? []),
-  'utf8',
-);
-await writeFile(
-  path.join(repoRoot, 'integrations/highlevel/registry/knowledge-base-registry.yaml'),
-  yaml(current.knowledge_bases ?? []),
-  'utf8',
-);
+const promptHashesChanged = await refreshHashes(current.prompts ?? []);
+const knowledgeBaseHashesChanged = await refreshHashes(current.knowledge_bases ?? []);
+if (promptHashesChanged || knowledgeBaseHashesChanged) {
+  await writeFile(currentPath, `${JSON.stringify(current, null, 2)}\n`, 'utf8');
+  await writeFile(
+    path.join(repoRoot, 'integrations/highlevel/registry/prompt-registry.yaml'),
+    yaml(current.prompts ?? []),
+    'utf8',
+  );
+  await writeFile(
+    path.join(repoRoot, 'integrations/highlevel/registry/knowledge-base-registry.yaml'),
+    yaml(current.knowledge_bases ?? []),
+    'utf8',
+  );
+}
 
 writeStdoutJson({
   schemaId: current.schema_id,
@@ -49,14 +51,24 @@ function writeStdoutJson(value: unknown) {
 }
 
 async function refreshHashes(records: PromptRecord[]) {
+  let changed = false;
   for (const record of records) {
     if (!record.file_path) continue;
-    record.sha256 = sha256(await readFile(path.join(repoRoot, record.file_path), 'utf8'));
+    const nextHash = sha256(await readFile(path.join(repoRoot, record.file_path), 'utf8'));
+    if (record.sha256 !== nextHash) {
+      record.sha256 = nextHash;
+      changed = true;
+    }
   }
+  return changed;
 }
 
 function sha256(value: string) {
-  return createHash('sha256').update(value).digest('hex');
+  return createHash('sha256').update(canonicalHashText(value)).digest('hex');
+}
+
+function canonicalHashText(value: string) {
+  return value.replace(/\r\n/g, '\n');
 }
 
 function yaml(value: unknown) {

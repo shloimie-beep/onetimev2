@@ -6,7 +6,11 @@ export const registryMetadata = {
   date: '2026-07-20',
 } as const;
 
-export type AssetStatus = 'active' | 'pending_creation' | 'deprecated_existing';
+export type AssetStatus =
+  | 'active'
+  | 'pending_creation'
+  | 'deprecated_existing'
+  | 'blocked_ui_or_business_value';
 export type SourceOfTruth = 'HighLevel' | 'One Time' | 'Shared';
 
 export type RegistryField = {
@@ -768,28 +772,28 @@ const customValueInputs = [
   [
     'One Time - URLs',
     'One Time Early Access URL',
-    'PENDING_ACCEPTED_ROUTE',
+    '',
     'URL',
     'Pending accepted early-access route.',
   ],
   [
     'One Time - URLs',
     'One Time Checkout URL',
-    'PENDING_VERIFIED_GHL_CHECKOUT_URL',
+    '',
     'URL',
     'Pending verified checkout URL.',
   ],
   [
     'One Time - URLs',
     'One Time Recording Portal URL',
-    'PENDING_PROTECTED_PORTAL_ROUTE',
+    '',
     'URL',
     'Pending protected portal route.',
   ],
   [
     'One Time - URLs',
     'One Time WhatsApp Entry URL',
-    'PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL',
+    '',
     'URL',
     'Pending verified WhatsApp entry URL.',
   ],
@@ -886,7 +890,7 @@ export const customValues: RegistryCustomValue[] = customValueInputs.map(
     dependencies:
       canonicalName === 'One Time Published Price Label' ? ['One Time Pricing Display Status'] : [],
     aliases: [],
-    deprecationState: 'pending_creation',
+    deprecationState: value ? 'pending_creation' : 'blocked_ui_or_business_value',
     createdDate: date,
     lastVerifiedDate: '',
     lastTestedDate: '',

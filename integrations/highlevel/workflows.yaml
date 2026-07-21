@@ -1804,7 +1804,7 @@ custom_values:
     dataType: 'URL'
     category: 'one_time_urls'
     purpose: 'Pending accepted early-access route.'
-    value: 'PENDING_ACCEPTED_ROUTE'
+    value: ''
     sourceOfTruth: 'Shared'
     allowedValues: []
     workflowsAllowedToWrite: []
@@ -1812,7 +1812,7 @@ custom_values:
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'pending_creation'
+    deprecationState: 'blocked_ui_or_business_value'
     createdDate: '2026-07-20'
     lastVerifiedDate: ''
     lastTestedDate: ''
@@ -1825,7 +1825,7 @@ custom_values:
     dataType: 'URL'
     category: 'one_time_urls'
     purpose: 'Pending verified checkout URL.'
-    value: 'PENDING_VERIFIED_GHL_CHECKOUT_URL'
+    value: ''
     sourceOfTruth: 'Shared'
     allowedValues: []
     workflowsAllowedToWrite: []
@@ -1833,7 +1833,7 @@ custom_values:
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'pending_creation'
+    deprecationState: 'blocked_ui_or_business_value'
     createdDate: '2026-07-20'
     lastVerifiedDate: ''
     lastTestedDate: ''
@@ -1846,7 +1846,7 @@ custom_values:
     dataType: 'URL'
     category: 'one_time_urls'
     purpose: 'Pending protected portal route.'
-    value: 'PENDING_PROTECTED_PORTAL_ROUTE'
+    value: ''
     sourceOfTruth: 'Shared'
     allowedValues: []
     workflowsAllowedToWrite: []
@@ -1854,7 +1854,7 @@ custom_values:
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'pending_creation'
+    deprecationState: 'blocked_ui_or_business_value'
     createdDate: '2026-07-20'
     lastVerifiedDate: ''
     lastTestedDate: ''
@@ -1867,7 +1867,7 @@ custom_values:
     dataType: 'URL'
     category: 'one_time_urls'
     purpose: 'Pending verified WhatsApp entry URL.'
-    value: 'PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL'
+    value: ''
     sourceOfTruth: 'Shared'
     allowedValues: []
     workflowsAllowedToWrite: []
@@ -1875,7 +1875,7 @@ custom_values:
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'pending_creation'
+    deprecationState: 'blocked_ui_or_business_value'
     createdDate: '2026-07-20'
     lastVerifiedDate: ''
     lastTestedDate: ''
@@ -1940,7 +1940,7 @@ custom_values:
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'pending_creation'
+    deprecationState: 'blocked_ui_or_business_value'
     createdDate: '2026-07-20'
     lastVerifiedDate: ''
     lastTestedDate: ''
@@ -1985,7 +1985,7 @@ custom_values:
     dependencies:
       - 'One Time Pricing Display Status'
     aliases: []
-    deprecationState: 'pending_creation'
+    deprecationState: 'blocked_ui_or_business_value'
     createdDate: '2026-07-20'
     lastVerifiedDate: ''
     lastTestedDate: ''
@@ -2048,7 +2048,7 @@ custom_values:
     humansMayEdit: true
     dependencies: []
     aliases: []
-    deprecationState: 'pending_creation'
+    deprecationState: 'blocked_ui_or_business_value'
     createdDate: '2026-07-20'
     lastVerifiedDate: ''
     lastTestedDate: ''
