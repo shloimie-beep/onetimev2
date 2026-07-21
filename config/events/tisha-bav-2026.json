@@ -17,6 +17,15 @@
     "from": "info@onetimeonetime.com",
     "reply_to": "info@onetimeonetime.com"
   },
+  "communications": {
+    "catalog_version": "tisha-bav-2026-email-copy-v1",
+    "catalog_module": "packages/domain/src/events/tisha-bav-communications.ts",
+    "warm_invitation": "manual_prepare_only",
+    "registration_confirmation": "registration_triggered",
+    "one_hour_reminder_offset_minutes": -60,
+    "ten_minute_reminder_offset_minutes": -10,
+    "time_change_contract": "Update the canonical event start; the catalog derives dated copy and both event-relative reminder instants together."
+  },
   "highlevel": {
     "location_id": "pBSnOK2nkdxp6gf9Rg3o",
     "signup_source_custom_field_label": "One Time Signup Source",

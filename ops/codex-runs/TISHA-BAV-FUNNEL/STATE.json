@@ -9,6 +9,16 @@
   "event_code": "tisha-bav-2026",
   "event_start": "2026-07-23T15:00:00-04:00",
   "event_start_israel": "2026-07-23T22:00:00+03:00",
+  "email_copy": {
+    "raw_id": "RAW-20260721-010",
+    "raw_sha256": "c970d6cae8311ace88c20bb0702e4a1f022f36ef165ad554bffa7af5b10a050f",
+    "spec_id": "SPEC-20260721-010",
+    "spec_fingerprint": "df3cbccf409bfe09788297eec926817918c86fe3e326a98d915f02f308709f39",
+    "catalog_version": "tisha-bav-2026-email-copy-v1",
+    "one_hour_reminder_at": "2026-07-23T18:00:00.000Z",
+    "ten_minute_reminder_at": "2026-07-23T18:50:00.000Z",
+    "external_send_authorized": false
+  },
   "production_changed": false,
   "external_provider_mutations_performed": false,
   "validation": {
@@ -19,12 +29,17 @@
     "mobile_browser_smoke": "passed",
     "secret_scan": "passed",
     "brand_check": "passed",
+    "intent_preservation": "passed_22_of_22_hard_signals",
+    "email_copy_contract": "passed_2_tests",
+    "pqc_validators_and_evals": "passed_with_pre_existing_watchdog_findings",
     "git_diff_check": "passed",
     "scoped_prettier": "passed",
     "full_repo_prettier": "pre_existing_backlog"
   },
   "notes": [
     "Original prompt preserved in ORIGINAL-PROMPT.md.",
+    "Exact event email copy is preserved and implemented through EMAIL-COPY-MANIFEST.json and the versioned communication catalog.",
+    "Warm invitation audience selection and any external send remain unapproved; no email was sent.",
     "The current base branch lacks the divergent HighLevel integration branch; this run keeps GHL work scoped to event registration intents and provider-off safe defaults.",
     "No raw Zoom URL or secret is stored in repo files."
   ]

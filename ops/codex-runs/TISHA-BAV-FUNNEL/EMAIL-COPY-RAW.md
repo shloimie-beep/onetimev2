@@ -1,14 +1,3 @@
-# Tisha B'Av 2026 Email Copy
-
-## Source metadata
-
-- Channel: Codex operator chat
-- Captured: 2026-07-21
-- Scope: `rabbi_sheller_provider` / `one_time_mishnah_class`
-- Raw ID: `RAW-20260721-010`
-
-## Verbatim operator input
-
 **# Tisha B'Av 2026 Email Copy**
 
 **## Event assumptions**

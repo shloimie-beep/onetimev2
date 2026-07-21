@@ -55,6 +55,17 @@ describe('Tisha BAv event registration', () => {
     );
     expect(delivery.rows[0]).toMatchObject({ status: 'provider_off', provider: 'highlevel' });
     expect(delivery.rows[0].public_metadata.raw_zoom_url_present).toBe(false);
+    expect(delivery.rows[0].public_metadata.communication_catalog_version).toBe(
+      'tisha-bav-2026-email-copy-v1',
+    );
+    expect(delivery.rows[0].protected_payload.communication_catalog_version).toBe(
+      'tisha-bav-2026-email-copy-v1',
+    );
+    expect(delivery.rows[0].protected_payload.workflow_schedule).toMatchObject({
+      eventStart: '2026-07-23T19:00:00.000Z',
+      oneHourReminder: { offsetMinutes: -60, sendAt: '2026-07-23T18:00:00.000Z' },
+      tenMinuteReminder: { offsetMinutes: -10, sendAt: '2026-07-23T18:50:00.000Z' },
+    });
     expect(delivery.rows[0].protected_payload.tags).toEqual([
       "OT | Event | Tisha B'Av 2026 | Registered",
       "OT | Source | Tisha B'Av 2026",
@@ -71,6 +82,42 @@ describe('Tisha BAv event registration', () => {
     expect(second.registration_key).toBe(first.registration_key);
     await expectCount('event_registrations', 1);
     await expectCount('event_delivery_events', 1);
+  });
+
+  it('queues the exact bounded confirmation copy when the Resend fallback is enabled', async () => {
+    const config = testConfig({ ONE_TIME_EVENT_EMAIL_FALLBACK: 'resend' });
+    await captureTishaBavRegistration({
+      pool,
+      config,
+      payload: registrationPayload('fallback@example.test'),
+      now: openWindow,
+    });
+
+    const deliveries = await pool.query(
+      `SELECT protected_payload, public_metadata
+         FROM onetime.event_delivery_events
+        WHERE event_code = 'tisha-bav-2026'
+          AND provider = 'resend_fallback'`,
+    );
+    expect(deliveries.rowCount).toBe(1);
+    expect(deliveries.rows[0].protected_payload).toMatchObject({
+      communication_catalog_version: 'tisha-bav-2026-email-copy-v1',
+      template: 'tisha_bav_2026_registration_confirmation_v1',
+      subject: "You're registered for Rabbi Eli Scheller's live Tisha B'Av program",
+      cta: { label: 'View Event Details', path: '/tisha-bav' },
+      reply_to: 'info@onetimeonetime.com',
+      sender: 'Rabbi Eli Scheller | One Time Mishnayos',
+      from: 'info@onetimeonetime.com',
+    });
+    expect(deliveries.rows[0].protected_payload.body).toContain(
+      'Thursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel',
+    );
+    expect(JSON.stringify(deliveries.rows[0])).not.toMatch(/zoom\.us|zoommtg|pwd=/i);
+    expect(deliveries.rows[0].public_metadata).toMatchObject({
+      bounded: true,
+      confirmation_only: true,
+      warm_list_invitation: false,
+    });
   });
 
   it('syncs through the mock HighLevel adapter with newsletter consent isolated', async () => {

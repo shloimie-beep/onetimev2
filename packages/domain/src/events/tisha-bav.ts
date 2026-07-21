@@ -12,16 +12,27 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../legal/policies.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
+import {
+  TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
+  TISHA_BAV_EMAIL_CATALOG,
+  TISHA_BAV_EMAIL_SENDER,
+  TISHA_BAV_EVENT_START,
+  TISHA_BAV_JOIN_PATH,
+  TISHA_BAV_LANDING_PATH,
+  TISHA_BAV_WORKFLOW_SCHEDULE,
+} from './tisha-bav-communications.ts';
 
 export const TISHA_BAV_EVENT_CODE = 'tisha-bav-2026';
 export const TISHA_BAV_EVENT_DEFINITION_KEY = 'event_tisha_bav_2026';
 export const TISHA_BAV_EVENT_TITLE = "A Live Tisha B'Av Program with Rabbi Eli Scheller";
-export const TISHA_BAV_LANDING_PATH = '/tisha-bav';
-export const TISHA_BAV_JOIN_PATH = '/tisha-bav/live';
+export { TISHA_BAV_EVENT_START, TISHA_BAV_JOIN_PATH, TISHA_BAV_LANDING_PATH };
 export const TISHA_BAV_REDIRECT_PATH = '/api/v1/events/tisha-bav-2026/redirect';
-export const TISHA_BAV_EVENT_START = '2026-07-23T19:00:00.000Z';
-export const TISHA_BAV_JOIN_OPEN_AT = '2026-07-23T18:15:00.000Z';
-export const TISHA_BAV_JOIN_CLOSE_AT = '2026-07-23T22:00:00.000Z';
+export const TISHA_BAV_JOIN_OPEN_AT = new Date(
+  new Date(TISHA_BAV_EVENT_START).getTime() - 45 * 60_000,
+).toISOString();
+export const TISHA_BAV_JOIN_CLOSE_AT = new Date(
+  new Date(TISHA_BAV_EVENT_START).getTime() + 180 * 60_000,
+).toISOString();
 export const TISHA_BAV_SERVICE_CONSENT_POLICY = 'tisha-bav-2026-service-v1';
 export const TISHA_BAV_SOURCE_VALUE = "Tisha B'Av 2026 Landing";
 export const TISHA_BAV_REQUIRED_TAGS = [
@@ -602,6 +613,7 @@ async function upsertHighLevelDelivery(
         tag_count: protectedPayload.tags.length,
         newsletter_tag_requested: registration.newsletter_opt_in,
         workflow_configured: Boolean(config.highLevelTishaBavWorkflowId),
+        communication_catalog_version: TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
         source_custom_field_value: TISHA_BAV_SOURCE_VALUE,
         raw_zoom_url_present: false,
       }),
@@ -622,9 +634,14 @@ async function upsertFallbackDelivery(
   const protectedPayload = {
     email_normalized: registration.email_normalized,
     first_name: registration.first_name,
-    template: 'tisha_bav_2026_confirmation_v1',
-    reply_to: 'info@onetimeonetime.com',
-    sender: 'Rabbi Eli Scheller | One Time Mishnayos',
+    communication_catalog_version: TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
+    template: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.templateId,
+    subject: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.subject,
+    body: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.body,
+    cta: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.cta,
+    reply_to: TISHA_BAV_EMAIL_SENDER.replyTo,
+    sender: TISHA_BAV_EMAIL_SENDER.visibleName,
+    from: TISHA_BAV_EMAIL_SENDER.from,
     source: normalizeSource(payload.source),
     expires_after: '2026-07-24T23:59:59.000Z',
   };
@@ -801,7 +818,9 @@ function highLevelProtectedPayload(
     custom_fields: {
       'One Time Signup Source': TISHA_BAV_SOURCE_VALUE,
     },
+    communication_catalog_version: TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
     workflow_id: config.highLevelTishaBavWorkflowId ?? null,
+    workflow_schedule: TISHA_BAV_WORKFLOW_SCHEDULE,
     workflow_request_key: stableKey('ghl_workflow_request', [
       TISHA_BAV_EVENT_CODE,
       registration.registration_key,
