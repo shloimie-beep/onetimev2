@@ -250,7 +250,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Portal Test Lab is forbidden in production.');
   }
 
-  if (parsed.NODE_ENV === 'production' && parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED) {
+  if (
+    parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED &&
+    (deliveryEnvironment === 'production' || oneTimeRuntimeEnvironment === 'production')
+  ) {
     throw new Error('Live class fake adapter is forbidden in production.');
   }
 
@@ -435,7 +438,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkSecretConfigured: Boolean(parsed.ZOOM_MEETING_SDK_SECRET),
     zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID),
     liveClassFakeAdapterEnabled:
-      parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED ?? parsed.NODE_ENV !== 'production',
+      parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED ?? oneTimeRuntimeEnvironment !== 'production',
     liveClassObsBridgeToken:
       parsed.LIVE_CLASS_OBS_BRIDGE_TOKEN ??
       (parsed.NODE_ENV === 'production' ? undefined : 'local-live-class-obs-bridge'),
