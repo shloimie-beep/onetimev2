@@ -18,6 +18,7 @@
 - Intent preservation validation (22/22 hard signals)
 - Railway preview DB migration `2211_tisha_bav_provider_event_scope.sql`
 - Railway preview registration domain smoke (`success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`)
+- Railway preview HTTP registration smoke (`success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`)
 - Railway preview smoke at `https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav` (HTTP 200; event title and CTA present; no raw Zoom URL)
 - `git diff --check`
 - Scoped Prettier check for touched files
