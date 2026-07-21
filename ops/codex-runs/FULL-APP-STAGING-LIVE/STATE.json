@@ -1,0 +1,51 @@
+{
+  "run_id": "FULL-APP-STAGING-LIVE",
+  "status": "live",
+  "production_changed": false,
+  "repository": "shloimie-beep/onetimev2",
+  "branch": "codex/full-app-staging-live",
+  "base_branch": "codex/one-time-finish-now-20260719",
+  "head_commit": "c93db419b0f95df4abd4696df407cc3293ee638d",
+  "staging": {
+    "url": "https://ot99-web-staging.up.railway.app",
+    "login_url": "https://ot99-web-staging.up.railway.app/login",
+    "version": "full-app-staging-live-c93db41",
+    "commit_sha": "c93db419b0f95df4abd4696df407cc3293ee638d",
+    "web_deployment_id": "e4be7e7a-1315-4798-a553-1809178c067a",
+    "worker_deployment_id": "7fb57e78-c16b-4419-ad27-89b9429330ca",
+    "latest_migration": "2209_class_series_scope_unique"
+  },
+  "provisioning": {
+    "account_key": "rabbi_sheller_provider",
+    "product_key": "one_time_mishnah_class",
+    "admin_login": "email_challenge_required",
+    "parent_login": "ready",
+    "student_count": 3,
+    "student_logins": "ready",
+    "fourth_student_cap_rejection": true,
+    "vimeo_demo_lesson_ready": true,
+    "zoom_demo_class_ready": true,
+    "zoom_provider_mode": "sink",
+    "protected_zoom_launch_only": true,
+    "raw_zoom_url_committed": false,
+    "raw_vimeo_url_committed": false,
+    "credentials_committed": false
+  },
+  "validation": {
+    "npm_ci": "passed",
+    "typecheck": "passed",
+    "build": "passed",
+    "secret_scan": "passed",
+    "git_diff_check": "passed",
+    "zoom_demo_students": "passed",
+    "focused_unit_tests": "18 passed",
+    "focused_integration_tests": "14 passed",
+    "live_browser_smoke": "passed"
+  },
+  "screenshots": [
+    "ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/admin-email-challenge.png",
+    "ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/parent-dashboard.png",
+    "ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/student-dashboard-mobile.png"
+  ],
+  "blockers": []
+}

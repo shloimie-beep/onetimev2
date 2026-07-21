@@ -1,0 +1,24 @@
+{
+  "private_handoff_path": "C:\\Users\\User\\.onetime-full-app-preview\\FULL-APP-HANDOFF.private.json",
+  "private_handoff_committed": false,
+  "credentials_committed": false,
+  "raw_provider_links_committed": false,
+  "staging_url": "https://ot99-web-staging.up.railway.app",
+  "login_url": "https://ot99-web-staging.up.railway.app/login",
+  "contains": {
+    "admin_destination_and_password": "private_only",
+    "parent_identifier_and_password": "private_only",
+    "student_usernames_and_passwords": "private_only",
+    "demo_household": "private_and_redacted_public",
+    "cleanup_instructions": "private_only"
+  },
+  "safe_public_summary": {
+    "admin_login": "email_challenge_required",
+    "parent_login": "ready",
+    "student_count": 3,
+    "fourth_student_cap_rejection": true,
+    "vimeo_demo_lesson_ready": true,
+    "zoom_demo_class_ready": true,
+    "production_changed": false
+  }
+}
