@@ -49,7 +49,7 @@ try {
   ) {
     throw new Error('Zoom demo student preview smoke failed.');
   }
-  console.log(JSON.stringify(summary, null, 2));
+  process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
 } finally {
   await pool.end();
 }
