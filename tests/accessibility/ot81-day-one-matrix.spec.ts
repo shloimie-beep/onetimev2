@@ -42,7 +42,7 @@ test.describe('OT81 responsive accessibility matrix', () => {
     evidence.push(await inspectPage(page, 'landing-reduced-motion'));
 
     await login(page, 'ot-admin@example.test', 'TestPassword!234', '/app/crm');
-    await expect(page.getByRole('heading', { name: 'CRM' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'CRM', exact: true })).toBeVisible();
     evidence.push(await inspectPage(page, 'crm-mobile'));
 
     await page.evaluate(() => {
