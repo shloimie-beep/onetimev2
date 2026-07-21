@@ -131,7 +131,8 @@ export async function runStudentAccessOperation(input: {
   householdKey: string;
   learnerKey: string;
   operation: 'setup' | 'reset' | 'suspend' | 'restore' | 'revoke_sessions';
-  email?: string | undefined;
+  username?: string | undefined;
+  password?: string | undefined;
   displayName?: string | undefined;
 }) {
   const json = await api<{ success: true; data: StudentAccessState }>(
@@ -143,7 +144,8 @@ export async function runStudentAccessOperation(input: {
       headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
       body: JSON.stringify({
         idempotency_key: createIdempotencyKey(),
-        ...(input.email ? { email: input.email } : {}),
+        ...(input.username ? { username: input.username } : {}),
+        ...(input.password ? { password: input.password } : {}),
         ...(input.displayName ? { display_name: input.displayName } : {}),
       }),
     },

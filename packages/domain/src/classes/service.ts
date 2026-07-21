@@ -525,6 +525,10 @@ function portalSummary(summary: ClassOccurrenceSummary, hasAccess: boolean): Upc
     class_key: summary.occurrence_key,
     title: summary.title,
     starts_at: summary.starts_at,
+    local_time: '19:00',
+    timezone: 'Asia/Jerusalem',
+    protected_launch_required: true,
+    provider_state: 'not_configured',
     status: hasAccess ? (summary.status === 'live' ? 'live' : 'upcoming') : 'unavailable',
     launch_action: hasAccess
       ? providerUnavailableAction(summary.occurrence_key)
@@ -543,6 +547,10 @@ function derivedPortalSummary(now: Date, hasAccess: boolean): UpcomingClassSumma
     class_key: occurrenceKey,
     title: ONE_TIME_CLASS_TITLE,
     starts_at: window.startsAt.toISOString(),
+    local_time: '19:00',
+    timezone: 'Asia/Jerusalem',
+    protected_launch_required: true,
+    provider_state: 'not_configured',
     status: hasAccess ? 'unavailable' : 'unavailable',
     launch_action: hasAccess
       ? providerUnavailableAction(occurrenceKey)

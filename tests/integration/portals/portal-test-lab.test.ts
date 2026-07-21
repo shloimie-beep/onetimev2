@@ -128,7 +128,7 @@ describe('W12-03 Portal Test Lab', () => {
       const learner = W12_PORTAL_TEST_LAB.learners[0];
       const resetAccess = await parentStudentAccessAction(server.baseUrl, parent, learner, 'reset');
       expect(resetAccess.status).toBe(200);
-      expect((await resetAccess.json()).data.status).toBe('reset_requested');
+      expect((await resetAccess.json()).data.status).toBe('active');
       const suspendAccess = await parentStudentAccessAction(
         server.baseUrl,
         parent,
@@ -214,7 +214,10 @@ async function parentStudentAccessAction(
         'content-type': 'application/json',
         'x-csrf-token': parent.json.csrf_token,
       },
-      body: JSON.stringify({ idempotency_key: `w12-${action}-${learner.learnerKey}` }),
+      body: JSON.stringify({
+        idempotency_key: `w12-${action}-${learner.learnerKey}`,
+        ...(action === 'reset' ? { password: learner.defaultPassword } : {}),
+      }),
     },
   );
 }

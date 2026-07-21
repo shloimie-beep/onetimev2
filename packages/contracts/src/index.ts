@@ -178,12 +178,25 @@ const optionalTrimmed = (max = 180) =>
     .optional()
     .transform((value) => (value ? value : undefined));
 
-export const loginPayloadSchema = z.object({
-  email: z.string().trim().email().max(254),
-  password: z.string().min(8).max(256),
-  csrf_token: z.string().trim().min(16).max(160).optional(),
-  return_to: z.string().trim().max(240).optional(),
-});
+const loginIdentifierSchema = z.string().trim().min(3).max(254);
+
+export const loginPayloadSchema = z
+  .object({
+    identifier: loginIdentifierSchema.optional(),
+    email: loginIdentifierSchema.optional(),
+    password: z.string().min(8).max(256),
+    csrf_token: z.string().trim().min(16).max(160).optional(),
+    return_to: z.string().trim().max(240).optional(),
+  })
+  .superRefine((payload, ctx) => {
+    if (!payload.identifier && !payload.email) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['identifier'],
+        message: 'Enter your email or student username.',
+      });
+    }
+  });
 export type LoginPayload = z.infer<typeof loginPayloadSchema>;
 
 export const mfaChallengePayloadSchema = z.object({

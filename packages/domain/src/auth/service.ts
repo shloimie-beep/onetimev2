@@ -7,9 +7,15 @@ import {
   randomBytes,
   randomInt,
   randomUUID,
+  scryptSync,
   timingSafeEqual,
 } from 'node:crypto';
-import { roleDisplayLabel, type SessionUser, type UserRole } from '../../../contracts/src/index.ts';
+import {
+  normalizeStudentUsername,
+  roleDisplayLabel,
+  type SessionUser,
+  type UserRole,
+} from '../../../contracts/src/index.ts';
 import type { AppConfig } from '../../../config/src/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
@@ -22,6 +28,9 @@ const ARGON2_PARALLELISM = 1;
 const ARGON2_TAG_LENGTH = 32;
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 const DUMMY_PASSWORD_HASH = hashPassword('dummy-password-used-only-to-balance-login-timing');
+const DUMMY_STUDENT_PASSWORD_HASH_REF = studentPasswordHashRefForTestsOnly(
+  'dummy-password-used-only-to-balance-student-login-timing',
+);
 const RECOVERY_CODE_COUNT = 10;
 const POST_ACTIVATION_MFA_HANDOFF_TTL_MS = 15 * 60 * 1000;
 const EMAIL_CHALLENGE_TTL_MS = 10 * 60 * 1000;
@@ -175,6 +184,7 @@ export async function createAccountUser({
 export async function authenticateUser({
   pool,
   config,
+  identifier,
   email,
   password,
   ip,
@@ -183,21 +193,22 @@ export async function authenticateUser({
 }: {
   pool: DbPool;
   config: AppConfig;
-  email: string;
+  identifier?: string | undefined;
+  email?: string | undefined;
   password: string;
   ip?: string | undefined;
   userAgent?: string | undefined;
   trustedDeviceToken?: string | undefined;
 }): Promise<LoginResult> {
-  const emailNormalized = normalizeEmail(email);
-  const emailHash = stableKey('email', [emailNormalized]);
+  const loginIdentifier = normalizeLoginIdentifier(identifier ?? email ?? '');
+  const identifierHash = stableKey('login_identifier', [loginIdentifier]);
   const rateLimit = await consumeRateLimitBudgets({
     pool,
     config,
     budgets: [
       {
         scope: 'login_identifier',
-        subject: emailHash,
+        subject: identifierHash,
         limit: config.loginIdentifierRateLimitMax,
         windowMs: config.loginRateLimitWindowMs,
       },
@@ -228,7 +239,7 @@ export async function authenticateUser({
       reason: 'RATE_LIMITED',
       ip,
       userAgent,
-      metadata: { email_hash: emailHash, budget_scope: rateLimit.scope ?? null },
+      metadata: { identifier_hash: identifierHash, budget_scope: rateLimit.scope ?? null },
     });
     return rateLimit.retryAfterSeconds
       ? {
@@ -239,6 +250,28 @@ export async function authenticateUser({
       : { ok: false, code: 'RATE_LIMITED' };
   }
 
+  if (!looksLikeEmail(loginIdentifier)) {
+    const studentLogin = await authenticateStudentByUsername({
+      pool,
+      config,
+      username: loginIdentifier,
+      password,
+      ip,
+      userAgent,
+    });
+    if (studentLogin) return studentLogin;
+    await insertAuthAudit(pool, config, {
+      eventType: 'login_failed',
+      success: false,
+      reason: 'INVALID_CREDENTIALS',
+      ip,
+      userAgent,
+      metadata: { identifier_hash: identifierHash },
+    });
+    return { ok: false, code: 'INVALID_CREDENTIALS' };
+  }
+
+  const emailNormalized = normalizeEmail(loginIdentifier);
   const result = await pool.query(
     `SELECT user_key, email_normalized, display_name, role, password_hash, mfa_capable, status,
             security_version
@@ -255,7 +288,7 @@ export async function authenticateUser({
       reason: 'INVALID_CREDENTIALS',
       ip,
       userAgent,
-      metadata: { email_hash: stableKey('email', [emailNormalized]) },
+      metadata: { identifier_hash: identifierHash },
     });
     return { ok: false, code: 'INVALID_CREDENTIALS' };
   }
@@ -341,6 +374,95 @@ export async function authenticateUser({
     success: true,
     ip,
     userAgent,
+  });
+  return { ok: true, user: rowToSessionUser(row) };
+}
+
+async function authenticateStudentByUsername({
+  pool,
+  config,
+  username,
+  password,
+  ip,
+  userAgent,
+}: {
+  pool: DbPool;
+  config: AppConfig;
+  username: string;
+  password: string;
+  ip?: string | undefined;
+  userAgent?: string | undefined;
+}): Promise<LoginResult | null> {
+  const normalizedUsername = normalizeStudentUsername(username);
+  const result = await pool.query(
+    `SELECT access.access_state_key, access.learner_key, access.household_key,
+            access.status AS access_status, access.credential_status,
+            access.password_hash_ref,
+            learners.learner_status,
+            users.user_key, users.email_normalized, users.display_name, users.role,
+            users.password_hash, users.mfa_capable, users.status AS user_status,
+            users.security_version
+       FROM onetime.portal_student_access_state AS access
+       JOIN onetime.portal_learners AS learners
+         ON learners.account_key = access.account_key
+        AND learners.product_key = access.product_key
+        AND learners.learner_key = access.learner_key
+       LEFT JOIN onetime.account_users AS users
+         ON users.account_key = access.account_key
+        AND users.product_key = access.product_key
+        AND users.user_key = access.student_user_ref
+      WHERE access.account_key = $1
+        AND access.product_key = $2
+        AND access.normalized_username = $3
+      ORDER BY access.updated_at DESC
+      LIMIT 1`,
+    [config.accountKey, config.productKey, normalizedUsername],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  const passwordValid = verifyStudentPasswordHashRef(
+    password,
+    typeof row?.password_hash_ref === 'string'
+      ? row.password_hash_ref
+      : DUMMY_STUDENT_PASSWORD_HASH_REF,
+  );
+  if (!row) return null;
+  if (!passwordValid) {
+    await insertAuthAudit(pool, config, {
+      eventType: 'student_login_failed',
+      success: false,
+      reason: 'INVALID_CREDENTIALS',
+      ip,
+      userAgent,
+      metadata: { username_digest: hashValue(normalizedUsername) },
+    });
+    return { ok: false, code: 'INVALID_CREDENTIALS' };
+  }
+  if (
+    row.access_status !== 'active' ||
+    row.credential_status !== 'parent_managed' ||
+    row.learner_status !== 'active' ||
+    row.user_status !== 'active' ||
+    row.role !== 'student' ||
+    !row.user_key
+  ) {
+    await insertAuthAudit(pool, config, {
+      eventType: 'student_login_failed',
+      userKey: typeof row.user_key === 'string' ? row.user_key : undefined,
+      success: false,
+      reason: 'DISABLED',
+      ip,
+      userAgent,
+      metadata: { username_digest: hashValue(normalizedUsername) },
+    });
+    return { ok: false, code: 'DISABLED' };
+  }
+  await insertAuthAudit(pool, config, {
+    eventType: 'student_login_succeeded',
+    userKey: String(row.user_key),
+    success: true,
+    ip,
+    userAgent,
+    metadata: { username_digest: hashValue(normalizedUsername) },
   });
   return { ok: true, user: rowToSessionUser(row) };
 }
@@ -1399,14 +1521,47 @@ async function insertAuthAudit(
 
 function rowToSessionUser(row: Record<string, unknown>): SessionUser {
   const role = row.role as UserRole;
+  const emailNormalized = String(row.email_normalized);
   return {
     user_key: String(row.user_key),
-    email: String(row.email_normalized),
+    email: emailNormalized.startsWith('student:')
+      ? emailNormalized.slice('student:'.length)
+      : emailNormalized,
     display_name: String(row.display_name),
     role,
     role_label: roleDisplayLabel[role],
     mfa_capable: Boolean(row.mfa_capable),
   };
+}
+
+function normalizeLoginIdentifier(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function looksLikeEmail(value: string) {
+  return value.includes('@');
+}
+
+function verifyStudentPasswordHashRef(password: string, storedHashRef: string) {
+  const parts = storedHashRef.split(':');
+  if (parts.length !== 4 || parts[0] !== 'scrypt' || parts[1] !== 'v1') {
+    scryptSync(password, 'invalid-student-password-ref', 32);
+    return false;
+  }
+  const [, , salt, encodedHash] = parts;
+  if (!salt || !encodedHash) {
+    scryptSync(password, 'invalid-student-password-ref', 32);
+    return false;
+  }
+  const expected = Buffer.from(encodedHash, 'base64url');
+  const actual = scryptSync(password, salt, expected.length);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+function studentPasswordHashRefForTestsOnly(password: string) {
+  const salt = 'dummy-student-password-salt-v1';
+  const derived = scryptSync(password, salt, 32).toString('base64url');
+  return `scrypt:v1:${salt}:${derived}`;
 }
 
 function token() {

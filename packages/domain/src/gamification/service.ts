@@ -6,6 +6,7 @@ import type {
   GamificationCorrectionPayload,
   GamificationGuardrails,
   GamificationLearningEventPayload,
+  GamificationPointsPolicy,
   GamificationReasonCode,
   GamificationSummary,
   LearningBadge,
@@ -15,7 +16,11 @@ import type {
   ParentRewardGoalPayload,
   PersonalMilestone,
 } from '../../../contracts/src/gamification/index.ts';
-import type { LearnerProfile, PortalActorContext } from '../../../contracts/src/portals/index.ts';
+import type {
+  ClassLeaderboardSummary,
+  LearnerProfile,
+  PortalActorContext,
+} from '../../../contracts/src/portals/index.ts';
 import { hasPortalCapability } from '../../../contracts/src/portals/index.ts';
 import { fingerprint, PortalServiceError } from '../portals/services.ts';
 
@@ -27,14 +32,30 @@ const LEVELS = [
   { level: 5, title: 'Chazara Champion', min_points: 450 },
 ] as const;
 
+export const LEARNING_POINTS_POLICY_VERSION = 'ot-learning-points-v2';
+
+export const DEFAULT_LEARNING_POINTS_POLICY: GamificationPointsPolicy = {
+  policy_version: LEARNING_POINTS_POLICY_VERSION,
+  attendance_present: 5,
+  lesson_completed: 10,
+  worksheet_completed: 10,
+  question_approved: 3,
+  excellent_question: 5,
+  consistency_bonus_default: 5,
+};
+
 const MEANINGFUL_POINTS = {
   attendance_present: 5,
   attendance_streak: 4,
+  lesson_completed: DEFAULT_LEARNING_POINTS_POLICY.lesson_completed,
+  worksheet_completed: DEFAULT_LEARNING_POINTS_POLICY.worksheet_completed,
   review_completed: 4,
   review_streak: 4,
   retention_review: 3,
-  mishnah_completed: 6,
-  question_approved: 2,
+  mishnah_completed: 10,
+  question_approved: DEFAULT_LEARNING_POINTS_POLICY.question_approved,
+  excellent_question: DEFAULT_LEARNING_POINTS_POLICY.excellent_question,
+  consistency_bonus: DEFAULT_LEARNING_POINTS_POLICY.consistency_bonus_default,
   personal_milestone: 8,
   class_milestone: 5,
   parent_reward_completed: 1,
@@ -43,17 +64,21 @@ const MEANINGFUL_POINTS = {
 const REASON_LABELS = {
   attendance_present: 'Class attended',
   attendance_streak: 'Attendance streak kept',
+  lesson_completed: 'Lesson completed',
+  worksheet_completed: 'Worksheet completed',
   review_completed: 'Review completed',
   review_streak: 'Review streak kept',
   retention_review: 'Retention review completed',
   mishnah_completed: 'Mishnah completed',
-  question_approved: 'Question reviewed',
+  question_approved: 'Question approved by Rabbi',
+  excellent_question: 'Excellent question',
+  consistency_bonus: 'Consistency bonus',
   personal_milestone: 'Personal milestone reached',
   class_milestone: 'Class milestone reached',
   parent_reward_completed: 'Parent reward completed',
 } satisfies Record<Exclude<GamificationReasonCode, 'admin_correction'>, string>;
 
-const ABUSE_WORDS = ['click', 'tap', 'random', 'loot', 'lottery', 'leaderboard', 'ranking'];
+const ABUSE_WORDS = ['click', 'tap', 'random', 'loot', 'lottery'];
 const MISHNAYOS_TARGET = 24;
 
 export type GamificationEventRow = {
@@ -107,6 +132,7 @@ export type GamificationRepository = {
     class_milestones: ClassMilestone[];
     correction_audit: GamificationCorrectionAudit[];
   }>;
+  loadClassLeaderboard?(args: { actor: PortalActorContext }): Promise<ClassLeaderboardSummary>;
 };
 
 export type GamificationService = ReturnType<typeof createGamificationService>;
@@ -146,6 +172,12 @@ export function createGamificationService(input: {
         request_fingerprint: fingerprint(payload),
       });
       return eventToAccomplishment(row);
+    },
+
+    async classLeaderboard(actor: PortalActorContext): Promise<ClassLeaderboardSummary> {
+      requireLeaderboardRead(actor);
+      if (!input.repository.loadClassLeaderboard) return emptyLeaderboard();
+      return input.repository.loadClassLeaderboard({ actor });
     },
 
     async createParentRewardGoal(actor: PortalActorContext, payload: ParentRewardGoalPayload) {
@@ -227,6 +259,8 @@ export function createPortalGamificationAdapter(service: GamificationService) {
       actor: PortalActorContext;
       learner: LearnerProfile;
     }) => service.summaryForLearner(actor, learner.learner_key),
+    classLeaderboard: async ({ actor }: { actor: PortalActorContext }) =>
+      service.classLeaderboard(actor),
   };
 }
 
@@ -256,6 +290,7 @@ export function emptyGamificationSummary(
     class_milestones: [],
     celebration: null,
     guardrails: guardrailsFor(actor),
+    points_policy: DEFAULT_LEARNING_POINTS_POLICY,
   };
 }
 
@@ -296,6 +331,7 @@ function buildSummary(
   return {
     learner_key: snapshot.learner.learner_key,
     learning_points: learningPoints,
+    points_policy: DEFAULT_LEARNING_POINTS_POLICY,
     level: levelForPoints(learningPoints),
     progress,
     streaks: [attendanceStreak, reviewStreak],
@@ -315,6 +351,26 @@ function requireGamificationRead(actor: PortalActorContext, learnerKey: string) 
   }
   if (actor.actor_role === 'student' && actor.student_learner?.learner_key !== learnerKey) {
     throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
+  }
+}
+
+function requireLeaderboardRead(actor: PortalActorContext) {
+  if (
+    actor.actor_role !== 'student' &&
+    actor.actor_role !== 'parent' &&
+    actor.actor_role !== 'owner' &&
+    actor.actor_role !== 'admin'
+  ) {
+    throw new PortalServiceError('FORBIDDEN', 'Class leaderboard requires a portal session.');
+  }
+  if (
+    !hasPortalCapability(actor, 'gamification:read') &&
+    !hasPortalCapability(actor, 'student:dashboard:read') &&
+    !hasPortalCapability(actor, 'parent:household:read') &&
+    !hasPortalCapability(actor, 'student:leaderboard:read') &&
+    !hasPortalCapability(actor, 'parent:leaderboard:read')
+  ) {
+    throw new PortalServiceError('FORBIDDEN', 'This session cannot view the class leaderboard.');
   }
 }
 
@@ -623,13 +679,35 @@ function eventToAccomplishment(event: GamificationEventRow): AccomplishmentEvent
 function guardrailsFor(actor: Pick<PortalActorContext, 'actor_role'>): GamificationGuardrails {
   return {
     no_public_rankings: true,
+    leaderboard_scope: 'authenticated_class_only',
+    leaderboard_time_basis: 'all_time_no_reset',
+    no_negative_labels: true,
     no_random_rewards: true,
     meaningful_learning_only: true,
+    rabbi_corrections_audited: true,
+    publication_controlled_by_rabbi: true,
     student_scope:
       actor.actor_role === 'student'
         ? 'self_only'
         : actor.actor_role === 'parent'
           ? 'household'
           : 'authorized_staff',
+  };
+}
+
+function emptyLeaderboard(): ClassLeaderboardSummary {
+  return {
+    board_key: 'leaderboard_one_time_daily_empty',
+    class_series_key: 'class_series_one_time_daily',
+    title: 'Daily One Time Mishnayos',
+    scope: 'authenticated_class_only',
+    time_basis: 'all_time_no_reset',
+    published: false,
+    actual_names_visible: true,
+    negative_labels_present: false,
+    ai_judgment_present: false,
+    corrected_by_rabbi_audit_available: true,
+    updated_at: null,
+    entries: [],
   };
 }

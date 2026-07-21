@@ -109,7 +109,8 @@ describe('OT-71 mounted parent and student portals', () => {
           },
           body: JSON.stringify({
             idempotency_key: 'portal-student-setup-001',
-            email: 'new.student@example.test',
+            username: 'setup_learner',
+            password: 'Mishnah12345',
             display_name: 'Setup Learner',
           }),
         },
@@ -117,21 +118,33 @@ describe('OT-71 mounted parent and student portals', () => {
       const setupText = await setup.text();
       expect(setup.status, setupText).toBe(200);
       expect(setupText).not.toContain('token_for_local_proof');
+      expect(setupText).not.toContain('Mishnah12345');
       expect(JSON.parse(setupText)).toMatchObject({
         success: true,
-        data: { learner_key: 'learner_setup', status: 'setup_requested' },
+        data: {
+          learner_key: 'learner_setup',
+          status: 'active',
+          username_display: 'setup_learner',
+          credential_status: 'parent_managed',
+        },
       });
       const repairedAccessRows = await pool.query(
-        `SELECT status, last_operation_type
+        `SELECT status, last_operation_type, username_display, credential_status,
+                password_hash_ref
            FROM onetime.portal_student_access_state
           WHERE account_key = $1
             AND product_key = $2
             AND learner_key = 'learner_setup'`,
         [config.accountKey, config.productKey],
       );
-      expect(repairedAccessRows.rows).toEqual([
-        { status: 'setup_requested', last_operation_type: 'setup' },
-      ]);
+      expect(repairedAccessRows.rows[0]).toMatchObject({
+        status: 'active',
+        last_operation_type: 'setup',
+        username_display: 'setup_learner',
+        credential_status: 'parent_managed',
+      });
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).toMatch(/^scrypt:v1:/);
+      expect(String(repairedAccessRows.rows[0].password_hash_ref)).not.toContain('Mishnah12345');
 
       const tokenRows = await pool.query(
         `SELECT token_hash, metadata
@@ -139,9 +152,66 @@ describe('OT-71 mounted parent and student portals', () => {
           WHERE token_type = 'student_setup'
             AND learner_key = 'learner_setup'`,
       );
-      expect(tokenRows.rows).toHaveLength(1);
-      expect(tokenRows.rows[0].token_hash).toMatch(/^[a-f0-9]{64}$/);
+      expect(tokenRows.rows).toHaveLength(0);
       expect(JSON.stringify(tokenRows.rows)).not.toContain('token_for_local_proof');
+
+      const setupStudent = await loginAs(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      expect(setupStudent.json.user.role).toBe('student');
+      const setupStudentDashboard = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/dashboard`,
+        {
+          headers: { cookie: setupStudent.cookies },
+        },
+      );
+      expect(setupStudentDashboard.status).toBe(200);
+      expect((await setupStudentDashboard.json()).data.learner.learner_key).toBe('learner_setup');
+
+      const reset = await fetch(
+        `${server.baseUrl}/api/v1/portals/parent/households/household_alpha/learners/learner_setup/student-access/reset`,
+        {
+          method: 'POST',
+          headers: {
+            cookie: parent.cookies,
+            'content-type': 'application/json',
+            'x-csrf-token': parent.json.csrf_token,
+          },
+          body: JSON.stringify({
+            idempotency_key: 'portal-student-reset-username-001',
+            username: 'setup_learner',
+            password: 'Mishnah54321',
+          }),
+        },
+      );
+      const resetText = await reset.text();
+      expect(reset.status, resetText).toBe(200);
+      expect(JSON.parse(resetText)).toMatchObject({
+        success: true,
+        data: {
+          learner_key: 'learner_setup',
+          status: 'active',
+          username_display: 'setup_learner',
+          credential_status: 'parent_managed',
+          last_operation_type: 'reset',
+        },
+      });
+
+      const staleStudentSession = await fetch(
+        `${server.baseUrl}/api/v1/portals/student/dashboard`,
+        {
+          headers: { cookie: setupStudent.cookies },
+        },
+      );
+      expect(staleStudentSession.status).toBe(401);
+
+      const oldStudentPassword = await postLogin(server.baseUrl, 'setup_learner', 'Mishnah12345');
+      expect(oldStudentPassword.status).toBe(401);
+      expect(oldStudentPassword.json).toMatchObject({
+        success: false,
+        code: 'INVALID_CREDENTIALS',
+      });
+
+      const resetStudent = await loginAs(server.baseUrl, 'setup_learner', 'Mishnah54321');
+      expect(resetStudent.json.user.role).toBe('student');
 
       const viewer = await loginAs(server.baseUrl, 'viewer@example.test', 'ViewerPass!234');
       const denied = await fetch(`${server.baseUrl}/api/v1/portals/parent/dashboard`, {
@@ -338,7 +408,16 @@ async function listenForTest(app: ReturnType<typeof createApp>) {
   };
 }
 
-async function loginAs(baseUrl: string, email: string, password: string) {
+async function loginAs(baseUrl: string, identifier: string, password: string) {
+  const login = await postLogin(baseUrl, identifier, password);
+  expect(login.status, JSON.stringify(login.json)).toBe(200);
+  return {
+    cookies: login.cookies,
+    json: login.json as { csrf_token: string; user: { role: string } },
+  };
+}
+
+async function postLogin(baseUrl: string, identifier: string, password: string) {
   const csrf = await getLoginCsrf(baseUrl);
   const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -347,13 +426,13 @@ async function loginAs(baseUrl: string, email: string, password: string) {
       'content-type': 'application/json',
       'x-csrf-token': csrf.token,
     },
-    body: JSON.stringify({ email, password, csrf_token: csrf.token }),
+    body: JSON.stringify({ identifier, password, csrf_token: csrf.token }),
   });
   const text = await response.text();
-  expect(response.status, text).toBe(200);
   return {
+    status: response.status,
     cookies: mergeCookies(csrf.cookies, cookieHeader(response.headers)),
-    json: JSON.parse(text) as { csrf_token: string },
+    json: JSON.parse(text) as Record<string, unknown>,
   };
 }
 

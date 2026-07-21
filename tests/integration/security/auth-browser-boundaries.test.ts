@@ -71,7 +71,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
       }),
     });
     expect(login.status).toBe(200);
-    expect(await login.json()).toMatchObject({ success: true, return_to: '/app/crm' });
+    expect(await login.json()).toMatchObject({ success: true, return_to: '/app/parent' });
 
     const setCookies = login.headers.getSetCookie();
     const sessionCookie = setCookies.find((cookie) => cookie.startsWith('otcrm_session='));
@@ -143,7 +143,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
       }),
     });
     expect(parentLogin.status).toBe(200);
-    expect(await parentLogin.json()).toMatchObject({ success: true, return_to: '/app/crm' });
+    expect(await parentLogin.json()).toMatchObject({ success: true, return_to: '/app/parent' });
 
     const adminCsrf = await getCsrf(harness, '/login');
     const passwordStep = await fetch(`${harness.baseUrl}/api/v1/auth/login`, {
