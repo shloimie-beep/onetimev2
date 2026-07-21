@@ -172,6 +172,7 @@ const envSchema = z.object({
   OT89_SUPPORT_DEPLOYMENT_ID: z.string().min(1).max(64).default('local-ot89a'),
   LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
   PORTAL_TEST_LAB_ENABLED: booleanFromString,
+  LEARNING_DELIVERY_DEMO_ENABLED: booleanFromString,
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -237,6 +238,14 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.PORTAL_TEST_LAB_ENABLED) {
     throw new Error('Portal Test Lab is forbidden in production.');
+  }
+
+  if (
+    parsed.NODE_ENV === 'production' &&
+    deliveryEnvironment === 'production' &&
+    parsed.LEARNING_DELIVERY_DEMO_ENABLED
+  ) {
+    throw new Error('Learning Delivery demo is forbidden in production.');
   }
 
   const ot89ProvidedSecrets = [
@@ -448,5 +457,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
     bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
     portalTestLabEnabled: parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED,
+    learningDeliveryDemoEnabled:
+      parsed.NODE_ENV === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
   };
 }

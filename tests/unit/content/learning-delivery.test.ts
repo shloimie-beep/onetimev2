@@ -1,15 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
   assertLearningDeliveryTransition,
   buildLearningDeliveryBusinessEvent,
   buildLearningDeliveryFfmpegRenderPlan,
   buildLearningDeliveryFfprobePlan,
+  buildLearningDeliveryPreparedDemoProjection,
+  buildLearningDeliveryTranscriptArtifact,
   buildLearningDeliveryWebVtt,
   createLearningDeliveryOpenAiTranscriptionAdapter,
   normalizeLearningDeliveryDriveFile,
   parseLearningDeliveryFfprobeJson,
+  parseLearningDeliverySilencedetectLog,
+  projectLearningDeliveryTranscriptForTrim,
   recordLearningDeliveryBusinessEvent,
   sanitizeLearningDeliveryMetadata,
+  suggestLearningDeliveryAutomaticTrim,
   suggestLearningDeliveryTrim,
 } from '../../../packages/domain/src/content/learning-delivery.ts';
 
@@ -60,7 +66,7 @@ describe('learning delivery media workflow', () => {
     ).toMatchObject({ accepted: false, reason: 'raw_url_rejected' });
   });
 
-  it('builds ffprobe and ffmpeg as argv plans and requires operator trim approval', () => {
+  it('builds ffprobe and legacy ffmpeg trim plans that still require operator approval', () => {
     const probe = buildLearningDeliveryFfprobePlan({ inputPath: 'C:/tmp/class.mp4' });
     expect(probe).toMatchObject({ executable: 'ffprobe' });
     expect(probe.args).toContain('-show_streams');
@@ -104,12 +110,100 @@ describe('learning delivery media workflow', () => {
     expect(render.args).toContain('libx264');
   });
 
+  it('automatically trims only opening and closing silence when transcript-aligned confidence passes', () => {
+    const silenceLog = [
+      '[silencedetect] silence_start: 0',
+      '[silencedetect] silence_end: 18.2 | silence_duration: 18.2',
+      '[silencedetect] silence_start: 58.0',
+      '[silencedetect] silence_end: 66.0 | silence_duration: 8.0',
+      '[silencedetect] silence_start: 109.1',
+      '[silencedetect] silence_end: 120.0 | silence_duration: 10.9',
+    ].join('\n');
+    const trim = suggestLearningDeliveryAutomaticTrim({
+      durationMs: 120_000,
+      hasAudio: true,
+      silenceRanges: parseLearningDeliverySilencedetectLog(silenceLog).map((range) => ({
+        startMs: range.start_ms,
+        endMs: range.end_ms,
+      })),
+      transcriptSegments: [
+        { segment_id: 'seg_open', start_ms: 20_500, end_ms: 24_000, text: 'Opening words' },
+        { segment_id: 'seg_middle', start_ms: 72_000, end_ms: 75_000, text: 'Middle words' },
+        { segment_id: 'seg_close', start_ms: 100_000, end_ms: 106_500, text: 'Closing words' },
+      ],
+    });
+    expect(trim).toMatchObject({
+      start_ms: 12500,
+      end_ms: 118500,
+      reason_code: 'automatic_edge_trim',
+      requires_operator_approval: false,
+      auto_cut_performed: true,
+      removed_start_ms: 12500,
+      removed_end_ms: 1500,
+    });
+    expect(trim.confidence_reason_codes).toContain('middle_silence_ignored');
+
+    const render = buildLearningDeliveryFfmpegRenderPlan({
+      inputPath: 'C:/tmp/class.mp4',
+      outputPath: 'C:/tmp/prepared.mp4',
+      trim,
+    });
+    expect(render.args).toEqual(expect.arrayContaining(['-ss', '12.500', '-t', '106.000']));
+  });
+
+  it('uses safe no-trim exceptions when automatic trim would remove too much media', () => {
+    const trim = suggestLearningDeliveryAutomaticTrim({
+      durationMs: 120_000,
+      hasAudio: true,
+      silenceRanges: [
+        { startMs: 0, endMs: 83_000 },
+        { startMs: 112_000, endMs: 120_000 },
+      ],
+      transcriptSegments: [
+        { segment_id: 'seg_late', start_ms: 86_000, end_ms: 98_000, text: 'Late words' },
+      ],
+    });
+    expect(trim).toMatchObject({
+      auto_cut_performed: false,
+      requires_operator_approval: false,
+      safe_exception_code: 'removed_percentage_exceeds_max',
+    });
+  });
+
   it('normalizes transcript segments and renders WebVTT', () => {
-    const vtt = buildLearningDeliveryWebVtt([
+    const segments = [
       { segment_id: 'seg_0001', start_ms: 0, end_ms: 1250, text: 'Opening line' },
-    ]);
+      { segment_id: 'seg_0002', start_ms: 10_000, end_ms: 12_000, text: 'Closing line' },
+    ];
+    const vtt = buildLearningDeliveryWebVtt(segments);
     expect(vtt).toContain('WEBVTT');
     expect(vtt).toContain('00:00:00.000 --> 00:00:01.250');
+
+    const projected = projectLearningDeliveryTranscriptForTrim({
+      segments,
+      trim: { start_ms: 8_000, end_ms: 15_000 },
+    });
+    expect(projected).toEqual([
+      { segment_id: 'seg_0002', start_ms: 2_000, end_ms: 4_000, text: 'Closing line' },
+    ]);
+
+    const artifact = buildLearningDeliveryTranscriptArtifact({
+      sourceSha256: 'a'.repeat(64),
+      providerModel: 'gpt-4o-mini-transcribe',
+      language: 'en',
+      durationMs: 4_000,
+      segments: projected,
+      vocabularyPrompt: LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
+    });
+    expect(artifact).toMatchObject({
+      provider: 'openai',
+      provider_model_version: 'gpt-4o-mini-transcribe',
+      raw_transcript_present: false,
+      approved_torah_interpretation: false,
+      segment_count: 1,
+    });
+    expect(artifact.transcript_sha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(artifact.webvtt_sha256).toMatch(/^[a-f0-9]{64}$/);
   });
 
   it('redacts unsafe metadata before building HighLevel-safe business events', () => {
@@ -172,14 +266,50 @@ describe('learning delivery media workflow', () => {
       model: 'test-transcribe-model',
       fetchImpl,
     });
-    const segments = await adapter.transcribeAudioBuffer({
+    const metadata = await adapter.transcribeAudioBufferWithMetadata({
       audio: Buffer.from('not-real-audio'),
       fileName: 'class audio.wav',
       mimeType: 'audio/wav',
     });
+    expect(metadata).toMatchObject({
+      provider: 'openai',
+      provider_model: 'test-transcribe-model',
+      language: 'und',
+    });
+    const segments = metadata.segments;
     expect(segments).toEqual([
       { segment_id: 'seg_1', start_ms: 0, end_ms: 1500, text: 'hello world' },
     ]);
     expect(JSON.stringify(segments)).not.toContain('sk-test-secret');
+  });
+
+  it('builds a safe protected demo projection with no raw provider URL or transcript', () => {
+    const projection = buildLearningDeliveryPreparedDemoProjection({
+      demoLessonKey: 'demo_autotrim_001',
+      originalDurationMs: 120_000,
+      preparedDurationMs: 106_000,
+      trim: {
+        start_ms: 12_500,
+        end_ms: 118_500,
+        reason_code: 'automatic_edge_trim',
+        requires_operator_approval: false,
+        auto_cut_performed: true,
+        confidence: 0.9,
+      },
+      captionsStatus: 'ready',
+      vimeoPrivacy: 'private',
+      sourceKey: 'source_demo_safe_001',
+      providerVideoId: 'video_private_001',
+      providerTextTrackId: 'track_private_001',
+      transcriptSha256: 'b'.repeat(64),
+      webvttSha256: 'c'.repeat(64),
+    });
+    expect(projection).toMatchObject({
+      playback_kind: 'server_authorized_vimeo_playback',
+      provider_video_id_present: true,
+      raw_provider_url_present: false,
+      raw_transcript_present: false,
+    });
+    expect(JSON.stringify(projection)).not.toMatch(/https?:\/\//i);
   });
 });

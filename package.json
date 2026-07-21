@@ -50,7 +50,8 @@
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",
     "version:print": "tsx scripts/print-version.ts",
     "director:truth": "node scripts/check-director-truth.mjs",
-    "director:truth:live": "node scripts/check-director-truth.mjs --live"
+    "director:truth:live": "node scripts/check-director-truth.mjs --live",
+    "learning-delivery:real-canary": "tsx scripts/media/learning-delivery-real-media-canary.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

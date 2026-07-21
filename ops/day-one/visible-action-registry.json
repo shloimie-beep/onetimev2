@@ -1749,6 +1749,40 @@
       "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
     },
     {
+      "action_id": "learning_delivery.vimeo_autotrim_demo.route",
+      "label": "Prepared Vimeo Demo",
+      "surface": "route",
+      "route": "/app/learning-delivery/demo/vimeo-autotrim",
+      "roles": ["owner", "admin"],
+      "capability": "learning-delivery:demo-read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/learning-delivery/demo/vimeo-autotrim"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "learning_delivery_vimeo_autotrim_demo_read"
+      },
+      "states": {
+        "loading": "Loading sanitized prepared-media metadata.",
+        "success": "Protected demo route is visible with safe prepared-asset metadata.",
+        "error": "A safe blocker state is shown without provider URLs or transcript text.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached media or transcript is exposed while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "isolated_private_vimeo_canary",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/content/learning-delivery.test.ts",
+        "tests/integration/content/learning-delivery-demo-route.test.ts"
+      ]
+    },
+    {
       "action_id": "portal_test_lab.view.route",
       "label": "Portal Test Lab",
       "surface": "route",

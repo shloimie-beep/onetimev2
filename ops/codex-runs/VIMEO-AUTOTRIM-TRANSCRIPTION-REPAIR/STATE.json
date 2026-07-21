@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "window_id": "VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR",
+  "updated_at": "2026-07-21T11:48:00.000Z",
+  "repo": "shloimie-beep/onetimev2",
+  "branch": "codex/vimeo-autotrim-transcription-repair",
+  "base_branch": "codex/learning-delivery-vimeo-zoom",
+  "base_head_verified": "486d67d7a43b2d98fffd3d11f87d6f877fdb8a95",
+  "scope": {
+    "included": [
+      "automatic edge-only trim decisions",
+      "ffprobe and FFmpeg silencedetect parsing",
+      "OpenAI transcription metadata with vocabulary prompt",
+      "timestamped normalized transcript segments and WebVTT hashing",
+      "private Vimeo TUS upload canary with active captions",
+      "owner/admin protected demo lesson projection",
+      "sanitized evidence with hashes and durations only"
+    ],
+    "excluded": [
+      "Zoom changes",
+      "portal-auth changes",
+      "HighLevel changes",
+      "shared deployment file changes",
+      "production deployment",
+      "customer notifications",
+      "AI helper"
+    ]
+  },
+  "media_canary": {
+    "status": "accepted",
+    "report": "ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR/REAL-MEDIA-CANARY.json",
+    "source_kind": "operator_owned_derived_edge_silence_canary",
+    "original_file_modified": false,
+    "raw_provider_url_present": false,
+    "raw_transcript_present": false,
+    "contact_notifications": 0,
+    "original_duration_ms": 91467,
+    "prepared_duration_ms": 79467,
+    "trim_start_ms": 6000,
+    "trim_end_ms": 85442,
+    "removed_start_ms": 6000,
+    "removed_end_ms": 6025,
+    "trim_confidence": 0.9,
+    "transcript_segment_count": 13,
+    "vimeo_privacy": "private",
+    "vimeo_text_track_active": true
+  },
+  "validation": [
+    {
+      "command": "npm ci",
+      "status": "passed",
+      "notes": "Installed locked dependencies in isolated worktree."
+    },
+    {
+      "command": "npm run learning-delivery:real-canary -- --source=<protected-operator-owned-media>",
+      "status": "passed",
+      "notes": "Ran actual ffprobe, FFmpeg silencedetect/render, OpenAI transcription, private Vimeo upload/playback verification, and WebVTT activation."
+    },
+    {
+      "command": "npm run typecheck",
+      "status": "passed"
+    },
+    {
+      "command": "npx vitest run --config vitest.unit.config.ts tests/unit/content/learning-delivery.test.ts tests/unit/day-one/visible-action-registry.test.ts --reporter=dot",
+      "status": "passed",
+      "notes": "2 files, 15 tests."
+    },
+    {
+      "command": "npx vitest run --config vitest.integration.config.ts tests/integration/content/learning-delivery-demo-route.test.ts --reporter=dot",
+      "status": "passed",
+      "notes": "1 file, 1 test."
+    },
+    {
+      "command": "npm run secret:scan",
+      "status": "passed",
+      "notes": "Secret scan passed across 1754 repo text files."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    },
+    {
+      "command": "npx prettier --check <supported touched files>",
+      "status": "passed"
+    }
+  ],
+  "railway": {
+    "target_project": "one-time-ot99-staging-96b42905",
+    "pr_environment_required": true,
+    "status": "pending_push_pr_environment"
+  },
+  "blockers": []
+}

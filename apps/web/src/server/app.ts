@@ -200,6 +200,7 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
+import { registerLearningDeliveryDemoRoutes } from './features/learning-delivery-demo/router.ts';
 import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
@@ -211,6 +212,7 @@ type AppDeps = {
   config: AppConfig;
   pool: DbPool;
   distDir?: string;
+  learningDeliveryDemoReportPath?: string;
   clock?: () => Date;
 };
 
@@ -289,6 +291,7 @@ export function createApp({
   config,
   pool,
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
+  learningDeliveryDemoReportPath,
   clock,
 }: AppDeps) {
   const app = express();
@@ -508,6 +511,16 @@ export function createApp({
       requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
       setPrivateNoStore,
     },
+  });
+
+  registerLearningDeliveryDemoRoutes({
+    app,
+    config,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      setPrivateNoStore,
+    },
+    ...(learningDeliveryDemoReportPath ? { reportPath: learningDeliveryDemoReportPath } : {}),
   });
 
   app.get('/health', (_req, res) => {

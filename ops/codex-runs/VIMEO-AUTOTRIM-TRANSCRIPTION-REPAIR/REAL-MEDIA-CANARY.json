@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-07-21T11:38:05.174Z",
+  "source": {
+    "source_kind": "operator_owned_derived_edge_silence_canary",
+    "original_source_sha256": "95c816bb7911586fc76b193636a3958334725f42be2d98994632b8f9a9036f97",
+    "source_sha256": "0ebf1a5120e300bb91e867870e20ae28bc5fddd7ef316e35c9be1dc7ac1a928a",
+    "prepared_sha256": "ba00daaaa91f02e9420c95e468e7abe8087f898c0973f69297fbbd34fee20778",
+    "source_path_sha256": "f89f515bfa8b70e6221f682e5a5e5ab62c5630ea33ba5c6a3231076c78915a91",
+    "original_duration_ms": 91467,
+    "prepared_duration_ms": 79467,
+    "derived_edge_silence_applied": true,
+    "original_file_modified": false,
+    "audio_codec_present": true
+  },
+  "trim": {
+    "start_ms": 6000,
+    "end_ms": 85442,
+    "removed_start_ms": 6000,
+    "removed_end_ms": 6025,
+    "removed_percent": 0.1315,
+    "confidence": 0.9,
+    "reason_code": "automatic_edge_trim",
+    "auto_cut_performed": true,
+    "requires_operator_approval": false,
+    "safe_exception_code": null,
+    "middle_cut_performed": false
+  },
+  "transcription": {
+    "provider": "openai",
+    "provider_model_version": "whisper-1",
+    "language": "english",
+    "segment_count": 13,
+    "transcript_sha256": "ec6993e844bb389a7b1f7a3d7e156213e1a5561e4417f9d7ad306d562e6f6fe8",
+    "webvtt_sha256": "263f2210732dde90563dabb2016f82e91f95b393509640e9aa8fe4f4e2c0e9b8",
+    "corrected_transcript_version": "v1-reviewed-webvtt",
+    "vocabulary_prompt_sha256": "87c7ce13f9571c4e5bcf16dacd3cae325eb5408a604d796df0804a0ded550ad4",
+    "raw_transcript_present": false,
+    "approved_torah_interpretation": false
+  },
+  "vimeo": {
+    "status": "ready",
+    "privacy": "private",
+    "provider_video_id_present": true,
+    "provider_video_ref_digest": "35a572bd2ebea8883690674ea261725bf672ceff4864779578d39d7fed584fab",
+    "text_track_status": "ready",
+    "text_track_active": true,
+    "provider_text_track_ref_digest": "6b51a9e3cdad233ab974dfb837a950a65b1e5aacb3b0b431a8a42426a5c24463",
+    "playback_verified": true,
+    "transcode_status": "complete",
+    "tus_patch_status": 204,
+    "project_add_ok": true,
+    "raw_provider_url_present": false
+  },
+  "preview": {
+    "demo_lesson_key": "demo_vimeo_autotrim_real_transcription",
+    "route": "/app/learning-delivery/demo/vimeo-autotrim",
+    "playback_kind": "server_authorized_vimeo_playback",
+    "playback_route": "/api/v1/content/vimeo/learning_delivery_demo_source_1a2ee7358684d3df99ae57eaeb4777b5/playback",
+    "projection_ready": true
+  },
+  "contact_notifications": 0
+}

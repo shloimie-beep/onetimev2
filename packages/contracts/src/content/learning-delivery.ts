@@ -72,6 +72,12 @@ export type LearningDeliveryTranscriptSegment = z.infer<
   typeof learningDeliveryTranscriptSegmentSchema
 >;
 
+export const learningDeliverySilenceRangeSchema = z.object({
+  start_ms: z.number().int().min(0),
+  end_ms: z.number().int().min(0),
+});
+export type LearningDeliverySilenceRange = z.infer<typeof learningDeliverySilenceRangeSchema>;
+
 export const learningDeliveryTrimDecisionSchema = z.object({
   start_ms: z.number().int().min(0),
   end_ms: z.number().int().min(0),
@@ -79,11 +85,92 @@ export const learningDeliveryTrimDecisionSchema = z.object({
     'leading_trailing_silence',
     'no_safe_trim_detected',
     'manual_operator_decision',
+    'automatic_edge_trim',
+    'safe_no_trim_exception',
   ]),
-  requires_operator_approval: z.literal(true),
-  auto_cut_performed: z.literal(false),
+  requires_operator_approval: z.boolean(),
+  auto_cut_performed: z.boolean(),
+  confidence: z.number().min(0).max(1).optional(),
+  confidence_reason_codes: z.array(z.string().trim().min(1).max(80)).max(20).optional(),
+  safe_exception_code: z
+    .enum([
+      'audio_missing',
+      'transcript_segments_missing',
+      'edge_speech_not_found',
+      'low_confidence',
+      'removed_percentage_exceeds_max',
+      'duration_implausible',
+      'no_edge_trim_needed',
+    ])
+    .nullable()
+    .optional(),
+  removed_start_ms: z.number().int().min(0).optional(),
+  removed_end_ms: z.number().int().min(0).optional(),
+  removed_percent: z.number().min(0).max(1).optional(),
+  opening_window_ms: z.number().int().min(1).optional(),
+  closing_window_ms: z.number().int().min(1).optional(),
 });
 export type LearningDeliveryTrimDecision = z.infer<typeof learningDeliveryTrimDecisionSchema>;
+
+export const learningDeliveryTranscriptArtifactSchema = z.object({
+  provider: z.literal('openai'),
+  provider_model: z.string().trim().min(1).max(120),
+  provider_model_version: z.string().trim().min(1).max(120),
+  source_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  transcript_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  webvtt_sha256: z.string().regex(/^[a-f0-9]{64}$/),
+  language: z.string().trim().min(2).max(24),
+  corrected_transcript_version: z.string().trim().min(1).max(80),
+  vocabulary_prompt_sha256: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable(),
+  segment_count: z.number().int().min(0),
+  duration_ms: z.number().int().min(0),
+  segments: z.array(learningDeliveryTranscriptSegmentSchema).max(20_000),
+  raw_transcript_present: z.literal(false),
+  approved_torah_interpretation: z.literal(false),
+});
+export type LearningDeliveryTranscriptArtifact = z.infer<
+  typeof learningDeliveryTranscriptArtifactSchema
+>;
+
+export const learningDeliveryPreparedDemoProjectionSchema = z.object({
+  demo_lesson_key: z.string().trim().min(3).max(180),
+  account_key: z.literal(LEARNING_DELIVERY_ACCOUNT_KEY),
+  product_key: z.literal(LEARNING_DELIVERY_PRODUCT_KEY),
+  original_duration_ms: z.number().int().min(0),
+  prepared_duration_ms: z.number().int().min(0),
+  trim_start_ms: z.number().int().min(0),
+  trim_end_ms: z.number().int().min(0),
+  trim_confidence: z.number().min(0).max(1),
+  captions_status: z.enum(['ready', 'blocked', 'not_requested']),
+  vimeo_privacy: z.enum(['private', 'unlisted', 'password', 'review_required']),
+  playback_kind: z.literal('server_authorized_vimeo_playback'),
+  playback_route: z.string().trim().min(1).max(240),
+  provider_video_id_present: z.boolean(),
+  provider_video_ref_digest: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable(),
+  provider_text_track_ref_digest: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable(),
+  transcript_sha256: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable(),
+  webvtt_sha256: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/)
+    .nullable(),
+  raw_provider_url_present: z.literal(false),
+  raw_transcript_present: z.literal(false),
+});
+export type LearningDeliveryPreparedDemoProjection = z.infer<
+  typeof learningDeliveryPreparedDemoProjectionSchema
+>;
 
 export const learningDeliveryBusinessEventTypeSchema = z.enum([
   'recording.available',
