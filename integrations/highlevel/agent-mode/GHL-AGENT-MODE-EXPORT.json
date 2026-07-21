@@ -1,8 +1,8 @@
 {
   "schema_id": "bna-agent-action-export",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "export_type": "highlevel_agent_mode_queue",
-  "generated_at": "2026-07-21T08:42:00.574Z",
+  "generated_at": "2026-07-21T13:45:16.180Z",
   "source": {
     "repository": "shloimie-beep/onetimev2",
     "registry_root": "integrations/highlevel/registry/",
@@ -19,12 +19,16 @@
       "active_tags": 28,
       "pending_tags": 9,
       "deprecated_tags": 1,
-      "custom_values": 28,
-      "blocked_custom_values": 7,
-      "business_workflows": 12,
+      "custom_values": 40,
+      "sender_profiles": 5,
+      "message_classes": 35,
+      "pipelines": 3,
+      "events": 1,
+      "business_workflows": 14,
       "bot_action_workflows": 5,
       "deprecated_workflows": 3
-    }
+    },
+    "pinned_registry_commit_source": "integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md"
   },
   "ingestion": {
     "lane": "highlevel_agent_mode",
@@ -43,7 +47,7 @@
     {
       "job_id": "GHL-UI-01",
       "order": 1,
-      "title": "custom-value folders and unresolved value review",
+      "title": "create sender custom-value folder",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
@@ -52,39 +56,14 @@
       "exact_target_ui_path": "HighLevel > Settings > Custom Values",
       "canonical_source_files": [
         "integrations/highlevel/registry/current.json",
+        "integrations/highlevel/registry/sender-registry.yaml",
+        "integrations/highlevel/registry/message-class-registry.yaml",
+        "integrations/highlevel/registry/communications-contract.json",
         "integrations/highlevel/registry/custom-values.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-01: custom-value folders and unresolved value review\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Settings > Custom Values\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/custom-values.yaml\n\nAllowed assets:\n- Custom-value folders matching the registry folder names.\n- One Time Brand Name\n- One Time Rabbi Name\n- One Time Sender Name\n- One Time Sender Email\n- One Time Reply-To Email\n- One Time Program Short Description\n- One Time Home URL\n- One Time Signup URL\n- One Time Member Login URL\n- One Time Password Help URL\n- One Time Parent Portal URL\n- One Time Student Portal URL\n- One Time Early Access URL\n- One Time Checkout URL\n- One Time Recording Portal URL\n- One Time WhatsApp Entry URL\n- One Time Complimentary Access Label\n- One Time Promotion Status\n- One Time Promotion End Date Label\n- One Time Pricing Display Status\n- One Time Published Price Label\n- One Time Default Time Zone\n- One Time Class Time Israel\n- One Time Schedule Notice\n- One Time Support Email\n- One Time Public Bot Name\n- One Time Public Bot Version\n- One Time Knowledge Base Version\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- PENDING_ACCEPTED_ROUTE\n- PENDING_VERIFIED_GHL_CHECKOUT_URL\n- PENDING_PROTECTED_PORTAL_ROUTE\n- PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL\n- TODO\n- CHANGEME\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or verify the Custom Values folders named in the registry.\n- Review unresolved values marked blocked_ui_or_business_value; do not create any placeholder value.\n- If a real approved value already exists in GHL, capture its safe custom value ID and status.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-01.result.json\nIdempotency key: one-time-ghl:GHL-UI-01:5992aa88997b126b",
+      "exact_copy_paste_prompt": "Job GHL-UI-01: create sender custom-value folder\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Settings > Custom Values\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/custom-values.yaml\n\nAllowed assets:\n- One Time - Senders custom-value folder\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- duplicate sender folders\n- renaming existing unrelated folders\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or verify exactly one folder named One Time - Senders.\n- Do not move or rewrite existing values in this job.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-01.result.json\nIdempotency key: one-time-ghl:GHL-UI-01:bb93fb12df1fdd31",
       "allowed_assets": [
-        "Custom-value folders matching the registry folder names.",
-        "One Time Brand Name",
-        "One Time Rabbi Name",
-        "One Time Sender Name",
-        "One Time Sender Email",
-        "One Time Reply-To Email",
-        "One Time Program Short Description",
-        "One Time Home URL",
-        "One Time Signup URL",
-        "One Time Member Login URL",
-        "One Time Password Help URL",
-        "One Time Parent Portal URL",
-        "One Time Student Portal URL",
-        "One Time Early Access URL",
-        "One Time Checkout URL",
-        "One Time Recording Portal URL",
-        "One Time WhatsApp Entry URL",
-        "One Time Complimentary Access Label",
-        "One Time Promotion Status",
-        "One Time Promotion End Date Label",
-        "One Time Pricing Display Status",
-        "One Time Published Price Label",
-        "One Time Default Time Zone",
-        "One Time Class Time Israel",
-        "One Time Schedule Notice",
-        "One Time Support Email",
-        "One Time Public Bot Name",
-        "One Time Public Bot Version",
-        "One Time Knowledge Base Version"
+        "One Time - Senders custom-value folder"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -95,23 +74,18 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "PENDING_ACCEPTED_ROUTE",
-        "PENDING_VERIFIED_GHL_CHECKOUT_URL",
-        "PENDING_PROTECTED_PORTAL_ROUTE",
-        "PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL",
-        "TODO",
-        "CHANGEME"
+        "duplicate sender folders",
+        "renaming existing unrelated folders"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets."
       ],
       "expected_ghl_ids_to_capture": [
-        "custom_value_folder_ids_if_visible",
-        "custom_value_ids_for_resolved_existing_values",
-        "blocked_ui_or_business_value_names"
+        "one_time_senders_folder_id_if_visible"
       ],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
@@ -248,7 +222,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-01:5992aa88997b126b",
+      "idempotency_key": "one-time-ghl:GHL-UI-01:bb93fb12df1fdd31",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -259,7 +233,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-01-custom-value-folders-and-unresolved-value-review.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-01-create-sender-custom-value-folder.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-01.result.json"
         }
       }
@@ -267,24 +241,34 @@
     {
       "job_id": "GHL-UI-02",
       "order": 2,
-      "title": "workflow folders",
+      "title": "reconcile sender values",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > Folders",
+      "exact_target_ui_path": "HighLevel > Settings > Custom Values > One Time - Senders",
       "canonical_source_files": [
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml"
+        "integrations/highlevel/registry/current.json",
+        "integrations/highlevel/registry/sender-registry.yaml",
+        "integrations/highlevel/registry/message-class-registry.yaml",
+        "integrations/highlevel/registry/communications-contract.json",
+        "integrations/highlevel/registry/custom-values.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-02: workflow folders\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > Folders\n\nRead these canonical source files first:\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n\nAllowed assets:\n- 00 - Intake & Data\n- 10 - Nurture & Sales\n- 20 - Billing & Access\n- 30 - Portal Lifecycle\n- 40 - Classes & Content\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- duplicate One Time workflow folders\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or verify only the workflow folders required by the canonical workflows.\n- Do not create workflow content in this job.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-02.result.json\nIdempotency key: one-time-ghl:GHL-UI-02:15cf7153045d3559",
+      "exact_copy_paste_prompt": "Job GHL-UI-02: reconcile sender values\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Settings > Custom Values > One Time - Senders\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/custom-values.yaml\n\nAllowed assets:\n- One Time Rabbi Campaign Sender Name\n- One Time Rabbi Campaign Phase 1 From\n- One Time Rabbi Campaign Phase 2 From\n- One Time Rabbi Personal Sender Name\n- One Time Rabbi Personal From\n- One Time Office Sender Name\n- One Time Office From\n- One Time Brand Sender Name\n- One Time Brand From\n- One Time Account Sender Name\n- One Time Account Preferred From\n- One Time Default Reply-To\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- activating rabbi@\n- deleting generic sender compatibility aliases\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Reconcile exact registered sender values and preserve the existing generic sender values as compatibility aliases.\n- Keep rabbi@ values recorded but inactive pending acceptance.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-02.result.json\nIdempotency key: one-time-ghl:GHL-UI-02:7ef8439346e3f82b",
       "allowed_assets": [
-        "00 - Intake & Data",
-        "10 - Nurture & Sales",
-        "20 - Billing & Access",
-        "30 - Portal Lifecycle",
-        "40 - Classes & Content"
+        "One Time Rabbi Campaign Sender Name",
+        "One Time Rabbi Campaign Phase 1 From",
+        "One Time Rabbi Campaign Phase 2 From",
+        "One Time Rabbi Personal Sender Name",
+        "One Time Rabbi Personal From",
+        "One Time Office Sender Name",
+        "One Time Office From",
+        "One Time Brand Sender Name",
+        "One Time Brand From",
+        "One Time Account Sender Name",
+        "One Time Account Preferred From",
+        "One Time Default Reply-To"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -295,16 +279,20 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "duplicate One Time workflow folders"
+        "activating rabbi@",
+        "deleting generic sender compatibility aliases"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
-        "Use only one canonical registry and do not create duplicate assets."
+        "Use only one canonical registry and do not create duplicate assets.",
+        "GHL-UI-01 saved and readback verified."
       ],
       "expected_ghl_ids_to_capture": [
-        "workflow_folder_ids_if_visible"
+        "registered_sender_custom_value_ids",
+        "compatibility_alias_ids"
       ],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
@@ -441,7 +429,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-02:15cf7153045d3559",
+      "idempotency_key": "one-time-ghl:GHL-UI-02:7ef8439346e3f82b",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -452,7 +440,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-02-workflow-folders.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-02-reconcile-sender-values.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-02.result.json"
         }
       }
@@ -460,23 +448,23 @@
     {
       "job_id": "GHL-UI-03",
       "order": 3,
-      "title": "OT-01 lead intake",
+      "title": "create or reconcile pipelines",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > 00 - Intake & Data > OT-01 New Lead Intake",
+      "exact_target_ui_path": "HighLevel > Opportunities > Pipelines",
       "canonical_source_files": [
-        "integrations/highlevel/registry/current.json",
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml",
-        "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
-        "integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md"
+        "integrations/highlevel/registry/pipeline-registry.yaml",
+        "integrations/highlevel/registry/communications-contract.json"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-03: OT-01 lead intake\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > 00 - Intake & Data > OT-01 New Lead Intake\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md\n- integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md\n\nAllowed assets:\n- OT-01 New Lead Intake\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-03.result.json\nIdempotency key: one-time-ghl:GHL-UI-03:b00bb30df56a1c02",
+      "exact_copy_paste_prompt": "Job GHL-UI-03: create or reconcile pipelines\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Opportunities > Pipelines\n\nRead these canonical source files first:\n- integrations/highlevel/registry/pipeline-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n\nAllowed assets:\n- One Time Enrollment and Conversion\n- One Time Member Support\n- One Time Torah Questions\n- One Time Business\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- deleting One Time Business\n- migrating existing opportunities\n- duplicate pipelines or stages\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or reconcile the three canonical pipelines and exact ordered stages.\n- Preserve One Time Business as a compatibility alias and do not move existing opportunities.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-03.result.json\nIdempotency key: one-time-ghl:GHL-UI-03:6c923be8807b27af",
       "allowed_assets": [
-        "OT-01 New Lead Intake"
+        "One Time Enrollment and Conversion",
+        "One Time Member Support",
+        "One Time Torah Questions",
+        "One Time Business"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -487,26 +475,25 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "workflow publishing",
-        "production contact enrollment",
-        "message send actions enabled for production"
+        "deleting One Time Business",
+        "migrating existing opportunities",
+        "duplicate pipelines or stages"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
-        "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-01 custom values reviewed.",
-        "GHL-UI-02 workflow folders complete."
+        "Use only one canonical registry and do not create duplicate assets."
       ],
       "expected_ghl_ids_to_capture": [
-        "OT-01_workflow_id"
+        "canonical_pipeline_ids",
+        "canonical_stage_ids",
+        "one_time_business_compatibility_alias_id"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -639,7 +626,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-03:b00bb30df56a1c02",
+      "idempotency_key": "one-time-ghl:GHL-UI-03:6c923be8807b27af",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -650,7 +637,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-03-ot-01-lead-intake.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-03-create-or-reconcile-pipelines.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-03.result.json"
         }
       }
@@ -658,23 +645,79 @@
     {
       "job_id": "GHL-UI-04",
       "order": 4,
-      "title": "OT-02A existing subscriber migration",
+      "title": "update workflow sender identities",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > 10 - Nurture & Sales > OT-02A Existing Subscriber Migration 2026 v1",
+      "exact_target_ui_path": "HighLevel > Automation > Workflows > canonical One Time workflow folders",
       "canonical_source_files": [
         "integrations/highlevel/registry/current.json",
+        "integrations/highlevel/registry/sender-registry.yaml",
+        "integrations/highlevel/registry/message-class-registry.yaml",
+        "integrations/highlevel/registry/communications-contract.json",
         "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml",
+        "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
+        "integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md",
         "integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md",
-        "integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md"
+        "integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md",
+        "integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md",
+        "integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md",
+        "integrations/highlevel/workflow-checklists/OT-04-payment-active.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md",
+        "integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md",
+        "integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
+        "integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
+        "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md",
+        "integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md",
+        "integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md",
+        "integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md",
+        "integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
+        "integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md",
+        "integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md",
+        "integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md",
+        "integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md",
+        "integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md",
+        "integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md",
+        "integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-04: OT-02A existing subscriber migration\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > 10 - Nurture & Sales > OT-02A Existing Subscriber Migration 2026 v1\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md\n\nAllowed assets:\n- OT-02A Existing Subscriber Migration 2026 v1\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-04.result.json\nIdempotency key: one-time-ghl:GHL-UI-04:310462aedc8536ad",
+      "exact_copy_paste_prompt": "Job GHL-UI-04: update workflow sender identities\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Automation > Workflows > canonical One Time workflow folders\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md\n- integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md\n- integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md\n- integrations/highlevel/workflow-checklists/OT-04-payment-active.md\n- integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md\n- integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md\n- integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md\n- integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md\n- integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md\n- integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n- integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md\n- integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md\n- integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md\n- integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md\n- integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md\n- integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md\n- integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md\n- integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md\n- integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md\n- integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md\n- integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md\n- integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md\n- integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md\n- integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md\n\nAllowed assets:\n- OT-01 New Lead Intake\n- OT-02A Existing Subscriber Migration 2026 v1\n- OT-02B New Lead Nurture v1\n- OT-03 Checkout Started / Abandoned\n- OT-04 Payment Active\n- OT-05 Payment Failed / Grace\n- OT-06 Subscription Canceled\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n- OT-09 Parent Class Reminder\n- OT-10 New Recording Available\n- OT-13 Refund / Chargeback\n- OT-C01 Tisha B'Av 2026 Warm Invitation\n- OT-E01 Tisha B'Av 2026 Registration and Reminders\n- OT-B01 Complete Signup\n- OT-B02 Send Next Confirmed Class Info\n- OT-B03 Send Member Login\n- OT-B04 Send Password Help\n- OT-B05 Apply Opt-Out\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- unregistered sender text\n- guessing a From address\n- activation/reset tokens in GHL\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Update every canonical workflow sender identity from its registered sender_key and exact custom-value picker entries.\n- Keep every workflow Draft/unpublished and do not enroll contacts.\n- Verify OT-07 GHL companion/welcome and separate One Time/Resend activation-token boundary.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-04.result.json\nIdempotency key: one-time-ghl:GHL-UI-04:4e8a6d184ba84c14",
       "allowed_assets": [
-        "OT-02A Existing Subscriber Migration 2026 v1"
+        "OT-01 New Lead Intake",
+        "OT-02A Existing Subscriber Migration 2026 v1",
+        "OT-02B New Lead Nurture v1",
+        "OT-03 Checkout Started / Abandoned",
+        "OT-04 Payment Active",
+        "OT-05 Payment Failed / Grace",
+        "OT-06 Subscription Canceled",
+        "OT-07 Parent Portal Invitation",
+        "OT-08 Parent Portal Activated",
+        "OT-09 Parent Class Reminder",
+        "OT-10 New Recording Available",
+        "OT-13 Refund / Chargeback",
+        "OT-C01 Tisha B'Av 2026 Warm Invitation",
+        "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+        "OT-B01 Complete Signup",
+        "OT-B02 Send Next Confirmed Class Info",
+        "OT-B03 Send Member Login",
+        "OT-B04 Send Password Help",
+        "OT-B05 Apply Opt-Out"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -685,26 +728,26 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "workflow publishing",
-        "production contact enrollment",
-        "message send actions enabled for production"
+        "unregistered sender text",
+        "guessing a From address",
+        "activation/reset tokens in GHL"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-01 custom values reviewed.",
-        "GHL-UI-02 workflow folders complete."
+        "GHL-UI-02 and GHL-UI-03 saved and readback verified."
       ],
       "expected_ghl_ids_to_capture": [
-        "OT-02A_workflow_id"
+        "workflow_ids",
+        "sender_value_ids_selected",
+        "workflow_message_class_readback"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -837,7 +880,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-04:310462aedc8536ad",
+      "idempotency_key": "one-time-ghl:GHL-UI-04:4e8a6d184ba84c14",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -848,7 +891,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-04-ot-02a-existing-subscriber-migration.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-04-update-workflow-sender-identities.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-04.result.json"
         }
       }
@@ -856,23 +899,26 @@
     {
       "job_id": "GHL-UI-05",
       "order": 5,
-      "title": "OT-02B new lead nurture",
+      "title": "update OT-A1",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > 10 - Nurture & Sales > OT-02B New Lead Nurture v1",
+      "exact_target_ui_path": "HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant",
       "canonical_source_files": [
-        "integrations/highlevel/registry/current.json",
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml",
-        "integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md",
-        "integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md"
+        "integrations/highlevel/prompts/active/OT-A1-v1.0.0.md",
+        "integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md",
+        "integrations/highlevel/registry/bot-action-registry.yaml",
+        "integrations/highlevel/registry/rabbi-telegram-contract.yaml",
+        "integrations/highlevel/registry/pipeline-registry.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-05: OT-02B new lead nurture\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > 10 - Nurture & Sales > OT-02B New Lead Nurture v1\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md\n\nAllowed assets:\n- OT-02B New Lead Nurture v1\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-05.result.json\nIdempotency key: one-time-ghl:GHL-UI-05:7c10999af2217c71",
+      "exact_copy_paste_prompt": "Job GHL-UI-05: update OT-A1\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant\n\nRead these canonical source files first:\n- integrations/highlevel/prompts/active/OT-A1-v1.0.0.md\n- integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md\n- integrations/highlevel/registry/bot-action-registry.yaml\n- integrations/highlevel/registry/rabbi-telegram-contract.yaml\n- integrations/highlevel/registry/pipeline-registry.yaml\n\nAllowed assets:\n- OT-A1 One Time Enrollment Assistant\n- Website Live Chat\n- WhatsApp\n- One Time Torah Questions routing for explicit substantive Torah questions\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- Voice AI\n- Human Handoff\n- human tasks\n- separate WhatsApp qualification bot\n- automatic promise that a person will reply\n- generic support routed to Rabbi\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Update only the canonical OT-A1 bot and public knowledge base dependencies.\n- Keep the bot inactive/unpublished. Route only explicit substantive Torah questions to One Time Torah Questions.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-05.result.json\nIdempotency key: one-time-ghl:GHL-UI-05:7a48ed5459d973c7",
       "allowed_assets": [
-        "OT-02B New Lead Nurture v1"
+        "OT-A1 One Time Enrollment Assistant",
+        "Website Live Chat",
+        "WhatsApp",
+        "One Time Torah Questions routing for explicit substantive Torah questions"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -883,26 +929,30 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "workflow publishing",
-        "production contact enrollment",
-        "message send actions enabled for production"
+        "Voice AI",
+        "Human Handoff",
+        "human tasks",
+        "separate WhatsApp qualification bot",
+        "automatic promise that a person will reply",
+        "generic support routed to Rabbi"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-01 custom values reviewed.",
-        "GHL-UI-02 workflow folders complete."
+        "GHL-UI-04 saved and readback verified."
       ],
       "expected_ghl_ids_to_capture": [
-        "OT-02B_workflow_id"
+        "bot_id",
+        "knowledge_base_id",
+        "channel_statuses",
+        "torah_routing_status"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -1035,7 +1085,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-05:7c10999af2217c71",
+      "idempotency_key": "one-time-ghl:GHL-UI-05:7a48ed5459d973c7",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -1046,7 +1096,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-05-ot-02b-new-lead-nurture.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-05-update-ot-a1.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-05.result.json"
         }
       }
@@ -1054,35 +1104,22 @@
     {
       "job_id": "GHL-UI-06",
       "order": 6,
-      "title": "billing workflows OT-03/04/05/06/13",
+      "title": "verify sending domain",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > 20 - Billing & Access > OT-03, OT-04, OT-05, OT-06, OT-13",
+      "exact_target_ui_path": "HighLevel > Settings > Email Services > Domains",
       "canonical_source_files": [
-        "integrations/highlevel/registry/current.json",
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml",
-        "integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md",
-        "integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md",
-        "integrations/highlevel/workflow-checklists/OT-04-payment-active.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md",
-        "integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md",
-        "integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md",
-        "integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md"
+        "integrations/highlevel/registry/sender-registry.yaml",
+        "integrations/highlevel/LC-EMAIL-DNS-CHECKLIST.md"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-06: billing workflows OT-03/04/05/06/13\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > 20 - Billing & Access > OT-03, OT-04, OT-05, OT-06, OT-13\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md\n- integrations/highlevel/workflow-checklists/OT-04-payment-active.md\n- integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md\n- integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md\n- integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md\n- integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md\n- integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md\n- integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md\n\nAllowed assets:\n- OT-03 Checkout Started / Abandoned\n- OT-04 Payment Active\n- OT-05 Payment Failed / Grace\n- OT-06 Subscription Canceled\n- OT-13 Refund / Chargeback\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-06.result.json\nIdempotency key: one-time-ghl:GHL-UI-06:1b4b60b98d253239",
+      "exact_copy_paste_prompt": "Job GHL-UI-06: verify sending domain\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Settings > Email Services > Domains\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/LC-EMAIL-DNS-CHECKLIST.md\n\nAllowed assets:\n- onetimeonetime.com domain readback\n- registered info@ sender readback\n- registered rabbi@ pending-state readback\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- DNS mutation\n- claiming account@ or rabbi@ is live without acceptance evidence\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Read back the sending-domain and accepted From-address state only.\n- Do not change DNS, activate rabbi@, or claim account@ is live.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-06.result.json\nIdempotency key: one-time-ghl:GHL-UI-06:c25847549661c225",
       "allowed_assets": [
-        "OT-03 Checkout Started / Abandoned",
-        "OT-04 Payment Active",
-        "OT-05 Payment Failed / Grace",
-        "OT-06 Subscription Canceled",
-        "OT-13 Refund / Chargeback"
+        "onetimeonetime.com domain readback",
+        "registered info@ sender readback",
+        "registered rabbi@ pending-state readback"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -1093,30 +1130,24 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "workflow publishing",
-        "production contact enrollment",
-        "message send actions enabled for production"
+        "DNS mutation",
+        "claiming account@ or rabbi@ is live without acceptance evidence"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
-        "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-01 custom values reviewed.",
-        "GHL-UI-02 workflow folders complete."
+        "Use only one canonical registry and do not create duplicate assets."
       ],
       "expected_ghl_ids_to_capture": [
-        "OT-03_workflow_id",
-        "OT-04_workflow_id",
-        "OT-05_workflow_id",
-        "OT-06_workflow_id",
-        "OT-13_workflow_id"
+        "sending_domain_id_if_visible",
+        "sending_domain_status",
+        "accepted_from_addresses"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -1249,7 +1280,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-06:1b4b60b98d253239",
+      "idempotency_key": "one-time-ghl:GHL-UI-06:c25847549661c225",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -1260,7 +1291,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-06-billing-workflows-ot-03-04-05-06-13.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-06-verify-sending-domain.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-06.result.json"
         }
       }
@@ -1268,26 +1299,20 @@
     {
       "job_id": "GHL-UI-07",
       "order": 7,
-      "title": "portal workflows OT-07/08",
+      "title": "phase-1 seed",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > 30 - Portal Lifecycle > OT-07, OT-08",
+      "exact_target_ui_path": "HighLevel > Marketing > Emails > seed preparation",
       "canonical_source_files": [
-        "integrations/highlevel/registry/current.json",
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml",
-        "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
-        "integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
-        "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md"
+        "integrations/highlevel/registry/sender-registry.yaml",
+        "integrations/highlevel/registry/message-class-registry.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-07: portal workflows OT-07/08\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > 30 - Portal Lifecycle > OT-07, OT-08\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md\n- integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n\nAllowed assets:\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-07.result.json\nIdempotency key: one-time-ghl:GHL-UI-07:72eda5804d3fdc04",
+      "exact_copy_paste_prompt": "Job GHL-UI-07: phase-1 seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- rabbi_campaign seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent phase-1 seed draft using sender_key rabbi_campaign.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-07.result.json\nIdempotency key: one-time-ghl:GHL-UI-07:cf4bcb9354272be6",
       "allowed_assets": [
-        "OT-07 Parent Portal Invitation",
-        "OT-08 Parent Portal Activated"
+        "rabbi_campaign seed draft using expected From info@onetimeonetime.com"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -1298,27 +1323,26 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "workflow publishing",
-        "production contact enrollment",
-        "message send actions enabled for production"
+        "clicking Send",
+        "adding a production audience",
+        "publishing a campaign"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-01 custom values reviewed.",
-        "GHL-UI-02 workflow folders complete."
+        "GHL-UI-06 sending-domain readback completed."
       ],
       "expected_ghl_ids_to_capture": [
-        "OT-07_workflow_id",
-        "OT-08_workflow_id"
+        "seed_draft_id_if_visible",
+        "selected_sender_value_ids",
+        "blocked_send_status"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -1451,7 +1475,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-07:72eda5804d3fdc04",
+      "idempotency_key": "one-time-ghl:GHL-UI-07:cf4bcb9354272be6",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -1462,7 +1486,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-07-portal-workflows-ot-07-08.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-07-phase-1-seed.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-07.result.json"
         }
       }
@@ -1470,26 +1494,20 @@
     {
       "job_id": "GHL-UI-08",
       "order": 8,
-      "title": "class/content workflows OT-09/10",
+      "title": "office seed",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > 40 - Classes & Content > OT-09, OT-10",
+      "exact_target_ui_path": "HighLevel > Marketing > Emails > seed preparation",
       "canonical_source_files": [
-        "integrations/highlevel/registry/current.json",
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml",
-        "integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md",
-        "integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md",
-        "integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md"
+        "integrations/highlevel/registry/sender-registry.yaml",
+        "integrations/highlevel/registry/message-class-registry.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-08: class/content workflows OT-09/10\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > 40 - Classes & Content > OT-09, OT-10\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md\n- integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md\n- integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md\n- integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md\n\nAllowed assets:\n- OT-09 Parent Class Reminder\n- OT-10 New Recording Available\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-08.result.json\nIdempotency key: one-time-ghl:GHL-UI-08:3f70fe195b97812a",
+      "exact_copy_paste_prompt": "Job GHL-UI-08: office seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- office seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent office seed draft using sender_key office.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-08.result.json\nIdempotency key: one-time-ghl:GHL-UI-08:10b62bdfe47d3271",
       "allowed_assets": [
-        "OT-09 Parent Class Reminder",
-        "OT-10 New Recording Available"
+        "office seed draft using expected From info@onetimeonetime.com"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -1500,27 +1518,26 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "workflow publishing",
-        "production contact enrollment",
-        "message send actions enabled for production"
+        "clicking Send",
+        "adding a production audience",
+        "publishing a campaign"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-01 custom values reviewed.",
-        "GHL-UI-02 workflow folders complete."
+        "GHL-UI-06 sending-domain readback completed."
       ],
       "expected_ghl_ids_to_capture": [
-        "OT-09_workflow_id",
-        "OT-10_workflow_id"
+        "seed_draft_id_if_visible",
+        "selected_sender_value_ids",
+        "blocked_send_status"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -1653,7 +1670,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-08:3f70fe195b97812a",
+      "idempotency_key": "one-time-ghl:GHL-UI-08:10b62bdfe47d3271",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -1664,7 +1681,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-08-class-content-workflows-ot-09-10.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-08-office-seed.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-08.result.json"
         }
       }
@@ -1672,35 +1689,20 @@
     {
       "job_id": "GHL-UI-09",
       "order": 9,
-      "title": "bot-action workflows OT-B01 through OT-B05",
+      "title": "brand seed",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows > Bot Action Workflows > OT-B01 through OT-B05",
+      "exact_target_ui_path": "HighLevel > Marketing > Emails > seed preparation",
       "canonical_source_files": [
-        "integrations/highlevel/registry/current.json",
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/workflows.yaml",
-        "integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md",
-        "integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md",
-        "integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md",
-        "integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md",
-        "integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md",
-        "integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md"
+        "integrations/highlevel/registry/sender-registry.yaml",
+        "integrations/highlevel/registry/message-class-registry.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-09: bot-action workflows OT-B01 through OT-B05\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > Bot Action Workflows > OT-B01 through OT-B05\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md\n- integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md\n- integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md\n- integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md\n- integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md\n- integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md\n- integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md\n- integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md\n\nAllowed assets:\n- OT-B01 Complete Signup\n- OT-B02 Send Next Confirmed Class Info\n- OT-B03 Send Member Login\n- OT-B04 Send Password Help\n- OT-B05 Apply Opt-Out\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-09.result.json\nIdempotency key: one-time-ghl:GHL-UI-09:0fd70581f9e58695",
+      "exact_copy_paste_prompt": "Job GHL-UI-09: brand seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- brand seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent brand seed draft using sender_key brand.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-09.result.json\nIdempotency key: one-time-ghl:GHL-UI-09:f581f5daa77da7f5",
       "allowed_assets": [
-        "OT-B01 Complete Signup",
-        "OT-B02 Send Next Confirmed Class Info",
-        "OT-B03 Send Member Login",
-        "OT-B04 Send Password Help",
-        "OT-B05 Apply Opt-Out"
+        "brand seed draft using expected From info@onetimeonetime.com"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -1711,30 +1713,26 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "workflow publishing",
-        "production contact enrollment",
-        "message send actions enabled for production"
+        "clicking Send",
+        "adding a production audience",
+        "publishing a campaign"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-01 custom values reviewed.",
-        "GHL-UI-02 workflow folders complete."
+        "GHL-UI-06 sending-domain readback completed."
       ],
       "expected_ghl_ids_to_capture": [
-        "OT-B01_workflow_id",
-        "OT-B02_workflow_id",
-        "OT-B03_workflow_id",
-        "OT-B04_workflow_id",
-        "OT-B05_workflow_id"
+        "seed_draft_id_if_visible",
+        "selected_sender_value_ids",
+        "blocked_send_status"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -1867,7 +1865,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-09:0fd70581f9e58695",
+      "idempotency_key": "one-time-ghl:GHL-UI-09:f581f5daa77da7f5",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -1878,7 +1876,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-09-bot-action-workflows-ot-b01-through-ot-b05.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-09-brand-seed.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-09.result.json"
         }
       }
@@ -1886,20 +1884,38 @@
     {
       "job_id": "GHL-UI-10",
       "order": 10,
-      "title": "knowledge base",
+      "title": "capture workflow IDs",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > AI Agent Studio > Knowledge Base",
+      "exact_target_ui_path": "HighLevel > Automation > Workflows",
       "canonical_source_files": [
-        "integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md",
-        "integrations/highlevel/registry/knowledge-base-registry.yaml"
+        "integrations/highlevel/WORKFLOW-ID-CAPTURE.md",
+        "integrations/highlevel/registry/workflow-registry.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-10: knowledge base\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > AI Agent Studio > Knowledge Base\n\nRead these canonical source files first:\n- integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md\n- integrations/highlevel/registry/knowledge-base-registry.yaml\n\nAllowed assets:\n- One Time Mishnayos - Public Program and Support v1.0.0\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- raw Vimeo URLs\n- raw Zoom links\n- student usernames\n- student passwords\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or update the canonical public knowledge base from the active markdown source.\n- Keep it scoped to public and support-safe program facts.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-10.result.json\nIdempotency key: one-time-ghl:GHL-UI-10:c1ec097a5f66ddf3",
+      "exact_copy_paste_prompt": "Job GHL-UI-10: capture workflow IDs\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Automation > Workflows\n\nRead these canonical source files first:\n- integrations/highlevel/WORKFLOW-ID-CAPTURE.md\n- integrations/highlevel/registry/workflow-registry.yaml\n\nAllowed assets:\n- OT-01 New Lead Intake\n- OT-02A Existing Subscriber Migration 2026 v1\n- OT-02B New Lead Nurture v1\n- OT-03 Checkout Started / Abandoned\n- OT-04 Payment Active\n- OT-05 Payment Failed / Grace\n- OT-06 Subscription Canceled\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n- OT-09 Parent Class Reminder\n- OT-10 New Recording Available\n- OT-13 Refund / Chargeback\n- OT-C01 Tisha B'Av 2026 Warm Invitation\n- OT-E01 Tisha B'Av 2026 Registration and Reminders\n- OT-B01 Complete Signup\n- OT-B02 Send Next Confirmed Class Info\n- OT-B03 Send Member Login\n- OT-B04 Send Password Help\n- OT-B05 Apply Opt-Out\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- chat-only completion claims\n- editing workflow logic while capturing IDs\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Open every canonical workflow, capture its safe ID/status, and do not edit workflow logic.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-10.result.json\nIdempotency key: one-time-ghl:GHL-UI-10:42aeda94cf001324",
       "allowed_assets": [
-        "One Time Mishnayos - Public Program and Support v1.0.0"
+        "OT-01 New Lead Intake",
+        "OT-02A Existing Subscriber Migration 2026 v1",
+        "OT-02B New Lead Nurture v1",
+        "OT-03 Checkout Started / Abandoned",
+        "OT-04 Payment Active",
+        "OT-05 Payment Failed / Grace",
+        "OT-06 Subscription Canceled",
+        "OT-07 Parent Portal Invitation",
+        "OT-08 Parent Portal Activated",
+        "OT-09 Parent Class Reminder",
+        "OT-10 New Recording Available",
+        "OT-13 Refund / Chargeback",
+        "OT-C01 Tisha B'Av 2026 Warm Invitation",
+        "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+        "OT-B01 Complete Signup",
+        "OT-B02 Send Next Confirmed Class Info",
+        "OT-B03 Send Member Login",
+        "OT-B04 Send Password Help",
+        "OT-B05 Apply Opt-Out"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -1910,20 +1926,20 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "raw Vimeo URLs",
-        "raw Zoom links",
-        "student usernames",
-        "student passwords"
+        "chat-only completion claims",
+        "editing workflow logic while capturing IDs"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
-        "Use only one canonical registry and do not create duplicate assets."
+        "Use only one canonical registry and do not create duplicate assets.",
+        "GHL-UI-04 and GHL-UI-05 saved and readback verified."
       ],
       "expected_ghl_ids_to_capture": [
-        "knowledge_base_id",
-        "knowledge_base_status"
+        "all_canonical_workflow_ids",
+        "visible_workflow_statuses"
       ],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
@@ -2060,7 +2076,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-10:c1ec097a5f66ddf3",
+      "idempotency_key": "one-time-ghl:GHL-UI-10:42aeda94cf001324",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -2071,7 +2087,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-10-knowledge-base.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-10-capture-workflow-ids.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-10.result.json"
         }
       }
@@ -2079,29 +2095,22 @@
     {
       "job_id": "GHL-UI-11",
       "order": 11,
-      "title": "OT-A1 bot",
+      "title": "capture pipeline IDs",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant",
+      "exact_target_ui_path": "HighLevel > Opportunities > Pipelines",
       "canonical_source_files": [
-        "integrations/highlevel/prompts/active/OT-A1-v1.0.0.md",
-        "integrations/highlevel/registry/prompt-registry.yaml",
-        "integrations/highlevel/registry/bot-action-registry.yaml",
-        "integrations/highlevel/agent-mode/HIGHLEVEL-BOT-UI-SETUP.md"
+        "integrations/highlevel/registry/pipeline-registry.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-11: OT-A1 bot\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant\n\nRead these canonical source files first:\n- integrations/highlevel/prompts/active/OT-A1-v1.0.0.md\n- integrations/highlevel/registry/prompt-registry.yaml\n- integrations/highlevel/registry/bot-action-registry.yaml\n- integrations/highlevel/agent-mode/HIGHLEVEL-BOT-UI-SETUP.md\n\nAllowed assets:\n- OT-A1 One Time Enrollment Assistant\n- Website Live Chat channel in draft/test routing\n- WhatsApp channel in draft/test routing\n- OT-B01\n- OT-B02\n- OT-B03\n- OT-B04\n- OT-B05\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- Voice AI\n- Human Handover\n- human task creation\n- duplicate public bots\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or update only OT-A1 One Time Enrollment Assistant.\n- Attach the canonical public knowledge base.\n- Configure Website Live Chat and WhatsApp as initial channels, but keep production launch disabled.\n- Disable Voice, Human Handover, and task creation.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-11.result.json\nIdempotency key: one-time-ghl:GHL-UI-11:9448d9580ff8149c",
+      "exact_copy_paste_prompt": "Job GHL-UI-11: capture pipeline IDs\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Opportunities > Pipelines\n\nRead these canonical source files first:\n- integrations/highlevel/registry/pipeline-registry.yaml\n\nAllowed assets:\n- One Time Enrollment and Conversion\n- One Time Member Support\n- One Time Torah Questions\n- One Time Business\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- moving opportunities\n- deleting stages\n- chat-only completion claims\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Capture safe pipeline and stage IDs plus visible status without moving opportunities.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-11.result.json\nIdempotency key: one-time-ghl:GHL-UI-11:4c9be6f4ddd859f5",
       "allowed_assets": [
-        "OT-A1 One Time Enrollment Assistant",
-        "Website Live Chat channel in draft/test routing",
-        "WhatsApp channel in draft/test routing",
-        "OT-B01",
-        "OT-B02",
-        "OT-B03",
-        "OT-B04",
-        "OT-B05"
+        "One Time Enrollment and Conversion",
+        "One Time Member Support",
+        "One Time Torah Questions",
+        "One Time Business"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -2112,30 +2121,25 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "Voice AI",
-        "Human Handover",
-        "human task creation",
-        "duplicate public bots"
+        "moving opportunities",
+        "deleting stages",
+        "chat-only completion claims"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-09 complete with OT-B01 through OT-B05 workflow IDs captured.",
-        "GHL-UI-10 complete with knowledge base ID captured."
+        "GHL-UI-03 saved and readback verified."
       ],
       "expected_ghl_ids_to_capture": [
-        "bot_id",
-        "bot_status",
-        "attached_knowledge_base_id",
-        "channel_statuses"
+        "all_canonical_pipeline_ids",
+        "all_canonical_stage_ids"
       ],
       "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
+        "No contact mutation is allowed for this job.",
+        "Do not use production contacts for verification."
       ],
       "defaults": {
         "no_send": true,
@@ -2268,7 +2272,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-11:9448d9580ff8149c",
+      "idempotency_key": "one-time-ghl:GHL-UI-11:4c9be6f4ddd859f5",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -2279,7 +2283,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-11-ot-a1-bot.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-11-capture-pipeline-ids.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-11.result.json"
         }
       }
@@ -2287,22 +2291,20 @@
     {
       "job_id": "GHL-UI-12",
       "order": 12,
-      "title": "duplicate workflow/bot deprecation",
+      "title": "save and readback verification",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows and HighLevel > AI Agent Studio > Conversation AI > Bots",
+      "exact_target_ui_path": "HighLevel changed asset screens and BNA Agent Action drop-off",
       "canonical_source_files": [
-        "integrations/highlevel/registry/deprecations.yaml",
-        "integrations/highlevel/registry/workflow-registry.yaml"
+        "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
+        "integrations/highlevel/registry/AGENT-HANDOFF.md"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-12: duplicate workflow/bot deprecation\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows and HighLevel > AI Agent Studio > Conversation AI > Bots\n\nRead these canonical source files first:\n- integrations/highlevel/registry/deprecations.yaml\n- integrations/highlevel/registry/workflow-registry.yaml\n\nAllowed assets:\n- Deprecated labeling or disabled status for duplicate lead-capture workflows.\n- Deprecated labeling or disabled status for duplicate signup workflows.\n- Deprecated labeling or disabled status for duplicate One Time bots.\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- deleting historical assets\n- publishing replacement workflows\n- enrolling contacts\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Deprecate duplicates and old lowercase one-time-* workflow/tag family assets without deleting historical records.\n- Capture safe IDs and statuses for anything disabled or marked deprecated.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-12.result.json\nIdempotency key: one-time-ghl:GHL-UI-12:7d9c0cac167f18e9",
+      "exact_copy_paste_prompt": "Job GHL-UI-12: save and readback verification\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel changed asset screens and BNA Agent Action drop-off\n\nRead these canonical source files first:\n- integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json\n- integrations/highlevel/registry/AGENT-HANDOFF.md\n\nAllowed assets:\n- Saved/readback verification for GHL-UI-01 through GHL-UI-11 results\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- unsaved chat-only completion claim\n- new asset creation\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Reopen every changed asset and saved result, verify readback, and record discrepancies without creating new assets.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-12.result.json\nIdempotency key: one-time-ghl:GHL-UI-12:326275366bf9d786",
       "allowed_assets": [
-        "Deprecated labeling or disabled status for duplicate lead-capture workflows.",
-        "Deprecated labeling or disabled status for duplicate signup workflows.",
-        "Deprecated labeling or disabled status for duplicate One Time bots."
+        "Saved/readback verification for GHL-UI-01 through GHL-UI-11 results"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -2313,21 +2315,20 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "deleting historical assets",
-        "publishing replacement workflows",
-        "enrolling contacts"
+        "unsaved chat-only completion claim",
+        "new asset creation"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-03 through GHL-UI-11 complete enough to identify canonical replacements."
+        "GHL-UI-01 through GHL-UI-11 have result records."
       ],
       "expected_ghl_ids_to_capture": [
-        "deprecated_workflow_ids",
-        "deprecated_bot_ids",
-        "old_lowercase_family_asset_ids"
+        "dropoff_result_ids",
+        "readback_statuses"
       ],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
@@ -2464,7 +2465,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-12:7d9c0cac167f18e9",
+      "idempotency_key": "one-time-ghl:GHL-UI-12:326275366bf9d786",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -2475,7 +2476,7 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-12-duplicate-workflow-bot-deprecation.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-12-save-and-readback-verification.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-12.result.json"
         }
       }
@@ -2483,70 +2484,20 @@
     {
       "job_id": "GHL-UI-13",
       "order": 13,
-      "title": "workflow ID capture and registry reconciliation",
+      "title": "phase-2 rabbi acceptance",
       "ghl_location": {
         "location_id": "pBSnOK2nkdxp6gf9Rg3o",
         "location_fingerprint": "31fcbd2792f131dc",
         "verification_required": true
       },
-      "exact_target_ui_path": "HighLevel > Automation > Workflows",
+      "exact_target_ui_path": "HighLevel email sender settings and Conversations",
       "canonical_source_files": [
-        "integrations/highlevel/WORKFLOW-ID-CAPTURE.md",
-        "integrations/highlevel/registry/workflow-registry.yaml",
-        "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
-        "integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md",
-        "integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md",
-        "integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md",
-        "integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md",
-        "integrations/highlevel/workflow-checklists/OT-04-payment-active.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md",
-        "integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md",
-        "integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
-        "integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
-        "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md",
-        "integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md",
-        "integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md",
-        "integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md",
-        "integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md",
-        "integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md",
-        "integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md",
-        "integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md",
-        "integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md",
-        "integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md"
+        "integrations/highlevel/registry/sender-registry.yaml"
       ],
-      "exact_copy_paste_prompt": "Job GHL-UI-13: workflow ID capture and registry reconciliation\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows\n\nRead these canonical source files first:\n- integrations/highlevel/WORKFLOW-ID-CAPTURE.md\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md\n- integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md\n- integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md\n- integrations/highlevel/workflow-checklists/OT-04-payment-active.md\n- integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md\n- integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md\n- integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md\n- integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md\n- integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md\n- integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n- integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md\n- integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md\n- integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md\n- integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md\n- integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md\n- integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md\n- integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md\n- integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md\n- integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md\n- integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md\n- integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md\n- integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md\n- integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md\n- integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md\n\nAllowed assets:\n- OT-01 New Lead Intake\n- OT-02A Existing Subscriber Migration 2026 v1\n- OT-02B New Lead Nurture v1\n- OT-03 Checkout Started / Abandoned\n- OT-04 Payment Active\n- OT-05 Payment Failed / Grace\n- OT-06 Subscription Canceled\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n- OT-09 Parent Class Reminder\n- OT-10 New Recording Available\n- OT-13 Refund / Chargeback\n- OT-B01 Complete Signup\n- OT-B02 Send Next Confirmed Class Info\n- OT-B03 Send Member Login\n- OT-B04 Send Password Help\n- OT-B05 Apply Opt-Out\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- chat-only workflow ID claims\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Open each canonical workflow and capture the saved GHL ID and visible status.\n- Do not edit workflow logic except to save an already-open draft when needed for ID visibility.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-13.result.json\nIdempotency key: one-time-ghl:GHL-UI-13:9ae804f8743f8066",
+      "exact_copy_paste_prompt": "Job GHL-UI-13: phase-2 rabbi acceptance\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel email sender settings and Conversations\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n\nAllowed assets:\n- rabbi_campaign phase-2 acceptance evidence\n- rabbi_personal acceptance evidence\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- activating rabbi@ before every prerequisite passes\n- broad campaign send\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Do not activate phase 2 in this no-send queue.\n- Record the exact unmet prerequisite or, after a separately authorized acceptance run, record all safe acceptance IDs and statuses.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-13.result.json\nIdempotency key: one-time-ghl:GHL-UI-13:88fd9a2607e04eb8",
       "allowed_assets": [
-        "OT-01 New Lead Intake",
-        "OT-02A Existing Subscriber Migration 2026 v1",
-        "OT-02B New Lead Nurture v1",
-        "OT-03 Checkout Started / Abandoned",
-        "OT-04 Payment Active",
-        "OT-05 Payment Failed / Grace",
-        "OT-06 Subscription Canceled",
-        "OT-07 Parent Portal Invitation",
-        "OT-08 Parent Portal Activated",
-        "OT-09 Parent Class Reminder",
-        "OT-10 New Recording Available",
-        "OT-13 Refund / Chargeback",
-        "OT-B01 Complete Signup",
-        "OT-B02 Send Next Confirmed Class Info",
-        "OT-B03 Send Member Login",
-        "OT-B04 Send Password Help",
-        "OT-B05 Apply Opt-Out"
+        "rabbi_campaign phase-2 acceptance evidence",
+        "rabbi_personal acceptance evidence"
       ],
       "forbidden_assets": [
         "Student contacts",
@@ -2557,19 +2508,24 @@
         "message sends",
         "Stripe or live payment mutations",
         "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "chat-only workflow ID claims"
+        "activating rabbi@ before every prerequisite passes",
+        "broad campaign send"
       ],
       "prerequisites": [
         "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
         "Read integrations/highlevel/registry/current.json.",
+        "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets.",
-        "GHL-UI-03 through GHL-UI-12 complete and saved."
+        "BLOCKED until rabbi@ mailbox or routing exists.",
+        "BLOCKED until HighLevel accepts the From address.",
+        "BLOCKED until a separately authorized seed delivers.",
+        "BLOCKED until a reply reaches GHL Conversations."
       ],
       "expected_ghl_ids_to_capture": [
-        "all_active_business_workflow_ids",
-        "all_bot_action_workflow_ids",
-        "deprecated_workflow_ids_if_present"
+        "rabbi_sender_acceptance_status",
+        "seed_delivery_safe_id",
+        "reply_conversation_safe_id"
       ],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
@@ -2706,7 +2662,7 @@
           }
         }
       },
-      "idempotency_key": "one-time-ghl:GHL-UI-13:9ae804f8743f8066",
+      "idempotency_key": "one-time-ghl:GHL-UI-13:88fd9a2607e04eb8",
       "bna_agent_action_dropoff": {
         "lane": "highlevel_agent_mode",
         "return_surface": "BNA Agent Action drop-off page",
@@ -2717,209 +2673,8 @@
           "repository": "shloimie-beep/onetimev2",
           "registry_root": "integrations/highlevel/registry/",
           "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-13-workflow-id-capture-and-registry-reconciliation.json",
+          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json",
           "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-13.result.json"
-        }
-      }
-    },
-    {
-      "job_id": "GHL-UI-14",
-      "order": 14,
-      "title": "controlled test-contact pass",
-      "ghl_location": {
-        "location_id": "pBSnOK2nkdxp6gf9Rg3o",
-        "location_fingerprint": "31fcbd2792f131dc",
-        "verification_required": true
-      },
-      "exact_target_ui_path": "HighLevel > Contacts > protected operator-owned test contact and related draft workflows/bot",
-      "canonical_source_files": [
-        "integrations/highlevel/WORKFLOW-TEST-MATRIX.md",
-        "integrations/highlevel/registry/current.json",
-        "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json"
-      ],
-      "exact_copy_paste_prompt": "Job GHL-UI-14: controlled test-contact pass\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Contacts > protected operator-owned test contact and related draft workflows/bot\n\nRead these canonical source files first:\n- integrations/highlevel/WORKFLOW-TEST-MATRIX.md\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json\n\nAllowed assets:\n- Protected operator-owned test contact only.\n- Draft workflow test mode.\n- Draft bot preview/test mode.\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- production contacts\n- message sends\n- workflow publishing\n- Stripe or GHL Payments mutation\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Run only no-send, no-publish draft checks against the protected operator-owned test contact.\n- Verify field/tag mutations are limited to registered One Time assets.\n- Capture status and evidence IDs without sending messages.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-14.result.json\nIdempotency key: one-time-ghl:GHL-UI-14:feceb3c838113d76",
-      "allowed_assets": [
-        "Protected operator-owned test contact only.",
-        "Draft workflow test mode.",
-        "Draft bot preview/test mode."
-      ],
-      "forbidden_assets": [
-        "Student contacts",
-        "Student username fields",
-        "Student password fields",
-        "workflow publish actions",
-        "production workflow enrollment",
-        "message sends",
-        "Stripe or live payment mutations",
-        "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-        "production contacts",
-        "message sends",
-        "workflow publishing",
-        "Stripe or GHL Payments mutation"
-      ],
-      "prerequisites": [
-        "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
-        "Read integrations/highlevel/registry/current.json.",
-        "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
-        "Use only one canonical registry and do not create duplicate assets.",
-        "Protected operator-owned test contact email and phone are configured outside Git.",
-        "GHL-UI-01 through GHL-UI-13 results are saved and readback verified."
-      ],
-      "expected_ghl_ids_to_capture": [
-        "test_contact_id",
-        "workflow_test_run_ids_if_visible",
-        "bot_preview_session_id_if_visible"
-      ],
-      "test_contact_rules": [
-        "Use only the protected operator-owned test contact configured outside Git.",
-        "Never use a production parent/adult contact for testing.",
-        "Do not send a message to the test contact.",
-        "Do not enroll the test contact into a published workflow."
-      ],
-      "defaults": {
-        "no_send": true,
-        "no_publish": true,
-        "no_production_workflow_enrollment": true,
-        "no_live_payment_mutation": true,
-        "no_student_contacts": true,
-        "save_required": true,
-        "readback_required": true
-      },
-      "completion_checklist": [
-        "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
-        "Canonical source files for GHL-UI-14 were read before edits.",
-        "Only allowed assets were created, edited, or verified.",
-        "Forbidden assets and actions were not used.",
-        "Every changed asset was saved in the HighLevel UI.",
-        "Saved asset state was verified after save.",
-        "Safe GHL IDs and visible statuses were captured.",
-        "Messages sent = 0.",
-        "Workflow publish actions = 0.",
-        "Production contacts enrolled = 0.",
-        "Stripe or live payment mutations = 0.",
-        "Result JSON was saved to the BNA Agent Action drop-off lane.",
-        "Readback result ID was verified."
-      ],
-      "result_json_schema": {
-        "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "job_id",
-          "status",
-          "ghl_location_id",
-          "saved",
-          "verified",
-          "captured_ids",
-          "messages_sent",
-          "workflows_published",
-          "production_contacts_enrolled",
-          "stripe_mutations",
-          "student_contacts_created",
-          "dropoff_result_id",
-          "readback_verified",
-          "idempotency_key",
-          "notes"
-        ],
-        "properties": {
-          "job_id": {
-            "const": "GHL-UI-14"
-          },
-          "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
-          },
-          "ghl_location_id": {
-            "const": "pBSnOK2nkdxp6gf9Rg3o"
-          },
-          "saved": {
-            "type": "boolean"
-          },
-          "verified": {
-            "type": "boolean"
-          },
-          "captured_ids": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
-              "properties": {
-                "asset_type": {
-                  "type": "string"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "status": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "messages_sent": {
-            "const": 0
-          },
-          "workflows_published": {
-            "const": 0
-          },
-          "production_contacts_enrolled": {
-            "const": 0
-          },
-          "stripe_mutations": {
-            "const": 0
-          },
-          "student_contacts_created": {
-            "const": 0
-          },
-          "dropoff_result_id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "readback_verified": {
-            "type": "boolean"
-          },
-          "idempotency_key": {
-            "type": "string",
-            "minLength": 1
-          },
-          "blockers": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "notes": {
-            "type": "string"
-          }
-        }
-      },
-      "idempotency_key": "one-time-ghl:GHL-UI-14:feceb3c838113d76",
-      "bna_agent_action_dropoff": {
-        "lane": "highlevel_agent_mode",
-        "return_surface": "BNA Agent Action drop-off page",
-        "return_route": "/ops/agent-actions/highlevel/drop-off",
-        "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-14.result.json",
-        "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
-        "metadata": {
-          "repository": "shloimie-beep/onetimev2",
-          "registry_root": "integrations/highlevel/registry/",
-          "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-          "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-14-controlled-test-contact-pass.json",
-          "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-14.result.json"
         }
       }
     }

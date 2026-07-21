@@ -1,7 +1,7 @@
 {
   "job_id": "GHL-UI-01",
   "order": 1,
-  "title": "custom-value folders and unresolved value review",
+  "title": "create sender custom-value folder",
   "ghl_location": {
     "location_id": "pBSnOK2nkdxp6gf9Rg3o",
     "location_fingerprint": "31fcbd2792f131dc",
@@ -10,39 +10,14 @@
   "exact_target_ui_path": "HighLevel > Settings > Custom Values",
   "canonical_source_files": [
     "integrations/highlevel/registry/current.json",
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/message-class-registry.yaml",
+    "integrations/highlevel/registry/communications-contract.json",
     "integrations/highlevel/registry/custom-values.yaml"
   ],
-  "exact_copy_paste_prompt": "Job GHL-UI-01: custom-value folders and unresolved value review\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Settings > Custom Values\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/custom-values.yaml\n\nAllowed assets:\n- Custom-value folders matching the registry folder names.\n- One Time Brand Name\n- One Time Rabbi Name\n- One Time Sender Name\n- One Time Sender Email\n- One Time Reply-To Email\n- One Time Program Short Description\n- One Time Home URL\n- One Time Signup URL\n- One Time Member Login URL\n- One Time Password Help URL\n- One Time Parent Portal URL\n- One Time Student Portal URL\n- One Time Early Access URL\n- One Time Checkout URL\n- One Time Recording Portal URL\n- One Time WhatsApp Entry URL\n- One Time Complimentary Access Label\n- One Time Promotion Status\n- One Time Promotion End Date Label\n- One Time Pricing Display Status\n- One Time Published Price Label\n- One Time Default Time Zone\n- One Time Class Time Israel\n- One Time Schedule Notice\n- One Time Support Email\n- One Time Public Bot Name\n- One Time Public Bot Version\n- One Time Knowledge Base Version\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- PENDING_ACCEPTED_ROUTE\n- PENDING_VERIFIED_GHL_CHECKOUT_URL\n- PENDING_PROTECTED_PORTAL_ROUTE\n- PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL\n- TODO\n- CHANGEME\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or verify the Custom Values folders named in the registry.\n- Review unresolved values marked blocked_ui_or_business_value; do not create any placeholder value.\n- If a real approved value already exists in GHL, capture its safe custom value ID and status.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-01.result.json\nIdempotency key: one-time-ghl:GHL-UI-01:5992aa88997b126b",
+  "exact_copy_paste_prompt": "Job GHL-UI-01: create sender custom-value folder\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Settings > Custom Values\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/custom-values.yaml\n\nAllowed assets:\n- One Time - Senders custom-value folder\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- duplicate sender folders\n- renaming existing unrelated folders\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or verify exactly one folder named One Time - Senders.\n- Do not move or rewrite existing values in this job.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-01.result.json\nIdempotency key: one-time-ghl:GHL-UI-01:bb93fb12df1fdd31",
   "allowed_assets": [
-    "Custom-value folders matching the registry folder names.",
-    "One Time Brand Name",
-    "One Time Rabbi Name",
-    "One Time Sender Name",
-    "One Time Sender Email",
-    "One Time Reply-To Email",
-    "One Time Program Short Description",
-    "One Time Home URL",
-    "One Time Signup URL",
-    "One Time Member Login URL",
-    "One Time Password Help URL",
-    "One Time Parent Portal URL",
-    "One Time Student Portal URL",
-    "One Time Early Access URL",
-    "One Time Checkout URL",
-    "One Time Recording Portal URL",
-    "One Time WhatsApp Entry URL",
-    "One Time Complimentary Access Label",
-    "One Time Promotion Status",
-    "One Time Promotion End Date Label",
-    "One Time Pricing Display Status",
-    "One Time Published Price Label",
-    "One Time Default Time Zone",
-    "One Time Class Time Israel",
-    "One Time Schedule Notice",
-    "One Time Support Email",
-    "One Time Public Bot Name",
-    "One Time Public Bot Version",
-    "One Time Knowledge Base Version"
+    "One Time - Senders custom-value folder"
   ],
   "forbidden_assets": [
     "Student contacts",
@@ -53,23 +28,18 @@
     "message sends",
     "Stripe or live payment mutations",
     "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-    "PENDING_ACCEPTED_ROUTE",
-    "PENDING_VERIFIED_GHL_CHECKOUT_URL",
-    "PENDING_PROTECTED_PORTAL_ROUTE",
-    "PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL",
-    "TODO",
-    "CHANGEME"
+    "duplicate sender folders",
+    "renaming existing unrelated folders"
   ],
   "prerequisites": [
     "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
     "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
     "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
     "Use only one canonical registry and do not create duplicate assets."
   ],
   "expected_ghl_ids_to_capture": [
-    "custom_value_folder_ids_if_visible",
-    "custom_value_ids_for_resolved_existing_values",
-    "blocked_ui_or_business_value_names"
+    "one_time_senders_folder_id_if_visible"
   ],
   "test_contact_rules": [
     "No contact mutation is allowed for this job.",
@@ -206,7 +176,7 @@
       }
     }
   },
-  "idempotency_key": "one-time-ghl:GHL-UI-01:5992aa88997b126b",
+  "idempotency_key": "one-time-ghl:GHL-UI-01:bb93fb12df1fdd31",
   "bna_agent_action_dropoff": {
     "lane": "highlevel_agent_mode",
     "return_surface": "BNA Agent Action drop-off page",
@@ -217,7 +187,7 @@
       "repository": "shloimie-beep/onetimev2",
       "registry_root": "integrations/highlevel/registry/",
       "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-01-custom-value-folders-and-unresolved-value-review.json",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-01-create-sender-custom-value-folder.json",
       "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-01.result.json"
     }
   }

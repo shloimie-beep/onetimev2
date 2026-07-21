@@ -5,13 +5,19 @@ import {
   botActionWorkflows,
   businessWorkflows,
   contactFields,
+  communicationsContract,
   customValues,
   deprecatedWorkflows,
+  eventDefinitions,
   lowercaseTagDeprecations,
+  messageClasses,
+  pipelineDefinitions,
   protectedImportPaths,
   registryMetadata,
+  senderProfiles,
   standardContactFields,
   tags,
+  type SenderKey,
   type RegistryWorkflow,
 } from './canonical-registry-data.ts';
 
@@ -32,6 +38,8 @@ type PromptRecord = {
   required_tags: string[];
   required_custom_values: string[];
   required_workflows: string[];
+  required_sender_keys: SenderKey[];
+  required_message_classes: string[];
   test_contact_reference: string;
   last_tested_date: string;
   supersedes: string[];
@@ -67,9 +75,12 @@ async function main() {
     productDecisionDir,
   ]);
 
-  const incomingRaw = await readIncoming(args.incomingPath);
-  await writeRepoFile(incomingTarget, incomingRaw);
-  await writeRepoFile(`${productDecisionDir}/ORIGINAL-DIRECTION.md`, incomingRaw);
+  const incomingSource = await readIncoming(args.incomingPath);
+  const incomingRaw = incomingSource ?? (await readRepoFile(incomingTarget));
+  if (incomingSource !== null) {
+    await writeRepoFile(incomingTarget, incomingRaw);
+    await writeRepoFile(`${productDecisionDir}/ORIGINAL-DIRECTION.md`, incomingRaw);
+  }
 
   await writeRepoFile(candidatePrompt, buildActiveBotPrompt());
   await writeRepoFile(activePrompt, buildActiveBotPrompt());
@@ -132,6 +143,11 @@ function buildCurrentRegistry(prompts: PromptRecord[], knowledgeBases: PromptRec
       pending_tags: tags.filter((tag) => tag.deprecationState === 'pending_creation').length,
       deprecated_tags: tags.filter((tag) => tag.deprecationState === 'deprecated_existing').length,
       custom_values: customValues.length,
+      sender_profiles: senderProfiles.length,
+      message_classes: messageClasses.length,
+      pipelines: pipelineDefinitions.filter((pipeline) => pipeline.status !== 'compatibility_alias')
+        .length,
+      events: eventDefinitions.length,
       business_workflows: businessWorkflows.length,
       bot_action_workflows: botActionWorkflows.length,
       deprecated_workflows: deprecatedWorkflows.length,
@@ -140,6 +156,11 @@ function buildCurrentRegistry(prompts: PromptRecord[], knowledgeBases: PromptRec
     contact_fields: contactFields,
     tags,
     custom_values: customValues,
+    sender_profiles: senderProfiles,
+    message_classes: messageClasses,
+    pipelines: pipelineDefinitions,
+    events: eventDefinitions,
+    communications_contract: communicationsContract,
     business_workflows: businessWorkflows,
     bot_action_workflows: botActionWorkflows,
     deprecated_workflows: deprecatedWorkflows,
@@ -172,8 +193,10 @@ async function writeRegistryFiles(current: ReturnType<typeof buildCurrentRegistr
       last_verified_date: registryMetadata.date,
       standard_contact_fields: standardContactFields.map((field) => field.canonicalName),
       safety_boundaries: [
-        'HighLevel owns parent/lead CRM, marketing, WhatsApp conversations, business workflows and payment state.',
-        'One Time owns Parent/Student authentication, households, learners, portals, learning access, Vimeo, Zoom, progress and gamification.',
+        'HighLevel owns adult/parent contacts, customer conversations, campaigns, business workflows, replies, suppression, opportunities, and customer-support/Torah-question processing state.',
+        'One Time owns authentication, passwords and secure tokens, households, learners, Parent/Student portals, entitlement, classes, Vimeo, Zoom, progress, gamification, and original portal submissions.',
+        'Resend is limited to activation/setup links, password reset, email verification, Administrator login challenge, and security-token email.',
+        'Telegram is Rabbi Eli Scheller private interface for assigned Torah questions and Rabbi-authored content; it is not a separate customer transcript.',
         'Never create a Student contact or Student custom field in HighLevel.',
         'A GHL field or tag is not authorization for One Time portal access.',
       ],
@@ -181,6 +204,27 @@ async function writeRegistryFiles(current: ReturnType<typeof buildCurrentRegistr
   );
   await writeRepoFile('integrations/highlevel/registry/custom-fields.yaml', yaml(contactFields));
   await writeRepoFile('integrations/highlevel/registry/custom-values.yaml', yaml(customValues));
+  await writeRepoFile('integrations/highlevel/registry/sender-registry.yaml', yaml(senderProfiles));
+  await writeRepoFile(
+    'integrations/highlevel/registry/message-class-registry.yaml',
+    yaml(messageClasses),
+  );
+  await writeRepoFile(
+    'integrations/highlevel/registry/pipeline-registry.yaml',
+    yaml(pipelineDefinitions),
+  );
+  await writeRepoFile(
+    'integrations/highlevel/registry/event-registry.yaml',
+    yaml(eventDefinitions),
+  );
+  await writeRepoFile(
+    'integrations/highlevel/registry/communications-contract.json',
+    `${JSON.stringify(communicationsContract, null, 2)}\n`,
+  );
+  await writeRepoFile(
+    'integrations/highlevel/registry/rabbi-telegram-contract.yaml',
+    yaml(rabbiTelegramContract()),
+  );
   await writeRepoFile('integrations/highlevel/registry/tag-taxonomy.yaml', yaml(tags));
   await writeRepoFile('integrations/highlevel/registry/form-field-map.yaml', yaml(formFieldMap()));
   await writeRepoFile(
@@ -365,14 +409,32 @@ async function writeProductDecisionFiles() {
 }
 
 function workflowPrompt(workflow: RegistryWorkflow) {
+  const senderValues = registeredSenderCustomValues(workflow.senderKey);
   return [
     `# ${workflow.canonicalName} Prompt`,
     '',
     'Build in HighLevel Draft state only. Do not publish, send messages, enroll production contacts, mutate Stripe, or create Student contacts from this prompt.',
     '',
     `Canonical registry: ${registryMetadata.schemaId}@${registryMetadata.schemaVersion}`,
+    `Exact workflow: ${workflow.canonicalName}`,
     `Folder: ${workflow.folder}`,
+    `Exact trigger: ${workflow.exactTrigger}`,
+    `message_class: ${workflow.messageClass}`,
+    `sender_key: ${workflow.senderKey}`,
+    `transport: ${workflow.transport}`,
     `Purpose: ${workflow.purpose}`,
+    ...(workflow.companionDelivery ? [`Companion delivery: ${workflow.companionDelivery}`] : []),
+    '',
+    'Registry dependencies:',
+    '- `integrations/highlevel/registry/sender-registry.yaml`',
+    '- `integrations/highlevel/registry/message-class-registry.yaml`',
+    '- `integrations/highlevel/registry/communications-contract.json`',
+    '- `integrations/highlevel/registry/workflow-registry.yaml`',
+    '',
+    'Exact sender custom values to select from the picker:',
+    ...senderValues.map((value) => `- ${value}`),
+    '- Do not type or guess sender display-name, From, reply-to, or provider text.',
+    '- If a registered sender value is absent from the picker, block this workflow instead of inventing it.',
     '',
     'Required boundaries:',
     '- Use only registered One Time fields, tags and custom values from `integrations/highlevel/registry/current.json`.',
@@ -447,6 +509,16 @@ function workflowSpecificLines(key: string) {
       'Record refund or chargeback state from verified payment events.',
       'Do not mutate Stripe or send customer messages from this workflow.',
     ],
+    'OT-C01': [
+      "Use event_code tisha-bav-2026 and only the preserved Tisha B'Av event tags and values already registered.",
+      'Use rabbi_campaign phase 1 only. Phase 2 rabbi@ remains blocked until every acceptance prerequisite is recorded.',
+      'Do not select an audience, send a seed, or launch the campaign from this prompt.',
+    ],
+    'OT-E01': [
+      "Use event_code tisha-bav-2026 and the canonical Tisha B'Av registration/reminder state.",
+      'Use brand unless an approved Rabbi-authored prompt version explicitly maps the step to rabbi_campaign.',
+      'Do not duplicate event tags or custom values.',
+    ],
     'OT-B01': [
       'Triggered only by OT-A1 after adult details are complete.',
       'Required adult fields: contact_name, family_or_school, audience_type, location, timezone, browser_timezone, email, phone when WhatsApp or Both, reminder_preference, reminder_consent, consent_context, idempotency_key, attribution.',
@@ -475,21 +547,57 @@ function workflowSpecificLines(key: string) {
   return linesByKey[key] ?? ['Follow the canonical workflow registry.'];
 }
 
+function registeredSenderCustomValues(senderKey: SenderKey) {
+  const common = ['One Time Default Reply-To'];
+  const bySender: Record<SenderKey, string[]> = {
+    rabbi_campaign: [
+      'One Time Rabbi Campaign Sender Name',
+      'One Time Rabbi Campaign Phase 1 From',
+      'One Time Rabbi Campaign Phase 2 From',
+      ...common,
+    ],
+    rabbi_personal: [
+      'One Time Rabbi Personal Sender Name',
+      'One Time Rabbi Personal From',
+      ...common,
+    ],
+    office: ['One Time Office Sender Name', 'One Time Office From', ...common],
+    brand: ['One Time Brand Sender Name', 'One Time Brand From', ...common],
+    account_security: [
+      'One Time Account Sender Name',
+      'One Time Account Preferred From',
+      ...common,
+    ],
+  };
+  return bySender[senderKey];
+}
+
 function workflowChecklist(workflow: RegistryWorkflow) {
+  const senderValues = registeredSenderCustomValues(workflow.senderKey);
   return [
     `# ${workflow.canonicalName} UI Checklist`,
     '',
     `Folder: ${workflow.folder}`,
+    `Exact trigger: ${workflow.exactTrigger}`,
+    `message_class: ${workflow.messageClass}`,
+    `sender_key: ${workflow.senderKey}`,
+    `transport: ${workflow.transport}`,
     `Registry: integrations/highlevel/registry/workflow-registry.yaml`,
     '',
     '- Build only in Draft.',
     '- Confirm every field, tag and custom value exists in `registry/current.json` before use.',
+    '- Read `sender-registry.yaml`, `message-class-registry.yaml`, and `communications-contract.json` before sender configuration.',
+    ...senderValues.map((value) => `- Select the registered picker value: ${value}.`),
+    '- Never guess or hardcode an unregistered sender identity.',
     '- No Human Handoff action.',
     '- No human task creation.',
     '- No production contact enrollment.',
     '- No outbound message send in this lane.',
     '- No Student contact, Student field or Student tag.',
     '- Record the workflow ID in `WORKFLOW-ID-CAPTURE.md` after creation.',
+    ...(workflow.companionDelivery
+      ? [`- Verify the split delivery contract: ${workflow.companionDelivery}`]
+      : []),
     '',
   ].join('\n');
 }
@@ -501,6 +609,8 @@ function buildActiveBotPrompt() {
     'You are OT-A1 One Time Enrollment Assistant for One Time Mishnayos with Rabbi Eli Scheller.',
     '',
     'Channels: Website Live Chat and WhatsApp. Voice AI is deferred.',
+    'Registry dependencies: sender-registry.yaml, message-class-registry.yaml, pipeline-registry.yaml, communications-contract.json, and rabbi-telegram-contract.yaml.',
+    'Default operational owner for customer communication is Shloimie.',
     '',
     'Primary job:',
     '- Help an adult parent, guardian, family or school contact understand One Time.',
@@ -523,6 +633,8 @@ function buildActiveBotPrompt() {
     'Boundaries:',
     '- Do not pretend to be Rabbi Scheller.',
     '- Do not provide Torah rulings or halachic advice.',
+    '- Route only an explicit substantive Torah, Mishnah, or halachic question to the One Time Torah Questions pipeline for Shloimie review.',
+    '- Do not route login, password help, billing, cancellation, refund, technical support, scheduling, class-link problems, parent administration, ordinary enrollment logistics, complaints, unknown messages, or generic replies to Rabbi.',
     '- Do not invent class information, schedule notices, promotions or price.',
     '- Do not proactively state a price.',
     '- Price may be shown only when One Time Pricing Display Status equals published and One Time Published Price Label contains the current approved value.',
@@ -577,6 +689,10 @@ function buildPublicKnowledgeBase() {
     '',
     'One Time and BNA Academy records remain separate.',
     '',
+    'Communication ownership: Shloimie owns default customer communication. Only explicit substantive Torah, Mishnah, or halachic questions enter One Time Torah Questions for Rabbi authorship through Telegram. Telegram is not a separate customer transcript.',
+    '',
+    'Sender identities are never guessed. Workflow messages use only sender-registry.yaml and message-class-registry.yaml. Security-token email is One Time/Resend account_security only; HighLevel never stores or sends activation/reset tokens.',
+    '',
   ].join('\n');
 }
 
@@ -587,6 +703,16 @@ function buildAgentHandoff() {
     '# One Time HighLevel Agent Handoff',
     '',
     `Canonical schema: ${registryMetadata.schemaId}@${registryMetadata.schemaVersion}`,
+    `Canonical location ID: ${registryMetadata.locationId}`,
+    '',
+    'Required start files:',
+    '- integrations/highlevel/registry/current.json',
+    '- integrations/highlevel/registry/sender-registry.yaml',
+    '- integrations/highlevel/registry/message-class-registry.yaml',
+    '- integrations/highlevel/registry/pipeline-registry.yaml',
+    '- integrations/highlevel/registry/event-registry.yaml',
+    '- integrations/highlevel/registry/communications-contract.json',
+    '- integrations/highlevel/registry/rabbi-telegram-contract.yaml',
     '',
     'Canonical bot:',
     '- OT-A1 One Time Enrollment Assistant.',
@@ -597,7 +723,7 @@ function buildAgentHandoff() {
     '- No separate WhatsApp lead-qualification bot or workflow.',
     '',
     'Workflow boundary:',
-    '- Business workflows: OT-01, OT-02A, OT-02B, OT-03, OT-04, OT-05, OT-06, OT-07, OT-08, OT-09, OT-10, OT-13.',
+    '- Business workflows: OT-01, OT-02A, OT-02B, OT-03, OT-04, OT-05, OT-06, OT-07, OT-08, OT-09, OT-10, OT-13, OT-C01, OT-E01.',
     '- Bot-action workflows: OT-B01, OT-B02, OT-B03, OT-B04, OT-B05.',
     '- Deprecated: OT-11, OT-12 when it creates tasks, OT - Human Handoff and duplicate lead-capture workflows.',
     '',
@@ -605,6 +731,8 @@ function buildAgentHandoff() {
     '- Do not create Student contacts, Student fields or Student tags in HighLevel.',
     '- Do not send messages, publish workflows, enroll production contacts, mutate Stripe or expose private One Time links unless a later task explicitly authorizes the exact action.',
     '- Reconcile protected import manifest and contact map before any contact import write.',
+    '- Every canonical workflow has exactly one message_class and sender_key. Never guess sender text.',
+    '- Phase-2 rabbi@ remains inactive until mailbox, HighLevel From acceptance, seed delivery, reply-to-Conversations, and recorded-result gates pass.',
     '',
   ].join('\n');
 }
@@ -634,6 +762,15 @@ function buildReadme() {
 function buildChangelog() {
   return [
     '# HighLevel Changelog',
+    '',
+    '## 2026-07-21 - Schema 1.1.0',
+    '',
+    '- Added canonical sender, message-class, pipeline, event, communications, and Rabbi Telegram registries.',
+    '- Bound every canonical workflow prompt/checklist to one message_class, sender_key, exact trigger, and registered picker values.',
+    '- Split OT-07 into a GHL brand companion/welcome email and a One Time/Resend account_security activation token.',
+    '- Registered One Time Enrollment and Conversion, One Time Member Support, and One Time Torah Questions pipelines while preserving One Time Business as a compatibility alias.',
+    '- Preserved phase-2 rabbi@ as inactive pending mailbox, From-address, seed, reply-to-Conversations, and recorded-result acceptance.',
+    '- Regenerated Agent Mode work under no-send/no-publish defaults.',
     '',
     '## 2026-07-20 - Schema 1.0.0',
     '',
@@ -795,28 +932,58 @@ function botActionContracts() {
   return {
     bot_id: 'OT-A1',
     bot_name: 'OT-A1 One Time Enrollment Assistant',
-    actions: [
-      {
-        key: 'OT-B01',
-        name: 'Complete Signup',
-        adapter_required: true,
-        student_data_allowed: false,
-      },
-      { key: 'OT-B02', name: 'Send Next Confirmed Class Info', raw_zoom_link_allowed: false },
-      { key: 'OT-B03', name: 'Send Member Login', url: 'https://join.onetimeonetime.com/login' },
-      {
-        key: 'OT-B04',
-        name: 'Send Password Help',
-        url: 'https://join.onetimeonetime.com/forgot-password',
-        obsolete_route_forbidden: '/api/one-time/parent-password/request',
-      },
-      {
-        key: 'OT-B05',
-        name: 'Apply Opt-Out',
-        updates_dnd: true,
-        sends_one_confirmation_only: true,
-      },
+    default_operational_owner: 'Shloimie',
+    torah_question_pipeline: 'One Time Torah Questions',
+    human_handoff_action: false,
+    task_creation_action: false,
+    actions: botActionWorkflows.map((workflow) => ({
+      key: workflow.key,
+      name: workflow.canonicalName.replace(`${workflow.key} `, ''),
+      message_class: workflow.messageClass,
+      sender_key: workflow.senderKey,
+      transport: workflow.transport,
+      adapter_required: true,
+      student_data_allowed: false,
+      messages_authorized_in_this_lane: false,
+    })),
+  };
+}
+
+function rabbiTelegramContract() {
+  return {
+    contract_id: 'one_time_rabbi_torah_console',
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates and retains visibility',
+    customer_transcript_system: 'HighLevel Conversations',
+    telegram_is_separate_customer_transcript: false,
+    allowed: [
+      'list assigned Torah questions',
+      'open question',
+      'accept Rabbi text or voice response',
+      'produce a preview',
+      'save draft',
+      'send confirmed reply through the same GHL conversation',
+      'return question to Shloimie',
+      'close question',
+      'draft Torah newsletter',
+      'draft warm enrollment email',
+      'show campaign audience and suppression results',
+      'trigger an approved campaign only after explicit confirmation',
     ],
+    forbidden: [
+      'general support queue',
+      'technical issues',
+      'billing',
+      'parent administration',
+      'independent AI Torah answers',
+      'independent bulk audience selection',
+      'separate Telegram transcript',
+      'vague bulk-send command',
+    ],
+    safety: {
+      messages_sent_authorized_by_registry: false,
+      campaign_trigger_requires_explicit_confirmation: true,
+      same_ghl_conversation_required: true,
+    },
   };
 }
 
@@ -905,6 +1072,8 @@ async function promptRegistry(): Promise<PromptRecord[]> {
           filePath: workflow.promptPath,
           source: 'Canonical workflow prompt generated from registry',
           requiredWorkflows: [workflow.key],
+          requiredSenderKeys: [workflow.senderKey],
+          requiredMessageClasses: [workflow.messageClass],
         }),
       ),
     )),
@@ -941,6 +1110,8 @@ async function promptRecord(input: {
   supersededBy?: string;
   requiredWorkflows?: string[];
   requiredCustomValues?: string[];
+  requiredSenderKeys?: SenderKey[];
+  requiredMessageClasses?: string[];
 }): Promise<PromptRecord> {
   const body = await readRepoFile(input.filePath);
   return {
@@ -975,6 +1146,14 @@ async function promptRecord(input: {
       'OT-B04',
       'OT-B05',
     ],
+    required_sender_keys: input.requiredSenderKeys ?? [
+      'rabbi_campaign',
+      'rabbi_personal',
+      'office',
+      'brand',
+      'account_security',
+    ],
+    required_message_classes: input.requiredMessageClasses ?? [],
     test_contact_reference: 'protected_operator_owned_test_contact',
     last_tested_date: '',
     supersedes: input.supersedes ?? [],
@@ -985,7 +1164,7 @@ async function promptRecord(input: {
 function buildWorkflowsYaml() {
   const activeWorkflows = [...businessWorkflows, ...botActionWorkflows];
   return yaml({
-    version: 4,
+    version: 6,
     schema_id: registryMetadata.schemaId,
     schema_version: registryMetadata.schemaVersion,
     status: 'canonical_registry_ready_ui_required',
@@ -1000,18 +1179,12 @@ function buildWorkflowsYaml() {
     custom_fields: contactFields,
     tags,
     custom_values: customValues,
-    pipeline: {
-      name: 'One Time Business',
-      id: 'T8xEp9woujGVqvNJlqoz',
-      stages: {
-        lead: 'a59ea712-d1e0-44e6-ac57-419fb3c71367',
-        checkout_started: '00cf536c-25ce-46a5-a292-1a72822d565f',
-        active_customer: '3177add5-e536-4a5f-a969-fc4f2cb00f83',
-        grace: '3e567591-4cc9-403c-a4b8-b843712ddd86',
-        canceled: '3cebc246-f63f-4cb1-87f3-72e139efd455',
-        former: '68680d55-15d4-42c3-b5be-dbb26a27c9cc',
-      },
-    },
+    senders: senderProfiles,
+    message_classes: messageClasses,
+    pipelines: pipelineDefinitions,
+    events: eventDefinitions,
+    communications_contract: 'integrations/highlevel/registry/communications-contract.json',
+    rabbi_telegram_contract: 'integrations/highlevel/registry/rabbi-telegram-contract.yaml',
     canonical_bot: {
       id: 'OT-A1',
       name: 'OT-A1 One Time Enrollment Assistant',
@@ -1039,11 +1212,11 @@ function parseArgs(argv: string[]): Args {
 }
 
 async function readIncoming(filePath: string | null) {
-  if (!filePath) return `# Missing incoming source\n\n${missingNamedPackNote}\n`;
+  if (!filePath) return null;
   try {
     return await readFile(filePath, 'utf8');
   } catch {
-    return `# Missing incoming source\n\nRequested source path was unavailable: ${filePath}\n\n${missingNamedPackNote}\n`;
+    throw new Error(`incoming_source_unavailable:${filePath}`);
   }
 }
 

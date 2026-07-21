@@ -1,12 +1,13 @@
-- prompt_id: 'OT-KB-PUBLIC-1'
+-
+  prompt_id: 'OT-KB-PUBLIC-1'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'One Time Mishnayos - Public Program and Support'
   file_path: 'integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md'
-  sha256: 'c515025b586083659c43c45cb829699b0b097728459936c1004df6118def6472'
+  sha256: '265ecde72f3355b6c85fca2b74aea62d7d2ba3d942ca51ab33d88af2e036412f'
   source: 'Corrected public knowledge base from incoming bot pack direction'
-  created_date: '2026-07-20'
-  approved_date: '2026-07-20'
+  created_date: '2026-07-21'
+  approved_date: '2026-07-21'
   ghl_asset_id: ''
   required_fields:
     - 'One Time Email Consent'
@@ -27,7 +28,16 @@
     - 'OT-B03'
     - 'OT-B04'
     - 'OT-B05'
+  required_sender_keys:
+    - 'rabbi_campaign'
+    - 'rabbi_personal'
+    - 'office'
+    - 'brand'
+    - 'account_security'
+  required_message_classes:
+    []
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes: []
+  supersedes:
+    []
   superseded_by: ''

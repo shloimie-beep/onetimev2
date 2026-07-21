@@ -19,3 +19,7 @@ Current price is not proactively stated. Price may be shown only when One Time P
 For unconfirmed information, use: I do not have that information confirmed. Please email info@onetimeonetime.com.
 
 One Time and BNA Academy records remain separate.
+
+Communication ownership: Shloimie owns default customer communication. Only explicit substantive Torah, Mishnah, or halachic questions enter One Time Torah Questions for Rabbi authorship through Telegram. Telegram is not a separate customer transcript.
+
+Sender identities are never guessed. Workflow messages use only sender-registry.yaml and message-class-registry.yaml. Security-token email is One Time/Resend account_security only; HighLevel never stores or sends activation/reset tokens.

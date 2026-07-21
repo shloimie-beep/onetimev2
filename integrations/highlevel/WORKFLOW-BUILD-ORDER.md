@@ -14,14 +14,15 @@ Build in Draft state only. Do not publish or enroll production contacts.
 10. OT-09 Parent Class Reminder - 40 - Classes & Content - integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md
 11. OT-10 New Recording Available - 40 - Classes & Content - integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md
 12. OT-13 Refund / Chargeback - 20 - Billing & Access - integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md
-13. OT-B01 Complete Signup - 00 - Intake & Data - integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md
-14. OT-B02 Send Next Confirmed Class Info - 40 - Classes & Content - integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md
-15. OT-B03 Send Member Login - 30 - Portal Lifecycle - integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md
-16. OT-B04 Send Password Help - 30 - Portal Lifecycle - integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md
-17. OT-B05 Apply Opt-Out - 00 - Intake & Data - integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md
+13. OT-C01 Tisha B'Av 2026 Warm Invitation - 10 - Nurture & Sales - integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md
+14. OT-E01 Tisha B'Av 2026 Registration and Reminders - 45 - Events - integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md
+15. OT-B01 Complete Signup - 00 - Intake & Data - integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md
+16. OT-B02 Send Next Confirmed Class Info - 40 - Classes & Content - integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md
+17. OT-B03 Send Member Login - 30 - Portal Lifecycle - integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md
+18. OT-B04 Send Password Help - 30 - Portal Lifecycle - integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md
+19. OT-B05 Apply Opt-Out - 00 - Intake & Data - integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md
 
 Deprecated / do not build:
-
 - OT-11 WhatsApp Lead Qualification
 - OT-12 Support Intake / Technical Escalation
 - OT - Human Handoff

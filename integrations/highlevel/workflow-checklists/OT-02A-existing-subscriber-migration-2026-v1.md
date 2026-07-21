@@ -1,10 +1,20 @@
 # OT-02A Existing Subscriber Migration 2026 v1 UI Checklist
 
 Folder: 10 - Nurture & Sales
+Exact trigger: registered existing subscriber migration audience entry
+message_class: existing_subscriber_migration
+sender_key: rabbi_campaign
+transport: GHL
 Registry: integrations/highlevel/registry/workflow-registry.yaml
 
 - Build only in Draft.
 - Confirm every field, tag and custom value exists in `registry/current.json` before use.
+- Read `sender-registry.yaml`, `message-class-registry.yaml`, and `communications-contract.json` before sender configuration.
+- Select the registered picker value: One Time Rabbi Campaign Sender Name.
+- Select the registered picker value: One Time Rabbi Campaign Phase 1 From.
+- Select the registered picker value: One Time Rabbi Campaign Phase 2 From.
+- Select the registered picker value: One Time Default Reply-To.
+- Never guess or hardcode an unregistered sender identity.
 - No Human Handoff action.
 - No human task creation.
 - No production contact enrollment.

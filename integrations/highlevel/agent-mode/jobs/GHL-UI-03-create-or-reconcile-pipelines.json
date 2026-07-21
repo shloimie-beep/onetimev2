@@ -1,23 +1,23 @@
 {
-  "job_id": "GHL-UI-14",
-  "order": 14,
-  "title": "controlled test-contact pass",
+  "job_id": "GHL-UI-03",
+  "order": 3,
+  "title": "create or reconcile pipelines",
   "ghl_location": {
     "location_id": "pBSnOK2nkdxp6gf9Rg3o",
     "location_fingerprint": "31fcbd2792f131dc",
     "verification_required": true
   },
-  "exact_target_ui_path": "HighLevel > Contacts > protected operator-owned test contact and related draft workflows/bot",
+  "exact_target_ui_path": "HighLevel > Opportunities > Pipelines",
   "canonical_source_files": [
-    "integrations/highlevel/WORKFLOW-TEST-MATRIX.md",
-    "integrations/highlevel/registry/current.json",
-    "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json"
+    "integrations/highlevel/registry/pipeline-registry.yaml",
+    "integrations/highlevel/registry/communications-contract.json"
   ],
-  "exact_copy_paste_prompt": "Job GHL-UI-14: controlled test-contact pass\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Contacts > protected operator-owned test contact and related draft workflows/bot\n\nRead these canonical source files first:\n- integrations/highlevel/WORKFLOW-TEST-MATRIX.md\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json\n\nAllowed assets:\n- Protected operator-owned test contact only.\n- Draft workflow test mode.\n- Draft bot preview/test mode.\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- production contacts\n- message sends\n- workflow publishing\n- Stripe or GHL Payments mutation\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Run only no-send, no-publish draft checks against the protected operator-owned test contact.\n- Verify field/tag mutations are limited to registered One Time assets.\n- Capture status and evidence IDs without sending messages.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-14.result.json\nIdempotency key: one-time-ghl:GHL-UI-14:feceb3c838113d76",
+  "exact_copy_paste_prompt": "Job GHL-UI-03: create or reconcile pipelines\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Opportunities > Pipelines\n\nRead these canonical source files first:\n- integrations/highlevel/registry/pipeline-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n\nAllowed assets:\n- One Time Enrollment and Conversion\n- One Time Member Support\n- One Time Torah Questions\n- One Time Business\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- deleting One Time Business\n- migrating existing opportunities\n- duplicate pipelines or stages\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or reconcile the three canonical pipelines and exact ordered stages.\n- Preserve One Time Business as a compatibility alias and do not move existing opportunities.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-03.result.json\nIdempotency key: one-time-ghl:GHL-UI-03:6c923be8807b27af",
   "allowed_assets": [
-    "Protected operator-owned test contact only.",
-    "Draft workflow test mode.",
-    "Draft bot preview/test mode."
+    "One Time Enrollment and Conversion",
+    "One Time Member Support",
+    "One Time Torah Questions",
+    "One Time Business"
   ],
   "forbidden_assets": [
     "Student contacts",
@@ -28,29 +28,25 @@
     "message sends",
     "Stripe or live payment mutations",
     "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-    "production contacts",
-    "message sends",
-    "workflow publishing",
-    "Stripe or GHL Payments mutation"
+    "deleting One Time Business",
+    "migrating existing opportunities",
+    "duplicate pipelines or stages"
   ],
   "prerequisites": [
     "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
     "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
     "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
-    "Use only one canonical registry and do not create duplicate assets.",
-    "Protected operator-owned test contact email and phone are configured outside Git.",
-    "GHL-UI-01 through GHL-UI-13 results are saved and readback verified."
+    "Use only one canonical registry and do not create duplicate assets."
   ],
   "expected_ghl_ids_to_capture": [
-    "test_contact_id",
-    "workflow_test_run_ids_if_visible",
-    "bot_preview_session_id_if_visible"
+    "canonical_pipeline_ids",
+    "canonical_stage_ids",
+    "one_time_business_compatibility_alias_id"
   ],
   "test_contact_rules": [
-    "Use only the protected operator-owned test contact configured outside Git.",
-    "Never use a production parent/adult contact for testing.",
-    "Do not send a message to the test contact.",
-    "Do not enroll the test contact into a published workflow."
+    "No contact mutation is allowed for this job.",
+    "Do not use production contacts for verification."
   ],
   "defaults": {
     "no_send": true,
@@ -63,7 +59,7 @@
   },
   "completion_checklist": [
     "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
-    "Canonical source files for GHL-UI-14 were read before edits.",
+    "Canonical source files for GHL-UI-03 were read before edits.",
     "Only allowed assets were created, edited, or verified.",
     "Forbidden assets and actions were not used.",
     "Every changed asset was saved in the HighLevel UI.",
@@ -99,7 +95,7 @@
     ],
     "properties": {
       "job_id": {
-        "const": "GHL-UI-14"
+        "const": "GHL-UI-03"
       },
       "status": {
         "enum": [
@@ -183,19 +179,19 @@
       }
     }
   },
-  "idempotency_key": "one-time-ghl:GHL-UI-14:feceb3c838113d76",
+  "idempotency_key": "one-time-ghl:GHL-UI-03:6c923be8807b27af",
   "bna_agent_action_dropoff": {
     "lane": "highlevel_agent_mode",
     "return_surface": "BNA Agent Action drop-off page",
     "return_route": "/ops/agent-actions/highlevel/drop-off",
-    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-14.result.json",
+    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-03.result.json",
     "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
     "metadata": {
       "repository": "shloimie-beep/onetimev2",
       "registry_root": "integrations/highlevel/registry/",
       "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-14-controlled-test-contact-pass.json",
-      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-14.result.json"
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-03-create-or-reconcile-pipelines.json",
+      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-03.result.json"
     }
   }
 }

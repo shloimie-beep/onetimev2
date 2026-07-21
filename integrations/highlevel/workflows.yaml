@@ -1,20 +1,28 @@
-version: 4
+version: 6
 schema_id: 'one-time-highlevel'
-schema_version: '1.0.0'
-status: 'canonical_registry_ready_ui_required'
+schema_version: '1.1.0'
+status: 'api_reconciled_ui_required'
 location_id: 'pBSnOK2nkdxp6gf9Rg3o'
-last_reconciled_at: '2026-07-20T15:04:11.449Z'
+last_reconciled_at: '2026-07-21T13:45:27.865Z'
 messages_sent_authorized: false
 workflow_publish_authorized: false
 production_workflow_enrollment_authorized: false
 workflow_folders:
-  - name: '00 - Intake & Data'
-  - name: '10 - Nurture & Sales'
-  - name: '20 - Billing & Access'
-  - name: '30 - Portal Lifecycle'
-  - name: '40 - Classes & Content'
+  -
+    name: '00 - Intake & Data'
+  -
+    name: '10 - Nurture & Sales'
+  -
+    name: '20 - Billing & Access'
+  -
+    name: '30 - Portal Lifecycle'
+  -
+    name: '40 - Classes & Content'
+  -
+    name: '45 - Events'
 custom_fields:
-  - canonicalName: 'One Time CRM Contact ID'
+  -
+    canonicalName: 'One Time CRM Contact ID'
     normalizedName: 'one_time_crm_contact_id'
     ghlId: 'TRZGYm5rfFdjpYHM0HLL'
     ghlKey: 'contact.one_time_crm_contact_id'
@@ -23,18 +31,22 @@ custom_fields:
     category: 'identity_linking'
     purpose: 'Stable One Time CRM-side contact key.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Parent ID'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Parent ID'
     normalizedName: 'one_time_parent_id'
     ghlId: 'xHPAvxHOpvZ6GbrRZBvn'
     ghlKey: 'contact.one_time_parent_id'
@@ -43,18 +55,22 @@ custom_fields:
     category: 'identity_linking'
     purpose: 'Opaque One Time parent reference.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Household ID'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Household ID'
     normalizedName: 'one_time_household_id'
     ghlId: 'PIuJBPvZGI3FTp4ZRpay'
     ghlKey: 'contact.one_time_household_id'
@@ -63,18 +79,22 @@ custom_fields:
     category: 'identity_linking'
     purpose: 'Opaque One Time household reference.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Customer Status'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Customer Status'
     normalizedName: 'one_time_customer_status'
     ghlId: 'eyXioXxAMuaZpxSaRcEN'
     ghlKey: 'contact.one_time_customer_status'
@@ -106,13 +126,16 @@ custom_fields:
       - 'OT-13'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Current Period End'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Current Period End'
     normalizedName: 'one_time_current_period_end'
     ghlId: '9dSeNRbmHqRRtQhjJgbx'
     ghlKey: 'contact.one_time_current_period_end'
@@ -121,19 +144,23 @@ custom_fields:
     category: 'lifecycle_billing'
     purpose: 'Billing current period end.'
     sourceOfTruth: 'HighLevel'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-04'
       - 'OT-06'
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Subscription ID'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Subscription ID'
     normalizedName: 'one_time_subscription_id'
     ghlId: 'OYbKjnswrDnv9q06tyNG'
     ghlKey: 'contact.one_time_subscription_id'
@@ -142,20 +169,24 @@ custom_fields:
     category: 'lifecycle_billing'
     purpose: 'Billing subscription reference.'
     sourceOfTruth: 'HighLevel'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-03'
       - 'OT-04'
       - 'OT-05'
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Grace Until'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Grace Until'
     normalizedName: 'one_time_grace_until'
     ghlId: 'JLxk8AOC5lapj3rU6aIi'
     ghlKey: 'contact.one_time_grace_until'
@@ -164,18 +195,22 @@ custom_fields:
     category: 'lifecycle_billing'
     purpose: 'Grace-period end timestamp.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Complimentary Until'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Complimentary Until'
     normalizedName: 'one_time_complimentary_until'
     ghlId: 'dJZx75HDus1L7oz87MQt'
     ghlKey: 'contact.one_time_complimentary_until'
@@ -184,20 +219,24 @@ custom_fields:
     category: 'lifecycle_billing'
     purpose: 'Complimentary access end timestamp.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-04'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Early Access Status'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Early Access Status'
     normalizedName: 'one_time_early_access_status'
-    ghlId: ''
+    ghlId: 'o9DVnpzmi6amGUNm3wKR'
     ghlKey: 'contact.one_time_early_access_status'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -215,15 +254,18 @@ custom_fields:
       - 'OT-02B'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Migration Status'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Migration Status'
     normalizedName: 'one_time_migration_status'
-    ghlId: ''
+    ghlId: 'AVNX5ISFZKKRxpqA3CmL'
     ghlKey: 'contact.one_time_migration_status'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -240,33 +282,40 @@ custom_fields:
       - 'OT-02A'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Migration Sequence Version'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Migration Sequence Version'
     normalizedName: 'one_time_migration_sequence_version'
-    ghlId: ''
+    ghlId: '3NiQqlb3UZaxobWfD2hO'
     ghlKey: 'contact.one_time_migration_sequence_version'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
     category: 'lifecycle_billing'
     purpose: 'Migration sequence version marker.'
     sourceOfTruth: 'HighLevel'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-02A'
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Portal Status'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Portal Status'
     normalizedName: 'one_time_portal_status'
     ghlId: 'hxancKIMgrEWUeVSSUYF'
     ghlKey: 'contact.one_time_portal_status'
@@ -286,13 +335,16 @@ custom_fields:
       - 'OT-08'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Access Status'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Access Status'
     normalizedName: 'one_time_access_status'
     ghlId: 'FvcsWZAo4OunHogLHyui'
     ghlKey: 'contact.one_time_access_status'
@@ -314,13 +366,16 @@ custom_fields:
       - 'OT-13'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Email Consent'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Email Consent'
     normalizedName: 'one_time_email_consent'
     ghlId: 'olSxPkya7mkkB61vSXHx'
     ghlKey: 'contact.one_time_email_consent'
@@ -343,13 +398,16 @@ custom_fields:
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time WhatsApp Consent'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time WhatsApp Consent'
     normalizedName: 'one_time_whatsapp_consent'
     ghlId: 'XhBuFbkwtbpD9gyVNDdG'
     ghlKey: 'contact.one_time_whatsapp_consent'
@@ -371,15 +429,18 @@ custom_fields:
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Reminder Preference'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Reminder Preference'
     normalizedName: 'one_time_reminder_preference'
-    ghlId: ''
+    ghlId: 'unxLA4KbWEBJO19B9pwe'
     ghlKey: 'contact.one_time_reminder_preference'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -396,55 +457,66 @@ custom_fields:
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Consent Policy Version'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Consent Policy Version'
     normalizedName: 'one_time_consent_policy_version'
-    ghlId: ''
+    ghlId: '5ID7x61OAXaLHf2VrzVb'
     ghlKey: 'contact.one_time_consent_policy_version'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
     category: 'consent_communication'
     purpose: 'Consent policy version captured.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-B01'
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Consent Captured At'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Consent Captured At'
     normalizedName: 'one_time_consent_captured_at'
-    ghlId: ''
+    ghlId: 'dzvudcSnnaVzuw4Y5QzL'
     ghlKey: 'contact.one_time_consent_captured_at'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
     category: 'consent_communication'
     purpose: 'Consent capture timestamp.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-B01'
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Suppression State'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Suppression State'
     normalizedName: 'one_time_suppression_state'
     ghlId: 'rdWsApvquRfHwkzvp5mS'
     ghlKey: 'contact.one_time_suppression_state'
@@ -465,13 +537,16 @@ custom_fields:
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Suppression Reason'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Suppression Reason'
     normalizedName: 'one_time_suppression_reason'
     ghlId: '16pDBLnVVV1RyMKgY7wh'
     ghlKey: 'contact.one_time_suppression_reason'
@@ -480,7 +555,8 @@ custom_fields:
     category: 'consent_communication'
     purpose: 'Suppression reason.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-01'
       - 'OT-02A'
@@ -488,15 +564,18 @@ custom_fields:
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Newsletter Status'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Newsletter Status'
     normalizedName: 'one_time_newsletter_status'
-    ghlId: ''
+    ghlId: 'yMEs8mRojkUBZlleyMmu'
     ghlKey: 'contact.one_time_newsletter_status'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -514,13 +593,16 @@ custom_fields:
       - 'OT-B05'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Signup Source'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Signup Source'
     normalizedName: 'one_time_signup_source'
     ghlId: 'kRNVyi6Fm5N5dobXU9ZL'
     ghlKey: 'contact.one_time_signup_source'
@@ -529,21 +611,25 @@ custom_fields:
     category: 'attribution_import'
     purpose: 'Lead source label.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-01'
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Source Channel'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Source Channel'
     normalizedName: 'one_time_source_channel'
-    ghlId: ''
+    ghlId: 'OmtEb9OQ42bcQIw1ov4J'
     ghlKey: 'contact.one_time_source_channel'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -562,13 +648,16 @@ custom_fields:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Source Classification'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Source Classification'
     normalizedName: 'one_time_source_classification'
     ghlId: 'XoW0UWbGFkwUplKydjZI'
     ghlKey: 'contact.one_time_source_classification'
@@ -577,20 +666,24 @@ custom_fields:
     category: 'attribution_import'
     purpose: 'Import or lead-source classification.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-01'
       - 'OT-02A'
       - 'OT-02B'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Import Batch'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Import Batch'
     normalizedName: 'one_time_import_batch'
     ghlId: 'ixTF2XqjPTUn40LLcYTU'
     ghlKey: 'contact.one_time_import_batch'
@@ -599,20 +692,24 @@ custom_fields:
     category: 'attribution_import'
     purpose: 'Protected import batch marker.'
     sourceOfTruth: 'HighLevel'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-01'
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Audience Type'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Audience Type'
     normalizedName: 'one_time_audience_type'
-    ghlId: ''
+    ghlId: 'AHRGCozYV8pdKwIQcYzZ'
     ghlKey: 'contact.one_time_audience_type'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -626,33 +723,40 @@ custom_fields:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Family or School Name'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Family or School Name'
     normalizedName: 'one_time_family_or_school_name'
-    ghlId: ''
+    ghlId: 'VvlM6bIndhFyLL6JXp4D'
     ghlKey: 'contact.one_time_family_or_school_name'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
     category: 'attribution_import'
     purpose: 'Adult-supplied family or school label.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Last Sync'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Last Sync'
     normalizedName: 'one_time_last_sync'
     ghlId: 'GQ94IylDxfFf1nbv4Lkw'
     ghlKey: 'contact.one_time_last_sync'
@@ -661,7 +765,8 @@ custom_fields:
     category: 'attribution_import'
     purpose: 'Last sync timestamp.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-01'
       - 'OT-04'
@@ -672,15 +777,18 @@ custom_fields:
       - 'OT-13'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Bot Request Type'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Bot Request Type'
     normalizedName: 'one_time_bot_request_type'
-    ghlId: ''
+    ghlId: 'H7GGTJjES6q7NiGQQH11'
     ghlKey: 'contact.one_time_bot_request_type'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -704,15 +812,18 @@ custom_fields:
       - 'OT-B05'
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Preferred Delivery'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Preferred Delivery'
     normalizedName: 'one_time_preferred_delivery'
-    ghlId: ''
+    ghlId: 's0XarGbSBAmvyHni6vHe'
     ghlKey: 'contact.one_time_preferred_delivery'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -726,15 +837,18 @@ custom_fields:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Signup Status'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Signup Status'
     normalizedName: 'one_time_signup_status'
-    ghlId: ''
+    ghlId: 'lvEVLePK9wGXpJWw02d3'
     ghlKey: 'contact.one_time_signup_status'
     objectType: 'contact_custom_field'
     dataType: 'TEXT'
@@ -751,13 +865,16 @@ custom_fields:
       - 'OT-B01'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Next Class At'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Next Class At'
     normalizedName: 'one_time_next_class_at'
     ghlId: 'yH9qCXXoeIMKIltiiBZM'
     ghlKey: 'contact.one_time_next_class_at'
@@ -766,19 +883,23 @@ custom_fields:
     category: 'classes_content'
     purpose: 'Next class timestamp supplied by One Time.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-09'
       - 'OT-B02'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Class Time Zone'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Class Time Zone'
     normalizedName: 'one_time_class_time_zone'
     ghlId: 'rUGmHIqjE5XVZxOmy79V'
     ghlKey: 'contact.one_time_class_time_zone'
@@ -787,19 +908,23 @@ custom_fields:
     category: 'classes_content'
     purpose: 'Class time zone.'
     sourceOfTruth: 'One Time'
-    allowedValues: []
+    allowedValues:
+      []
     workflowsAllowedToWrite:
       - 'OT-09'
       - 'OT-B02'
     oneTimeAllowedToWrite: true
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'One Time Support Status'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'One Time Support Status'
     normalizedName: 'one_time_support_status'
     ghlId: '73LVTry3sBVEUBeMUIAY'
     ghlKey: 'contact.one_time_support_status'
@@ -808,19 +933,23 @@ custom_fields:
     category: 'deprecated_existing'
     purpose: 'Legacy support marker preserved for ID history; OT-A1 does not create tasks from it.'
     sourceOfTruth: 'HighLevel'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
+    dependencies:
+      []
     aliases:
       - 'support_requested'
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
 tags:
-  - canonicalName: 'OT | Lead'
+  -
+    canonicalName: 'OT | Lead'
     normalizedName: 'ot_lead'
     ghlId: 'W3sICvTUAAGOQ6Lduu7a'
     ghlKey: 'ot_lead'
@@ -829,17 +958,22 @@ tags:
     category: 'lifecycle'
     purpose: 'Public lead or imported lead.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Prelaunch'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Prelaunch'
     normalizedName: 'ot_prelaunch'
     ghlId: 'lPRxePKusizYZ5qjlKv2'
     ghlKey: 'ot_prelaunch'
@@ -848,93 +982,118 @@ tags:
     category: 'lifecycle'
     purpose: 'Prelaunch audience member.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Existing Subscriber'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Existing Subscriber'
     normalizedName: 'ot_existing_subscriber'
-    ghlId: ''
+    ghlId: 'QhHrnT0RAiWnWOwmAmeB'
     ghlKey: 'ot_existing_subscriber'
     objectType: 'tag'
     dataType: 'tag'
     category: 'lifecycle'
     purpose: 'Known existing subscriber entering migration.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Migration 2026'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Migration 2026'
     normalizedName: 'ot_migration_2026'
-    ghlId: ''
+    ghlId: 'KbmanJujVcgV0aZrdMzJ'
     ghlKey: 'ot_migration_2026'
     objectType: 'tag'
     dataType: 'tag'
     category: 'lifecycle'
     purpose: '2026 migration audience.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Early Access Invited'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Early Access Invited'
     normalizedName: 'ot_early_access_invited'
-    ghlId: ''
+    ghlId: 'M6hXjSpaizGKE0NFyHBg'
     ghlKey: 'ot_early_access_invited'
     objectType: 'tag'
     dataType: 'tag'
     category: 'lifecycle'
     purpose: 'Early-access invitation sent or staged.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Early Access Activated'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Early Access Activated'
     normalizedName: 'ot_early_access_activated'
-    ghlId: ''
+    ghlId: '94rotrqjxxUp28g4JOxi'
     ghlKey: 'ot_early_access_activated'
     objectType: 'tag'
     dataType: 'tag'
     category: 'lifecycle'
     purpose: 'Early-access activation complete.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Checkout Started'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Checkout Started'
     normalizedName: 'ot_checkout_started'
     ghlId: 'BadNHkr6A08m8RhGZCK1'
     ghlKey: 'ot_checkout_started'
@@ -943,17 +1102,22 @@ tags:
     category: 'lifecycle'
     purpose: 'Checkout started before payment completes.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Active'
     normalizedName: 'ot_active'
     ghlId: 'SXtHZVNE0aWL7nqfSuaI'
     ghlKey: 'ot_active'
@@ -962,17 +1126,22 @@ tags:
     category: 'lifecycle'
     purpose: 'Active paid or entitled contact.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Grace'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Grace'
     normalizedName: 'ot_grace'
     ghlId: 'TN597GG04kP6DsVBiF9d'
     ghlKey: 'ot_grace'
@@ -981,17 +1150,22 @@ tags:
     category: 'lifecycle'
     purpose: 'Payment grace window.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Canceled'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Canceled'
     normalizedName: 'ot_canceled'
     ghlId: 'aKupBqdvXV91W2eI4H7f'
     ghlKey: 'ot_canceled'
@@ -1000,17 +1174,22 @@ tags:
     category: 'lifecycle'
     purpose: 'Canceled subscription state.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Former'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Former'
     normalizedName: 'ot_former'
     ghlId: 'E6TzEbLkL4SRrQnVLbpL'
     ghlKey: 'ot_former'
@@ -1019,17 +1198,22 @@ tags:
     category: 'lifecycle'
     purpose: 'Former customer.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Complimentary'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Complimentary'
     normalizedName: 'ot_complimentary'
     ghlId: 'Bb2F5nNvc7asUyc4kgRh'
     ghlKey: 'ot_complimentary'
@@ -1038,93 +1222,118 @@ tags:
     category: 'lifecycle'
     purpose: 'Complimentary access holder.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Migration Email 1 Sent'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Migration Email 1 Sent'
     normalizedName: 'ot_migration_email_1_sent'
-    ghlId: ''
+    ghlId: 'Cl9VSIaKZ3LT2JSas5aO'
     ghlKey: 'ot_migration_email_1_sent'
     objectType: 'tag'
     dataType: 'tag'
     category: 'migration_sequence'
     purpose: 'First migration email sent.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Migration Email 2 Sent'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Migration Email 2 Sent'
     normalizedName: 'ot_migration_email_2_sent'
-    ghlId: ''
+    ghlId: 'eUAi34HtTR9yY4gtXems'
     ghlKey: 'ot_migration_email_2_sent'
     objectType: 'tag'
     dataType: 'tag'
     category: 'migration_sequence'
     purpose: 'Second migration email sent.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Migration Email 3 Sent'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Migration Email 3 Sent'
     normalizedName: 'ot_migration_email_3_sent'
-    ghlId: ''
+    ghlId: 'yFmgy9TdKXV82D4adRlb'
     ghlKey: 'ot_migration_email_3_sent'
     objectType: 'tag'
     dataType: 'tag'
     category: 'migration_sequence'
     purpose: 'Third migration email sent.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Migration Sequence Complete'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Migration Sequence Complete'
     normalizedName: 'ot_migration_sequence_complete'
-    ghlId: ''
+    ghlId: 'iD2TvNwKUfaUKYJFYYnx'
     ghlKey: 'ot_migration_sequence_complete'
     objectType: 'tag'
     dataType: 'tag'
     category: 'migration_sequence'
     purpose: 'Migration sequence complete.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Portal Invited'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Portal Invited'
     normalizedName: 'ot_portal_invited'
     ghlId: 'RvjIOKjtueWAdezLN4Ar'
     ghlKey: 'ot_portal_invited'
@@ -1133,17 +1342,22 @@ tags:
     category: 'portal'
     purpose: 'Parent portal invitation sent.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Portal Active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Portal Active'
     normalizedName: 'ot_portal_active'
     ghlId: 'lPSHRPcLiURAMyVCrEJO'
     ghlKey: 'ot_portal_active'
@@ -1152,17 +1366,22 @@ tags:
     category: 'portal'
     purpose: 'Parent portal activation observed.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Email Opt-In'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Email Opt-In'
     normalizedName: 'ot_email_opt_in'
     ghlId: 'beGT917lbxgGc99QQ7jO'
     ghlKey: 'ot_email_opt_in'
@@ -1171,17 +1390,22 @@ tags:
     category: 'consent_communication'
     purpose: 'Explicit email opt-in marker.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | WhatsApp Opt-In'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | WhatsApp Opt-In'
     normalizedName: 'ot_whatsapp_opt_in'
     ghlId: 'qN2B1ZWs2saXmTudBgzo'
     ghlKey: 'ot_whatsapp_opt_in'
@@ -1190,17 +1414,22 @@ tags:
     category: 'consent_communication'
     purpose: 'Explicit WhatsApp opt-in marker.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Consent Unknown'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Consent Unknown'
     normalizedName: 'ot_consent_unknown'
     ghlId: '7j9yCOCNunGFfhmm0TaX'
     ghlKey: 'ot_consent_unknown'
@@ -1209,17 +1438,22 @@ tags:
     category: 'consent_communication'
     purpose: 'Consent unknown; do not send marketing.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Marketing Suppressed'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Marketing Suppressed'
     normalizedName: 'ot_marketing_suppressed'
     ghlId: 'uYfDohCdnW4nYiqFbVi6'
     ghlKey: 'ot_marketing_suppressed'
@@ -1228,36 +1462,46 @@ tags:
     category: 'consent_communication'
     purpose: 'Marketing suppression marker.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Weekly Newsletter'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Weekly Newsletter'
     normalizedName: 'ot_weekly_newsletter'
-    ghlId: ''
+    ghlId: '6uJjeYuxNUhwbAjTJkAz'
     ghlKey: 'ot_weekly_newsletter'
     objectType: 'tag'
     dataType: 'tag'
     category: 'consent_communication'
     purpose: 'Newsletter audience marker.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'OT | Signup Website'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Signup Website'
     normalizedName: 'ot_signup_website'
     ghlId: 'Ladbs8RIkwqNYLd3Zg2s'
     ghlKey: 'ot_signup_website'
@@ -1266,17 +1510,22 @@ tags:
     category: 'source'
     purpose: 'Signup source was website.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Signup WhatsApp'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Signup WhatsApp'
     normalizedName: 'ot_signup_whatsapp'
     ghlId: 'j9vlQDQ5XFUrj5SVtdve'
     ghlKey: 'ot_signup_whatsapp'
@@ -1285,17 +1534,22 @@ tags:
     category: 'source'
     purpose: 'Signup source was WhatsApp.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Source | Rabbi Followers'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Source | Rabbi Followers'
     normalizedName: 'ot_source_rabbi_followers'
     ghlId: 'F3kxEGC93isu7v4RaE5V'
     ghlKey: 'ot_source_rabbi_followers'
@@ -1304,17 +1558,22 @@ tags:
     category: 'source'
     purpose: 'Approved Rabbi followers import source.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Source | Subscribed Audience'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Source | Subscribed Audience'
     normalizedName: 'ot_source_subscribed_audience'
     ghlId: 'qqqWZ0BDxagiBHiQhg06'
     ghlKey: 'ot_source_subscribed_audience'
@@ -1323,17 +1582,22 @@ tags:
     category: 'source'
     purpose: 'Approved subscribed audience import source.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Source | Cleaned Audience'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Source | Cleaned Audience'
     normalizedName: 'ot_source_cleaned_audience'
     ghlId: 'JDTcyLwjRDImxzwna1M5'
     ghlKey: 'ot_source_cleaned_audience'
@@ -1342,17 +1606,22 @@ tags:
     category: 'source'
     purpose: 'Approved cleaned audience import source.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Source | Legacy Subscriber'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Source | Legacy Subscriber'
     normalizedName: 'ot_source_legacy_subscriber'
     ghlId: 'AJsgTeWZcIaSP7S7JRLJ'
     ghlKey: 'ot_source_legacy_subscriber'
@@ -1361,17 +1630,22 @@ tags:
     category: 'source'
     purpose: 'Approved legacy subscriber import source.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Source | Existing One Time CRM'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Source | Existing One Time CRM'
     normalizedName: 'ot_source_existing_one_time_crm'
     ghlId: 'gZ210QaOkEZcUy8LDr6p'
     ghlKey: 'ot_source_existing_one_time_crm'
@@ -1380,17 +1654,22 @@ tags:
     category: 'source'
     purpose: 'Existing One Time CRM source.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Payment Failed'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Payment Failed'
     normalizedName: 'ot_payment_failed'
     ghlId: 'TLM5NIIYZLTELU5u7Lx1'
     ghlKey: 'ot_payment_failed'
@@ -1399,17 +1678,22 @@ tags:
     category: 'billing'
     purpose: 'Payment failure marker.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Refunded'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Refunded'
     normalizedName: 'ot_refunded'
     ghlId: 'z1Fw6MV2gTXkMhREsD4c'
     ghlKey: 'ot_refunded'
@@ -1418,17 +1702,22 @@ tags:
     category: 'billing'
     purpose: 'Refund marker.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Chargeback'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Chargeback'
     normalizedName: 'ot_chargeback'
     ghlId: '4Qk836BtHCz2BMSo2ZOe'
     ghlKey: 'ot_chargeback'
@@ -1437,17 +1726,22 @@ tags:
     category: 'billing'
     purpose: 'Chargeback marker.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Class Reminder Pending'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Class Reminder Pending'
     normalizedName: 'ot_class_reminder_pending'
     ghlId: 'lxbShmvQw86lJlrHB2B5'
     ghlKey: 'ot_class_reminder_pending'
@@ -1456,17 +1750,22 @@ tags:
     category: 'classes_content'
     purpose: 'Parent class reminder pending.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Recording Available'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Recording Available'
     normalizedName: 'ot_recording_available'
     ghlId: 'vfTzZAYNcHEZrJzNzDOi'
     ghlKey: 'ot_recording_available'
@@ -1475,17 +1774,22 @@ tags:
     category: 'classes_content'
     purpose: 'Recording available through protected portal.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Duplicate Merged'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Duplicate Merged'
     normalizedName: 'ot_duplicate_merged'
     ghlId: 'Wc1KT4pP2GE7XN9UE3pU'
     ghlKey: 'ot_duplicate_merged'
@@ -1494,17 +1798,22 @@ tags:
     category: 'data_quality'
     purpose: 'Duplicate input rows merged.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Identity Conflict'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Identity Conflict'
     normalizedName: 'ot_identity_conflict'
     ghlId: 'q2toHtyOUCEuttsHRBZQ'
     ghlKey: 'ot_identity_conflict'
@@ -1513,17 +1822,22 @@ tags:
     category: 'data_quality'
     purpose: 'Identity conflict requiring protected review.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'active'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
-  - canonicalName: 'OT | Support Requested'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+  -
+    canonicalName: 'OT | Support Requested'
     normalizedName: 'ot_support_requested'
     ghlId: 'HGoilQNAKGJ1L6OVi8K7'
     ghlKey: 'ot_support_requested'
@@ -1532,20 +1846,25 @@ tags:
     category: 'deprecated_existing'
     purpose: 'Legacy support tag preserved for ID history.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: false
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: '2026-07-20'
-    lastTestedDate: '2026-07-20'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
 custom_values:
-  - canonicalName: 'One Time Brand Name'
+  -
+    canonicalName: 'One Time Brand Name'
     normalizedName: 'one_time_brand_name'
-    ghlId: ''
+    ghlId: 'j8heHDPqOmfrpfZJajlH'
     ghlKey: 'one_time_brand_name'
     folder: 'One Time - Brand'
     objectType: 'custom_value'
@@ -1554,19 +1873,25 @@ custom_values:
     purpose: 'Public brand name.'
     value: 'One Time Mishnayos'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Rabbi Name'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '8ca59ebfb4f7adab'
+  -
+    canonicalName: 'One Time Rabbi Name'
     normalizedName: 'one_time_rabbi_name'
-    ghlId: ''
+    ghlId: 'pPkems3FM5UWt0SyhEWS'
     ghlKey: 'one_time_rabbi_name'
     folder: 'One Time - Brand'
     objectType: 'custom_value'
@@ -1575,82 +1900,433 @@ custom_values:
     purpose: 'Public teacher name.'
     value: 'Rabbi Eli Scheller'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Sender Name'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '38b8d5e95e97ce17'
+  -
+    canonicalName: 'One Time Sender Name'
     normalizedName: 'one_time_sender_name'
-    ghlId: ''
+    ghlId: 'yVZ4cwtSqORKX2DNMQpH'
     ghlKey: 'one_time_sender_name'
     folder: 'One Time - Brand'
     objectType: 'custom_value'
     dataType: 'TEXT'
     category: 'one_time_brand'
-    purpose: 'Sender display name.'
+    purpose: 'Compatibility alias. New workflows select a registered sender key.'
     value: 'One Time Mishnayos'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Sender Email'
+    dependencies:
+      []
+    aliases:
+      - 'compatibility_alias'
+      - 'migrate_to_registered_sender_key'
+    deprecationState: 'deprecated_existing'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '8ca59ebfb4f7adab'
+  -
+    canonicalName: 'One Time Sender Email'
     normalizedName: 'one_time_sender_email'
-    ghlId: ''
+    ghlId: 'v79xSZ5H0t1GaldtK8dS'
     ghlKey: 'one_time_sender_email'
     folder: 'One Time - Brand'
     objectType: 'custom_value'
     dataType: 'TEXT'
     category: 'one_time_brand'
-    purpose: 'Sender email.'
+    purpose: 'Compatibility alias. New workflows select a registered sender key.'
     value: 'info@onetimeonetime.com'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Reply-To Email'
+    dependencies:
+      []
+    aliases:
+      - 'compatibility_alias'
+      - 'migrate_to_registered_sender_key'
+    deprecationState: 'deprecated_existing'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a64728a6a2bb16c6'
+  -
+    canonicalName: 'One Time Reply-To Email'
     normalizedName: 'one_time_reply_to_email'
-    ghlId: ''
+    ghlId: 'M4thgFhvZusXeqvfXoOZ'
     ghlKey: 'one_time_reply_to_email'
     folder: 'One Time - Brand'
     objectType: 'custom_value'
     dataType: 'TEXT'
     category: 'one_time_brand'
-    purpose: 'Reply-to email.'
+    purpose: 'Compatibility alias. New workflows use One Time Default Reply-To.'
     value: 'info@onetimeonetime.com'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Program Short Description'
+    dependencies:
+      []
+    aliases:
+      - 'compatibility_alias'
+      - 'migrate_to_registered_sender_key'
+    deprecationState: 'deprecated_existing'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a64728a6a2bb16c6'
+  -
+    canonicalName: 'One Time Rabbi Campaign Sender Name'
+    normalizedName: 'one_time_rabbi_campaign_sender_name'
+    ghlId: 'YTbMWivrsI10LnH26Xfv'
+    ghlKey: 'one_time_rabbi_campaign_sender_name'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'rabbi_campaign display name.'
+    value: 'Rabbi Eli Scheller | One Time Mishnayos'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '6cd9a86d282f59c5'
+  -
+    canonicalName: 'One Time Rabbi Campaign Phase 1 From'
+    normalizedName: 'one_time_rabbi_campaign_phase_1_from'
+    ghlId: '1ciJqvUIDDCxs1cBumdL'
+    ghlKey: 'one_time_rabbi_campaign_phase_1_from'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'Active phase-1 rabbi_campaign From address.'
+    value: 'info@onetimeonetime.com'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a64728a6a2bb16c6'
+  -
+    canonicalName: 'One Time Rabbi Campaign Phase 2 From'
+    normalizedName: 'one_time_rabbi_campaign_phase_2_from'
+    ghlId: 'vry4UlKB4PAvWLkiz6Ac'
+    ghlKey: 'one_time_rabbi_campaign_phase_2_from'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'Inactive phase-2 From address pending mailbox and reply acceptance.'
+    value: 'rabbi@onetimeonetime.com'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a987678811c253d3'
+  -
+    canonicalName: 'One Time Rabbi Personal Sender Name'
+    normalizedName: 'one_time_rabbi_personal_sender_name'
+    ghlId: 'WnvMdhccgwGVuBCReHIU'
+    ghlKey: 'one_time_rabbi_personal_sender_name'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'rabbi_personal display name pending mailbox and reply acceptance.'
+    value: 'Rabbi Eli Scheller'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '38b8d5e95e97ce17'
+  -
+    canonicalName: 'One Time Rabbi Personal From'
+    normalizedName: 'one_time_rabbi_personal_from'
+    ghlId: '9wK6SJKlPoN1WytManp5'
+    ghlKey: 'one_time_rabbi_personal_from'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'rabbi_personal From address pending mailbox and reply acceptance.'
+    value: 'rabbi@onetimeonetime.com'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a987678811c253d3'
+  -
+    canonicalName: 'One Time Office Sender Name'
+    normalizedName: 'one_time_office_sender_name'
+    ghlId: 'Lr6PxCIoU2vMpJWkngow'
+    ghlKey: 'one_time_office_sender_name'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'office display name.'
+    value: 'Shloimie from One Time Mishnayos'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '4cae599b7c5cf5e2'
+  -
+    canonicalName: 'One Time Office From'
+    normalizedName: 'one_time_office_from'
+    ghlId: 'hqUv17HvF9zGd781UDpX'
+    ghlKey: 'one_time_office_from'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'office From address.'
+    value: 'info@onetimeonetime.com'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a64728a6a2bb16c6'
+  -
+    canonicalName: 'One Time Brand Sender Name'
+    normalizedName: 'one_time_brand_sender_name'
+    ghlId: 'XyASPYbVa4ZBHuJe2yJI'
+    ghlKey: 'one_time_brand_sender_name'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'brand display name.'
+    value: 'One Time Mishnayos'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '8ca59ebfb4f7adab'
+  -
+    canonicalName: 'One Time Brand From'
+    normalizedName: 'one_time_brand_from'
+    ghlId: 'o9aOerC0VSMKzDv4hrkX'
+    ghlKey: 'one_time_brand_from'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'brand From address.'
+    value: 'info@onetimeonetime.com'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a64728a6a2bb16c6'
+  -
+    canonicalName: 'One Time Account Sender Name'
+    normalizedName: 'one_time_account_sender_name'
+    ghlId: 'UT4ehcG0QqMBnu7Cg6ed'
+    ghlKey: 'one_time_account_sender_name'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'account_security display name for Resend.'
+    value: 'One Time Mishnayos Account'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '94f515243398e9ae'
+  -
+    canonicalName: 'One Time Account Preferred From'
+    normalizedName: 'one_time_account_preferred_from'
+    ghlId: 'cb2pQ72WD9EAOyZwTh9u'
+    ghlKey: 'one_time_account_preferred_from'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'Preferred account_security From address; do not claim live until domain acceptance is verified.'
+    value: 'account@onetimeonetime.com'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '88b79ed1deacb1df'
+  -
+    canonicalName: 'One Time Default Reply-To'
+    normalizedName: 'one_time_default_reply_to'
+    ghlId: 'u0msWwGUDL4Upjfe58Bm'
+    ghlKey: 'one_time_default_reply_to'
+    folder: 'One Time - Senders'
+    objectType: 'custom_value'
+    dataType: 'TEXT'
+    category: 'one_time_senders'
+    purpose: 'Canonical default reply-to for registered sender profiles.'
+    value: 'info@onetimeonetime.com'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a64728a6a2bb16c6'
+  -
+    canonicalName: 'One Time Program Short Description'
     normalizedName: 'one_time_program_short_description'
-    ghlId: ''
+    ghlId: 'KuWt6c6BW7X2qfwNE6Ct'
     ghlKey: 'one_time_program_short_description'
     folder: 'One Time - Brand'
     objectType: 'custom_value'
@@ -1659,19 +2335,25 @@ custom_values:
     purpose: 'Approved program summary.'
     value: 'A live hybrid Mishnayos experience from Eretz Yisrael designed to build consistency, accountability, understanding, and excitement in Torah learning.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Home URL'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '58d65b2517c8f2af'
+  -
+    canonicalName: 'One Time Home URL'
     normalizedName: 'one_time_home_url'
-    ghlId: ''
+    ghlId: 'gyRIy9gSabnBF4038v7A'
     ghlKey: 'one_time_home_url'
     folder: 'One Time - URLs'
     objectType: 'custom_value'
@@ -1680,19 +2362,25 @@ custom_values:
     purpose: 'Public home URL.'
     value: 'https://join.onetimeonetime.com/'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Signup URL'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '93435e57639e9bc1'
+  -
+    canonicalName: 'One Time Signup URL'
     normalizedName: 'one_time_signup_url'
-    ghlId: ''
+    ghlId: 'Don4uQa4aJOc3wYYErgd'
     ghlKey: 'one_time_signup_url'
     folder: 'One Time - URLs'
     objectType: 'custom_value'
@@ -1701,19 +2389,25 @@ custom_values:
     purpose: 'Signup URL.'
     value: 'https://join.onetimeonetime.com/signup'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Member Login URL'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '974171385908288a'
+  -
+    canonicalName: 'One Time Member Login URL'
     normalizedName: 'one_time_member_login_url'
-    ghlId: ''
+    ghlId: 'GIbhzBI8WrkDDUNau0ZI'
     ghlKey: 'one_time_member_login_url'
     folder: 'One Time - URLs'
     objectType: 'custom_value'
@@ -1722,19 +2416,25 @@ custom_values:
     purpose: 'Login URL.'
     value: 'https://join.onetimeonetime.com/login'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Password Help URL'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '23c3c4da660ca0ec'
+  -
+    canonicalName: 'One Time Password Help URL'
     normalizedName: 'one_time_password_help_url'
-    ghlId: ''
+    ghlId: 'nQv2QX1nYE9TvVDBgWCr'
     ghlKey: 'one_time_password_help_url'
     folder: 'One Time - URLs'
     objectType: 'custom_value'
@@ -1743,19 +2443,25 @@ custom_values:
     purpose: 'Password-help URL.'
     value: 'https://join.onetimeonetime.com/forgot-password'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Parent Portal URL'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '09dc9d051f2713af'
+  -
+    canonicalName: 'One Time Parent Portal URL'
     normalizedName: 'one_time_parent_portal_url'
-    ghlId: ''
+    ghlId: 'ixqb7lPdQZmyCmMilVno'
     ghlKey: 'one_time_parent_portal_url'
     folder: 'One Time - URLs'
     objectType: 'custom_value'
@@ -1764,19 +2470,25 @@ custom_values:
     purpose: 'Parent portal URL.'
     value: 'https://join.onetimeonetime.com/app/parent'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Student Portal URL'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'fa626ad68d3005e3'
+  -
+    canonicalName: 'One Time Student Portal URL'
     normalizedName: 'one_time_student_portal_url'
-    ghlId: ''
+    ghlId: 'UhbQj0yQbk0xRuqRJPnz'
     ghlKey: 'one_time_student_portal_url'
     folder: 'One Time - URLs'
     objectType: 'custom_value'
@@ -1785,17 +2497,23 @@ custom_values:
     purpose: 'Student portal URL; not collected by OT-A1.'
     value: 'https://join.onetimeonetime.com/app/student'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Early Access URL'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '7daca07c4c2739e0'
+  -
+    canonicalName: 'One Time Early Access URL'
     normalizedName: 'one_time_early_access_url'
     ghlId: ''
     ghlKey: 'one_time_early_access_url'
@@ -1806,17 +2524,23 @@ custom_values:
     purpose: 'Pending accepted early-access route.'
     value: ''
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'blocked_ui_or_business_value'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-  - canonicalName: 'One Time Checkout URL'
+    blocker: 'blocked_ui_or_business_value:verified_url_missing'
+  -
+    canonicalName: 'One Time Checkout URL'
     normalizedName: 'one_time_checkout_url'
     ghlId: ''
     ghlKey: 'one_time_checkout_url'
@@ -1827,17 +2551,23 @@ custom_values:
     purpose: 'Pending verified checkout URL.'
     value: ''
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'blocked_ui_or_business_value'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-  - canonicalName: 'One Time Recording Portal URL'
+    blocker: 'blocked_ui_or_business_value:verified_url_missing'
+  -
+    canonicalName: 'One Time Recording Portal URL'
     normalizedName: 'one_time_recording_portal_url'
     ghlId: ''
     ghlKey: 'one_time_recording_portal_url'
@@ -1848,17 +2578,23 @@ custom_values:
     purpose: 'Pending protected portal route.'
     value: ''
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'blocked_ui_or_business_value'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-  - canonicalName: 'One Time WhatsApp Entry URL'
+    blocker: 'blocked_ui_or_business_value:verified_url_missing'
+  -
+    canonicalName: 'One Time WhatsApp Entry URL'
     normalizedName: 'one_time_whatsapp_entry_url'
     ghlId: ''
     ghlKey: 'one_time_whatsapp_entry_url'
@@ -1869,19 +2605,25 @@ custom_values:
     purpose: 'Pending verified WhatsApp entry URL.'
     value: ''
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'blocked_ui_or_business_value'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-  - canonicalName: 'One Time Complimentary Access Label'
+    blocker: 'blocked_ui_or_business_value:verified_url_missing'
+  -
+    canonicalName: 'One Time Complimentary Access Label'
     normalizedName: 'one_time_complimentary_access_label'
-    ghlId: ''
+    ghlId: 'PxPr2cZEZKVQpC2cqLdT'
     ghlKey: 'one_time_complimentary_access_label'
     folder: 'One Time - Offer'
     objectType: 'custom_value'
@@ -1890,19 +2632,25 @@ custom_values:
     purpose: 'Complimentary access label.'
     value: 'A complimentary month of early access'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Promotion Status'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '6151d1f5b0eb1966'
+  -
+    canonicalName: 'One Time Promotion Status'
     normalizedName: 'one_time_promotion_status'
-    ghlId: ''
+    ghlId: '8ukEaZNNsvZOJC4M1jja'
     ghlKey: 'one_time_promotion_status'
     folder: 'One Time - Offer'
     objectType: 'custom_value'
@@ -1914,16 +2662,21 @@ custom_values:
     allowedValues:
       - 'active'
       - 'inactive'
-    workflowsAllowedToWrite: []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Promotion End Date Label'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'd1022618b99a974b'
+  -
+    canonicalName: 'One Time Promotion End Date Label'
     normalizedName: 'one_time_promotion_end_date_label'
     ghlId: ''
     ghlKey: 'one_time_promotion_end_date_label'
@@ -1934,19 +2687,25 @@ custom_values:
     purpose: 'Approved promotion end date label.'
     value: ''
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'blocked_ui_or_business_value'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-  - canonicalName: 'One Time Pricing Display Status'
+    blocker: 'blocked_ui_or_business_value:approved_business_copy_missing'
+  -
+    canonicalName: 'One Time Pricing Display Status'
     normalizedName: 'one_time_pricing_display_status'
-    ghlId: ''
+    ghlId: 'i1o66xW9Y0Kl18xIQtvB'
     ghlKey: 'one_time_pricing_display_status'
     folder: 'One Time - Offer'
     objectType: 'custom_value'
@@ -1958,16 +2717,21 @@ custom_values:
     allowedValues:
       - 'hidden'
       - 'published'
-    workflowsAllowedToWrite: []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Published Price Label'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'e564b4081d7a9ea4'
+  -
+    canonicalName: 'One Time Published Price Label'
     normalizedName: 'one_time_published_price_label'
     ghlId: ''
     ghlKey: 'one_time_published_price_label'
@@ -1978,20 +2742,25 @@ custom_values:
     purpose: 'Approved price label when published.'
     value: ''
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
     dependencies:
       - 'One Time Pricing Display Status'
-    aliases: []
+    aliases:
+      []
     deprecationState: 'blocked_ui_or_business_value'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-  - canonicalName: 'One Time Default Time Zone'
+    blocker: 'blocked_ui_or_business_value:approved_business_copy_missing'
+  -
+    canonicalName: 'One Time Default Time Zone'
     normalizedName: 'one_time_default_time_zone'
-    ghlId: ''
+    ghlId: 'YSpFDAE6PEnfShEmypRQ'
     ghlKey: 'one_time_default_time_zone'
     folder: 'One Time - Class'
     objectType: 'custom_value'
@@ -2000,19 +2769,25 @@ custom_values:
     purpose: 'Default class timezone.'
     value: 'Asia/Jerusalem'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Class Time Israel'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '767f41f547937e73'
+  -
+    canonicalName: 'One Time Class Time Israel'
     normalizedName: 'one_time_class_time_israel'
-    ghlId: ''
+    ghlId: 'h1Ukxh0kQerrlRgh8IFO'
     ghlKey: 'one_time_class_time_israel'
     folder: 'One Time - Class'
     objectType: 'custom_value'
@@ -2021,17 +2796,23 @@ custom_values:
     purpose: 'Approved normal class time.'
     value: '7:00 p.m. Israel time'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Schedule Notice'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '9f8c31c8247070f3'
+  -
+    canonicalName: 'One Time Schedule Notice'
     normalizedName: 'one_time_schedule_notice'
     ghlId: ''
     ghlKey: 'one_time_schedule_notice'
@@ -2042,19 +2823,25 @@ custom_values:
     purpose: 'Approved schedule notice.'
     value: ''
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'blocked_ui_or_business_value'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
-  - canonicalName: 'One Time Support Email'
+    blocker: 'blocked_ui_or_business_value:approved_business_copy_missing'
+  -
+    canonicalName: 'One Time Support Email'
     normalizedName: 'one_time_support_email'
-    ghlId: ''
+    ghlId: 'DOmCxdkR1cVxQmNvY2yJ'
     ghlKey: 'one_time_support_email'
     folder: 'One Time - Support'
     objectType: 'custom_value'
@@ -2063,19 +2850,25 @@ custom_values:
     purpose: 'Support email.'
     value: 'info@onetimeonetime.com'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Public Bot Name'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: 'a64728a6a2bb16c6'
+  -
+    canonicalName: 'One Time Public Bot Name'
     normalizedName: 'one_time_public_bot_name'
-    ghlId: ''
+    ghlId: 'gv4IikUMoT1fjxzXBoHi'
     ghlKey: 'one_time_public_bot_name'
     folder: 'One Time - Bot'
     objectType: 'custom_value'
@@ -2084,19 +2877,25 @@ custom_values:
     purpose: 'Canonical public bot name.'
     value: 'OT-A1 One Time Enrollment Assistant'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Public Bot Version'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '9278e33c632e4fbd'
+  -
+    canonicalName: 'One Time Public Bot Version'
     normalizedName: 'one_time_public_bot_version'
-    ghlId: ''
+    ghlId: 'MGrhKfk5ndE4uLkJy6s7'
     ghlKey: 'one_time_public_bot_version'
     folder: 'One Time - Bot'
     objectType: 'custom_value'
@@ -2105,19 +2904,25 @@ custom_values:
     purpose: 'Canonical bot version.'
     value: '1.0.0'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-  - canonicalName: 'One Time Knowledge Base Version'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '92521fc3cbd964bd'
+  -
+    canonicalName: 'One Time Knowledge Base Version'
     normalizedName: 'one_time_knowledge_base_version'
-    ghlId: ''
+    ghlId: 'liBRazBsirZuJUNPFO81'
     ghlKey: 'one_time_knowledge_base_version'
     folder: 'One Time - Bot'
     objectType: 'custom_value'
@@ -2126,26 +2931,791 @@ custom_values:
     purpose: 'Canonical knowledge-base version.'
     value: '1.0.0'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
-    deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
-pipeline:
-  name: 'One Time Business'
-  id: 'T8xEp9woujGVqvNJlqoz'
-  stages:
-    lead: 'a59ea712-d1e0-44e6-ac57-419fb3c71367'
-    checkout_started: '00cf536c-25ce-46a5-a292-1a72822d565f'
-    active_customer: '3177add5-e536-4a5f-a969-fc4f2cb00f83'
-    grace: '3e567591-4cc9-403c-a4b8-b843712ddd86'
-    canceled: '3cebc246-f63f-4cb1-87f3-72e139efd455'
-    former: '68680d55-15d4-42c3-b5be-dbb26a27c9cc'
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    liveValueFingerprint: '92521fc3cbd964bd'
+sender_profiles:
+  -
+    key: 'rabbi_campaign'
+    purpose:
+      - 'warm enrollment campaigns'
+      - 'Torah newsletters'
+      - 'Rabbi-authored teaching emails'
+      - 'Rabbi-authored event invitations'
+    provider: 'GHL'
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
+    displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
+    fromEmail: 'info@onetimeonetime.com'
+    preferredFromEmail: 'rabbi@onetimeonetime.com'
+    currentFallbackFromEmail: 'info@onetimeonetime.com'
+    replyTo: 'info@onetimeonetime.com'
+    status: 'active_phase_1'
+    phase1:
+      displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
+      fromEmail: 'info@onetimeonetime.com'
+      replyTo: 'info@onetimeonetime.com'
+      status: 'active_phase_1'
+    phase2:
+      displayName: 'Rabbi Eli Scheller | One Time Mishnayos'
+      fromEmail: 'rabbi@onetimeonetime.com'
+      replyTo: 'info@onetimeonetime.com'
+      status: 'pending_mailbox_and_reply_acceptance'
+      activationPrerequisites:
+        - 'rabbi@ mailbox or routing exists'
+        - 'HighLevel accepts the From address'
+        - 'a seed delivers'
+        - 'a reply reaches GHL Conversations'
+        - 'the result is recorded'
+    messageClasses:
+      - 'warm_enrollment_campaign'
+      - 'existing_subscriber_migration'
+      - 'prelaunch_nurture'
+      - 'torah_newsletter'
+      - 'rabbi_teaching_email'
+      - 'rabbi_event_invitation'
+  -
+    key: 'rabbi_personal'
+    purpose:
+      - 'Rabbi-authored Torah answers and follow-up'
+    provider: 'GHL'
+    owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
+    displayName: 'Rabbi Eli Scheller'
+    fromEmail: 'rabbi@onetimeonetime.com'
+    preferredFromEmail: 'rabbi@onetimeonetime.com'
+    currentFallbackFromEmail: ''
+    replyTo: 'info@onetimeonetime.com'
+    status: 'pending_mailbox_and_reply_acceptance'
+    phase1: ''
+    phase2: ''
+    messageClasses:
+      - 'torah_answer'
+      - 'torah_follow_up'
+  -
+    key: 'office'
+    purpose:
+      - 'customer support'
+      - 'billing help'
+      - 'access help'
+      - 'complaints and administration'
+    provider: 'GHL'
+    owner: 'Shloimie'
+    displayName: 'Shloimie from One Time Mishnayos'
+    fromEmail: 'info@onetimeonetime.com'
+    preferredFromEmail: 'info@onetimeonetime.com'
+    currentFallbackFromEmail: 'info@onetimeonetime.com'
+    replyTo: 'info@onetimeonetime.com'
+    status: 'active'
+    phase1: ''
+    phase2: ''
+    messageClasses:
+      - 'support_reply'
+      - 'access_help'
+      - 'billing_help'
+      - 'payment_failed_support'
+      - 'cancellation_help'
+      - 'refund_help'
+      - 'complaint_reply'
+      - 'parent_administration_reply'
+  -
+    key: 'brand'
+    purpose:
+      - 'neutral One Time program, portal, event, class, content, and receipt notices'
+    provider: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    displayName: 'One Time Mishnayos'
+    fromEmail: 'info@onetimeonetime.com'
+    preferredFromEmail: 'info@onetimeonetime.com'
+    currentFallbackFromEmail: 'info@onetimeonetime.com'
+    replyTo: 'info@onetimeonetime.com'
+    status: 'active'
+    phase1: ''
+    phase2: ''
+    messageClasses:
+      - 'signup_confirmation'
+      - 'event_registration_confirmation'
+      - 'event_reminder'
+      - 'class_reminder'
+      - 'schedule_change'
+      - 'recording_available'
+      - 'new_video_available'
+      - 'worksheet_available'
+      - 'portal_welcome'
+      - 'portal_activated'
+      - 'payment_receipt'
+      - 'cancellation_confirmation'
+      - 'support_acknowledgement'
+  -
+    key: 'account_security'
+    purpose:
+      - 'activation/setup links'
+      - 'password reset'
+      - 'email verification'
+      - 'Administrator login challenge'
+      - 'security-token email'
+    provider: 'Resend'
+    owner: 'One Time authentication and security runtime'
+    displayName: 'One Time Mishnayos Account'
+    fromEmail: 'info@onetimeonetime.com'
+    preferredFromEmail: 'account@onetimeonetime.com'
+    currentFallbackFromEmail: 'info@onetimeonetime.com'
+    replyTo: 'info@onetimeonetime.com'
+    status: 'preferred_address_pending_domain_acceptance'
+    phase1: ''
+    phase2: ''
+    messageClasses:
+      - 'activation_token'
+      - 'password_setup'
+      - 'password_reset'
+      - 'email_verification'
+      - 'login_challenge'
+      - 'security_notice'
+message_classes:
+  -
+    key: 'warm_enrollment_campaign'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-03'
+    securityTokensAllowed: false
+  -
+    key: 'existing_subscriber_migration'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-02A'
+    securityTokensAllowed: false
+  -
+    key: 'prelaunch_nurture'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-02B'
+    securityTokensAllowed: false
+  -
+    key: 'torah_newsletter'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'rabbi_teaching_email'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'rabbi_event_invitation'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-C01'
+    securityTokensAllowed: false
+  -
+    key: 'torah_answer'
+    senderKey: 'rabbi_personal'
+    transport: 'GHL'
+    owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'torah_follow_up'
+    senderKey: 'rabbi_personal'
+    transport: 'GHL'
+    owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'support_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-12'
+    securityTokensAllowed: false
+  -
+    key: 'access_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-B03'
+    securityTokensAllowed: false
+  -
+    key: 'billing_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'payment_failed_support'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-05'
+    securityTokensAllowed: false
+  -
+    key: 'cancellation_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-06'
+    securityTokensAllowed: false
+  -
+    key: 'refund_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-13'
+    securityTokensAllowed: false
+  -
+    key: 'complaint_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'parent_administration_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    owner: 'Shloimie'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-01'
+      - 'OT-04'
+      - 'OT-B01'
+    securityTokensAllowed: false
+  -
+    key: 'event_registration_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-E01'
+    securityTokensAllowed: false
+  -
+    key: 'event_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'class_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-09'
+      - 'OT-B02'
+    securityTokensAllowed: false
+  -
+    key: 'schedule_change'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'recording_available'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-10'
+    securityTokensAllowed: false
+  -
+    key: 'new_video_available'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'worksheet_available'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'portal_welcome'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-07'
+    securityTokensAllowed: false
+  -
+    key: 'portal_activated'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-08'
+    securityTokensAllowed: false
+  -
+    key: 'payment_receipt'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'cancellation_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: false
+  -
+    key: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
+    sourceOfTruth: 'HighLevel'
+    allowedWorkflows:
+      - 'OT-B05'
+      - 'OT-11'
+      - 'OT-HUMAN-HANDOFF'
+    securityTokensAllowed: false
+  -
+    key: 'activation_token'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    owner: 'One Time authentication and security runtime'
+    sourceOfTruth: 'One Time'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: true
+  -
+    key: 'password_setup'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    owner: 'One Time authentication and security runtime'
+    sourceOfTruth: 'One Time'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: true
+  -
+    key: 'password_reset'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    owner: 'One Time authentication and security runtime'
+    sourceOfTruth: 'One Time'
+    allowedWorkflows:
+      - 'OT-B04'
+    securityTokensAllowed: true
+  -
+    key: 'email_verification'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    owner: 'One Time authentication and security runtime'
+    sourceOfTruth: 'One Time'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: true
+  -
+    key: 'login_challenge'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    owner: 'One Time authentication and security runtime'
+    sourceOfTruth: 'One Time'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: true
+  -
+    key: 'security_notice'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    owner: 'One Time authentication and security runtime'
+    sourceOfTruth: 'One Time'
+    allowedWorkflows:
+      []
+    securityTokensAllowed: true
+pipelines:
+  -
+    key: 'one_time_enrollment_and_conversion'
+    canonicalName: 'One Time Enrollment and Conversion'
+    status: 'pending_creation'
+    purpose: 'Adult lead, nurture, signup, and conversion opportunity state.'
+    owner: 'Shloimie'
+    stages:
+      -
+        name: 'Warm Lead'
+        position: 0
+      -
+        name: 'Contacted'
+        position: 1
+      -
+        name: 'Engaged'
+        position: 2
+      -
+        name: 'Signup Started'
+        position: 3
+      -
+        name: 'Signed Up'
+        position: 4
+      -
+        name: 'Active Member'
+        position: 5
+      -
+        name: 'Not Now'
+        position: 6
+      -
+        name: 'Unqualified'
+        position: 7
+    aliases:
+      - 'One Time Business'
+    deleteOrMigrateExistingOpportunities: false
+    reconciliation:
+      name: 'One Time Enrollment and Conversion'
+      status: 'verified'
+      id: 'RTTGVfbMv5aM92BQqklL'
+      stages:
+        -
+          name: 'Warm Lead'
+          id: 'd4a0adcc-627d-4557-b963-da0950050748'
+          position: 0
+        -
+          name: 'Contacted'
+          id: 'be1af44d-6d33-488e-a034-e958455a9e0f'
+          position: 1
+        -
+          name: 'Engaged'
+          id: '7582d13a-3d0e-463d-923f-b7d4bf660a52'
+          position: 2
+        -
+          name: 'Signup Started'
+          id: '0ae744df-b0bb-468e-913a-79188b03e76f'
+          position: 3
+        -
+          name: 'Signed Up'
+          id: 'b87ce5c3-d877-4009-99bd-6012da7e455d'
+          position: 4
+        -
+          name: 'Active Member'
+          id: '05900897-e5b0-472a-b89d-70978f29f825'
+          position: 5
+        -
+          name: 'Not Now'
+          id: 'a262b166-c2f3-4b2a-9306-a7b79d8555e1'
+          position: 6
+        -
+          name: 'Unqualified'
+          id: 'bb4af305-fedd-42e4-8307-98767b0945b5'
+          position: 7
+  -
+    key: 'one_time_member_support'
+    canonicalName: 'One Time Member Support'
+    status: 'pending_creation'
+    purpose: 'Customer-support and external-fix opportunity state.'
+    owner: 'Shloimie'
+    stages:
+      -
+        name: 'New'
+        position: 0
+      -
+        name: 'Triaged'
+        position: 1
+      -
+        name: 'In Progress'
+        position: 2
+      -
+        name: 'Waiting on Member'
+        position: 3
+      -
+        name: 'Waiting on External Fix'
+        position: 4
+      -
+        name: 'Resolved'
+        position: 5
+      -
+        name: 'Closed'
+        position: 6
+    aliases:
+      - 'One Time Business'
+    deleteOrMigrateExistingOpportunities: false
+    reconciliation:
+      name: 'One Time Member Support'
+      status: 'verified'
+      id: 'u2TzNK7t25ZdqqIrgjkE'
+      stages:
+        -
+          name: 'New'
+          id: 'de6f7e08-ec97-4f27-a5ad-adf922db34ae'
+          position: 0
+        -
+          name: 'Triaged'
+          id: '654e7272-2fdc-4857-b073-eda8af611e65'
+          position: 1
+        -
+          name: 'In Progress'
+          id: '60709dab-e5c3-4f98-ab94-560df405cc82'
+          position: 2
+        -
+          name: 'Waiting on Member'
+          id: '6d9da475-b03a-43b9-a09c-1eedc0c60528'
+          position: 3
+        -
+          name: 'Waiting on External Fix'
+          id: '795b1f1a-1cf0-46e5-9a58-9dd158b53d8d'
+          position: 4
+        -
+          name: 'Resolved'
+          id: 'a6dee446-3c4d-41c9-ade5-d4019b9a0f21'
+          position: 5
+        -
+          name: 'Closed'
+          id: '21383964-8714-4e22-8b06-ca70060b0869'
+          position: 6
+  -
+    key: 'one_time_torah_questions'
+    canonicalName: 'One Time Torah Questions'
+    status: 'pending_creation'
+    purpose: 'Substantive Torah, Mishnah, and halachic question state.'
+    owner: 'Shloimie triages; Rabbi Eli Scheller authors assigned answers through Telegram'
+    stages:
+      -
+        name: 'New'
+        position: 0
+      -
+        name: 'Shloimie Review'
+        position: 1
+      -
+        name: 'Assigned to Rabbi'
+        position: 2
+      -
+        name: 'Rabbi Reviewing'
+        position: 3
+      -
+        name: 'Answer Sent'
+        position: 4
+      -
+        name: 'Waiting on Follow-Up'
+        position: 5
+      -
+        name: 'Closed'
+        position: 6
+    aliases:
+      - 'One Time Business'
+    deleteOrMigrateExistingOpportunities: false
+    reconciliation:
+      name: 'One Time Torah Questions'
+      status: 'verified'
+      id: 'wabcK1pPBuqj1T4cjpI7'
+      stages:
+        -
+          name: 'New'
+          id: '003652bd-73a8-4b8d-9f35-f4c37854fec8'
+          position: 0
+        -
+          name: 'Shloimie Review'
+          id: '58f3ebc9-c3b8-45cd-a54a-f855722b8d30'
+          position: 1
+        -
+          name: 'Assigned to Rabbi'
+          id: '9518925f-656f-4d2b-a559-32b42ac8be71'
+          position: 2
+        -
+          name: 'Rabbi Reviewing'
+          id: 'e526a96d-0e87-4835-8be3-e885fe5e9c67'
+          position: 3
+        -
+          name: 'Answer Sent'
+          id: 'd68b0149-4017-4483-b823-e0de121e3b8b'
+          position: 4
+        -
+          name: 'Waiting on Follow-Up'
+          id: 'ec263678-3b92-4b00-9de8-0b68608f9de3'
+          position: 5
+        -
+          name: 'Closed'
+          id: '75989802-095c-45ed-9271-4ba6c53cb96b'
+          position: 6
+  -
+    key: 'one_time_business_compatibility_alias'
+    canonicalName: 'One Time Business'
+    status: 'compatibility_alias'
+    purpose: 'Compatibility alias until existing opportunities are explicitly mapped.'
+    owner: 'Shloimie'
+    stages:
+      []
+    aliases:
+      - 'One Time Enrollment and Conversion'
+      - 'One Time Member Support'
+      - 'One Time Torah Questions'
+    deleteOrMigrateExistingOpportunities: false
+    reconciliation:
+      name: 'One Time Business'
+      status: 'verified'
+      id: 'T8xEp9woujGVqvNJlqoz'
+      stages:
+        -
+          name: 'Lead'
+          id: 'a59ea712-d1e0-44e6-ac57-419fb3c71367'
+          position: 0
+        -
+          name: 'Checkout Started'
+          id: '00cf536c-25ce-46a5-a292-1a72822d565f'
+          position: 1
+        -
+          name: 'Active Customer'
+          id: '3177add5-e536-4a5f-a969-fc4f2cb00f83'
+          position: 2
+        -
+          name: 'Grace'
+          id: '3e567591-4cc9-403c-a4b8-b843712ddd86'
+          position: 3
+        -
+          name: 'Canceled'
+          id: '3cebc246-f63f-4cb1-87f3-72e139efd455'
+          position: 4
+        -
+          name: 'Former'
+          id: '68680d55-15d4-42c3-b5be-dbb26a27c9cc'
+          position: 5
+events:
+  -
+    eventCode: 'tisha-bav-2026'
+    canonicalWorkflow: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
+    canonicalCampaign: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+    invitationSenderKey: 'rabbi_campaign'
+    registrationReminderSenderKeys:
+      - 'brand'
+      - 'rabbi_campaign'
+    existingTagsAndValuesPolicy: 'Preserve existing Tisha B''Av lane tags and values; never duplicate them.'
+    sendAuthorized: false
+communications_contract:
+  highLevelSourceOfTruth:
+    - 'adult/parent contacts'
+    - 'customer conversations'
+    - 'campaigns'
+    - 'business workflows'
+    - 'replies'
+    - 'suppression'
+    - 'opportunities'
+    - 'customer-support and Torah-question processing state'
+  oneTimeSourceOfTruth:
+    - 'authentication'
+    - 'passwords and secure tokens'
+    - 'households'
+    - 'learners'
+    - 'Parent and Student portals'
+    - 'entitlement'
+    - 'classes'
+    - 'Vimeo'
+    - 'Zoom'
+    - 'progress'
+    - 'gamification'
+    - 'original portal submissions'
+  resendOnly:
+    - 'activation/setup links'
+    - 'password reset'
+    - 'email verification'
+    - 'Administrator login challenge'
+    - 'security-token email'
+  telegram:
+    role: 'Rabbi Eli Scheller''s private interface for assigned Torah questions and Rabbi-authored content'
+    separateCustomerTranscript: false
+  defaultCustomerCommunicationOwner: 'Shloimie'
+  rabbiReceivesOnly:
+    - 'substantive Torah questions'
+    - 'Mishnah questions'
+    - 'halachic questions requiring Rabbi authorship'
+    - 'Rabbi-authored Torah newsletters'
+    - 'Rabbi-authored warm enrollment content'
+  rabbiMustNotReceive:
+    - 'login'
+    - 'password help'
+    - 'billing'
+    - 'cancellation'
+    - 'refund'
+    - 'technical support'
+    - 'scheduling'
+    - 'class-link problems'
+    - 'parent administration'
+    - 'ordinary enrollment logistics'
+    - 'complaints'
+    - 'unknown messages'
+    - 'generic replies'
+  safety:
+    messagesSent: 0
+    workflowsPublished: 0
+    botActivated: false
+    contactsEnrolled: 0
+    studentContactsCreated: 0
+    paymentStateChanged: false
+    railwayChanged: false
 canonical_bot:
   id: 'OT-A1'
   name: 'OT-A1 One Time Enrollment Assistant'
@@ -2158,7 +3728,8 @@ canonical_bot:
   human_handoff_action: false
   task_creation_action: false
 workflows:
-  - key: 'OT-01'
+  -
+    key: 'OT-01'
     canonicalName: 'OT-01 New Lead Intake'
     normalizedName: 'ot_01_new_lead_intake'
     ghlId: ''
@@ -2169,19 +3740,29 @@ workflows:
     folder: '00 - Intake & Data'
     purpose: 'Lead intake after public signup or bot action.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md'
-  - key: 'OT-02A'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'adult public signup submitted'
+    companionDelivery: ''
+  -
+    key: 'OT-02A'
     canonicalName: 'OT-02A Existing Subscriber Migration 2026 v1'
     normalizedName: 'ot_02a_existing_subscriber_migration_2026_v1'
     ghlId: ''
@@ -2192,19 +3773,29 @@ workflows:
     folder: '10 - Nurture & Sales'
     purpose: 'Three-email existing-subscriber migration sequence.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md'
-  - key: 'OT-02B'
+    messageClass: 'existing_subscriber_migration'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'registered existing subscriber migration audience entry'
+    companionDelivery: ''
+  -
+    key: 'OT-02B'
     canonicalName: 'OT-02B New Lead Nurture v1'
     normalizedName: 'ot_02b_new_lead_nurture_v1'
     ghlId: ''
@@ -2215,19 +3806,29 @@ workflows:
     folder: '10 - Nurture & Sales'
     purpose: 'New lead nurture separate from migration.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md'
-  - key: 'OT-03'
+    messageClass: 'prelaunch_nurture'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'registered new lead nurture audience entry'
+    companionDelivery: ''
+  -
+    key: 'OT-03'
     canonicalName: 'OT-03 Checkout Started / Abandoned'
     normalizedName: 'ot_03_checkout_started_abandoned'
     ghlId: ''
@@ -2238,19 +3839,29 @@ workflows:
     folder: '20 - Billing & Access'
     purpose: 'Checkout started and abandoned checkout handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md'
-  - key: 'OT-04'
+    messageClass: 'warm_enrollment_campaign'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'checkout started and not completed within the registered wait window'
+    companionDelivery: ''
+  -
+    key: 'OT-04'
     canonicalName: 'OT-04 Payment Active'
     normalizedName: 'ot_04_payment_active'
     ghlId: ''
@@ -2261,19 +3872,29 @@ workflows:
     folder: '20 - Billing & Access'
     purpose: 'Active payment state handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-04-payment-active.md'
-  - key: 'OT-05'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time payment/access projection becomes Active'
+    companionDelivery: ''
+  -
+    key: 'OT-05'
     canonicalName: 'OT-05 Payment Failed / Grace'
     normalizedName: 'ot_05_payment_failed_grace'
     ghlId: ''
@@ -2284,19 +3905,29 @@ workflows:
     folder: '20 - Billing & Access'
     purpose: 'Payment failure and grace handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md'
-  - key: 'OT-06'
+    messageClass: 'payment_failed_support'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'One Time payment/access projection becomes Grace after payment failure'
+    companionDelivery: ''
+  -
+    key: 'OT-06'
     canonicalName: 'OT-06 Subscription Canceled'
     normalizedName: 'ot_06_subscription_canceled'
     ghlId: ''
@@ -2307,19 +3938,29 @@ workflows:
     folder: '20 - Billing & Access'
     purpose: 'Cancellation handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md'
-  - key: 'OT-07'
+    messageClass: 'cancellation_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'One Time subscription projection becomes Canceled when support context is required'
+    companionDelivery: ''
+  -
+    key: 'OT-07'
     canonicalName: 'OT-07 Parent Portal Invitation'
     normalizedName: 'ot_07_parent_portal_invitation'
     ghlId: ''
@@ -2330,19 +3971,29 @@ workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Parent portal invitation after One Time access confirmation.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md'
-  - key: 'OT-08'
+    messageClass: 'portal_welcome'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time access confirmation requests the parent portal companion email'
+    companionDelivery: 'One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.'
+  -
+    key: 'OT-08'
     canonicalName: 'OT-08 Parent Portal Activated'
     normalizedName: 'ot_08_parent_portal_activated'
     ghlId: ''
@@ -2353,19 +4004,29 @@ workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Parent portal activation projection.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md'
-  - key: 'OT-09'
+    messageClass: 'portal_activated'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time parent portal projection becomes Active'
+    companionDelivery: ''
+  -
+    key: 'OT-09'
     canonicalName: 'OT-09 Parent Class Reminder'
     normalizedName: 'ot_09_parent_class_reminder'
     ghlId: ''
@@ -2376,19 +4037,29 @@ workflows:
     folder: '40 - Classes & Content'
     purpose: 'Parent class reminder gated by access and consent.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md'
-  - key: 'OT-10'
+    messageClass: 'class_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'registered confirmed class reminder schedule and consent gate pass'
+    companionDelivery: ''
+  -
+    key: 'OT-10'
     canonicalName: 'OT-10 New Recording Available'
     normalizedName: 'ot_10_new_recording_available'
     ghlId: ''
@@ -2399,19 +4070,29 @@ workflows:
     folder: '40 - Classes & Content'
     purpose: 'Protected recording availability notice.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md'
-  - key: 'OT-13'
+    messageClass: 'recording_available'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time marks a protected recording available for an entitled household'
+    companionDelivery: ''
+  -
+    key: 'OT-13'
     canonicalName: 'OT-13 Refund / Chargeback'
     normalizedName: 'ot_13_refund_chargeback'
     ghlId: ''
@@ -2422,19 +4103,95 @@ workflows:
     folder: '20 - Billing & Access'
     purpose: 'Refund and chargeback handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md'
-  - key: 'OT-B01'
+    messageClass: 'refund_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'refund or chargeback support state is recorded'
+    companionDelivery: ''
+  -
+    key: 'OT-C01'
+    canonicalName: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+    normalizedName: 'ot_c01_tisha_b_av_2026_warm_invitation'
+    ghlId: ''
+    ghlKey: 'ot_c01_tisha_b_av_2026_warm_invitation'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Nurture & Sales'
+    purpose: 'Registered Tisha B''Av 2026 Rabbi-authored warm invitation campaign.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'pending_creation'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md'
+    messageClass: 'rabbi_event_invitation'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'approved Tisha B''Av 2026 warm invitation audience enters the registered campaign'
+    companionDelivery: ''
+  -
+    key: 'OT-E01'
+    canonicalName: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
+    normalizedName: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
+    ghlId: 'a34ea513-4612-4f53-8bd8-49e89e6610f9'
+    ghlKey: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    category: 'business_workflow'
+    folder: '45 - Events'
+    purpose: 'Registered Tisha B''Av 2026 registration and reminder workflow.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
+    messageClass: 'event_registration_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'Tisha B''Av 2026 registration or approved reminder milestone is recorded'
+    companionDelivery: ''
+  -
+    key: 'OT-B01'
     canonicalName: 'OT-B01 Complete Signup'
     normalizedName: 'ot_b01_complete_signup'
     ghlId: ''
@@ -2445,19 +4202,29 @@ workflows:
     folder: '00 - Intake & Data'
     purpose: 'Typed bot action adapter for adult signup.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md'
-  - key: 'OT-B02'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed complete-signup adapter for an adult'
+    companionDelivery: ''
+  -
+    key: 'OT-B02'
     canonicalName: 'OT-B02 Send Next Confirmed Class Info'
     normalizedName: 'ot_b02_send_next_confirmed_class_info'
     ghlId: ''
@@ -2468,19 +4235,29 @@ workflows:
     folder: '40 - Classes & Content'
     purpose: 'Safe next confirmed class info adapter.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md'
-  - key: 'OT-B03'
+    messageClass: 'class_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed next-confirmed-class-info adapter'
+    companionDelivery: ''
+  -
+    key: 'OT-B03'
     canonicalName: 'OT-B03 Send Member Login'
     normalizedName: 'ot_b03_send_member_login'
     ghlId: ''
@@ -2491,19 +4268,29 @@ workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Send canonical member login URL.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md'
-  - key: 'OT-B04'
+    messageClass: 'access_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed member-login adapter'
+    companionDelivery: ''
+  -
+    key: 'OT-B04'
     canonicalName: 'OT-B04 Send Password Help'
     normalizedName: 'ot_b04_send_password_help'
     ghlId: ''
@@ -2514,19 +4301,29 @@ workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Send canonical password-help URL.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md'
-  - key: 'OT-B05'
+    messageClass: 'password_reset'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    exactTrigger: 'OT-A1 invokes the typed password-help adapter'
+    companionDelivery: 'GHL may request the One Time adapter but never stores or sends a reset token.'
+  -
+    key: 'OT-B05'
     canonicalName: 'OT-B05 Apply Opt-Out'
     normalizedName: 'ot_b05_apply_opt_out'
     ghlId: ''
@@ -2537,20 +4334,30 @@ workflows:
     folder: '00 - Intake & Data'
     purpose: 'Apply opt-out, DND, suppression and stop bot follow-up.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md'
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane'
+    companionDelivery: ''
 deprecated_workflows:
-  - key: 'OT-11'
+  -
+    key: 'OT-11'
     canonicalName: 'OT-11 WhatsApp Lead Qualification'
     normalizedName: 'ot_11_whatsapp_lead_qualification'
     ghlId: ''
@@ -2561,19 +4368,29 @@ deprecated_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Superseded by OT-A1 and OT-B01.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: ''
     checklistPath: ''
-  - key: 'OT-12'
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'deprecated; no active trigger is allowed'
+    companionDelivery: ''
+  -
+    key: 'OT-12'
     canonicalName: 'OT-12 Support Intake / Technical Escalation'
     normalizedName: 'ot_12_support_intake_technical_escalation'
     ghlId: ''
@@ -2584,19 +4401,29 @@ deprecated_workflows:
     folder: '50 - Support'
     purpose: 'Deprecated when it creates tasks or support escalation workflows.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: ''
     checklistPath: ''
-  - key: 'OT-HUMAN-HANDOFF'
+    messageClass: 'support_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'deprecated when it creates tasks; no active trigger is allowed'
+    companionDelivery: ''
+  -
+    key: 'OT-HUMAN-HANDOFF'
     canonicalName: 'OT - Human Handoff'
     normalizedName: 'ot_human_handoff'
     ghlId: ''
@@ -2607,18 +4434,27 @@ deprecated_workflows:
     folder: '50 - Support'
     purpose: 'Human handoff workflow is not active for OT-A1.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: ''
     checklistPath: ''
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'forbidden and deprecated; no active trigger is allowed'
+    companionDelivery: ''
 contact_import:
   directory: 'C:/Users/User/.onetime-highlevel-private/imports'
   csv: 'C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-contacts.csv'

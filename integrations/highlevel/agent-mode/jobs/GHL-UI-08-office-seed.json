@@ -1,22 +1,20 @@
 {
-  "job_id": "GHL-UI-12",
-  "order": 12,
-  "title": "duplicate workflow/bot deprecation",
+  "job_id": "GHL-UI-08",
+  "order": 8,
+  "title": "office seed",
   "ghl_location": {
     "location_id": "pBSnOK2nkdxp6gf9Rg3o",
     "location_fingerprint": "31fcbd2792f131dc",
     "verification_required": true
   },
-  "exact_target_ui_path": "HighLevel > Automation > Workflows and HighLevel > AI Agent Studio > Conversation AI > Bots",
+  "exact_target_ui_path": "HighLevel > Marketing > Emails > seed preparation",
   "canonical_source_files": [
-    "integrations/highlevel/registry/deprecations.yaml",
-    "integrations/highlevel/registry/workflow-registry.yaml"
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/message-class-registry.yaml"
   ],
-  "exact_copy_paste_prompt": "Job GHL-UI-12: duplicate workflow/bot deprecation\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows and HighLevel > AI Agent Studio > Conversation AI > Bots\n\nRead these canonical source files first:\n- integrations/highlevel/registry/deprecations.yaml\n- integrations/highlevel/registry/workflow-registry.yaml\n\nAllowed assets:\n- Deprecated labeling or disabled status for duplicate lead-capture workflows.\n- Deprecated labeling or disabled status for duplicate signup workflows.\n- Deprecated labeling or disabled status for duplicate One Time bots.\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- deleting historical assets\n- publishing replacement workflows\n- enrolling contacts\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Deprecate duplicates and old lowercase one-time-* workflow/tag family assets without deleting historical records.\n- Capture safe IDs and statuses for anything disabled or marked deprecated.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-12.result.json\nIdempotency key: one-time-ghl:GHL-UI-12:7d9c0cac167f18e9",
+  "exact_copy_paste_prompt": "Job GHL-UI-08: office seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- office seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent office seed draft using sender_key office.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-08.result.json\nIdempotency key: one-time-ghl:GHL-UI-08:10b62bdfe47d3271",
   "allowed_assets": [
-    "Deprecated labeling or disabled status for duplicate lead-capture workflows.",
-    "Deprecated labeling or disabled status for duplicate signup workflows.",
-    "Deprecated labeling or disabled status for duplicate One Time bots."
+    "office seed draft using expected From info@onetimeonetime.com"
   ],
   "forbidden_assets": [
     "Student contacts",
@@ -27,21 +25,22 @@
     "message sends",
     "Stripe or live payment mutations",
     "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-    "deleting historical assets",
-    "publishing replacement workflows",
-    "enrolling contacts"
+    "clicking Send",
+    "adding a production audience",
+    "publishing a campaign"
   ],
   "prerequisites": [
     "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
     "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
     "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
     "Use only one canonical registry and do not create duplicate assets.",
-    "GHL-UI-03 through GHL-UI-11 complete enough to identify canonical replacements."
+    "GHL-UI-06 sending-domain readback completed."
   ],
   "expected_ghl_ids_to_capture": [
-    "deprecated_workflow_ids",
-    "deprecated_bot_ids",
-    "old_lowercase_family_asset_ids"
+    "seed_draft_id_if_visible",
+    "selected_sender_value_ids",
+    "blocked_send_status"
   ],
   "test_contact_rules": [
     "No contact mutation is allowed for this job.",
@@ -58,7 +57,7 @@
   },
   "completion_checklist": [
     "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
-    "Canonical source files for GHL-UI-12 were read before edits.",
+    "Canonical source files for GHL-UI-08 were read before edits.",
     "Only allowed assets were created, edited, or verified.",
     "Forbidden assets and actions were not used.",
     "Every changed asset was saved in the HighLevel UI.",
@@ -94,7 +93,7 @@
     ],
     "properties": {
       "job_id": {
-        "const": "GHL-UI-12"
+        "const": "GHL-UI-08"
       },
       "status": {
         "enum": [
@@ -178,19 +177,19 @@
       }
     }
   },
-  "idempotency_key": "one-time-ghl:GHL-UI-12:7d9c0cac167f18e9",
+  "idempotency_key": "one-time-ghl:GHL-UI-08:10b62bdfe47d3271",
   "bna_agent_action_dropoff": {
     "lane": "highlevel_agent_mode",
     "return_surface": "BNA Agent Action drop-off page",
     "return_route": "/ops/agent-actions/highlevel/drop-off",
-    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-12.result.json",
+    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-08.result.json",
     "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
     "metadata": {
       "repository": "shloimie-beep/onetimev2",
       "registry_root": "integrations/highlevel/registry/",
       "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-12-duplicate-workflow-bot-deprecation.json",
-      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-12.result.json"
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-08-office-seed.json",
+      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-08.result.json"
     }
   }
 }

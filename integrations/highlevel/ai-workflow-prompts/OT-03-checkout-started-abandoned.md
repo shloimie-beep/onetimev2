@@ -2,12 +2,30 @@
 
 Build in HighLevel Draft state only. Do not publish, send messages, enroll production contacts, mutate Stripe, or create Student contacts from this prompt.
 
-Canonical registry: one-time-highlevel@1.0.0
+Canonical registry: one-time-highlevel@1.1.0
+Exact workflow: OT-03 Checkout Started / Abandoned
 Folder: 20 - Billing & Access
+Exact trigger: checkout started and not completed within the registered wait window
+message_class: warm_enrollment_campaign
+sender_key: rabbi_campaign
+transport: GHL
 Purpose: Checkout started and abandoned checkout handling.
 
-Required boundaries:
+Registry dependencies:
+- `integrations/highlevel/registry/sender-registry.yaml`
+- `integrations/highlevel/registry/message-class-registry.yaml`
+- `integrations/highlevel/registry/communications-contract.json`
+- `integrations/highlevel/registry/workflow-registry.yaml`
 
+Exact sender custom values to select from the picker:
+- One Time Rabbi Campaign Sender Name
+- One Time Rabbi Campaign Phase 1 From
+- One Time Rabbi Campaign Phase 2 From
+- One Time Default Reply-To
+- Do not type or guess sender display-name, From, reply-to, or provider text.
+- If a registered sender value is absent from the picker, block this workflow instead of inventing it.
+
+Required boundaries:
 - Use only registered One Time fields, tags and custom values from `integrations/highlevel/registry/current.json`.
 - Preserve unrelated existing tags on contacts.
 - Check suppression and consent before any non-transactional communication.
@@ -19,7 +37,6 @@ Handle checkout-started and abandoned-checkout state after verified checkout eve
 Do not state a price unless One Time Pricing Display Status is published and One Time Published Price Label is populated.
 
 Test state:
-
 - Use only a protected operator-owned test contact.
 - Record the workflow ID only after it exists in the verified location.
 - Keep publish toggle off until explicit separate approval.

@@ -1,5 +1,6 @@
 business_workflows:
-  - key: 'OT-01'
+  -
+    key: 'OT-01'
     canonicalName: 'OT-01 New Lead Intake'
     normalizedName: 'ot_01_new_lead_intake'
     ghlId: ''
@@ -10,19 +11,29 @@ business_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Lead intake after public signup or bot action.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md'
-  - key: 'OT-02A'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'adult public signup submitted'
+    companionDelivery: ''
+  -
+    key: 'OT-02A'
     canonicalName: 'OT-02A Existing Subscriber Migration 2026 v1'
     normalizedName: 'ot_02a_existing_subscriber_migration_2026_v1'
     ghlId: ''
@@ -33,19 +44,29 @@ business_workflows:
     folder: '10 - Nurture & Sales'
     purpose: 'Three-email existing-subscriber migration sequence.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md'
-  - key: 'OT-02B'
+    messageClass: 'existing_subscriber_migration'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'registered existing subscriber migration audience entry'
+    companionDelivery: ''
+  -
+    key: 'OT-02B'
     canonicalName: 'OT-02B New Lead Nurture v1'
     normalizedName: 'ot_02b_new_lead_nurture_v1'
     ghlId: ''
@@ -56,19 +77,29 @@ business_workflows:
     folder: '10 - Nurture & Sales'
     purpose: 'New lead nurture separate from migration.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md'
-  - key: 'OT-03'
+    messageClass: 'prelaunch_nurture'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'registered new lead nurture audience entry'
+    companionDelivery: ''
+  -
+    key: 'OT-03'
     canonicalName: 'OT-03 Checkout Started / Abandoned'
     normalizedName: 'ot_03_checkout_started_abandoned'
     ghlId: ''
@@ -79,19 +110,29 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Checkout started and abandoned checkout handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md'
-  - key: 'OT-04'
+    messageClass: 'warm_enrollment_campaign'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'checkout started and not completed within the registered wait window'
+    companionDelivery: ''
+  -
+    key: 'OT-04'
     canonicalName: 'OT-04 Payment Active'
     normalizedName: 'ot_04_payment_active'
     ghlId: ''
@@ -102,19 +143,29 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Active payment state handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-04-payment-active.md'
-  - key: 'OT-05'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time payment/access projection becomes Active'
+    companionDelivery: ''
+  -
+    key: 'OT-05'
     canonicalName: 'OT-05 Payment Failed / Grace'
     normalizedName: 'ot_05_payment_failed_grace'
     ghlId: ''
@@ -125,19 +176,29 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Payment failure and grace handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md'
-  - key: 'OT-06'
+    messageClass: 'payment_failed_support'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'One Time payment/access projection becomes Grace after payment failure'
+    companionDelivery: ''
+  -
+    key: 'OT-06'
     canonicalName: 'OT-06 Subscription Canceled'
     normalizedName: 'ot_06_subscription_canceled'
     ghlId: ''
@@ -148,19 +209,29 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Cancellation handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md'
-  - key: 'OT-07'
+    messageClass: 'cancellation_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'One Time subscription projection becomes Canceled when support context is required'
+    companionDelivery: ''
+  -
+    key: 'OT-07'
     canonicalName: 'OT-07 Parent Portal Invitation'
     normalizedName: 'ot_07_parent_portal_invitation'
     ghlId: ''
@@ -171,19 +242,29 @@ business_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Parent portal invitation after One Time access confirmation.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md'
-  - key: 'OT-08'
+    messageClass: 'portal_welcome'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time access confirmation requests the parent portal companion email'
+    companionDelivery: 'One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.'
+  -
+    key: 'OT-08'
     canonicalName: 'OT-08 Parent Portal Activated'
     normalizedName: 'ot_08_parent_portal_activated'
     ghlId: ''
@@ -194,19 +275,29 @@ business_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Parent portal activation projection.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md'
-  - key: 'OT-09'
+    messageClass: 'portal_activated'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time parent portal projection becomes Active'
+    companionDelivery: ''
+  -
+    key: 'OT-09'
     canonicalName: 'OT-09 Parent Class Reminder'
     normalizedName: 'ot_09_parent_class_reminder'
     ghlId: ''
@@ -217,19 +308,29 @@ business_workflows:
     folder: '40 - Classes & Content'
     purpose: 'Parent class reminder gated by access and consent.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md'
-  - key: 'OT-10'
+    messageClass: 'class_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'registered confirmed class reminder schedule and consent gate pass'
+    companionDelivery: ''
+  -
+    key: 'OT-10'
     canonicalName: 'OT-10 New Recording Available'
     normalizedName: 'ot_10_new_recording_available'
     ghlId: ''
@@ -240,19 +341,29 @@ business_workflows:
     folder: '40 - Classes & Content'
     purpose: 'Protected recording availability notice.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md'
-  - key: 'OT-13'
+    messageClass: 'recording_available'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'One Time marks a protected recording available for an entitled household'
+    companionDelivery: ''
+  -
+    key: 'OT-13'
     canonicalName: 'OT-13 Refund / Chargeback'
     normalizedName: 'ot_13_refund_chargeback'
     ghlId: ''
@@ -263,20 +374,96 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Refund and chargeback handling.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md'
+    messageClass: 'refund_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'refund or chargeback support state is recorded'
+    companionDelivery: ''
+  -
+    key: 'OT-C01'
+    canonicalName: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+    normalizedName: 'ot_c01_tisha_b_av_2026_warm_invitation'
+    ghlId: ''
+    ghlKey: 'ot_c01_tisha_b_av_2026_warm_invitation'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    category: 'business_workflow'
+    folder: '10 - Nurture & Sales'
+    purpose: 'Registered Tisha B''Av 2026 Rabbi-authored warm invitation campaign.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'pending_creation'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: ''
+    lastTestedDate: ''
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md'
+    messageClass: 'rabbi_event_invitation'
+    senderKey: 'rabbi_campaign'
+    transport: 'GHL'
+    exactTrigger: 'approved Tisha B''Av 2026 warm invitation audience enters the registered campaign'
+    companionDelivery: ''
+  -
+    key: 'OT-E01'
+    canonicalName: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
+    normalizedName: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
+    ghlId: 'a34ea513-4612-4f53-8bd8-49e89e6610f9'
+    ghlKey: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
+    objectType: 'business_workflow'
+    dataType: 'workflow'
+    category: 'business_workflow'
+    folder: '45 - Events'
+    purpose: 'Registered Tisha B''Av 2026 registration and reminder workflow.'
+    sourceOfTruth: 'Shared'
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
+    oneTimeAllowedToWrite: false
+    humansMayEdit: true
+    dependencies:
+      []
+    aliases:
+      []
+    deprecationState: 'active'
+    createdDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-21'
+    lastTestedDate: '2026-07-21'
+    promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
+    checklistPath: 'integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
+    messageClass: 'event_registration_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'Tisha B''Av 2026 registration or approved reminder milestone is recorded'
+    companionDelivery: ''
 bot_action_workflows:
-  - key: 'OT-B01'
+  -
+    key: 'OT-B01'
     canonicalName: 'OT-B01 Complete Signup'
     normalizedName: 'ot_b01_complete_signup'
     ghlId: ''
@@ -287,19 +474,29 @@ bot_action_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Typed bot action adapter for adult signup.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md'
-  - key: 'OT-B02'
+    messageClass: 'signup_confirmation'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed complete-signup adapter for an adult'
+    companionDelivery: ''
+  -
+    key: 'OT-B02'
     canonicalName: 'OT-B02 Send Next Confirmed Class Info'
     normalizedName: 'ot_b02_send_next_confirmed_class_info'
     ghlId: ''
@@ -310,19 +507,29 @@ bot_action_workflows:
     folder: '40 - Classes & Content'
     purpose: 'Safe next confirmed class info adapter.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md'
-  - key: 'OT-B03'
+    messageClass: 'class_reminder'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed next-confirmed-class-info adapter'
+    companionDelivery: ''
+  -
+    key: 'OT-B03'
     canonicalName: 'OT-B03 Send Member Login'
     normalizedName: 'ot_b03_send_member_login'
     ghlId: ''
@@ -333,19 +540,29 @@ bot_action_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Send canonical member login URL.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md'
-  - key: 'OT-B04'
+    messageClass: 'access_help'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed member-login adapter'
+    companionDelivery: ''
+  -
+    key: 'OT-B04'
     canonicalName: 'OT-B04 Send Password Help'
     normalizedName: 'ot_b04_send_password_help'
     ghlId: ''
@@ -356,19 +573,29 @@ bot_action_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Send canonical password-help URL.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md'
-  - key: 'OT-B05'
+    messageClass: 'password_reset'
+    senderKey: 'account_security'
+    transport: 'Resend'
+    exactTrigger: 'OT-A1 invokes the typed password-help adapter'
+    companionDelivery: 'GHL may request the One Time adapter but never stores or sends a reset token.'
+  -
+    key: 'OT-B05'
     canonicalName: 'OT-B05 Apply Opt-Out'
     normalizedName: 'ot_b05_apply_opt_out'
     ghlId: ''
@@ -379,20 +606,30 @@ bot_action_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Apply opt-out, DND, suppression and stop bot follow-up.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'pending_creation'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md'
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane'
+    companionDelivery: ''
 deprecated_workflows:
-  - key: 'OT-11'
+  -
+    key: 'OT-11'
     canonicalName: 'OT-11 WhatsApp Lead Qualification'
     normalizedName: 'ot_11_whatsapp_lead_qualification'
     ghlId: ''
@@ -403,19 +640,29 @@ deprecated_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Superseded by OT-A1 and OT-B01.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: ''
     checklistPath: ''
-  - key: 'OT-12'
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'deprecated; no active trigger is allowed'
+    companionDelivery: ''
+  -
+    key: 'OT-12'
     canonicalName: 'OT-12 Support Intake / Technical Escalation'
     normalizedName: 'ot_12_support_intake_technical_escalation'
     ghlId: ''
@@ -426,19 +673,29 @@ deprecated_workflows:
     folder: '50 - Support'
     purpose: 'Deprecated when it creates tasks or support escalation workflows.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: ''
     checklistPath: ''
-  - key: 'OT-HUMAN-HANDOFF'
+    messageClass: 'support_reply'
+    senderKey: 'office'
+    transport: 'GHL'
+    exactTrigger: 'deprecated when it creates tasks; no active trigger is allowed'
+    companionDelivery: ''
+  -
+    key: 'OT-HUMAN-HANDOFF'
     canonicalName: 'OT - Human Handoff'
     normalizedName: 'ot_human_handoff'
     ghlId: ''
@@ -449,19 +706,48 @@ deprecated_workflows:
     folder: '50 - Support'
     purpose: 'Human handoff workflow is not active for OT-A1.'
     sourceOfTruth: 'Shared'
-    allowedValues: []
-    workflowsAllowedToWrite: []
+    allowedValues:
+      []
+    workflowsAllowedToWrite:
+      []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies: []
-    aliases: []
+    dependencies:
+      []
+    aliases:
+      []
     deprecationState: 'deprecated_existing'
-    createdDate: '2026-07-20'
+    createdDate: '2026-07-21'
     lastVerifiedDate: ''
     lastTestedDate: ''
     promptPath: ''
     checklistPath: ''
+    messageClass: 'support_acknowledgement'
+    senderKey: 'brand'
+    transport: 'GHL'
+    exactTrigger: 'forbidden and deprecated; no active trigger is allowed'
+    companionDelivery: ''
 publishing_authorized: false
 production_enrollment_authorized: false
 duplicate_workflows_disabled_in_this_run: 0
 human_task_workflows_active: 0
+read_only_workflow_api_status: 'ui_required'
+workflow_ui_missing:
+  - 'OT-01 New Lead Intake'
+  - 'OT-02A Existing Subscriber Migration 2026 v1'
+  - 'OT-02B New Lead Nurture v1'
+  - 'OT-03 Checkout Started / Abandoned'
+  - 'OT-04 Payment Active'
+  - 'OT-05 Payment Failed / Grace'
+  - 'OT-06 Subscription Canceled'
+  - 'OT-07 Parent Portal Invitation'
+  - 'OT-08 Parent Portal Activated'
+  - 'OT-09 Parent Class Reminder'
+  - 'OT-10 New Recording Available'
+  - 'OT-13 Refund / Chargeback'
+  - 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+  - 'OT-B01 Complete Signup'
+  - 'OT-B02 Send Next Confirmed Class Info'
+  - 'OT-B03 Send Member Login'
+  - 'OT-B04 Send Password Help'
+  - 'OT-B05 Apply Opt-Out'

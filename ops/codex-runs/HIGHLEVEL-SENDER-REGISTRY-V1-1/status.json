@@ -1,0 +1,19 @@
+{
+  "packet_id": "HIGHLEVEL-SENDER-REGISTRY-V1-1",
+  "status": "commit_a_ready",
+  "owner": "Codex",
+  "raw_sha256": "4d21cf954d5ed121d3d184387c2a1ce68bd08c9bd93c0b99db3d9f7146ccfdc3",
+  "intent_spec_path": "ops/codex-runs/HIGHLEVEL-SENDER-REGISTRY-V1-1/SPEC.json",
+  "intent_spec_fingerprint": "f9ae235ee4556b9e9cc633e3ffe7b1181c0639e4869645bfdf2d2fefedc44877",
+  "current_requirement": "REQ-20260721-008",
+  "next_action": "Create immutable Commit A, push it, open the draft PR, then generate the two-file pinned Commit B handoff.",
+  "messages_sent": 0,
+  "workflows_published": 0,
+  "api_created_counts": {
+    "custom_fields": 13,
+    "tags": 9,
+    "custom_values": 33,
+    "pipelines": 3
+  },
+  "updated_at": "2026-07-21T13:45:27.865Z"
+}

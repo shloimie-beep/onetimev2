@@ -1,12 +1,12 @@
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   botActionWorkflows,
   businessWorkflows,
   customValues,
+  pipelineDefinitions,
   registryMetadata,
-  type RegistryWorkflow,
 } from './canonical-registry-data.ts';
 
 type CurrentRegistry = {
@@ -98,11 +98,18 @@ async function main() {
   const jobs = buildJobs(locationId);
   await mkdir(path.join(repoRoot, jobsDir), { recursive: true });
   await mkdir(path.join(repoRoot, resultsDir), { recursive: true });
+  await removeStaleJobFiles(jobs);
   for (const job of jobs) {
     await writeRepoFile(jobFilePath(job), `${JSON.stringify(job, null, 2)}\n`);
   }
-  await writeRepoFile(queuePath, `${JSON.stringify(buildQueue(locationId, jobs, current), null, 2)}\n`);
-  await writeRepoFile(exportPath, `${JSON.stringify(buildExport(locationId, jobs, current), null, 2)}\n`);
+  await writeRepoFile(
+    queuePath,
+    `${JSON.stringify(buildQueue(locationId, jobs, current), null, 2)}\n`,
+  );
+  await writeRepoFile(
+    exportPath,
+    `${JSON.stringify(buildExport(locationId, jobs, current), null, 2)}\n`,
+  );
   await writeRepoFile(readmePath, buildReadme(jobs));
   await writeRepoFile(`${resultsDir}/.gitkeep`, '');
   writeStdoutJson({
@@ -156,7 +163,8 @@ function buildJobs(locationId: string): AgentModeJob[] {
         return_surface: 'BNA Agent Action drop-off page',
         return_route: '/ops/agent-actions/highlevel/drop-off',
         result_path: resultFile,
-        readback_verification: 'After saving the result, reopen/read it and record the returned result ID.',
+        readback_verification:
+          'After saving the result, reopen/read it and record the returned result ID.',
         metadata: {
           repository: 'shloimie-beep/onetimev2',
           registry_root: 'integrations/highlevel/registry/',
@@ -173,313 +181,329 @@ function jobInputs(): JobInput[] {
   const activeWorkflowSources = [...businessWorkflows, ...botActionWorkflows].flatMap(
     (workflow) => [workflow.promptPath, workflow.checklistPath],
   );
+  const senderRegistrySources = [
+    'integrations/highlevel/registry/current.json',
+    'integrations/highlevel/registry/sender-registry.yaml',
+    'integrations/highlevel/registry/message-class-registry.yaml',
+    'integrations/highlevel/registry/communications-contract.json',
+  ];
   return [
     {
       jobId: 'GHL-UI-01',
       order: 1,
-      title: 'custom-value folders and unresolved value review',
+      title: 'create sender custom-value folder',
       targetUiPath: 'HighLevel > Settings > Custom Values',
       canonicalSourceFiles: [
-        'integrations/highlevel/registry/current.json',
+        ...senderRegistrySources,
         'integrations/highlevel/registry/custom-values.yaml',
       ],
-      allowedAssets: [
-        'Custom-value folders matching the registry folder names.',
-        ...customValues.map((value) => value.canonicalName),
-      ],
+      allowedAssets: ['One Time - Senders custom-value folder'],
       forbiddenAssets: commonForbiddenAssets([
-        'PENDING_ACCEPTED_ROUTE',
-        'PENDING_VERIFIED_GHL_CHECKOUT_URL',
-        'PENDING_PROTECTED_PORTAL_ROUTE',
-        'PENDING_VERIFIED_QR_LINKED_WHATSAPP_ENTRY_URL',
-        'TODO',
-        'CHANGEME',
+        'duplicate sender folders',
+        'renaming existing unrelated folders',
       ]),
       prerequisites: commonPrerequisites(),
-      expectedGhlIdsToCapture: [
-        'custom_value_folder_ids_if_visible',
-        'custom_value_ids_for_resolved_existing_values',
-        'blocked_ui_or_business_value_names',
-      ],
+      expectedGhlIdsToCapture: ['one_time_senders_folder_id_if_visible'],
       testContactRules: noTestContactRules(),
       taskInstructions: [
-        'Create or verify the Custom Values folders named in the registry.',
-        'Review unresolved values marked blocked_ui_or_business_value; do not create any placeholder value.',
-        'If a real approved value already exists in GHL, capture its safe custom value ID and status.',
+        'Create or verify exactly one folder named One Time - Senders.',
+        'Do not move or rewrite existing values in this job.',
       ],
     },
     {
       jobId: 'GHL-UI-02',
       order: 2,
-      title: 'workflow folders',
-      targetUiPath: 'HighLevel > Automation > Workflows > Folders',
+      title: 'reconcile sender values',
+      targetUiPath: 'HighLevel > Settings > Custom Values > One Time - Senders',
       canonicalSourceFiles: [
-        'integrations/highlevel/registry/workflow-registry.yaml',
-        'integrations/highlevel/workflows.yaml',
+        ...senderRegistrySources,
+        'integrations/highlevel/registry/custom-values.yaml',
       ],
-      allowedAssets: unique([...businessWorkflows, ...botActionWorkflows].map((workflow) => workflow.folder)),
-      forbiddenAssets: commonForbiddenAssets(['duplicate One Time workflow folders']),
-      prerequisites: commonPrerequisites(),
-      expectedGhlIdsToCapture: ['workflow_folder_ids_if_visible'],
+      allowedAssets: customValues
+        .filter((value) => value.folder === 'One Time - Senders')
+        .map((value) => value.canonicalName),
+      forbiddenAssets: commonForbiddenAssets([
+        'activating rabbi@',
+        'deleting generic sender compatibility aliases',
+      ]),
+      prerequisites: [...commonPrerequisites(), 'GHL-UI-01 saved and readback verified.'],
+      expectedGhlIdsToCapture: ['registered_sender_custom_value_ids', 'compatibility_alias_ids'],
       testContactRules: noTestContactRules(),
       taskInstructions: [
-        'Create or verify only the workflow folders required by the canonical workflows.',
-        'Do not create workflow content in this job.',
+        'Reconcile exact registered sender values and preserve the existing generic sender values as compatibility aliases.',
+        'Keep rabbi@ values recorded but inactive pending acceptance.',
       ],
     },
-    workflowJob({
+    {
       jobId: 'GHL-UI-03',
       order: 3,
-      title: 'OT-01 lead intake',
-      workflowKeys: ['OT-01'],
-      targetUiPath: 'HighLevel > Automation > Workflows > 00 - Intake & Data > OT-01 New Lead Intake',
-    }),
-    workflowJob({
+      title: 'create or reconcile pipelines',
+      targetUiPath: 'HighLevel > Opportunities > Pipelines',
+      canonicalSourceFiles: [
+        'integrations/highlevel/registry/pipeline-registry.yaml',
+        'integrations/highlevel/registry/communications-contract.json',
+      ],
+      allowedAssets: pipelineDefinitions.map((pipeline) => pipeline.canonicalName),
+      forbiddenAssets: commonForbiddenAssets([
+        'deleting One Time Business',
+        'migrating existing opportunities',
+        'duplicate pipelines or stages',
+      ]),
+      prerequisites: commonPrerequisites(),
+      expectedGhlIdsToCapture: [
+        'canonical_pipeline_ids',
+        'canonical_stage_ids',
+        'one_time_business_compatibility_alias_id',
+      ],
+      testContactRules: noTestContactRules(),
+      taskInstructions: [
+        'Create or reconcile the three canonical pipelines and exact ordered stages.',
+        'Preserve One Time Business as a compatibility alias and do not move existing opportunities.',
+      ],
+    },
+    {
       jobId: 'GHL-UI-04',
       order: 4,
-      title: 'OT-02A existing subscriber migration',
-      workflowKeys: ['OT-02A'],
-      targetUiPath:
-        'HighLevel > Automation > Workflows > 10 - Nurture & Sales > OT-02A Existing Subscriber Migration 2026 v1',
-    }),
-    workflowJob({
+      title: 'update workflow sender identities',
+      targetUiPath: 'HighLevel > Automation > Workflows > canonical One Time workflow folders',
+      canonicalSourceFiles: [
+        ...senderRegistrySources,
+        'integrations/highlevel/registry/workflow-registry.yaml',
+        ...activeWorkflowSources,
+      ],
+      allowedAssets: activeWorkflowNames(),
+      forbiddenAssets: commonForbiddenAssets([
+        'unregistered sender text',
+        'guessing a From address',
+        'activation/reset tokens in GHL',
+      ]),
+      prerequisites: [
+        ...commonPrerequisites(),
+        'GHL-UI-02 and GHL-UI-03 saved and readback verified.',
+      ],
+      expectedGhlIdsToCapture: [
+        'workflow_ids',
+        'sender_value_ids_selected',
+        'workflow_message_class_readback',
+      ],
+      testContactRules: noTestContactRules(),
+      taskInstructions: [
+        'Update every canonical workflow sender identity from its registered sender_key and exact custom-value picker entries.',
+        'Keep every workflow Draft/unpublished and do not enroll contacts.',
+        'Verify OT-07 GHL companion/welcome and separate One Time/Resend activation-token boundary.',
+      ],
+    },
+    {
       jobId: 'GHL-UI-05',
       order: 5,
-      title: 'OT-02B new lead nurture',
-      workflowKeys: ['OT-02B'],
+      title: 'update OT-A1',
       targetUiPath:
-        'HighLevel > Automation > Workflows > 10 - Nurture & Sales > OT-02B New Lead Nurture v1',
-    }),
-    workflowJob({
+        'HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant',
+      canonicalSourceFiles: [
+        'integrations/highlevel/prompts/active/OT-A1-v1.0.0.md',
+        'integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md',
+        'integrations/highlevel/registry/bot-action-registry.yaml',
+        'integrations/highlevel/registry/rabbi-telegram-contract.yaml',
+        'integrations/highlevel/registry/pipeline-registry.yaml',
+      ],
+      allowedAssets: [
+        'OT-A1 One Time Enrollment Assistant',
+        'Website Live Chat',
+        'WhatsApp',
+        'One Time Torah Questions routing for explicit substantive Torah questions',
+      ],
+      forbiddenAssets: commonForbiddenAssets([
+        'Voice AI',
+        'Human Handoff',
+        'human tasks',
+        'separate WhatsApp qualification bot',
+        'automatic promise that a person will reply',
+        'generic support routed to Rabbi',
+      ]),
+      prerequisites: [...commonPrerequisites(), 'GHL-UI-04 saved and readback verified.'],
+      expectedGhlIdsToCapture: [
+        'bot_id',
+        'knowledge_base_id',
+        'channel_statuses',
+        'torah_routing_status',
+      ],
+      testContactRules: noTestContactRules(),
+      taskInstructions: [
+        'Update only the canonical OT-A1 bot and public knowledge base dependencies.',
+        'Keep the bot inactive/unpublished. Route only explicit substantive Torah questions to One Time Torah Questions.',
+      ],
+    },
+    {
       jobId: 'GHL-UI-06',
       order: 6,
-      title: 'billing workflows OT-03/04/05/06/13',
-      workflowKeys: ['OT-03', 'OT-04', 'OT-05', 'OT-06', 'OT-13'],
-      targetUiPath:
-        'HighLevel > Automation > Workflows > 20 - Billing & Access > OT-03, OT-04, OT-05, OT-06, OT-13',
-    }),
-    workflowJob({
-      jobId: 'GHL-UI-07',
-      order: 7,
-      title: 'portal workflows OT-07/08',
-      workflowKeys: ['OT-07', 'OT-08'],
-      targetUiPath: 'HighLevel > Automation > Workflows > 30 - Portal Lifecycle > OT-07, OT-08',
-    }),
-    workflowJob({
-      jobId: 'GHL-UI-08',
-      order: 8,
-      title: 'class/content workflows OT-09/10',
-      workflowKeys: ['OT-09', 'OT-10'],
-      targetUiPath: 'HighLevel > Automation > Workflows > 40 - Classes & Content > OT-09, OT-10',
-    }),
-    workflowJob({
-      jobId: 'GHL-UI-09',
-      order: 9,
-      title: 'bot-action workflows OT-B01 through OT-B05',
-      workflowKeys: ['OT-B01', 'OT-B02', 'OT-B03', 'OT-B04', 'OT-B05'],
-      targetUiPath:
-        'HighLevel > Automation > Workflows > Bot Action Workflows > OT-B01 through OT-B05',
-    }),
+      title: 'verify sending domain',
+      targetUiPath: 'HighLevel > Settings > Email Services > Domains',
+      canonicalSourceFiles: [
+        'integrations/highlevel/registry/sender-registry.yaml',
+        'integrations/highlevel/LC-EMAIL-DNS-CHECKLIST.md',
+      ],
+      allowedAssets: [
+        'onetimeonetime.com domain readback',
+        'registered info@ sender readback',
+        'registered rabbi@ pending-state readback',
+      ],
+      forbiddenAssets: commonForbiddenAssets([
+        'DNS mutation',
+        'claiming account@ or rabbi@ is live without acceptance evidence',
+      ]),
+      prerequisites: commonPrerequisites(),
+      expectedGhlIdsToCapture: [
+        'sending_domain_id_if_visible',
+        'sending_domain_status',
+        'accepted_from_addresses',
+      ],
+      testContactRules: noTestContactRules(),
+      taskInstructions: [
+        'Read back the sending-domain and accepted From-address state only.',
+        'Do not change DNS, activate rabbi@, or claim account@ is live.',
+      ],
+    },
+    seedPreparationJob('GHL-UI-07', 7, 'phase-1 seed', 'rabbi_campaign', 'info@onetimeonetime.com'),
+    seedPreparationJob('GHL-UI-08', 8, 'office seed', 'office', 'info@onetimeonetime.com'),
+    seedPreparationJob('GHL-UI-09', 9, 'brand seed', 'brand', 'info@onetimeonetime.com'),
     {
       jobId: 'GHL-UI-10',
       order: 10,
-      title: 'knowledge base',
-      targetUiPath: 'HighLevel > AI Agent Studio > Knowledge Base',
+      title: 'capture workflow IDs',
+      targetUiPath: 'HighLevel > Automation > Workflows',
       canonicalSourceFiles: [
-        'integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md',
-        'integrations/highlevel/registry/knowledge-base-registry.yaml',
+        'integrations/highlevel/WORKFLOW-ID-CAPTURE.md',
+        'integrations/highlevel/registry/workflow-registry.yaml',
       ],
-      allowedAssets: ['One Time Mishnayos - Public Program and Support v1.0.0'],
+      allowedAssets: activeWorkflowNames(),
       forbiddenAssets: commonForbiddenAssets([
-        'raw Vimeo URLs',
-        'raw Zoom links',
-        'student usernames',
-        'student passwords',
+        'chat-only completion claims',
+        'editing workflow logic while capturing IDs',
       ]),
-      prerequisites: commonPrerequisites(),
-      expectedGhlIdsToCapture: ['knowledge_base_id', 'knowledge_base_status'],
+      prerequisites: [
+        ...commonPrerequisites(),
+        'GHL-UI-04 and GHL-UI-05 saved and readback verified.',
+      ],
+      expectedGhlIdsToCapture: ['all_canonical_workflow_ids', 'visible_workflow_statuses'],
       testContactRules: noTestContactRules(),
       taskInstructions: [
-        'Create or update the canonical public knowledge base from the active markdown source.',
-        'Keep it scoped to public and support-safe program facts.',
+        'Open every canonical workflow, capture its safe ID/status, and do not edit workflow logic.',
       ],
     },
     {
       jobId: 'GHL-UI-11',
       order: 11,
-      title: 'OT-A1 bot',
-      targetUiPath: 'HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant',
-      canonicalSourceFiles: [
-        'integrations/highlevel/prompts/active/OT-A1-v1.0.0.md',
-        'integrations/highlevel/registry/prompt-registry.yaml',
-        'integrations/highlevel/registry/bot-action-registry.yaml',
-        'integrations/highlevel/agent-mode/HIGHLEVEL-BOT-UI-SETUP.md',
-      ],
-      allowedAssets: [
-        'OT-A1 One Time Enrollment Assistant',
-        'Website Live Chat channel in draft/test routing',
-        'WhatsApp channel in draft/test routing',
-        'OT-B01',
-        'OT-B02',
-        'OT-B03',
-        'OT-B04',
-        'OT-B05',
-      ],
+      title: 'capture pipeline IDs',
+      targetUiPath: 'HighLevel > Opportunities > Pipelines',
+      canonicalSourceFiles: ['integrations/highlevel/registry/pipeline-registry.yaml'],
+      allowedAssets: pipelineDefinitions.map((pipeline) => pipeline.canonicalName),
       forbiddenAssets: commonForbiddenAssets([
-        'Voice AI',
-        'Human Handover',
-        'human task creation',
-        'duplicate public bots',
+        'moving opportunities',
+        'deleting stages',
+        'chat-only completion claims',
       ]),
-      prerequisites: [
-        ...commonPrerequisites(),
-        'GHL-UI-09 complete with OT-B01 through OT-B05 workflow IDs captured.',
-        'GHL-UI-10 complete with knowledge base ID captured.',
-      ],
-      expectedGhlIdsToCapture: ['bot_id', 'bot_status', 'attached_knowledge_base_id', 'channel_statuses'],
-      testContactRules: controlledTestContactRules(),
+      prerequisites: [...commonPrerequisites(), 'GHL-UI-03 saved and readback verified.'],
+      expectedGhlIdsToCapture: ['all_canonical_pipeline_ids', 'all_canonical_stage_ids'],
+      testContactRules: noTestContactRules(),
       taskInstructions: [
-        'Create or update only OT-A1 One Time Enrollment Assistant.',
-        'Attach the canonical public knowledge base.',
-        'Configure Website Live Chat and WhatsApp as initial channels, but keep production launch disabled.',
-        'Disable Voice, Human Handover, and task creation.',
+        'Capture safe pipeline and stage IDs plus visible status without moving opportunities.',
       ],
     },
     {
       jobId: 'GHL-UI-12',
       order: 12,
-      title: 'duplicate workflow/bot deprecation',
-      targetUiPath: 'HighLevel > Automation > Workflows and HighLevel > AI Agent Studio > Conversation AI > Bots',
-      canonicalSourceFiles: [
-        'integrations/highlevel/registry/deprecations.yaml',
-        'integrations/highlevel/registry/workflow-registry.yaml',
-      ],
-      allowedAssets: [
-        'Deprecated labeling or disabled status for duplicate lead-capture workflows.',
-        'Deprecated labeling or disabled status for duplicate signup workflows.',
-        'Deprecated labeling or disabled status for duplicate One Time bots.',
-      ],
+      title: 'save and readback verification',
+      targetUiPath: 'HighLevel changed asset screens and BNA Agent Action drop-off',
+      canonicalSourceFiles: [queuePath, 'integrations/highlevel/registry/AGENT-HANDOFF.md'],
+      allowedAssets: ['Saved/readback verification for GHL-UI-01 through GHL-UI-11 results'],
       forbiddenAssets: commonForbiddenAssets([
-        'deleting historical assets',
-        'publishing replacement workflows',
-        'enrolling contacts',
+        'unsaved chat-only completion claim',
+        'new asset creation',
       ]),
-      prerequisites: [
-        ...commonPrerequisites(),
-        'GHL-UI-03 through GHL-UI-11 complete enough to identify canonical replacements.',
-      ],
-      expectedGhlIdsToCapture: ['deprecated_workflow_ids', 'deprecated_bot_ids', 'old_lowercase_family_asset_ids'],
+      prerequisites: [...commonPrerequisites(), 'GHL-UI-01 through GHL-UI-11 have result records.'],
+      expectedGhlIdsToCapture: ['dropoff_result_ids', 'readback_statuses'],
       testContactRules: noTestContactRules(),
       taskInstructions: [
-        'Deprecate duplicates and old lowercase one-time-* workflow/tag family assets without deleting historical records.',
-        'Capture safe IDs and statuses for anything disabled or marked deprecated.',
+        'Reopen every changed asset and saved result, verify readback, and record discrepancies without creating new assets.',
       ],
     },
     {
       jobId: 'GHL-UI-13',
       order: 13,
-      title: 'workflow ID capture and registry reconciliation',
-      targetUiPath: 'HighLevel > Automation > Workflows',
-      canonicalSourceFiles: [
-        'integrations/highlevel/WORKFLOW-ID-CAPTURE.md',
-        'integrations/highlevel/registry/workflow-registry.yaml',
-        ...activeWorkflowSources,
-      ],
-      allowedAssets: activeWorkflowNames(),
-      forbiddenAssets: commonForbiddenAssets(['chat-only workflow ID claims']),
-      prerequisites: [
-        ...commonPrerequisites(),
-        'GHL-UI-03 through GHL-UI-12 complete and saved.',
-      ],
-      expectedGhlIdsToCapture: [
-        'all_active_business_workflow_ids',
-        'all_bot_action_workflow_ids',
-        'deprecated_workflow_ids_if_present',
-      ],
-      testContactRules: noTestContactRules(),
-      taskInstructions: [
-        'Open each canonical workflow and capture the saved GHL ID and visible status.',
-        'Do not edit workflow logic except to save an already-open draft when needed for ID visibility.',
-      ],
-    },
-    {
-      jobId: 'GHL-UI-14',
-      order: 14,
-      title: 'controlled test-contact pass',
-      targetUiPath: 'HighLevel > Contacts > protected operator-owned test contact and related draft workflows/bot',
-      canonicalSourceFiles: [
-        'integrations/highlevel/WORKFLOW-TEST-MATRIX.md',
-        'integrations/highlevel/registry/current.json',
-        queuePath,
-      ],
+      title: 'phase-2 rabbi acceptance',
+      targetUiPath: 'HighLevel email sender settings and Conversations',
+      canonicalSourceFiles: ['integrations/highlevel/registry/sender-registry.yaml'],
       allowedAssets: [
-        'Protected operator-owned test contact only.',
-        'Draft workflow test mode.',
-        'Draft bot preview/test mode.',
+        'rabbi_campaign phase-2 acceptance evidence',
+        'rabbi_personal acceptance evidence',
       ],
       forbiddenAssets: commonForbiddenAssets([
-        'production contacts',
-        'message sends',
-        'workflow publishing',
-        'Stripe or GHL Payments mutation',
+        'activating rabbi@ before every prerequisite passes',
+        'broad campaign send',
       ]),
       prerequisites: [
         ...commonPrerequisites(),
-        'Protected operator-owned test contact email and phone are configured outside Git.',
-        'GHL-UI-01 through GHL-UI-13 results are saved and readback verified.',
+        'BLOCKED until rabbi@ mailbox or routing exists.',
+        'BLOCKED until HighLevel accepts the From address.',
+        'BLOCKED until a separately authorized seed delivers.',
+        'BLOCKED until a reply reaches GHL Conversations.',
       ],
       expectedGhlIdsToCapture: [
-        'test_contact_id',
-        'workflow_test_run_ids_if_visible',
-        'bot_preview_session_id_if_visible',
+        'rabbi_sender_acceptance_status',
+        'seed_delivery_safe_id',
+        'reply_conversation_safe_id',
       ],
-      testContactRules: controlledTestContactRules(),
+      testContactRules: noTestContactRules(),
       taskInstructions: [
-        'Run only no-send, no-publish draft checks against the protected operator-owned test contact.',
-        'Verify field/tag mutations are limited to registered One Time assets.',
-        'Capture status and evidence IDs without sending messages.',
+        'Do not activate phase 2 in this no-send queue.',
+        'Record the exact unmet prerequisite or, after a separately authorized acceptance run, record all safe acceptance IDs and statuses.',
       ],
     },
   ];
 }
 
-function workflowJob(input: {
-  jobId: string;
-  order: number;
-  title: string;
-  workflowKeys: string[];
-  targetUiPath: string;
-}): JobInput {
-  const workflows = workflowsByKey(input.workflowKeys);
+async function removeStaleJobFiles(jobs: AgentModeJob[]) {
+  const expected = new Set(jobs.map((job) => path.basename(jobFilePath(job))));
+  const directory = path.join(repoRoot, jobsDir);
+  for (const name of await readdir(directory)) {
+    if (name.endsWith('.json') && !expected.has(name)) {
+      await unlink(path.join(directory, name));
+    }
+  }
+}
+
+function seedPreparationJob(
+  jobId: string,
+  order: number,
+  title: string,
+  senderKey: string,
+  expectedFrom: string,
+): JobInput {
   return {
-    jobId: input.jobId,
-    order: input.order,
-    title: input.title,
-    targetUiPath: input.targetUiPath,
+    jobId,
+    order,
+    title,
+    targetUiPath: 'HighLevel > Marketing > Emails > seed preparation',
     canonicalSourceFiles: [
-      'integrations/highlevel/registry/current.json',
-      'integrations/highlevel/registry/workflow-registry.yaml',
-      'integrations/highlevel/workflows.yaml',
-      ...workflows.flatMap((workflow) => [workflow.promptPath, workflow.checklistPath]),
+      'integrations/highlevel/registry/sender-registry.yaml',
+      'integrations/highlevel/registry/message-class-registry.yaml',
     ],
-    allowedAssets: workflows.map((workflow) => workflow.canonicalName),
+    allowedAssets: [`${senderKey} seed draft using expected From ${expectedFrom}`],
     forbiddenAssets: commonForbiddenAssets([
-      'workflow publishing',
-      'production contact enrollment',
-      'message send actions enabled for production',
+      'clicking Send',
+      'adding a production audience',
+      'publishing a campaign',
     ]),
-    prerequisites: [
-      ...commonPrerequisites(),
-      'GHL-UI-01 custom values reviewed.',
-      'GHL-UI-02 workflow folders complete.',
+    prerequisites: [...commonPrerequisites(), 'GHL-UI-06 sending-domain readback completed.'],
+    expectedGhlIdsToCapture: [
+      'seed_draft_id_if_visible',
+      'selected_sender_value_ids',
+      'blocked_send_status',
     ],
-    expectedGhlIdsToCapture: workflows.map((workflow) => `${workflow.key}_workflow_id`),
-    testContactRules: controlledTestContactRules(),
+    testContactRules: noTestContactRules(),
     taskInstructions: [
-      'Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.',
-      'Keep every workflow unpublished.',
-      'Use only canonical fields, tags, custom values, folders, and adapters.',
-      'Save each workflow and verify the saved draft before returning a result.',
+      `Prepare and save a no-audience, unsent ${title} draft using sender_key ${senderKey}.`,
+      'Do not click Send. Record that delivery remains blocked pending separate explicit authorization.',
     ],
   };
 }
@@ -494,6 +518,7 @@ function buildPrompt(
     `Job ${input.jobId}: ${input.title}`,
     '',
     `Use HighLevel location ${locationId}. Verify the visible location before doing any work.`,
+    'Use only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.',
     `Target UI path: ${input.targetUiPath}`,
     '',
     'Read these canonical source files first:',
@@ -594,10 +619,12 @@ function resultJsonSchema(jobId: string): ResultJsonSchema {
 function buildQueue(locationId: string, jobs: AgentModeJob[], current: CurrentRegistry) {
   return {
     schema_id: 'one-time-highlevel-agent-mode-queue',
-    schema_version: '1.0.0',
+    schema_version: '1.1.0',
     generated_at: generatedAt,
     repository: 'shloimie-beep/onetimev2',
     registry_schema: `${registryMetadata.schemaId}@${registryMetadata.schemaVersion}`,
+    pinned_registry_commit_source:
+      'integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md',
     location_id: locationId,
     location_fingerprint: sha256(locationId).slice(0, 16),
     registry_counts: current.counts ?? {},
@@ -625,7 +652,7 @@ function buildQueue(locationId: string, jobs: AgentModeJob[], current: CurrentRe
 function buildExport(locationId: string, jobs: AgentModeJob[], current: CurrentRegistry) {
   return {
     schema_id: 'bna-agent-action-export',
-    schema_version: '1.0.0',
+    schema_version: '1.1.0',
     export_type: 'highlevel_agent_mode_queue',
     generated_at: generatedAt,
     source: {
@@ -635,6 +662,8 @@ function buildExport(locationId: string, jobs: AgentModeJob[], current: CurrentR
       location_id: locationId,
       location_fingerprint: sha256(locationId).slice(0, 16),
       registry_counts: current.counts ?? {},
+      pinned_registry_commit_source:
+        'integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md',
     },
     ingestion: {
       lane: 'highlevel_agent_mode',
@@ -678,6 +707,7 @@ function commonPrerequisites() {
   return [
     'Read integrations/highlevel/registry/AGENT-HANDOFF.md.',
     'Read integrations/highlevel/registry/current.json.',
+    'Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.',
     `Verify HighLevel location ID is ${registryMetadata.locationId}.`,
     'Use only one canonical registry and do not create duplicate assets.',
   ];
@@ -704,24 +734,6 @@ function noTestContactRules() {
   ];
 }
 
-function controlledTestContactRules() {
-  return [
-    'Use only the protected operator-owned test contact configured outside Git.',
-    'Never use a production parent/adult contact for testing.',
-    'Do not send a message to the test contact.',
-    'Do not enroll the test contact into a published workflow.',
-  ];
-}
-
-function workflowsByKey(keys: string[]): RegistryWorkflow[] {
-  const workflows = [...businessWorkflows, ...botActionWorkflows];
-  return keys.map((key) => {
-    const workflow = workflows.find((candidate) => candidate.key === key);
-    if (!workflow) throw new Error(`workflow_missing:${key}`);
-    return workflow;
-  });
-}
-
 function activeWorkflowNames() {
   return [...businessWorkflows, ...botActionWorkflows].map((workflow) => workflow.canonicalName);
 }
@@ -735,7 +747,7 @@ function jobFilePathFromId(jobId: string, title: string) {
 }
 
 function stableKey(locationId: string, jobId: string, title: string) {
-  return `one-time-ghl:${jobId}:${sha256(`${locationId}:${jobId}:${title}:1.0.0`).slice(0, 16)}`;
+  return `one-time-ghl:${jobId}:${sha256(`${locationId}:${jobId}:${title}:1.1.0`).slice(0, 16)}`;
 }
 
 function slug(value: string) {
@@ -745,10 +757,6 @@ function slug(value: string) {
     .replace(/&/g, 'and')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-}
-
-function unique(values: string[]) {
-  return Array.from(new Set(values)).sort();
 }
 
 async function readCurrent(): Promise<CurrentRegistry> {

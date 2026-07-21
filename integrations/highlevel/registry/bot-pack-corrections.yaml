@@ -23,28 +23,39 @@ removed_sections:
   - 'Old password reset API'
   - 'Hardcoded price'
 route_corrections:
-  - from: '/api/one-time/parent-password/request'
+  -
+    from: '/api/one-time/parent-password/request'
     to: 'https://join.onetimeonetime.com/forgot-password'
-  - from: 'BNA workspace routing'
+  -
+    from: 'BNA workspace routing'
     to: 'standalone One Time URLs'
 tag_field_mappings:
-  - legacy: 'one-time'
+  -
+    legacy: 'one-time'
     replacement: 'No canonical replacement required; preserve only for historical reporting.'
-  - legacy: 'one-time-bot'
+  -
+    legacy: 'one-time-bot'
     replacement: 'One Time Source Channel'
-  - legacy: 'one-time-signup-request'
+  -
+    legacy: 'one-time-signup-request'
     replacement: 'One Time Signup Status = Collecting or Submitted'
-  - legacy: 'one-time-signup-submitted'
+  -
+    legacy: 'one-time-signup-submitted'
     replacement: 'One Time Signup Status = Submitted'
-  - legacy: 'one-time-signup-confirmed'
+  -
+    legacy: 'one-time-signup-confirmed'
     replacement: 'One Time Signup Status = Confirmed'
-  - legacy: 'one-time-class-link-request'
+  -
+    legacy: 'one-time-class-link-request'
     replacement: 'One Time Bot Request Type = Next Class Info'
-  - legacy: 'one-time-password-reset'
+  -
+    legacy: 'one-time-password-reset'
     replacement: 'One Time Bot Request Type = Password Help'
-  - legacy: 'one-time-human-handoff'
+  -
+    legacy: 'one-time-human-handoff'
     replacement: 'No replacement; disable and remove from active workflows.'
-  - legacy: 'one-time-opt-out'
+  -
+    legacy: 'one-time-opt-out'
     replacement: 'OT | Marketing Suppressed, channel DND, consent field update, suppression field update.'
 workflow_deprecations:
   - 'OT-11 WhatsApp Lead Qualification'

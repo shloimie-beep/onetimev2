@@ -1,17 +1,17 @@
 export const registryMetadata = {
   schemaId: 'one-time-highlevel',
-  schemaVersion: '1.0.0',
+  schemaVersion: '1.1.0',
   status: 'active',
   locationId: 'pBSnOK2nkdxp6gf9Rg3o',
-  date: '2026-07-20',
+  date: '2026-07-21',
 } as const;
 
 export type AssetStatus =
-  | 'active'
-  | 'pending_creation'
-  | 'deprecated_existing'
-  | 'blocked_ui_or_business_value';
+  'active' | 'pending_creation' | 'deprecated_existing' | 'blocked_ui_or_business_value';
 export type SourceOfTruth = 'HighLevel' | 'One Time' | 'Shared';
+export type SenderKey =
+  'rabbi_campaign' | 'rabbi_personal' | 'office' | 'brand' | 'account_security';
+export type MessageTransport = 'GHL' | 'Resend';
 
 export type RegistryField = {
   canonicalName: string;
@@ -105,7 +105,380 @@ export type RegistryWorkflow = {
   lastTestedDate: string;
   promptPath: string;
   checklistPath: string;
+  messageClass: string;
+  senderKey: SenderKey;
+  transport: MessageTransport;
+  exactTrigger: string;
+  companionDelivery: string;
 };
+
+export type RegistrySender = {
+  key: SenderKey;
+  purpose: string[];
+  provider: MessageTransport;
+  owner: string;
+  displayName: string;
+  fromEmail: string;
+  preferredFromEmail: string;
+  currentFallbackFromEmail: string;
+  replyTo: string;
+  status: string;
+  phase1: {
+    displayName: string;
+    fromEmail: string;
+    replyTo: string;
+    status: string;
+  } | null;
+  phase2: {
+    displayName: string;
+    fromEmail: string;
+    replyTo: string;
+    status: string;
+    activationPrerequisites: string[];
+  } | null;
+  messageClasses: string[];
+};
+
+export type RegistryMessageClass = {
+  key: string;
+  senderKey: SenderKey;
+  transport: MessageTransport;
+  owner: string;
+  sourceOfTruth: SourceOfTruth;
+  allowedWorkflows: string[];
+  securityTokensAllowed: boolean;
+};
+
+export type RegistryPipeline = {
+  key: string;
+  canonicalName: string;
+  status: 'pending_creation' | 'compatibility_alias';
+  purpose: string;
+  owner: string;
+  stages: Array<{ name: string; position: number }>;
+  aliases: string[];
+  deleteOrMigrateExistingOpportunities: false;
+};
+
+export type RegistryEvent = {
+  eventCode: string;
+  canonicalWorkflow: string;
+  canonicalCampaign: string;
+  invitationSenderKey: SenderKey;
+  registrationReminderSenderKeys: SenderKey[];
+  existingTagsAndValuesPolicy: string;
+  sendAuthorized: false;
+};
+
+export const senderProfiles: RegistrySender[] = [
+  {
+    key: 'rabbi_campaign',
+    purpose: [
+      'warm enrollment campaigns',
+      'Torah newsletters',
+      'Rabbi-authored teaching emails',
+      'Rabbi-authored event invitations',
+    ],
+    provider: 'GHL',
+    owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility',
+    displayName: 'Rabbi Eli Scheller | One Time Mishnayos',
+    fromEmail: 'info@onetimeonetime.com',
+    preferredFromEmail: 'rabbi@onetimeonetime.com',
+    currentFallbackFromEmail: 'info@onetimeonetime.com',
+    replyTo: 'info@onetimeonetime.com',
+    status: 'active_phase_1',
+    phase1: {
+      displayName: 'Rabbi Eli Scheller | One Time Mishnayos',
+      fromEmail: 'info@onetimeonetime.com',
+      replyTo: 'info@onetimeonetime.com',
+      status: 'active_phase_1',
+    },
+    phase2: {
+      displayName: 'Rabbi Eli Scheller | One Time Mishnayos',
+      fromEmail: 'rabbi@onetimeonetime.com',
+      replyTo: 'info@onetimeonetime.com',
+      status: 'pending_mailbox_and_reply_acceptance',
+      activationPrerequisites: [
+        'rabbi@ mailbox or routing exists',
+        'HighLevel accepts the From address',
+        'a seed delivers',
+        'a reply reaches GHL Conversations',
+        'the result is recorded',
+      ],
+    },
+    messageClasses: [
+      'warm_enrollment_campaign',
+      'existing_subscriber_migration',
+      'prelaunch_nurture',
+      'torah_newsletter',
+      'rabbi_teaching_email',
+      'rabbi_event_invitation',
+    ],
+  },
+  {
+    key: 'rabbi_personal',
+    purpose: ['Rabbi-authored Torah answers and follow-up'],
+    provider: 'GHL',
+    owner: 'Rabbi authors through Telegram; Shloimie retains visibility',
+    displayName: 'Rabbi Eli Scheller',
+    fromEmail: 'rabbi@onetimeonetime.com',
+    preferredFromEmail: 'rabbi@onetimeonetime.com',
+    currentFallbackFromEmail: '',
+    replyTo: 'info@onetimeonetime.com',
+    status: 'pending_mailbox_and_reply_acceptance',
+    phase1: null,
+    phase2: null,
+    messageClasses: ['torah_answer', 'torah_follow_up'],
+  },
+  {
+    key: 'office',
+    purpose: ['customer support', 'billing help', 'access help', 'complaints and administration'],
+    provider: 'GHL',
+    owner: 'Shloimie',
+    displayName: 'Shloimie from One Time Mishnayos',
+    fromEmail: 'info@onetimeonetime.com',
+    preferredFromEmail: 'info@onetimeonetime.com',
+    currentFallbackFromEmail: 'info@onetimeonetime.com',
+    replyTo: 'info@onetimeonetime.com',
+    status: 'active',
+    phase1: null,
+    phase2: null,
+    messageClasses: [
+      'support_reply',
+      'access_help',
+      'billing_help',
+      'payment_failed_support',
+      'cancellation_help',
+      'refund_help',
+      'complaint_reply',
+      'parent_administration_reply',
+    ],
+  },
+  {
+    key: 'brand',
+    purpose: ['neutral One Time program, portal, event, class, content, and receipt notices'],
+    provider: 'GHL',
+    owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity',
+    displayName: 'One Time Mishnayos',
+    fromEmail: 'info@onetimeonetime.com',
+    preferredFromEmail: 'info@onetimeonetime.com',
+    currentFallbackFromEmail: 'info@onetimeonetime.com',
+    replyTo: 'info@onetimeonetime.com',
+    status: 'active',
+    phase1: null,
+    phase2: null,
+    messageClasses: [
+      'signup_confirmation',
+      'event_registration_confirmation',
+      'event_reminder',
+      'class_reminder',
+      'schedule_change',
+      'recording_available',
+      'new_video_available',
+      'worksheet_available',
+      'portal_welcome',
+      'portal_activated',
+      'payment_receipt',
+      'cancellation_confirmation',
+      'support_acknowledgement',
+    ],
+  },
+  {
+    key: 'account_security',
+    purpose: [
+      'activation/setup links',
+      'password reset',
+      'email verification',
+      'Administrator login challenge',
+      'security-token email',
+    ],
+    provider: 'Resend',
+    owner: 'One Time authentication and security runtime',
+    displayName: 'One Time Mishnayos Account',
+    fromEmail: 'info@onetimeonetime.com',
+    preferredFromEmail: 'account@onetimeonetime.com',
+    currentFallbackFromEmail: 'info@onetimeonetime.com',
+    replyTo: 'info@onetimeonetime.com',
+    status: 'preferred_address_pending_domain_acceptance',
+    phase1: null,
+    phase2: null,
+    messageClasses: [
+      'activation_token',
+      'password_setup',
+      'password_reset',
+      'email_verification',
+      'login_challenge',
+      'security_notice',
+    ],
+  },
+];
+
+export const messageClasses: RegistryMessageClass[] = senderProfiles.flatMap((sender) =>
+  sender.messageClasses.map((key) => ({
+    key,
+    senderKey: sender.key,
+    transport: sender.provider,
+    owner: sender.owner,
+    sourceOfTruth: sender.provider === 'Resend' ? 'One Time' : 'HighLevel',
+    allowedWorkflows: [] as string[],
+    securityTokensAllowed: sender.key === 'account_security',
+  })),
+);
+
+export const pipelineDefinitions: RegistryPipeline[] = [
+  {
+    key: 'one_time_enrollment_and_conversion',
+    canonicalName: 'One Time Enrollment and Conversion',
+    status: 'pending_creation',
+    purpose: 'Adult lead, nurture, signup, and conversion opportunity state.',
+    owner: 'Shloimie',
+    stages: [
+      'Warm Lead',
+      'Contacted',
+      'Engaged',
+      'Signup Started',
+      'Signed Up',
+      'Active Member',
+      'Not Now',
+      'Unqualified',
+    ].map((name, position) => ({ name, position })),
+    aliases: ['One Time Business'],
+    deleteOrMigrateExistingOpportunities: false,
+  },
+  {
+    key: 'one_time_member_support',
+    canonicalName: 'One Time Member Support',
+    status: 'pending_creation',
+    purpose: 'Customer-support and external-fix opportunity state.',
+    owner: 'Shloimie',
+    stages: [
+      'New',
+      'Triaged',
+      'In Progress',
+      'Waiting on Member',
+      'Waiting on External Fix',
+      'Resolved',
+      'Closed',
+    ].map((name, position) => ({ name, position })),
+    aliases: ['One Time Business'],
+    deleteOrMigrateExistingOpportunities: false,
+  },
+  {
+    key: 'one_time_torah_questions',
+    canonicalName: 'One Time Torah Questions',
+    status: 'pending_creation',
+    purpose: 'Substantive Torah, Mishnah, and halachic question state.',
+    owner: 'Shloimie triages; Rabbi Eli Scheller authors assigned answers through Telegram',
+    stages: [
+      'New',
+      'Shloimie Review',
+      'Assigned to Rabbi',
+      'Rabbi Reviewing',
+      'Answer Sent',
+      'Waiting on Follow-Up',
+      'Closed',
+    ].map((name, position) => ({ name, position })),
+    aliases: ['One Time Business'],
+    deleteOrMigrateExistingOpportunities: false,
+  },
+  {
+    key: 'one_time_business_compatibility_alias',
+    canonicalName: 'One Time Business',
+    status: 'compatibility_alias',
+    purpose: 'Compatibility alias until existing opportunities are explicitly mapped.',
+    owner: 'Shloimie',
+    stages: [],
+    aliases: [
+      'One Time Enrollment and Conversion',
+      'One Time Member Support',
+      'One Time Torah Questions',
+    ],
+    deleteOrMigrateExistingOpportunities: false,
+  },
+];
+
+export const eventDefinitions: RegistryEvent[] = [
+  {
+    eventCode: 'tisha-bav-2026',
+    canonicalWorkflow: "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+    canonicalCampaign: "OT-C01 Tisha B'Av 2026 Warm Invitation",
+    invitationSenderKey: 'rabbi_campaign',
+    registrationReminderSenderKeys: ['brand', 'rabbi_campaign'],
+    existingTagsAndValuesPolicy:
+      "Preserve existing Tisha B'Av lane tags and values; never duplicate them.",
+    sendAuthorized: false,
+  },
+];
+
+export const communicationsContract = {
+  highLevelSourceOfTruth: [
+    'adult/parent contacts',
+    'customer conversations',
+    'campaigns',
+    'business workflows',
+    'replies',
+    'suppression',
+    'opportunities',
+    'customer-support and Torah-question processing state',
+  ],
+  oneTimeSourceOfTruth: [
+    'authentication',
+    'passwords and secure tokens',
+    'households',
+    'learners',
+    'Parent and Student portals',
+    'entitlement',
+    'classes',
+    'Vimeo',
+    'Zoom',
+    'progress',
+    'gamification',
+    'original portal submissions',
+  ],
+  resendOnly: [
+    'activation/setup links',
+    'password reset',
+    'email verification',
+    'Administrator login challenge',
+    'security-token email',
+  ],
+  telegram: {
+    role: "Rabbi Eli Scheller's private interface for assigned Torah questions and Rabbi-authored content",
+    separateCustomerTranscript: false,
+  },
+  defaultCustomerCommunicationOwner: 'Shloimie',
+  rabbiReceivesOnly: [
+    'substantive Torah questions',
+    'Mishnah questions',
+    'halachic questions requiring Rabbi authorship',
+    'Rabbi-authored Torah newsletters',
+    'Rabbi-authored warm enrollment content',
+  ],
+  rabbiMustNotReceive: [
+    'login',
+    'password help',
+    'billing',
+    'cancellation',
+    'refund',
+    'technical support',
+    'scheduling',
+    'class-link problems',
+    'parent administration',
+    'ordinary enrollment logistics',
+    'complaints',
+    'unknown messages',
+    'generic replies',
+  ],
+  safety: {
+    messagesSent: 0,
+    workflowsPublished: 0,
+    botActivated: false,
+    contactsEnrolled: 0,
+    studentContactsCreated: 0,
+    paymentStateChanged: false,
+    railwayChanged: false,
+  },
+} as const;
 
 const date = registryMetadata.date;
 
@@ -710,15 +1083,105 @@ const customValueInputs = [
     'One Time Sender Name',
     'One Time Mishnayos',
     'TEXT',
-    'Sender display name.',
+    'Compatibility alias. New workflows select a registered sender key.',
   ],
-  ['One Time - Brand', 'One Time Sender Email', 'info@onetimeonetime.com', 'TEXT', 'Sender email.'],
+  [
+    'One Time - Brand',
+    'One Time Sender Email',
+    'info@onetimeonetime.com',
+    'TEXT',
+    'Compatibility alias. New workflows select a registered sender key.',
+  ],
   [
     'One Time - Brand',
     'One Time Reply-To Email',
     'info@onetimeonetime.com',
     'TEXT',
-    'Reply-to email.',
+    'Compatibility alias. New workflows use One Time Default Reply-To.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Rabbi Campaign Sender Name',
+    'Rabbi Eli Scheller | One Time Mishnayos',
+    'TEXT',
+    'rabbi_campaign display name.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Rabbi Campaign Phase 1 From',
+    'info@onetimeonetime.com',
+    'TEXT',
+    'Active phase-1 rabbi_campaign From address.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Rabbi Campaign Phase 2 From',
+    'rabbi@onetimeonetime.com',
+    'TEXT',
+    'Inactive phase-2 From address pending mailbox and reply acceptance.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Rabbi Personal Sender Name',
+    'Rabbi Eli Scheller',
+    'TEXT',
+    'rabbi_personal display name pending mailbox and reply acceptance.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Rabbi Personal From',
+    'rabbi@onetimeonetime.com',
+    'TEXT',
+    'rabbi_personal From address pending mailbox and reply acceptance.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Office Sender Name',
+    'Shloimie from One Time Mishnayos',
+    'TEXT',
+    'office display name.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Office From',
+    'info@onetimeonetime.com',
+    'TEXT',
+    'office From address.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Brand Sender Name',
+    'One Time Mishnayos',
+    'TEXT',
+    'brand display name.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Brand From',
+    'info@onetimeonetime.com',
+    'TEXT',
+    'brand From address.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Account Sender Name',
+    'One Time Mishnayos Account',
+    'TEXT',
+    'account_security display name for Resend.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Account Preferred From',
+    'account@onetimeonetime.com',
+    'TEXT',
+    'Preferred account_security From address; do not claim live until domain acceptance is verified.',
+  ],
+  [
+    'One Time - Senders',
+    'One Time Default Reply-To',
+    'info@onetimeonetime.com',
+    'TEXT',
+    'Canonical default reply-to for registered sender profiles.',
   ],
   [
     'One Time - Brand',
@@ -776,13 +1239,7 @@ const customValueInputs = [
     'URL',
     'Pending accepted early-access route.',
   ],
-  [
-    'One Time - URLs',
-    'One Time Checkout URL',
-    '',
-    'URL',
-    'Pending verified checkout URL.',
-  ],
+  ['One Time - URLs', 'One Time Checkout URL', '', 'URL', 'Pending verified checkout URL.'],
   [
     'One Time - URLs',
     'One Time Recording Portal URL',
@@ -889,13 +1346,188 @@ export const customValues: RegistryCustomValue[] = customValueInputs.map(
     humansMayEdit: true,
     dependencies:
       canonicalName === 'One Time Published Price Label' ? ['One Time Pricing Display Status'] : [],
-    aliases: [],
-    deprecationState: value ? 'pending_creation' : 'blocked_ui_or_business_value',
+    aliases: ['One Time Sender Name', 'One Time Sender Email', 'One Time Reply-To Email'].includes(
+      canonicalName,
+    )
+      ? ['compatibility_alias', 'migrate_to_registered_sender_key']
+      : [],
+    deprecationState: [
+      'One Time Sender Name',
+      'One Time Sender Email',
+      'One Time Reply-To Email',
+    ].includes(canonicalName)
+      ? 'deprecated_existing'
+      : value
+        ? 'pending_creation'
+        : 'blocked_ui_or_business_value',
     createdDate: date,
     lastVerifiedDate: '',
     lastTestedDate: '',
   }),
 );
+
+export const workflowCommunicationBindings: Record<
+  string,
+  {
+    messageClass: string;
+    senderKey: SenderKey;
+    transport: MessageTransport;
+    exactTrigger: string;
+    companionDelivery?: string;
+  }
+> = {
+  'OT-01': {
+    messageClass: 'signup_confirmation',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'adult public signup submitted',
+  },
+  'OT-02A': {
+    messageClass: 'existing_subscriber_migration',
+    senderKey: 'rabbi_campaign',
+    transport: 'GHL',
+    exactTrigger: 'registered existing subscriber migration audience entry',
+  },
+  'OT-02B': {
+    messageClass: 'prelaunch_nurture',
+    senderKey: 'rabbi_campaign',
+    transport: 'GHL',
+    exactTrigger: 'registered new lead nurture audience entry',
+  },
+  'OT-03': {
+    messageClass: 'warm_enrollment_campaign',
+    senderKey: 'rabbi_campaign',
+    transport: 'GHL',
+    exactTrigger: 'checkout started and not completed within the registered wait window',
+  },
+  'OT-04': {
+    messageClass: 'signup_confirmation',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'One Time payment/access projection becomes Active',
+  },
+  'OT-05': {
+    messageClass: 'payment_failed_support',
+    senderKey: 'office',
+    transport: 'GHL',
+    exactTrigger: 'One Time payment/access projection becomes Grace after payment failure',
+  },
+  'OT-06': {
+    messageClass: 'cancellation_help',
+    senderKey: 'office',
+    transport: 'GHL',
+    exactTrigger:
+      'One Time subscription projection becomes Canceled when support context is required',
+  },
+  'OT-07': {
+    messageClass: 'portal_welcome',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'One Time access confirmation requests the parent portal companion email',
+    companionDelivery:
+      'One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.',
+  },
+  'OT-08': {
+    messageClass: 'portal_activated',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'One Time parent portal projection becomes Active',
+  },
+  'OT-09': {
+    messageClass: 'class_reminder',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'registered confirmed class reminder schedule and consent gate pass',
+  },
+  'OT-10': {
+    messageClass: 'recording_available',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'One Time marks a protected recording available for an entitled household',
+  },
+  'OT-13': {
+    messageClass: 'refund_help',
+    senderKey: 'office',
+    transport: 'GHL',
+    exactTrigger: 'refund or chargeback support state is recorded',
+  },
+  'OT-C01': {
+    messageClass: 'rabbi_event_invitation',
+    senderKey: 'rabbi_campaign',
+    transport: 'GHL',
+    exactTrigger:
+      "approved Tisha B'Av 2026 warm invitation audience enters the registered campaign",
+  },
+  'OT-E01': {
+    messageClass: 'event_registration_confirmation',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: "Tisha B'Av 2026 registration or approved reminder milestone is recorded",
+  },
+  'OT-B01': {
+    messageClass: 'signup_confirmation',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'OT-A1 invokes the typed complete-signup adapter for an adult',
+  },
+  'OT-B02': {
+    messageClass: 'class_reminder',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'OT-A1 invokes the typed next-confirmed-class-info adapter',
+  },
+  'OT-B03': {
+    messageClass: 'access_help',
+    senderKey: 'office',
+    transport: 'GHL',
+    exactTrigger: 'OT-A1 invokes the typed member-login adapter',
+  },
+  'OT-B04': {
+    messageClass: 'password_reset',
+    senderKey: 'account_security',
+    transport: 'Resend',
+    exactTrigger: 'OT-A1 invokes the typed password-help adapter',
+    companionDelivery:
+      'GHL may request the One Time adapter but never stores or sends a reset token.',
+  },
+  'OT-B05': {
+    messageClass: 'support_acknowledgement',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger:
+      'OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane',
+  },
+  'OT-11': {
+    messageClass: 'support_acknowledgement',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'deprecated; no active trigger is allowed',
+  },
+  'OT-12': {
+    messageClass: 'support_reply',
+    senderKey: 'office',
+    transport: 'GHL',
+    exactTrigger: 'deprecated when it creates tasks; no active trigger is allowed',
+  },
+  'OT-HUMAN-HANDOFF': {
+    messageClass: 'support_acknowledgement',
+    senderKey: 'brand',
+    transport: 'GHL',
+    exactTrigger: 'forbidden and deprecated; no active trigger is allowed',
+  },
+};
+
+for (const [workflowKey, binding] of Object.entries(workflowCommunicationBindings)) {
+  const messageClass = messageClasses.find((candidate) => candidate.key === binding.messageClass);
+  if (!messageClass) throw new Error(`message_class_missing:${binding.messageClass}`);
+  if (
+    messageClass.senderKey !== binding.senderKey ||
+    messageClass.transport !== binding.transport
+  ) {
+    throw new Error(`workflow_sender_binding_mismatch:${workflowKey}`);
+  }
+  messageClass.allowedWorkflows.push(workflowKey);
+}
 
 const businessWorkflowInputs = [
   [
@@ -959,6 +1591,18 @@ const businessWorkflowInputs = [
     'OT-13 Refund / Chargeback',
     '20 - Billing & Access',
     'Refund and chargeback handling.',
+  ],
+  [
+    'OT-C01',
+    "OT-C01 Tisha B'Av 2026 Warm Invitation",
+    '10 - Nurture & Sales',
+    "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign.",
+  ],
+  [
+    'OT-E01',
+    "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+    '45 - Events',
+    "Registered Tisha B'Av 2026 registration and reminder workflow.",
   ],
 ] as const;
 
@@ -1033,6 +1677,8 @@ function workflowFromInput(
   deprecationState: AssetStatus,
 ): RegistryWorkflow {
   const [key, canonicalName, folder, purpose] = input;
+  const communication = workflowCommunicationBindings[key];
+  if (!communication) throw new Error(`workflow_communication_binding_missing:${key}`);
   const fileBase = `${key}-${fileSlug(canonicalName.replace(`${key} `, ''))}.md`;
   return {
     key,
@@ -1064,6 +1710,11 @@ function workflowFromInput(
       objectType === 'deprecated_workflow'
         ? ''
         : `integrations/highlevel/workflow-checklists/${fileBase}`,
+    messageClass: communication.messageClass,
+    senderKey: communication.senderKey,
+    transport: communication.transport,
+    exactTrigger: communication.exactTrigger,
+    companionDelivery: communication.companionDelivery ?? '',
   };
 }
 

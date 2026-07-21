@@ -7,6 +7,7 @@ import {
   contactFields,
   customValues,
   deprecatedWorkflows,
+  pipelineDefinitions,
   lowercaseTagDeprecations,
   normalizeAssetName,
   protectedImportPaths,
@@ -15,8 +16,12 @@ import {
   tags as canonicalTags,
   type AssetStatus,
   type RegistryCustomValue,
+  type RegistryEvent,
   type RegistryField,
+  type RegistryMessageClass,
   type RegistryTag,
+  type RegistryPipeline,
+  type RegistrySender,
   type RegistryWorkflow,
 } from './canonical-registry-data.ts';
 
@@ -110,6 +115,11 @@ type CurrentRegistry = {
   contact_fields: RegistryField[];
   tags: RegistryTag[];
   custom_values: RegistryCustomValueRecord[];
+  sender_profiles: RegistrySender[];
+  message_classes: RegistryMessageClass[];
+  pipelines: RegistryPipeline[];
+  events: RegistryEvent[];
+  communications_contract: Record<string, unknown>;
   business_workflows: RegistryWorkflow[];
   bot_action_workflows: RegistryWorkflow[];
   deprecated_workflows: RegistryWorkflow[];
@@ -126,12 +136,7 @@ type RegistryCustomValueRecord = RegistryCustomValue & {
 };
 
 type ReconcileAssetStatus =
-  | 'verified'
-  | 'created'
-  | 'updated'
-  | 'missing'
-  | 'blocked'
-  | 'deprecated_existing';
+  'verified' | 'created' | 'updated' | 'missing' | 'blocked' | 'deprecated_existing';
 
 type FieldEntry = {
   name: string;
@@ -188,7 +193,7 @@ type ReconciliationReport = {
   customFields: FieldEntry[];
   tags: TagEntry[];
   customValues: CustomValueEntry[];
-  pipeline: PipelineEntry;
+  pipelines: PipelineEntry[];
   contacts: {
     status: 'verified' | 'blocked';
     count: number | null;
@@ -215,18 +220,6 @@ const args = parseArgs(process.argv.slice(2));
 const repoRoot = process.cwd();
 const generatedAt = new Date().toISOString();
 const today = generatedAt.slice(0, 10);
-
-const oneTimePipeline = {
-  name: 'One Time Business',
-  stages: [
-    { name: 'Lead', position: 0 },
-    { name: 'Checkout Started', position: 1 },
-    { name: 'Active Customer', position: 2 },
-    { name: 'Grace', position: 3 },
-    { name: 'Canceled', position: 4 },
-    { name: 'Former', position: 5 },
-  ],
-};
 
 async function main() {
   const current = await readCurrentRegistry();
@@ -330,14 +323,14 @@ async function reconcileHighLevel(
   client: HighLevelApiClient,
   input: Pick<Args, 'apply' | 'createPipeline' | 'updatePipelineStages'>,
 ): Promise<ReconciliationReport> {
-  const [location, customFields, tags, customValuesReport, pipeline, contacts, workflows] =
+  const [location, customFields, tags, customValuesReport, pipelines, contacts, workflows] =
     await sequentialReconciliation(client, input);
   const blockers = [
     ...(location.status === 'blocked' ? [location.blocker] : []),
     ...customFields.filter(hasBlocker).map((entry) => entry.blocker),
     ...tags.filter(hasBlocker).map((entry) => entry.blocker),
     ...customValuesReport.filter(hasBlocker).map((entry) => entry.blocker),
-    ...(pipeline.status === 'blocked' ? [pipeline.blocker] : []),
+    ...pipelines.filter(hasBlocker).map((pipeline) => pipeline.blocker),
     ...(contacts.status === 'blocked' ? [contacts.blocker] : []),
     ...(workflows.status === 'blocked' ? [workflows.blocker] : []),
     ...(workflows.missing.length ? ['workflow_ui_setup_required'] : []),
@@ -351,7 +344,7 @@ async function reconcileHighLevel(
     customFields,
     tags,
     customValues: customValuesReport,
-    pipeline,
+    pipelines,
     contacts,
     workflows,
     testContact: client.testContactState(),
@@ -359,14 +352,14 @@ async function reconcileHighLevel(
       highLevelCustomFieldsCreated: customFields.filter((entry) => entry.status === 'created')
         .length,
       highLevelTagsCreated: tags.filter((entry) => entry.status === 'created').length,
-      highLevelCustomValuesCreated: customValuesReport.filter(
-        (entry) => entry.status === 'created',
-      ).length,
-      highLevelCustomValuesUpdated: customValuesReport.filter(
-        (entry) => entry.status === 'updated',
-      ).length,
-      highLevelPipelinesCreated: pipeline.status === 'created' ? 1 : 0,
-      highLevelPipelinesUpdated: pipeline.status === 'updated' ? 1 : 0,
+      highLevelCustomValuesCreated: customValuesReport.filter((entry) => entry.status === 'created')
+        .length,
+      highLevelCustomValuesUpdated: customValuesReport.filter((entry) => entry.status === 'updated')
+        .length,
+      highLevelPipelinesCreated: pipelines.filter((pipeline) => pipeline.status === 'created')
+        .length,
+      highLevelPipelinesUpdated: pipelines.filter((pipeline) => pipeline.status === 'updated')
+        .length,
       contactsCreated: 0,
       workflowEnrollments: 0,
       messagesSent: 0,
@@ -388,7 +381,7 @@ async function sequentialReconciliation(
   await delay(250);
   const customValuesReport = await ensureCustomValues(client, input.apply);
   await delay(250);
-  const pipeline = await ensurePipeline(
+  const pipelines = await ensurePipelines(
     client,
     input.apply && input.createPipeline,
     input.apply && input.updatePipelineStages,
@@ -397,10 +390,20 @@ async function sequentialReconciliation(
   const contacts = await probeContacts(client);
   await delay(250);
   const workflows = await verifyWorkflows(client);
-  return [location, customFields, tags, customValuesReport, pipeline, contacts, workflows] as const;
+  return [
+    location,
+    customFields,
+    tags,
+    customValuesReport,
+    pipelines,
+    contacts,
+    workflows,
+  ] as const;
 }
 
-async function verifyLocation(client: HighLevelApiClient): Promise<ReconciliationReport['location']> {
+async function verifyLocation(
+  client: HighLevelApiClient,
+): Promise<ReconciliationReport['location']> {
   const location = await client.request<Record<string, unknown>>(
     'GET',
     `/locations/${encodeURIComponent(client.locationId())}`,
@@ -425,7 +428,10 @@ async function verifyLocation(client: HighLevelApiClient): Promise<Reconciliatio
   };
 }
 
-async function ensureCustomFields(client: HighLevelApiClient, apply: boolean): Promise<FieldEntry[]> {
+async function ensureCustomFields(
+  client: HighLevelApiClient,
+  apply: boolean,
+): Promise<FieldEntry[]> {
   const listed = await listCustomFields(client);
   if (!listed.ok) {
     return contactFields.map((field) => ({
@@ -442,7 +448,13 @@ async function ensureCustomFields(client: HighLevelApiClient, apply: boolean): P
   for (const field of contactFields) {
     const existing = findCustomField(liveFields, field);
     if (existing) {
-      entries.push(fieldEntry(field.deprecationState === 'deprecated_existing' ? 'deprecated_existing' : 'verified', field.canonicalName, existing));
+      entries.push(
+        fieldEntry(
+          field.deprecationState === 'deprecated_existing' ? 'deprecated_existing' : 'verified',
+          field.canonicalName,
+          existing,
+        ),
+      );
       continue;
     }
     if (field.deprecationState === 'deprecated_existing') {
@@ -515,7 +527,13 @@ async function ensureTags(client: HighLevelApiClient, apply: boolean): Promise<T
   for (const tag of canonicalTags) {
     const existing = findTag(liveTags, tag);
     if (existing) {
-      entries.push(tagEntry(tag.deprecationState === 'deprecated_existing' ? 'deprecated_existing' : 'verified', tag.canonicalName, existing));
+      entries.push(
+        tagEntry(
+          tag.deprecationState === 'deprecated_existing' ? 'deprecated_existing' : 'verified',
+          tag.canonicalName,
+          existing,
+        ),
+      );
       continue;
     }
     if (tag.deprecationState === 'deprecated_existing') {
@@ -711,65 +729,107 @@ async function ensureCustomValues(
   return entries;
 }
 
-async function ensurePipeline(
+async function ensurePipelines(
   client: HighLevelApiClient,
   createPipeline: boolean,
   updatePipelineStages: boolean,
-): Promise<PipelineEntry> {
+): Promise<PipelineEntry[]> {
   const listed = await listPipelines(client);
   if (!listed.ok) {
-    return {
-      name: oneTimePipeline.name,
+    return pipelineDefinitions.map((pipeline) => ({
+      name: pipeline.canonicalName,
       status: 'blocked',
       id: null,
       stages: [],
       blocker: `pipeline_read_failed:${listed.status}:${listed.code}`,
-    };
+    }));
   }
-  const existing = findByCanonicalName(listed.body, oneTimePipeline.name);
-  if (!existing) {
-    if (!createPipeline) {
-      return { name: oneTimePipeline.name, status: 'missing', id: null, stages: [] };
+  const entries: PipelineEntry[] = [];
+  let livePipelines = listed.body;
+  for (const definition of pipelineDefinitions) {
+    const existing = findByCanonicalName(livePipelines, definition.canonicalName);
+    if (definition.status === 'compatibility_alias') {
+      entries.push(
+        existing
+          ? pipelineEntry('verified', definition, existing)
+          : { name: definition.canonicalName, status: 'missing', id: null, stages: [] },
+      );
+      continue;
     }
-    const created = await client.request<{ pipeline?: GhlPipeline }>(
-      'POST',
-      '/opportunities/pipelines',
-      {
-        locationId: client.locationId(),
-        name: oneTimePipeline.name,
-        stages: oneTimePipeline.stages,
-      },
+    if (!existing) {
+      if (!createPipeline) {
+        entries.push({ name: definition.canonicalName, status: 'missing', id: null, stages: [] });
+        continue;
+      }
+      const created = await client.request<{ pipeline?: GhlPipeline }>(
+        'POST',
+        '/opportunities/pipelines',
+        {
+          locationId: client.locationId(),
+          name: definition.canonicalName,
+          stages: definition.stages,
+        },
+      );
+      if (created.ok) {
+        const createdPipeline = created.body.pipeline ?? (created.body as GhlPipeline);
+        entries.push(pipelineEntry('created', definition, createdPipeline));
+        livePipelines = [...livePipelines, createdPipeline];
+        await delay(500);
+        continue;
+      }
+      const refreshed = await listPipelines(client);
+      livePipelines = refreshed.ok ? refreshed.body : livePipelines;
+      const afterCreate = findByCanonicalName(livePipelines, definition.canonicalName);
+      if (afterCreate) {
+        entries.push(pipelineEntry('verified', definition, afterCreate));
+        continue;
+      }
+      entries.push({
+        name: definition.canonicalName,
+        status: 'blocked',
+        id: null,
+        stages: [],
+        blocker: `pipeline_create_failed:${created.status}:${created.code}`,
+      });
+      continue;
+    }
+    const missingStageNames = definition.stages
+      .map((stage) => stage.name)
+      .filter((name) => !findByCanonicalName(existing.stages ?? [], name));
+    if (missingStageNames.length === 0) {
+      entries.push(pipelineEntry('verified', definition, existing));
+      continue;
+    }
+    if (!updatePipelineStages) {
+      entries.push({
+        ...pipelineEntry('missing', definition, existing),
+        blocker: `pipeline_stages_missing:${missingStageNames.map(normalizeAssetName).join(',')}`,
+      });
+      continue;
+    }
+    const mergedStages = mergePipelineStages(definition, existing.stages ?? []);
+    const updated = await client.request<{ pipeline?: GhlPipeline }>(
+      'PUT',
+      `/opportunities/pipelines/${encodeURIComponent(existing.id ?? '')}`,
+      { locationId: client.locationId(), name: definition.canonicalName, stages: mergedStages },
     );
-    if (created.ok) return pipelineEntry('created', created.body.pipeline ?? (created.body as GhlPipeline));
-    return {
-      name: oneTimePipeline.name,
-      status: 'blocked',
-      id: null,
-      stages: [],
-      blocker: `pipeline_create_failed:${created.status}:${created.code}`,
-    };
+    if (updated.ok) {
+      entries.push(
+        pipelineEntry(
+          'updated',
+          definition,
+          updated.body.pipeline ?? (updated.body as GhlPipeline),
+        ),
+      );
+      await delay(500);
+      continue;
+    }
+    entries.push({
+      ...pipelineEntry('blocked', definition, existing),
+      blocker: `pipeline_stage_update_failed:${updated.status}:${updated.code}`,
+    });
   }
-  const missingStageNames = oneTimePipeline.stages
-    .map((stage) => stage.name)
-    .filter((name) => !findByCanonicalName(existing.stages ?? [], name));
-  if (missingStageNames.length === 0) return pipelineEntry('verified', existing);
-  if (!updatePipelineStages) {
-    return {
-      ...pipelineEntry('missing', existing),
-      blocker: `pipeline_stages_missing:${missingStageNames.map(normalizeAssetName).join(',')}`,
-    };
-  }
-  const mergedStages = mergePipelineStages(existing.stages ?? []);
-  const updated = await client.request<{ pipeline?: GhlPipeline }>(
-    'PUT',
-    `/opportunities/pipelines/${encodeURIComponent(existing.id ?? '')}`,
-    { locationId: client.locationId(), name: oneTimePipeline.name, stages: mergedStages },
-  );
-  if (updated.ok) return pipelineEntry('updated', updated.body.pipeline ?? (updated.body as GhlPipeline));
-  return {
-    ...pipelineEntry('blocked', existing),
-    blocker: `pipeline_stage_update_failed:${updated.status}:${updated.code}`,
-  };
+  return entries;
 }
 
 async function probeContacts(
@@ -801,7 +861,9 @@ async function verifyWorkflows(client: HighLevelApiClient): Promise<WorkflowRepo
     return {
       status: 'blocked',
       present: [],
-      missing: [...businessWorkflows, ...botActionWorkflows].map((workflow) => workflow.canonicalName),
+      missing: [...businessWorkflows, ...botActionWorkflows].map(
+        (workflow) => workflow.canonicalName,
+      ),
       deprecated_present: [],
       blocker: `workflow_read_failed:${result.status}:${result.code}`,
     };
@@ -898,7 +960,10 @@ async function listPipelines(client: HighLevelApiClient): Promise<GhlResult<GhlP
   };
 }
 
-function buildUpdatedRegistry(current: CurrentRegistry, report: ReconciliationReport): CurrentRegistry {
+function buildUpdatedRegistry(
+  current: CurrentRegistry,
+  report: ReconciliationReport,
+): CurrentRegistry {
   const reportFields = byName(report.customFields);
   const reportTags = byName(report.tags);
   const reportCustomValues = byName(report.customValues);
@@ -945,12 +1010,22 @@ function buildUpdatedRegistry(current: CurrentRegistry, report: ReconciliationRe
     const currentValue = current.custom_values.find(
       (candidate) => candidate.canonicalName === value.canonicalName,
     );
-    const liveResolvedValue = currentValue?.value && isResolvedCustomValue(currentValue.value)
-      ? currentValue.value
-      : value.value;
-    const isLive = entry?.status === 'verified' || entry?.status === 'created' || entry?.status === 'updated';
-    const isBlocked = entry?.status === 'blocked_ui_or_business_value' || !isResolvedCustomValue(liveResolvedValue);
-    const status: AssetStatus = isLive && !isBlocked ? 'active' : isBlocked ? 'blocked_ui_or_business_value' : value.deprecationState;
+    const liveResolvedValue =
+      currentValue?.value && isResolvedCustomValue(currentValue.value)
+        ? currentValue.value
+        : value.value;
+    const isLive =
+      entry?.status === 'verified' || entry?.status === 'created' || entry?.status === 'updated';
+    const isBlocked =
+      entry?.status === 'blocked_ui_or_business_value' || !isResolvedCustomValue(liveResolvedValue);
+    const status: AssetStatus =
+      value.deprecationState === 'deprecated_existing'
+        ? 'deprecated_existing'
+        : isLive && !isBlocked
+          ? 'active'
+          : isBlocked
+            ? 'blocked_ui_or_business_value'
+            : value.deprecationState;
     return {
       ...value,
       ghlId: entry?.id ?? value.ghlId,
@@ -962,7 +1037,9 @@ function buildUpdatedRegistry(current: CurrentRegistry, report: ReconciliationRe
       ...(entry?.valueFingerprint ? { liveValueFingerprint: entry.valueFingerprint } : {}),
     };
   });
-  const business = businessWorkflows.map((workflow) => workflowWithLiveId(workflow, reportWorkflowIds));
+  const business = businessWorkflows.map((workflow) =>
+    workflowWithLiveId(workflow, reportWorkflowIds),
+  );
   const botActions = botActionWorkflows.map((workflow) =>
     workflowWithLiveId(workflow, reportWorkflowIds),
   );
@@ -1010,10 +1087,29 @@ async function writeReports(report: ReconciliationReport) {
 }
 
 async function writeRegistryFiles(current: CurrentRegistry, report: ReconciliationReport) {
-  await writeRepoFile('integrations/highlevel/registry/current.json', `${JSON.stringify(current, null, 2)}\n`);
-  await writeRepoFile('integrations/highlevel/registry/custom-fields.yaml', yaml(current.contact_fields));
-  await writeRepoFile('integrations/highlevel/registry/custom-values.yaml', yaml(current.custom_values));
+  await writeRepoFile(
+    'integrations/highlevel/registry/current.json',
+    `${JSON.stringify(current, null, 2)}\n`,
+  );
+  await writeRepoFile(
+    'integrations/highlevel/registry/custom-fields.yaml',
+    yaml(current.contact_fields),
+  );
+  await writeRepoFile(
+    'integrations/highlevel/registry/custom-values.yaml',
+    yaml(current.custom_values),
+  );
   await writeRepoFile('integrations/highlevel/registry/tag-taxonomy.yaml', yaml(current.tags));
+  await writeRepoFile(
+    'integrations/highlevel/registry/pipeline-registry.yaml',
+    yaml(
+      pipelineDefinitions.map((definition) => ({
+        ...definition,
+        reconciliation:
+          report.pipelines.find((pipeline) => pipeline.name === definition.canonicalName) ?? null,
+      })),
+    ),
+  );
   await writeRepoFile(
     'integrations/highlevel/registry/workflow-registry.yaml',
     yaml({
@@ -1032,7 +1128,10 @@ async function writeRegistryFiles(current: CurrentRegistry, report: Reconciliati
     'integrations/highlevel/registry/bot-action-registry.yaml',
     yaml(botActionContracts(current.bot_action_workflows)),
   );
-  await writeRepoFile('integrations/highlevel/registry/prompt-registry.yaml', yaml(current.prompts));
+  await writeRepoFile(
+    'integrations/highlevel/registry/prompt-registry.yaml',
+    yaml(current.prompts),
+  );
   await writeRepoFile(
     'integrations/highlevel/registry/knowledge-base-registry.yaml',
     yaml(current.knowledge_bases),
@@ -1060,7 +1159,7 @@ function publicReport(report: ReconciliationReport) {
     customFields: summarizeEntries(report.customFields),
     tags: summarizeEntries(report.tags),
     customValues: summarizeEntries(report.customValues),
-    pipeline: report.pipeline,
+    pipelines: report.pipelines,
     contacts: report.contacts,
     workflows: {
       status: report.workflows.status,
@@ -1099,7 +1198,10 @@ function hardBlockers(report: ReconciliationReport) {
   );
 }
 
-function workflowWithLiveId(workflow: RegistryWorkflow, ids: Map<string, string>): RegistryWorkflow {
+function workflowWithLiveId(
+  workflow: RegistryWorkflow,
+  ids: Map<string, string>,
+): RegistryWorkflow {
   const id = ids.get(workflow.canonicalName) ?? workflow.ghlId;
   const live = Boolean(id);
   const deprecationState: AssetStatus =
@@ -1150,7 +1252,7 @@ function registryCounts(
 
 function buildWorkflowsYaml(current: CurrentRegistry, report: ReconciliationReport) {
   return yaml({
-    version: 5,
+    version: 6,
     schema_id: registryMetadata.schemaId,
     schema_version: registryMetadata.schemaVersion,
     status:
@@ -1170,12 +1272,15 @@ function buildWorkflowsYaml(current: CurrentRegistry, report: ReconciliationRepo
     custom_fields: current.contact_fields,
     tags: current.tags,
     custom_values: current.custom_values,
-    pipeline: {
-      name: oneTimePipeline.name,
-      id: report.pipeline.id ?? '',
-      stages: report.pipeline.stages,
-      reconciliation_status: report.pipeline.status,
-    },
+    sender_profiles: current.sender_profiles,
+    message_classes: current.message_classes,
+    pipelines: current.pipelines.map((definition) => ({
+      ...definition,
+      reconciliation:
+        report.pipelines.find((pipeline) => pipeline.name === definition.canonicalName) ?? null,
+    })),
+    events: current.events,
+    communications_contract: current.communications_contract,
     canonical_bot: {
       id: 'OT-A1',
       name: 'OT-A1 One Time Enrollment Assistant',
@@ -1209,6 +1314,12 @@ function buildAgentHandoff(current: CurrentRegistry, report: ReconciliationRepor
     '- `integrations/highlevel/registry/tag-taxonomy.yaml`',
     '- `integrations/highlevel/registry/custom-values.yaml`',
     '- `integrations/highlevel/registry/workflow-registry.yaml`',
+    '- `integrations/highlevel/registry/sender-registry.yaml`',
+    '- `integrations/highlevel/registry/message-class-registry.yaml`',
+    '- `integrations/highlevel/registry/pipeline-registry.yaml`',
+    '- `integrations/highlevel/registry/event-registry.yaml`',
+    '- `integrations/highlevel/registry/communications-contract.json`',
+    '- `integrations/highlevel/registry/rabbi-telegram-contract.yaml`',
     '- `integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json`',
     '',
     'Canonical bot:',
@@ -1220,7 +1331,7 @@ function buildAgentHandoff(current: CurrentRegistry, report: ReconciliationRepor
     '- No separate WhatsApp lead-qualification bot or workflow.',
     '',
     'Workflow boundary:',
-    '- Business workflows: OT-01, OT-02A, OT-02B, OT-03, OT-04, OT-05, OT-06, OT-07, OT-08, OT-09, OT-10, OT-13.',
+    '- Business workflows: OT-01, OT-02A, OT-02B, OT-03, OT-04, OT-05, OT-06, OT-07, OT-08, OT-09, OT-10, OT-13, OT-C01, OT-E01.',
     '- Bot-action workflows: OT-B01, OT-B02, OT-B03, OT-B04, OT-B05.',
     '- Deprecated: OT-11, OT-12 when it creates tasks, OT - Human Handoff and duplicate lead-capture workflows.',
     '',
@@ -1233,12 +1344,14 @@ function buildAgentHandoff(current: CurrentRegistry, report: ReconciliationRepor
     `- Contact custom fields: ${current.counts.contact_custom_fields} total, ${current.counts.active_contact_custom_fields} active, ${current.counts.pending_contact_custom_fields} pending.`,
     `- Tags: ${current.counts.tags} total, ${current.counts.active_tags} active, ${current.counts.pending_tags} pending.`,
     `- Custom values: ${current.counts.custom_values} total, ${current.counts.active_custom_values ?? 0} active, ${current.counts.blocked_custom_values ?? 0} blocked pending UI/business value.`,
-    `- Agent Mode jobs: 14 expected under integrations/highlevel/agent-mode/jobs/.`,
+    `- Agent Mode jobs: 13 expected under integrations/highlevel/agent-mode/jobs/.`,
     '',
     'Safety:',
     '- Do not create Student contacts, Student fields or Student tags in HighLevel.',
     '- Do not send messages, publish workflows, enroll production contacts, mutate Stripe or expose private One Time links unless a later task explicitly authorizes the exact action.',
     '- Reconcile protected import manifest and contact map before any contact import write.',
+    '- Every canonical workflow uses exactly one registered sender_key and message_class. Never guess sender text.',
+    '- Phase-2 rabbi@ remains inactive until every mailbox, From-address, seed, reply-to-Conversations, and recorded-result prerequisite passes.',
     '',
   ].join('\n');
 }
@@ -1272,9 +1385,13 @@ function tagEntry(status: ReconcileAssetStatus, name: string, tag: GhlTag): TagE
   return { name, status, id: tag.id ?? null };
 }
 
-function pipelineEntry(status: PipelineEntry['status'], pipeline: GhlPipeline): PipelineEntry {
+function pipelineEntry(
+  status: PipelineEntry['status'],
+  definition: RegistryPipeline,
+  pipeline: GhlPipeline,
+): PipelineEntry {
   return {
-    name: oneTimePipeline.name,
+    name: definition.canonicalName,
     status,
     id: pipeline.id ?? null,
     stages: (pipeline.stages ?? []).map((stage) => ({
@@ -1323,9 +1440,9 @@ function replaceCustomValue(values: GhlCustomValue[], updated: GhlCustomValue) {
   return values.map((value) => (value.id && value.id === updated.id ? updated : value));
 }
 
-function mergePipelineStages(existing: GhlPipelineStage[]) {
+function mergePipelineStages(definition: RegistryPipeline, existing: GhlPipelineStage[]) {
   const stages = [...existing];
-  for (const required of oneTimePipeline.stages) {
+  for (const required of definition.stages) {
     if (!findByCanonicalName(stages, required.name)) stages.push(required);
   }
   return stages.map((stage, index) => ({
@@ -1368,14 +1485,17 @@ function summarizeEntries(entries: Array<{ status: string; id?: string | null }>
 
 function isResolvedCustomValue(value: string) {
   const normalized = value.trim().toUpperCase();
-  return Boolean(value.trim()) &&
+  return (
+    Boolean(value.trim()) &&
     !normalized.startsWith('PENDING_') &&
     normalized !== 'TODO' &&
-    normalized !== 'CHANGEME';
+    normalized !== 'CHANGEME'
+  );
 }
 
 function customValueBlocker(name: string, liveValue: string) {
-  if (isResolvedCustomValue(liveValue)) return 'blocked_ui_or_business_value:canonical_review_required';
+  if (isResolvedCustomValue(liveValue))
+    return 'blocked_ui_or_business_value:canonical_review_required';
   if (/url/i.test(name)) return 'blocked_ui_or_business_value:verified_url_missing';
   if (/price|promotion|schedule/i.test(name)) {
     return 'blocked_ui_or_business_value:approved_business_copy_missing';
@@ -1491,7 +1611,11 @@ function redactProviderMessage(value: string) {
 function retryDelayMs(attempt: number, retryAfter: string | null) {
   const retryAfterSeconds = retryAfter ? Number(retryAfter) : Number.NaN;
   if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0) {
-    return Math.min(12_000, retryAfterSeconds * 1000);
+    return Math.min(60_000, retryAfterSeconds * 1000);
+  }
+  const retryAfterDate = retryAfter ? Date.parse(retryAfter) : Number.NaN;
+  if (Number.isFinite(retryAfterDate) && retryAfterDate > Date.now()) {
+    return Math.min(60_000, retryAfterDate - Date.now());
   }
   return Math.min(12_000, 750 * 2 ** attempt);
 }
@@ -1502,7 +1626,8 @@ function parseArgs(argv: string[]): Args {
     createPipeline: false,
     updatePipelineStages: false,
     privateDir: 'C:/Users/User/.onetime-highlevel-private',
-    privateReportFile: 'C:/Users/User/.onetime-highlevel-private/activation-api-finalize-report.json',
+    privateReportFile:
+      'C:/Users/User/.onetime-highlevel-private/activation-api-finalize-report.json',
     publicReportFile: 'integrations/highlevel/registry/api-reconciliation-report.json',
     skipRegistryWrite: false,
   };

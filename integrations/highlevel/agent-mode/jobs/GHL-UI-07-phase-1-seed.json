@@ -1,26 +1,20 @@
 {
   "job_id": "GHL-UI-07",
   "order": 7,
-  "title": "portal workflows OT-07/08",
+  "title": "phase-1 seed",
   "ghl_location": {
     "location_id": "pBSnOK2nkdxp6gf9Rg3o",
     "location_fingerprint": "31fcbd2792f131dc",
     "verification_required": true
   },
-  "exact_target_ui_path": "HighLevel > Automation > Workflows > 30 - Portal Lifecycle > OT-07, OT-08",
+  "exact_target_ui_path": "HighLevel > Marketing > Emails > seed preparation",
   "canonical_source_files": [
-    "integrations/highlevel/registry/current.json",
-    "integrations/highlevel/registry/workflow-registry.yaml",
-    "integrations/highlevel/workflows.yaml",
-    "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
-    "integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md",
-    "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
-    "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md"
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/message-class-registry.yaml"
   ],
-  "exact_copy_paste_prompt": "Job GHL-UI-07: portal workflows OT-07/08\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > Automation > Workflows > 30 - Portal Lifecycle > OT-07, OT-08\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/workflows.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md\n- integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n\nAllowed assets:\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- workflow publishing\n- production contact enrollment\n- message send actions enabled for production\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Build or update the listed workflow drafts exactly from the canonical prompt and checklist files.\n- Keep every workflow unpublished.\n- Use only canonical fields, tags, custom values, folders, and adapters.\n- Save each workflow and verify the saved draft before returning a result.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-07.result.json\nIdempotency key: one-time-ghl:GHL-UI-07:72eda5804d3fdc04",
+  "exact_copy_paste_prompt": "Job GHL-UI-07: phase-1 seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- rabbi_campaign seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent phase-1 seed draft using sender_key rabbi_campaign.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-07.result.json\nIdempotency key: one-time-ghl:GHL-UI-07:cf4bcb9354272be6",
   "allowed_assets": [
-    "OT-07 Parent Portal Invitation",
-    "OT-08 Parent Portal Activated"
+    "rabbi_campaign seed draft using expected From info@onetimeonetime.com"
   ],
   "forbidden_assets": [
     "Student contacts",
@@ -31,27 +25,26 @@
     "message sends",
     "Stripe or live payment mutations",
     "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-    "workflow publishing",
-    "production contact enrollment",
-    "message send actions enabled for production"
+    "clicking Send",
+    "adding a production audience",
+    "publishing a campaign"
   ],
   "prerequisites": [
     "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
     "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
     "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
     "Use only one canonical registry and do not create duplicate assets.",
-    "GHL-UI-01 custom values reviewed.",
-    "GHL-UI-02 workflow folders complete."
+    "GHL-UI-06 sending-domain readback completed."
   ],
   "expected_ghl_ids_to_capture": [
-    "OT-07_workflow_id",
-    "OT-08_workflow_id"
+    "seed_draft_id_if_visible",
+    "selected_sender_value_ids",
+    "blocked_send_status"
   ],
   "test_contact_rules": [
-    "Use only the protected operator-owned test contact configured outside Git.",
-    "Never use a production parent/adult contact for testing.",
-    "Do not send a message to the test contact.",
-    "Do not enroll the test contact into a published workflow."
+    "No contact mutation is allowed for this job.",
+    "Do not use production contacts for verification."
   ],
   "defaults": {
     "no_send": true,
@@ -184,7 +177,7 @@
       }
     }
   },
-  "idempotency_key": "one-time-ghl:GHL-UI-07:72eda5804d3fdc04",
+  "idempotency_key": "one-time-ghl:GHL-UI-07:cf4bcb9354272be6",
   "bna_agent_action_dropoff": {
     "lane": "highlevel_agent_mode",
     "return_surface": "BNA Agent Action drop-off page",
@@ -195,7 +188,7 @@
       "repository": "shloimie-beep/onetimev2",
       "registry_root": "integrations/highlevel/registry/",
       "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-07-portal-workflows-ot-07-08.json",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-07-phase-1-seed.json",
       "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-07.result.json"
     }
   }

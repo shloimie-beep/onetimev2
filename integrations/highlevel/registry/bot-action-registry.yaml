@@ -1,21 +1,38 @@
 bot_id: 'OT-A1'
 bot_name: 'OT-A1 One Time Enrollment Assistant'
 actions:
-  - key: 'OT-B01'
+  -
+    key: 'OT-B01'
     name: 'Complete Signup'
+    workflow_id: ''
     adapter_required: true
     student_data_allowed: false
-  - key: 'OT-B02'
+    messages_authorized_in_this_lane: false
+  -
+    key: 'OT-B02'
     name: 'Send Next Confirmed Class Info'
-    raw_zoom_link_allowed: false
-  - key: 'OT-B03'
+    workflow_id: ''
+    adapter_required: true
+    student_data_allowed: false
+    messages_authorized_in_this_lane: false
+  -
+    key: 'OT-B03'
     name: 'Send Member Login'
-    url: 'https://join.onetimeonetime.com/login'
-  - key: 'OT-B04'
+    workflow_id: ''
+    adapter_required: true
+    student_data_allowed: false
+    messages_authorized_in_this_lane: false
+  -
+    key: 'OT-B04'
     name: 'Send Password Help'
-    url: 'https://join.onetimeonetime.com/forgot-password'
-    obsolete_route_forbidden: '/api/one-time/parent-password/request'
-  - key: 'OT-B05'
+    workflow_id: ''
+    adapter_required: true
+    student_data_allowed: false
+    messages_authorized_in_this_lane: false
+  -
+    key: 'OT-B05'
     name: 'Apply Opt-Out'
-    updates_dnd: true
-    sends_one_confirmation_only: true
+    workflow_id: ''
+    adapter_required: true
+    student_data_allowed: false
+    messages_authorized_in_this_lane: false

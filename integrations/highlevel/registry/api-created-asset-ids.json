@@ -1,0 +1,383 @@
+{
+  "schema_id": "one-time-highlevel-safe-created-asset-ids",
+  "schema_version": "1.1.0",
+  "source_generated_at": "2026-07-21T13:40:30.172Z",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "custom_fields": [
+    {
+      "name": "One Time Early Access Status",
+      "id": "o9DVnpzmi6amGUNm3wKR"
+    },
+    {
+      "name": "One Time Migration Status",
+      "id": "AVNX5ISFZKKRxpqA3CmL"
+    },
+    {
+      "name": "One Time Migration Sequence Version",
+      "id": "3NiQqlb3UZaxobWfD2hO"
+    },
+    {
+      "name": "One Time Reminder Preference",
+      "id": "unxLA4KbWEBJO19B9pwe"
+    },
+    {
+      "name": "One Time Consent Policy Version",
+      "id": "5ID7x61OAXaLHf2VrzVb"
+    },
+    {
+      "name": "One Time Consent Captured At",
+      "id": "dzvudcSnnaVzuw4Y5QzL"
+    },
+    {
+      "name": "One Time Newsletter Status",
+      "id": "yMEs8mRojkUBZlleyMmu"
+    },
+    {
+      "name": "One Time Source Channel",
+      "id": "OmtEb9OQ42bcQIw1ov4J"
+    },
+    {
+      "name": "One Time Audience Type",
+      "id": "AHRGCozYV8pdKwIQcYzZ"
+    },
+    {
+      "name": "One Time Family or School Name",
+      "id": "VvlM6bIndhFyLL6JXp4D"
+    },
+    {
+      "name": "One Time Bot Request Type",
+      "id": "H7GGTJjES6q7NiGQQH11"
+    },
+    {
+      "name": "One Time Preferred Delivery",
+      "id": "s0XarGbSBAmvyHni6vHe"
+    },
+    {
+      "name": "One Time Signup Status",
+      "id": "lvEVLePK9wGXpJWw02d3"
+    }
+  ],
+  "tags": [
+    {
+      "name": "OT | Existing Subscriber",
+      "id": "QhHrnT0RAiWnWOwmAmeB"
+    },
+    {
+      "name": "OT | Migration 2026",
+      "id": "KbmanJujVcgV0aZrdMzJ"
+    },
+    {
+      "name": "OT | Early Access Invited",
+      "id": "M6hXjSpaizGKE0NFyHBg"
+    },
+    {
+      "name": "OT | Early Access Activated",
+      "id": "94rotrqjxxUp28g4JOxi"
+    },
+    {
+      "name": "OT | Migration Email 1 Sent",
+      "id": "Cl9VSIaKZ3LT2JSas5aO"
+    },
+    {
+      "name": "OT | Migration Email 2 Sent",
+      "id": "eUAi34HtTR9yY4gtXems"
+    },
+    {
+      "name": "OT | Migration Email 3 Sent",
+      "id": "yFmgy9TdKXV82D4adRlb"
+    },
+    {
+      "name": "OT | Migration Sequence Complete",
+      "id": "iD2TvNwKUfaUKYJFYYnx"
+    },
+    {
+      "name": "OT | Weekly Newsletter",
+      "id": "6uJjeYuxNUhwbAjTJkAz"
+    }
+  ],
+  "custom_values": [
+    {
+      "name": "One Time Brand Name",
+      "id": "j8heHDPqOmfrpfZJajlH"
+    },
+    {
+      "name": "One Time Rabbi Name",
+      "id": "pPkems3FM5UWt0SyhEWS"
+    },
+    {
+      "name": "One Time Sender Name",
+      "id": "yVZ4cwtSqORKX2DNMQpH"
+    },
+    {
+      "name": "One Time Sender Email",
+      "id": "v79xSZ5H0t1GaldtK8dS"
+    },
+    {
+      "name": "One Time Reply-To Email",
+      "id": "M4thgFhvZusXeqvfXoOZ"
+    },
+    {
+      "name": "One Time Rabbi Campaign Sender Name",
+      "id": "YTbMWivrsI10LnH26Xfv"
+    },
+    {
+      "name": "One Time Rabbi Campaign Phase 1 From",
+      "id": "1ciJqvUIDDCxs1cBumdL"
+    },
+    {
+      "name": "One Time Rabbi Campaign Phase 2 From",
+      "id": "vry4UlKB4PAvWLkiz6Ac"
+    },
+    {
+      "name": "One Time Rabbi Personal Sender Name",
+      "id": "WnvMdhccgwGVuBCReHIU"
+    },
+    {
+      "name": "One Time Rabbi Personal From",
+      "id": "9wK6SJKlPoN1WytManp5"
+    },
+    {
+      "name": "One Time Office Sender Name",
+      "id": "Lr6PxCIoU2vMpJWkngow"
+    },
+    {
+      "name": "One Time Office From",
+      "id": "hqUv17HvF9zGd781UDpX"
+    },
+    {
+      "name": "One Time Brand Sender Name",
+      "id": "XyASPYbVa4ZBHuJe2yJI"
+    },
+    {
+      "name": "One Time Brand From",
+      "id": "o9aOerC0VSMKzDv4hrkX"
+    },
+    {
+      "name": "One Time Account Sender Name",
+      "id": "UT4ehcG0QqMBnu7Cg6ed"
+    },
+    {
+      "name": "One Time Account Preferred From",
+      "id": "cb2pQ72WD9EAOyZwTh9u"
+    },
+    {
+      "name": "One Time Default Reply-To",
+      "id": "u0msWwGUDL4Upjfe58Bm"
+    },
+    {
+      "name": "One Time Program Short Description",
+      "id": "KuWt6c6BW7X2qfwNE6Ct"
+    },
+    {
+      "name": "One Time Home URL",
+      "id": "gyRIy9gSabnBF4038v7A"
+    },
+    {
+      "name": "One Time Signup URL",
+      "id": "Don4uQa4aJOc3wYYErgd"
+    },
+    {
+      "name": "One Time Member Login URL",
+      "id": "GIbhzBI8WrkDDUNau0ZI"
+    },
+    {
+      "name": "One Time Password Help URL",
+      "id": "nQv2QX1nYE9TvVDBgWCr"
+    },
+    {
+      "name": "One Time Parent Portal URL",
+      "id": "ixqb7lPdQZmyCmMilVno"
+    },
+    {
+      "name": "One Time Student Portal URL",
+      "id": "UhbQj0yQbk0xRuqRJPnz"
+    },
+    {
+      "name": "One Time Complimentary Access Label",
+      "id": "PxPr2cZEZKVQpC2cqLdT"
+    },
+    {
+      "name": "One Time Promotion Status",
+      "id": "8ukEaZNNsvZOJC4M1jja"
+    },
+    {
+      "name": "One Time Pricing Display Status",
+      "id": "i1o66xW9Y0Kl18xIQtvB"
+    },
+    {
+      "name": "One Time Default Time Zone",
+      "id": "YSpFDAE6PEnfShEmypRQ"
+    },
+    {
+      "name": "One Time Class Time Israel",
+      "id": "h1Ukxh0kQerrlRgh8IFO"
+    },
+    {
+      "name": "One Time Support Email",
+      "id": "DOmCxdkR1cVxQmNvY2yJ"
+    },
+    {
+      "name": "One Time Public Bot Name",
+      "id": "gv4IikUMoT1fjxzXBoHi"
+    },
+    {
+      "name": "One Time Public Bot Version",
+      "id": "MGrhKfk5ndE4uLkJy6s7"
+    },
+    {
+      "name": "One Time Knowledge Base Version",
+      "id": "liBRazBsirZuJUNPFO81"
+    }
+  ],
+  "pipelines": [
+    {
+      "name": "One Time Enrollment and Conversion",
+      "id": "RTTGVfbMv5aM92BQqklL",
+      "stages": [
+        {
+          "name": "Warm Lead",
+          "id": "d4a0adcc-627d-4557-b963-da0950050748",
+          "position": 0
+        },
+        {
+          "name": "Contacted",
+          "id": "be1af44d-6d33-488e-a034-e958455a9e0f",
+          "position": 1
+        },
+        {
+          "name": "Engaged",
+          "id": "7582d13a-3d0e-463d-923f-b7d4bf660a52",
+          "position": 2
+        },
+        {
+          "name": "Signup Started",
+          "id": "0ae744df-b0bb-468e-913a-79188b03e76f",
+          "position": 3
+        },
+        {
+          "name": "Signed Up",
+          "id": "b87ce5c3-d877-4009-99bd-6012da7e455d",
+          "position": 4
+        },
+        {
+          "name": "Active Member",
+          "id": "05900897-e5b0-472a-b89d-70978f29f825",
+          "position": 5
+        },
+        {
+          "name": "Not Now",
+          "id": "a262b166-c2f3-4b2a-9306-a7b79d8555e1",
+          "position": 6
+        },
+        {
+          "name": "Unqualified",
+          "id": "bb4af305-fedd-42e4-8307-98767b0945b5",
+          "position": 7
+        }
+      ]
+    },
+    {
+      "name": "One Time Member Support",
+      "id": "u2TzNK7t25ZdqqIrgjkE",
+      "stages": [
+        {
+          "name": "New",
+          "id": "de6f7e08-ec97-4f27-a5ad-adf922db34ae",
+          "position": 0
+        },
+        {
+          "name": "Triaged",
+          "id": "654e7272-2fdc-4857-b073-eda8af611e65",
+          "position": 1
+        },
+        {
+          "name": "In Progress",
+          "id": "60709dab-e5c3-4f98-ab94-560df405cc82",
+          "position": 2
+        },
+        {
+          "name": "Waiting on Member",
+          "id": "6d9da475-b03a-43b9-a09c-1eedc0c60528",
+          "position": 3
+        },
+        {
+          "name": "Waiting on External Fix",
+          "id": "795b1f1a-1cf0-46e5-9a58-9dd158b53d8d",
+          "position": 4
+        },
+        {
+          "name": "Resolved",
+          "id": "a6dee446-3c4d-41c9-ade5-d4019b9a0f21",
+          "position": 5
+        },
+        {
+          "name": "Closed",
+          "id": "21383964-8714-4e22-8b06-ca70060b0869",
+          "position": 6
+        }
+      ]
+    },
+    {
+      "name": "One Time Torah Questions",
+      "id": "wabcK1pPBuqj1T4cjpI7",
+      "stages": [
+        {
+          "name": "New",
+          "id": "003652bd-73a8-4b8d-9f35-f4c37854fec8",
+          "position": 0
+        },
+        {
+          "name": "Shloimie Review",
+          "id": "58f3ebc9-c3b8-45cd-a54a-f855722b8d30",
+          "position": 1
+        },
+        {
+          "name": "Assigned to Rabbi",
+          "id": "9518925f-656f-4d2b-a559-32b42ac8be71",
+          "position": 2
+        },
+        {
+          "name": "Rabbi Reviewing",
+          "id": "e526a96d-0e87-4835-8be3-e885fe5e9c67",
+          "position": 3
+        },
+        {
+          "name": "Answer Sent",
+          "id": "d68b0149-4017-4483-b823-e0de121e3b8b",
+          "position": 4
+        },
+        {
+          "name": "Waiting on Follow-Up",
+          "id": "ec263678-3b92-4b00-9de8-0b68608f9de3",
+          "position": 5
+        },
+        {
+          "name": "Closed",
+          "id": "75989802-095c-45ed-9271-4ba6c53cb96b",
+          "position": 6
+        }
+      ]
+    }
+  ],
+  "external_effects": {
+    "highLevelCustomFieldsCreated": 13,
+    "highLevelTagsCreated": 9,
+    "highLevelCustomValuesCreated": 33,
+    "highLevelCustomValuesUpdated": 0,
+    "highLevelPipelinesCreated": 3,
+    "highLevelPipelinesUpdated": 0,
+    "contactsCreated": 0,
+    "workflowEnrollments": 0,
+    "messagesSent": 0,
+    "stripeMutations": 0
+  },
+  "safety": {
+    "values_included": false,
+    "credentials_included": false,
+    "contact_data_included": false,
+    "messages_sent": 0,
+    "workflows_published": 0,
+    "production_contacts_enrolled": 0,
+    "stripe_mutations": 0
+  }
+}

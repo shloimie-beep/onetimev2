@@ -1,29 +1,20 @@
 {
-  "job_id": "GHL-UI-11",
-  "order": 11,
-  "title": "OT-A1 bot",
+  "job_id": "GHL-UI-09",
+  "order": 9,
+  "title": "brand seed",
   "ghl_location": {
     "location_id": "pBSnOK2nkdxp6gf9Rg3o",
     "location_fingerprint": "31fcbd2792f131dc",
     "verification_required": true
   },
-  "exact_target_ui_path": "HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant",
+  "exact_target_ui_path": "HighLevel > Marketing > Emails > seed preparation",
   "canonical_source_files": [
-    "integrations/highlevel/prompts/active/OT-A1-v1.0.0.md",
-    "integrations/highlevel/registry/prompt-registry.yaml",
-    "integrations/highlevel/registry/bot-action-registry.yaml",
-    "integrations/highlevel/agent-mode/HIGHLEVEL-BOT-UI-SETUP.md"
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/message-class-registry.yaml"
   ],
-  "exact_copy_paste_prompt": "Job GHL-UI-11: OT-A1 bot\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nTarget UI path: HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant\n\nRead these canonical source files first:\n- integrations/highlevel/prompts/active/OT-A1-v1.0.0.md\n- integrations/highlevel/registry/prompt-registry.yaml\n- integrations/highlevel/registry/bot-action-registry.yaml\n- integrations/highlevel/agent-mode/HIGHLEVEL-BOT-UI-SETUP.md\n\nAllowed assets:\n- OT-A1 One Time Enrollment Assistant\n- Website Live Chat channel in draft/test routing\n- WhatsApp channel in draft/test routing\n- OT-B01\n- OT-B02\n- OT-B03\n- OT-B04\n- OT-B05\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- Voice AI\n- Human Handover\n- human task creation\n- duplicate public bots\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or update only OT-A1 One Time Enrollment Assistant.\n- Attach the canonical public knowledge base.\n- Configure Website Live Chat and WhatsApp as initial channels, but keep production launch disabled.\n- Disable Voice, Human Handover, and task creation.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-11.result.json\nIdempotency key: one-time-ghl:GHL-UI-11:9448d9580ff8149c",
+  "exact_copy_paste_prompt": "Job GHL-UI-09: brand seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- brand seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent brand seed draft using sender_key brand.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-09.result.json\nIdempotency key: one-time-ghl:GHL-UI-09:f581f5daa77da7f5",
   "allowed_assets": [
-    "OT-A1 One Time Enrollment Assistant",
-    "Website Live Chat channel in draft/test routing",
-    "WhatsApp channel in draft/test routing",
-    "OT-B01",
-    "OT-B02",
-    "OT-B03",
-    "OT-B04",
-    "OT-B05"
+    "brand seed draft using expected From info@onetimeonetime.com"
   ],
   "forbidden_assets": [
     "Student contacts",
@@ -34,30 +25,26 @@
     "message sends",
     "Stripe or live payment mutations",
     "duplicate tags, fields, values, workflows, bots, or knowledge bases",
-    "Voice AI",
-    "Human Handover",
-    "human task creation",
-    "duplicate public bots"
+    "clicking Send",
+    "adding a production audience",
+    "publishing a campaign"
   ],
   "prerequisites": [
     "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
     "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
     "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
     "Use only one canonical registry and do not create duplicate assets.",
-    "GHL-UI-09 complete with OT-B01 through OT-B05 workflow IDs captured.",
-    "GHL-UI-10 complete with knowledge base ID captured."
+    "GHL-UI-06 sending-domain readback completed."
   ],
   "expected_ghl_ids_to_capture": [
-    "bot_id",
-    "bot_status",
-    "attached_knowledge_base_id",
-    "channel_statuses"
+    "seed_draft_id_if_visible",
+    "selected_sender_value_ids",
+    "blocked_send_status"
   ],
   "test_contact_rules": [
-    "Use only the protected operator-owned test contact configured outside Git.",
-    "Never use a production parent/adult contact for testing.",
-    "Do not send a message to the test contact.",
-    "Do not enroll the test contact into a published workflow."
+    "No contact mutation is allowed for this job.",
+    "Do not use production contacts for verification."
   ],
   "defaults": {
     "no_send": true,
@@ -70,7 +57,7 @@
   },
   "completion_checklist": [
     "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
-    "Canonical source files for GHL-UI-11 were read before edits.",
+    "Canonical source files for GHL-UI-09 were read before edits.",
     "Only allowed assets were created, edited, or verified.",
     "Forbidden assets and actions were not used.",
     "Every changed asset was saved in the HighLevel UI.",
@@ -106,7 +93,7 @@
     ],
     "properties": {
       "job_id": {
-        "const": "GHL-UI-11"
+        "const": "GHL-UI-09"
       },
       "status": {
         "enum": [
@@ -190,19 +177,19 @@
       }
     }
   },
-  "idempotency_key": "one-time-ghl:GHL-UI-11:9448d9580ff8149c",
+  "idempotency_key": "one-time-ghl:GHL-UI-09:f581f5daa77da7f5",
   "bna_agent_action_dropoff": {
     "lane": "highlevel_agent_mode",
     "return_surface": "BNA Agent Action drop-off page",
     "return_route": "/ops/agent-actions/highlevel/drop-off",
-    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-11.result.json",
+    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-09.result.json",
     "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
     "metadata": {
       "repository": "shloimie-beep/onetimev2",
       "registry_root": "integrations/highlevel/registry/",
       "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
-      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-11-ot-a1-bot.json",
-      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-11.result.json"
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-09-brand-seed.json",
+      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-09.result.json"
     }
   }
 }

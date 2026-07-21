@@ -46,8 +46,12 @@ import {
   businessWorkflows,
   contactFields,
   customValues,
+  eventDefinitions,
   lowercaseTagDeprecations,
+  messageClasses,
+  pipelineDefinitions,
   registryMetadata,
+  senderProfiles,
   tags,
 } from '../../../scripts/highlevel/canonical-registry-data.ts';
 import { createMemoryPool, runMigrations } from '../../../packages/db/src/index.ts';
@@ -486,7 +490,7 @@ describe('HighLevel canonical registry model', () => {
   it('converges One Time bot, workflow, field, tag, and pricing boundaries', () => {
     expect(registryMetadata).toMatchObject({
       schemaId: 'one-time-highlevel',
-      schemaVersion: '1.0.0',
+      schemaVersion: '1.1.0',
       status: 'active',
     });
     expect(duplicates(contactFields.map((field) => field.normalizedName))).toEqual([]);
@@ -502,6 +506,18 @@ describe('HighLevel canonical registry model', () => {
       'OT-B04',
       'OT-B05',
     ]);
+    expect(senderProfiles).toHaveLength(5);
+    expect(messageClasses).toHaveLength(35);
+    expect(
+      pipelineDefinitions.filter((pipeline) => pipeline.status !== 'compatibility_alias'),
+    ).toHaveLength(3);
+    expect(eventDefinitions.map((event) => event.eventCode)).toEqual(['tisha-bav-2026']);
+    expect([...businessWorkflows, ...botActionWorkflows]).toHaveLength(19);
+    expect(
+      [...businessWorkflows, ...botActionWorkflows].every(
+        (workflow) => workflow.senderKey && workflow.messageClass && workflow.exactTrigger,
+      ),
+    ).toBe(true);
     expect(tags.find((tag) => tag.canonicalName === 'OT | Support Requested')).toMatchObject({
       deprecationState: 'deprecated_existing',
     });
