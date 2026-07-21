@@ -10,6 +10,11 @@
   "event_start": "2026-07-23T15:00:00-04:00",
   "event_start_israel": "2026-07-23T22:00:00+03:00",
   "preview_url": "https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav",
+  "provider_scope": {
+    "account_key": "rabbi_sheller_provider",
+    "product_key": "one_time_mishnah_class",
+    "event_definition_key": "event_tisha_bav_2026_rabbi_sheller_provider"
+  },
   "email_copy": {
     "raw_id": "RAW-20260721-010",
     "raw_sha256": "c970d6cae8311ace88c20bb0702e4a1f022f36ef165ad554bffa7af5b10a050f",
@@ -33,7 +38,9 @@
     "intent_preservation": "passed_22_of_22_hard_signals",
     "email_copy_contract": "passed_2_tests",
     "pqc_validators_and_evals": "passed_with_pre_existing_watchdog_findings",
-    "railway_preview_deploy": "passed_f5b573863ddc01d9c48d61d1f04f6239d958eca7",
+    "railway_preview_deploy": "passed_0c45134b1a8e890e28e7fd06312b6bb881f556fb_before_provider_registration_fix",
+    "railway_preview_provider_migration": "passed_2211_tisha_bav_provider_event_scope_applied",
+    "railway_preview_registration_domain_smoke": "passed_success_confirmation_queued_provider_off",
     "railway_preview_smoke": "passed_http_200_no_raw_zoom_url",
     "git_diff_check": "passed",
     "scoped_prettier": "passed",
@@ -41,6 +48,7 @@
   },
   "notes": [
     "Original prompt preserved in ORIGINAL-PROMPT.md.",
+    "Preview provider-scoped registration required migration 2211 and runtime event_definition_key event_tisha_bav_2026_rabbi_sheller_provider.",
     "Exact event email copy is preserved and implemented through EMAIL-COPY-MANIFEST.json and the versioned communication catalog.",
     "Warm invitation audience selection and any external send remain unapproved; no email was sent.",
     "The current base branch lacks the divergent HighLevel integration branch; this run keeps GHL work scoped to event registration intents and provider-off safe defaults.",

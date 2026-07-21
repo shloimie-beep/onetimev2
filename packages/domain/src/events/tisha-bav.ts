@@ -23,7 +23,7 @@ import {
 } from './tisha-bav-communications.ts';
 
 export const TISHA_BAV_EVENT_CODE = 'tisha-bav-2026';
-export const TISHA_BAV_EVENT_DEFINITION_KEY = 'event_tisha_bav_2026';
+export const TISHA_BAV_EVENT_DEFINITION_KEY = 'event_tisha_bav_2026_rabbi_sheller_provider';
 export const TISHA_BAV_EVENT_TITLE = "A Live Tisha B'Av Program with Rabbi Eli Scheller";
 export { TISHA_BAV_EVENT_START, TISHA_BAV_JOIN_PATH, TISHA_BAV_LANDING_PATH };
 export const TISHA_BAV_REDIRECT_PATH = '/api/v1/events/tisha-bav-2026/redirect';
@@ -457,7 +457,11 @@ async function persistRegistration(
        marketing_consent_policy_version, marketing_consent_recorded_at, initial_source,
        latest_source, first_seen_at, last_seen_at, registered_at, last_registered_at, metadata
      )
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,CASE WHEN $8 THEN $11 ELSE NULL END,$12,$12,$11,$11,$11,$11,$13::jsonb)
+     VALUES (
+       $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
+       CASE WHEN $8 THEN $11::timestamptz ELSE NULL::timestamptz END,
+       $12,$12,$11::timestamptz,$11::timestamptz,$11::timestamptz,$11::timestamptz,$13::jsonb
+     )
      ON CONFLICT (account_key, product_key, event_code, email_normalized)
      DO UPDATE SET
        first_name = COALESCE(EXCLUDED.first_name, onetime.event_registrations.first_name),

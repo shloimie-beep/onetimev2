@@ -1,7 +1,7 @@
 ## Summary
 
 - Ships the Tisha B'Av 2026 event funnel on `/tisha-bav` with registration, consent handling, idempotency, rate limits, and generic confirmation copy.
-- Adds first-party event tables, event-scoped HighLevel delivery intents, provider-off defaults, mock provider coverage, and protected Zoom join flow via `/tisha-bav/live`.
+- Adds first-party event tables, provider-scoped event seeding, event-scoped HighLevel delivery intents, provider-off defaults, mock provider coverage, and protected Zoom join flow via `/tisha-bav/live`.
 - Adds route/action registry coverage plus Zoom, GHL, and run-status handoff docs.
 - Preserves and implements the exact operator-approved event email catalog, with all dated copy and both reminder instants tied to the canonical event start.
 - Keeps the warm invitation prepared-only and all CTAs on protected One Time event pages; no raw Zoom URL is present.
@@ -16,6 +16,8 @@
 - `npm run brand:check`
 - `npx vitest run --config vitest.unit.config.ts tests/unit/tisha-bav-email-copy.test.ts`
 - Intent preservation validation (22/22 hard signals)
+- Railway preview DB migration `2211_tisha_bav_provider_event_scope.sql`
+- Railway preview registration domain smoke (`success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`)
 - Railway preview smoke at `https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav` (HTTP 200; event title and CTA present; no raw Zoom URL)
 - `git diff --check`
 - Scoped Prettier check for touched files

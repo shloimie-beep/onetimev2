@@ -304,6 +304,8 @@ function testConfig(overrides: NodeJS.ProcessEnv = {}): AppConfig {
     PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
     APP_VERSION: 'test',
     COMMIT_SHA: 'test',
+    ONE_TIME_ACCOUNT_KEY: 'rabbi_sheller_provider',
+    ONE_TIME_PRODUCT_KEY: 'one_time_mishnah_class',
     ...overrides,
   });
 }
