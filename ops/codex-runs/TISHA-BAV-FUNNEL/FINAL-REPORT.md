@@ -6,8 +6,9 @@ Implemented:
 
 - Canonical event config at `config/events/tisha-bav-2026.json`.
 - Additive migration `2210_tisha_bav_event_funnel.sql` for event definitions, registrations, delivery intents, and short-lived event sessions.
+- Additive migration `2211_tisha_bav_provider_event_scope.sql` to seed the provider-scoped `rabbi_sheller_provider` / `one_time_mishnah_class` event definition used by runtime configuration.
 - Public landing page `/tisha-bav` with exact `Send Me the Zoom Link` button copy and no student/payment/password/GHL iframe fields.
-- Registration API `POST /api/v1/events/tisha-bav-2026/register` with normalization, honeypot, durable rate limit, idempotency, duplicate update behavior, separate event-service and newsletter consent, and first-party event storage.
+- Registration API `POST /api/v1/events/tisha-bav-2026/register` with normalization, honeypot, durable rate limit, idempotency, duplicate update behavior, separate event-service and newsletter consent, explicit PostgreSQL timestamp casts, and first-party event storage.
 - Event-scoped HighLevel adapter and delivery intent with provider-off default, mock coverage, exact event/source tags, and newsletter tag only on explicit consent.
 - Private access page `/tisha-bav/live`, join API, short-lived event session cookie, no-store/no-referrer headers, and server-side redirect endpoint.
 - Registry coverage in the visible action registry, brand route registry, and action/route inventory.
@@ -23,7 +24,7 @@ Validation:
 - `npm run typecheck`: passed after the email catalog update.
 - `npx vitest run --config vitest.unit.config.ts tests/unit/tisha-bav-email-copy.test.ts`: passed, 2 tests.
 - `npx vitest run --config vitest.unit.config.ts tests/unit/day-one/visible-action-registry.test.ts tests/unit/brand-system/brand-system.test.ts`: passed.
-- `npx vitest run --config vitest.integration.config.ts tests/integration/tisha-bav-event-funnel.test.ts`: passed, 9 tests, including the exact bounded fallback confirmation payload.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/tisha-bav-event-funnel.test.ts`: passed, 9 tests, including the provider-scoped event definition and exact bounded fallback confirmation payload.
 - `npx playwright test tests/e2e/tisha-bav-funnel.spec.ts --project=chromium`: passed.
 - `npm run secret:scan`: passed.
 - `npm run brand:check`: passed.
@@ -31,7 +32,9 @@ Validation:
 - Scoped Prettier check for touched files: passed.
 - Intent preservation validation: passed, 22/22 hard signals and 5/5 actionable spans covered.
 - BNA PQC validation fixtures and 8/8 evals: passed; watchdog retains 17 pre-existing findings outside this packet.
-- Railway PR environment: deployed commit `f5b573863ddc01d9c48d61d1f04f6239d958eca7` successfully.
+- Railway PR environment: deployed commit `0c45134b1a8e890e28e7fd06312b6bb881f556fb` successfully before the provider-scoped preview registration fix.
+- Railway preview database migration: `2211_tisha_bav_provider_event_scope.sql` applied through the existing PR environment database service using `DATABASE_PUBLIC_URL`.
+- Railway preview registration domain smoke: passed with `success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`, and `duplicate_submission=false`.
 - Live preview smoke: `https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav` returned HTTP 200 with the event title and registration CTA, and exposed no raw Zoom URL.
 - Full local `npm run format`: still shows the existing broad Windows-worktree formatting backlog outside this funnel change; CI's named format blockers were formatted.
 
