@@ -208,7 +208,7 @@
     {
       "action_id": "public.tisha_bav.register.form",
       "label": "Reserve My Spot",
-      "surface": "modal_form",
+      "surface": "form",
       "route": "/tisha-bav",
       "roles": ["anonymous"],
       "capability": "events:register",
@@ -242,7 +242,7 @@
     {
       "action_id": "public.tisha_bav.share.whatsapp.link",
       "label": "WhatsApp share",
-      "surface": "link",
+      "surface": "button",
       "route": "/tisha-bav",
       "roles": ["anonymous"],
       "capability": "events:share",
@@ -273,7 +273,7 @@
     {
       "action_id": "public.tisha_bav.share.email_friend.link",
       "label": "Email a Friend",
-      "surface": "link",
+      "surface": "button",
       "route": "/tisha-bav",
       "roles": ["anonymous"],
       "capability": "events:share",
