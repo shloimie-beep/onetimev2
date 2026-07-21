@@ -142,7 +142,7 @@
     },
     {
       "action_id": "public.tisha_bav.register.form",
-      "label": "Send Me the Zoom Link",
+      "label": "Reserve My Spot",
       "surface": "form",
       "route": "/tisha-bav",
       "roles": ["anonymous"],

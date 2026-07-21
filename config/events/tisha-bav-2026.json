@@ -10,8 +10,9 @@
   "join_open_minutes_before": 45,
   "join_close_minutes_after": 180,
   "protected_zoom_join_url_env": "ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL",
-  "hero_image_path": null,
-  "final_graphic_replacement_path": "apps/web/public/assets/events/tisha-bav-2026/final-hero.webp",
+  "hero_image_path": "/assets/events/tisha-bav-2026/hero-desktop.png",
+  "hero_image_mobile_path": "/assets/events/tisha-bav-2026/hero-mobile.png",
+  "final_graphic_replacement_path": null,
   "sender": {
     "visible_name": "Rabbi Eli Scheller | One Time Mishnayos",
     "from": "info@onetimeonetime.com",

@@ -33,8 +33,8 @@ export type TishaBavRegistrationSuccessResponse = {
   confirmation_queued: boolean;
   ghl_sync_status: 'pending' | 'provider_off' | 'succeeded' | 'skipped';
   message: {
-    heading: "You're registered.";
-    body: "We'll email the private access details before the program.";
+    heading: 'Thank you — your spot has been reserved.';
+    body: "We'll send your Zoom link and event details by email.";
     schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel';
   };
 };
