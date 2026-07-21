@@ -23,7 +23,10 @@ export type ObsBridgeClient = {
 export class ObsBridgeReplayWindow {
   private readonly seen = new Set<string>();
 
-  accept(command: Pick<ObsBridgeCommand, 'command_key' | 'nonce' | 'expires_at'>, now = new Date()) {
+  accept(
+    command: Pick<ObsBridgeCommand, 'command_key' | 'nonce' | 'expires_at'>,
+    now = new Date(),
+  ) {
     if (new Date(command.expires_at).getTime() <= now.getTime()) return false;
     const replayKey = `${command.command_key}:${command.nonce}`;
     if (this.seen.has(replayKey)) return false;
@@ -48,7 +51,8 @@ export async function executeObsBridgeCommand(
   command: ObsBridgeCommand,
   now = new Date(),
 ) {
-  if (!replay.accept(command, now)) return { status: 'rejected' as const, result: 'stale_or_replay' };
+  if (!replay.accept(command, now))
+    return { status: 'rejected' as const, result: 'stale_or_replay' };
   const scene = sceneForBridgeCommand(command);
   await client.switchScene(scene);
   return { status: 'executed' as const, result: `scene:${scene}` };

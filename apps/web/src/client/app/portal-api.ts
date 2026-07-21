@@ -226,18 +226,15 @@ export async function submitClassroomQuestion(input: {
   occurrenceKey: string;
   body: string;
 }) {
-  const json = await api<LiveClassQuestionSubmitResponse>(
-    '/api/v1/live-class/questions',
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
-      body: JSON.stringify({
-        occurrence_key: input.occurrenceKey,
-        body: input.body,
-        idempotency_key: createIdempotencyKey(),
-      }),
-    },
-  );
+  const json = await api<LiveClassQuestionSubmitResponse>('/api/v1/live-class/questions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      occurrence_key: input.occurrenceKey,
+      body: input.body,
+      idempotency_key: createIdempotencyKey(),
+    }),
+  });
   return json.data;
 }
 

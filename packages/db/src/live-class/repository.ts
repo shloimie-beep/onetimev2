@@ -1,6 +1,5 @@
 import type {
   LiveClassControlCommand,
-  LiveClassObsCommandReportPayload,
   LiveClassObsScene,
   LiveClassParticipant,
   LiveClassQuestion,
@@ -59,7 +58,12 @@ async function ensureLiveSession(
        VALUES ($1, $2, $3, $4, 'Asia/Jerusalem', '19:00', '18:30')
        ON CONFLICT (account_key, product_key, class_series_key)
        DO UPDATE SET updated_at = now()`,
-      [ONE_TIME_CLASS_SERIES_KEY, args.actor.account_key, args.actor.product_key, ONE_TIME_CLASS_TITLE],
+      [
+        ONE_TIME_CLASS_SERIES_KEY,
+        args.actor.account_key,
+        args.actor.product_key,
+        ONE_TIME_CLASS_TITLE,
+      ],
     );
 
     let occurrence = await getOccurrence(client, args.actor, args.occurrence_key);
@@ -464,7 +468,12 @@ async function selectQuestion(
           AND occurrence_key = $3
           AND question_key <> $4
           AND status IN ('selected', 'student_ready', 'live')`,
-      [args.actor.account_key, args.actor.product_key, String(row.occurrence_key), args.question_key],
+      [
+        args.actor.account_key,
+        args.actor.product_key,
+        String(row.occurrence_key),
+        args.question_key,
+      ],
     );
     const updated = await client.query(
       `UPDATE onetime.live_class_questions
@@ -480,7 +489,13 @@ async function selectQuestion(
           AND product_key = $2
           AND question_key = $3
        RETURNING *`,
-      [args.actor.account_key, args.actor.product_key, args.question_key, args.now, args.actor.actor_user_ref],
+      [
+        args.actor.account_key,
+        args.actor.product_key,
+        args.question_key,
+        args.now,
+        args.actor.actor_user_ref,
+      ],
     );
     return mapQuestion(updated.rows[0] as Record<string, unknown>);
   });
@@ -874,7 +889,10 @@ function demoQuestions(occurrenceKey: string, classLabel: string) {
   }));
 }
 
-function commandParams(actor: { account_key: string; product_key: string }, command: LiveClassCommandInsert) {
+function commandParams(
+  actor: { account_key: string; product_key: string },
+  command: LiveClassCommandInsert,
+) {
   return [
     command.command_key,
     actor.account_key,

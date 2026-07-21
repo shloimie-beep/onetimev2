@@ -1258,7 +1258,9 @@ export function createApp({
   const liveClassService = createLiveClassService({
     config,
     repository: liveClassRepository,
-    questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:live-class-question-v1`),
+    questionCodec: new AesGcmPayloadCodec(
+      `${config.mfaSecretEncryptionKey}:live-class-question-v1`,
+    ),
     ...(clock ? { clock } : {}),
   });
   const gamificationRepository = createGamificationRepository(pool);
@@ -2918,7 +2920,9 @@ function requireObsBridgeToken(req: RequestWithTrace, res: Response, config: App
   const submitted =
     req.header('x-ot-live-bridge-token') ?? optionalQueryString(req.query.bridge_token);
   if (!expected || !submitted || !constantDigestEqual(expected, submitted)) {
-    res.status(403).json(publicError('FORBIDDEN', 'Live OBS bridge token is required.', req.traceId));
+    res
+      .status(403)
+      .json(publicError('FORBIDDEN', 'Live OBS bridge token is required.', req.traceId));
     return false;
   }
   return true;

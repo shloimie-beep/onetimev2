@@ -27,9 +27,7 @@ for (;;) {
 
 async function pollOnce(obsClient: ObsBridgeClient) {
   const response = await fetch(
-    `${baseUrl}/api/v1/live-class/obs/commands?occurrence_key=${encodeURIComponent(
-      occurrenceKey,
-    )}`,
+    `${baseUrl}/api/v1/live-class/obs/commands?occurrence_key=${encodeURIComponent(occurrenceKey)}`,
     { headers: { 'x-ot-live-bridge-token': bridgeToken } },
   );
   if (!response.ok) {
@@ -46,7 +44,11 @@ async function pollOnce(obsClient: ObsBridgeClient) {
   }
 }
 
-async function report(command: ObsBridgeCommand, status: 'executed' | 'failed' | 'rejected', result: string) {
+async function report(
+  command: ObsBridgeCommand,
+  status: 'executed' | 'failed' | 'rejected',
+  result: string,
+) {
   await fetch(`${baseUrl}/api/v1/live-class/obs/commands`, {
     method: 'POST',
     headers: {
@@ -87,7 +89,12 @@ async function obsSetCurrentProgramScene(url: string, password: string, scene: O
       const packet = JSON.parse(String(event.data)) as { op?: number; d?: Record<string, unknown> };
       if (packet.op === 0) {
         const auth = authentication(packet.d?.authentication, password);
-        socket.send(JSON.stringify({ op: 1, d: { rpcVersion: 1, ...(auth ? { authentication: auth } : {}) } }));
+        socket.send(
+          JSON.stringify({
+            op: 1,
+            d: { rpcVersion: 1, ...(auth ? { authentication: auth } : {}) },
+          }),
+        );
       }
       if (packet.op === 2) {
         socket.send(
@@ -118,12 +125,8 @@ function authentication(value: unknown, password: string) {
   if (!value || typeof value !== 'object') return null;
   const auth = value as { salt?: string; challenge?: string };
   if (!auth.salt || !auth.challenge) return null;
-  const secret = createHash('sha256')
-    .update(`${password}${auth.salt}`)
-    .digest('base64');
-  return createHash('sha256')
-    .update(`${secret}${auth.challenge}`)
-    .digest('base64');
+  const secret = createHash('sha256').update(`${password}${auth.salt}`).digest('base64');
+  return createHash('sha256').update(`${secret}${auth.challenge}`).digest('base64');
 }
 
 function requiredEnv(name: string) {

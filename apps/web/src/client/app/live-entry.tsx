@@ -32,7 +32,10 @@ function LiveConsole() {
   const [data, setData] = useState<ConsoleData | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
-  const occurrenceKey = useMemo(() => new URLSearchParams(location.search).get('occurrence_key'), []);
+  const occurrenceKey = useMemo(
+    () => new URLSearchParams(location.search).get('occurrence_key'),
+    [],
+  );
 
   async function load() {
     setLoading(true);
@@ -134,7 +137,10 @@ function LiveConsole() {
             />
           </section>
 
-          <section className="live-panel live-panel--selected" aria-labelledby="live-selected-heading">
+          <section
+            className="live-panel live-panel--selected"
+            aria-labelledby="live-selected-heading"
+          >
             <div className="live-panel__title">
               <h3 id="live-selected-heading">Selected Student</h3>
               {selected && <span>{selected.status.replaceAll('_', ' ')}</span>}
@@ -193,7 +199,11 @@ function LiveConsole() {
                 type="button"
                 className="ot-button secondary"
                 onClick={() =>
-                  void postControl('/api/v1/live-class/obs/commands', { action: 'done' }, 'OBS slides')
+                  void postControl(
+                    '/api/v1/live-class/obs/commands',
+                    { action: 'done' },
+                    'OBS slides',
+                  )
                 }
               >
                 OBS Slides
@@ -262,10 +272,18 @@ function QuestionQueue({
             >
               Select
             </button>
-            <button type="button" className="ot-button secondary" onClick={() => onResolve(question, 'kept_private')}>
+            <button
+              type="button"
+              className="ot-button secondary"
+              onClick={() => onResolve(question, 'kept_private')}
+            >
               Keep Private
             </button>
-            <button type="button" className="ot-button secondary" onClick={() => onResolve(question, 'rejected')}>
+            <button
+              type="button"
+              className="ot-button secondary"
+              onClick={() => onResolve(question, 'rejected')}
+            >
               Reject
             </button>
           </div>
@@ -284,7 +302,9 @@ function SelectedQuestion({
 }: {
   question: LiveClassQuestion;
   participant: LiveClassParticipant | null;
-  onZoom: (operation: 'ask_unmute' | 'mute' | 'spotlight_replace' | 'spotlight_remove' | 'stop_video') => void;
+  onZoom: (
+    operation: 'ask_unmute' | 'mute' | 'spotlight_replace' | 'spotlight_remove' | 'stop_video',
+  ) => void;
   onFeature: () => void;
   onFinish: (resolution: 'answered' | 'approved_for_board' | 'kept_private' | 'rejected') => void;
 }) {
@@ -312,10 +332,18 @@ function SelectedQuestion({
         <button type="button" className="ot-button secondary" onClick={() => onZoom('mute')}>
           Mute
         </button>
-        <button type="button" className="ot-button secondary" onClick={() => onZoom('spotlight_replace')}>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onZoom('spotlight_replace')}
+        >
           Spotlight
         </button>
-        <button type="button" className="ot-button secondary" onClick={() => onZoom('spotlight_remove')}>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onZoom('spotlight_remove')}
+        >
           Remove Spotlight
         </button>
         <button type="button" className="ot-button secondary" onClick={() => onZoom('stop_video')}>
@@ -332,10 +360,18 @@ function SelectedQuestion({
         <button type="button" className="ot-button secondary" onClick={() => onFinish('answered')}>
           Done
         </button>
-        <button type="button" className="ot-button secondary" onClick={() => onFinish('approved_for_board')}>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onFinish('approved_for_board')}
+        >
           Approve Board
         </button>
-        <button type="button" className="ot-button secondary" onClick={() => onFinish('kept_private')}>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onFinish('kept_private')}
+        >
           Keep Private
         </button>
       </div>
@@ -362,7 +398,10 @@ function ObsHealth({ data }: { data: ConsoleData | null }) {
   return (
     <div className="live-health">
       <p>Scene: {data?.obs.current_scene ?? 'OT - Slides'}</p>
-      <p>Scenes: {data?.obs.allowed_scenes.join(', ') ?? 'OT - Slides, OT - Featured Student, OT - Break'}</p>
+      <p>
+        Scenes:{' '}
+        {data?.obs.allowed_scenes.join(', ') ?? 'OT - Slides, OT - Featured Student, OT - Break'}
+      </p>
       <p>Sources: {data?.obs.canonical_sources.join(', ') ?? 'configured locally'}</p>
       <p>Setup: {data?.obs.one_click_setup ?? 'tools/obs-bridge/README.md'}</p>
     </div>
@@ -379,7 +418,9 @@ function ZoomHealth({ data }: { data: ConsoleData | null }) {
       <p>Video start model: participant consent</p>
       {job && (
         <details>
-          <summary>{job.job_key} {job.title}</summary>
+          <summary>
+            {job.job_key} {job.title}
+          </summary>
           <ol>
             {job.steps.map((step) => (
               <li key={step}>{step}</li>
@@ -419,7 +460,11 @@ function LiveStage({ stageSession }: { stageSession: string }) {
     <main className="live-stage" data-scene={stage?.current_scene ?? 'OT - Slides'}>
       <section className="live-stage__video" aria-label="Selected participant video surface">
         <div className="live-stage__frame" data-video-state={participant?.video_state ?? 'unknown'}>
-          <span>{participant?.video_state === 'on' ? question?.approved_display_name : 'Video not ready'}</span>
+          <span>
+            {participant?.video_state === 'on'
+              ? question?.approved_display_name
+              : 'Video not ready'}
+          </span>
         </div>
       </section>
       <aside className="live-stage__caption">
@@ -438,7 +483,10 @@ function LiveStage({ stageSession }: { stageSession: string }) {
 
 function LiveNotice({ notice }: { notice: Notice }) {
   return (
-    <div className={`notice-banner ${notice.kind}`} role={notice.kind === 'error' ? 'alert' : 'status'}>
+    <div
+      className={`notice-banner ${notice.kind}`}
+      role={notice.kind === 'error' ? 'alert' : 'status'}
+    >
       {notice.message}
     </div>
   );
@@ -454,11 +502,15 @@ function StatusPill({ label, value }: { label: string; value: string }) {
 }
 
 function participantFor(participants: LiveClassParticipant[], question: LiveClassQuestion) {
-  return participants.find((participant) => participant.customer_key === question.customer_key) ?? null;
+  return (
+    participants.find((participant) => participant.customer_key === question.customer_key) ?? null
+  );
 }
 
 async function logout() {
-  await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => undefined);
+  await fetch('/api/v1/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(
+    () => undefined,
+  );
   window.location.assign('/login');
 }
 
@@ -476,7 +528,10 @@ function stageSessionFromPath(pathname: string) {
 }
 
 function idempotencyKey(label: string) {
-  const normalized = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const normalized = label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
   if ('crypto' in globalThis && typeof crypto.randomUUID === 'function') {
     return `live-${normalized}-${crypto.randomUUID()}`;
   }

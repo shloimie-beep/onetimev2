@@ -20,7 +20,11 @@ export const liveClassParticipantJoinStateSchema = z.enum(['unknown', 'waiting',
 export const liveClassParticipantAudioStateSchema = z.enum(['unknown', 'muted', 'unmuted']);
 export const liveClassParticipantVideoStateSchema = z.enum(['unknown', 'off', 'on']);
 
-export const liveClassObsSceneSchema = z.enum(['OT - Slides', 'OT - Featured Student', 'OT - Break']);
+export const liveClassObsSceneSchema = z.enum([
+  'OT - Slides',
+  'OT - Featured Student',
+  'OT - Break',
+]);
 export type LiveClassObsScene = z.infer<typeof liveClassObsSceneSchema>;
 
 export const liveClassObsActionSchema = z.enum(['feature_student', 'done', 'emergency_reset']);
@@ -148,11 +152,13 @@ export const liveClassConsoleSnapshotSchema = z.object({
     telegram: z.object({
       enabled: z.literal(false),
       source_of_truth: z.literal(false),
-      card_preview: z.object({
-        student_safe_label: z.string().trim().min(1).max(160),
-        question_preview: z.string().trim().min(1).max(180),
-        actions: z.array(z.enum(['Open Live Console', 'Select', 'Keep Private', 'Reject'])),
-      }).nullable(),
+      card_preview: z
+        .object({
+          student_safe_label: z.string().trim().min(1).max(160),
+          question_preview: z.string().trim().min(1).max(180),
+          actions: z.array(z.enum(['Open Live Console', 'Select', 'Keep Private', 'Reject'])),
+        })
+        .nullable(),
     }),
     audit_ref: opaqueIdSchema,
   }),
@@ -165,9 +171,7 @@ export const liveClassQuestionSubmitPayloadSchema = z.object({
   approved_display_name: z.string().trim().min(1).max(160).optional(),
   idempotency_key: idempotencyKeySchema,
 });
-export type LiveClassQuestionSubmitPayload = z.infer<
-  typeof liveClassQuestionSubmitPayloadSchema
->;
+export type LiveClassQuestionSubmitPayload = z.infer<typeof liveClassQuestionSubmitPayloadSchema>;
 
 export const liveClassQuestionSubmitResponseSchema = z.object({
   success: z.literal(true),
@@ -176,9 +180,7 @@ export const liveClassQuestionSubmitResponseSchema = z.object({
     moderator_alert_queued: z.boolean(),
   }),
 });
-export type LiveClassQuestionSubmitResponse = z.infer<
-  typeof liveClassQuestionSubmitResponseSchema
->;
+export type LiveClassQuestionSubmitResponse = z.infer<typeof liveClassQuestionSubmitResponseSchema>;
 
 export const liveClassQuestionListResponseSchema = z.object({
   success: z.literal(true),
@@ -191,9 +193,7 @@ export type LiveClassQuestionListResponse = z.infer<typeof liveClassQuestionList
 export const liveClassQuestionActionPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
 });
-export type LiveClassQuestionActionPayload = z.infer<
-  typeof liveClassQuestionActionPayloadSchema
->;
+export type LiveClassQuestionActionPayload = z.infer<typeof liveClassQuestionActionPayloadSchema>;
 
 export const liveClassQuestionReadyPayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
@@ -206,9 +206,9 @@ export type LiveClassQuestionReadyPayload = z.infer<typeof liveClassQuestionRead
 
 export const liveClassQuestionCompletePayloadSchema = z.object({
   idempotency_key: idempotencyKeySchema,
-  resolution: z.enum(['answered', 'approved_for_board', 'kept_private', 'rejected']).default(
-    'answered',
-  ),
+  resolution: z
+    .enum(['answered', 'approved_for_board', 'kept_private', 'rejected'])
+    .default('answered'),
 });
 export type LiveClassQuestionCompletePayload = z.infer<
   typeof liveClassQuestionCompletePayloadSchema
@@ -251,9 +251,7 @@ export const liveClassObsCommandPollResponseSchema = z.object({
     commands: z.array(liveClassControlCommandSchema),
   }),
 });
-export type LiveClassObsCommandPollResponse = z.infer<
-  typeof liveClassObsCommandPollResponseSchema
->;
+export type LiveClassObsCommandPollResponse = z.infer<typeof liveClassObsCommandPollResponseSchema>;
 
 export const liveClassObsCommandReportPayloadSchema = z.object({
   command_key: opaqueIdSchema,

@@ -1,18 +1,27 @@
 import { expect, test, type Page } from '@playwright/test';
 import { W12_E2E_ADMIN_SESSION_TOKEN } from '../support/w12-portal-test-lab-session.ts';
 
-test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', async ({ browser }) => {
+test('Rabbi live console fake flow: Student Ready -> Rabbi Feature -> Done', async ({
+  browser,
+}) => {
   const studentContext = await browser.newContext();
   const ownerContext = await browser.newContext();
   const studentPage = await studentContext.newPage();
   const ownerPage = await ownerContext.newPage();
   const questionText = 'Browser live question alpha marker';
 
-  await loginAs(studentPage, 'ot-zoom-student@example.test', 'ZoomStudentPassword!234', '/app/student');
+  await loginAs(
+    studentPage,
+    'ot-zoom-student@example.test',
+    'ZoomStudentPassword!234',
+    '/app/student',
+  );
   await expect(studentPage.getByLabel('Question for class')).toBeVisible();
 
-  const questionResponse = studentPage.waitForResponse((response) =>
-    response.url().includes('/api/v1/live-class/questions') && response.request().method() === 'POST',
+  const questionResponse = studentPage.waitForResponse(
+    (response) =>
+      response.url().includes('/api/v1/live-class/questions') &&
+      response.request().method() === 'POST',
   );
   await studentPage.getByLabel('Question for class').fill(questionText);
   await studentPage.getByRole('button', { name: 'Send question' }).click();

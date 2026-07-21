@@ -47,11 +47,14 @@ describe('live class question lifecycle', () => {
       now,
       expires_at: new Date(now.getTime() + 60 * 60_000),
     });
-    const submitted = await service.submitQuestion(studentActor('learner_alpha', 'household_alpha'), {
-      occurrence_key: session.occurrence_key,
-      body: 'Why does the Mishnah use this example? alpha@example.test',
-      idempotency_key: 'live-alpha-question-1',
-    });
+    const submitted = await service.submitQuestion(
+      studentActor('learner_alpha', 'household_alpha'),
+      {
+        occurrence_key: session.occurrence_key,
+        body: 'Why does the Mishnah use this example? alpha@example.test',
+        idempotency_key: 'live-alpha-question-1',
+      },
+    );
     expect(submitted.question).toMatchObject({
       status: 'submitted',
       approved_display_name: 'Alpha Student',
@@ -94,11 +97,10 @@ describe('live class question lifecycle', () => {
     );
     expect(live.stage.current_scene).toBe('OT - Featured Student');
 
-    const done = await service.completeQuestion(
-      rabbiActor(),
-      submitted.question.question_key,
-      { idempotency_key: 'live-alpha-done', resolution: 'answered' },
-    );
+    const done = await service.completeQuestion(rabbiActor(), submitted.question.question_key, {
+      idempotency_key: 'live-alpha-done',
+      resolution: 'answered',
+    });
     expect(done.question?.status).toBe('answered');
     expect(done.stage.current_scene).toBe('OT - Slides');
     expect(done.stage.selected_question).toBeNull();
@@ -110,18 +112,25 @@ describe('live class question lifecycle', () => {
       now,
       expires_at: new Date(now.getTime() + 60 * 60_000),
     });
-    const submitted = await service.submitQuestion(studentActor('learner_alpha', 'household_alpha'), {
-      occurrence_key: session.occurrence_key,
-      body: 'Can I ask this privately?',
-      idempotency_key: 'live-alpha-question-2',
-    });
+    const submitted = await service.submitQuestion(
+      studentActor('learner_alpha', 'household_alpha'),
+      {
+        occurrence_key: session.occurrence_key,
+        body: 'Can I ask this privately?',
+        idempotency_key: 'live-alpha-question-2',
+      },
+    );
     await service.selectQuestion(rabbiActor(), submitted.question.question_key, 'live-select-2');
 
     await expect(
-      service.markReady(studentActor('learner_beta', 'household_beta'), submitted.question.question_key, {
-        idempotency_key: 'live-beta-wrong-ready',
-        ready: true,
-      }),
+      service.markReady(
+        studentActor('learner_beta', 'household_beta'),
+        submitted.question.question_key,
+        {
+          idempotency_key: 'live-beta-wrong-ready',
+          ready: true,
+        },
+      ),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' });
 
     await service.markReady(
@@ -170,11 +179,14 @@ describe('live class question lifecycle', () => {
       now,
       expires_at: new Date(now.getTime() + 60 * 60_000),
     });
-    const submitted = await service.submitQuestion(studentActor('learner_alpha', 'household_alpha'), {
-      occurrence_key: session.occurrence_key,
-      body: 'Can Zoom spotlight me only after I am ready?',
-      idempotency_key: 'live-alpha-question-3',
-    });
+    const submitted = await service.submitQuestion(
+      studentActor('learner_alpha', 'household_alpha'),
+      {
+        occurrence_key: session.occurrence_key,
+        body: 'Can Zoom spotlight me only after I am ready?',
+        idempotency_key: 'live-alpha-question-3',
+      },
+    );
     await service.selectQuestion(rabbiActor(), submitted.question.question_key, 'live-select-3');
     await service.zoomControl(rabbiActor(), {
       operation: 'spotlight_replace',

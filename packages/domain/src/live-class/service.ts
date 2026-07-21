@@ -20,7 +20,6 @@ import type {
   SensitivePayloadCodec,
   SensitivePayloadContext,
 } from '../../../contracts/src/telegram/types.ts';
-import { ONE_TIME_CLASS_TITLE } from '../classes/service.ts';
 import { stableKey } from '../lead/normalize.ts';
 import { PortalServiceError } from '../portals/services.ts';
 
@@ -415,7 +414,11 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
           'The student must tap ready before the stage can feature them.',
         );
       }
-      const question = await deps.repository.markQuestionLive({ actor, question_key: questionKey, now });
+      const question = await deps.repository.markQuestionLive({
+        actor,
+        question_key: questionKey,
+        now,
+      });
       await deps.repository.setStage({
         actor,
         occurrence_key: question.occurrence_key,
@@ -550,7 +553,8 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         throw new PortalServiceError('FORBIDDEN', 'The participant target does not match.');
       }
       const command = await enqueueSignedCommand(deps, actor, {
-        occurrence_key: question?.occurrence_key ?? (await ensureSession(deps, actor, now)).occurrence_key,
+        occurrence_key:
+          question?.occurrence_key ?? (await ensureSession(deps, actor, now)).occurrence_key,
         command_type: payload.operation,
         target_question_key: question?.question_key ?? null,
         target_participant_key: participant?.participant_key ?? payload.participant_key ?? null,
@@ -584,9 +588,10 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       await deps.repository.setStage({
         actor,
         occurrence_key: question?.occurrence_key ?? session.occurrence_key,
-        question_key: payload.action === 'emergency_reset' || payload.action === 'done'
-          ? null
-          : (question?.question_key ?? null),
+        question_key:
+          payload.action === 'emergency_reset' || payload.action === 'done'
+            ? null
+            : (question?.question_key ?? null),
         scene,
         state: payload.action === 'feature_student' ? 'student_featured' : 'slides',
       });
@@ -610,7 +615,10 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       return commandResponse(deps, actor, question, [command.command], now);
     },
 
-    async pollObsCommands(actor: Pick<PortalActorContext, 'account_key' | 'product_key'>, occurrenceKey: string) {
+    async pollObsCommands(
+      actor: Pick<PortalActorContext, 'account_key' | 'product_key'>,
+      occurrenceKey: string,
+    ) {
       return deps.repository.listPendingCommands({
         actor,
         occurrence_key: occurrenceKey,
@@ -618,7 +626,10 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       });
     },
 
-    async reportObsCommand(actor: Pick<PortalActorContext, 'account_key' | 'product_key'>, payload: LiveClassObsCommandReportPayload) {
+    async reportObsCommand(
+      actor: Pick<PortalActorContext, 'account_key' | 'product_key'>,
+      payload: LiveClassObsCommandReportPayload,
+    ) {
       const accepted = await deps.repository.reportCommand({
         actor,
         payload,
@@ -669,10 +680,9 @@ async function snapshot(
   const selectedQuestion =
     questions.find((question) => ['selected', 'student_ready', 'live'].includes(question.status)) ??
     null;
-  const participant =
-    selectedQuestion
-      ? participants.find((item) => item.customer_key === selectedQuestion.customer_key) ?? null
-      : null;
+  const participant = selectedQuestion
+    ? (participants.find((item) => item.customer_key === selectedQuestion.customer_key) ?? null)
+    : null;
   const session = await deps.repository.ensureLiveSession({
     actor,
     occurrence_key: occurrenceKey,
@@ -692,7 +702,8 @@ async function snapshot(
     private_portal_visible: false,
   };
   const mode = zoomAdapterMode(deps.config);
-  const firstQuestion = questions.find((question) => question.status === 'submitted') ?? selectedQuestion;
+  const firstQuestion =
+    questions.find((question) => question.status === 'submitted') ?? selectedQuestion;
   return {
     success: true,
     data: {
@@ -818,7 +829,12 @@ async function ensureQuestionParticipant(
   deps: LiveClassServiceDeps,
   actor: Pick<PortalActorContext, 'account_key' | 'product_key'>,
   question: LiveClassQuestion,
-  patch: Partial<Pick<LiveClassParticipant, 'join_state' | 'audio_state' | 'video_state' | 'active_speaker' | 'spotlighted'>> = {},
+  patch: Partial<
+    Pick<
+      LiveClassParticipant,
+      'join_state' | 'audio_state' | 'video_state' | 'active_speaker' | 'spotlighted'
+    >
+  > = {},
 ) {
   const existing = await deps.repository.getParticipantByCustomerKey({
     actor,
@@ -829,13 +845,15 @@ async function ensureQuestionParticipant(
     actor,
     occurrence_key: question.occurrence_key,
     participant_key:
-      existing?.participant_key ?? stableKey('zoom_participant', [question.occurrence_key, question.customer_key]),
+      existing?.participant_key ??
+      stableKey('zoom_participant', [question.occurrence_key, question.customer_key]),
     learner_key: question.learner_key,
     customer_key: question.customer_key,
     approved_display_name: question.approved_display_name,
     join_state: patch.join_state ?? existing?.join_state ?? 'joined',
     audio_state: patch.audio_state ?? existing?.audio_state ?? 'muted',
-    video_state: patch.video_state ?? existing?.video_state ?? (question.video_ready ? 'on' : 'off'),
+    video_state:
+      patch.video_state ?? existing?.video_state ?? (question.video_ready ? 'on' : 'off'),
     active_speaker: patch.active_speaker ?? existing?.active_speaker ?? false,
     spotlighted: patch.spotlighted ?? existing?.spotlighted ?? false,
   });
@@ -870,7 +888,9 @@ function publicScope(config: AppConfig) {
 }
 
 function liveClassFakeAdapterEnabled(config: AppConfig) {
-  return Boolean((config as AppConfig & { liveClassFakeAdapterEnabled?: boolean }).liveClassFakeAdapterEnabled);
+  return Boolean(
+    (config as AppConfig & { liveClassFakeAdapterEnabled?: boolean }).liveClassFakeAdapterEnabled,
+  );
 }
 
 function zoomSdkConfigured(config: AppConfig) {
