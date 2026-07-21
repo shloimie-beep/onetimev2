@@ -1,0 +1,175 @@
+{
+  "schema_version": "onetime.repository_transfer.active_reference_audit.v1",
+  "generated_at": "2026-07-21T08:26:33Z",
+  "canonical_repository": "shloimie-beep/onetimev2",
+  "transferred_from_repository": "webcraft-media/onetimev2",
+  "search_patterns": [
+    "webcraft-media/onetimev2",
+    "github.com/webcraft-media",
+    "api.github.com/repos/webcraft-media"
+  ],
+  "local_git_remotes": [
+    {
+      "path": "C:/Users/User/onetimev2",
+      "type": "worktree",
+      "origin_fetch": "https://github.com/shloimie-beep/onetimev2.git",
+      "origin_push": "https://github.com/shloimie-beep/onetimev2.git",
+      "status": "canonical"
+    },
+    {
+      "path": "C:/Users/User/onetimev2.git",
+      "type": "bare-mirror",
+      "origin_before": "https://github.com/webcraft-media/onetimev2.git",
+      "origin_after": "https://github.com/shloimie-beep/onetimev2.git",
+      "status": "repaired"
+    },
+    {
+      "path": "C:/Users/User/.onetime-worktrees/repository-transfer-pr-previews",
+      "type": "isolated-worktree",
+      "branch": "codex/repository-transfer-pr-previews",
+      "base_head": "5ddd7b604c01744dd562050ae9b51124f7732594",
+      "status": "canonical"
+    }
+  ],
+  "github_audit": {
+    "repository_url": "https://github.com/shloimie-beep/onetimev2",
+    "repository_api": "https://api.github.com/repos/shloimie-beep/onetimev2",
+    "hooks": [],
+    "actions_permissions": "enabled",
+    "github_app_installation_access": {
+      "status": "not_inspectable_with_current_user_token",
+      "evidence": "GitHub Apps installation endpoints returned 401/403 to the authenticated user token."
+    },
+    "railway_github_app_evidence": {
+      "status": "seen",
+      "deployment_creator": "railway-app[bot]",
+      "latest_seen_deployment_environment": "one-time-ot99-staging-96b42905 / staging",
+      "latest_seen_deployment_sha": "96b429053d13a139595ed3bd0ea3c854cc2500e8",
+      "latest_seen_deployment_created_at": "2026-07-16T13:48:21Z"
+    },
+    "tracked_pull_requests": [
+      {
+        "number": 92,
+        "head_branch": "codex/one-time-finish-now-20260719",
+        "head_sha": "5ddd7b604c01744dd562050ae9b51124f7732594",
+        "base_branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+        "url": "https://github.com/shloimie-beep/onetimev2/pull/92"
+      },
+      {
+        "number": 93,
+        "head_branch": "codex/highlevel-business-foundation",
+        "head_sha": "977e4453c34684cd06359f663d0e8f50dc3645f5",
+        "base_branch": "codex/one-time-finish-now-20260719",
+        "url": "https://github.com/shloimie-beep/onetimev2/pull/93"
+      },
+      {
+        "number": 95,
+        "head_branch": "codex/learning-delivery-vimeo-zoom",
+        "head_sha": "486d67d7a43b2d98fffd3d11f87d6f877fdb8a95",
+        "base_branch": "codex/learning-product-portals-media",
+        "url": "https://github.com/shloimie-beep/onetimev2/pull/95"
+      },
+      {
+        "number": 96,
+        "head_branch": "codex/student-experience-preview",
+        "head_sha": "9fe808210d09ac5f298f4f17a32cabf58ea77bd7",
+        "base_branch": "codex/one-time-finish-now-20260719",
+        "url": "https://github.com/shloimie-beep/onetimev2/pull/96"
+      }
+    ]
+  },
+  "railway_audit": {
+    "production_project": {
+      "project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+      "environment": "production",
+      "environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+      "web_service_id": "d175ad94-5e3c-41c2-8cbc-daa1a299077d",
+      "worker_service_id": "742f60ed-dc2f-4321-85d0-019003d4e9b9",
+      "source_repository_connection": "not_modified",
+      "production_changed": false
+    },
+    "staging_project": {
+      "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+      "base_environment": "staging",
+      "base_environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+      "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+      "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+      "web_service_domain": "ot99-web-staging.up.railway.app",
+      "source_repository_connection": "status_payload_reported_source_repo_null",
+      "ephemeral_environments": [],
+      "pr_environments": "not_enabled_or_not_provisioning_for_tracked_prs"
+    },
+    "railway_cli": {
+      "version": "5.26.2",
+      "supports_ephemeral_environment_listing": true,
+      "supports_source_connect_command": true,
+      "pr_environment_toggle": "not_exposed_by_cli_help",
+      "action_taken": "no_service_source_connect_or_deploy_commands_were_run"
+    },
+    "required_agent_action": "ops/previews/agent-actions/RAILWAY-PR-ENVIRONMENTS.json"
+  },
+  "active_updates": [
+    {
+      "scope": "executable checks and fixtures",
+      "files": [
+        "packages/contracts/src/providers/oversight.ts",
+        "scripts/day-one-certification-harness.mjs",
+        "scripts/postgres-assurance/current-base-scenarios.ts",
+        "scripts/ot75/validate-release-readiness.mjs",
+        "scripts/w12-100/deploy/railway-launch-toolkit.ts",
+        "scripts/w12-100/deploy/railway-launch-toolkit.test.ts",
+        "scripts/w13-10/generate-artifacts.ts",
+        "scripts/ot81/write-release-evidence.ts",
+        "tests/unit/ot75/release-readiness.test.ts"
+      ]
+    },
+    {
+      "scope": "active release/director/runbook records",
+      "files": [
+        "ops/day-one/release-manifest.example.json",
+        "ops/day-one/ot81-release-manifest.json",
+        "ops/release/ot75/release-readiness.contract.json",
+        "ops/release/ot75/release-manifest.template.json",
+        "ops/runbooks/w12-100/README.md",
+        "ops/director/START-HERE.md",
+        "ops/director/NEW-CHAT-PROMPT.md",
+        "ops/director/CURRENT-STATE.json",
+        "ops/director/CAPABILITY-MATRIX.json",
+        "ops/director/BRANCH-FLEET.json",
+        "ops/director/WORKSTREAMS.json",
+        "ops/director/W12-99-CANDIDATE.json",
+        "ops/director/DECISION-REGISTER.md",
+        "ops/hybrid-pivot/WINDOW-REGISTRY.json",
+        "ops/hybrid-pivot/RESUME.md",
+        "ops/hybrid-pivot/OWNERSHIP.json",
+        "ops/hybrid-pivot/MIGRATION-RESERVATIONS.json",
+        "ops/hybrid-pivot/EVIDENCE-VALIDITY.json",
+        "ops/hybrid-pivot/DECISION.md",
+        "ops/hybrid-pivot/BASE.json",
+        "ops/execution/registry.json",
+        "ops/execution/control/CANONICAL-CANDIDATE.json"
+      ]
+    },
+    {
+      "scope": "pull request template",
+      "files": [
+        ".github/pull_request_template.md"
+      ],
+      "note": "No pull request template existed. Added a minimal template with the required Preview URL field and production-changed declaration."
+    }
+  ],
+  "historical_preserved": [
+    "ops/codex-runs/**",
+    "ops/execution/ot-*/**",
+    "ops/release/ot75/execution/**",
+    "ops/release/ot75/evidence/**",
+    "ops/evidence/**",
+    "artifacts/**"
+  ],
+  "result": {
+    "active_repository_references": "repaired",
+    "railway_pr_environment_urls": "blocked",
+    "single_preview_blocker": "RAILWAY_PR_ENVIRONMENTS_NOT_ENABLED_OR_SOURCE_NOT_CONNECTED",
+    "production_changed": false
+  }
+}

@@ -240,7 +240,7 @@ export function validateLaunchManifest(
 ): CheckResult[] {
   return [
     equalsCheck('manifest_schema', manifest.schema_version, LAUNCH_MANIFEST_SCHEMA),
-    equalsCheck('repository', manifest.repository, 'webcraft-media/onetimev2'),
+    equalsCheck('repository', manifest.repository, 'shloimie-beep/onetimev2'),
     equalsCheck('lane_id', manifest.lane_id, 'W12-100-10'),
     validateCandidate(manifest),
     validateImmutableIdentity(manifest.target.railway),

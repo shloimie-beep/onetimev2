@@ -1,0 +1,60 @@
+{
+  "schema_version": "onetime.agent_action_job.v1",
+  "job_id": "RAILWAY-PR-ENVIRONMENTS-20260721",
+  "created_at": "2026-07-21T08:26:33Z",
+  "status": "needs_operator_or_railway_ui_action",
+  "reason": "Railway CLI/API inspection available in this lane could list environments and inspect status, but did not expose supported commands for enabling PR Environments, Bot PR Environments, or Focused PR Environments on the project. Service source connection also requires operator review because connecting the wrong branch can deploy shared staging.",
+  "canonical_repository": "shloimie-beep/onetimev2",
+  "do_not": [
+    "Do not deploy production.",
+    "Do not copy production credentials.",
+    "Do not copy production data.",
+    "Do not let feature branches overwrite shared persistent staging."
+  ],
+  "target_railway_project": {
+    "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+    "base_environment": "staging",
+    "base_environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+    "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+    "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+    "web_base_domain": "ot99-web-staging.up.railway.app"
+  },
+  "actions": [
+    {
+      "step": 1,
+      "action": "Open the One Time Railway staging project and confirm no production environment is selected."
+    },
+    {
+      "step": 2,
+      "action": "Connect the web and worker service source repository to shloimie-beep/onetimev2 only after confirming the source branch cannot cause feature branches to overwrite shared staging."
+    },
+    {
+      "step": 3,
+      "action": "In Project Settings -> Environments -> PR Environments, enable PR Environments with base environment staging."
+    },
+    {
+      "step": 4,
+      "action": "Enable Bot PR Environments so Codex-authored and other bot-authored app-visible PRs receive previews."
+    },
+    {
+      "step": 5,
+      "action": "Enable Focused PR Environments where compatible. Suggested web watch paths: apps/web/**, packages/**, public/**, scripts/build-public-pages.ts, package.json, package-lock.json, railway.json. Suggested worker watch paths: apps/worker/**, packages/**, scripts/**, package.json, package-lock.json, railway.json."
+    },
+    {
+      "step": 6,
+      "action": "Confirm the base web service has an automatic Railway-provided domain so PR environments receive clickable Railway domains."
+    },
+    {
+      "step": 7,
+      "action": "Open or refresh PR #93, #95, #96, and the repository-transfer preview PR. Record each Railway environment ID and URL in ops/previews/current.json, then replace the blocked Preview URL fields in the PR bodies."
+    }
+  ],
+  "acceptance": [
+    "Railway creates one isolated PR Environment for each app-visible PR.",
+    "Each PR body has Preview URL: https://...",
+    "Preview databases use fixture/demo data or isolated staging copies.",
+    "PR environments are deleted when the PR closes.",
+    "Production environment and production credentials remain unchanged."
+  ],
+  "single_blocker_until_done": "RAILWAY_PR_ENVIRONMENTS_NOT_ENABLED_OR_SOURCE_NOT_CONNECTED"
+}

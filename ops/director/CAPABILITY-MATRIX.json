@@ -15,7 +15,7 @@
   ],
   "production_runtime_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
   "production_version": "rabbi-day-one-crm-ed77a04",
-  "canonical_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/91",
+  "canonical_draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/91",
   "capabilities": [
     {
       "id": "public_landing_signup",

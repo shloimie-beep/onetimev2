@@ -37,7 +37,7 @@ values.
 {
   "schema_version": "onetime.w12_100.railway_launch_manifest.v1",
   "lane_id": "W12-100-10",
-  "repository": "webcraft-media/onetimev2",
+  "repository": "shloimie-beep/onetimev2",
   "target": {
     "environment_kind": "staging",
     "base_url": "https://<staging-host>",

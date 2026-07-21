@@ -2,12 +2,12 @@
   "schema_version": "onetime.hybrid_pivot.base.v1",
   "generated_at": "2026-07-20T11:17:44.8984447+03:00",
   "repository": {
-    "full_name": "webcraft-media/onetimev2",
-    "remote": "https://github.com/webcraft-media/onetimev2.git"
+    "full_name": "shloimie-beep/onetimev2",
+    "remote": "https://github.com/shloimie-beep/onetimev2.git"
   },
   "pull_request": {
     "number": 92,
-    "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/92",
     "state": "OPEN",
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",
@@ -40,7 +40,7 @@
       {
         "name": "Node 24 verify",
         "workflow": "CI",
-        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099515",
+        "run_url": "https://github.com/shloimie-beep/onetimev2/actions/runs/29697099515",
         "job_id": "88219620645",
         "conclusion": "FAILURE",
         "steps_reported": 0
@@ -48,7 +48,7 @@
       {
         "name": "OPS-06 deterministic checks",
         "workflow": "OPS-06 Reliability Observability",
-        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099500",
+        "run_url": "https://github.com/shloimie-beep/onetimev2/actions/runs/29697099500",
         "job_id": "88219620560",
         "conclusion": "FAILURE",
         "steps_reported": 0
@@ -56,7 +56,7 @@
       {
         "name": "PostgreSQL 18 assurance and restore clone",
         "workflow": "OPS-11 PostgreSQL 18 Assurance",
-        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099474",
+        "run_url": "https://github.com/shloimie-beep/onetimev2/actions/runs/29697099474",
         "job_id": "88219620423",
         "conclusion": "FAILURE",
         "steps_reported": 0
@@ -64,7 +64,7 @@
       {
         "name": "PostgreSQL 16 assurance harness",
         "workflow": "OT-37 PostgreSQL Assurance",
-        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099479",
+        "run_url": "https://github.com/shloimie-beep/onetimev2/actions/runs/29697099479",
         "job_id": "88219620733",
         "conclusion": "FAILURE",
         "steps_reported": 0
@@ -72,7 +72,7 @@
       {
         "name": "PostgreSQL 16 learner-seat proof",
         "workflow": "OT-83 PostgreSQL Concurrency",
-        "run_url": "https://github.com/webcraft-media/onetimev2/actions/runs/29697099491",
+        "run_url": "https://github.com/shloimie-beep/onetimev2/actions/runs/29697099491",
         "job_id": "88219620746",
         "conclusion": "FAILURE",
         "steps_reported": 0

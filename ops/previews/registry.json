@@ -1,0 +1,71 @@
+{
+  "schema_version": "onetime.preview.registry.v1",
+  "updated_at": "2026-07-21T08:26:33Z",
+  "canonical_repository": "shloimie-beep/onetimev2",
+  "railway": {
+    "owner": "Railway GitHub integration",
+    "project_id": "7c8eee26-7a6a-4684-826d-9f4377d67d46",
+    "base_environment": "staging",
+    "base_environment_id": "11edf8a2-0160-45b4-a039-b15b4beb4c10",
+    "web_service_id": "9fb6d9f4-4f50-4df6-868b-c18a9b83d2f2",
+    "worker_service_id": "76e7fdc2-99b9-4a82-ba55-5dff3723398f",
+    "production_project_id": "ce55ef20-1418-4ad3-aafa-f877fb992dc8",
+    "production_environment_id": "f911acfc-e206-44df-a569-9d69d709b94b",
+    "production_allowed": false
+  },
+  "policy": {
+    "app_visible_pr_preview_required": true,
+    "pr_body_preview_url_field_required": true,
+    "production_credentials_copied": false,
+    "production_data_copied": false,
+    "feature_branches_may_overwrite_shared_staging": false,
+    "shared_staging_conductor_only": true,
+    "single_blocker": "RAILWAY_PR_ENVIRONMENTS_NOT_ENABLED_OR_SOURCE_NOT_CONNECTED"
+  },
+  "tracked_pull_requests": [
+    {
+      "pr_number": 93,
+      "lane": "HighLevel",
+      "title": "HighLevel business foundation without credentials",
+      "app_visible": true,
+      "head_branch": "codex/highlevel-business-foundation",
+      "base_branch": "codex/one-time-finish-now-20260719",
+      "preview_required": true,
+      "database_mode": "fixture_demo_database_or_copied_isolated_staging_database",
+      "safe_test_identity_mode": "synthetic_demo_business_provider_identity"
+    },
+    {
+      "pr_number": 95,
+      "lane": "media",
+      "title": "Add learning delivery media pipeline foundation",
+      "app_visible": true,
+      "head_branch": "codex/learning-delivery-vimeo-zoom",
+      "base_branch": "codex/learning-product-portals-media",
+      "preview_required": true,
+      "database_mode": "fixture_demo_database_or_copied_isolated_staging_database",
+      "safe_test_identity_mode": "synthetic_demo_media_provider_identity"
+    },
+    {
+      "pr_number": 96,
+      "lane": "Student experience",
+      "title": "Integrate student experience preview",
+      "app_visible": true,
+      "head_branch": "codex/student-experience-preview",
+      "base_branch": "codex/one-time-finish-now-20260719",
+      "preview_required": true,
+      "database_mode": "fixture_demo_database_or_copied_isolated_staging_database",
+      "safe_test_identity_mode": "synthetic_demo_family_student_identity"
+    },
+    {
+      "pr_number": null,
+      "lane": "repository transfer and PR preview contract",
+      "title": "Repair repository transfer references and add automatic PR preview contract",
+      "app_visible": false,
+      "head_branch": "codex/repository-transfer-pr-previews",
+      "base_branch": "codex/one-time-finish-now-20260719",
+      "preview_required": true,
+      "database_mode": "backend_health_only",
+      "safe_test_identity_mode": "synthetic_demo_identity_only"
+    }
+  ]
+}

@@ -19,7 +19,7 @@ describe('OT-75 release readiness contract', () => {
   }>('ops/release/ot75/release-readiness.contract.json');
 
   it('pins the requested repository, base, branch, and mutation policy', () => {
-    expect(contract.task.repository).toBe('webcraft-media/onetimev2');
+    expect(contract.task.repository).toBe('shloimie-beep/onetimev2');
     expect(contract.task.immutable_base_sha).toBe('dfef7de2035e08f1ee72e0133ccf656fe7a74444');
     expect(contract.task.branch).toBe('codex/ot75-release-observability-readiness');
     expect(Object.values(contract.mutation_policy).every((allowed) => allowed === false)).toBe(

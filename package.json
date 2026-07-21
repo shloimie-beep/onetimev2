@@ -50,7 +50,9 @@
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",
     "version:print": "tsx scripts/print-version.ts",
     "director:truth": "node scripts/check-director-truth.mjs",
-    "director:truth:live": "node scripts/check-director-truth.mjs --live"
+    "director:truth:live": "node scripts/check-director-truth.mjs --live",
+    "preview:discover": "node scripts/previews/discover-pr-preview.mjs --write",
+    "preview:check": "node scripts/previews/check-preview-contract.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

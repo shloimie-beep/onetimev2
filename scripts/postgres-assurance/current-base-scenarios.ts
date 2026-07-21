@@ -1,6 +1,6 @@
 export const ot37Task = {
   taskId: 'OT-37',
-  repository: 'webcraft-media/onetimev2',
+  repository: 'shloimie-beep/onetimev2',
   baseCommit: '4ac288968ba24e30a5c3f8c6924f492eedf4338f',
   foundationAncestor: '3465bd7d4c6b6829a6be6e4b4f8a003d608f3680',
   stackedBaseBranch: 'codex/crm-core-v1',

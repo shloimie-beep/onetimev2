@@ -3,7 +3,7 @@
 Generated: 2026-07-19T17:32:01.523Z
 
 This folder is the canonical director handoff for fresh ChatGPT or Codex
-sessions working on `webcraft-media/onetimev2`. It records the current release
+sessions working on `shloimie-beep/onetimev2`. It records the current release
 state without depending on local chat memory.
 
 ## Read Order
@@ -22,7 +22,7 @@ state without depending on local chat memory.
 
 ## Current Truth
 
-- Repository: `webcraft-media/onetimev2`
+- Repository: `shloimie-beep/onetimev2`
 - Production URL: `https://join.onetimeonetime.com`
 - Staging URL: `https://ot99-web-staging.up.railway.app`
 - Production and staging `/version` read back:
@@ -30,7 +30,7 @@ state without depending on local chat memory.
 - Production and staging runtime SHA:
   `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`
 - Canonical draft PR:
-  `https://github.com/webcraft-media/onetimev2/pull/91`
+  `https://github.com/shloimie-beep/onetimev2/pull/91`
 - PR #91 head:
   `e3d3736546f48b3834d6698838befe20884005f1`
 - PR #91 required checks were green when inspected on 2026-07-19.
@@ -41,7 +41,7 @@ state without depending on local chat memory.
 - Current release run:
   `ops/codex-runs/RABBI-DAY-ONE-CRM/`
 - ONE-TIME-FINISH-NOW remediation PR:
-  `https://github.com/webcraft-media/onetimev2/pull/92`
+  `https://github.com/shloimie-beep/onetimev2/pull/92`
 - PR #92 CRM production evidence commit:
   `25c271576be675c36261465e51d4f176a923b007`
 - PR #92 deployed runtime remains `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`; the CRM-first evidence at commit `25c271576be675c36261465e51d4f176a923b007` records production migration 2204, real CRM import apply, idempotency replay, reconciliation, and one production signup proof.

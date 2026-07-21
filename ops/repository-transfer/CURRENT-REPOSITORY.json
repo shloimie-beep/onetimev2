@@ -1,0 +1,24 @@
+{
+  "schema_version": "onetime.repository_transfer.current_repository.v1",
+  "generated_at": "2026-07-21T08:26:33Z",
+  "canonical_repository": "shloimie-beep/onetimev2",
+  "transferred_from_repository": "webcraft-media/onetimev2",
+  "canonical_git_remote": "https://github.com/shloimie-beep/onetimev2.git",
+  "transferred_from_git_remote": "https://github.com/webcraft-media/onetimev2.git",
+  "canonical_github_url": "https://github.com/shloimie-beep/onetimev2",
+  "canonical_api_repository": "https://api.github.com/repos/shloimie-beep/onetimev2",
+  "current_release_line": {
+    "pull_request": 92,
+    "head_branch": "codex/one-time-finish-now-20260719",
+    "head_sha": "5ddd7b604c01744dd562050ae9b51124f7732594",
+    "base_branch": "release/w13-100-controlled-day-one-20260717T182046Z",
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/92",
+    "fetched_at": "2026-07-21T08:26:33Z"
+  },
+  "work_branch": "codex/repository-transfer-pr-previews",
+  "worktree": "C:/Users/User/.onetime-worktrees/repository-transfer-pr-previews",
+  "base_policy": "This branch is based on the fetched PR #92 head. It must target codex/one-time-finish-now-20260719 as a draft PR.",
+  "production_changed": false,
+  "production_deploy_allowed": false,
+  "historical_reference_policy": "Historical run evidence may keep webcraft-media/onetimev2 as provenance. Active operational checks, templates, director records, and generated handoff material use shloimie-beep/onetimev2."
+}

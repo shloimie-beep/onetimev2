@@ -16,7 +16,7 @@ const BASE_SHA = '0d8d7168f066668f035176d777bdaaa4dcc5accd';
 const BASE_BRANCH = 'integration/w12-final-convergence-20260717T123715Z';
 const BRANCH = 'codex/w13-10-complete-launch-foundations';
 const WORKTREE = 'C:/Users/User/OneTimeOneTime-w13-10-launch-foundations';
-const PR73 = 'https://github.com/webcraft-media/onetimev2/pull/73';
+const PR73 = 'https://github.com/shloimie-beep/onetimev2/pull/73';
 const PR72_HEAD = 'd4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4';
 const PR71_HEAD = 'fc075bb688c69d8a03681633df8e6ea32ff685a9';
 const PROMPT_PATH =
@@ -253,7 +253,7 @@ A staging canary is not production activation approval. A green test suite is no
 function replacementPrompt(name: string) {
   return `# ${name} Replacement Prompt
 
-Repository: webcraft-media/onetimev2
+Repository: shloimie-beep/onetimev2
 Authoritative source: ${BASE_BRANCH} at ${BASE_SHA}
 Safety: do not deploy, import real rows, enable providers, send messages, charge cards, upload content, mutate DNS, or call production databases unless the exact sub-lane has an explicit approval artifact.
 
@@ -761,7 +761,7 @@ function state(changedFiles: readonly string[]): JsonValue {
   return {
     schema_version: 'onetime.w13_10.state.v1',
     generated_at: now,
-    repository: 'webcraft-media/onetimev2',
+    repository: 'shloimie-beep/onetimev2',
     exact_base_sha: BASE_SHA,
     base_branch: BASE_BRANCH,
     branch: BRANCH,
@@ -991,7 +991,7 @@ async function refreshDirector() {
     json.source_ref = {
       selected_base_sha: BASE_SHA,
       deployed_runtime_sha: '1197673fa409bfc4c649c2683f782e86775caa5e',
-      release_pr: 'https://github.com/webcraft-media/onetimev2/pull/61',
+      release_pr: 'https://github.com/shloimie-beep/onetimev2/pull/61',
       w12_99_candidate_branch: BASE_BRANCH,
       w12_99_candidate_head: BASE_SHA,
       w12_99_evidence: 'ops/codex-runs/W12-99/CAPABILITY-MATRIX.json',

@@ -69,8 +69,8 @@ function main() {
   }
 
   check(
-    contract.task.repository === 'webcraft-media/onetimev2',
-    'repository is webcraft-media/onetimev2',
+    contract.task.repository === 'shloimie-beep/onetimev2',
+    'repository is shloimie-beep/onetimev2',
     report,
   );
   check(

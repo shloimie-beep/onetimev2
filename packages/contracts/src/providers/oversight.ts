@@ -31,7 +31,7 @@ export const bnaOversightFollowupManifestSchema = z
     schema_version: z.literal(1),
     producer: z
       .object({
-        repository: z.literal('webcraft-media/onetimev2'),
+        repository: z.literal('shloimie-beep/onetimev2'),
         branch: z.string().min(1).max(160),
         account_key: z.string().min(1).max(120),
         product_key: z.string().min(1).max(120),

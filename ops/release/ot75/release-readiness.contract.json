@@ -3,7 +3,7 @@
   "task": {
     "id": "OT-75",
     "title": "Release and observability readiness",
-    "repository": "webcraft-media/onetimev2",
+    "repository": "shloimie-beep/onetimev2",
     "immutable_base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
     "base_ref": "codex/ot60r-recovery-convergence",
     "branch": "codex/ot75-release-observability-readiness",

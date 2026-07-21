@@ -390,7 +390,7 @@ const exampleManifest = JSON.parse(
 const manifest = {
   ...exampleManifest,
   manifest_id: 'OT-81-day-one-release-manifest',
-  repository: 'webcraft-media/onetimev2',
+  repository: 'shloimie-beep/onetimev2',
   source: {
     immutable_base_sha: immutableBaseSha,
     base_branch: 'codex/ot80-one-shot-final-convergence',

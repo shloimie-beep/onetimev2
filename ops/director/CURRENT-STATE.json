@@ -3,8 +3,8 @@
   "generated_at": "2026-07-19T17:32:01.523Z",
   "current_run": "ops/codex-runs/RABBI-DAY-ONE-CRM",
   "repository": {
-    "full_name": "webcraft-media/onetimev2",
-    "remote": "https://github.com/webcraft-media/onetimev2.git"
+    "full_name": "shloimie-beep/onetimev2",
+    "remote": "https://github.com/shloimie-beep/onetimev2.git"
   },
   "release_truth": {
     "status": "crm_real_data_delivered_campaign_seed_ready_external_lanes_pending",
@@ -23,7 +23,7 @@
   },
   "canonical_draft_pr": {
     "number": 91,
-    "url": "https://github.com/webcraft-media/onetimev2/pull/91",
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/91",
     "state": "OPEN",
     "is_draft": true,
     "base_ref": "integration/w12-final-convergence-20260717T123715Z",
@@ -33,7 +33,7 @@
   },
   "finish_now_pr": {
     "number": 92,
-    "url": "https://github.com/webcraft-media/onetimev2/pull/92",
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/92",
     "state": "OPEN",
     "is_draft": true,
     "base_ref": "release/w13-100-controlled-day-one-20260717T182046Z",

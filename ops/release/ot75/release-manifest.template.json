@@ -2,7 +2,7 @@
   "schema_version": 1,
   "task_id": "OT-75",
   "release_id": "OT-80_TO_FILL",
-  "repository": "webcraft-media/onetimev2",
+  "repository": "shloimie-beep/onetimev2",
   "base_sha": "dfef7de2035e08f1ee72e0133ccf656fe7a74444",
   "integrated_heads": {
     "web": "TO_BE_FILLED_BY_OT80",

@@ -1,15 +1,15 @@
 {
   "schema_version": "onetime.director.w12_99_candidate.v1",
   "generated_at": "2026-07-17T17:17:56.257Z",
-  "repository": "webcraft-media/onetimev2",
+  "repository": "shloimie-beep/onetimev2",
   "candidate_branch": "integration/w12-final-convergence-20260717T123715Z",
   "candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-  "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+  "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/73",
   "release_pr": {
     "number": 61,
     "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
     "head": "c7d46066517d7a458d189f2c782cc06200f7861c",
-    "url": "https://github.com/webcraft-media/onetimev2/pull/61"
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/61"
   },
   "production_runtime": {
     "url": "https://join.onetimeonetime.com",
@@ -69,7 +69,7 @@
   ],
   "draft_pr_state": {
     "number": 73,
-    "url": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/73",
     "state": "OPEN",
     "is_draft": true,
     "mergeable": "MERGEABLE",
@@ -123,7 +123,7 @@
       "lane": "OPS-13A",
       "status": "available_preflight_input_not_acceptance_proof",
       "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/72",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/72",
       "evidence": [
         "ops/codex-runs/OPS-13A/FINAL-REPORT.md",
         "ops/codex-runs/OPS-13A/IMPORT-PREVIEW.json",

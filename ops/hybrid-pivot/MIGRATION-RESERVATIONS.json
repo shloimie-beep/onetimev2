@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.hybrid_pivot.migration_reservations.v1",
   "generated_at": "2026-07-20T11:17:44.8984447+03:00",
-  "repository": "webcraft-media/onetimev2",
+  "repository": "shloimie-beep/onetimev2",
   "pull_request": 92,
   "latest_existing_migration": "2204_w12_100_real_source_crm_apply",
   "policy": {

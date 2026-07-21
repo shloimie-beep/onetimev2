@@ -1,10 +1,10 @@
 {
   "schema_version": "onetime.hybrid_pivot.window_registry.v1",
   "generated_at": "2026-07-20T11:17:44.8984447+03:00",
-  "repository": "webcraft-media/onetimev2",
+  "repository": "shloimie-beep/onetimev2",
   "pull_request": {
     "number": 92,
-    "url": "https://github.com/webcraft-media/onetimev2/pull/92"
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/92"
   },
   "base_head_before_checkpoint": "0d50e0f07afbc0d0d143a45e76e73821ca25178f",
   "checkpoint_base_sha": "Use the pushed checkpoint commit SHA returned in the prompt-01 final response.",

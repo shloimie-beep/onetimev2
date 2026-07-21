@@ -3,10 +3,10 @@
   "generated_at": "2026-07-17T17:17:56.257Z",
   "base": {
     "selected_base_sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
-    "release_pr": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "release_pr": "https://github.com/shloimie-beep/onetimev2/pull/61",
     "run_w12_99_last": true,
     "w12_99_candidate_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
-    "w12_99_draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "w12_99_draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/73",
     "w12_100_owns_launch_readiness": true
   },
   "parallel_w12_lanes": [
@@ -17,7 +17,7 @@
       "branch": "codex/w12-00-canonical-director-handoff",
       "head": "d22b68381f53686efb0badcce159f966e3167fe2",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/63",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/63",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -28,7 +28,7 @@
       "branch": "codex/w12-01-crm-audience-import",
       "head": "f31316dcb55a53b3ab4f77e7dc79988f2c988dfe",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/68",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/68",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -39,7 +39,7 @@
       "branch": "codex/w12-02-communication-history",
       "head": "5c412373b3a317f1197ab50dffcf5352c2f97a2e",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/66",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/66",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -50,7 +50,7 @@
       "branch": "codex/w12-03-portal-test-lab",
       "head": "5bed730705f92a07647bd6eb3672952a47a4a075",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/70",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/70",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -61,7 +61,7 @@
       "branch": "codex/w12-04-content-vimeo-classroom",
       "head": "373f6d55f6a636922d08b994b5dee28ff7bf6aa9",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/64",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/64",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -72,7 +72,7 @@
       "branch": "codex/w12-05-telegram-operations",
       "head": "fcdfcd3a93b2174d62298099ebefa39ac2e7c34d",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/65",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/65",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -83,7 +83,7 @@
       "branch": "codex/w12-06-whatsapp-lead-assistant",
       "head": "fbc5c2f7304fec23d41e44e3f141f9b6abbade9f",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/62",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/62",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -94,7 +94,7 @@
       "branch": "codex/w12-07-premium-landing",
       "head": "7d1196b03cfdb6828b376486c196a43b7ab9df32",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/69",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/69",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -105,7 +105,7 @@
       "branch": "codex/w12-08-admin-classroom-productization",
       "head": "4c29c6c665f9094f1d83f332c40316e0d2bce18f",
       "status": "integrated_in_w12_99",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/67",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/67",
       "w12_99_integration_head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "notes": "Integrated into the W12-99 draft PR; branch-local check status is no longer the release acceptance proof."
     },
@@ -116,7 +116,7 @@
       "branch": "codex/w12-09-student-gamification",
       "head": "fc075bb688c69d8a03681633df8e6ea32ff685a9",
       "status": "excluded_pending_explicit_decision",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/71",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/71",
       "notes": "Excluded from W12-99 and this W12-100-00 operations lane."
     },
     {
@@ -126,7 +126,7 @@
       "branch": "codex/ops13a-real-data-provider-preflight",
       "head": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
       "status": "available_preflight_input_not_acceptance_proof",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/72",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/72",
       "notes": "Eight sanitized artifacts integrated by W12-100-00; OPS-13B was not run."
     },
     {
@@ -136,7 +136,7 @@
       "branch": "integration/w12-final-convergence-20260717T123715Z",
       "head": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
       "status": "pushed_draft_pr_open",
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/73",
       "notes": "Includes W12-00 through W12-08. Excludes W12-09 and BNA P1/P2/P3. Staging deploy, real import, and provider canaries remain W12-100 work."
     },
     {

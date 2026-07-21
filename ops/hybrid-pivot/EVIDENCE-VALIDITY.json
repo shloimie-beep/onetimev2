@@ -1,7 +1,7 @@
 {
   "schema_version": "onetime.hybrid_pivot.evidence_validity.v1",
   "generated_at": "2026-07-20T11:17:44.8984447+03:00",
-  "repository": "webcraft-media/onetimev2",
+  "repository": "shloimie-beep/onetimev2",
   "pull_request": 92,
   "policy": {
     "new_window_does_not_force_full_retest": true,

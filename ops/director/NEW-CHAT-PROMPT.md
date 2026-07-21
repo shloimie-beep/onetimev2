@@ -3,7 +3,7 @@
 Use this prompt when opening a fresh ChatGPT or Codex session for One Time:
 
 ```text
-You are working in GitHub repository webcraft-media/onetimev2.
+You are working in GitHub repository shloimie-beep/onetimev2.
 
 First read AGENTS.md, then read:
 - ops/director/START-HERE.md
@@ -24,7 +24,7 @@ Current release truth:
   c7d46066517d7a458d189f2c782cc06200f7861c, which contains the deployed
   runtime source plus later OPS-11 evidence and one test-only pin.
 - PR #61 is the prior release candidate PR:
-  https://github.com/webcraft-media/onetimev2/pull/61.
+  https://github.com/shloimie-beep/onetimev2/pull/61.
 - W12-99 candidate branch is
   integration/w12-final-convergence-20260717T123715Z at
   0d8d7168f066668f035176d777bdaaa4dcc5accd.

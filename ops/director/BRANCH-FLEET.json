@@ -1,12 +1,12 @@
 {
   "schema_version": "onetime.director.branch_fleet.v1",
   "generated_at": "2026-07-17T17:17:56.257Z",
-  "repository": "webcraft-media/onetimev2",
+  "repository": "shloimie-beep/onetimev2",
   "release_candidate": {
     "branch": "release/ops10-full-staged-production-launch-20260717T050800Z",
     "sha": "c7d46066517d7a458d189f2c782cc06200f7861c",
     "pr": 61,
-    "url": "https://github.com/webcraft-media/onetimev2/pull/61",
+    "url": "https://github.com/shloimie-beep/onetimev2/pull/61",
     "base": "main",
     "is_draft": true,
     "check_summary": "all_listed_checks_success"
@@ -15,7 +15,7 @@
     "branch": "integration/w12-final-convergence-20260717T123715Z",
     "sha": "0d8d7168f066668f035176d777bdaaa4dcc5accd",
     "status": "pushed_draft_pr_open",
-    "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/73",
+    "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/73",
     "included_lanes": [
       "W12-00",
       "W12-01",
@@ -33,7 +33,7 @@
         "lane": "OPS-13A",
         "branch": "codex/ops13a-real-data-provider-preflight",
         "sha": "d4f58801ebbb5fe8a41ef33621c7594f0ff6b2b4",
-        "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/72",
+        "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/72",
         "status": "available_preflight_input_not_acceptance_proof"
       }
     ],
@@ -45,7 +45,7 @@
       "branch": "codex/w12-00-canonical-director-handoff",
       "sha": "d22b68381f53686efb0badcce159f966e3167fe2",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/63",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/63",
       "w12_99_status": "integrated"
     },
     {
@@ -53,7 +53,7 @@
       "branch": "codex/w12-01-crm-audience-import",
       "sha": "f31316dcb55a53b3ab4f77e7dc79988f2c988dfe",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/68",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/68",
       "w12_99_status": "integrated"
     },
     {
@@ -61,7 +61,7 @@
       "branch": "codex/w12-02-communication-history",
       "sha": "5c412373b3a317f1197ab50dffcf5352c2f97a2e",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/66",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/66",
       "w12_99_status": "integrated"
     },
     {
@@ -69,7 +69,7 @@
       "branch": "codex/w12-03-portal-test-lab",
       "sha": "5bed730705f92a07647bd6eb3672952a47a4a075",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/70",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/70",
       "w12_99_status": "integrated"
     },
     {
@@ -77,7 +77,7 @@
       "branch": "codex/w12-04-content-vimeo-classroom",
       "sha": "373f6d55f6a636922d08b994b5dee28ff7bf6aa9",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/64",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/64",
       "w12_99_status": "integrated"
     },
     {
@@ -85,7 +85,7 @@
       "branch": "codex/w12-05-telegram-operations",
       "sha": "fcdfcd3a93b2174d62298099ebefa39ac2e7c34d",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/65",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/65",
       "w12_99_status": "integrated"
     },
     {
@@ -93,7 +93,7 @@
       "branch": "codex/w12-06-whatsapp-lead-assistant",
       "sha": "fbc5c2f7304fec23d41e44e3f141f9b6abbade9f",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/62",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/62",
       "w12_99_status": "integrated"
     },
     {
@@ -101,7 +101,7 @@
       "branch": "codex/w12-07-premium-landing",
       "sha": "7d1196b03cfdb6828b376486c196a43b7ab9df32",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/69",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/69",
       "w12_99_status": "integrated"
     },
     {
@@ -109,7 +109,7 @@
       "branch": "codex/w12-08-admin-classroom-productization",
       "sha": "4c29c6c665f9094f1d83f332c40316e0d2bce18f",
       "remote_seen": true,
-      "draft_pr": "https://github.com/webcraft-media/onetimev2/pull/67",
+      "draft_pr": "https://github.com/shloimie-beep/onetimev2/pull/67",
       "w12_99_status": "integrated"
     }
   ],

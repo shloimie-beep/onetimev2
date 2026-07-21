@@ -319,10 +319,10 @@ async function evaluateSignal({ signal, manifest, packageJson, facts }) {
 
 function validateManifest({ manifest, registry }) {
   const failures = [];
-  if (manifest.repository !== 'webcraft-media/onetimev2') {
+  if (manifest.repository !== 'shloimie-beep/onetimev2') {
     failures.push({
       code: 'REPOSITORY_MISMATCH',
-      message: 'manifest repository is not webcraft-media/onetimev2',
+      message: 'manifest repository is not shloimie-beep/onetimev2',
     });
   }
   if (manifest.source?.immutable_base_sha !== IMMUTABLE_BASE) {

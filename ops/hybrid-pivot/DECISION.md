@@ -2,7 +2,7 @@
 
 Generated: 2026-07-20T11:17:44.8984447+03:00
 
-Repository: `webcraft-media/onetimev2`
+Repository: `shloimie-beep/onetimev2`
 PR: `#92`
 Branch: `codex/one-time-finish-now-20260719`
 
