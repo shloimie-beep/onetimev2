@@ -194,6 +194,8 @@
   "routes": {
     "/": "public-marketing",
     "/signup": "auth",
+    "/tisha-bav": "public-marketing",
+    "/tisha-bav/live": "public-marketing",
     "/login": "auth",
     "/activate": "auth",
     "/forgot-password": "auth",

@@ -257,6 +257,23 @@ export {
   type AuthenticatedSession,
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
+export {
+  HttpHighLevelEventClient,
+  MockHighLevelEventClient,
+  TISHA_BAV_EVENT_CODE,
+  TISHA_BAV_EVENT_TITLE,
+  TISHA_BAV_JOIN_PATH,
+  TISHA_BAV_LANDING_PATH,
+  TISHA_BAV_REDIRECT_PATH,
+  TishaBavIdempotencyConflictError,
+  TishaBavJoinError,
+  captureTishaBavRegistration,
+  createHighLevelEventClient,
+  requestTishaBavJoin,
+  resolveTishaBavRedirect,
+  tishaBavEventState,
+  type HighLevelEventClient,
+} from './events/tisha-bav.ts';
 export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
 export { buildOwnerDashboard, ownerAdminVisibleActions } from './dashboard/service.ts';
 export {
