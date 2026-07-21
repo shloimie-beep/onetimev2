@@ -42,6 +42,19 @@ export {
   type ClassroomRepository,
   type ClassroomService,
 } from './classroom/service.ts';
+export {
+  CANONICAL_OBS_SCENES,
+  CANONICAL_OBS_SOURCES,
+  LIVE_CLASS_POLICY_VERSION,
+  LIVE_CLASS_STAGE_SURFACE_LABEL,
+  createLiveClassService,
+  verifySignedLiveClassCommand,
+  type LiveClassCommandInsert,
+  type LiveClassLearnerRecord,
+  type LiveClassRepository,
+  type LiveClassService,
+  type LiveClassSessionRecord,
+} from './live-class/service.ts';
 export { createClassroomReminderJob } from './classroom/reminders.ts';
 export {
   ZoomApiError,

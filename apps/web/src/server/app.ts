@@ -10,6 +10,7 @@ import type { DbPool } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
+import { createLiveClassRepository } from '../../../../packages/db/src/live-class/repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
@@ -36,6 +37,19 @@ import {
   createContactSchema,
   ownerDashboardResponseSchema,
   leadPayloadSchema,
+  liveClassCommandResponseSchema,
+  liveClassConsoleSnapshotSchema,
+  liveClassObsCommandPayloadSchema,
+  liveClassObsCommandPollResponseSchema,
+  liveClassObsCommandReportPayloadSchema,
+  liveClassQuestionActionPayloadSchema,
+  liveClassQuestionCompletePayloadSchema,
+  liveClassQuestionListResponseSchema,
+  liveClassQuestionReadyPayloadSchema,
+  liveClassQuestionSubmitPayloadSchema,
+  liveClassQuestionSubmitResponseSchema,
+  liveClassStageResponseSchema,
+  liveClassZoomControlPayloadSchema,
   loginPayloadSchema,
   publicFieldErrors,
   updateContactSchema,
@@ -107,6 +121,7 @@ import {
   createClassPortalAccessAdapter,
   createClassroomPortalAccessAdapter,
   createClassroomService,
+  createLiveClassService,
   createContentPortalAccessAdapter,
   createGamificationService,
   createLoginCsrf,
@@ -790,6 +805,48 @@ export function createApp({
     },
   );
 
+  app.get(/^\/app\/live-console(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(
+        302,
+        `/login?return_to=${encodeURIComponent(
+          safeReturnPath(req.path, config) ?? '/app/live-console',
+        )}`,
+      );
+      return;
+    }
+    if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    await sendAppHtml(res, distDir, 'live');
+  });
+
+  app.get(/^\/app\/live-stage\/([^/]+)(?:\/.*)?$/, async (_req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "script-src 'self'",
+        "style-src 'self'",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'self'",
+      ].join('; '),
+    );
+    await sendAppHtml(res, distDir, 'live');
+  });
+
   app.get(/^\/app\/parent(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     await serveProtectedAppShell(req, res, {
       pool,
@@ -1197,6 +1254,13 @@ export function createApp({
     questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
     ...(clock ? { clock } : {}),
   });
+  const liveClassRepository = createLiveClassRepository(pool);
+  const liveClassService = createLiveClassService({
+    config,
+    repository: liveClassRepository,
+    questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:live-class-question-v1`),
+    ...(clock ? { clock } : {}),
+  });
   const gamificationRepository = createGamificationRepository(pool);
   const gamificationService = createGamificationService({
     repository: gamificationRepository,
@@ -1336,6 +1400,222 @@ export function createApp({
         success: true,
         data: classroomQuestionListResponseSchema.parse({ questions }),
       });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const occurrenceKey = optionalQueryString(req.query.occurrence_key);
+      if (actor.actor_role === 'owner' || actor.actor_role === 'admin') {
+        const snapshot = await liveClassService.consoleSnapshot(actor, occurrenceKey);
+        res.json(liveClassConsoleSnapshotSchema.parse(snapshot));
+        return;
+      }
+      const questions = await liveClassService.listQuestions(actor, occurrenceKey);
+      res.json(liveClassQuestionListResponseSchema.parse({ success: true, data: { questions } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionSubmitPayloadSchema.parse(req.body);
+      const result = await liveClassService.submitQuestion(actor, payload);
+      res.status(201).json(
+        liveClassQuestionSubmitResponseSchema.parse({
+          success: true,
+          data: result,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/select', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionActionPayloadSchema.parse(req.body);
+      const data = await liveClassService.selectQuestion(
+        actor,
+        String(req.params.id),
+        payload.idempotency_key,
+      );
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/ready', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionReadyPayloadSchema.parse(req.body);
+      const question = await liveClassService.markReady(actor, String(req.params.id), payload);
+      res.json({ success: true, data: { question } });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/live', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionActionPayloadSchema.parse(req.body);
+      const data = await liveClassService.goLive(
+        actor,
+        String(req.params.id),
+        payload.idempotency_key,
+      );
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/complete', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionCompletePayloadSchema.parse(req.body);
+      const data = await liveClassService.completeQuestion(actor, String(req.params.id), payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/control', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassZoomControlPayloadSchema.parse(req.body);
+      const data = await liveClassService.zoomControl(actor, payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/obs/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (!requireObsBridgeToken(req, res, config)) return;
+    try {
+      const occurrenceKey = String(req.query.occurrence_key ?? '');
+      const commands = await liveClassService.pollObsCommands(
+        { account_key: config.accountKey, product_key: config.productKey },
+        occurrenceKey,
+      );
+      res.json(liveClassObsCommandPollResponseSchema.parse({ success: true, data: { commands } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/obs/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (req.body && typeof req.body === 'object' && 'command_key' in req.body) {
+      if (!requireObsBridgeToken(req, res, config)) return;
+      try {
+        const payload = liveClassObsCommandReportPayloadSchema.parse(req.body);
+        const result = await liveClassService.reportObsCommand(
+          { account_key: config.accountKey, product_key: config.productKey },
+          payload,
+        );
+        res.json({ success: true, data: result });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+      return;
+    }
+
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassObsCommandPayloadSchema.parse(req.body);
+      const data = await liveClassService.obsCommand(actor, payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/stage/:stageSession', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const stage = await liveClassService.stageSnapshot(String(req.params.stageSession));
+      res.json(liveClassStageResponseSchema.parse({ success: true, data: stage }));
     } catch (error) {
       handleApiError(error, req, res);
     }
@@ -2397,6 +2677,7 @@ function publicHtmlFileForPath(pathname: string) {
     '/app/classes',
     '/app/content',
     '/app/billing',
+    '/app/live-console',
     '/app/parent',
     '/app/student',
   ]);
@@ -2632,6 +2913,32 @@ function requireSameOriginPost(req: RequestWithTrace, res: Response, config: App
   return false;
 }
 
+function requireObsBridgeToken(req: RequestWithTrace, res: Response, config: AppConfig) {
+  const expected = config.liveClassObsBridgeToken;
+  const submitted =
+    req.header('x-ot-live-bridge-token') ?? optionalQueryString(req.query.bridge_token);
+  if (!expected || !submitted || !constantDigestEqual(expected, submitted)) {
+    res.status(403).json(publicError('FORBIDDEN', 'Live OBS bridge token is required.', req.traceId));
+    return false;
+  }
+  return true;
+}
+
+function optionalQueryString(value: unknown) {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (Array.isArray(value) && typeof value[0] === 'string' && value[0].trim()) {
+    return value[0].trim();
+  }
+  return undefined;
+}
+
+function constantDigestEqual(left: string, right: string) {
+  return (
+    createHash('sha256').update(left).digest('hex') ===
+    createHash('sha256').update(right).digest('hex')
+  );
+}
+
 function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
   const values = [
     'ops05_fixture_webhook',
@@ -2733,7 +3040,11 @@ async function serveProtectedAppShell(
   await sendAppHtml(res, input.distDir, input.appPage);
 }
 
-async function sendAppHtml(res: Response, distDir: string, appPage: 'crm' | 'parent' | 'student') {
+async function sendAppHtml(
+  res: Response,
+  distDir: string,
+  appPage: 'crm' | 'live' | 'parent' | 'student',
+) {
   try {
     const html = await readFile(path.join(distDir, 'app', `${appPage}.html`), 'utf8');
     res.status(200).type('html').send(html);

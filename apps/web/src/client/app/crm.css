@@ -1,1 +1,200 @@
 @import '../../../../../packages/brand-system/src/styles/react.css';
+
+.live-console {
+  display: grid;
+  gap: var(--ot-space-4);
+}
+
+.live-console__header,
+.live-panel__title,
+.live-stage-card,
+.live-roster-row,
+.live-console__status,
+.live-action-grid,
+.live-question-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ot-space-2);
+}
+
+.live-console__header,
+.live-panel__title,
+.live-stage-card {
+  justify-content: space-between;
+}
+
+.live-console__layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.05fr) minmax(300px, 1fr);
+  gap: var(--ot-space-4);
+  align-items: start;
+}
+
+.live-panel {
+  display: grid;
+  gap: var(--ot-space-3);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-4);
+}
+
+.live-panel--queue {
+  grid-row: span 2;
+}
+
+.live-question-list {
+  display: grid;
+  gap: var(--ot-space-3);
+}
+
+.live-question-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--ot-space-3);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-3);
+}
+
+.live-question-item[data-selected='true'] {
+  border-color: var(--ot-color-action-auth);
+}
+
+.live-question-item p,
+.live-selected__question p,
+.live-health p {
+  margin: var(--ot-space-1) 0 0;
+  color: var(--ot-color-text-muted);
+}
+
+.live-question-item span,
+.live-panel__title span,
+.live-empty {
+  color: var(--ot-color-text-muted);
+}
+
+.live-selected {
+  display: grid;
+  gap: var(--ot-space-3);
+}
+
+.live-status-pill {
+  display: inline-grid;
+  gap: 2px;
+  min-width: 88px;
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-2);
+  background: var(--ot-color-surface);
+  color: var(--ot-color-text-muted);
+}
+
+.live-status-pill strong {
+  color: var(--ot-color-text);
+  font-size: 0.8rem;
+}
+
+.live-roster-row {
+  flex-wrap: wrap;
+}
+
+.live-roster-row span {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-1) var(--ot-space-2);
+}
+
+.live-action-grid {
+  flex-wrap: wrap;
+}
+
+.live-stage-card {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-3);
+}
+
+.live-stage-card code {
+  display: block;
+  max-width: 46ch;
+  overflow-wrap: anywhere;
+}
+
+.live-health {
+  display: grid;
+  gap: var(--ot-space-2);
+}
+
+.ot-live-ready {
+  display: grid;
+  gap: var(--ot-space-2);
+  border: 1px solid var(--ot-color-action-auth);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-3);
+  background: var(--ot-color-surface-muted);
+}
+
+.ot-live-ready p {
+  margin: var(--ot-space-1) 0 0;
+  color: var(--ot-color-text-muted);
+}
+
+.live-stage {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+  background: var(--ot-color-text);
+  color: var(--ot-color-surface);
+}
+
+.live-stage__video {
+  display: grid;
+  place-items: center;
+  padding: var(--ot-space-5);
+}
+
+.live-stage__frame {
+  width: min(100%, 1280px);
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ot-color-action-auth);
+  background: var(--ot-color-surface-raised);
+  color: var(--ot-color-text);
+}
+
+.live-stage__frame span {
+  font-size: clamp(1.5rem, 3rem, 3rem);
+}
+
+.live-stage__caption {
+  display: grid;
+  align-content: center;
+  gap: var(--ot-space-3);
+  padding: var(--ot-space-5);
+  background: var(--ot-color-action-auth);
+  color: var(--ot-color-text);
+}
+
+.live-stage__caption h1,
+.live-stage__caption p,
+.live-stage__caption blockquote {
+  margin: 0;
+}
+
+.live-stage__caption blockquote {
+  font-size: 1.5rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+  .live-console__layout,
+  .live-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .live-question-item {
+    grid-template-columns: 1fr;
+  }
+}

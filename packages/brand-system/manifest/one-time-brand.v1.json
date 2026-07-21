@@ -216,6 +216,8 @@
     "/app/communications": "owner-admin",
     "/app/support": "authenticated-support",
     "/app/support/receipts/:receiptId": "authenticated-support",
+    "/app/live-console": "owner-admin",
+    "/app/live-stage/:stageSession": "owner-admin",
     "/app/parent": "parent",
     "/app/student": "student",
     "/classroom/launch/:grantKey/:secret": "student"

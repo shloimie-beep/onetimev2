@@ -12,6 +12,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         crm: path.resolve(process.cwd(), 'apps/web/src/client/app/crm-entry.tsx'),
+        live: path.resolve(process.cwd(), 'apps/web/src/client/app/live-entry.tsx'),
         portal: path.resolve(process.cwd(), 'apps/web/src/client/app/portal-entry.tsx'),
         'classroom-launch': path.resolve(
           process.cwd(),

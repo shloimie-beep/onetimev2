@@ -87,7 +87,7 @@ export function renderPageShell({
   ogTitle: string;
   ogDescription: string;
   app?: boolean;
-  appEntry?: 'crm' | 'portal';
+  appEntry?: 'crm' | 'live' | 'portal';
 }) {
   const script = app ? `/assets/app-${appEntry}.js` : '/assets/public.js';
   const stylesheet = app ? '/assets/app-crm.css' : '/assets/public.css';

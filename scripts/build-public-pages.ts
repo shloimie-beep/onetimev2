@@ -68,7 +68,7 @@ function pageShell(
     description?: string;
     canonicalPath?: string;
     app?: boolean;
-    appEntry?: 'crm' | 'portal';
+    appEntry?: 'crm' | 'live' | 'portal';
   } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
@@ -446,6 +446,15 @@ await writeFile(
     app: true,
     canonicalPath: '/app/crm',
     description: 'One Time authenticated CRM.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
+await writeFile(
+  path.join(outDir, 'app', 'live.html'),
+  pageShell('Live Console | One Time Mishnayos', `<div id="live-root"></div>`, {
+    app: true,
+    appEntry: 'live',
+    canonicalPath: '/app/live-console',
+    description: 'One Time protected live classroom console and stage.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
 for (const [fileName, title, description] of [

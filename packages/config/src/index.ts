@@ -6,6 +6,14 @@ const booleanFromString = z
   .default(false)
   .transform((value) => value === true || value === 'true' || value === '1');
 
+const optionalBooleanFromString = z
+  .union([z.boolean(), z.string()])
+  .optional()
+  .transform((value) => {
+    if (value === undefined || value === '') return undefined;
+    return value === true || value === 'true' || value === '1';
+  });
+
 const numberFromString = z
   .union([z.number(), z.string()])
   .optional()
@@ -157,6 +165,9 @@ const envSchema = z.object({
   ZOOM_MEETING_SDK_KEY: z.string().optional(),
   ZOOM_MEETING_SDK_SECRET: z.string().optional(),
   ZOOM_ACCOUNT_ID: z.string().optional(),
+  LIVE_CLASS_FAKE_ADAPTER_ENABLED: optionalBooleanFromString,
+  LIVE_CLASS_OBS_BRIDGE_TOKEN: optionalTrimmedString(12, 160),
+  LIVE_CLASS_TELEGRAM_ENABLED: booleanFromString,
   SUPPORT_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
   SUPPORT_RATE_LIMIT_MAX: numberFromString.default(6),
   SUPPORT_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(120),
@@ -237,6 +248,10 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.PORTAL_TEST_LAB_ENABLED) {
     throw new Error('Portal Test Lab is forbidden in production.');
+  }
+
+  if (parsed.NODE_ENV === 'production' && parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED) {
+    throw new Error('Live class fake adapter is forbidden in production.');
   }
 
   const ot89ProvidedSecrets = [
@@ -419,6 +434,13 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkKeyConfigured: Boolean(parsed.ZOOM_MEETING_SDK_KEY),
     zoomMeetingSdkSecretConfigured: Boolean(parsed.ZOOM_MEETING_SDK_SECRET),
     zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID),
+    liveClassFakeAdapterEnabled:
+      parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED ?? parsed.NODE_ENV !== 'production',
+    liveClassObsBridgeToken:
+      parsed.LIVE_CLASS_OBS_BRIDGE_TOKEN ??
+      (parsed.NODE_ENV === 'production' ? undefined : 'local-live-class-obs-bridge'),
+    liveClassObsBridgeTokenConfigured: Boolean(parsed.LIVE_CLASS_OBS_BRIDGE_TOKEN),
+    liveClassTelegramEnabled: parsed.LIVE_CLASS_TELEGRAM_ENABLED,
     supportRateLimitWindowMs: parsed.SUPPORT_RATE_LIMIT_WINDOW_MS,
     supportRateLimitMax: parsed.SUPPORT_RATE_LIMIT_MAX,
     supportAccountRateLimitMax: parsed.SUPPORT_ACCOUNT_RATE_LIMIT_MAX,

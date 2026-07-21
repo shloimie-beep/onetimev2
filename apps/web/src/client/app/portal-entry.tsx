@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type {
   LearnerProfile,
+  LiveClassQuestion,
   ParentLearnerMaterials,
   ParentPortalDashboard,
   ProtectedActionDescriptor,
@@ -21,9 +22,11 @@ import {
   createParentLearner,
   getParentDashboard,
   getParentMaterials,
+  getLiveClassQuestions,
   getSession,
   getStudentDashboard,
   invokeProtectedAction,
+  markLiveClassQuestionReady,
   createBillingCheckoutSession,
   createBillingPortalSession,
   runStudentAccessOperation,
@@ -83,6 +86,7 @@ function PortalApp() {
   const [viewState, setViewState] = useState<PortalViewState>('loading');
   const [parentDashboard, setParentDashboard] = useState<ParentPortalDashboard | null>(null);
   const [studentDashboard, setStudentDashboard] = useState<StudentPortalDashboard | null>(null);
+  const [liveClassQuestions, setLiveClassQuestions] = useState<LiveClassQuestion[]>([]);
   const [selectedLearnerKey, setSelectedLearnerKey] = useState<string | null>(null);
   const [parentMaterials, setParentMaterials] = useState<Record<string, ParentLearnerMaterials>>(
     {},
@@ -107,6 +111,14 @@ function PortalApp() {
     void loadMaterials(parentDashboard.household.household_key, selectedLearner.learner_key);
   }, [parentDashboard, selectedLearner?.learner_key]);
 
+  useEffect(() => {
+    if (!session || portalRole !== 'student' || !studentDashboard?.upcoming_classes[0]) {
+      return undefined;
+    }
+    const interval = window.setInterval(() => void loadLiveQuestions(studentDashboard), 4000);
+    return () => window.clearInterval(interval);
+  }, [session?.expires_at, portalRole, studentDashboard?.upcoming_classes[0]?.class_key]);
+
   async function load() {
     setViewState('loading');
     setNotice(null);
@@ -127,7 +139,9 @@ function PortalApp() {
             : (dashboard.learners[0]?.learner_key ?? null),
         );
       } else {
-        setStudentDashboard(await getStudentDashboard());
+        const dashboard = await getStudentDashboard();
+        setStudentDashboard(dashboard);
+        await loadLiveQuestions(dashboard);
       }
       setViewState('ready');
     } catch (error) {
@@ -142,6 +156,19 @@ function PortalApp() {
     } catch (error) {
       if (handleAuthError(error)) return;
       setViewState('partial-error');
+    }
+  }
+
+  async function loadLiveQuestions(dashboard = studentDashboard) {
+    const occurrenceKey = dashboard?.upcoming_classes[0]?.class_key;
+    if (!occurrenceKey) {
+      setLiveClassQuestions([]);
+      return;
+    }
+    try {
+      setLiveClassQuestions(await getLiveClassQuestions(occurrenceKey));
+    } catch {
+      setLiveClassQuestions([]);
     }
   }
 
@@ -422,11 +449,33 @@ function PortalApp() {
         occurrenceKey,
         body,
       });
+      await loadLiveQuestions();
       setNotice({ kind: 'success', message: 'Question sent.' });
       setViewState('success');
     } catch (error) {
       if (handleAuthError(error)) return;
       setNotice({ kind: 'error', message: errorMessage(error, 'Question was not sent.') });
+      setViewState(stateForError(error));
+    }
+  }
+
+  async function handleLiveClassReady(questionKey: string, ready: boolean) {
+    if (!session || portalRole !== 'student') return;
+    try {
+      await markLiveClassQuestionReady({
+        csrfToken: session.csrf_token,
+        questionKey,
+        ready,
+      });
+      await loadLiveQuestions();
+      setNotice({
+        kind: ready ? 'success' : 'info',
+        message: ready ? 'Readiness sent.' : 'The Rabbi will keep your question private.',
+      });
+      setViewState('success');
+    } catch (error) {
+      if (handleAuthError(error)) return;
+      setNotice({ kind: 'error', message: errorMessage(error, 'Readiness was not sent.') });
       setViewState(stateForError(error));
     }
   }
@@ -526,6 +575,10 @@ function PortalApp() {
           onSubmitQuestion={(question, classKey) => void handleStudentQuestion(question, classKey)}
           onSubmitClassroomQuestion={(occurrenceKey, body) =>
             void handleClassroomQuestion(occurrenceKey, body)
+          }
+          liveClassQuestions={liveClassQuestions}
+          onMarkLiveClassReady={(questionKey, ready) =>
+            void handleLiveClassReady(questionKey, ready)
           }
           onPreviewSupport={() => window.location.assign('/app/support')}
           onRetry={() => void load()}
