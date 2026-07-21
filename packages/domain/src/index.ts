@@ -277,6 +277,14 @@ export {
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
 export {
+  TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
+  TISHA_BAV_EMAIL_CATALOG,
+  TISHA_BAV_EMAIL_SENDER,
+  TISHA_BAV_EVENT_DISPLAY,
+  TISHA_BAV_EVENT_START,
+  TISHA_BAV_WORKFLOW_SCHEDULE,
+} from './events/tisha-bav-communications.ts';
+export {
   HttpHighLevelEventClient,
   MockHighLevelEventClient,
   TISHA_BAV_EVENT_CODE,

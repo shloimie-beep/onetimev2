@@ -1,0 +1,40 @@
+{
+  "packet_id": "TISHA-BAV-2026-EMAIL-COPY",
+  "captured_at": "2026-07-21",
+  "source_channel": "Codex operator chat",
+  "workspace": "rabbi_sheller_provider",
+  "project": "one_time_mishnah_class",
+  "raw_id": "RAW-20260721-010",
+  "spec_id": "SPEC-20260721-010",
+  "spec_fingerprint": "df3cbccf409bfe09788297eec926817918c86fe3e326a98d915f02f308709f39",
+  "catalog_version": "tisha-bav-2026-email-copy-v1",
+  "status": "implemented_pending_provider_configuration",
+  "external_send_authorized": false,
+  "external_provider_mutations_performed": false,
+  "artifacts": [
+    {
+      "path": "EMAIL-COPY-RAW.md",
+      "sha256": "c970d6cae8311ace88c20bb0702e4a1f022f36ef165ad554bffa7af5b10a050f"
+    },
+    {
+      "path": "EMAIL-COPY-SPEC.json",
+      "sha256": "ddccdf573b79cc7c16554eea38e4ab92824d0a3b6a401cee69b4b80acb3d6f39"
+    },
+    {
+      "path": "EMAIL-COPY-RECEIPT.md",
+      "sha256": "ef2a0e8ed9369583f0e70017baae6a5a0345763cd18ee1144e75ac9cbb3d27dc"
+    },
+    {
+      "path": "EMAIL-COPY-CODEX-PROMPT.md",
+      "sha256": "5bee7f285cbfb28b3232659bda9afeb90e177d20be2499e91f8d43acc9aba90d"
+    }
+  ],
+  "implementation": {
+    "catalog": "packages/domain/src/events/tisha-bav-communications.ts",
+    "provider_handoff": "GHL-WORKFLOW-HANDOFF.md",
+    "contract_test": "tests/unit/tisha-bav-email-copy.test.ts",
+    "event_start_utc": "2026-07-23T19:00:00.000Z",
+    "one_hour_reminder_utc": "2026-07-23T18:00:00.000Z",
+    "ten_minute_reminder_utc": "2026-07-23T18:50:00.000Z"
+  }
+}
