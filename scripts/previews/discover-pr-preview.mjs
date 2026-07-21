@@ -141,7 +141,24 @@ function getCurrentBranchPr() {
     '--json',
     'number,title,headRefName,headRefOid,baseRefName,state,url,body',
   ]);
-  return result.ok ? result.value : null;
+  if (result.ok) return result.value;
+
+  const currentBranch = getGitValue(['branch', '--show-current']);
+  if (!currentBranch) return null;
+
+  const list = runJson('gh', [
+    'pr',
+    'list',
+    '--repo',
+    REPO,
+    '--head',
+    currentBranch,
+    '--state',
+    'open',
+    '--json',
+    'number,title,headRefName,headRefOid,baseRefName,state,url,body',
+  ]);
+  return list.ok && Array.isArray(list.value) ? (list.value[0] ?? null) : null;
 }
 
 function getGitValue(args) {
