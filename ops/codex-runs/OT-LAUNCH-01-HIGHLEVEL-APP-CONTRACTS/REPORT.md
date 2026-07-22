@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Base: `codex/full-app-staging-live` at `18d339f27bb715723f56f50b65d1745fab75164c`
+- Base: `codex/full-app-staging-live` at `6fcf0435cca744dba0e4a3337beac860d9315180`
 - GHL evidence: PR #107 at `deda8f9b04dbafcc36363628a14b6fecc94fd854`
 - Location: `pBSnOK2nkdxp6gf9Rg3o`
 - Provider mode: default-off
@@ -60,9 +60,9 @@ Primary sources:
 
 ## Concurrency And Replay
 
-Real PostgreSQL uses one atomic CTE claim with exact account, product, channel, transport mode, canary run, allowlist hash, persisted allowlist membership, budget and authorization-state predicates plus `FOR UPDATE OF outbox SKIP LOCKED`. Every claimed row receives a unique fencing token and independent 120-second lease; both provider-operation completion and terminal row completion require that token. A two-dispatcher assertion proves one claim, a slow-row assertion proves no reclaim after the former 60-second boundary, and crash-after-upsert/add-tag assertions prove uncertain operations are never repeated. The exact PostgreSQL SQL contract is also asserted.
+Real PostgreSQL uses one atomic CTE claim with exact account, product, channel, transport mode, canary run, allowlist hash, persisted allowlist membership, budget and authorization-state predicates plus `FOR UPDATE OF outbox SKIP LOCKED`. Every claimed row receives a unique fencing token and independent 120-second lease; both provider-operation completion and terminal row completion require that token. A two-dispatcher assertion proves one claim, a slow-row assertion proves no reclaim after the former 60-second boundary, and crash-after-upsert/add-tag assertions prove uncertain operations are never repeated. The exact PostgreSQL SQL contract is asserted, and `scripts/highlevel/postgres-claim-assurance.ts` runs a disposable real-PostgreSQL race that holds the first authorized row lock while a second claimant proves it can claim only the other authorized row and never the held backlog.
 
-This machine had no `DATABASE_URL`, Docker, or `psql`, so the real-PostgreSQL concurrent execution remains an explicit pre-merge CI gap. No production or persistent-staging database was used.
+This machine had no `DATABASE_URL`, Docker, or `psql`, so the real-PostgreSQL race is required in the isolated PR's PostgreSQL 16 assurance job. No production or persistent-staging database is used by that disposable proof.
 
 ## Verification
 
@@ -72,6 +72,7 @@ This machine had no `DATABASE_URL`, Docker, or `psql`, so the real-PostgreSQL co
 - Focused lead capture and class fulfillment regressions: passed
 - Focused account lifecycle, content library, delivery repository and web/worker independence regressions: passed
 - Focused total: 51 tests passed
+- Disposable real-PostgreSQL HighLevel claim race: required in the PR PostgreSQL 16 assurance job
 - Typecheck and build: passed before final publication
 - All tests used fake/sink adapters; external calls and sends remained zero
 

@@ -61,6 +61,16 @@ jobs:
           OT37_OUTPUT_DIR: ops/evidence/ot-37
         run: npx tsx scripts/postgres-assurance/run.ts
 
+      - name: Run HighLevel PostgreSQL claim assurance
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          HIGHLEVEL_ALLOW_POSTGRES_ASSURANCE: 'true'
+        run: npx tsx scripts/highlevel/postgres-claim-assurance.ts
+
       - name: Secret scan
         run: npm run secret:scan
 
@@ -72,6 +82,7 @@ jobs:
           ops/evidence/ot-37/README.md
           scripts/postgres-assurance/README.md
           scripts/postgres-assurance/run.ts
+          scripts/highlevel/postgres-claim-assurance.ts
           tests/postgres-assurance/current-base-scenarios.ts
 
       - name: Lint

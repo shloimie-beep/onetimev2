@@ -1,7 +1,7 @@
 {
   "task": "OT-LAUNCH-01-HIGHLEVEL-APP-CONTRACTS",
   "base_branch": "codex/full-app-staging-live",
-  "base_head": "18d339f27bb715723f56f50b65d1745fab75164c",
+  "base_head": "6fcf0435cca744dba0e4a3337beac860d9315180",
   "evidence_pr": 107,
   "evidence_head": "deda8f9b04dbafcc36363628a14b6fecc94fd854",
   "location_id": "pBSnOK2nkdxp6gf9Rg3o",
@@ -33,7 +33,8 @@
     "sql_contract_asserted": true,
     "memory_two_worker_assertion": "passed",
     "memory_slow_row_fence_assertion": "passed",
-    "real_postgres_execution": "pending_isolated_pr_environment"
+    "real_postgres_execution": "required_disposable_pr_ci_assertion",
+    "real_postgres_assertion": "scripts/highlevel/postgres-claim-assurance.ts"
   },
   "focused_tests_passed": 51,
   "remaining_dependency": "Approve and prove a HighLevel-side per-request raw-body HMAC signer before any OT-B01 through OT-B05 Agent Mode activation."
