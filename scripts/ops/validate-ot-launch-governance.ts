@@ -60,6 +60,12 @@ record(
   'SPEC and ACCEPTANCE derive status from BOARD',
 );
 const statusDefinitions = objectAt(board, 'status_definitions');
+const outcome = objectAt(board, 'outcome');
+const parsedBoardStrings = collectStrings(board);
+const suspiciousTruncatedStrings = parsedBoardStrings.filter(({ value }) =>
+  /\bPR$/u.test(value.trim()),
+);
+const unquotedHashCommentHazards = findUnquotedHashCommentHazards(boardText);
 record(
   'board status vocabulary',
   sameSet(Object.keys(statusDefinitions), [
@@ -78,6 +84,43 @@ record(
 const tracks = arrayAt<Record<string, unknown>>(board, 'tracks');
 const trackIds = tracks.map((track) => String(track.id));
 record('unique tracks', new Set(trackIds).size === trackIds.length, `${trackIds.length} tracks`);
+const criticalParsedSubstrings = [
+  'PR #97 checkpoint 06f66568a587c333fbab416e9eb17e323e2b885a',
+  'PR #104 prefix 2214',
+  'PR #105 corrected code head 50989b336838d2029a0e0abc075bfd209b9c65ef',
+  'PR #106 exact production head acddcc8cd012c5cdc5bfc08cbc80550bef8719ba',
+  'PR #107 terminal head 1e247c70004dffb6247fc1ee407f1153d753bd7d',
+  'PR #108 exact rebased head 891293f2bd269f4918394c6078096f81d7ed8695',
+  'PR #109 head 1779254768dacebb84aeac5d71b56b5abfba2534',
+  'PR #110 exact head 38358961cff6c6bf44621ab9e3f6b88061586618',
+  'PR #141 exact head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe',
+];
+record(
+  'critical PR scalars parse intact',
+  String(outcome.production_impact).includes('PR #106') &&
+    String(outcome.current_summary).includes('PR #97') &&
+    String(outcome.current_summary).includes('PR #107') &&
+    String(outcome.current_summary).includes('PR #108') &&
+    String(outcome.current_summary).includes('PR #110') &&
+    criticalParsedSubstrings.every((expected) =>
+      parsedBoardStrings.some(({ value }) => value.includes(expected)),
+    ),
+  `${criticalParsedSubstrings.length} critical parsed substrings preserved`,
+);
+record(
+  'parsed strings have no hash-comment truncation',
+  suspiciousTruncatedStrings.length === 0,
+  `${parsedBoardStrings.length} strings scanned; suspicious=${
+    suspiciousTruncatedStrings
+      .map(({ path: valuePath, value }) => `${valuePath}=${JSON.stringify(value)}`)
+      .join(', ') || 'none'
+  }`,
+);
+record(
+  'board has no unquoted hash-comment hazards',
+  unquotedHashCommentHazards.length === 0,
+  unquotedHashCommentHazards.join(', ') || 'none',
+);
 record(
   'structured track owners',
   tracks.every((track) => {
@@ -104,19 +147,63 @@ record(
       track.id === 'tisha_landing_polish' &&
       track.status === 'blocked' &&
       owner.pr === 110 &&
-      owner.head === 'c3d0817e37f0d7225554e21c7096a1284e048893' &&
+      owner.head === '38358961cff6c6bf44621ab9e3f6b88061586618' &&
       track.preview_review_state === 'PREVIEW_VERIFIED_PRODUCTION_BLOCKED' &&
-      boardText.includes('acddcc8cd012c5cdc5bfc08cbc80550bef8719ba') &&
-      boardText.includes('81317abe-f3ef-42cd-b5db-5814b014b6a3') &&
-      boardText.includes('PR #110 is not integrated into PR #97')
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('acddcc8cd012c5cdc5bfc08cbc80550bef8719ba'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('81317abe-f3ef-42cd-b5db-5814b014b6a3'),
+      ) &&
+      parsedBoardStrings.some(({ value }) =>
+        value.includes('PR #110 is not integrated into PR #97'),
+      )
     );
   }),
-  'PR #106 acddcc8 remains accepted production while PR #110 is isolated',
+  'PR #106 acddcc8 remains accepted production while PR #110 3835896 is isolated',
+);
+record(
+  'Zoom SDK preview and real control remain distinct',
+  tracks.some((track) => {
+    const owner = objectAt(track, 'owner');
+    return (
+      track.id === 'zoom_meeting_sdk' &&
+      track.status === 'ready_for_convergence' &&
+      owner.head === '50989b336838d2029a0e0abc075bfd209b9c65ef' &&
+      track.zoom_ui_preview_state === 'READY' &&
+      track.zoom_real_control_state === 'PROVIDER_OFF'
+    );
+  }) &&
+    tracks.some((track) => {
+      const owner = objectAt(track, 'owner');
+      return (
+        track.id === 'zoom_s2s_host_control' &&
+        track.status === 'provider_off' &&
+        owner.head === '50989b336838d2029a0e0abc075bfd209b9c65ef' &&
+        track.zoom_ui_preview_state === 'READY' &&
+        track.zoom_real_control_state === 'PROVIDER_OFF'
+      );
+    }) &&
+    parsedBoardStrings.some(({ value }) =>
+      value.includes(
+        'ZOOM_MEETING_SDK_CLIENT_ID, ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION',
+      ),
+    ) &&
+    parsedBoardStrings.some(({ value }) =>
+      value.includes(
+        'ZOOM_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE',
+      ),
+    ),
+  'isolated SDK setup READY; six-gate real control PROVIDER_OFF',
 );
 record(
   'honest GHL enrollment truth',
-  boardText.includes('OT-07 and OT-08 each read back 0 total / 0 active') &&
-    boardText.includes('GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'),
+  parsedBoardStrings.some(({ value }) =>
+    value.includes('OT-07 and OT-08 each read back 0 total / 0 active'),
+  ) &&
+    parsedBoardStrings.some(({ value }) =>
+      value.includes('GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'),
+    ),
   'zero counts require the committed timestamped closeout readback',
 );
 record(
@@ -213,4 +300,48 @@ function arrayAt<T>(value: Record<string, unknown>, key: string) {
 
 function sameSet(left: string[], right: string[]) {
   return left.length === right.length && left.every((value) => right.includes(value));
+}
+
+function collectStrings(value: unknown, valuePath = '$'): Array<{ path: string; value: string }> {
+  if (typeof value === 'string') return [{ path: valuePath, value }];
+  if (Array.isArray(value)) {
+    return value.flatMap((entry, index) => collectStrings(entry, `${valuePath}[${index}]`));
+  }
+  if (!value || typeof value !== 'object') return [];
+  return Object.entries(value).flatMap(([key, entry]) =>
+    collectStrings(entry, `${valuePath}.${key}`),
+  );
+}
+
+function findUnquotedHashCommentHazards(source: string) {
+  const hazards: string[] = [];
+  for (const [lineIndex, line] of source.split(/\r?\n/u).entries()) {
+    let inSingleQuote = false;
+    let inDoubleQuote = false;
+    for (let index = 0; index < line.length; index += 1) {
+      const character = line[index];
+      if (character === "'" && !inDoubleQuote) {
+        if (inSingleQuote && line[index + 1] === "'") {
+          index += 1;
+        } else {
+          inSingleQuote = !inSingleQuote;
+        }
+        continue;
+      }
+      if (character === '"' && !inSingleQuote && line[index - 1] !== '\\') {
+        inDoubleQuote = !inDoubleQuote;
+        continue;
+      }
+      if (
+        character === '#' &&
+        !inSingleQuote &&
+        !inDoubleQuote &&
+        (index === 0 || /\s/u.test(line[index - 1] ?? ''))
+      ) {
+        hazards.push(`line ${lineIndex + 1}`);
+        break;
+      }
+    }
+  }
+  return hazards;
 }
