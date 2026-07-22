@@ -16,6 +16,7 @@ import {
   getSessionUserByKey,
   ingestContentFactoryItem,
   revokeFreePilotAccess,
+  retryContentFactoryIntake,
   runContentFactoryWorkerOnce,
 } from '../../../packages/domain/src/index.ts';
 
@@ -261,6 +262,55 @@ describe('durable occurrence-scoped content factory', () => {
     } finally {
       await afterUnpublishRestart.close();
     }
+
+    for (let retryWindow = 1; retryWindow <= 3; retryWindow += 1) {
+      await pool.query(
+        `UPDATE onetime.learning_delivery_content_factory_jobs
+            SET job_state = 'dead_letter', attempt_count = max_attempts
+          WHERE intake_key = $1`,
+        [intakeKey],
+      );
+      await pool.query(
+        `UPDATE onetime.learning_delivery_content_factory_intakes
+            SET intake_state = 'failed' WHERE intake_key = $1`,
+        [intakeKey],
+      );
+      await retryContentFactoryIntake({
+        pool,
+        config,
+        intakeKey,
+        actorUserKey: owner.userKey,
+        actorRole: 'owner',
+      });
+      const retryState = await pool.query(
+        `SELECT job.attempt_count, job.job_state, intake.audit_metadata_json
+           FROM onetime.learning_delivery_content_factory_jobs job
+           JOIN onetime.learning_delivery_content_factory_intakes intake
+             ON intake.intake_key = job.intake_key
+          WHERE job.intake_key = $1`,
+        [intakeKey],
+      );
+      expect(retryState.rows[0]).toMatchObject({ attempt_count: 0, job_state: 'queued' });
+      expect(retryState.rows[0].audit_metadata_json).toMatchObject({
+        manual_retry_count: retryWindow,
+        manual_retry_window_limit: 3,
+      });
+    }
+    await pool.query(
+      `UPDATE onetime.learning_delivery_content_factory_jobs
+          SET job_state = 'dead_letter', attempt_count = max_attempts
+        WHERE intake_key = $1`,
+      [intakeKey],
+    );
+    await expect(
+      retryContentFactoryIntake({
+        pool,
+        config,
+        intakeKey,
+        actorUserKey: owner.userKey,
+        actorRole: 'owner',
+      }),
+    ).rejects.toThrow('Manual retry limit reached.');
   });
 
   it('rejects traversal, executable/spreadsheet signatures, oversize, and missing occurrence', async () => {
@@ -363,24 +413,10 @@ describe('durable occurrence-scoped content factory', () => {
       expect(workspaceText).not.toContain('private_video_123');
 
       expect(
-        (
-          await mutate(
-            server.baseUrl,
-            owner,
-            'factory_sample_2026_07_22',
-            'approve',
-          )
-        ).status,
+        (await mutate(server.baseUrl, owner, 'factory_sample_2026_07_22', 'approve')).status,
       ).toBe(200);
       expect(
-        (
-          await mutate(
-            server.baseUrl,
-            owner,
-            'factory_sample_2026_07_22',
-            'publish',
-          )
-        ).status,
+        (await mutate(server.baseUrl, owner, 'factory_sample_2026_07_22', 'publish')).status,
       ).toBe(200);
 
       const published = await pool.query(
@@ -402,11 +438,7 @@ describe('durable occurrence-scoped content factory', () => {
       ]);
 
       for (const session of [parent, student]) {
-        const response = await playback(
-          server.baseUrl,
-          session,
-          'factory_sample_2026_07_22',
-        );
+        const response = await playback(server.baseUrl, session, 'factory_sample_2026_07_22');
         const html = await response.text();
         expect(response.status, html).toBe(200);
         expect(html).toContain('Protected One Time lesson');
@@ -434,18 +466,12 @@ describe('durable occurrence-scoped content factory', () => {
         actor: studentActor(sibling.userKey, 'learner_video_sibling'),
         learner: studentLearner('learner_video_sibling', 'Unentitled sibling'),
       });
-      expect(intendedLibrary.map((item) => item.item_key)).toContain(
-        'factory_sample_2026_07_22',
-      );
+      expect(intendedLibrary.map((item) => item.item_key)).toContain('factory_sample_2026_07_22');
       expect(siblingLibrary.map((item) => item.item_key)).not.toContain(
         'factory_sample_2026_07_22',
       );
 
-      const siblingPlayback = await playback(
-        server.baseUrl,
-        sibling,
-        'factory_sample_2026_07_22',
-      );
+      const siblingPlayback = await playback(server.baseUrl, sibling, 'factory_sample_2026_07_22');
       expect(siblingPlayback.status).toBe(404);
       expect(await siblingPlayback.text()).not.toContain('private_video_123');
       const siblingEmbed = await fetch(

@@ -24,6 +24,7 @@ const STAGES = [
   'review',
 ] as const;
 type Stage = (typeof STAGES)[number];
+const MAX_MANUAL_RETRY_WINDOWS = 3;
 
 export const CONTENT_FACTORY_CLAIM_SQL = `
   SELECT job_key
@@ -253,31 +254,57 @@ export async function retryContentFactoryIntake(input: {
   if (!['owner', 'admin'].includes(input.actorRole)) {
     throw new ContentFactoryError('FORBIDDEN', 'Owner or Admin access required.');
   }
-  const result = await input.pool.query(
-    `UPDATE onetime.learning_delivery_content_factory_jobs job
-        SET job_state = 'queued', next_attempt_at = now(), lease_owner_digest = NULL,
-            lease_expires_at = NULL, heartbeat_at = NULL, last_safe_error_code = NULL,
-            updated_at = now()
-      WHERE job.account_key = $1 AND job.product_key = $2 AND job.intake_key = $3
-        AND job.job_state IN ('retry_wait','dead_letter')
-      RETURNING job.intake_key`,
-    [input.config.accountKey, input.config.productKey, input.intakeKey],
-  );
-  if (!result.rows[0]) {
-    throw new ContentFactoryError('INVALID_STATE', 'Only failed processing can be retried.');
-  }
-  await input.pool.query(
-    `UPDATE onetime.learning_delivery_content_factory_intakes
-        SET intake_state = 'received', last_safe_error_code = NULL,
-            audit_metadata_json = audit_metadata_json || $4::jsonb, updated_at = now()
-      WHERE account_key = $1 AND product_key = $2 AND intake_key = $3`,
-    [
-      input.config.accountKey,
-      input.config.productKey,
-      input.intakeKey,
-      JSON.stringify({ retry_actor_present: Boolean(input.actorUserKey) }),
-    ],
-  );
+  await inTransaction(input.pool, async (client) => {
+    const current = await client.query(
+      `SELECT job.job_state, intake.audit_metadata_json
+         FROM onetime.learning_delivery_content_factory_jobs job
+         JOIN onetime.learning_delivery_content_factory_intakes intake
+           ON intake.account_key = job.account_key
+          AND intake.product_key = job.product_key
+          AND intake.intake_key = job.intake_key
+        WHERE job.account_key = $1 AND job.product_key = $2 AND job.intake_key = $3
+        LIMIT 1 FOR UPDATE`,
+      [input.config.accountKey, input.config.productKey, input.intakeKey],
+    );
+    const row = current.rows[0];
+    if (!row || !['retry_wait', 'dead_letter'].includes(String(row.job_state))) {
+      throw new ContentFactoryError('INVALID_STATE', 'Only failed processing can be retried.');
+    }
+    const audit = recordValue(row.audit_metadata_json);
+    const manualRetryCount = Number(audit.manual_retry_count ?? 0);
+    if (!Number.isSafeInteger(manualRetryCount) || manualRetryCount < 0) {
+      throw new ContentFactoryError('INVALID_STATE', 'Retry history is invalid.');
+    }
+    if (manualRetryCount >= MAX_MANUAL_RETRY_WINDOWS) {
+      throw new ContentFactoryError('INVALID_STATE', 'Manual retry limit reached.');
+    }
+    const nextManualRetryCount = manualRetryCount + 1;
+    await client.query(
+      `UPDATE onetime.learning_delivery_content_factory_jobs
+          SET job_state = 'queued', attempt_count = 0, next_attempt_at = now(),
+              lease_owner_digest = NULL, lease_expires_at = NULL, heartbeat_at = NULL,
+              last_safe_error_code = NULL, updated_at = now()
+        WHERE account_key = $1 AND product_key = $2 AND intake_key = $3`,
+      [input.config.accountKey, input.config.productKey, input.intakeKey],
+    );
+    await client.query(
+      `UPDATE onetime.learning_delivery_content_factory_intakes
+          SET intake_state = 'received', last_safe_error_code = NULL,
+              audit_metadata_json = $4::jsonb, updated_at = now()
+        WHERE account_key = $1 AND product_key = $2 AND intake_key = $3`,
+      [
+        input.config.accountKey,
+        input.config.productKey,
+        input.intakeKey,
+        JSON.stringify({
+          ...audit,
+          manual_retry_count: nextManualRetryCount,
+          manual_retry_window_limit: MAX_MANUAL_RETRY_WINDOWS,
+          retry_actor_present: Boolean(input.actorUserKey),
+        }),
+      ],
+    );
+  });
 }
 
 async function runSyntheticStage(storage: VolumeContentFactoryStorage, job: Job) {
