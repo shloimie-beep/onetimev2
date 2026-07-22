@@ -43,12 +43,11 @@ Do not set any of these on persistent staging or production.
 
 ## Exact redirect and origin allow-list
 
-Replace `RAILWAY_PR_PREVIEW_HOST` below with the host from the draft PR's isolated Railway
-environment, then permit only these exact values:
+Permit only these exact PR #105 values:
 
-- OAuth Redirect URL: `https://RAILWAY_PR_PREVIEW_HOST/api/v1/live-class/zoom/oauth/callback`
-- OAuth Allow List entry: `https://RAILWAY_PR_PREVIEW_HOST/api/v1/live-class/zoom/oauth/callback`
-- Meeting SDK Web Domain: `https://RAILWAY_PR_PREVIEW_HOST`
+- OAuth Redirect URL: `https://ot99-web-onetimev2-pr-105.up.railway.app/api/v1/live-class/zoom/oauth/callback`
+- OAuth Allow List entry: `https://ot99-web-onetimev2-pr-105.up.railway.app/api/v1/live-class/zoom/oauth/callback`
+- Meeting SDK Web Domain: `https://ot99-web-onetimev2-pr-105.up.railway.app`
 
 Turn **Strict Mode** on, keep the subdomain check on, and add no wildcard, localhost,
 persistent-staging, production, Zoom App Home URL, or private customer destination. This
