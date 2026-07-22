@@ -1,3 +1,6 @@
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
@@ -262,10 +265,15 @@ describe('Tisha BAv event HTTP routes', () => {
       AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-production-cache-proof',
       MFA_SECRET_ENCRYPTION_KEY: 'test-only-32-byte-mfa-key-do-not-use',
     });
-    const server = await startServer(config, openWindow);
+    const distDir = await mkdtemp(path.join(tmpdir(), 'tisha-cache-proof-'));
+    await writeFile(
+      path.join(distDir, 'tisha-bav.html'),
+      '<!doctype html><html><head><title>Tisha</title></head><body><h1>Bringing Knowledge of Hashem into the World</h1><p>No charge</p></body></html>',
+    );
+    const server = await startServer(config, openWindow, distDir);
     try {
-      for (const path of ['/tisha-bav', '/tisha-bav.html']) {
-        const response = await fetch(`${server.baseUrl}${path}`);
+      for (const routePath of ['/tisha-bav', '/tisha-bav.html']) {
+        const response = await fetch(`${server.baseUrl}${routePath}`);
         expect(response.status).toBe(200);
         expect(response.headers.get('cache-control')).toBe('no-cache, max-age=0, must-revalidate');
         expect(response.headers.get('pragma')).toBe('no-cache');
@@ -278,6 +286,7 @@ describe('Tisha BAv event HTTP routes', () => {
       }
     } finally {
       await server.close();
+      await rm(distDir, { recursive: true, force: true });
     }
   });
 
@@ -385,8 +394,13 @@ async function expectCount(table: string, expected: number) {
   expect(count).toBe(expected);
 }
 
-async function startServer(config: AppConfig, now: Date) {
-  const app = createApp({ config, pool, clock: () => now });
+async function startServer(config: AppConfig, now: Date, distDir?: string) {
+  const app = createApp({
+    config,
+    pool,
+    clock: () => now,
+    ...(distDir ? { distDir } : {}),
+  });
   const server = await new Promise<ReturnType<typeof app.listen>>((resolve, reject) => {
     const listening = app.listen(0, (error?: Error) => {
       if (error) reject(error);
