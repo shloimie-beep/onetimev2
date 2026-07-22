@@ -4252,7 +4252,7 @@ function zoomHostHtml() {
       <a class="button" href="/app/live-console">Return to Rabbi Live Console</a>
     </section>
   </main>
-  <script type="module" src="/assets/app-zoom-host.js?v=zoom-real-control-2"></script>
+  <script type="module" src="/assets/app-zoom-host.js?v=zoom-real-control-3"></script>
 </body>
 </html>`;
 }
@@ -4280,7 +4280,7 @@ function zoomParticipantHtml(student: number) {
       <a class="button" href="/app/live-console">Return to Rabbi Live Console</a>
     </section>
   </main>
-  <script type="module" src="/assets/app-zoom-participant.js?v=zoom-real-control-2"></script>
+  <script type="module" src="/assets/app-zoom-participant.js?v=zoom-real-control-3"></script>
 </body>
 </html>`;
 }
