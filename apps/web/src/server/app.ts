@@ -2456,7 +2456,15 @@ export function createApp({
   });
 
   app.use(
-    express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }),
+    express.static(distDir, {
+      extensions: ['html'],
+      maxAge: config.isProduction ? '1h' : 0,
+      setHeaders: (res, filePath) => {
+        if (path.basename(filePath) === 'tisha-bav.html') {
+          setTishaBavLandingCacheHeaders(res);
+        }
+      },
+    }),
   );
 
   app.use(async (_req, res) => {
@@ -2500,10 +2508,19 @@ async function sendPublicHtml(
   canonicalPath: string,
 ) {
   const html = await readFile(filePath, 'utf8');
-  res
-    .type('html')
-    .set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache')
-    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+  res.type('html');
+  if (canonicalPath === '/tisha-bav') {
+    setTishaBavLandingCacheHeaders(res);
+  } else {
+    res.set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache');
+  }
+  res.send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+}
+
+function setTishaBavLandingCacheHeaders(res: { setHeader(name: string, value: string): void }) {
+  res.setHeader('Cache-Control', 'no-cache, max-age=0, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
 }
 
 async function sendNoStorePublicHtml(

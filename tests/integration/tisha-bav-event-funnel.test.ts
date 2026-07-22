@@ -256,6 +256,31 @@ describe('Tisha BAv event join access', () => {
 });
 
 describe('Tisha BAv event HTTP routes', () => {
+  it('serves the production landing HTML with immediate revalidation headers', async () => {
+    const config = testConfig({
+      NODE_ENV: 'production',
+      AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-production-cache-proof',
+      MFA_SECRET_ENCRYPTION_KEY: 'test-only-32-byte-mfa-key-do-not-use',
+    });
+    const server = await startServer(config, openWindow);
+    try {
+      for (const path of ['/tisha-bav', '/tisha-bav.html']) {
+        const response = await fetch(`${server.baseUrl}${path}`);
+        expect(response.status).toBe(200);
+        expect(response.headers.get('cache-control')).toBe('no-cache, max-age=0, must-revalidate');
+        expect(response.headers.get('pragma')).toBe('no-cache');
+        expect(response.headers.get('expires')).toBe('0');
+
+        const html = await response.text();
+        expect(html).toContain('Bringing Knowledge of Hashem into the World');
+        expect(html).toContain('No charge');
+        expect(html).not.toContain('Filling the World with Knowledge of Hashem');
+      }
+    } finally {
+      await server.close();
+    }
+  });
+
   it('registers, rate limits, joins, and server-redirects through Express routes', async () => {
     const config = testConfig({
       ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: 'https://zoom.example.test/j/456?pwd=protected',
