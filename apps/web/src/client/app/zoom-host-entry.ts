@@ -1,3 +1,5 @@
+import { sdkErrorSummary, zoomSpotlightOptions } from './zoom-sdk-safety.ts';
+
 type ZoomCommand = {
   command_key: string;
   command_type: 'ask_unmute' | 'mute' | 'spotlight_replace' | 'spotlight_remove' | 'stop_video';
@@ -190,29 +192,6 @@ function sdkKeyFromSignature(signature: string) {
   return payload.sdkKey;
 }
 
-function sdkErrorSummary(error: unknown) {
-  if (!error || typeof error !== 'object') return 'code unknown';
-  const record = error as {
-    errorCode?: unknown;
-    error_code?: unknown;
-    reason?: unknown;
-    errorMessage?: unknown;
-    message?: unknown;
-  };
-  const value = record.errorCode ?? record.error_code;
-  const normalized = String(value ?? '')
-    .replace(/[^a-z0-9_-]/gi, '')
-    .slice(0, 32);
-  const reason = String(record.reason ?? record.errorMessage ?? record.message ?? '')
-    .replace(/https?:\/\/\S+/gi, '[redacted]')
-    .replace(/\b\d{6,}\b/g, '[redacted]')
-    .replace(/\b(zak|token|pass(?:word|code)?)\s*[:=]\s*\S+/gi, '$1=[redacted]')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 140);
-  return reason ? `code ${normalized || 'unknown'}: ${reason}` : `code ${normalized || 'unknown'}`;
-}
-
 async function report(
   command: ZoomCommand,
   status: 'executed' | 'failed' | 'rejected',
@@ -262,10 +241,18 @@ async function executeCommand(zoom: ZoomApi, command: ZoomCommand) {
       await invokeZoom(zoom, 'mute', { userId, mute: true });
       await report(command, 'executed', 'participant_muted');
     } else if (command.command_type === 'spotlight_replace') {
-      await invokeZoom(zoom, 'operateSpotlight', { userId, action: 'spotlight' });
+      await invokeZoom(
+        zoom,
+        'operateSpotlight',
+        zoomSpotlightOptions(userId, command.command_type),
+      );
       await report(command, 'executed', 'spotlight_replaced');
     } else if (command.command_type === 'spotlight_remove') {
-      await invokeZoom(zoom, 'operateSpotlight', { userId, action: 'unspotlight' });
+      await invokeZoom(
+        zoom,
+        'operateSpotlight',
+        zoomSpotlightOptions(userId, command.command_type),
+      );
       await report(command, 'executed', 'spotlight_removed');
     } else {
       await report(command, 'rejected', 'participant_consent_required');

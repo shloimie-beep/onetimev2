@@ -12,6 +12,7 @@ import {
   type LiveClassLearnerRecord,
   type LiveClassRepository,
   type LiveClassSessionRecord,
+  zoomCustomerKey,
 } from '../../../domain/src/index.ts';
 import {
   ONE_TIME_CLASS_SERIES_KEY,
@@ -178,7 +179,11 @@ async function ensureFakeDemo(
             idempotency_key, request_hash)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
          ON CONFLICT (account_key, product_key, learner_key, occurrence_key, idempotency_key)
-         DO NOTHING`,
+         DO UPDATE SET
+           customer_key = EXCLUDED.customer_key,
+           updated_at = now(),
+           revision = onetime.live_class_questions.revision + 1
+         WHERE onetime.live_class_questions.customer_key <> EXCLUDED.customer_key`,
         [
           item.question_key,
           args.actor.account_key,
@@ -199,6 +204,21 @@ async function ensureFakeDemo(
           item.status === 'student_ready' ? args.now : null,
           item.idempotency_key,
           item.request_hash,
+        ],
+      );
+      await client.query(
+        `DELETE FROM onetime.live_class_participants
+          WHERE account_key = $1
+            AND product_key = $2
+            AND occurrence_key = $3
+            AND learner_key = $4
+            AND customer_key <> $5`,
+        [
+          args.actor.account_key,
+          args.actor.product_key,
+          args.occurrence_key,
+          item.learner_key,
+          item.customer_key,
         ],
       );
       await upsertParticipant(client, {
@@ -945,7 +965,7 @@ function demoQuestions(occurrenceKey: string, classLabel: string) {
     ...item,
     occurrence_key: occurrenceKey,
     class_label: classLabel,
-    customer_key: stableKey('zoom_customer_key', [occurrenceKey, item.learner_key]),
+    customer_key: zoomCustomerKey([occurrenceKey, item.learner_key]),
     question_body_digest: stableKey('live_question_digest', [occurrenceKey, item.question_preview]),
     request_hash: stableKey('live_question_request', [occurrenceKey, item.idempotency_key]),
   }));

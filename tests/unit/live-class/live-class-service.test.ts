@@ -6,7 +6,9 @@ import { createLiveClassRepository } from '../../../packages/db/src/live-class/r
 import {
   createLiveClassService,
   createZoomHostLaunchPort,
+  stableKey,
   verifySignedLiveClassCommand,
+  ZOOM_CUSTOMER_KEY_MAX_LENGTH,
   type LiveClassRepository,
   type LiveClassService,
 } from '../../../packages/domain/src/index.ts';
@@ -405,6 +407,42 @@ describe('live class question lifecycle', () => {
       video_start_model: 'PARTICIPANT_CONSENT',
     });
     expect(launch.customer_key).not.toContain('Student 1');
+    expect(launch.customer_key).toMatch(/^zoom_ck_[a-f0-9]{24}$/);
+    expect(launch.customer_key.length).toBeLessThanOrEqual(ZOOM_CUSTOMER_KEY_MAX_LENGTH);
+
+    const legacyCustomerKey = stableKey('zoom_customer_key', [
+      launch.occurrence_key,
+      'live_demo_learner_1',
+    ]);
+    expect(legacyCustomerKey.length).toBeGreaterThan(ZOOM_CUSTOMER_KEY_MAX_LENGTH);
+    await pool.query(
+      `UPDATE onetime.live_class_questions
+          SET customer_key = $1
+        WHERE account_key = $2
+          AND product_key = $3
+          AND occurrence_key = $4
+          AND learner_key = 'live_demo_learner_1'`,
+      [legacyCustomerKey, config.accountKey, config.productKey, launch.occurrence_key],
+    );
+    await pool.query(
+      `UPDATE onetime.live_class_participants
+          SET participant_key = $1,
+              customer_key = $2
+        WHERE account_key = $3
+          AND product_key = $4
+          AND occurrence_key = $5
+          AND learner_key = 'live_demo_learner_1'`,
+      [
+        stableKey('zoom_participant', [launch.occurrence_key, legacyCustomerKey]),
+        legacyCustomerKey,
+        config.accountKey,
+        config.productKey,
+        launch.occurrence_key,
+      ],
+    );
+    const reseededLaunch = await realService.zoomTestParticipantBootstrap(rabbiActor(), 1);
+    expect(reseededLaunch.customer_key).toBe(launch.customer_key);
+    expect(reseededLaunch.customer_key.length).toBeLessThanOrEqual(ZOOM_CUSTOMER_KEY_MAX_LENGTH);
     const payload = JSON.parse(
       Buffer.from(launch.signature.split('.')[1]!, 'base64url').toString('utf8'),
     ) as { role: number; mn: string };

@@ -1,3 +1,5 @@
+import { sdkErrorSummary } from './zoom-sdk-safety.ts';
+
 type ZoomApi = Record<
   'setZoomJSLib' | 'preLoadWasm' | 'prepareWebSDK' | 'init' | 'join',
   (...args: unknown[]) => unknown
@@ -74,29 +76,6 @@ function sdkKeyFromSignature(signature: string) {
   const payload = JSON.parse(atob(base64)) as { sdkKey?: string };
   if (!payload.sdkKey) throw new Error('Meeting SDK signature is invalid.');
   return payload.sdkKey;
-}
-
-function sdkErrorSummary(error: unknown) {
-  if (!error || typeof error !== 'object') return 'code unknown';
-  const record = error as {
-    errorCode?: unknown;
-    error_code?: unknown;
-    reason?: unknown;
-    errorMessage?: unknown;
-    message?: unknown;
-  };
-  const value = record.errorCode ?? record.error_code;
-  const normalized = String(value ?? '')
-    .replace(/[^a-z0-9_-]/gi, '')
-    .slice(0, 32);
-  const reason = String(record.reason ?? record.errorMessage ?? record.message ?? '')
-    .replace(/https?:\/\/\S+/gi, '[redacted]')
-    .replace(/\b\d{6,}\b/g, '[redacted]')
-    .replace(/\b(zak|token|pass(?:word|code)?)\s*[:=]\s*\S+/gi, '$1=[redacted]')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 140);
-  return reason ? `code ${normalized || 'unknown'}: ${reason}` : `code ${normalized || 'unknown'}`;
 }
 
 function studentNumber() {

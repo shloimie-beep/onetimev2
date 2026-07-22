@@ -39,6 +39,11 @@ export const liveClassZoomOperationSchema = z.enum([
 ]);
 export type LiveClassZoomOperation = z.infer<typeof liveClassZoomOperationSchema>;
 
+export const liveClassZoomCustomerKeySchema = z
+  .string()
+  .regex(/^zoom_ck_[a-f0-9]{24}$/)
+  .max(36);
+
 export const liveClassQuestionSchema = z.object({
   question_key: opaqueIdSchema,
   occurrence_key: opaqueIdSchema,
@@ -249,7 +254,7 @@ export const liveClassZoomTestParticipantBootstrapResponseSchema = z.object({
     meeting_number: z.string().trim().min(9).max(32),
     signature: z.string().trim().min(16).max(2048),
     password: z.string().max(64),
-    customer_key: opaqueIdSchema,
+    customer_key: liveClassZoomCustomerKeySchema,
     user_name: z.string().trim().min(1).max(160),
     leave_url: z.string().trim().min(1).max(240),
     video_start_model: z.literal('PARTICIPANT_CONSENT'),
@@ -264,7 +269,7 @@ export const liveClassZoomParticipantSyncPayloadSchema = z.object({
   participants: z
     .array(
       z.object({
-        customer_key: opaqueIdSchema,
+        customer_key: liveClassZoomCustomerKeySchema,
         provider_user_id: z.string().regex(/^\d{1,20}$/),
         join_state: liveClassParticipantJoinStateSchema,
         audio_state: liveClassParticipantAudioStateSchema,
@@ -285,7 +290,7 @@ export const liveClassZoomParticipantSyncResponseSchema = z.object({
     mappings: z.array(
       z.object({
         participant_key: opaqueIdSchema,
-        customer_key: opaqueIdSchema,
+        customer_key: liveClassZoomCustomerKeySchema,
       }),
     ),
   }),

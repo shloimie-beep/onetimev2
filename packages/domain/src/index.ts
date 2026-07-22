@@ -57,6 +57,11 @@ export {
   type ZoomHostLaunchPort,
 } from './live-class/service.ts';
 export { createZoomHostLaunchPort } from './live-class/zoom-host.ts';
+export {
+  ZOOM_CUSTOMER_KEY_MAX_LENGTH,
+  assertZoomCustomerKey,
+  zoomCustomerKey,
+} from './live-class/zoom-identifiers.ts';
 export { createClassroomReminderJob } from './classroom/reminders.ts';
 export {
   ZoomApiError,
