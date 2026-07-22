@@ -268,7 +268,7 @@ describe('Tisha BAv event HTTP routes', () => {
     const distDir = await mkdtemp(path.join(tmpdir(), 'tisha-cache-proof-'));
     await writeFile(
       path.join(distDir, 'tisha-bav.html'),
-      '<!doctype html><html><head><title>Tisha</title></head><body><h1>Bringing Knowledge of Hashem into the World</h1><p>No charge</p></body></html>',
+      '<!doctype html><html><head><title>Tisha</title></head><body><p>Ki Mala Haaretz Deas Hashem</p><h1>Live Zoom class with Rabbi Eli Scheller for boys</h1><p>3 p.m. Eastern Time</p><p>No charge</p></body></html>',
     );
     const server = await startServer(config, openWindow, distDir);
     try {
@@ -280,8 +280,12 @@ describe('Tisha BAv event HTTP routes', () => {
         expect(response.headers.get('expires')).toBe('0');
 
         const html = await response.text();
-        expect(html).toContain('Bringing Knowledge of Hashem into the World');
+        expect(html).toContain('Ki Mala Haaretz Deas Hashem');
+        expect(html).toContain('Live Zoom class with Rabbi Eli Scheller for boys');
+        expect(html).toContain('3 p.m. Eastern Time');
         expect(html).toContain('No charge');
+        expect(html).not.toContain('10:00 PM Israel');
+        expect(html).not.toContain('Bringing Knowledge of Hashem into the World');
         expect(html).not.toContain('Filling the World with Knowledge of Hashem');
       }
     } finally {

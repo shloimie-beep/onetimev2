@@ -291,28 +291,26 @@ function signupPage() {
 
 function tishaBavLandingPage() {
   const shareUrl = 'https://join.onetimeonetime.com/tisha-bav';
-  const shareText = `Reserve your spot for the Tisha B'Av VIP Zoom class with Rabbi Elly Scheller: ${shareUrl}`;
+  const shareText = `Reserve your spot for the Tisha B'Av live Zoom class with Rabbi Eli Scheller: ${shareUrl}`;
   const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
   const emailShareUrl = `mailto:?subject=${encodeURIComponent("Tisha B'Av VIP Zoom Class")}&body=${encodeURIComponent(shareText)}`;
 
   return pageShell(
-    "Bringing Knowledge of Hashem into the World | Tisha B'Av VIP Zoom Class",
+    "Live Zoom class with Rabbi Eli Scheller for boys | Tisha B'Av VIP Zoom Class",
     `<main class="event-page tisha-bav-page">
   <section class="tisha-page" aria-labelledby="tisha-bav-title">
+    <p class="event-pasuk">Ki Mala Haaretz Deas Hashem</p>
     <div class="tisha-artwork" data-event-artwork>
       <picture class="tisha-picture">
         <source media="(max-width: 767px)" srcset="${tishaBavMobileImage}">
         <img src="${tishaBavDesktopImage}" alt=""${mediaSizeAttributes(tishaBavDesktopImage)} decoding="async" fetchpriority="high" data-event-hero-image>
       </picture>
       <div class="tisha-copy">
-        <p class="event-hebrew" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
-        <h1 id="tisha-bav-title">Bringing Knowledge of Hashem into the World</h1>
+        <h1 id="tisha-bav-title">Live Zoom class with Rabbi Eli Scheller for boys</h1>
       </div>
     </div>
     <div class="tisha-details" aria-label="Event details">
-      <p class="event-intro">Special Tisha B'Av VIP Zoom Class with Rabbi Elly Scheller</p>
-      <p class="event-date">Thursday, July 23, 2026</p>
-      <p class="event-time"><strong>3:00 PM Eastern / 10:00 PM Israel</strong></p>
+      <p class="event-time"><strong>3 p.m. Eastern Time</strong></p>
     </div>
     <div class="tisha-cta-block">
       <p class="event-charge">No charge</p>
@@ -353,7 +351,7 @@ function tishaBavLandingPage() {
     {
       canonicalPath: '/tisha-bav',
       description:
-        "Reserve a spot for a special Tisha B'Av VIP Zoom class with Rabbi Elly Scheller.",
+        "Reserve a spot for a special Tisha B'Av live Zoom class with Rabbi Eli Scheller.",
     },
   );
 }

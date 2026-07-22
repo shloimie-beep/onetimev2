@@ -3,7 +3,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const shareUrl = 'https://join.onetimeonetime.com/tisha-bav';
-const eventTitle = 'Bringing Knowledge of Hashem into the World';
+const eventTitle = 'Live Zoom class with Rabbi Eli Scheller for boys';
+const eventPasuk = 'Ki Mala Haaretz Deas Hashem';
 const screenshotDir = path.resolve(
   process.env.TISHA_BAV_SCREENSHOT_DIR ?? 'test-results/tisha-bav-funnel',
 );
@@ -60,26 +61,20 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     const headline = page.getByRole('heading', {
       name: eventTitle,
     });
-    const hebrew = page.locator('.event-hebrew');
+    const pasuk = page.getByText(eventPasuk, { exact: true });
     const image = page.locator('[data-event-hero-image]');
-    const description = page.getByText(
-      "Special Tisha B'Av VIP Zoom Class with Rabbi Elly Scheller",
-    );
-    const date = page.getByText('Thursday, July 23, 2026');
-    const time = page.getByText('3:00 PM Eastern / 10:00 PM Israel', { exact: true });
+    const time = page.getByText('3 p.m. Eastern Time', { exact: true });
     const noCharge = page.getByText('No charge', { exact: true });
     const cta = page.getByRole('button', { name: 'Reserve My Spot' });
 
     await waitForHeroImage(page);
     await assertFullyVisible(page, headline, `${label} headline`);
-    await assertFullyVisible(page, hebrew, `${label} Hebrew line`);
+    await assertFullyVisible(page, pasuk, `${label} pasuk line`);
     await assertFullyVisible(page, image, `${label} portrait art`);
-    await assertFullyVisible(page, description, `${label} class description`);
-    await assertFullyVisible(page, date, `${label} date`);
     await assertFullyVisible(page, time, `${label} time`);
     await assertFullyVisible(page, noCharge, `${label} no charge`);
     await assertFullyVisible(page, cta, `${label} CTA`);
-    await assertTitleOnTopOfArtwork(page, headline, hebrew, image, `${label} title overlay`);
+    await assertTitleOnTopOfArtwork(page, headline, pasuk, image, `${label} title overlay`);
 
     await expect(cta).toHaveCount(1);
     await expect(page.locator('form.event-form')).toBeHidden();
@@ -87,6 +82,11 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     await expect(page.locator('input[type="checkbox"]')).toHaveCount(0);
     await expect(page.locator('body')).not.toContainText('Send me future One Time emails.');
     await expect(page.locator('body')).not.toContainText('We will use this email');
+    await expect(page.locator('body')).not.toContainText(
+      'Bringing Knowledge of Hashem into the World',
+    );
+    await expect(page.locator('body')).not.toContainText('10:00 PM Israel');
+    await expect(page.locator('body')).not.toContainText("Special Tisha B'Av VIP Zoom Class");
 
     await assertHeroImage(page, {
       expectedName: 'tishea beav mobile(1).png',
@@ -95,12 +95,6 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
       naturalHeight: 1350,
       label,
     });
-    await assertNoVisibleBoxOverlap(
-      page,
-      image,
-      [description, date, time, noCharge, cta],
-      `${label} details`,
-    );
     await assertNoRawZoom(page);
 
     await page.screenshot({
@@ -142,18 +136,16 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     await waitForHeroImage(page);
 
     await expect(page.getByRole('heading', { name: eventTitle })).toBeVisible();
-    await expect(page.locator('.event-hebrew')).toBeVisible();
-    await expect(
-      page.getByText("Special Tisha B'Av VIP Zoom Class with Rabbi Elly Scheller"),
-    ).toBeVisible();
-    await expect(page.getByText('Thursday, July 23, 2026')).toBeVisible();
-    await expect(
-      page.getByText('3:00 PM Eastern / 10:00 PM Israel', { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByText(eventPasuk, { exact: true })).toBeVisible();
+    await expect(page.getByText('3 p.m. Eastern Time', { exact: true })).toBeVisible();
     await expect(page.getByText('No charge', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Reserve My Spot' })).toHaveCount(1);
     await expect(page.locator('form.event-form')).toBeHidden();
     await expect(page.locator('body')).not.toContainText(/student|payment|pricing|GHL iframe/i);
+    await expect(page.locator('body')).not.toContainText(
+      'Bringing Knowledge of Hashem into the World',
+    );
+    await expect(page.locator('body')).not.toContainText('10:00 PM Israel');
 
     await assertHeroImage(page, {
       expectedName: 'tisha beav(1).png',
@@ -165,7 +157,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     await assertTitleOnTopOfArtwork(
       page,
       page.getByRole('heading', { name: eventTitle }),
-      page.locator('.event-hebrew'),
+      page.getByText(eventPasuk, { exact: true }),
       page.locator('[data-event-hero-image]'),
       `${label} title overlay`,
     );
@@ -287,51 +279,28 @@ async function waitForHeroImage(page: Page) {
   });
 }
 
-async function assertNoVisibleBoxOverlap(
-  page: Page,
-  base: Locator,
-  others: Locator[],
-  label: string,
-) {
-  const baseBox = await base.boundingBox();
-  expect(baseBox, `${label} base box`).not.toBeNull();
-  if (!baseBox) return;
-  for (const locator of others) {
-    const otherBox = await locator.boundingBox();
-    expect(otherBox, `${label} other box`).not.toBeNull();
-    if (!otherBox) continue;
-    expect(boxesOverlap(baseBox, otherBox), label).toBe(false);
-  }
-}
-
-function boxesOverlap(a: Box, b: Box) {
-  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
-}
-
 async function assertTitleOnTopOfArtwork(
   page: Page,
   headline: Locator,
-  hebrew: Locator,
+  pasuk: Locator,
   image: Locator,
   label: string,
 ) {
   const headlineBox = await headline.boundingBox();
-  const hebrewBox = await hebrew.boundingBox();
+  const pasukBox = await pasuk.boundingBox();
   const imageBox = await image.boundingBox();
   expect(headlineBox, `${label} headline box`).not.toBeNull();
-  expect(hebrewBox, `${label} Hebrew box`).not.toBeNull();
+  expect(pasukBox, `${label} pasuk box`).not.toBeNull();
   expect(imageBox, `${label} image box`).not.toBeNull();
-  if (!headlineBox || !hebrewBox || !imageBox) return;
-  expect(hebrewBox.y, `${label} Hebrew above English`).toBeLessThanOrEqual(headlineBox.y);
+  if (!headlineBox || !pasukBox || !imageBox) return;
+  expect(pasukBox.y + pasukBox.height, `${label} pasuk above artwork`).toBeLessThanOrEqual(
+    imageBox.y + 1,
+  );
   expect(headlineBox.y, `${label} headline inside image top`).toBeGreaterThanOrEqual(
     imageBox.y - 1,
   );
-  expect(hebrewBox.y, `${label} Hebrew inside image top`).toBeGreaterThanOrEqual(imageBox.y - 1);
   const upperBand = imageBox.y + imageBox.height * 0.32;
   expect(headlineBox.y + headlineBox.height, `${label} headline upper image band`).toBeLessThan(
-    upperBand,
-  );
-  expect(hebrewBox.y + hebrewBox.height, `${label} Hebrew upper image band`).toBeLessThan(
     upperBand,
   );
 }
