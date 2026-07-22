@@ -12,6 +12,7 @@ import {
   createAccountUser,
   createSession,
   getSessionUserByKey,
+  retryContentFactoryIntake,
   runContentFactoryWorkerOnce,
 } from '../../../packages/domain/src/index.ts';
 
@@ -257,6 +258,55 @@ describe('durable occurrence-scoped content factory', () => {
     } finally {
       await afterUnpublishRestart.close();
     }
+
+    for (let retryWindow = 1; retryWindow <= 3; retryWindow += 1) {
+      await pool.query(
+        `UPDATE onetime.learning_delivery_content_factory_jobs
+            SET job_state = 'dead_letter', attempt_count = max_attempts
+          WHERE intake_key = $1`,
+        [intakeKey],
+      );
+      await pool.query(
+        `UPDATE onetime.learning_delivery_content_factory_intakes
+            SET intake_state = 'failed' WHERE intake_key = $1`,
+        [intakeKey],
+      );
+      await retryContentFactoryIntake({
+        pool,
+        config,
+        intakeKey,
+        actorUserKey: owner.userKey,
+        actorRole: 'owner',
+      });
+      const retryState = await pool.query(
+        `SELECT job.attempt_count, job.job_state, intake.audit_metadata_json
+           FROM onetime.learning_delivery_content_factory_jobs job
+           JOIN onetime.learning_delivery_content_factory_intakes intake
+             ON intake.intake_key = job.intake_key
+          WHERE job.intake_key = $1`,
+        [intakeKey],
+      );
+      expect(retryState.rows[0]).toMatchObject({ attempt_count: 0, job_state: 'queued' });
+      expect(retryState.rows[0].audit_metadata_json).toMatchObject({
+        manual_retry_count: retryWindow,
+        manual_retry_window_limit: 3,
+      });
+    }
+    await pool.query(
+      `UPDATE onetime.learning_delivery_content_factory_jobs
+          SET job_state = 'dead_letter', attempt_count = max_attempts
+        WHERE intake_key = $1`,
+      [intakeKey],
+    );
+    await expect(
+      retryContentFactoryIntake({
+        pool,
+        config,
+        intakeKey,
+        actorUserKey: owner.userKey,
+        actorRole: 'owner',
+      }),
+    ).rejects.toThrow('Manual retry limit reached.');
   });
 
   it('rejects traversal, executable/spreadsheet signatures, oversize, and missing occurrence', async () => {
