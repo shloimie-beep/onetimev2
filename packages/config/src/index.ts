@@ -548,6 +548,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
       (!parsed.ZOOM_MEETING_SDK_CLIENT_ID && parsed.ZOOM_MEETING_SDK_KEY) ||
       (!parsed.ZOOM_MEETING_SDK_CLIENT_SECRET && parsed.ZOOM_MEETING_SDK_SECRET),
     ),
+    zoomMeetingSdkCanonicalClientIdConfigured: Boolean(parsed.ZOOM_MEETING_SDK_CLIENT_ID?.trim()),
+    zoomMeetingSdkCanonicalClientSecretConfigured: Boolean(
+      parsed.ZOOM_MEETING_SDK_CLIENT_SECRET?.trim(),
+    ),
+    zoomMeetingSdkWebVersionConfigured: Boolean(source.ZOOM_MEETING_SDK_WEB_VERSION?.trim()),
     zoomMeetingSdkKeyConfigured: Boolean(
       parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
     ),

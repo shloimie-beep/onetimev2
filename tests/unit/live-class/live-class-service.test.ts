@@ -21,6 +21,21 @@ let service: LiveClassService;
 
 const now = new Date('2027-07-21T16:05:00.000Z');
 let clockNow = now;
+const realZoomHostEnv = {
+  ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+  ZOOM_CLASSROOM_ENABLED: 'true',
+  ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
+  ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+  ZOOM_MEETING_SDK_CLIENT_ID: 'sdk_client_test',
+  ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
+  ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+  ZOOM_ACCOUNT_ID: 'zoom_account_test',
+  ZOOM_S2S_CLIENT_ID: 's2s_client_test',
+  ZOOM_S2S_CLIENT_SECRET: 's2s_secret_test',
+  ZOOM_HOST_USER_ID: 'host_user_test',
+  ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+  ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
+} as const;
 
 beforeEach(async () => {
   clockNow = now;
@@ -304,14 +319,7 @@ describe('live class question lifecycle', () => {
     const realConfig = loadConfig({
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
-      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk_client_test',
-      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
-      ZOOM_ACCOUNT_ID: 'zoom_account_test',
-      ZOOM_S2S_CLIENT_ID: 's2s_client_test',
-      ZOOM_S2S_CLIENT_SECRET: 's2s_secret_test',
-      ZOOM_HOST_USER_ID: 'host_user_test',
-      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
-      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
+      ...realZoomHostEnv,
     });
     const realService = createLiveClassService({
       config: realConfig,
@@ -383,14 +391,7 @@ describe('live class question lifecycle', () => {
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
       LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
-      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk_client_test',
-      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
-      ZOOM_ACCOUNT_ID: 'zoom_account_test',
-      ZOOM_S2S_CLIENT_ID: 's2s_client_test',
-      ZOOM_S2S_CLIENT_SECRET: 's2s_secret_test',
-      ZOOM_HOST_USER_ID: 'host_user_test',
-      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
-      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
+      ...realZoomHostEnv,
     });
     const launchPort = createZoomHostLaunchPort(realConfig);
     expect(launchPort).toBeTruthy();

@@ -26,6 +26,7 @@ import type {
 import { stableKey } from '../lead/normalize.ts';
 import { PortalServiceError } from '../portals/services.ts';
 import { assertZoomCustomerKey, zoomCustomerKey } from './zoom-identifiers.ts';
+import { inspectZoomHostControlReadiness } from './zoom-host.ts';
 
 export const LIVE_CLASS_POLICY_VERSION = 'ot-live-class-control-v1';
 export const LIVE_CLASS_STAGE_SURFACE_LABEL = 'One Time Zoom Stage Host';
@@ -241,10 +242,11 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
 
     async zoomHostBootstrap(actor: PortalActorContext, occurrenceKey?: string | undefined) {
       requireRabbi(actor);
-      if (!zoomHostControlConfigured(deps.config) || !deps.zoomHostLaunchPort) {
+      requireZoomHostControl(deps.config);
+      if (!deps.zoomHostLaunchPort) {
         throw new PortalServiceError(
-          'ADAPTER_UNAVAILABLE',
-          'Meeting SDK host control is not configured for this preview.',
+          'PROVIDER_NOT_READY',
+          'Meeting SDK host control is not ready.',
         );
       }
       const now = clock();
@@ -261,10 +263,11 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       occurrenceKey?: string | undefined,
     ) {
       requireRabbi(actor);
-      if (!zoomHostControlConfigured(deps.config) || !deps.zoomHostLaunchPort) {
+      requireZoomHostControl(deps.config);
+      if (!deps.zoomHostLaunchPort) {
         throw new PortalServiceError(
-          'ADAPTER_UNAVAILABLE',
-          'Meeting SDK participant control is not configured for this preview.',
+          'PROVIDER_NOT_READY',
+          'Meeting SDK participant control is not ready.',
         );
       }
       if (!liveClassFakeAdapterEnabled(deps.config) || ![1, 2, 3].includes(studentNumber)) {
@@ -301,12 +304,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       payload: LiveClassZoomParticipantSyncPayload,
     ) {
       requireRabbi(actor);
-      if (!zoomHostControlConfigured(deps.config)) {
-        throw new PortalServiceError(
-          'ADAPTER_UNAVAILABLE',
-          'Meeting SDK participant sync is not configured.',
-        );
-      }
+      requireZoomHostControl(deps.config);
       const mappings: Array<{ participant_key: string; customer_key: string }> = [];
       for (const item of payload.participants) {
         const existing = await deps.repository.getParticipantByCustomerKey({
@@ -780,12 +778,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
 
     async pollZoomCommands(actor: PortalActorContext, occurrenceKey: string) {
       requireRabbi(actor);
-      if (!zoomHostControlConfigured(deps.config)) {
-        throw new PortalServiceError(
-          'ADAPTER_UNAVAILABLE',
-          'Meeting SDK host control is not configured.',
-        );
-      }
+      requireZoomHostControl(deps.config);
       return deps.repository.listPendingZoomCommands({
         actor,
         occurrence_key: occurrenceKey,
@@ -1138,19 +1131,22 @@ function zoomSdkConfigured(config: AppConfig) {
 }
 
 function zoomHostControlConfigured(config: AppConfig) {
-  return Boolean(
-    zoomSdkConfigured(config) &&
-    config.zoomAccountId &&
-    config.zoomServerToServerClientId &&
-    config.zoomServerToServerClientSecret &&
-    config.zoomHostUserId &&
-    config.zoomRealControlMeetingId &&
-    config.zoomRealControlMeetingPasscode,
-  );
+  return inspectZoomHostControlReadiness(config).ready;
 }
 
 function zoomAdapterMode(config: AppConfig): 'fake' | 'meeting_sdk_host' {
   return zoomHostControlConfigured(config) ? 'meeting_sdk_host' : 'fake';
+}
+
+function requireZoomHostControl(config: AppConfig) {
+  const readiness = inspectZoomHostControlReadiness(config);
+  if (readiness.ready) return;
+  throw new PortalServiceError(
+    readiness.code === 'PROVIDER_OFF' ? 'PROVIDER_OFF' : 'PROVIDER_NOT_READY',
+    readiness.code === 'PROVIDER_OFF'
+      ? 'Real Zoom host control is disabled by runtime or provider policy.'
+      : 'Real Zoom host control prerequisites are incomplete.',
+  );
 }
 
 function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['setup_job']> {
@@ -1165,13 +1161,14 @@ function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['s
       'Participant roster, audio/video state, active speaker, and spotlight events',
     ],
     storage_instruction:
-      'Save Meeting SDK client ID, client secret, and web version only as protected Railway PR environment variables or local secret storage.',
+      'Store canonical Meeting SDK, S2S, host, meeting, and passcode values only in protected governed environment configuration.',
     steps: [
       'Open Zoom Marketplace, choose Develop, then Build App.',
       'Create an admin-managed General app named One Time Zoom Stage Host.',
       'On Features > Embed, enable Meeting SDK for Other Devices.',
-      'Set the exact PR callback as the OAuth redirect and allow-list entry with strict mode enabled.',
-      'Store the development Client ID and Client Secret in the protected Railway PR environment.',
+      'After governed staging integration, allowlist exactly https://ot99-web-staging.up.railway.app with strict mode enabled.',
+      'Set ZOOM_MEETING_SDK_CLIENT_ID, ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION in protected configuration.',
+      'Set the protected S2S account/client credentials plus host, isolated meeting, and passcode prerequisites.',
       'Confirm the classroom account can start or join the class meeting as host or co-host.',
     ],
   };

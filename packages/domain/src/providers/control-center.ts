@@ -11,6 +11,10 @@ import {
   type ProviderControlCenterResponse,
   type WebhookEndpointContract,
 } from '../../../contracts/src/providers/control-center.ts';
+import {
+  inspectZoomHostControlReadiness,
+  ZOOM_HOST_CONTROL_REQUIRED_VARIABLES,
+} from '../live-class/zoom-host.ts';
 
 type EnvLike = Record<string, string | undefined>;
 
@@ -269,6 +273,7 @@ function buildProviderItems(
   endpoints: WebhookEndpointContract[],
 ): ProviderControlCenterItem[] {
   const endpointByProvider = new Map(endpoints.map((candidate) => [candidate.provider, candidate]));
+  const zoomHostReadiness = inspectZoomHostControlReadiness(config);
   return [
     providerItem({
       provider: 'resend_email',
@@ -330,25 +335,10 @@ function buildProviderItems(
     providerItem({
       provider: 'zoom_classroom',
       label: 'Zoom classroom',
-      required: [
-        'ZOOM_CLASSROOM_ENABLED',
-        'ZOOM_CLASSROOM_PROVIDER_MODE',
-        'ZOOM_MEETING_SDK_CLIENT_ID',
-        'ZOOM_MEETING_SDK_CLIENT_SECRET',
-        'ZOOM_MEETING_SDK_WEB_VERSION',
-        'ZOOM_S2S_ACCOUNT_ID',
-        'ZOOM_S2S_CLIENT_ID',
-        'ZOOM_S2S_CLIENT_SECRET',
-      ],
-      configured:
-        config.zoomMeetingSdkClientIdConfigured &&
-        config.zoomMeetingSdkClientSecretConfigured &&
-        config.zoomMeetingSdkWebVersionConfigured &&
-        config.zoomS2sAccountIdConfigured &&
-        config.zoomS2sClientIdConfigured &&
-        config.zoomS2sClientSecretConfigured,
-      providerOn: config.zoomClassroomEnabled && config.zoomClassroomProviderMode === 'real',
-      canaryReady: config.zoomClassroomCanaryEnabled,
+      required: [...ZOOM_HOST_CONTROL_REQUIRED_VARIABLES],
+      configured: zoomHostReadiness.readiness_blockers.length === 0,
+      providerOn: zoomHostReadiness.provider_gate_blockers.length === 0,
+      canaryReady: zoomHostReadiness.ready && config.zoomClassroomCanaryEnabled,
       endpoint: requiredEndpoint(endpointByProvider, 'zoom_classroom'),
       queueDependency: ['class_occurrences', 'classroom_join_grants'],
       env,
