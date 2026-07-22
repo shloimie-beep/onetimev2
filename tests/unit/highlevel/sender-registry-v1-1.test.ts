@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   botActionWorkflows,
   businessWorkflows,
+  campaignAssets,
   eventDefinitions,
   messageClasses,
   pipelineDefinitions,
@@ -22,9 +23,18 @@ describe('HighLevel sender registry 1.1', () => {
       pipelineDefinitions.filter((pipeline) => pipeline.status !== 'compatibility_alias'),
     ).toHaveLength(3);
     expect(eventDefinitions.map((event) => event.eventCode)).toEqual(['tisha-bav-2026']);
-    expect([...businessWorkflows, ...botActionWorkflows]).toHaveLength(19);
+    const automationAssets = [...businessWorkflows, ...botActionWorkflows];
+    expect(automationAssets).toHaveLength(19);
+    expect(automationAssets.filter((asset) => asset.asset_kind === 'workflow')).toHaveLength(18);
+    expect(campaignAssets).toHaveLength(1);
+    expect(campaignAssets[0]).toMatchObject({
+      key: 'OT-C01',
+      asset_kind: 'email_marketing_campaign',
+      observedStatus: 'SAVED_REOPENED',
+      audienceReadback: { audienceConfigured: false, scheduled: false, sends: 0 },
+    });
     expect(
-      [...businessWorkflows, ...botActionWorkflows].every(
+      automationAssets.every(
         (workflow) => workflow.senderKey && workflow.messageClass && workflow.exactTrigger,
       ),
     ).toBe(true);

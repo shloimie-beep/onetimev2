@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "one-time-highlevel-asset-kind-readback@1.0.0",
+  "generatedAt": "2026-07-22T12:15:00.000Z",
+  "mutationPerformed": false,
+  "source": "sanitized read-only browser reconciliation plus committed terminal GHL handoff",
+  "assets": [
+    {
+      "key": "OT-C01",
+      "assetKind": "email_marketing_campaign",
+      "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "fullPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "observedStatus": "DRAFT_NOT_SENT",
+      "audienceConfigured": false,
+      "scheduled": false,
+      "sends": 0
+    },
+    {
+      "key": "OT-A1",
+      "assetKind": "conversation_ai_bot",
+      "id": "0Z5YvlziuXqZmBntYFU0",
+      "fullPath": "One Time / 60 - Bot Actions",
+      "observedStatus": "OFF",
+      "channels": ["Website Live Chat", "WhatsApp"]
+    },
+    {
+      "key": "one-time-public-kb-v1",
+      "assetKind": "knowledge_base",
+      "id": "ps6jttZ8WUGycLeQX6uF",
+      "fullPath": "One Time / 60 - Bot Actions",
+      "observedStatus": "ACTIVE_REFERENCE"
+    }
+  ],
+  "workflowEnrollments": 0,
+  "broadSends": 0,
+  "notes": [
+    "OT-C01 is an Email Marketing campaign, not a workflow.",
+    "OT-A1 and its knowledge base are tracked outside workflow counts.",
+    "This result records observed evidence only; workflow-registry.yaml remains canonical desired state."
+  ]
+}

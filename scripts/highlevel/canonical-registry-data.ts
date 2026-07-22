@@ -1,8 +1,12 @@
 import {
-  workflowControlByKey,
+  botActionWorkflowRecords,
+  businessWorkflowRecords,
+  canonicalCampaignAssets,
+  deprecatedWorkflowRecords,
+  nonWorkflowAssets,
   workflowFolderTree,
-  type WorkflowControlState,
-} from './workflow-control-registry.ts';
+  type WorkflowRegistryRecord,
+} from './workflow-registry-source.ts';
 
 export const registryMetadata = {
   schemaId: 'one-time-highlevel',
@@ -87,57 +91,9 @@ export type RegistryCustomValue = {
   lastTestedDate: string;
 };
 
-export type RegistryWorkflow = {
-  key: string;
-  canonicalName: string;
-  normalizedName: string;
-  ghlId: string;
-  ghlKey: string;
-  objectType: 'business_workflow' | 'bot_action_workflow' | 'deprecated_workflow';
-  dataType: 'workflow';
-  category: string;
-  folder: string;
-  purpose: string;
-  sourceOfTruth: SourceOfTruth;
-  allowedValues: string[];
-  workflowsAllowedToWrite: string[];
-  oneTimeAllowedToWrite: boolean;
-  humansMayEdit: boolean;
-  dependencies: string[];
-  aliases: string[];
-  assetLifecycle: 'canonical' | 'deprecated';
-  createdDate: string;
-  lastVerifiedDate: string;
-  lastTestedDate: string;
-  promptPath: string;
-  checklistPath: string;
-  messageClass: string;
-  senderKey: SenderKey;
-  transport: MessageTransport;
-  exactTrigger: string;
-  companionDelivery: string;
-  displayOrder: number;
-  desiredStatus: WorkflowControlState;
-  observedStatus: WorkflowControlState;
-  exactOrderedTriggers: string[];
-  exactOrderedActions: string[];
-  observedTriggers: string[];
-  observedActions: string[];
-  lastReadback: {
-    at: string;
-    method: string;
-    reference: string;
-  };
-  canary: {
-    result: 'passed' | 'not_run' | 'not_applicable';
-    reference: string;
-    detail: string;
-  };
-  blocker: string;
-  evidence: string[];
-};
+export type RegistryWorkflow = WorkflowRegistryRecord;
 
-export { workflowFolderTree };
+export { nonWorkflowAssets, workflowFolderTree };
 
 export type RegistrySender = {
   key: SenderKey;
@@ -1393,7 +1349,24 @@ export const customValues: RegistryCustomValue[] = customValueInputs.map(
   }),
 );
 
-export const workflowCommunicationBindings: Record<
+export const businessWorkflows = businessWorkflowRecords;
+export const botActionWorkflows = botActionWorkflowRecords;
+export const deprecatedWorkflows = deprecatedWorkflowRecords;
+export const campaignAssets = canonicalCampaignAssets;
+export const workflows = [...businessWorkflows, ...botActionWorkflows, ...deprecatedWorkflows];
+
+export const workflowCommunicationBindings = Object.fromEntries(
+  workflows.map((workflow) => [
+    workflow.key,
+    {
+      messageClass: workflow.messageClass,
+      senderKey: workflow.senderKey,
+      transport: workflow.transport,
+      exactTrigger: workflow.exactTrigger,
+      ...(workflow.companionDelivery ? { companionDelivery: workflow.companionDelivery } : {}),
+    },
+  ]),
+) satisfies Record<
   string,
   {
     messageClass: string;
@@ -1402,351 +1375,18 @@ export const workflowCommunicationBindings: Record<
     exactTrigger: string;
     companionDelivery?: string;
   }
-> = {
-  'OT-01': {
-    messageClass: 'signup_confirmation',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'adult public signup submitted',
-  },
-  'OT-02A': {
-    messageClass: 'existing_subscriber_migration',
-    senderKey: 'rabbi_campaign',
-    transport: 'GHL',
-    exactTrigger: 'registered existing subscriber migration audience entry',
-  },
-  'OT-02B': {
-    messageClass: 'prelaunch_nurture',
-    senderKey: 'rabbi_campaign',
-    transport: 'GHL',
-    exactTrigger: 'registered new lead nurture audience entry',
-  },
-  'OT-03': {
-    messageClass: 'warm_enrollment_campaign',
-    senderKey: 'rabbi_campaign',
-    transport: 'GHL',
-    exactTrigger: 'checkout started and not completed within the registered wait window',
-  },
-  'OT-04': {
-    messageClass: 'signup_confirmation',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'One Time payment/access projection becomes Active',
-  },
-  'OT-05': {
-    messageClass: 'payment_failed_support',
-    senderKey: 'office',
-    transport: 'GHL',
-    exactTrigger: 'One Time payment/access projection becomes Grace after payment failure',
-  },
-  'OT-06': {
-    messageClass: 'cancellation_help',
-    senderKey: 'office',
-    transport: 'GHL',
-    exactTrigger:
-      'One Time subscription projection becomes Canceled when support context is required',
-  },
-  'OT-07': {
-    messageClass: 'portal_welcome',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'One Time access confirmation requests the parent portal companion email',
-    companionDelivery:
-      'One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.',
-  },
-  'OT-08': {
-    messageClass: 'portal_activated',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'One Time parent portal projection becomes Active',
-  },
-  'OT-09': {
-    messageClass: 'class_reminder',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'registered confirmed class reminder schedule and consent gate pass',
-  },
-  'OT-10': {
-    messageClass: 'recording_available',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'One Time marks a protected recording available for an entitled household',
-  },
-  'OT-13': {
-    messageClass: 'refund_help',
-    senderKey: 'office',
-    transport: 'GHL',
-    exactTrigger: 'refund or chargeback support state is recorded',
-  },
-  'OT-C01': {
-    messageClass: 'rabbi_event_invitation',
-    senderKey: 'rabbi_campaign',
-    transport: 'GHL',
-    exactTrigger:
-      "approved Tisha B'Av 2026 warm invitation audience enters the registered campaign",
-  },
-  'OT-E01': {
-    messageClass: 'event_registration_confirmation',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: "Tisha B'Av 2026 registration or approved reminder milestone is recorded",
-  },
-  'OT-B01': {
-    messageClass: 'signup_confirmation',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'OT-A1 invokes the typed complete-signup adapter for an adult',
-  },
-  'OT-B02': {
-    messageClass: 'class_reminder',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'OT-A1 invokes the typed next-confirmed-class-info adapter',
-  },
-  'OT-B03': {
-    messageClass: 'access_help',
-    senderKey: 'office',
-    transport: 'GHL',
-    exactTrigger: 'OT-A1 invokes the typed member-login adapter',
-  },
-  'OT-B04': {
-    messageClass: 'password_reset',
-    senderKey: 'account_security',
-    transport: 'Resend',
-    exactTrigger: 'OT-A1 invokes the typed password-help adapter',
-    companionDelivery:
-      'GHL may request the One Time adapter but never stores or sends a reset token.',
-  },
-  'OT-B05': {
-    messageClass: 'support_acknowledgement',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger:
-      'OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane',
-  },
-  'OT-11': {
-    messageClass: 'support_acknowledgement',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'deprecated; no active trigger is allowed',
-  },
-  'OT-12': {
-    messageClass: 'support_reply',
-    senderKey: 'office',
-    transport: 'GHL',
-    exactTrigger: 'deprecated when it creates tasks; no active trigger is allowed',
-  },
-  'OT-HUMAN-HANDOFF': {
-    messageClass: 'support_acknowledgement',
-    senderKey: 'brand',
-    transport: 'GHL',
-    exactTrigger: 'forbidden and deprecated; no active trigger is allowed',
-  },
-};
+>;
 
-for (const [workflowKey, binding] of Object.entries(workflowCommunicationBindings)) {
-  const messageClass = messageClasses.find((candidate) => candidate.key === binding.messageClass);
-  if (!messageClass) throw new Error(`message_class_missing:${binding.messageClass}`);
+for (const workflow of workflows) {
+  const messageClass = messageClasses.find((candidate) => candidate.key === workflow.messageClass);
+  if (!messageClass) throw new Error(`message_class_missing:${workflow.messageClass}`);
   if (
-    messageClass.senderKey !== binding.senderKey ||
-    messageClass.transport !== binding.transport
+    messageClass.senderKey !== workflow.senderKey ||
+    messageClass.transport !== workflow.transport
   ) {
-    throw new Error(`workflow_sender_binding_mismatch:${workflowKey}`);
+    throw new Error(`workflow_sender_binding_mismatch:${workflow.key}`);
   }
-  messageClass.allowedWorkflows.push(workflowKey);
-}
-
-const businessWorkflowInputs = [
-  [
-    'OT-01',
-    'OT-01 New Lead Intake',
-    '00 - Intake & Data',
-    'Lead intake after public signup or bot action.',
-  ],
-  [
-    'OT-02A',
-    'OT-02A Existing Subscriber Migration 2026 v1',
-    '10 - Enrollment & Nurture',
-    'Three-email existing-subscriber migration sequence.',
-  ],
-  [
-    'OT-02B',
-    'OT-02B New Lead Nurture v1',
-    '10 - Enrollment & Nurture',
-    'New lead nurture separate from migration.',
-  ],
-  [
-    'OT-03',
-    'OT-03 Checkout Started / Abandoned',
-    '20 - Billing & Access',
-    'Checkout started and abandoned checkout handling.',
-  ],
-  ['OT-04', 'OT-04 Payment Active', '20 - Billing & Access', 'Active payment state handling.'],
-  [
-    'OT-05',
-    'OT-05 Payment Failed / Grace',
-    '20 - Billing & Access',
-    'Payment failure and grace handling.',
-  ],
-  ['OT-06', 'OT-06 Subscription Canceled', '20 - Billing & Access', 'Cancellation handling.'],
-  [
-    'OT-07',
-    'OT-07 Parent Portal Invitation',
-    '30 - Portal Lifecycle',
-    'Parent portal invitation after One Time access confirmation.',
-  ],
-  [
-    'OT-08',
-    'OT-08 Parent Portal Activated',
-    '30 - Portal Lifecycle',
-    'Parent portal activation projection.',
-  ],
-  [
-    'OT-09',
-    'OT-09 Parent Class Reminder',
-    '40 - Learning Operations / Classes',
-    'Parent class reminder gated by access and consent.',
-  ],
-  [
-    'OT-10',
-    'OT-10 New Recording Available',
-    '40 - Learning Operations / Content',
-    'Protected recording availability notice.',
-  ],
-  [
-    'OT-13',
-    'OT-13 Refund / Chargeback',
-    '20 - Billing & Access',
-    'Refund and chargeback handling.',
-  ],
-  [
-    'OT-C01',
-    "OT-C01 Tisha B'Av 2026 Warm Invitation",
-    "45 - Events / 2026 / Tisha B'Av 2026",
-    "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign.",
-  ],
-  [
-    'OT-E01',
-    "OT-E01 Tisha B'Av 2026 Registration and Reminders",
-    "45 - Events / 2026 / Tisha B'Av 2026",
-    "Registered Tisha B'Av 2026 registration and reminder workflow.",
-  ],
-] as const;
-
-const botActionWorkflowInputs = [
-  [
-    'OT-B01',
-    'OT-B01 Complete Signup',
-    '60 - Bot Actions',
-    'Typed bot action adapter for adult signup.',
-  ],
-  [
-    'OT-B02',
-    'OT-B02 Send Next Confirmed Class Info',
-    '60 - Bot Actions',
-    'Safe next confirmed class info adapter.',
-  ],
-  ['OT-B03', 'OT-B03 Send Member Login', '60 - Bot Actions', 'Send canonical member login URL.'],
-  ['OT-B04', 'OT-B04 Send Password Help', '60 - Bot Actions', 'Send canonical password-help URL.'],
-  [
-    'OT-B05',
-    'OT-B05 Apply Opt-Out',
-    '60 - Bot Actions',
-    'Apply opt-out, DND, suppression and stop bot follow-up.',
-  ],
-] as const;
-
-const deprecatedWorkflowInputs = [
-  [
-    'OT-11',
-    'OT-11 WhatsApp Lead Qualification',
-    '99 - Deprecated',
-    'Superseded by OT-A1 and OT-B01.',
-  ],
-  [
-    'OT-12',
-    'OT-12 Support Intake / Technical Escalation',
-    '99 - Deprecated',
-    'Deprecated when it creates tasks or support escalation workflows.',
-  ],
-  [
-    'OT-HUMAN-HANDOFF',
-    'OT - Human Handoff',
-    '99 - Deprecated',
-    'Human handoff workflow is not active for OT-A1.',
-  ],
-] as const;
-
-export const businessWorkflows = businessWorkflowInputs.map((input) =>
-  workflowFromInput(input, 'business_workflow', 'canonical'),
-);
-export const botActionWorkflows = botActionWorkflowInputs.map((input) =>
-  workflowFromInput(input, 'bot_action_workflow', 'canonical'),
-);
-export const deprecatedWorkflows = deprecatedWorkflowInputs.map((input) =>
-  workflowFromInput(input, 'deprecated_workflow', 'deprecated'),
-);
-export const workflows = [...businessWorkflows, ...botActionWorkflows, ...deprecatedWorkflows];
-
-function workflowFromInput(
-  input: readonly [string, string, string, string],
-  objectType: RegistryWorkflow['objectType'],
-  assetLifecycle: RegistryWorkflow['assetLifecycle'],
-): RegistryWorkflow {
-  const [key, canonicalName, folder, purpose] = input;
-  const communication = workflowCommunicationBindings[key];
-  if (!communication) throw new Error(`workflow_communication_binding_missing:${key}`);
-  const control = workflowControlByKey[key];
-  if (!control) throw new Error(`workflow_control_binding_missing:${key}`);
-  if (control.folder !== folder) throw new Error(`workflow_control_folder_mismatch:${key}`);
-  const fileBase = `${key}-${fileSlug(canonicalName.replace(`${key} `, ''))}.md`;
-  return {
-    key,
-    canonicalName,
-    normalizedName: normalizeAssetName(canonicalName),
-    ghlId: control.ghlId,
-    ghlKey: normalizeAssetName(canonicalName),
-    objectType,
-    dataType: 'workflow',
-    category: objectType,
-    folder,
-    purpose,
-    sourceOfTruth: 'Shared',
-    allowedValues: [],
-    workflowsAllowedToWrite: [],
-    oneTimeAllowedToWrite: false,
-    humansMayEdit: true,
-    dependencies: [],
-    aliases: [],
-    assetLifecycle,
-    createdDate: date,
-    lastVerifiedDate: control.lastReadback.at.slice(0, 10),
-    lastTestedDate: control.canary.result === 'passed' ? control.lastReadback.at.slice(0, 10) : '',
-    promptPath:
-      objectType === 'deprecated_workflow'
-        ? ''
-        : `integrations/highlevel/ai-workflow-prompts/${fileBase}`,
-    checklistPath:
-      objectType === 'deprecated_workflow'
-        ? ''
-        : `integrations/highlevel/workflow-checklists/${fileBase}`,
-    messageClass: communication.messageClass,
-    senderKey: communication.senderKey,
-    transport: communication.transport,
-    exactTrigger: communication.exactTrigger,
-    companionDelivery: communication.companionDelivery ?? '',
-    displayOrder: control.displayOrder,
-    desiredStatus: control.desiredStatus,
-    observedStatus: control.observedStatus,
-    exactOrderedTriggers: control.exactOrderedTriggers,
-    exactOrderedActions: control.exactOrderedActions,
-    observedTriggers: control.observedTriggers,
-    observedActions: control.observedActions,
-    lastReadback: control.lastReadback,
-    canary: control.canary,
-    blocker: control.blocker,
-    evidence: control.evidence,
-  };
+  messageClass.allowedWorkflows.push(workflow.key);
 }
 
 export const lowercaseTagDeprecations = [

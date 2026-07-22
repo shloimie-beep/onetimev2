@@ -10,7 +10,9 @@ Agent Mode may change GHL only under an exact authorized job. GitHub is the cano
 ## Before opening or changing GHL
 
 1. Read the canonical GHL registry and the exact job specification referenced by the conductor.
-   This includes `integrations/highlevel/workflows.yaml`, `registry/workflow-registry.yaml`, and the generated `registry/WORKFLOW-CONTROL-REPORT.md` for workflow jobs.
+   `registry/workflow-registry.yaml` is the single editable automation inventory; also inspect its
+   source-hashed generated `integrations/highlevel/workflows.yaml`/`registry/current.json` projections
+   and generated `registry/WORKFLOW-CONTROL-REPORT.md`.
 2. Verify the job names allowed asset types, exact canonical keys/names/paths, permitted operations, send/publish/enrollment authority, test audience/budget, and expected result path.
 3. If the authorized job is absent or incomplete, produce a proposed job for Codex review and make no GHL mutation.
 4. Default to no-send, no-publish, no-activation, and no-enrollment unless the exact job explicitly authorizes each action.
@@ -50,6 +52,8 @@ Use only these workflow control states:
 
 - `MISSING`: no exact asset exists.
 - `DRAFT_SHELL`: the asset exists in Draft but exact executable triggers/actions are absent.
+- `DRAFT_WAITING_EXTERNAL`: the saved Draft cannot become executable until its exact app, adapter,
+  authority, or provider dependency exists; preserve that dependency reference and do not publish it.
 - `SAVED_REOPENED`: the permitted configuration was saved and survives navigate-away/reload plus reopen; activation is not claimed.
 - `ACTIVE_CONFIGURED`: active configuration is read back, but controlled execution has not passed.
 - `ACTIVE_TESTED`: a controlled authorized trigger/execution proves expected branches and waits, bounded delivery, and idempotency/replay behavior.
@@ -60,7 +64,7 @@ Never claim `ACTIVE_TESTED` from a green toggle, save confirmation, or config sc
 
 Activation, broad sends, payments, destructive actions, enrollment, publication, and quarantine each require exact job authority. Default to no action when authority is missing.
 
-After readback, compare the observed ID, full path/order, exact ordered triggers/actions, and state to `workflow-registry.yaml`. Return `DRIFTED` on every disagreement. Codex commits the sanitized result and regenerates the human control report; Agent Mode never edits the registry, report, or BOARD.
+After readback, compare the observed asset kind, ID, full nested path/order, exact trigger, ordered actions/essential values, and state to `workflow-registry.yaml`. Return `DRIFTED` on every disagreement. An Email Marketing campaign, bot, or knowledge base must not be counted or described as a workflow. Codex commits the sanitized result, synchronizes the generated projections, and regenerates the human control report; Agent Mode never edits the registry, projections, report, or BOARD.
 
 ## Sanitized result JSON
 
@@ -71,6 +75,7 @@ Return:
   "schema_version": 1,
   "job_id": "...",
   "asset_type": "...",
+  "asset_kind": "workflow|email_marketing_campaign|conversation_ai_bot|knowledge_base|...",
   "canonical_key": "...",
   "location_fingerprint": "...",
   "full_path": "...",
@@ -79,11 +84,12 @@ Return:
   "duplicate_count": 0,
   "save_status": "SAVED_REOPENED",
   "reopen_status": "MATCHED",
-  "control_status": "MISSING|DRAFT_SHELL|SAVED_REOPENED|ACTIVE_CONFIGURED|ACTIVE_TESTED|DRIFTED|BLOCKED",
+  "control_status": "MISSING|DRAFT_SHELL|DRAFT_WAITING_EXTERNAL|SAVED_REOPENED|ACTIVE_CONFIGURED|ACTIVE_TESTED|DRIFTED|BLOCKED",
   "desired_status": "...",
   "observed_status": "...",
   "ordered_trigger_readback": [],
   "ordered_action_readback": [],
+  "essential_value_readback": {},
   "drift": [],
   "timestamp": "...",
   "sanitized_execution_reference": null,

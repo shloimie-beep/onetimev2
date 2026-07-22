@@ -333,14 +333,20 @@ function buildProviderItems(
       required: [
         'ZOOM_CLASSROOM_ENABLED',
         'ZOOM_CLASSROOM_PROVIDER_MODE',
-        'ZOOM_MEETING_SDK_KEY',
-        'ZOOM_MEETING_SDK_SECRET',
-        'ZOOM_ACCOUNT_ID',
+        'ZOOM_MEETING_SDK_CLIENT_ID',
+        'ZOOM_MEETING_SDK_CLIENT_SECRET',
+        'ZOOM_MEETING_SDK_WEB_VERSION',
+        'ZOOM_S2S_ACCOUNT_ID',
+        'ZOOM_S2S_CLIENT_ID',
+        'ZOOM_S2S_CLIENT_SECRET',
       ],
       configured:
-        config.zoomMeetingSdkKeyConfigured &&
-        config.zoomMeetingSdkSecretConfigured &&
-        config.zoomAccountIdConfigured,
+        config.zoomMeetingSdkClientIdConfigured &&
+        config.zoomMeetingSdkClientSecretConfigured &&
+        config.zoomMeetingSdkWebVersionConfigured &&
+        config.zoomS2sAccountIdConfigured &&
+        config.zoomS2sClientIdConfigured &&
+        config.zoomS2sClientSecretConfigured,
       providerOn: config.zoomClassroomEnabled && config.zoomClassroomProviderMode === 'real',
       canaryReady: config.zoomClassroomCanaryEnabled,
       endpoint: requiredEndpoint(endpointByProvider, 'zoom_classroom'),

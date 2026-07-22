@@ -129,9 +129,12 @@ export function isLiveConsoleNavigationEnabled(config: AppConfig) {
     return (
       config.zoomClassroomProviderMode === 'real' &&
       config.zoomClassroomRealProviderEnabled &&
-      config.zoomMeetingSdkKeyConfigured &&
-      config.zoomMeetingSdkSecretConfigured &&
-      config.zoomAccountIdConfigured
+      config.zoomMeetingSdkClientIdConfigured &&
+      config.zoomMeetingSdkClientSecretConfigured &&
+      config.zoomMeetingSdkWebVersionConfigured &&
+      config.zoomS2sAccountIdConfigured &&
+      config.zoomS2sClientIdConfigured &&
+      config.zoomS2sClientSecretConfigured
     );
   }
   return config.liveClassFakeAdapterEnabled;
@@ -946,9 +949,12 @@ function resolveZoomState(
   const activationGates =
     config.zoomClassroomProviderMode === 'real' &&
     config.zoomClassroomRealProviderEnabled &&
-    config.zoomMeetingSdkKeyConfigured &&
-    config.zoomMeetingSdkSecretConfigured &&
-    config.zoomAccountIdConfigured;
+    config.zoomMeetingSdkClientIdConfigured &&
+    config.zoomMeetingSdkClientSecretConfigured &&
+    config.zoomMeetingSdkWebVersionConfigured &&
+    config.zoomS2sAccountIdConfigured &&
+    config.zoomS2sClientIdConfigured &&
+    config.zoomS2sClientSecretConfigured;
   if (!activationGates) return 'provider_off';
   return scenario?.provider_meeting_state === 'ready' &&
     Boolean(scenario.provider_meeting_ref_digest) &&

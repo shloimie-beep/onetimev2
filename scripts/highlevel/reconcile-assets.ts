@@ -4,6 +4,7 @@ import path from 'node:path';
 import {
   botActionWorkflows,
   businessWorkflows,
+  campaignAssets,
   contactFields,
   communicationsContract,
   customValues,
@@ -11,6 +12,7 @@ import {
   eventDefinitions,
   lowercaseTagDeprecations,
   messageClasses,
+  nonWorkflowAssets,
   pipelineDefinitions,
   protectedImportPaths,
   registryMetadata,
@@ -152,6 +154,11 @@ function buildCurrentRegistry(prompts: PromptRecord[], knowledgeBases: PromptRec
       events: eventDefinitions.length,
       business_workflows: businessWorkflows.length,
       bot_action_workflows: botActionWorkflows.length,
+      workflow_assets: [...businessWorkflows, ...botActionWorkflows].filter(
+        (asset) => asset.asset_kind === 'workflow',
+      ).length,
+      campaign_assets: campaignAssets.length,
+      non_workflow_assets: nonWorkflowAssets.length,
       deprecated_workflows: deprecatedWorkflows.length,
     },
     standard_contact_fields: standardContactFields,
@@ -170,6 +177,8 @@ function buildCurrentRegistry(prompts: PromptRecord[], knowledgeBases: PromptRec
     },
     business_workflows: businessWorkflows,
     bot_action_workflows: botActionWorkflows,
+    campaign_assets: campaignAssets,
+    non_workflow_assets: nonWorkflowAssets,
     deprecated_workflows: deprecatedWorkflows,
     prompts,
     knowledge_bases: knowledgeBases,
@@ -237,9 +246,11 @@ async function writeRegistryFiles(current: ReturnType<typeof buildCurrentRegistr
   await writeRepoFile(
     'integrations/highlevel/registry/workflow-registry.yaml',
     yaml({
+      workflow_folders: workflowFolderTree,
       business_workflows: businessWorkflows,
       bot_action_workflows: botActionWorkflows,
       deprecated_workflows: deprecatedWorkflows,
+      non_workflow_assets: nonWorkflowAssets,
       workflow_control: {
         ...workflowControlPolicy,
         allowed_states: workflowControlStates,
@@ -247,6 +258,7 @@ async function writeRegistryFiles(current: ReturnType<typeof buildCurrentRegistr
         observed_evidence: [
           'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json',
           'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json',
+          'integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json',
         ],
       },
       publishing_authorized: false,
@@ -1178,7 +1190,8 @@ async function promptRecord(input: {
 }
 
 function buildWorkflowsYaml() {
-  const activeWorkflows = [...businessWorkflows, ...botActionWorkflows];
+  const activeAssets = [...businessWorkflows, ...botActionWorkflows];
+  const activeWorkflows = activeAssets.filter((asset) => asset.asset_kind === 'workflow');
   return yaml({
     version: 6,
     schema_id: registryMetadata.schemaId,
@@ -1207,6 +1220,7 @@ function buildWorkflowsYaml() {
     rabbi_telegram_contract: 'integrations/highlevel/registry/rabbi-telegram-contract.yaml',
     canonical_bot: {
       id: 'OT-A1',
+      ghl_id: nonWorkflowAssets.find((asset) => asset.key === 'OT-A1')?.ghlId,
       name: 'OT-A1 One Time Enrollment Assistant',
       prompt_file: activePrompt,
       knowledge_base_file: activeKb,
@@ -1215,7 +1229,11 @@ function buildWorkflowsYaml() {
       human_handoff_action: false,
       task_creation_action: false,
     },
+    knowledge_base_readback: nonWorkflowAssets.find(
+      (asset) => asset.asset_kind === 'knowledge_base',
+    ),
     workflows: activeWorkflows,
+    campaign_assets: campaignAssets,
     deprecated_workflows: deprecatedWorkflows,
     contact_import: protectedImportPaths,
   });

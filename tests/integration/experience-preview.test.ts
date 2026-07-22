@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -16,7 +16,10 @@ import {
   createSession,
   getSessionUserByKey,
 } from '../../packages/domain/src/index.ts';
-import { runFullAppProvision } from '../../scripts/full-app-staging-live/provision-preview.ts';
+import {
+  rotateFullAppPreviewAdminCredential,
+  runFullAppProvision,
+} from '../../scripts/full-app-staging-live/provision-preview.ts';
 
 let pool: DbPool;
 let config: AppConfig;
@@ -527,9 +530,12 @@ describe('OT-LAUNCH-01 exact projection truth', () => {
     const realConfig = previewConfig({
       ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
       ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
-      ZOOM_MEETING_SDK_KEY: 'sdk-key',
-      ZOOM_MEETING_SDK_SECRET: 'sdk-secret',
-      ZOOM_ACCOUNT_ID: 'zoom-account',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk-client-id',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-client-secret',
+      ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
+      ZOOM_S2S_ACCOUNT_ID: 'zoom-account',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-id',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-client-secret',
     });
     expect(
       itemState(await buildExperiencePreviewCatalog(pool, realConfig), 'rabbi_classroom', 'Zoom'),
@@ -586,6 +592,78 @@ describe('OT-LAUNCH-01 exact projection truth', () => {
         'Rabbi Telegram',
       ),
     ).toBe('ready');
+  });
+
+  it('rotates only the exact fictional Admin credential, revokes sessions, and preserves the private handoff', async () => {
+    config = previewConfig({
+      ONE_TIME_OWNER_TEST_EMAIL: 'full-app-admin@example.invalid',
+    });
+    await seedExactScenario();
+    const adminRow = await pool.query(
+      `SELECT user_key, password_hash, security_version
+         FROM onetime.account_users
+        WHERE account_key = $1 AND product_key = $2
+          AND email_normalized = 'full-app-admin@example.invalid'`,
+      [config.accountKey, config.productKey],
+    );
+    const userKey = String(adminRow.rows[0]?.user_key ?? '');
+    const user = await getSessionUserByKey({ pool, config, userKey });
+    if (!user) throw new Error('missing exact fictional Admin fixture');
+    await createSession({ pool, config, user });
+
+    const handoffPath = path.join(distDir, 'FULL-APP-HANDOFF.private.json');
+    await writeFile(
+      handoffPath,
+      `${JSON.stringify({
+        generated_at: currentTime.toISOString(),
+        staging_url: config.publicBaseUrl,
+        account_key: config.accountKey,
+        product_key: config.productKey,
+        admin: {
+          destination: 'full-app-admin@example.invalid',
+          password: 'CompromisedFictionalAdminOnly!234',
+        },
+        parent: { preserved: true },
+        students: [{ preserved: true }],
+      })}\n`,
+    );
+
+    const result = await rotateFullAppPreviewAdminCredential({
+      pool,
+      config,
+      publicBaseUrl: config.publicBaseUrl,
+      requirePrivateDestinations: true,
+      handoffPath,
+      now: new Date(currentTime.getTime() + 1_000),
+    });
+    const rotatedRow = await pool.query(
+      `SELECT password_hash, security_version
+         FROM onetime.account_users WHERE user_key = $1`,
+      [userKey],
+    );
+    const activeSessions = await pool.query(
+      `SELECT count(*)::int AS active_sessions
+         FROM onetime.user_sessions WHERE user_key = $1 AND revoked_at IS NULL`,
+      [userKey],
+    );
+    const handoff = JSON.parse(await readFile(handoffPath, 'utf8')) as Record<string, unknown>;
+    const handoffAdmin = handoff.admin as Record<string, unknown>;
+
+    expect(result).toMatchObject({
+      security_version_incremented: true,
+      active_sessions_before: 1,
+      active_sessions_after: 0,
+      credential_printed: false,
+    });
+    expect(rotatedRow.rows[0]?.password_hash).not.toBe(adminRow.rows[0]?.password_hash);
+    expect(Number(rotatedRow.rows[0]?.security_version)).toBeGreaterThan(
+      Number(adminRow.rows[0]?.security_version),
+    );
+    expect(Number(activeSessions.rows[0]?.active_sessions)).toBe(0);
+    expect(handoffAdmin.password).not.toBe('CompromisedFictionalAdminOnly!234');
+    expect(handoff.parent).toEqual({ preserved: true });
+    expect(handoff.students).toEqual([{ preserved: true }]);
+    expect(JSON.stringify(result)).not.toContain(String(handoffAdmin.password));
   });
 });
 

@@ -14,7 +14,7 @@ decisions:
   - id: ghl-authority
     decision: Agent Mode mutates GHL and returns sanitized readback; Codex alone updates canonical Git state.
   - id: ghl-github-control
-    decision: GitHub workflow-registry.yaml is the canonical HighLevel desired-state/control view; the human report is generated, observed GHL is evidence rather than authority, and MISSING/DRAFT_SHELL/SAVED_REOPENED/ACTIVE_CONFIGURED/ACTIVE_TESTED/DRIFTED/BLOCKED are the only workflow control states.
+    decision: GitHub workflow-registry.yaml is the single editable HighLevel automation inventory; current.json and workflows.yaml are source-hashed generated projections, the human report is generated, observed GHL is evidence rather than authority, and MISSING/DRAFT_SHELL/DRAFT_WAITING_EXTERNAL/SAVED_REOPENED/ACTIVE_CONFIGURED/ACTIVE_TESTED/DRIFTED/BLOCKED are the only workflow control states.
   - id: ghl-closed-loop
     decision: A reviewed Git job may close only through browser apply, save, navigate/reload, reopen/readback, bounded authorized canary, sanitized committed result, and drift validation; unknown workflows fail closed and may enter 99 - Deprecated only after dependency checking and separate safe authorization, never silent deletion.
   - id: visual-execution-loop
@@ -29,3 +29,15 @@ decisions:
     decision: Live 2209/2210 duplicate-prefix ledger rows are legitimate immutable history; 2216 is reserved for new schema, and a required HighLevel 2205 must be integrated exact and unchanged.
   - id: status-semantics
     decision: Pending tests, deployment, reseed, or convergence are remaining_work/pending verification; blocked is reserved for an actual impasse.
+  - id: ghl-asset-kinds
+    decision: OT-C01 is an Email Marketing campaign with Draft/no-audience/no-schedule/zero-send truth; OT-A1 and its knowledge base are non-workflow assets and never inflate workflow counts.
+  - id: provider-approval-gates
+    decision: Enrollment, publication/activation, broad sends, payments, production change, quarantine/deprecation, and destructive action each require separate exact authority; no gate implies another.
+  - id: zoom-config-contract
+    decision: Meeting SDK uses canonical ZOOM_MEETING_SDK_CLIENT_ID/CLIENT_SECRET/WEB_VERSION with KEY/SECRET temporary aliases only; S2S OAuth uses separate ZOOM_S2S_ACCOUNT_ID/CLIENT_ID/CLIENT_SECRET with ZOOM_ACCOUNT_ID as a temporary account-ID alias, and ZOOM_UI_PREVIEW never implies ZOOM_REAL_CONTROL.
+  - id: queued-video-to-classroom
+    decision: VIDEO-TO-CLASSROOM-E2E is the next queued implementation after PR #97 governance and independently accepted PR #108 convergence; this conductor pass records its acceptance contract but does not implement it.
+  - id: tisha-ot-c01-email-invitation-20260722
+    decision: The operator authorizes existing task 019f84c1-956f-7e82-8e8b-fd940588e440 as the sole GHL writer for one bounded proof and one email-only invitation send from exact OT-C01 campaign f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae in 45 - Events / 2026 / Tisha B'Av 2026, using fresh-read exact URL https://join.onetimeonetime.com/tisha-bav and the canonical active sender/reply-to picker. The job must fail closed on duplicates, exclude Students and every adult lacking consent or subject to DND/suppression/unsubscribe/dedupe, contain no raw Zoom/provider link, perform no WhatsApp action/test/send, save/reload/reopen/read back, and return exact sanitized audience/exclusion/enrollment/send evidence. This authority supersedes OT-C01 DRAFT_NOT_SENT only for the exact invitation; every unrelated enrollment, campaign, broad send, payment, provider activation, quarantine/destructive cleanup, PR #108 provider mode, and production change keeps its separate human gate.
+  - id: tisha-ot-e01-registered-direct-class-link-exception-20260722
+    decision: The newest direct operator instruction permits the protected direct class link already supplied to the sole GHL executor only in exact OT-E01 registered-contact email delivery tonight, limited to the immediate confirmation and/or one-hour/ten-minute reminders for contacts enrolled through the canonical registration trigger and still email-eligible. OT-C01 keeps only https://join.onetimeonetime.com/tisha-bav; no WhatsApp is permitted. Exact OT-E01 ID, idempotent registration, late-skip timing, in-flight enrollment behavior, save/reload/reopen readback, and all eligibility gates must remain. Git, BOARD, logs, screenshots, browser proof, final reports, and public/customer pages may record only protected direct class link present/valid and must never contain the URL. Every unrelated provider-link restriction remains in force.

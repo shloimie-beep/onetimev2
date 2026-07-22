@@ -35,9 +35,9 @@ Stop if CURRENT points to missing/conflicting goal files. Do not invent a replac
 
 ## HighLevel control boundary
 
-For a HighLevel track, also read `integrations/highlevel/workflows.yaml`, `integrations/highlevel/registry/workflow-registry.yaml`, the generated `WORKFLOW-CONTROL-REPORT.md`, and the assigned reviewed job/result. GitHub is canonical desired state; provider UI is observed evidence. Reuse the existing workflow control fields and states; never create a shadow dashboard or status model.
+For a HighLevel track, read `integrations/highlevel/registry/workflow-registry.yaml` first as the single editable automation inventory, then its source-hashed generated projections `integrations/highlevel/workflows.yaml` and `integrations/highlevel/registry/current.json`, the generated `WORKFLOW-CONTROL-REPORT.md`, and the assigned reviewed job/result. GitHub is canonical desired state; provider UI is observed evidence. Preserve exact asset kinds (workflow, Email Marketing campaign, bot, or knowledge base), reuse the existing control states including `DRAFT_WAITING_EXTERNAL`, and never create a shadow dashboard or status model.
 
-Require the closed loop: reviewed Git-authored job -> permitted browser change -> save -> navigate/reload -> reopen/readback -> bounded authorized canary -> sanitized result committed -> drift validator. Report unknown workflows and fail closed. Dependency-check before any separately authorized move to `99 - Deprecated`; never silently delete. Activation, broad sends, payments, and destructive actions require exact authority.
+Require the closed loop: reviewed Git-authored job -> permitted browser change -> save -> navigate/reload -> reopen/readback -> bounded authorized canary -> sanitized result committed -> drift validator. Compare the full nested folder topology, exact trigger, ordered actions, and essential values. Report unknown workflows and fail closed. Dependency-check before any separately authorized move to `99 - Deprecated`; never silently delete. Enrollment, publication/activation, broad sends, payments, production change, quarantine/deprecation, and destructive actions require separate exact authority.
 
 ## Visual execution
 

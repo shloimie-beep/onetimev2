@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import type { AppConfig } from '../../packages/config/src/index.ts';
@@ -26,6 +26,7 @@ import {
   createStudentPortalService,
   ONE_TIME_CLASS_SERIES_KEY,
   PortalServiceError,
+  revokeUserSessions,
   type PortalServiceDeps,
 } from '../../packages/domain/src/index.ts';
 import { AesGcmPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
@@ -98,6 +99,26 @@ type RunFullAppProvisionInput = {
   writePrivateHandoff?: boolean;
   requirePrivateDestinations?: boolean;
   now?: Date;
+};
+
+type RotateFullAppAdminCredentialInput = {
+  pool: DbPool;
+  config: AppConfig;
+  publicBaseUrl?: string;
+  requirePrivateDestinations?: boolean;
+  handoffPath?: string;
+  now?: Date;
+};
+
+type RotateFullAppAdminCredentialResult = {
+  rotated_at: string;
+  staging_url: string;
+  handoff_path: string;
+  admin_user_ref_digest: string;
+  security_version_incremented: boolean;
+  active_sessions_before: number;
+  active_sessions_after: 0;
+  credential_printed: false;
 };
 
 const previewLearners = [
@@ -322,6 +343,112 @@ export async function runFullAppProvision(
   }
 
   return result;
+}
+
+export async function rotateFullAppPreviewAdminCredential(
+  input: RotateFullAppAdminCredentialInput,
+): Promise<RotateFullAppAdminCredentialResult> {
+  const now = input.now ?? new Date();
+  assertStagingScope(input.config, input.requirePrivateDestinations ?? true);
+  const publicBaseUrl = normalizeBaseUrl(input.publicBaseUrl ?? input.config.publicBaseUrl);
+  const adminDestination = resolveAdminDestination(input.config, {
+    requirePrivateDestinations: input.requirePrivateDestinations ?? true,
+  });
+  const handoffPath = input.handoffPath ?? HANDOFF_PATH;
+  const handoff = JSON.parse(await readFile(handoffPath, 'utf8')) as Record<string, unknown>;
+  const admin = objectAt(handoff, 'admin');
+  if (
+    handoff.account_key !== input.config.accountKey ||
+    handoff.product_key !== input.config.productKey ||
+    normalizeBaseUrl(String(handoff.staging_url ?? '')) !== publicBaseUrl ||
+    String(admin.destination ?? '')
+      .trim()
+      .toLowerCase() !== adminDestination.trim().toLowerCase()
+  ) {
+    throw new Error('Refusing Admin rotation because the protected handoff scope does not match.');
+  }
+
+  const before = await input.pool.query(
+    `SELECT user_key, security_version
+       FROM onetime.account_users
+      WHERE account_key = $1 AND product_key = $2 AND email_normalized = $3
+        AND role = 'admin' AND status = 'active'`,
+    [input.config.accountKey, input.config.productKey, adminDestination],
+  );
+  if (before.rowCount !== 1)
+    throw new Error('Exact active fictional staging Administrator is unavailable.');
+  const activeSessionsBefore = await countActiveUserSessions(
+    input.pool,
+    input.config,
+    String(before.rows[0]?.user_key ?? ''),
+  );
+
+  const replacement = strongPassword('Adm');
+  const userKey = await createAccountUser({
+    pool: input.pool,
+    config: input.config,
+    email: adminDestination,
+    password: replacement,
+    displayName: 'One Time Administrator',
+    role: 'admin',
+    mfaCapable: false,
+  });
+  if (userKey !== String(before.rows[0]?.user_key ?? '')) {
+    throw new Error('Admin rotation resolved a different user key.');
+  }
+  await revokeUserSessions({
+    pool: input.pool,
+    config: input.config,
+    userKey,
+    reason: 'fictional_staging_admin_credential_exposure_rotation',
+  });
+  const after = await input.pool.query(
+    `SELECT security_version
+       FROM onetime.account_users
+      WHERE user_key = $1 AND account_key = $2 AND product_key = $3`,
+    [userKey, input.config.accountKey, input.config.productKey],
+  );
+  const securityVersionIncremented =
+    Number(after.rows[0]?.security_version ?? 0) > Number(before.rows[0]?.security_version ?? 0);
+  const activeSessionsAfter = await countActiveUserSessions(input.pool, input.config, userKey);
+  if (!securityVersionIncremented || activeSessionsAfter !== 0) {
+    throw new Error(
+      'Admin rotation did not increment security version and revoke every active session.',
+    );
+  }
+
+  admin.password = replacement;
+  handoff.generated_at = now.toISOString();
+  handoff.admin = admin;
+  handoff.security = {
+    ...(isRecord(handoff.security) ? handoff.security : {}),
+    last_admin_credential_rotation_at: now.toISOString(),
+    reason: 'fictional_staging_admin_credential_exposure',
+    old_credential_compromised: true,
+    old_sessions_revoked: true,
+  };
+  await writeProtectedJson(handoffPath, handoff);
+
+  return {
+    rotated_at: now.toISOString(),
+    staging_url: publicBaseUrl,
+    handoff_path: handoffPath,
+    admin_user_ref_digest: digest(userKey),
+    security_version_incremented: true,
+    active_sessions_before: activeSessionsBefore,
+    active_sessions_after: 0,
+    credential_printed: false,
+  };
+}
+
+async function countActiveUserSessions(pool: DbPool, config: AppConfig, userKey: string) {
+  const result = await pool.query(
+    `SELECT count(*)::int AS active_sessions
+       FROM onetime.user_sessions
+      WHERE account_key = $1 AND product_key = $2 AND user_key = $3 AND revoked_at IS NULL`,
+    [config.accountKey, config.productKey, userKey],
+  );
+  return Number(result.rows[0]?.active_sessions ?? 0);
 }
 function portalDeps(
   pool: DbPool,
@@ -1289,22 +1416,13 @@ function studentActorContext(
 }
 
 function resolveDestinations(config: AppConfig, options: { requirePrivateDestinations: boolean }) {
-  const adminDestination =
-    firstEmail(
-      process.env.FULL_APP_ADMIN_EMAIL,
-      process.env.ONE_TIME_FULL_APP_ADMIN_EMAIL,
-      config.ownerTestEmail,
-      config.deliveryTestCanaryEmail,
-    ) ?? (options.requirePrivateDestinations ? null : 'full-app-admin@example.invalid');
+  const adminDestination = resolveAdminDestination(config, options);
   const parentDestination =
     firstEmail(
       process.env.FULL_APP_PARENT_EMAIL,
       process.env.ONE_TIME_FULL_APP_PARENT_EMAIL,
       config.parentTestEmail,
     ) ?? (options.requirePrivateDestinations ? null : 'full-app-parent@example.invalid');
-  if (!adminDestination) {
-    throw new Error('FULL_APP_ADMIN_EMAIL or ONE_TIME_OWNER_TEST_EMAIL is required.');
-  }
   if (!parentDestination) {
     throw new Error('FULL_APP_PARENT_EMAIL or ONE_TIME_PARENT_TEST_EMAIL is required.');
   }
@@ -1312,6 +1430,23 @@ function resolveDestinations(config: AppConfig, options: { requirePrivateDestina
     throw new Error('Admin and parent preview destinations must be distinct.');
   }
   return { adminDestination, parentDestination };
+}
+
+function resolveAdminDestination(
+  config: AppConfig,
+  options: { requirePrivateDestinations: boolean },
+) {
+  const adminDestination =
+    firstEmail(
+      process.env.FULL_APP_ADMIN_EMAIL,
+      process.env.ONE_TIME_FULL_APP_ADMIN_EMAIL,
+      config.ownerTestEmail,
+      config.deliveryTestCanaryEmail,
+    ) ?? (options.requirePrivateDestinations ? null : 'full-app-admin@example.invalid');
+  if (!adminDestination) {
+    throw new Error('FULL_APP_ADMIN_EMAIL or ONE_TIME_OWNER_TEST_EMAIL is required.');
+  }
+  return adminDestination;
 }
 
 function assertStagingScope(config: AppConfig, requirePrivateDestinations: boolean) {
@@ -1400,8 +1535,22 @@ async function writePrivateHandoff(input: {
       production_changed: false,
     },
   };
-  await mkdir(path.dirname(HANDOFF_PATH), { recursive: true });
-  await writeFile(HANDOFF_PATH, `${JSON.stringify(handoff, null, 2)}\n`, { mode: 0o600 });
+  await writeProtectedJson(HANDOFF_PATH, handoff);
+}
+
+async function writeProtectedJson(filePath: string, value: unknown) {
+  await mkdir(path.dirname(filePath), { recursive: true });
+  await writeFile(filePath, `${JSON.stringify(value, null, 2)}\n`, { mode: 0o600 });
+}
+
+function objectAt(value: Record<string, unknown>, key: string) {
+  const candidate = value[key];
+  if (!isRecord(candidate)) throw new Error(`Protected handoff is missing ${key}.`);
+  return candidate;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
 function mapLearner(row: Record<string, unknown>): LearnerProfile {

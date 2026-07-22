@@ -20,19 +20,23 @@ golden_paths:
         retests, and verifies the deployed URL without asking for non-decisions.
   ghl:
     requirements:
-      - GitHub is the canonical desired-state/control view; workflow-registry.yaml is the single
-        workflow control model and WORKFLOW-CONTROL-REPORT.md is generated from it plus committed
-        sanitized provider readbacks.
-      - Every canonical workflow records exact ordered triggers/actions, full folder ancestry and
-        order, desired and observed status, GHL ID, last readback, canary result, blocker, and evidence.
-      - Workflow control states are MISSING, DRAFT_SHELL, SAVED_REOPENED, ACTIVE_CONFIGURED,
-        ACTIVE_TESTED, DRIFTED, and BLOCKED; folder organization alone never proves operation.
+      - GitHub is the canonical desired-state/control view; registry/workflow-registry.yaml is the
+        single editable automation inventory. workflows.yaml and registry/current.json are
+        source-hashed generated projections, and WORKFLOW-CONTROL-REPORT.md is generated from the
+        same YAML plus committed sanitized provider readbacks.
+      - Every canonical automation asset records exact asset_kind, ordered triggers/actions and
+        essential values, full nested folder ancestry/order, desired and observed status, GHL ID,
+        last readback, canary result, blocker, and evidence.
+      - Workflow control states are MISSING, DRAFT_SHELL, DRAFT_WAITING_EXTERNAL, SAVED_REOPENED,
+        ACTIVE_CONFIGURED, ACTIVE_TESTED, DRIFTED, and BLOCKED; folder organization alone never
+        proves operation.
       - Close every permitted change through reviewed Git job -> browser mutation -> save ->
         navigate/reload -> reopen/readback -> bounded safe canary -> sanitized committed result ->
         drift validation against the registry.
       - Report unknown workflows and fail closed; dependency-check them and move them to
         99 - Deprecated only through a separately authorized safe job, never silently delete.
-      - Activation, broad sends, payments, and destructive actions remain exact approval gates.
+      - Enrollment, publication/activation, broad sends, payments, production change,
+        quarantine/deprecation, and destructive actions remain separate exact approval gates.
       - Inventory canonical folders, workflows, bot, knowledge base, fields, tags, values,
         pipelines, senders, and campaigns across active, draft, archived, and deprecated states.
       - Account for every canonical asset by ID, key, type, and full folder ancestry with no
@@ -41,8 +45,11 @@ golden_paths:
         branch/wait, bounded-delivery, and replay/idempotency proof.
       - Keep every other workflow explicitly draft or dependency-blocked.
       - >-
-        Preserve current truth: OT-E01 alone is ACTIVE_TESTED; OT-C01 is Draft/not sent; OT-07 and
-        OT-08 are Draft with zero enrollments; no organized Draft shell is described as operational.
+        Preserve current truth: OT-E01 alone is ACTIVE_TESTED; OT-C01 is an Email Marketing campaign
+        that is Draft/not sent with no audience or schedule and zero sends; OT-07 and OT-08 are Draft,
+        but enrollment counts are Unavailable until a committed timestamped sanitized readback exists.
+        OT-A1 and its knowledge base are tracked outside workflow counts, and no organized Draft shell
+        is described as operational.
       - Use one canonical outbox-backed One Time to GHL event dispatcher and exact producers;
         never add parallel direct delivery paths.
       - OT-01, OT-07, OT-08, OT-09, OT-10, and OT-B01 through OT-B05 remain
@@ -57,10 +64,18 @@ golden_paths:
       - Media staging integration and external Vimeo canary remain separate tracks.
   zoom_meeting_sdk:
     requirements:
+      - ZOOM_UI_PREVIEW is a protected provider-off/synthetic UI state and never implies a provider join.
+      - The canonical Meeting SDK variables are ZOOM_MEETING_SDK_CLIENT_ID,
+        ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION; legacy
+        ZOOM_MEETING_SDK_KEY/SECRET are temporary aliases only and never substitute for S2S OAuth.
       - The exact fictional occurrence has a protected Meeting SDK projection and Student Ready state.
       - Student consent precedes join; protected grants deny replay and cross-student use.
   zoom_s2s_host_control:
     requirements:
+      - ZOOM_REAL_CONTROL requires separately proven S2S OAuth account/client credentials, exact
+        meeting/registrant/host identity, and a human-cleared provider canary; config presence is not proof.
+      - Canonical S2S variables are ZOOM_S2S_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, and
+        ZOOM_S2S_CLIENT_SECRET; ZOOM_ACCOUNT_ID is a temporary account-ID alias only.
       - The Rabbi console controls the exact fictional meeting through S2S-backed mute, unmute,
         and spotlight operations with scoped audit/readback.
   bna:
@@ -91,6 +106,20 @@ golden_paths:
       - Parent and Student golden paths show only their scoped exact data.
       - Ordinary Admin, Parent, and Student landing views hide engineering, diagnostic, and dead test panels.
       - Provider-dependent surfaces show provider_off or unavailable when exact gates/evidence are absent.
+  video_to_classroom_e2e:
+    requirements:
+      - >-
+        This queued implementation begins only after PR #97 governance and an independently accepted
+        PR #108 converge; it is not implemented in this conductor pass.
+      - Admin selects one canonical class occurrence and uploads one video to durable protected source
+        storage that retains a non-secret opaque locator across restart/redeploy.
+      - One idempotent worker advances probe -> conservative trim -> transcription -> captions ->
+        editable metadata/questions -> private Vimeo -> Admin review; retries cannot duplicate
+        transcription or provider upload.
+      - Admin can edit, approve, publish, and unpublish; only learners enrolled in the selected
+        occurrence receive Classroom access, unrelated siblings are denied, and unpublish revokes access.
+      - The fully usable staging path remains synthetic/provider-off. One real OpenAI/private-Vimeo
+        canary stays behind the already-recorded exact approval phrase, and production remains unchanged.
 
 security_invariants:
   - No real Parent or Student impersonation.

@@ -894,7 +894,11 @@ function liveClassFakeAdapterEnabled(config: AppConfig) {
 }
 
 function zoomSdkConfigured(config: AppConfig) {
-  return config.zoomMeetingSdkKeyConfigured && config.zoomMeetingSdkSecretConfigured;
+  return (
+    config.zoomMeetingSdkClientIdConfigured &&
+    config.zoomMeetingSdkClientSecretConfigured &&
+    config.zoomMeetingSdkWebVersionConfigured
+  );
 }
 
 function zoomAdapterMode(config: AppConfig): 'fake' | 'meeting_sdk_host' {
@@ -912,7 +916,7 @@ function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['s
       'Participant roster, audio/video state, active speaker, and spotlight events',
     ],
     storage_instruction:
-      'Save SDK key and secret only as protected Railway PR environment variables or local secret storage.',
+      'Save Meeting SDK client ID, client secret, and web version only as protected Railway PR environment variables or local secret storage.',
     steps: [
       'Open Zoom Marketplace, choose Develop, then Build App.',
       'Create a Meeting SDK app named One Time Zoom Stage Host.',

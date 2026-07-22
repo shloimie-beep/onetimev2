@@ -19,7 +19,7 @@ criteria:
     proof: [ramble_intake, browser_desktop, browser_mobile, deployed_url_readback]
   - id: GHL-001
     track: ghl_organization
-    observable: All 19 canonical workflows and all bot/KB/folder/field/tag/value assets have IDs, full ancestry, terminal states, and zero unexplained duplicate/deprecated assets.
+    observable: Exactly 19 canonical automation assets are accounted for as 18 workflows plus OT-C01 Email Marketing campaign; OT-A1 and the KB are separate non-workflow assets, and every asset has its exact ID/kind/full ancestry/state with zero unexplained duplicates.
     proof: [provider_readback, PR_107_result_artifact]
   - id: GHL-002
     track: ghl_ot_e01
@@ -35,7 +35,7 @@ criteria:
     proof: [integration_test, database_readback, controlled_GHL_test]
   - id: GHL-005
     track: ghl_organization
-    observable: Git workflow-registry.yaml contains all 19 canonical IDs plus exact ordered triggers/actions, full folder/order, desired/observed control states, last readback, canary, blocker, and evidence; the generated WORKFLOW-CONTROL-REPORT.md flags every ID/folder/state disagreement and unknown workflow, and the drift validator fails closed without mutating GHL.
+    observable: Canonical workflow-registry.yaml contains all 19 automation IDs and exact asset kinds, full nested folder/order, exact provider trigger plus ordered actions/essential values, DRAFT_WAITING_EXTERNAL where applicable, desired/observed state, readback, canary, blocker, and evidence; source-hashed current.json/workflows.yaml projections and the generated report match it across LF/CRLF checkouts, while drift/unknown assets fail closed without mutating GHL.
     proof:
       [repository_diff, registry_validation, generated_control_report, sanitized_provider_readback]
   - id: CONTENT-001
@@ -48,11 +48,11 @@ criteria:
     proof: [provider_readback, browser_desktop]
   - id: ZOOM-SDK-001
     track: zoom_meeting_sdk
-    observable: Exact fictional Student shows Ready, grants consent, joins by protected Meeting SDK grant, and replay/cross-student attempts are denied.
+    observable: ZOOM_UI_PREVIEW truthfully renders the fictional protected/provider-off path; ZOOM_REAL_CONTROL remains false until the canonical CLIENT_ID/CLIENT_SECRET/WEB_VERSION contract and a human-cleared exact fictional Student consent/join canary pass, with replay/cross-student denial.
     proof: [api, browser_desktop, authorization_negative_tests]
   - id: ZOOM-S2S-001
     track: zoom_s2s_host_control
-    observable: /app/live-console performs scoped mute, unmute, and spotlight on the exact fictional meeting with provider and audit readback.
+    observable: ZOOM_REAL_CONTROL becomes true only when separate canonical S2S OAuth account/client credentials plus exact meeting/registrant/host identity are read back and /app/live-console performs scoped mute, unmute, and spotlight in a human-cleared canary with provider/audit evidence.
     proof: [browser_desktop, provider_readback, audit_readback]
   - id: BNA-001
     track: bna_foundation
@@ -115,3 +115,15 @@ criteria:
     observable: /tisha-bav shows exact H1 Bringing Knowledge of Hashem into the World with no trailing period, includes exact phrase No charge, removes the large mobile middle gap, loads fresh nonzero assets, has no horizontal overflow, and keeps the CTA visible at 375x667, 390x844, 430x932, 1366x768, and 1440x900; persistent staging passes before the separately authorized narrow production promotion is verified.
     proof:
       [browser_mobile, browser_desktop, asset_http_readback, persistent_staging_url, production_url]
+  - id: VIDEO-E2E-001
+    track: VIDEO-TO-CLASSROOM-E2E
+    observable: After PR #97 governance and accepted PR #108 convergence, Admin selects an exact class occurrence, uploads to durable opaque source storage, and an idempotent restart-safe worker reaches editable review without duplicate transcription/upload; publish/unpublish grants/revokes only occurrence-enrolled Parent/Student Classroom access and denies unrelated siblings, with a fully usable synthetic provider-off path and production unchanged.
+    proof:
+      [
+        integration_test,
+        database_readback,
+        restart_readback,
+        browser_desktop,
+        browser_mobile,
+        sibling_isolation_test,
+      ]

@@ -4,6 +4,7 @@ import path from 'node:path';
 import {
   botActionWorkflows,
   businessWorkflows,
+  campaignAssets,
   communicationsContract,
   contactFields,
   customValues,
@@ -156,12 +157,12 @@ async function main() {
   record(
     'workflow sender dependency validation',
     workflowSenderDependenciesExist(current),
-    `canonical_workflows=${current.business_workflows.length + current.bot_action_workflows.length}`,
+    `canonical_automation_assets=${current.business_workflows.length + current.bot_action_workflows.length}`,
   );
   record(
     'GitHub workflow control contract',
     workflowControlIsValid(current),
-    `canonical=${current.business_workflows.length + current.bot_action_workflows.length}, folders=${workflowFolderTree.length}`,
+    `canonical=${current.business_workflows.length + current.bot_action_workflows.length}, root_folders=${workflowFolderTree.length}`,
   );
   record(
     'sender custom-value coverage',
@@ -358,12 +359,7 @@ function workflowControlIsValid(current: CurrentRegistry) {
   const allowedStates = new Set<string>(workflowControlStates);
   const ids = canonical.map((workflow) => workflow.ghlId);
   const orders = canonical.map((workflow) => workflow.displayOrder);
-  const folders = new Set(
-    workflowFolderTree.flatMap((folder) => [
-      folder.name,
-      ...folder.children.map((child) => `${folder.name} / ${child}`),
-    ]),
-  );
+  const folders = new Set(flattenFolderPaths(workflowFolderTree));
   return (
     current.workflow_control.canonicalDesiredState ===
       workflowControlPolicy.canonicalDesiredState &&
@@ -379,6 +375,9 @@ function workflowControlIsValid(current: CurrentRegistry) {
     current.workflow_control.unknownWorkflowPolicy.quarantineOnlyWhenSafeAndAuthorized === true &&
     current.workflow_control.unknownWorkflowPolicy.silentlyDelete === false &&
     canonical.length === 19 &&
+    canonical.filter((asset) => asset.asset_kind === 'workflow').length === 18 &&
+    canonical.filter((asset) => asset.asset_kind === 'email_marketing_campaign').length === 1 &&
+    campaignAssets.length === 1 &&
     ids.every(Boolean) &&
     duplicates(ids).length === 0 &&
     duplicates(orders.map(String)).length === 0 &&
@@ -396,10 +395,21 @@ function workflowControlIsValid(current: CurrentRegistry) {
         workflow.evidence.length > 0,
     ) &&
     canonical.find((workflow) => workflow.key === 'OT-E01')?.observedStatus === 'ACTIVE_TESTED' &&
-    canonical.find((workflow) => workflow.key === 'OT-C01')?.observedStatus === 'SAVED_REOPENED' &&
-    canonical.find((workflow) => workflow.key === 'OT-07')?.observedStatus === 'DRAFT_SHELL' &&
-    canonical.find((workflow) => workflow.key === 'OT-08')?.observedStatus === 'DRAFT_SHELL'
+    canonical.find((workflow) => workflow.key === 'OT-C01')?.asset_kind ===
+      'email_marketing_campaign' &&
+    canonical.find((workflow) => workflow.key === 'OT-C01')?.audienceReadback?.sends === 0 &&
+    canonical.find((workflow) => workflow.key === 'OT-07')?.observedStatus ===
+      'DRAFT_WAITING_EXTERNAL' &&
+    canonical.find((workflow) => workflow.key === 'OT-08')?.observedStatus ===
+      'DRAFT_WAITING_EXTERNAL'
   );
+}
+
+function flattenFolderPaths(folders: typeof workflowFolderTree, parent = ''): string[] {
+  return folders.flatMap((folder) => {
+    const current = parent ? `${parent} / ${folder.name}` : folder.name;
+    return [current, ...flattenFolderPaths(folder.children, current)];
+  });
 }
 
 function senderCustomValuesExist(current: CurrentRegistry) {

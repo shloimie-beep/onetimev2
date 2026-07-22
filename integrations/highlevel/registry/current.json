@@ -19,7 +19,10 @@
     "blocked_custom_values": 7,
     "business_workflows": 14,
     "bot_action_workflows": 5,
-    "deprecated_workflows": 3
+    "deprecated_workflows": 3,
+    "workflow_assets": 18,
+    "campaign_assets": 1,
+    "non_workflow_assets": 2
   },
   "standard_contact_fields": [
     {
@@ -3413,6 +3416,7 @@
       "ghlKey": "ot_01_new_lead_intake",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "00 - Intake & Data",
       "purpose": "Lead intake after public signup or bot action.",
@@ -3434,9 +3438,19 @@
       "transport": "GHL",
       "exactTrigger": "adult public signup submitted",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "adult public signup submitted after One Time or OT-B01 creates or updates the adult contact, with known source and consent",
+        "orderedCriticalActions": [
+          "apply OT | Lead",
+          "apply only the canonical known source tag",
+          "preserve unrelated tags"
+        ],
+        "deliveryCategory": "signup_confirmation",
+        "senderKey": "brand"
+      },
       "displayOrder": 1,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive the canonical adult public-signup event from One Time or OT-B01.",
         "Require a known source and recorded adult channel-consent state."
@@ -3473,6 +3487,7 @@
       "ghlKey": "ot_02a_existing_subscriber_migration_2026_v1",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "10 - Enrollment & Nurture",
       "purpose": "Three-email existing-subscriber migration sequence.",
@@ -3534,6 +3549,7 @@
       "ghlKey": "ot_02b_new_lead_nurture_v1",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "10 - Enrollment & Nurture",
       "purpose": "New lead nurture separate from migration.",
@@ -3593,6 +3609,7 @@
       "ghlKey": "ot_03_checkout_started_abandoned",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "20 - Billing & Access",
       "purpose": "Checkout started and abandoned checkout handling.",
@@ -3653,6 +3670,7 @@
       "ghlKey": "ot_04_payment_active",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "20 - Billing & Access",
       "purpose": "Active payment state handling.",
@@ -3711,6 +3729,7 @@
       "ghlKey": "ot_05_payment_failed_grace",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "20 - Billing & Access",
       "purpose": "Payment failure and grace handling.",
@@ -3769,6 +3788,7 @@
       "ghlKey": "ot_06_subscription_canceled",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "20 - Billing & Access",
       "purpose": "Cancellation handling.",
@@ -3828,6 +3848,7 @@
       "ghlKey": "ot_07_parent_portal_invitation",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "30 - Portal Lifecycle",
       "purpose": "Parent portal invitation after One Time access confirmation.",
@@ -3849,9 +3870,18 @@
       "transport": "GHL",
       "exactTrigger": "One Time access confirmation requests the parent portal companion email",
       "companionDelivery": "One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.",
+      "providerContract": {
+        "exactTriggerFilter": "One Time access confirmation requests the eligible parent portal companion email",
+        "orderedCriticalActions": [
+          "send or record a non-token parent portal companion only after One Time confirms eligibility",
+          "never store or send credentials or activation/reset tokens"
+        ],
+        "deliveryCategory": "portal_welcome_companion",
+        "senderKey": "brand"
+      },
       "displayOrder": 9,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive One Time access confirmation for an eligible adult parent contact."
       ],
@@ -3861,6 +3891,14 @@
       ],
       "observedTriggers": [],
       "observedActions": [],
+      "enrollmentReadback": {
+        "status": "unavailable",
+        "at": "",
+        "total": "",
+        "active": "",
+        "reference": "",
+        "reason": "No committed timestamped sanitized enrollment-count readback exists; Draft status only is proven."
+      },
       "lastReadback": {
         "at": "2026-07-22T09:37:00.000Z",
         "method": "navigate-away/reopen plus sanitized UI/API readback",
@@ -3885,6 +3923,7 @@
       "ghlKey": "ot_08_parent_portal_activated",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "30 - Portal Lifecycle",
       "purpose": "Parent portal activation projection.",
@@ -3906,9 +3945,18 @@
       "transport": "GHL",
       "exactTrigger": "One Time parent portal projection becomes Active",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "One Time parent portal projection becomes Active for the eligible adult contact",
+        "orderedCriticalActions": [
+          "record the adult parent portal activation",
+          "exclude Student data and learning progress"
+        ],
+        "deliveryCategory": "portal_activated",
+        "senderKey": "brand"
+      },
       "displayOrder": 10,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive the One Time parent-portal projection becoming Active for the eligible adult."
       ],
@@ -3918,6 +3966,14 @@
       ],
       "observedTriggers": [],
       "observedActions": [],
+      "enrollmentReadback": {
+        "status": "unavailable",
+        "at": "",
+        "total": "",
+        "active": "",
+        "reference": "",
+        "reason": "No committed timestamped sanitized enrollment-count readback exists; Draft status only is proven."
+      },
       "lastReadback": {
         "at": "2026-07-22T09:37:00.000Z",
         "method": "navigate-away/reopen plus sanitized UI/API readback",
@@ -3942,6 +3998,7 @@
       "ghlKey": "ot_09_parent_class_reminder",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "40 - Learning Operations / Classes",
       "purpose": "Parent class reminder gated by access and consent.",
@@ -3963,9 +4020,19 @@
       "transport": "GHL",
       "exactTrigger": "registered confirmed class reminder schedule and consent gate pass",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "registered confirmed class reminder schedule and consent gate pass for an entitled adult household",
+        "orderedCriticalActions": [
+          "send only current confirmed class information supplied by One Time",
+          "use only a canonical protected One Time URL",
+          "never store or send a permanent raw Zoom URL"
+        ],
+        "deliveryCategory": "class_reminder",
+        "senderKey": "brand"
+      },
       "displayOrder": 11,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive a confirmed-class reminder event for an entitled adult household after consent passes."
       ],
@@ -4000,6 +4067,7 @@
       "ghlKey": "ot_10_new_recording_available",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "40 - Learning Operations / Content",
       "purpose": "Protected recording availability notice.",
@@ -4021,9 +4089,19 @@
       "transport": "GHL",
       "exactTrigger": "One Time marks a protected recording available for an entitled household",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "One Time marks a protected recording available for an entitled household",
+        "orderedCriticalActions": [
+          "send the approved recording-available notice to the eligible adult",
+          "use only the protected One Time recording URL",
+          "never expose a raw Vimeo provider URL"
+        ],
+        "deliveryCategory": "recording_available",
+        "senderKey": "brand"
+      },
       "displayOrder": 12,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive recording.available after Admin approval for an entitled household."
       ],
@@ -4058,6 +4136,7 @@
       "ghlKey": "ot_13_refund_chargeback",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "20 - Billing & Access",
       "purpose": "Refund and chargeback handling.",
@@ -4112,9 +4191,10 @@
       "normalizedName": "ot_c01_tisha_b_av_2026_warm_invitation",
       "ghlId": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
       "ghlKey": "ot_c01_tisha_b_av_2026_warm_invitation",
-      "objectType": "business_workflow",
-      "dataType": "workflow",
-      "category": "business_workflow",
+      "objectType": "email_marketing_campaign",
+      "dataType": "campaign",
+      "asset_kind": "email_marketing_campaign",
+      "category": "email_marketing_campaign",
       "folder": "45 - Events / 2026 / Tisha B'Av 2026",
       "purpose": "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign.",
       "sourceOfTruth": "Shared",
@@ -4160,6 +4240,13 @@
         "detail": "Draft preserved; no contact enrolled and no send authorized."
       },
       "blocker": "Campaign audience and send authorization are absent; observed sends and enrollments are zero.",
+      "audienceReadback": {
+        "status": "DRAFT_NOT_SENT",
+        "audienceConfigured": false,
+        "scheduled": false,
+        "sends": 0,
+        "reference": "integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json"
+      },
       "evidence": [
         "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
       ]
@@ -4172,6 +4259,7 @@
       "ghlKey": "ot_e01_tisha_b_av_2026_registration_and_reminders",
       "objectType": "business_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "business_workflow",
       "folder": "45 - Events / 2026 / Tisha B'Av 2026",
       "purpose": "Registered Tisha B'Av 2026 registration and reminder workflow.",
@@ -4243,6 +4331,7 @@
       "ghlKey": "ot_b01_complete_signup",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "bot_action_workflow",
       "folder": "60 - Bot Actions",
       "purpose": "Typed bot action adapter for adult signup.",
@@ -4264,9 +4353,19 @@
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed complete-signup adapter for an adult",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "OT-A1 invokes the typed complete-signup adapter after all required adult details and consent context are complete",
+        "orderedCriticalActions": [
+          "validate required adult fields",
+          "invoke the protected HighLevel-to-One-Time adapter with idempotency key",
+          "never create a Student contact"
+        ],
+        "deliveryCategory": "signup_confirmation",
+        "senderKey": "brand"
+      },
       "displayOrder": 15,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive the typed OT-A1 complete-signup invocation with required adult data and consent."
       ],
@@ -4301,6 +4400,7 @@
       "ghlKey": "ot_b02_send_next_confirmed_class_info",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "bot_action_workflow",
       "folder": "60 - Bot Actions",
       "purpose": "Safe next confirmed class info adapter.",
@@ -4322,9 +4422,19 @@
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed next-confirmed-class-info adapter",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "OT-A1 invokes the typed next-confirmed-class-info adapter",
+        "orderedCriticalActions": [
+          "query safe current class state from One Time",
+          "return or send only the protected confirmed class information",
+          "never expose a raw provider URL"
+        ],
+        "deliveryCategory": "class_reminder",
+        "senderKey": "brand"
+      },
       "displayOrder": 16,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": ["Receive the typed OT-A1 next-confirmed-class-info invocation."],
       "exactOrderedActions": [
         "Query safe current class state from One Time.",
@@ -4357,6 +4467,7 @@
       "ghlKey": "ot_b03_send_member_login",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "bot_action_workflow",
       "folder": "60 - Bot Actions",
       "purpose": "Send canonical member login URL.",
@@ -4378,9 +4489,19 @@
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed member-login adapter",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "OT-A1 invokes the typed member-login adapter for an adult contact",
+        "orderedCriticalActions": [
+          "send only https://join.onetimeonetime.com/login",
+          "do not claim the account is active",
+          "never send credentials or tokens"
+        ],
+        "deliveryCategory": "access_help_companion",
+        "senderKey": "office"
+      },
       "displayOrder": 17,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive the typed OT-A1 member-login invocation for an adult contact."
       ],
@@ -4415,6 +4536,7 @@
       "ghlKey": "ot_b04_send_password_help",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "bot_action_workflow",
       "folder": "60 - Bot Actions",
       "purpose": "Send canonical password-help URL.",
@@ -4436,9 +4558,19 @@
       "transport": "Resend",
       "exactTrigger": "OT-A1 invokes the typed password-help adapter",
       "companionDelivery": "GHL may request the One Time adapter but never stores or sends a reset token.",
+      "providerContract": {
+        "exactTriggerFilter": "OT-A1 invokes the typed password-help adapter without account enumeration",
+        "orderedCriticalActions": [
+          "request the One Time password-help boundary",
+          "send only the canonical forgot-password URL as a non-token companion when eligible",
+          "leave reset-token creation and delivery to One Time and Resend"
+        ],
+        "deliveryCategory": "password_help_companion",
+        "senderKey": "account_security"
+      },
       "displayOrder": 18,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive the typed OT-A1 password-help invocation without account enumeration."
       ],
@@ -4473,6 +4605,7 @@
       "ghlKey": "ot_b05_apply_opt_out",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "bot_action_workflow",
       "folder": "60 - Bot Actions",
       "purpose": "Apply opt-out, DND, suppression and stop bot follow-up.",
@@ -4494,9 +4627,22 @@
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane",
       "companionDelivery": "",
+      "providerContract": {
+        "exactTriggerFilter": "OT-A1 invokes the typed opt-out adapter for STOP, unsubscribe, remove me, do not contact me, wrong number, or equivalent intent",
+        "orderedCriticalActions": [
+          "set relevant channel DND",
+          "update consent and suppression fields",
+          "remove related opt-in tag",
+          "apply OT | Marketing Suppressed when appropriate",
+          "remove from marketing and nurture workflows",
+          "stop bot auto-follow-up"
+        ],
+        "deliveryCategory": "preference_enforcement",
+        "senderKey": "brand"
+      },
       "displayOrder": 19,
-      "desiredStatus": "DRAFT_SHELL",
-      "observedStatus": "DRAFT_SHELL",
+      "desiredStatus": "DRAFT_WAITING_EXTERNAL",
+      "observedStatus": "DRAFT_WAITING_EXTERNAL",
       "exactOrderedTriggers": [
         "Receive the typed OT-A1 opt-out invocation for STOP or equivalent intent."
       ],
@@ -4535,6 +4681,7 @@
       "ghlKey": "ot_11_whatsapp_lead_qualification",
       "objectType": "deprecated_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "deprecated_workflow",
       "folder": "99 - Deprecated",
       "purpose": "Superseded by OT-A1 and OT-B01.",
@@ -4588,6 +4735,7 @@
       "ghlKey": "ot_12_support_intake_technical_escalation",
       "objectType": "deprecated_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "deprecated_workflow",
       "folder": "99 - Deprecated",
       "purpose": "Deprecated when it creates tasks or support escalation workflows.",
@@ -4639,6 +4787,7 @@
       "ghlKey": "ot_human_handoff",
       "objectType": "deprecated_workflow",
       "dataType": "workflow",
+      "asset_kind": "workflow",
       "category": "deprecated_workflow",
       "folder": "99 - Deprecated",
       "purpose": "Human handoff workflow is not active for OT-A1.",
@@ -5772,6 +5921,11 @@
       }
     }
   },
+  "workflow_projection": {
+    "generated_from": "integrations/highlevel/registry/workflow-registry.yaml",
+    "source_sha256": "de0f1745345bf951babdc72a02cbbbcb17beaccdcffef80f4949e28524dae78a",
+    "editable": false
+  },
   "workflow_control": {
     "canonicalDesiredState": "GitHub repository registry on the reviewed PR head",
     "browserMutationAuthority": "exact reviewed Git-authored Agent Mode job only",
@@ -5785,7 +5939,15 @@
       "sanitized_result_committed",
       "drift_validator_compares_observation_to_registry"
     ],
-    "approvalGates": ["activation", "broad_send", "payment", "destructive_action"],
+    "approvalGates": [
+      "enrollment",
+      "publication_or_activation",
+      "broad_send",
+      "payment",
+      "production_change",
+      "quarantine_or_deprecation",
+      "destructive_action"
+    ],
     "unknownWorkflowPolicy": {
       "report": true,
       "dependencyCheckRequired": true,
@@ -5796,6 +5958,7 @@
     "allowedStates": [
       "MISSING",
       "DRAFT_SHELL",
+      "DRAFT_WAITING_EXTERNAL",
       "SAVED_REOPENED",
       "ACTIVE_CONFIGURED",
       "ACTIVE_TESTED",

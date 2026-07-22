@@ -461,9 +461,7 @@ export function StudentPortalFeature({
           <h2 id="student-library-heading">Library</h2>
           {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
           <ContentList
-            items={dashboard.library_items.filter(
-              (item) => item.status === 'published' && Boolean(item.content_factory),
-            )}
+            items={dashboard.library_items.filter((item) => item.status === 'published')}
             onOpen={onOpenContent}
           />
         </section>

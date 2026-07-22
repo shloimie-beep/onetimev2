@@ -651,6 +651,29 @@ async function seedPortalLabClassAndContent(input: { pool: DbPool; config: AppCo
     ],
   );
   await input.pool.query(
+    `INSERT INTO onetime.classroom_lesson_publications
+       (lesson_key, account_key, product_key, class_series_key, occurrence_key, content_item_key,
+        title, description, publication_state, featured, published_at,
+        controlled_by_actor_ref, raw_private_url_present, transcript_state, resource_count,
+        resources_json)
+     VALUES ('w12_lesson_recording',$1,$2,$3,$4,$5,'W12 Fictional Recording',
+             'Deterministic approved W12 fictional recording.','published',false,now(),
+             'w12_test_fixture',false,'not_available',0,'[]'::jsonb)
+     ON CONFLICT (lesson_key)
+     DO UPDATE SET publication_state = 'published',
+                   published_at = EXCLUDED.published_at,
+                   controlled_by_actor_ref = 'w12_test_fixture',
+                   raw_private_url_present = false,
+                   updated_at = now()`,
+    [
+      input.config.accountKey,
+      input.config.productKey,
+      W12_PORTAL_TEST_LAB.classSeriesKey,
+      W12_PORTAL_TEST_LAB.occurrenceKey,
+      W12_PORTAL_TEST_LAB.recordingKey,
+    ],
+  );
+  await input.pool.query(
     `INSERT INTO onetime.classroom_household_entitlements
        (entitlement_key, account_key, product_key, household_key, entitlement_state, source)
      VALUES ('w12_classroom_entitlement',$1,$2,$3,'active','w12_test_fixture')

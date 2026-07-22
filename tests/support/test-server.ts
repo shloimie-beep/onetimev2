@@ -238,6 +238,23 @@ async function seedDayOneBrowserRecords() {
     [config.accountKey, config.productKey],
   );
   await pool.query(
+    `INSERT INTO onetime.classroom_lesson_publications
+       (lesson_key, account_key, product_key, class_series_key, occurrence_key, content_item_key,
+        title, description, publication_state, featured, published_at,
+        controlled_by_actor_ref, raw_private_url_present, transcript_state, resource_count,
+        resources_json)
+     VALUES ('e2e_lesson_recording', $1, $2, 'e2e_class_series', 'e2e_class_occurrence',
+             'e2e_recording_001', 'E2E Recording', 'Deterministic approved E2E recording.',
+             'published', false, now(), 'e2e_fixture', false, 'not_available', 0, '[]'::jsonb)
+     ON CONFLICT (lesson_key)
+     DO UPDATE SET publication_state = 'published',
+                   published_at = EXCLUDED.published_at,
+                   controlled_by_actor_ref = 'e2e_fixture',
+                   raw_private_url_present = false,
+                   updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
     `INSERT INTO onetime.billing_provider_accounts
        (provider, mode, provider_account_ref, status)
      VALUES ('stripe', 'test', 'acct_e2e_test', 'active')`,

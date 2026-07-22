@@ -93,9 +93,12 @@ describe('OT-88 classroom contracts and policy', () => {
       ZOOM_CLASSROOM_ENABLED: 'true',
       ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
       ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
-      ZOOM_MEETING_SDK_KEY: 'configured',
-      ZOOM_MEETING_SDK_SECRET: 'configured',
-      ZOOM_ACCOUNT_ID: 'configured',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'configured',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'configured',
+      ZOOM_MEETING_SDK_WEB_VERSION: 'configured',
+      ZOOM_S2S_ACCOUNT_ID: 'configured',
+      ZOOM_S2S_CLIENT_ID: 'configured',
+      ZOOM_S2S_CLIENT_SECRET: 'configured',
     });
     const sinkConfig = loadConfig({
       NODE_ENV: 'test',
@@ -105,6 +108,44 @@ describe('OT-88 classroom contracts and policy', () => {
 
     expect(serviceFor(realConfig).providerState()).toBe('unconfigured');
     expect(serviceFor(sinkConfig).providerState()).toBe('sink_ready');
+  });
+
+  it('keeps Meeting SDK aliases separate from canonical S2S OAuth readiness', () => {
+    const legacySdkOnly = loadConfig({
+      NODE_ENV: 'test',
+      ZOOM_MEETING_SDK_KEY: 'legacy-client-id-alias',
+      ZOOM_MEETING_SDK_SECRET: 'legacy-client-secret-alias',
+      ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
+      ZOOM_ACCOUNT_ID: 'legacy-s2s-account-id-alias',
+    });
+    expect(legacySdkOnly).toMatchObject({
+      zoomMeetingSdkClientIdConfigured: true,
+      zoomMeetingSdkClientSecretConfigured: true,
+      zoomMeetingSdkWebVersionConfigured: true,
+      zoomMeetingSdkLegacyAliasUsed: true,
+      zoomS2sAccountIdConfigured: true,
+      zoomS2sClientIdConfigured: false,
+      zoomS2sClientSecretConfigured: false,
+    });
+
+    const canonical = loadConfig({
+      NODE_ENV: 'test',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'meeting-sdk-client-id',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'meeting-sdk-client-secret',
+      ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
+      ZOOM_S2S_ACCOUNT_ID: 's2s-account-id',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-id',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-client-secret',
+    });
+    expect(canonical).toMatchObject({
+      zoomMeetingSdkClientIdConfigured: true,
+      zoomMeetingSdkClientSecretConfigured: true,
+      zoomMeetingSdkWebVersionConfigured: true,
+      zoomMeetingSdkLegacyAliasUsed: false,
+      zoomS2sAccountIdConfigured: true,
+      zoomS2sClientIdConfigured: true,
+      zoomS2sClientSecretConfigured: true,
+    });
   });
 
   it('keeps the official Zoom Meeting SDK boundary deterministic and strips internal fields', async () => {

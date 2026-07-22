@@ -498,9 +498,22 @@ async function portalItemsForLearner(input: {
           OR entitlements.learner_key = $4
           OR entitlements.household_key = $5
         )
+        AND (
+          $6::text <> 'student'
+          OR items.item_type IN ('sheet', 'review')
+          OR lessons.lesson_key IS NOT NULL
+          OR factory.source_key IS NOT NULL
+        )
       ORDER BY items.published_at DESC, items.content_item_key ASC
       LIMIT 25`,
-    [input.accountKey, input.productKey, input.itemTypes, input.learnerKey, input.householdKey],
+    [
+      input.accountKey,
+      input.productKey,
+      input.itemTypes,
+      input.learnerKey,
+      input.householdKey,
+      input.actorRole,
+    ],
   );
   const messagesByLesson = await approvedMessagesByLesson(
     input.pool,
