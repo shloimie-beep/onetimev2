@@ -18,7 +18,7 @@ Registry: integrations/highlevel/registry/workflow-registry.yaml
 - Never guess or hardcode an unregistered sender identity.
 - Set Email A subject to `You're registered — let's strengthen ourselves together`.
 - Set Email A pre-header to `Join Rabbi Eli Scheller live from the Holy Land this Tisha B'Av.`.
-- Match the exact Email A body in the canonical prompt file, including the protected custom-value link and the Rabbi Eli Scheller / One Time Mishnah Learning sign-off.
+- Match the exact Email A body in the canonical prompt file, including the One Time landing link and the Rabbi Eli Scheller / One Time Mishnah Learning sign-off. If GHL quick compose directly embeds the canonical public Tisha page for reliable clickability, verify it exactly matches `one_time_tisha_bav_landing_url` and is not a provider URL.
 - Treat Email A as event-only registration confirmation. Do not infer newsletter or general-marketing consent.
 - Require the registered-event permission marker, valid email, email DND false, and no unsubscribe, complaint, hard bounce, or suppression.
 - Keep duplicate registration idempotent and Student contacts/data prohibited.

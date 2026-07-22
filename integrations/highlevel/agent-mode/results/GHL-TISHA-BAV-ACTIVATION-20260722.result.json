@@ -1,6 +1,6 @@
 {
   "schemaVersion": "one-time-highlevel-tisha-bav-activation@1.0.0",
-  "generatedAt": "2026-07-22T16:33:29.8399873+03:00",
+  "generatedAt": "2026-07-22T17:47:25.2776573+03:00",
   "location": {
     "id": "pBSnOK2nkdxp6gf9Rg3o",
     "fingerprint": "sha256:018d4f8e5cb779b0",
@@ -98,8 +98,10 @@
             "Rabbi Eli Scheller / One Time Mishnah Learning"
           ],
           "linkCustomValueKey": "one_time_tisha_bav_landing_url",
+          "liveLinkStorageMode": "canonical_public_tisha_page_directly_embedded_for_reliable_clickability",
+          "liveLinkReadback": "sanitized_present_valid",
           "rawProviderUrlRecorded": false,
-          "directClassLink": "sanitized_present_valid_operator_authorized"
+          "directClassLink": false
         },
         {
           "order": 2,
@@ -159,6 +161,14 @@
       "briefDraftIntervalObserved": true,
       "saved": true,
       "reopenedVerified": true,
+      "governanceHeadBeforeUiSave": "5ec6f0735fecb86776262398b136acc3b07e2749",
+      "liveSaveCompletedAt": "2026-07-22T17:47:25.2776573+03:00",
+      "concurrentEditConflict": {
+        "observed": true,
+        "firstWorkflowSaveRejectedAsOutdated": true,
+        "userVersionOverwritten": false,
+        "resolution": "fresh server version reopened; approved Email A applied once and saved successfully"
+      },
       "inFlightEnrollmentRetainedAcrossRepublish": true,
       "reEnrollmentOrDuplicateCreated": false,
       "test": {
@@ -171,7 +181,14 @@
         "messagesSentDuringThisRun": 0,
         "customerEmailsSentAfterPermissionCorrection": 0
       },
-      "remainingBlocker": null
+      "registrationHandoffReadback": {
+        "userReportedFreshProductionSignup": true,
+        "newEnrollmentObserved": false,
+        "registeredEventTagObservedByWorkflow": false,
+        "manualTagOrEnrollmentApplied": false,
+        "loginCodeEmailIsSeparateFromEventConfirmation": true
+      },
+      "remainingBlocker": "Production Tisha registration did not add the exact registered-event tag, so the user's fresh signup created no OT-E01 enrollment and no immediate event confirmation."
     }
   ],
   "audienceSelector": {

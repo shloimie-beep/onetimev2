@@ -74,6 +74,7 @@ One Time Mishnah Learning
 Link semantics:
 
 - The only link in this immediate email is the registered protected One Time landing custom value `one_time_tisha_bav_landing_url`.
+- GHL quick compose may embed the exact canonical public Tisha page directly when that is required for reliable clickability, but its value must equal the registered custom value; never substitute a provider URL.
 - No raw meeting-provider URL, token, customer address, or secret may be copied into Git evidence.
 - The public invitation campaign OT-C01 is out of scope and remains Draft with zero sends.
 
