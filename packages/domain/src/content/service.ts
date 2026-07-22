@@ -468,7 +468,10 @@ async function portalItemsForLearner(input: {
             lessons.featured AS lesson_featured,
             lessons.published_at AS lesson_published_at,
             lessons.transcript_state AS lesson_transcript_state,
-            lessons.resource_count AS lesson_resource_count
+            lessons.resource_count AS lesson_resource_count,
+            factory.draft_json AS factory_draft_json,
+            factory.captions_active AS factory_captions_active,
+            factory.progress_state AS factory_progress_state
        FROM onetime.content_items AS items
        JOIN onetime.content_item_entitlements AS entitlements
          ON entitlements.account_key = items.account_key
@@ -479,6 +482,11 @@ async function portalItemsForLearner(input: {
         AND lessons.product_key = items.product_key
         AND lessons.content_item_key = items.content_item_key
         AND lessons.publication_state = 'published'
+       LEFT JOIN onetime.learning_delivery_content_factory_items AS factory
+         ON factory.account_key = items.account_key
+        AND factory.product_key = items.product_key
+        AND factory.source_key = items.content_item_key
+        AND factory.factory_state = 'published'
       WHERE items.account_key = $1
         AND items.product_key = $2
         AND items.retention_state = 'active'
@@ -504,8 +512,12 @@ async function portalItemsForLearner(input: {
   );
   return result.rows.map((row) => {
     const lessonKey = nullableString(row.lesson_key);
+    const factoryDraft = row.factory_draft_json
+      ? (row.factory_draft_json as Record<string, unknown>)
+      : null;
+    const itemKey = String(row.content_item_key);
     return {
-      item_key: String(row.content_item_key),
+      item_key: itemKey,
       title: String(row.title),
       item_type: String(row.item_type) as LibraryItem['item_type'],
       status: 'published' as const,
@@ -518,6 +530,19 @@ async function portalItemsForLearner(input: {
       ),
       featured: Boolean(row.lesson_featured),
       published_at: nullableIso(row.published_at),
+      content_factory: factoryDraft
+        ? {
+            approved_summary: String(factoryDraft.short_description ?? ''),
+            approved_review_questions: Array.isArray(factoryDraft.review_questions)
+              ? factoryDraft.review_questions.map(String)
+              : [],
+            captions_active: true as const,
+            progress_state: String(row.factory_progress_state ?? 'not_started') as
+              'not_started' | 'in_progress' | 'completed',
+            playback_route: `/app/learning/items/${encodeURIComponent(itemKey)}`,
+            raw_provider_url_present: false as const,
+          }
+        : undefined,
       lesson: lessonKey
         ? {
             lesson_key: lessonKey,

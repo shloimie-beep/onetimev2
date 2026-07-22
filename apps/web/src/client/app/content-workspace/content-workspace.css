@@ -92,6 +92,90 @@
   gap: var(--ot-space-3);
 }
 
+.content-factory-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.65fr) minmax(0, 1.8fr);
+  gap: var(--ot-space-4);
+  align-items: start;
+  min-width: 0;
+}
+
+.content-factory-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--ot-space-2);
+  align-items: center;
+  width: 100%;
+  min-height: var(--ot-size-touch-target);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  background: var(--ot-color-surface-raised);
+  color: var(--ot-color-text);
+  padding: var(--ot-space-3);
+  text-align: left;
+}
+
+.content-factory-item[aria-pressed='true'] {
+  border-color: var(--ot-color-action-auth);
+}
+
+.content-factory-item span,
+.content-factory-item small {
+  display: grid;
+  gap: var(--ot-space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.content-factory-item small,
+.content-factory-metadata dt {
+  color: var(--ot-color-text-muted);
+}
+
+.content-factory-editor {
+  gap: var(--ot-space-4);
+}
+
+.content-factory-editor h2,
+.content-factory-editor p,
+.content-factory-metadata,
+.content-factory-metadata dt,
+.content-factory-metadata dd {
+  margin: 0;
+}
+
+.content-factory-metadata,
+.content-factory-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ot-space-3);
+}
+
+.content-factory-metadata div {
+  display: grid;
+  gap: var(--ot-space-1);
+}
+
+.content-editor-form textarea {
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  background: var(--ot-color-surface-raised);
+  color: var(--ot-color-text);
+  padding: var(--ot-space-2);
+  font: inherit;
+  resize: vertical;
+}
+
+.content-preview-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ot-size-touch-target);
+  color: var(--ot-color-action-auth);
+}
+
 .content-row-card {
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
@@ -302,7 +386,10 @@
 
   .content-vertical-slice,
   .content-flow-list li,
-  .content-slice-card dl {
+  .content-slice-card dl,
+  .content-factory-layout,
+  .content-factory-fields,
+  .content-factory-metadata {
     grid-template-columns: minmax(0, 1fr);
   }
 

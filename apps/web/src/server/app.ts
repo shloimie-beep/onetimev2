@@ -76,6 +76,10 @@ import {
   contentAdminSocialWorkspaceResponseSchema,
   contentAdminSourceDetailResponseSchema,
   contentAdminWorkspaceQuerySchema,
+  contentFactoryActionSchema,
+  contentFactoryEditPayloadSchema,
+  contentFactoryMutationResponseSchema,
+  contentFactoryWorkspaceResponseSchema,
   accomplishmentEventSchema,
   adminGamificationDashboardResponseSchema,
   gamificationCorrectionAuditSchema,
@@ -98,6 +102,7 @@ import {
   CrmDuplicateError,
   CrmVersionConflictError,
   ContentIdempotencyConflictError,
+  ContentFactoryError,
   Ot110aContentWorkspaceError,
   IdempotencyConflictError,
   AccountLifecycleError,
@@ -137,6 +142,8 @@ import {
   resendEmailChallenge,
   getClassOccurrenceDetail,
   getContentItemDetail,
+  getContentFactoryPlayback,
+  getContentFactoryWorkspace,
   getContactDetail,
   getOt110aContentCreateWorkspace,
   getOt110aContentProcessingQueue,
@@ -158,6 +165,7 @@ import {
   listOt110aSocialWorkspace,
   ownerAdminVisibleActions,
   performOt110aContentAction,
+  performContentFactoryAction,
   previewOt110aPromptPatch,
   inspectOt86bBufferReadinessFromEnv,
   listCrmTags,
@@ -176,6 +184,8 @@ import {
   requestTishaBavJoin,
   resolveTishaBavRedirect,
   updateContact,
+  editContentFactoryItem,
+  inspectLearningDeliveryInputAdapters,
   verifyEmailChallengeCode,
   verifyEmailChallengeLink,
   CrmReplyError,
@@ -336,6 +346,7 @@ export function createApp({
           objectSrc: ["'none'"],
           baseUri: ["'self'"],
           frameAncestors: ["'none'"],
+          frameSrc: ["'self'", 'https://player.vimeo.com'],
         },
       },
     }),
@@ -2067,6 +2078,132 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/admin/content/factory', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!isContentFactoryAdmin(session)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const workspace = await withTiming(req, 'db', () =>
+        getContentFactoryWorkspace({ pool, config }),
+      );
+      const adapter = inspectLearningDeliveryInputAdapters({
+        driveFolderIdPresent: Boolean(process.env.GOOGLE_DRIVE_FOLDER_ID),
+        driveServiceAccountPresent: Boolean(process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON),
+      });
+      res.json(
+        contentFactoryWorkspaceResponseSchema.parse({
+          success: true,
+          input_adapter: adapter.inputAdapter,
+          adapters: adapter.adapters,
+          ...workspace,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.patch('/api/v1/admin/content/factory/:sourceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = contentFactoryEditPayloadSchema.parse(req.body);
+      const item = await withTiming(req, 'db', () =>
+        editContentFactoryItem({
+          pool,
+          config,
+          sourceKey: String(req.params.sourceKey),
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+          payload,
+        }),
+      );
+      res.json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/admin/content/factory/:sourceKey/:action',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const action = contentFactoryActionSchema.parse(req.params.action);
+        const item = await withTiming(req, 'db', () =>
+          performContentFactoryAction({
+            pool,
+            config,
+            sourceKey: String(req.params.sourceKey),
+            actorUserKey: session.user.user_key,
+            actorRole: session.user.role,
+            action,
+          }),
+        );
+        res.json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get('/app/learning/items/:sourceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, `/login?return_to=${encodeURIComponent(req.originalUrl)}`);
+      return;
+    }
+    if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
+      res.status(403).type('html').send('Protected learning access required.');
+      return;
+    }
+    try {
+      const playback = await getContentFactoryPlayback({
+        pool,
+        config,
+        sourceKey: String(req.params.sourceKey),
+      });
+      res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
+    } catch (error) {
+      const status = error instanceof ContentFactoryError && error.code === 'NOT_FOUND' ? 404 : 409;
+      res.status(status).type('html').send('Approved lesson playback is unavailable.');
+    }
+  });
+
+  app.get('/api/v1/content/factory/:sourceKey/embed', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Protected learning access required.', req.traceId));
+      return;
+    }
+    try {
+      const playback = await getContentFactoryPlayback({
+        pool,
+        config,
+        sourceKey: String(req.params.sourceKey),
+      });
+      res.redirect(302, playback.privateProviderEmbedUrl);
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.get('/api/v1/admin/content/processing', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -2810,6 +2947,7 @@ export function createApp({
 
 function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
+  if (pathname.startsWith('/app/content/')) return 'app/content.html';
   const staticPages = new Set([
     '/signup',
     '/tisha-bav',
@@ -3675,6 +3813,23 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof ContentFactoryError) {
+    const status =
+      error.code === 'FORBIDDEN'
+        ? 403
+        : error.code === 'NOT_FOUND'
+          ? 404
+          : error.code === 'VALIDATION_ERROR'
+            ? 400
+            : 409;
+    res.status(status).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      request_id: req.traceId,
+    });
+    return;
+  }
   if (error instanceof Ot110aContentWorkspaceError) {
     res.status(statusForOt110aError(error.code)).json({
       success: false,
@@ -3738,6 +3893,10 @@ function canReadContacts(role: string) {
 
 function canReadContentLibrary(role: string) {
   return role === 'owner' || role === 'admin';
+}
+
+function isContentFactoryAdmin(session: AuthenticatedSession) {
+  return session.user.role === 'owner' || session.user.role === 'admin';
 }
 
 function canUseOwnerDashboard(role: string) {
@@ -4254,6 +4413,48 @@ function classroomLaunchHtml() {
     </section>
   </main>
   <script type="module" src="/assets/app-classroom-launch.js"></script>
+</body>
+</html>`;
+}
+
+function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>${escapeHtml(playback.title)} | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace learning-player-page" data-protected-player="true">
+    <section class="state-panel learning-player-shell" aria-labelledby="learning-player-title">
+      <p class="eyebrow">Protected One Time lesson</p>
+      <h1 id="learning-player-title">${escapeHtml(playback.title)}</h1>
+      <p>${escapeHtml(playback.summary)}</p>
+      <div class="protected-player-frame">
+        <iframe
+          src="${escapeHtml(playback.playbackRoute)}"
+          title="${escapeHtml(playback.title)}"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          loading="eager"
+        ></iframe>
+      </div>
+      <dl class="content-factory-safe-metadata">
+        <div><dt>Captions</dt><dd>${playback.captionsActive ? 'Active' : 'Unavailable'}</dd></div>
+        <div><dt>Progress</dt><dd>${escapeHtml(playback.progressState.replaceAll('_', ' '))}</dd></div>
+      </dl>
+      <section aria-labelledby="review-questions-title">
+        <h2 id="review-questions-title">Review questions</h2>
+        <ol>${playback.reviewQuestions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ol>
+      </section>
+      <p class="ot-guardrail-note">Approved class material only. No raw Vimeo link is displayed.</p>
+    </section>
+  </main>
 </body>
 </html>`;
 }

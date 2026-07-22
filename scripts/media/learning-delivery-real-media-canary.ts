@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
@@ -14,7 +14,15 @@ import {
   projectLearningDeliveryTranscriptForTrim,
   suggestLearningDeliveryAutomaticTrim,
 } from '../../packages/domain/src/content/learning-delivery.ts';
-import type { LearningDeliveryProbeSummary } from '../../packages/contracts/src/content/index.ts';
+import {
+  generateContentFactoryDraftFromTranscript,
+  stageLearningDeliveryLocalDrop,
+} from '../../packages/domain/src/index.ts';
+import type {
+  LearningDeliveryProbeSummary,
+  LearningDeliveryTranscriptSegment,
+  LearningDeliveryTrimDecision,
+} from '../../packages/contracts/src/content/index.ts';
 
 const RUN_DIR = 'ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR';
 const SAFE_JSON_PATH = path.join(RUN_DIR, 'REAL-MEDIA-CANARY.json');
@@ -38,6 +46,7 @@ type VimeoResult =
       status: 'ready';
       privacy: 'private' | 'unlisted' | 'password' | 'review_required';
       providerVideoId: string;
+      providerEmbedUrl: string;
       providerTextTrackId: string;
       providerVideoRefDigest: string;
       providerTextTrackRefDigest: string;
@@ -76,9 +85,13 @@ async function main() {
     throw new Error('No protected operator-owned source media candidate was found.');
   }
 
-  const operatorSourceHash = await sha256File(operatorSourcePath);
-  let canarySourcePath = operatorSourcePath;
-  let sourceKind = 'operator_owned_real_media';
+  const stagedInput = await stageLearningDeliveryLocalDrop({
+    sourcePath: operatorSourcePath,
+    privateDirectory: path.join(args.outDir, 'private-intake'),
+  });
+  const operatorSourceHash = stagedInput.sourceSha256;
+  let canarySourcePath = stagedInput.privatePath;
+  let sourceKind = 'local_drop';
   let derivedEdgeSilenceApplied = false;
   let probe = await ffprobe(ffprobePath, canarySourcePath);
   ensureAudio(probe);
@@ -88,13 +101,13 @@ async function main() {
     canarySourcePath = path.join(args.outDir, 'operator-owned-derived-edge-silence-source.mp4');
     await renderDerivedEdgeSilenceSource({
       ffmpegPath,
-      inputPath: operatorSourcePath,
+      inputPath: stagedInput.privatePath,
       outputPath: canarySourcePath,
       leadSeconds: 14,
       tailSeconds: 18,
     });
     derivedEdgeSilenceApplied = true;
-    sourceKind = 'operator_owned_derived_edge_silence_canary';
+    sourceKind = 'local_drop_derived_edge_silence_canary';
     probe = await ffprobe(ffprobePath, canarySourcePath);
     ensureAudio(probe);
   }
@@ -146,6 +159,10 @@ async function main() {
     segments: correctedSegments,
     vocabularyPrompt: LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
   });
+  const metadataDraft = generateContentFactoryDraftFromTranscript({
+    displayName: stagedInput.displayName,
+    segments: correctedSegments,
+  });
   await writeFile(
     path.join(args.outDir, 'corrected-transcript-segments.private.json'),
     JSON.stringify(artifact.segments, null, 2),
@@ -182,7 +199,9 @@ async function main() {
           sourceKey,
           providerVideoId: vimeo.providerVideoId,
           providerTextTrackId: vimeo.providerTextTrackId,
-          transcriptSha256: artifact.transcript_sha256,
+          transcriptSha256: learningDeliverySha256Hex(
+            artifact.segments.map((segment) => segment.text).join(' '),
+          ),
           webvttSha256: artifact.webvtt_sha256,
         })
       : null;
@@ -225,6 +244,16 @@ async function main() {
       vocabulary_prompt_sha256: artifact.vocabulary_prompt_sha256,
       raw_transcript_present: false,
       approved_torah_interpretation: false,
+    },
+    metadata_draft: {
+      status: 'needs_review',
+      title_present: Boolean(metadataDraft.title),
+      description_present: Boolean(metadataDraft.short_description),
+      review_question_count: metadataDraft.review_questions.length,
+      key_takeaway_count: metadataDraft.key_takeaways.length,
+      vocabulary_count: metadataDraft.vocabulary.length,
+      draft_only: true,
+      authoritative_torah_interpretation: false,
     },
     vimeo:
       vimeo.status === 'ready'
@@ -285,12 +314,57 @@ async function main() {
     )}\n`,
     'utf8',
   );
+  if (vimeo.status === 'ready') {
+    const sourceStat = await stat(canarySourcePath);
+    await writeFile(
+      path.join(args.outDir, 'content-factory-import.private.json'),
+      `${JSON.stringify(
+        {
+          sourceKey,
+          sourceKind: 'local_drop',
+          sourceRefDigest: learningDeliverySha256Hex(
+            `local_drop\0${sourceSha256}\0${stagedInput.sourceRefDigest}`,
+          ),
+          sourceSha256,
+          displayName: stagedInput.displayName,
+          mimeType: stagedInput.mimeType,
+          byteLength: sourceStat.size,
+          originalDurationMs: probe.duration_ms,
+          preparedDurationMs: preparedProbe.duration_ms,
+          trimStartMs: trim.start_ms,
+          trimEndMs: trim.end_ms,
+          removedStartMs: trim.removed_start_ms ?? trim.start_ms,
+          removedEndMs: trim.removed_end_ms ?? Math.max(0, probe.duration_ms - trim.end_ms),
+          trimConfidence: trim.confidence ?? 0,
+          transcriptSegments: artifact.segments,
+          normalizedTranscript: artifact.segments.map((segment) => segment.text).join(' '),
+          transcriptSha256: artifact.transcript_sha256,
+          webvtt: artifact.webvtt,
+          webvttSha256: artifact.webvtt_sha256,
+          transcriptionModel: artifact.provider_model_version,
+          transcriptionLanguage: artifact.language,
+          draft: metadataDraft,
+          providerVideoId: vimeo.providerVideoId,
+          providerEmbedUrl: vimeo.providerEmbedUrl,
+          providerTextTrackId: vimeo.providerTextTrackId,
+          vimeoPrivacy: vimeo.privacy,
+          captionsActive: vimeo.textTrackActive,
+        },
+        null,
+        2,
+      )}\n`,
+      { encoding: 'utf8', mode: 0o600 },
+    );
+  }
   process.stdout.write(
     `${JSON.stringify({
       automatic_trim: trim.auto_cut_performed ? 'accepted' : 'blocked',
       real_transcription: artifact.segment_count > 0 ? 'accepted' : 'blocked',
       vimeo_prepared_asset: vimeo.status,
       captions: vimeo.status === 'ready' && vimeo.textTrackActive ? 'ready' : 'blocked',
+      metadata_draft: 'ready',
+      review_questions_draft: metadataDraft.review_questions.length,
+      input_adapter: 'LOCAL_DROP',
       preview_route: safeReport.preview.route,
       contact_notifications: 0,
       raw_provider_url_present: false,
@@ -513,6 +587,9 @@ async function uploadPreparedVideoToVimeo(input: {
       status: 'ready',
       privacy: inspection.privacy,
       providerVideoId,
+      providerEmbedUrl:
+        inspection.providerEmbedUrl ??
+        `https://player.vimeo.com/video/${encodeURIComponent(providerVideoId)}`,
       providerTextTrackId: track.providerTextTrackId,
       providerVideoRefDigest: learningDeliverySha256Hex(providerVideoId),
       providerTextTrackRefDigest: learningDeliverySha256Hex(track.providerTextTrackId),
@@ -582,14 +659,24 @@ async function waitForVimeoTranscode(token: string, providerVideoId: string) {
     lastStatus = status;
     privacy = privacyFromVimeo(video);
     if (['complete', 'completed', 'available', 'ready'].includes(status)) {
-      return { available: true, status, privacy };
+      return {
+        available: true,
+        status,
+        privacy,
+        providerEmbedUrl: extractVimeoEmbedUrl(video, providerVideoId),
+      };
     }
     if (['error', 'failed', 'failure'].includes(status)) {
       return { available: false, status, privacy };
     }
     await sleep(10_000);
   }
-  return { available: false, status: lastStatus, privacy };
+  return {
+    available: false,
+    status: lastStatus,
+    privacy,
+    providerEmbedUrl: `https://player.vimeo.com/video/${encodeURIComponent(providerVideoId)}`,
+  };
 }
 
 async function vimeoApiJson(token: string, apiPath: string, init: RequestInit = {}) {
@@ -717,6 +804,14 @@ function extractVimeoTextTrackId(value: unknown) {
   if (!text) return null;
   const match = text.match(/\/texttracks\/([A-Za-z0-9._:-]+)/);
   return match?.[1] ?? (/^[A-Za-z0-9._:-]+$/.test(text) ? text : null);
+}
+
+function extractVimeoEmbedUrl(video: Record<string, unknown>, providerVideoId: string) {
+  const direct = stringValue(video.player_embed_url);
+  if (direct?.startsWith('https://player.vimeo.com/')) return direct;
+  const html = stringValue(asRecord(video.embed).html);
+  const match = html?.match(/src=["'](https:\/\/player\.vimeo\.com\/[^"']+)/i);
+  return match?.[1] ?? `https://player.vimeo.com/video/${encodeURIComponent(providerVideoId)}`;
 }
 
 function asRecord(value: unknown): Record<string, unknown> {

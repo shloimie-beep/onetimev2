@@ -56,7 +56,8 @@
     "learning-delivery:real-canary": "tsx scripts/media/learning-delivery-real-media-canary.ts",
     "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
-    "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts"
+    "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
+    "content-factory:import": "tsx scripts/media/content-factory-import.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",
