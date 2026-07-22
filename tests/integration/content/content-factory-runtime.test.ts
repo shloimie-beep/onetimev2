@@ -34,7 +34,7 @@ describe('narrow content-factory readiness', () => {
     await expect(assertNarrowContentFactoryReadiness({ pool, runtime })).resolves.toBeUndefined();
 
     await pool.query(
-      `UPDATE onetime.schema_migrations SET checksum = 'wrong' WHERE id = '2221_video_to_classroom_e2e'`,
+      `UPDATE onetime.schema_migrations SET checksum = 'wrong' WHERE id = '2222_content_factory_provider_constraint'`,
     );
     await expect(assertNarrowContentFactoryReadiness({ pool, runtime })).rejects.toThrow(
       'content_factory_migration_checksum_mismatch',
