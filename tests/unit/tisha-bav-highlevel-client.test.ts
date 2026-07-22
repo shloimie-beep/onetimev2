@@ -30,4 +30,39 @@ describe('Tisha BAv HighLevel client', () => {
       body: JSON.stringify({ name: "OT | Source | Tisha B'Av 2026" }),
     });
   });
+
+  it('uses the supported contact payload and tag endpoint', async () => {
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({ contact: { id: 'contact_operator' } }))
+      .mockResolvedValueOnce(Response.json({ tags: ['event-tag'] }, { status: 201 }));
+    const client = new HttpHighLevelEventClient({
+      baseUrl: 'https://provider.example.test',
+      token: 'private-test-token',
+      apiVersion: '2021-07-28',
+      fetchImpl,
+    });
+
+    const contact = await client.upsertContact({
+      locationId: 'location_one_time',
+      email: 'operator@example.test',
+      source: "Tisha B'Av 2026 Landing",
+      customFields: {
+        'contact.one_time_signup_source': "Tisha B'Av 2026 Landing",
+      },
+    });
+    await client.addTags({ contactId: contact.contactId, tags: ['event-tag'] });
+
+    const upsertBody = JSON.parse(String(fetchImpl.mock.calls[0]?.[1]?.body));
+    expect(upsertBody.customFields).toEqual([
+      {
+        key: 'contact.one_time_signup_source',
+        fieldValue: "Tisha B'Av 2026 Landing",
+      },
+    ]);
+    expect(fetchImpl.mock.calls[1]?.[0]).toBe(
+      'https://provider.example.test/contacts/contact_operator/tags',
+    );
+    expect(fetchImpl.mock.calls[1]?.[1]?.body).toBe(JSON.stringify({ tags: ['event-tag'] }));
+  });
 });

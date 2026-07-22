@@ -194,9 +194,9 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
         email: input.email,
         source: input.source,
         ...(input.firstName ? { firstName: input.firstName } : {}),
-        customFields: Object.entries(input.customFields).map(([key, field_value]) => ({
+        customFields: Object.entries(input.customFields).map(([key, fieldValue]) => ({
           key,
-          field_value,
+          fieldValue,
         })),
       },
     });
@@ -208,12 +208,9 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
   }
 
   async addTags(input: { contactId: string; tags: readonly string[] }) {
-    await this.request('/contacts/bulk/tags/update/add', {
+    await this.request(`/contacts/${encodeURIComponent(input.contactId)}/tags`, {
       method: 'POST',
-      body: {
-        contactIds: [input.contactId],
-        tags: input.tags,
-      },
+      body: { tags: input.tags },
     });
   }
 
@@ -765,6 +762,7 @@ async function maybeSyncHighLevel(input: {
     });
     return 'provider_off';
   }
+  let providerStage = 'ensure_tags';
   try {
     await client.ensureTags({
       locationId: payload.location_id,
@@ -773,6 +771,7 @@ async function maybeSyncHighLevel(input: {
         ...(payload.tags.includes(TISHA_BAV_NEWSLETTER_TAG) ? [TISHA_BAV_NEWSLETTER_TAG] : []),
       ],
     });
+    providerStage = 'upsert_contact';
     const contact = await client.upsertContact({
       locationId: payload.location_id,
       email: payload.email_normalized,
@@ -780,7 +779,9 @@ async function maybeSyncHighLevel(input: {
       customFields: payload.custom_fields,
       ...(payload.first_name ? { firstName: payload.first_name } : {}),
     });
+    providerStage = 'add_tags';
     await client.addTags({ contactId: contact.contactId, tags: payload.tags });
+    providerStage = 'add_to_workflow';
     await client.addToWorkflow({
       contactId: contact.contactId,
       workflowId: payload.workflow_id,
@@ -794,6 +795,8 @@ async function maybeSyncHighLevel(input: {
   } catch (error) {
     await markHighLevelDelivery(input.pool, input.deliveryKey, 'failed', {
       error_class: error instanceof Error ? error.name : 'Error',
+      failed_stage: providerStage,
+      provider_http_status: highLevelErrorStatus(error),
     });
     return 'pending';
   }
@@ -835,7 +838,7 @@ function highLevelProtectedPayload(
     signup_source: TISHA_BAV_SOURCE_VALUE,
     tags,
     custom_fields: {
-      'One Time Signup Source': TISHA_BAV_SOURCE_VALUE,
+      'contact.one_time_signup_source': TISHA_BAV_SOURCE_VALUE,
     },
     communication_catalog_version: TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
     workflow_id: config.highLevelTishaBavWorkflowId ?? null,
@@ -847,6 +850,12 @@ function highLevelProtectedPayload(
     preserve_unrelated_tags: true,
     student_contact: false,
   };
+}
+
+function highLevelErrorStatus(error: unknown) {
+  if (!(error instanceof Error)) return null;
+  const match = error.message.match(/status (\d{3})\b/);
+  return match ? Number(match[1]) : null;
 }
 
 function normalizeHighLevelPayload(value: unknown) {
