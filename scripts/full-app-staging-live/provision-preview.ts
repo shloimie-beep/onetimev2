@@ -694,7 +694,7 @@ async function ensureOpenDemoClass(
                    raw_join_url_present = false,
                    updated_at = $7`,
     [
-      'full_app_preview_zoom_projection',
+      `full_app_preview_zoom_projection_${occurrence.class_key}`,
       config.accountKey,
       config.productKey,
       occurrence.class_key,
@@ -909,7 +909,7 @@ async function seedProgressAndRewards(
                      metadata = EXCLUDED.metadata,
                      recorded_at = $7`,
       [
-        `full_app_preview_attendance_${index + 1}`,
+        `full_app_preview_attendance_${occurrenceKey}_${index + 1}`,
         config.accountKey,
         config.productKey,
         occurrenceKey,
