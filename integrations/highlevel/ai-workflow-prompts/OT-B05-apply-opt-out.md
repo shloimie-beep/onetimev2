@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-B05 Apply Opt-Out
-Folder: 00 - Intake & Data
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane
 message_class: support_acknowledgement
 sender_key: brand

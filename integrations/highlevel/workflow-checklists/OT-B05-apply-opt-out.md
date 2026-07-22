@@ -1,6 +1,6 @@
 # OT-B05 Apply Opt-Out UI Checklist
 
-Folder: 00 - Intake & Data
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane
 message_class: support_acknowledgement
 sender_key: brand

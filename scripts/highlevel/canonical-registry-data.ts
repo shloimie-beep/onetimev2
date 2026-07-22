@@ -1,3 +1,9 @@
+import {
+  workflowControlByKey,
+  workflowFolderTree,
+  type WorkflowControlState,
+} from './workflow-control-registry.ts';
+
 export const registryMetadata = {
   schemaId: 'one-time-highlevel',
   schemaVersion: '1.1.0',
@@ -99,7 +105,7 @@ export type RegistryWorkflow = {
   humansMayEdit: boolean;
   dependencies: string[];
   aliases: string[];
-  deprecationState: AssetStatus;
+  assetLifecycle: 'canonical' | 'deprecated';
   createdDate: string;
   lastVerifiedDate: string;
   lastTestedDate: string;
@@ -110,7 +116,28 @@ export type RegistryWorkflow = {
   transport: MessageTransport;
   exactTrigger: string;
   companionDelivery: string;
+  displayOrder: number;
+  desiredStatus: WorkflowControlState;
+  observedStatus: WorkflowControlState;
+  exactOrderedTriggers: string[];
+  exactOrderedActions: string[];
+  observedTriggers: string[];
+  observedActions: string[];
+  lastReadback: {
+    at: string;
+    method: string;
+    reference: string;
+  };
+  canary: {
+    result: 'passed' | 'not_run' | 'not_applicable';
+    reference: string;
+    detail: string;
+  };
+  blocker: string;
+  evidence: string[];
 };
+
+export { workflowFolderTree };
 
 export type RegistrySender = {
   key: SenderKey;
@@ -1539,13 +1566,13 @@ const businessWorkflowInputs = [
   [
     'OT-02A',
     'OT-02A Existing Subscriber Migration 2026 v1',
-    '10 - Nurture & Sales',
+    '10 - Enrollment & Nurture',
     'Three-email existing-subscriber migration sequence.',
   ],
   [
     'OT-02B',
     'OT-02B New Lead Nurture v1',
-    '10 - Nurture & Sales',
+    '10 - Enrollment & Nurture',
     'New lead nurture separate from migration.',
   ],
   [
@@ -1577,13 +1604,13 @@ const businessWorkflowInputs = [
   [
     'OT-09',
     'OT-09 Parent Class Reminder',
-    '40 - Classes & Content',
+    '40 - Learning Operations / Classes',
     'Parent class reminder gated by access and consent.',
   ],
   [
     'OT-10',
     'OT-10 New Recording Available',
-    '40 - Classes & Content',
+    '40 - Learning Operations / Content',
     'Protected recording availability notice.',
   ],
   [
@@ -1595,13 +1622,13 @@ const businessWorkflowInputs = [
   [
     'OT-C01',
     "OT-C01 Tisha B'Av 2026 Warm Invitation",
-    '10 - Nurture & Sales',
+    "45 - Events / 2026 / Tisha B'Av 2026",
     "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign.",
   ],
   [
     'OT-E01',
     "OT-E01 Tisha B'Av 2026 Registration and Reminders",
-    '45 - Events',
+    "45 - Events / 2026 / Tisha B'Av 2026",
     "Registered Tisha B'Av 2026 registration and reminder workflow.",
   ],
 ] as const;
@@ -1610,31 +1637,21 @@ const botActionWorkflowInputs = [
   [
     'OT-B01',
     'OT-B01 Complete Signup',
-    '00 - Intake & Data',
+    '60 - Bot Actions',
     'Typed bot action adapter for adult signup.',
   ],
   [
     'OT-B02',
     'OT-B02 Send Next Confirmed Class Info',
-    '40 - Classes & Content',
+    '60 - Bot Actions',
     'Safe next confirmed class info adapter.',
   ],
-  [
-    'OT-B03',
-    'OT-B03 Send Member Login',
-    '30 - Portal Lifecycle',
-    'Send canonical member login URL.',
-  ],
-  [
-    'OT-B04',
-    'OT-B04 Send Password Help',
-    '30 - Portal Lifecycle',
-    'Send canonical password-help URL.',
-  ],
+  ['OT-B03', 'OT-B03 Send Member Login', '60 - Bot Actions', 'Send canonical member login URL.'],
+  ['OT-B04', 'OT-B04 Send Password Help', '60 - Bot Actions', 'Send canonical password-help URL.'],
   [
     'OT-B05',
     'OT-B05 Apply Opt-Out',
-    '00 - Intake & Data',
+    '60 - Bot Actions',
     'Apply opt-out, DND, suppression and stop bot follow-up.',
   ],
 ] as const;
@@ -1643,48 +1660,51 @@ const deprecatedWorkflowInputs = [
   [
     'OT-11',
     'OT-11 WhatsApp Lead Qualification',
-    '00 - Intake & Data',
+    '99 - Deprecated',
     'Superseded by OT-A1 and OT-B01.',
   ],
   [
     'OT-12',
     'OT-12 Support Intake / Technical Escalation',
-    '50 - Support',
+    '99 - Deprecated',
     'Deprecated when it creates tasks or support escalation workflows.',
   ],
   [
     'OT-HUMAN-HANDOFF',
     'OT - Human Handoff',
-    '50 - Support',
+    '99 - Deprecated',
     'Human handoff workflow is not active for OT-A1.',
   ],
 ] as const;
 
 export const businessWorkflows = businessWorkflowInputs.map((input) =>
-  workflowFromInput(input, 'business_workflow', 'pending_creation'),
+  workflowFromInput(input, 'business_workflow', 'canonical'),
 );
 export const botActionWorkflows = botActionWorkflowInputs.map((input) =>
-  workflowFromInput(input, 'bot_action_workflow', 'pending_creation'),
+  workflowFromInput(input, 'bot_action_workflow', 'canonical'),
 );
 export const deprecatedWorkflows = deprecatedWorkflowInputs.map((input) =>
-  workflowFromInput(input, 'deprecated_workflow', 'deprecated_existing'),
+  workflowFromInput(input, 'deprecated_workflow', 'deprecated'),
 );
 export const workflows = [...businessWorkflows, ...botActionWorkflows, ...deprecatedWorkflows];
 
 function workflowFromInput(
   input: readonly [string, string, string, string],
   objectType: RegistryWorkflow['objectType'],
-  deprecationState: AssetStatus,
+  assetLifecycle: RegistryWorkflow['assetLifecycle'],
 ): RegistryWorkflow {
   const [key, canonicalName, folder, purpose] = input;
   const communication = workflowCommunicationBindings[key];
   if (!communication) throw new Error(`workflow_communication_binding_missing:${key}`);
+  const control = workflowControlByKey[key];
+  if (!control) throw new Error(`workflow_control_binding_missing:${key}`);
+  if (control.folder !== folder) throw new Error(`workflow_control_folder_mismatch:${key}`);
   const fileBase = `${key}-${fileSlug(canonicalName.replace(`${key} `, ''))}.md`;
   return {
     key,
     canonicalName,
     normalizedName: normalizeAssetName(canonicalName),
-    ghlId: '',
+    ghlId: control.ghlId,
     ghlKey: normalizeAssetName(canonicalName),
     objectType,
     dataType: 'workflow',
@@ -1698,10 +1718,10 @@ function workflowFromInput(
     humansMayEdit: true,
     dependencies: [],
     aliases: [],
-    deprecationState,
+    assetLifecycle,
     createdDate: date,
-    lastVerifiedDate: '',
-    lastTestedDate: '',
+    lastVerifiedDate: control.lastReadback.at.slice(0, 10),
+    lastTestedDate: control.canary.result === 'passed' ? control.lastReadback.at.slice(0, 10) : '',
     promptPath:
       objectType === 'deprecated_workflow'
         ? ''
@@ -1715,6 +1735,17 @@ function workflowFromInput(
     transport: communication.transport,
     exactTrigger: communication.exactTrigger,
     companionDelivery: communication.companionDelivery ?? '',
+    displayOrder: control.displayOrder,
+    desiredStatus: control.desiredStatus,
+    observedStatus: control.observedStatus,
+    exactOrderedTriggers: control.exactOrderedTriggers,
+    exactOrderedActions: control.exactOrderedActions,
+    observedTriggers: control.observedTriggers,
+    observedActions: control.observedActions,
+    lastReadback: control.lastReadback,
+    canary: control.canary,
+    blocker: control.blocker,
+    evidence: control.evidence,
   };
 }
 

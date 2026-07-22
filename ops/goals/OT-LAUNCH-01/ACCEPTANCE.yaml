@@ -13,6 +13,10 @@ criteria:
     track: goal_system
     observable: CURRENT, GOAL, SPEC, ACCEPTANCE, BOARD, DECISIONS, RAMBLE-PROTOCOL, stable inputs/handoffs, and pointer-only ops/previews/current.json validate from disk.
     proof: [repository_diff, yaml_json_parse, official_skill_validator]
+  - id: UX-001
+    track: goal_system
+    observable: A visual request records exact routes and breakpoint checks, inspects current screenshots/page state, automatically repairs obvious in-scope violations, retests each breakpoint, and verifies the deployed URL; only a real product choice is returned to the operator.
+    proof: [ramble_intake, browser_desktop, browser_mobile, deployed_url_readback]
   - id: GHL-001
     track: ghl_organization
     observable: All 19 canonical workflows and all bot/KB/folder/field/tag/value assets have IDs, full ancestry, terminal states, and zero unexplained duplicate/deprecated assets.
@@ -29,6 +33,11 @@ criteria:
     track: ghl_event_dispatcher
     observable: One outbox-backed dispatcher emits canonical exact-key events/tags/bot invocations for controlled golden-path producers with dedupe, retry, replay, and readback proof before any waiting workflow is eligible for activation.
     proof: [integration_test, database_readback, controlled_GHL_test]
+  - id: GHL-005
+    track: ghl_organization
+    observable: Git workflow-registry.yaml contains all 19 canonical IDs plus exact ordered triggers/actions, full folder/order, desired/observed control states, last readback, canary, blocker, and evidence; the generated WORKFLOW-CONTROL-REPORT.md flags every ID/folder/state disagreement and unknown workflow, and the drift validator fails closed without mutating GHL.
+    proof:
+      [repository_diff, registry_validation, generated_control_report, sanitized_provider_readback]
   - id: CONTENT-001
     track: media_staging_integration
     observable: /app/content proves private intake -> conservative trim -> transcript/VTT -> editable metadata/questions draft -> private Vimeo -> Admin approval -> protected Student playback for one operator-owned asset.
@@ -101,3 +110,8 @@ criteria:
     track: persistent_staging
     observable: PR #97 head equals /version commit, /health and /ready pass at latest migration, worker heartbeat is fresh, and the complete desktop/360px journey passes without production mutation.
     proof: [version_health_ready, worker_heartbeat, browser_desktop, browser_mobile]
+  - id: TISHA-001
+    track: tisha_landing_polish
+    observable: /tisha-bav shows exact H1 Bringing Knowledge of Hashem into the World with no trailing period, includes exact phrase No charge, removes the large mobile middle gap, loads fresh nonzero assets, has no horizontal overflow, and keeps the CTA visible at 375x667, 390x844, 430x932, 1366x768, and 1440x900; persistent staging passes before the separately authorized narrow production promotion is verified.
+    proof:
+      [browser_mobile, browser_desktop, asset_http_readback, persistent_staging_url, production_url]

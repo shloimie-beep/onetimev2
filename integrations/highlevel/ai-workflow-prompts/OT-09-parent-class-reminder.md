@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-09 Parent Class Reminder
-Folder: 40 - Classes & Content
+Folder: 40 - Learning Operations / Classes
 Exact trigger: registered confirmed class reminder schedule and consent gate pass
 message_class: class_reminder
 sender_key: brand

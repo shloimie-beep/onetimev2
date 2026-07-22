@@ -1,4 +1,4 @@
 interface:
   display_name: 'One Time GHL UI Job'
-  short_description: 'Reconcile one canonical GHL Agent Mode job'
-  default_prompt: 'Use $one-time-ghl-ui-job to verify an exact authorized One Time GHL job, reconcile the full location without duplicates, and return sanitized save/reopen/test readback for Codex.'
+  short_description: 'Reconcile one Git-controlled GHL UI job'
+  default_prompt: 'Use $one-time-ghl-ui-job to verify an exact authorized One Time GHL job against the canonical Git registry, reconcile the full location without duplicates, save/reopen/canary only within authority, and return sanitized drift-aware readback for Codex.'

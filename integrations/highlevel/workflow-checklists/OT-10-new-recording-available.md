@@ -1,6 +1,6 @@
 # OT-10 New Recording Available UI Checklist
 
-Folder: 40 - Classes & Content
+Folder: 40 - Learning Operations / Content
 Exact trigger: One Time marks a protected recording available for an entitled household
 message_class: recording_available
 sender_key: brand

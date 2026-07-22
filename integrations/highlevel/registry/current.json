@@ -3,7 +3,7 @@
   "schema_version": "1.1.0",
   "status": "active",
   "location_id": "pBSnOK2nkdxp6gf9Rg3o",
-  "generated_at": "2026-07-22T06:16:21.012Z",
+  "generated_at": "2026-07-22T11:35:08.953Z",
   "counts": {
     "standard_contact_fields": 8,
     "contact_custom_fields": 34,
@@ -3409,7 +3409,7 @@
       "key": "OT-01",
       "canonicalName": "OT-01 New Lead Intake",
       "normalizedName": "ot_01_new_lead_intake",
-      "ghlId": "",
+      "ghlId": "95a6f461-1a04-4260-b379-246fdcc45af7",
       "ghlKey": "ot_01_new_lead_intake",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3423,9 +3423,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md",
@@ -3433,18 +3433,48 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "adult public signup submitted",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 1,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive the canonical adult public-signup event from One Time or OT-B01.",
+        "Require a known source and recorded adult channel-consent state."
+      ],
+      "exactOrderedActions": [
+        "Create or update only the adult contact using the canonical idempotency key.",
+        "Apply OT | Lead.",
+        "Apply only the canonical known-source tag.",
+        "Preserve every unrelated existing tag."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: deployed adult signup event dispatcher is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-02A",
       "canonicalName": "OT-02A Existing Subscriber Migration 2026 v1",
       "normalizedName": "ot_02a_existing_subscriber_migration_2026_v1",
-      "ghlId": "",
+      "ghlId": "368d47ca-c6d2-4545-acb0-664f98bac8f2",
       "ghlKey": "ot_02a_existing_subscriber_migration_2026_v1",
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "10 - Nurture & Sales",
+      "folder": "10 - Enrollment & Nurture",
       "purpose": "Three-email existing-subscriber migration sequence.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3453,9 +3483,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md",
@@ -3463,18 +3493,49 @@
       "senderKey": "rabbi_campaign",
       "transport": "GHL",
       "exactTrigger": "registered existing subscriber migration audience entry",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 2,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": [
+        "Enter only an explicitly approved 2026 existing-subscriber migration audience.",
+        "Require service/marketing eligibility and no suppression before each message."
+      ],
+      "exactOrderedActions": [
+        "Mark the registered migration sequence/version active.",
+        "Send migration email one with the registered rabbi_campaign sender.",
+        "Wait the approved cadence, then recheck activation and suppression.",
+        "Send migration email two only while still eligible.",
+        "Wait the approved cadence, recheck, and send migration email three only while still eligible.",
+        "Exit immediately on activation, opt-out, or suppression."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Approved migration audience, cadence, and controlled-test authorization are absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-02B",
       "canonicalName": "OT-02B New Lead Nurture v1",
       "normalizedName": "ot_02b_new_lead_nurture_v1",
-      "ghlId": "",
+      "ghlId": "a7038e32-79d2-4d2d-b103-5722ab0abcfc",
       "ghlKey": "ot_02b_new_lead_nurture_v1",
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "10 - Nurture & Sales",
+      "folder": "10 - Enrollment & Nurture",
       "purpose": "New lead nurture separate from migration.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3483,9 +3544,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md",
@@ -3493,13 +3554,42 @@
       "senderKey": "rabbi_campaign",
       "transport": "GHL",
       "exactTrigger": "registered new lead nurture audience entry",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 3,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": [
+        "Enter only the canonical new-lead nurture audience.",
+        "Require explicit consent and no suppression before each message."
+      ],
+      "exactOrderedActions": [
+        "Send the approved first nurture message with the registered rabbi_campaign sender.",
+        "Wait the approved cadence and recheck checkout, customer, consent, and suppression state.",
+        "Send each next approved nurture step only while eligible.",
+        "Exit on checkout start, Active status, opt-out, or suppression."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Approved nurture audience, cadence, content, and controlled-test authorization are absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-03",
       "canonicalName": "OT-03 Checkout Started / Abandoned",
       "normalizedName": "ot_03_checkout_started_abandoned",
-      "ghlId": "",
+      "ghlId": "b5c3e702-a7e6-415d-9ffc-fa2b0027a27f",
       "ghlKey": "ot_03_checkout_started_abandoned",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3513,9 +3603,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md",
@@ -3523,13 +3613,43 @@
       "senderKey": "rabbi_campaign",
       "transport": "GHL",
       "exactTrigger": "checkout started and not completed within the registered wait window",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 4,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": [
+        "Receive the canonical checkout-started event.",
+        "Wait the registered abandonment window.",
+        "Continue only when checkout has not completed and the adult remains eligible."
+      ],
+      "exactOrderedActions": [
+        "Record canonical checkout-started state.",
+        "Exit when completion or Active status is observed.",
+        "Read price only from published canonical custom values.",
+        "Send the single approved abandonment message only with valid consent and no suppression."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Checkout event, abandonment window, and payment-provider acceptance are not configured.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-04",
       "canonicalName": "OT-04 Payment Active",
       "normalizedName": "ot_04_payment_active",
-      "ghlId": "",
+      "ghlId": "dd1e90ea-f9bd-4c3b-97de-2230f119f38b",
       "ghlKey": "ot_04_payment_active",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3543,9 +3663,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-04-payment-active.md",
@@ -3553,13 +3673,41 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "One Time payment/access projection becomes Active",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 5,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": [
+        "Receive the canonical One Time payment/access projection becoming Active."
+      ],
+      "exactOrderedActions": [
+        "Record canonical customer and access status as Active.",
+        "Clear obsolete grace state and apply only the registered active tag.",
+        "Invoke the protected One Time billing/access adapter idempotently.",
+        "Send the approved confirmation only when separately authorized."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Payment-active projection and protected adapter acceptance are not configured.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-05",
       "canonicalName": "OT-05 Payment Failed / Grace",
       "normalizedName": "ot_05_payment_failed_grace",
-      "ghlId": "",
+      "ghlId": "8c7a0a37-6747-492f-99f6-1a1fb90518de",
       "ghlKey": "ot_05_payment_failed_grace",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3573,9 +3721,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md",
@@ -3583,13 +3731,41 @@
       "senderKey": "office",
       "transport": "GHL",
       "exactTrigger": "One Time payment/access projection becomes Grace after payment failure",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 6,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": [
+        "Receive the canonical payment-failure projection that places access in Grace."
+      ],
+      "exactOrderedActions": [
+        "Record customer/access Grace state and the canonical grace-until value.",
+        "Apply only the registered grace/payment-failed tags.",
+        "Send pressure-free support copy only when separately authorized.",
+        "Never charge, retry, or mutate Stripe from GHL."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Payment-failure projection, approved grace timing, and provider acceptance are absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-06",
       "canonicalName": "OT-06 Subscription Canceled",
       "normalizedName": "ot_06_subscription_canceled",
-      "ghlId": "",
+      "ghlId": "7421cd97-a61b-4434-b7f3-163b8cc7237c",
       "ghlKey": "ot_06_subscription_canceled",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3603,9 +3779,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md",
@@ -3613,13 +3789,42 @@
       "senderKey": "office",
       "transport": "GHL",
       "exactTrigger": "One Time subscription projection becomes Canceled when support context is required",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 7,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": [
+        "Receive the canonical Canceled subscription projection when support context is required."
+      ],
+      "exactOrderedActions": [
+        "Record canceled customer state and current-period end when present.",
+        "Apply only the registered cancellation tags.",
+        "Invoke the protected One Time adapter idempotently.",
+        "Send cancellation help only when separately authorized.",
+        "Never revoke One Time access from a GHL tag alone."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Cancellation projection and protected adapter acceptance are not configured.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-07",
       "canonicalName": "OT-07 Parent Portal Invitation",
       "normalizedName": "ot_07_parent_portal_invitation",
-      "ghlId": "",
+      "ghlId": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
       "ghlKey": "ot_07_parent_portal_invitation",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3633,9 +3838,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md",
@@ -3643,13 +3848,40 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "One Time access confirmation requests the parent portal companion email",
-      "companionDelivery": "One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token."
+      "companionDelivery": "One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.",
+      "displayOrder": 9,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive One Time access confirmation for an eligible adult parent contact."
+      ],
+      "exactOrderedActions": [
+        "Send or record only the non-token parent portal companion.",
+        "Never store or send credentials, activation tokens, reset tokens, or Student data."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: access-confirmation companion event is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-08",
       "canonicalName": "OT-08 Parent Portal Activated",
       "normalizedName": "ot_08_parent_portal_activated",
-      "ghlId": "",
+      "ghlId": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
       "ghlKey": "ot_08_parent_portal_activated",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3663,9 +3895,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md",
@@ -3673,18 +3905,45 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "One Time parent portal projection becomes Active",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 10,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive the One Time parent-portal projection becoming Active for the eligible adult."
+      ],
+      "exactOrderedActions": [
+        "Record the adult parent-portal activation.",
+        "Exclude Student identities, credentials, learning progress, and entitlement data."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: parent-activation projection is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-09",
       "canonicalName": "OT-09 Parent Class Reminder",
       "normalizedName": "ot_09_parent_class_reminder",
-      "ghlId": "",
+      "ghlId": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
       "ghlKey": "ot_09_parent_class_reminder",
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "40 - Classes & Content",
+      "folder": "40 - Learning Operations / Classes",
       "purpose": "Parent class reminder gated by access and consent.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3693,9 +3952,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md",
@@ -3703,18 +3962,46 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "registered confirmed class reminder schedule and consent gate pass",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 11,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive a confirmed-class reminder event for an entitled adult household after consent passes."
+      ],
+      "exactOrderedActions": [
+        "Send only current confirmed class information supplied by One Time.",
+        "Use only the canonical protected One Time class URL.",
+        "Never store or send a permanent raw Zoom URL."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: confirmed-class reminder event projection is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-10",
       "canonicalName": "OT-10 New Recording Available",
       "normalizedName": "ot_10_new_recording_available",
-      "ghlId": "",
+      "ghlId": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
       "ghlKey": "ot_10_new_recording_available",
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "40 - Classes & Content",
+      "folder": "40 - Learning Operations / Content",
       "purpose": "Protected recording availability notice.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3723,9 +4010,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md",
@@ -3733,13 +4020,41 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "One Time marks a protected recording available for an entitled household",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 12,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive recording.available after Admin approval for an entitled household."
+      ],
+      "exactOrderedActions": [
+        "Send the approved recording-available notice only to the eligible adult.",
+        "Use only the protected One Time recording URL.",
+        "Never expose a raw Vimeo provider URL."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: recording.available producer and GHL dispatcher are absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-13",
       "canonicalName": "OT-13 Refund / Chargeback",
       "normalizedName": "ot_13_refund_chargeback",
-      "ghlId": "",
+      "ghlId": "9459a4a1-c5fa-4912-920e-e30c86f1fbe9",
       "ghlKey": "ot_13_refund_chargeback",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -3753,9 +4068,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md",
@@ -3763,7 +4078,33 @@
       "senderKey": "office",
       "transport": "GHL",
       "exactTrigger": "refund or chargeback support state is recorded",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 8,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": ["Receive a verified refund or chargeback support projection."],
+      "exactOrderedActions": [
+        "Record the canonical refund or chargeback state.",
+        "Apply only registered support/status tags.",
+        "Invoke the protected One Time adapter idempotently when configured.",
+        "Never mutate Stripe or send a customer message from this workflow without separate approval."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Refund/chargeback projection and protected adapter acceptance are not configured.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-C01",
@@ -3774,7 +4115,7 @@
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "10 - Nurture & Sales",
+      "folder": "45 - Events / 2026 / Tisha B'Av 2026",
       "purpose": "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3783,17 +4124,45 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "active",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
       "lastVerifiedDate": "2026-07-22",
-      "lastTestedDate": "2026-07-22",
+      "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md",
       "messageClass": "rabbi_event_invitation",
       "senderKey": "rabbi_campaign",
       "transport": "GHL",
       "exactTrigger": "approved Tisha B'Av 2026 warm invitation audience enters the registered campaign",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 14,
+      "desiredStatus": "SAVED_REOPENED",
+      "observedStatus": "SAVED_REOPENED",
+      "exactOrderedTriggers": [
+        "Require an explicitly approved Tisha B'Av 2026 warm audience.",
+        "Require explicit campaign authorization, channel consent, and no suppression."
+      ],
+      "exactOrderedActions": [
+        "Select only the approved audience.",
+        "Send the approved Rabbi-authored phase-one invitation with rabbi_campaign.",
+        "Record the bounded execution result and stop on opt-out or suppression."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Draft preserved; no contact enrolled and no send authorized."
+      },
+      "blocker": "Campaign audience and send authorization are absent; observed sends and enrollments are zero.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-E01",
@@ -3804,7 +4173,7 @@
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "45 - Events",
+      "folder": "45 - Events / 2026 / Tisha B'Av 2026",
       "purpose": "Registered Tisha B'Av 2026 registration and reminder workflow.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3813,7 +4182,7 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "active",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
       "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "2026-07-22",
@@ -3823,7 +4192,46 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "Tisha B'Av 2026 registration or approved reminder milestone is recorded",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 13,
+      "desiredStatus": "ACTIVE_TESTED",
+      "observedStatus": "ACTIVE_TESTED",
+      "exactOrderedTriggers": [
+        "Receive the canonical Tisha B'Av 2026 registration event and event/source tags.",
+        "Reject a duplicate active registration run for the same idempotency scope.",
+        "Enter each approved reminder milestone only when it is still in the future."
+      ],
+      "exactOrderedActions": [
+        "Apply the canonical event and source tags without adding newsletter consent.",
+        "Send one immediate confirmation using only the protected One Time event URL.",
+        "Schedule the approved one-hour and ten-minute reminders.",
+        "Skip reminder actions already in the past for late registrants.",
+        "Preserve one active run on replay and never expose a raw Zoom URL."
+      ],
+      "observedTriggers": [
+        "Canonical Tisha B'Av registration and source tags were read back.",
+        "Duplicate replay did not create a second active run."
+      ],
+      "observedActions": [
+        "Immediate confirmation delivered once.",
+        "One-hour and ten-minute reminders scheduled.",
+        "Late past actions skipped; protected URLs retained; raw Zoom URL absent."
+      ],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "passed",
+        "reference": "GHL-E01-operator-fab156df2719852d",
+        "detail": "Bounded operator-owned controlled execution and replay/idempotency proof passed."
+      },
+      "blocker": "",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     }
   ],
   "bot_action_workflows": [
@@ -3831,12 +4239,12 @@
       "key": "OT-B01",
       "canonicalName": "OT-B01 Complete Signup",
       "normalizedName": "ot_b01_complete_signup",
-      "ghlId": "",
+      "ghlId": "1c1c0bcd-6185-492e-819f-3b7c749d4c23",
       "ghlKey": "ot_b01_complete_signup",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
       "category": "bot_action_workflow",
-      "folder": "00 - Intake & Data",
+      "folder": "60 - Bot Actions",
       "purpose": "Typed bot action adapter for adult signup.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3845,9 +4253,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md",
@@ -3855,18 +4263,46 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed complete-signup adapter for an adult",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 15,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive the typed OT-A1 complete-signup invocation with required adult data and consent."
+      ],
+      "exactOrderedActions": [
+        "Validate all required adult fields.",
+        "Invoke the protected HighLevel-to-One-Time adapter with an idempotency key.",
+        "Never create a Student contact."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: typed complete-signup adapter is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-B02",
       "canonicalName": "OT-B02 Send Next Confirmed Class Info",
       "normalizedName": "ot_b02_send_next_confirmed_class_info",
-      "ghlId": "",
+      "ghlId": "cc766d32-0a47-47b5-818c-de45fefa83a7",
       "ghlKey": "ot_b02_send_next_confirmed_class_info",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
       "category": "bot_action_workflow",
-      "folder": "40 - Classes & Content",
+      "folder": "60 - Bot Actions",
       "purpose": "Safe next confirmed class info adapter.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3875,9 +4311,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md",
@@ -3885,18 +4321,44 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed next-confirmed-class-info adapter",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 16,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": ["Receive the typed OT-A1 next-confirmed-class-info invocation."],
+      "exactOrderedActions": [
+        "Query safe current class state from One Time.",
+        "Return or send only protected confirmed class information.",
+        "Never expose a raw provider URL."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: typed next-class adapter is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-B03",
       "canonicalName": "OT-B03 Send Member Login",
       "normalizedName": "ot_b03_send_member_login",
-      "ghlId": "",
+      "ghlId": "8ff00774-82fd-42d7-992b-4e9aca0a5091",
       "ghlKey": "ot_b03_send_member_login",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
       "category": "bot_action_workflow",
-      "folder": "30 - Portal Lifecycle",
+      "folder": "60 - Bot Actions",
       "purpose": "Send canonical member login URL.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3905,9 +4367,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md",
@@ -3915,18 +4377,46 @@
       "senderKey": "office",
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed member-login adapter",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 17,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive the typed OT-A1 member-login invocation for an adult contact."
+      ],
+      "exactOrderedActions": [
+        "Return or send only https://join.onetimeonetime.com/login.",
+        "Do not claim that the account is active.",
+        "Never send credentials or tokens."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: typed member-login companion adapter is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-B04",
       "canonicalName": "OT-B04 Send Password Help",
       "normalizedName": "ot_b04_send_password_help",
-      "ghlId": "",
+      "ghlId": "9f96c105-a298-4b5d-a5e5-8c573624d242",
       "ghlKey": "ot_b04_send_password_help",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
       "category": "bot_action_workflow",
-      "folder": "30 - Portal Lifecycle",
+      "folder": "60 - Bot Actions",
       "purpose": "Send canonical password-help URL.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3935,9 +4425,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md",
@@ -3945,18 +4435,46 @@
       "senderKey": "account_security",
       "transport": "Resend",
       "exactTrigger": "OT-A1 invokes the typed password-help adapter",
-      "companionDelivery": "GHL may request the One Time adapter but never stores or sends a reset token."
+      "companionDelivery": "GHL may request the One Time adapter but never stores or sends a reset token.",
+      "displayOrder": 18,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive the typed OT-A1 password-help invocation without account enumeration."
+      ],
+      "exactOrderedActions": [
+        "Request the One Time password-help boundary.",
+        "Return only the canonical non-token forgot-password URL when eligible.",
+        "Leave reset-token creation and delivery to One Time and Resend."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: typed password-help companion adapter is absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     },
     {
       "key": "OT-B05",
       "canonicalName": "OT-B05 Apply Opt-Out",
       "normalizedName": "ot_b05_apply_opt_out",
-      "ghlId": "",
+      "ghlId": "badd7521-913c-43b8-9b7a-1c1ccedac63c",
       "ghlKey": "ot_b05_apply_opt_out",
       "objectType": "bot_action_workflow",
       "dataType": "workflow",
       "category": "bot_action_workflow",
-      "folder": "00 - Intake & Data",
+      "folder": "60 - Bot Actions",
       "purpose": "Apply opt-out, DND, suppression and stop bot follow-up.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3965,9 +4483,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "assetLifecycle": "canonical",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md",
@@ -3975,7 +4493,37 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 19,
+      "desiredStatus": "DRAFT_SHELL",
+      "observedStatus": "DRAFT_SHELL",
+      "exactOrderedTriggers": [
+        "Receive the typed OT-A1 opt-out invocation for STOP or equivalent intent."
+      ],
+      "exactOrderedActions": [
+        "Set the relevant channel DND state.",
+        "Update canonical consent and suppression fields.",
+        "Remove related opt-in tags and apply OT | Marketing Suppressed when appropriate.",
+        "Remove the adult from marketing/nurture workflows and stop bot auto-follow-up.",
+        "Send no acknowledgement until the registry wording conflict is separately resolved."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:37:00.000Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_run",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+        "detail": "No executable trigger or critical action exists; controlled execution is not possible."
+      },
+      "blocker": "DRAFT_BLOCKED_APP_CONTRACT: typed opt-out adapter and suppression mapping are absent.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json"
+      ]
     }
   ],
   "deprecated_workflows": [
@@ -3988,7 +4536,7 @@
       "objectType": "deprecated_workflow",
       "dataType": "workflow",
       "category": "deprecated_workflow",
-      "folder": "00 - Intake & Data",
+      "folder": "99 - Deprecated",
       "purpose": "Superseded by OT-A1 and OT-B01.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -3997,9 +4545,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "deprecated_existing",
+      "assetLifecycle": "deprecated",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "",
       "checklistPath": "",
@@ -4007,7 +4555,30 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "deprecated; no active trigger is allowed",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 20,
+      "desiredStatus": "BLOCKED",
+      "observedStatus": "MISSING",
+      "exactOrderedTriggers": ["No active trigger is allowed."],
+      "exactOrderedActions": [
+        "Do not create or activate; OT-A1 and OT-B01 supersede this contract."
+      ],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_applicable",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Deprecated contract."
+      },
+      "blocker": "Superseded; dependency-check before any safe quarantine of an unknown historical asset.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-12",
@@ -4018,7 +4589,7 @@
       "objectType": "deprecated_workflow",
       "dataType": "workflow",
       "category": "deprecated_workflow",
-      "folder": "50 - Support",
+      "folder": "99 - Deprecated",
       "purpose": "Deprecated when it creates tasks or support escalation workflows.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -4027,9 +4598,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "deprecated_existing",
+      "assetLifecycle": "deprecated",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "",
       "checklistPath": "",
@@ -4037,7 +4608,28 @@
       "senderKey": "office",
       "transport": "GHL",
       "exactTrigger": "deprecated when it creates tasks; no active trigger is allowed",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 21,
+      "desiredStatus": "BLOCKED",
+      "observedStatus": "MISSING",
+      "exactOrderedTriggers": ["No task-creating support trigger is allowed."],
+      "exactOrderedActions": ["Do not create or activate a human-task workflow."],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_applicable",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Deprecated contract."
+      },
+      "blocker": "Deprecated; dependency-check before any safe quarantine of an unknown historical asset.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     },
     {
       "key": "OT-HUMAN-HANDOFF",
@@ -4048,7 +4640,7 @@
       "objectType": "deprecated_workflow",
       "dataType": "workflow",
       "category": "deprecated_workflow",
-      "folder": "50 - Support",
+      "folder": "99 - Deprecated",
       "purpose": "Human handoff workflow is not active for OT-A1.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -4057,9 +4649,9 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "deprecated_existing",
+      "assetLifecycle": "deprecated",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
+      "lastVerifiedDate": "2026-07-22",
       "lastTestedDate": "",
       "promptPath": "",
       "checklistPath": "",
@@ -4067,7 +4659,28 @@
       "senderKey": "brand",
       "transport": "GHL",
       "exactTrigger": "forbidden and deprecated; no active trigger is allowed",
-      "companionDelivery": ""
+      "companionDelivery": "",
+      "displayOrder": 22,
+      "desiredStatus": "BLOCKED",
+      "observedStatus": "MISSING",
+      "exactOrderedTriggers": ["No active trigger is allowed."],
+      "exactOrderedActions": ["Do not create, activate, or silently delete a historical asset."],
+      "observedTriggers": [],
+      "observedActions": [],
+      "lastReadback": {
+        "at": "2026-07-22T09:09:54.117Z",
+        "method": "navigate-away/reopen plus sanitized UI/API readback",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      },
+      "canary": {
+        "result": "not_applicable",
+        "reference": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+        "detail": "Forbidden/deprecated contract."
+      },
+      "blocker": "Forbidden; dependency-check before any safe quarantine of an unknown historical asset.",
+      "evidence": [
+        "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json"
+      ]
     }
   ],
   "prompts": [
@@ -4077,7 +4690,7 @@
       "status": "incoming",
       "title": "Incoming GHL One Time Rabbi Scheller Bot Paste Pack",
       "file_path": "integrations/highlevel/prompts/incoming/ghl-one-time-rabbi-scheller-bot-paste-pack-2026-07-20.md",
-      "sha256": "59a3d8103b1f75c4bc6252a01e68c3b505b6823d34b2804c2a08cec04a83601b",
+      "sha256": "e451bcc30f08dbdf2ba990ec62dcca97b742ff0625059a9e9db1c783c2035992",
       "source": "Codex pasted direction preserved as raw incoming source",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4116,7 +4729,7 @@
       "status": "candidate",
       "title": "OT-A1 One Time Enrollment Assistant",
       "file_path": "integrations/highlevel/prompts/candidates/OT-A1-v1.0.0.md",
-      "sha256": "cd8d3c8c288de1910630f08254e65899fc08c81a52be108a81a572b1705a194b",
+      "sha256": "c2ab9b5e2f7e573cf7da1ee4c046a4cef048b5036933df13921ab781bbc596fc",
       "source": "Corrected candidate from incoming bot pack direction",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4155,7 +4768,7 @@
       "status": "active",
       "title": "OT-A1 One Time Enrollment Assistant",
       "file_path": "integrations/highlevel/prompts/active/OT-A1-v1.0.0.md",
-      "sha256": "cd8d3c8c288de1910630f08254e65899fc08c81a52be108a81a572b1705a194b",
+      "sha256": "c2ab9b5e2f7e573cf7da1ee4c046a4cef048b5036933df13921ab781bbc596fc",
       "source": "Approved active canonical bot prompt",
       "created_date": "2026-07-21",
       "approved_date": "2026-07-21",
@@ -4194,7 +4807,7 @@
       "status": "active",
       "title": "OT-01 New Lead Intake",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md",
-      "sha256": "b4f80f6259b056959ebda2f143f629f87103d6476868db74e001ec359ac7b43a",
+      "sha256": "c55746d21fa96f3d84e919290fbc340211672bcf38d672b03210b8df294a1791",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4227,7 +4840,7 @@
       "status": "active",
       "title": "OT-02A Existing Subscriber Migration 2026 v1",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md",
-      "sha256": "19aaa8daf1fac199f901473d034ecc1e176d12bfe9832c0c6638fc76a5bf332a",
+      "sha256": "62309a684f4c82babbcb3c9dbcb61d165056285877e4977c71000f503304bd62",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4260,7 +4873,7 @@
       "status": "active",
       "title": "OT-02B New Lead Nurture v1",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md",
-      "sha256": "9d5fc96d60a18c8900e54184d11b74fe549eea62435796927e76a28e9e65ea09",
+      "sha256": "0461ed09934f0aebfe5f30bd9766a048bcedd1dfcdba5876f14157c7acca7d4e",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4293,7 +4906,7 @@
       "status": "active",
       "title": "OT-03 Checkout Started / Abandoned",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md",
-      "sha256": "ce98f036afeb8df7e59611ef74ef26384f5a7b12e9fdff8348c3a019f8b765c2",
+      "sha256": "876fa4a3158d0fa7b6277f8d24a82d62c5f1c0d5789a1e6f20ea21c82cb7227d",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4326,7 +4939,7 @@
       "status": "active",
       "title": "OT-04 Payment Active",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md",
-      "sha256": "f94635b96a5cb4840f234b430f8d2391db534b1c8a31731e03fc56a473cf8272",
+      "sha256": "d410846b373b164e3f5f215e01b92f00ea8ea69bcee7328a6b04d4dccbbd97b0",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4359,7 +4972,7 @@
       "status": "active",
       "title": "OT-05 Payment Failed / Grace",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md",
-      "sha256": "ef2e6f05eec3dcdd3c39c0976c9eec6dfd6b0eab4bb32522b165cec70ec9721c",
+      "sha256": "8d07d77d28ae027ea951fcce674ade8e9aa1fe4b9b1d63de95df34b56404c1dc",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4392,7 +5005,7 @@
       "status": "active",
       "title": "OT-06 Subscription Canceled",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md",
-      "sha256": "21f2484998b56ec0a536852591f02c8ad087a07d0e22d0ac3c8fe0993cca8d2b",
+      "sha256": "c417698db62d628b9ab64e36a5719fce6fdaf998d287fa58aca251a74f2249f9",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4425,7 +5038,7 @@
       "status": "active",
       "title": "OT-07 Parent Portal Invitation",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md",
-      "sha256": "a7231624c6286cbccb1176bff9f0374cbc4592a4627d5ceca05d193e7824a841",
+      "sha256": "a8723e5b7e57647f92af9eadbf2223b1bb1752fbe49806d681a8fef27241f404",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4458,7 +5071,7 @@
       "status": "active",
       "title": "OT-08 Parent Portal Activated",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md",
-      "sha256": "d1c6b1ed285733bf3006cf9f0bbe42df4b72236e273cfbe05f9259cfbb987e63",
+      "sha256": "f404a363731e22671b5ca5ac65a3351a23becb7c39154f72f7d8bfe0a99ad5fa",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4491,7 +5104,7 @@
       "status": "active",
       "title": "OT-09 Parent Class Reminder",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md",
-      "sha256": "cd3639c2d6792b526ccbdcdc7dfe33477d97f5d31e124b5586e1cf8cbaf24371",
+      "sha256": "f4daf554a6f88b24ef9aa776a1804990970bfdc8557d821731bd606399aba3ef",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4524,7 +5137,7 @@
       "status": "active",
       "title": "OT-10 New Recording Available",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md",
-      "sha256": "4f83e527e0b1312b24207859b6c68f442383a9b0f85d46b81513b90b4eae6688",
+      "sha256": "c94dd44bedf258b57d490571d3820de469c8d0354f772f5df1a8f2f12864c3a7",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4557,7 +5170,7 @@
       "status": "active",
       "title": "OT-13 Refund / Chargeback",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md",
-      "sha256": "a8dc0b88aaf1c07a9ef9cee6805a28ab92b75777df1f1f29df435253d6569022",
+      "sha256": "993bf9260eb02b97b4b06b632ad2eeb1095fba60bdb89698330ade1768b9b560",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4590,7 +5203,7 @@
       "status": "active",
       "title": "OT-C01 Tisha B'Av 2026 Warm Invitation",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md",
-      "sha256": "5d406d5951d39267bfe9f2a9aeb1c8163703d1e6f41ce9719fd713cbe53f59c4",
+      "sha256": "e0d4fd237341ddd9927a72443b9b5f866f2fbfb00eac8f67242ca6ff5ed974dd",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4623,7 +5236,7 @@
       "status": "active",
       "title": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
-      "sha256": "d6038b45c1fc0ed66228edccd8f918f1f804eaafe4fe8fbb4737cf7104206734",
+      "sha256": "d6abded6a85f0332e8cde1ad5c21a8ceee1bdce41f9b7f83eded76723258ec9f",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4656,7 +5269,7 @@
       "status": "active",
       "title": "OT-B01 Complete Signup",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md",
-      "sha256": "35363ba5cb4a2829b5604b9703e2772e6e5a1414c301470be61ef125b05f609b",
+      "sha256": "129109670eb1d6134dcf974858018ecfb1ab9cf6cdadfe9750c9246240739ebd",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4689,7 +5302,7 @@
       "status": "active",
       "title": "OT-B02 Send Next Confirmed Class Info",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md",
-      "sha256": "82852c3a3ed36612ff4c142e772c14aaf51c0a6d66faefdf916cba8fdf274c6d",
+      "sha256": "1f9998579e734ba59d72f3afbbcb10b7bc899673adaaaf0ac8d87f1fb9c3c977",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4722,7 +5335,7 @@
       "status": "active",
       "title": "OT-B03 Send Member Login",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md",
-      "sha256": "24884ca768476f963cfc1044c461a1df1d8245dc1947c603e69cf02a1b47aa63",
+      "sha256": "8456d219d6b40b90a7247736b2c537ae77694b34d7fdb280be8509c6a86d9d06",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4755,7 +5368,7 @@
       "status": "active",
       "title": "OT-B04 Send Password Help",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md",
-      "sha256": "84a939914a85bdab406d934e5b2d3659dd5d17bf973111032302249a65b636da",
+      "sha256": "09d2dacf2469d206bf1aba78114d7465829fe31e18b838f48ff461613dc0edfc",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4788,7 +5401,7 @@
       "status": "active",
       "title": "OT-B05 Apply Opt-Out",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md",
-      "sha256": "e13e8b6e8e853506ffd76810f830ac01058b8bf8dca1443defae18c87a9736ef",
+      "sha256": "efc87ebc9f22dde39441cd5ef121ce72a137e282f5014a6790b0131c735b9e92",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4915,226 +5528,235 @@
   "workflow_readback": [
     {
       "canonicalName": "OT-01 New Lead Intake",
-      "id": null,
+      "id": "95a6f461-1a04-4260-b379-246fdcc45af7",
       "canonicalFolder": "00 - Intake & Data",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:38:49.224Z",
+      "updatedAt": "2026-07-22T09:36:58.252Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-02A Existing Subscriber Migration 2026 v1",
-      "id": null,
-      "canonicalFolder": "10 - Nurture & Sales",
+      "id": "368d47ca-c6d2-4545-acb0-664f98bac8f2",
+      "canonicalFolder": "10 - Enrollment & Nurture",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:42:38.889Z",
+      "updatedAt": "2026-07-22T09:37:18.259Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-02B New Lead Nurture v1",
-      "id": null,
-      "canonicalFolder": "10 - Nurture & Sales",
+      "id": "a7038e32-79d2-4d2d-b103-5722ab0abcfc",
+      "canonicalFolder": "10 - Enrollment & Nurture",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:47:39.880Z",
+      "updatedAt": "2026-07-22T08:48:15.077Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-03 Checkout Started / Abandoned",
-      "id": null,
+      "id": "b5c3e702-a7e6-415d-9ffc-fa2b0027a27f",
       "canonicalFolder": "20 - Billing & Access",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:49:10.534Z",
+      "updatedAt": "2026-07-22T08:49:13.624Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-04 Payment Active",
-      "id": null,
+      "id": "dd1e90ea-f9bd-4c3b-97de-2230f119f38b",
       "canonicalFolder": "20 - Billing & Access",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:50:05.873Z",
+      "updatedAt": "2026-07-22T08:50:09.097Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-05 Payment Failed / Grace",
-      "id": null,
+      "id": "8c7a0a37-6747-492f-99f6-1a1fb90518de",
       "canonicalFolder": "20 - Billing & Access",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:51:02.196Z",
+      "updatedAt": "2026-07-22T08:51:05.280Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-06 Subscription Canceled",
-      "id": null,
+      "id": "7421cd97-a61b-4434-b7f3-163b8cc7237c",
       "canonicalFolder": "20 - Billing & Access",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:52:26.843Z",
+      "updatedAt": "2026-07-22T08:52:29.788Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-07 Parent Portal Invitation",
-      "id": null,
+      "id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
       "canonicalFolder": "30 - Portal Lifecycle",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:00.568Z",
+      "updatedAt": "2026-07-22T08:53:03.640Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-08 Parent Portal Activated",
-      "id": null,
+      "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
       "canonicalFolder": "30 - Portal Lifecycle",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:18.116Z",
+      "updatedAt": "2026-07-22T08:57:14.032Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-09 Parent Class Reminder",
-      "id": null,
-      "canonicalFolder": "40 - Classes & Content",
+      "id": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
+      "canonicalFolder": "40 - Learning Operations / Classes",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:42.188Z",
+      "updatedAt": "2026-07-22T08:53:45.211Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-10 New Recording Available",
-      "id": null,
-      "canonicalFolder": "40 - Classes & Content",
+      "id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
+      "canonicalFolder": "40 - Learning Operations / Content",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:59.571Z",
+      "updatedAt": "2026-07-22T08:57:30.605Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-13 Refund / Chargeback",
-      "id": null,
+      "id": "9459a4a1-c5fa-4912-920e-e30c86f1fbe9",
       "canonicalFolder": "20 - Billing & Access",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:52:43.771Z",
+      "updatedAt": "2026-07-22T08:57:46.856Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-C01 Tisha B'Av 2026 Warm Invitation",
       "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
-      "canonicalFolder": "10 - Nurture & Sales",
+      "canonicalFolder": "45 - Events / 2026 / Tisha B'Av 2026",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
       "status": "draft",
       "createdAt": "2026-07-21T16:10:32.426Z",
-      "updatedAt": "2026-07-21T16:16:32.330Z",
+      "updatedAt": "2026-07-22T08:35:12.874Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
-      "canonicalFolder": "45 - Events",
+      "canonicalFolder": "45 - Events / 2026 / Tisha B'Av 2026",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
       "status": "published",
       "createdAt": "2026-07-21T13:10:47.185Z",
-      "updatedAt": "2026-07-22T05:33:12.698Z",
+      "updatedAt": "2026-07-22T09:09:23.044Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-B01 Complete Signup",
-      "id": null,
-      "canonicalFolder": "00 - Intake & Data",
+      "id": "1c1c0bcd-6185-492e-819f-3b7c749d4c23",
+      "canonicalFolder": "60 - Bot Actions",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:54:28.214Z",
+      "updatedAt": "2026-07-22T08:54:31.335Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-B02 Send Next Confirmed Class Info",
-      "id": null,
-      "canonicalFolder": "40 - Classes & Content",
+      "id": "cc766d32-0a47-47b5-818c-de45fefa83a7",
+      "canonicalFolder": "60 - Bot Actions",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:54:45.868Z",
+      "updatedAt": "2026-07-22T08:54:49.135Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-B03 Send Member Login",
-      "id": null,
-      "canonicalFolder": "30 - Portal Lifecycle",
+      "id": "8ff00774-82fd-42d7-992b-4e9aca0a5091",
+      "canonicalFolder": "60 - Bot Actions",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:55:03.793Z",
+      "updatedAt": "2026-07-22T08:55:07.049Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-B04 Send Password Help",
-      "id": null,
-      "canonicalFolder": "30 - Portal Lifecycle",
+      "id": "9f96c105-a298-4b5d-a5e5-8c573624d242",
+      "canonicalFolder": "60 - Bot Actions",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:55:20.966Z",
+      "updatedAt": "2026-07-22T08:55:24.020Z",
       "duplicateCandidates": []
     },
     {
       "canonicalName": "OT-B05 Apply Opt-Out",
-      "id": null,
-      "canonicalFolder": "00 - Intake & Data",
+      "id": "badd7521-913c-43b8-9b7a-1c1ccedac63c",
+      "canonicalFolder": "60 - Bot Actions",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
-      "status": "missing",
-      "createdAt": null,
-      "updatedAt": null,
+      "status": "draft",
+      "createdAt": "2026-07-22T08:55:38.420Z",
+      "updatedAt": "2026-07-22T08:58:02.613Z",
       "duplicateCandidates": []
     }
   ],
   "provider_asset_readback": {
     "conversation_ai": {
       "status": "verified",
-      "liveTotal": 0,
+      "liveTotal": 1,
       "canonical": {
         "canonicalName": "OT-A1 One Time Enrollment Assistant",
-        "id": null,
-        "mode": "missing",
-        "channels": [],
-        "knowledgeBaseIds": [],
-        "createdAt": null,
-        "updatedAt": null,
+        "id": "0Z5YvlziuXqZmBntYFU0",
+        "mode": "off",
+        "channels": [
+          {
+            "name": "Live_Chat",
+            "isPrimary": true
+          },
+          {
+            "name": "WhatsApp",
+            "isPrimary": true
+          }
+        ],
+        "knowledgeBaseIds": ["ps6jttZ8WUGycLeQX6uF"],
+        "createdAt": "2026-07-22T09:01:24.778Z",
+        "updatedAt": "2026-07-22T09:02:59.858Z",
         "duplicateCandidates": []
       }
     },
@@ -5149,5 +5771,37 @@
         "duplicateCandidates": []
       }
     }
+  },
+  "workflow_control": {
+    "canonicalDesiredState": "GitHub repository registry on the reviewed PR head",
+    "browserMutationAuthority": "exact reviewed Git-authored Agent Mode job only",
+    "closedLoop": [
+      "reviewed_git_job",
+      "permitted_browser_change",
+      "save",
+      "navigate_away_or_reload",
+      "reopen_and_read_back",
+      "bounded_safe_canary",
+      "sanitized_result_committed",
+      "drift_validator_compares_observation_to_registry"
+    ],
+    "approvalGates": ["activation", "broad_send", "payment", "destructive_action"],
+    "unknownWorkflowPolicy": {
+      "report": true,
+      "dependencyCheckRequired": true,
+      "quarantineFolder": "99 - Deprecated",
+      "quarantineOnlyWhenSafeAndAuthorized": true,
+      "silentlyDelete": false
+    },
+    "allowedStates": [
+      "MISSING",
+      "DRAFT_SHELL",
+      "SAVED_REOPENED",
+      "ACTIVE_CONFIGURED",
+      "ACTIVE_TESTED",
+      "DRIFTED",
+      "BLOCKED"
+    ],
+    "controlReport": "integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md"
   }
 }

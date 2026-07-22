@@ -1,6 +1,6 @@
 # OT-B02 Send Next Confirmed Class Info UI Checklist
 
-Folder: 40 - Classes & Content
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed next-confirmed-class-info adapter
 message_class: class_reminder
 sender_key: brand

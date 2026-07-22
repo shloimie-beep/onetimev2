@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-B01 Complete Signup
-Folder: 00 - Intake & Data
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed complete-signup adapter for an adult
 message_class: signup_confirmation
 sender_key: brand

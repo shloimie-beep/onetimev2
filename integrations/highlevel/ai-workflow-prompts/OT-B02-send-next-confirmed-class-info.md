@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-B02 Send Next Confirmed Class Info
-Folder: 40 - Classes & Content
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed next-confirmed-class-info adapter
 message_class: class_reminder
 sender_key: brand

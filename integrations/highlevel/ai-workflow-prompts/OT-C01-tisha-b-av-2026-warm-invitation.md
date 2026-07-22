@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-C01 Tisha B'Av 2026 Warm Invitation
-Folder: 10 - Nurture & Sales
+Folder: 45 - Events / 2026 / Tisha B'Av 2026
 Exact trigger: approved Tisha B'Av 2026 warm invitation audience enters the registered campaign
 message_class: rabbi_event_invitation
 sender_key: rabbi_campaign

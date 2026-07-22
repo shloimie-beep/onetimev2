@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-E01 Tisha B'Av 2026 Registration and Reminders
-Folder: 45 - Events
+Folder: 45 - Events / 2026 / Tisha B'Av 2026
 Exact trigger: Tisha B'Av 2026 registration or approved reminder milestone is recorded
 message_class: event_registration_confirmation
 sender_key: brand

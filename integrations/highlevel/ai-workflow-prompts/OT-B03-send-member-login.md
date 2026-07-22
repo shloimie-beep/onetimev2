@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-B03 Send Member Login
-Folder: 30 - Portal Lifecycle
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed member-login adapter
 message_class: access_help
 sender_key: office

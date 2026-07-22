@@ -55,6 +55,8 @@
     "director:truth:live": "node scripts/check-director-truth.mjs --live",
     "learning-delivery:real-canary": "tsx scripts/media/learning-delivery-real-media-canary.ts",
     "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
+    "highlevel:workflow-control:check": "tsx scripts/highlevel/workflow-control-report.ts",
+    "highlevel:workflow-control:report": "tsx scripts/highlevel/workflow-control-report.ts --write",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",

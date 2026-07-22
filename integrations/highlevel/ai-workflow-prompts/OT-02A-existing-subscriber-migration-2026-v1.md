@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-02A Existing Subscriber Migration 2026 v1
-Folder: 10 - Nurture & Sales
+Folder: 10 - Enrollment & Nurture
 Exact trigger: registered existing subscriber migration audience entry
 message_class: existing_subscriber_migration
 sender_key: rabbi_campaign

@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T10:56:10Z
+updated_at: 2026-07-22T11:33:42Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -17,7 +17,7 @@ outcome:
   target: Production-believable persistent staging with complete operator preview and coherent fictional scenario.
   production_changed: YES_TRANSIENT_RESTORED
   production_impact: BNA production was transiently changed in error, restored, and independently evidenced at canonical master cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c; One Time production remains untouched.
-  current_summary: PR #97 runtime head 18d339f is live on persistent staging with migration 2215, a rotated coherent fictional household, and the Admin-to-role browser journey verified; external GHL dispatcher, Zoom provider, BNA durability, Telegram bridge, and media-canary tracks remain independently truthful.
+  current_summary: PR #97 deployed version 6fcf043 is live on persistent staging as a documentation-only descendant of verified runtime code 18d339f, with migration 2215, a rotated coherent fictional household, and the Admin-to-role browser journey verified; external GHL dispatcher, Zoom provider, BNA durability, Telegram bridge, media-canary, and Tisha landing-polish tracks remain independently truthful.
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -26,8 +26,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 18d339f27bb715723f56f50b65d1745fab75164c
-    resolution: Exact deployed runtime commit; the next commit is a board/pointer-only convergence checkpoint and must not be reported as runtime code until /version reads it back.
+    last_verified_commit: 6fcf0435cca744dba0e4a3337beac860d9315180
+    resolution: Exact /version readback from web deployment 6b3b2bfb-41d5-4c0b-996d-1855a717ae0c; runtime code remains the verified 18d339f ancestor because 6fcf043 changed only ops/control records.
   system: One Time persistent staging
 
 tracks:
@@ -42,12 +42,14 @@ tracks:
     write_scope: ops/goals, ops/previews, and the two repository-local skills
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/goal-system--persistent-staging-conductor.json
     dependencies: []
-    acceptance_ids: [GOAL-001]
+    acceptance_ids: [GOAL-001, UX-001]
     evidence:
       - Current goal files and skills are present in the conductor worktree.
-      - Both unchanged repository skills passed the official bundled Codex skill validator earlier in this task; this board-only checkpoint does not claim that the later PyYAML-dependent rerun passed.
+      - Independent revalidation at 6fcf043 closed all five prior goal-system findings and both unchanged repository skills passed their official validators independently.
       - Modified goal, board, and pointer files pass repository-native YAML/JSON parsing; the pointer hash is generated from the formatted BOARD.yaml bytes.
       - Fresh conductor review reconciled structured owners, accepted external heads, dependency-only states, production impact, and board-derived preview metadata.
+      - Goal execution and RAMBLE now turn visual intent into route/breakpoint acceptance, current-page/screenshot inspection, obvious in-scope repair, retest, and deployed-URL proof; only real product decisions return to the operator.
+      - Both modified skill packages pass repository-native frontmatter/name/UI-metadata/control-clause validation and Prettier YAML/Markdown parsing. The bundled official quick_validate.py was attempted for each but could not inspect either skill because bundled Python lacks yaml; no package was installed or vendored and no false validator pass is claimed.
     blocker: null
     remaining_work: null
     next_action: Preserve BOARD.yaml as the single status map and regenerate the pointer after each conductor update.
@@ -69,7 +71,7 @@ tracks:
       - Fresh-server Playwright passed 3/3 across all five role cards, two isolated sibling tabs, production nav/route rejection, protected Student playback, and desktop/360px layout.
       - Migration prefix proof reserves 2215 and preserves PR #104 prefix 2214.
       - Migration audit preserves historical live 2209/2210 duplicate-prefix rows, reserves 2216 only for new schema, and requires exact 2215 checksum/ledger readback.
-      - Persistent-staging deployment 42ed8541-7ff2-43a6-906a-b139705c8c6d served exact runtime head 18d339f27bb715723f56f50b65d1745fab75164c; /ready read back 2215_experience_preview_sessions with checksum e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56.
+      - Persistent-staging web deployment 6b3b2bfb-41d5-4c0b-996d-1855a717ae0c served exact /version 6fcf0435cca744dba0e4a3337beac860d9315180, a docs-only descendant of verified runtime code 18d339f; /ready read back 2215_experience_preview_sessions with checksum e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56.
       - Live Admin browser proof reached Experience Preview and selected Parent, all three siblings, and Rabbi/Classroom; both Experience Preview and Live Console navigation were visible.
     blocker: null
     remaining_work: null
@@ -151,12 +153,15 @@ tracks:
     write_scope: Sanitized result artifact only; GHL mutation belonged to the authorized Agent Mode job
     handoff_path: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
     dependencies: []
-    acceptance_ids: [GHL-001]
+    acceptance_ids: [GHL-001, GHL-005]
     evidence:
       - PR #107 head deda8f9b04dbafcc36363628a14b6fecc94fd854 and GHL-PHASE-2-20260722.result.json are authoritative.
       - Folder tree is fully corrected; OT-01 and OT-02A were moved and reopened with no duplicates or content changes.
       - 19/19 canonical workflows are correctly nested; OT-A1 0Z5YvlziuXqZmBntYFU0 is Off with Live Chat and WhatsApp only; KB ps6jttZ8WUGycLeQX6uF.
       - No duplicate/deprecated assets; 241 contacts, one One Time tag, and zero broad sends.
+      - Git is the canonical desired-state/control view: the existing registry records exact folder/order, all 19 live IDs, ordered triggers/actions, desired/observed state, readback, canary, blocker, and evidence; its generated control report and fail-closed drift check use the committed sanitized readbacks.
+      - Read-only browser reconciliation records OT-07 and OT-08 as Draft with zero total/active enrollments; OT-C01 remains Draft/not sent; organized folders are not operational proof and OT-E01 remains the sole ACTIVE_TESTED workflow.
+      - Repository registry validation and the generated workflow drift/report check pass for all 19 canonical workflows, ten root folders, zero unknown workflows, and zero current ID/folder/state disagreements; a dry-run provider reconciliation reported zero writes, contacts, enrollments, messages, payments, or publication.
     blocker: null
     remaining_work: null
     next_action: Preserve the result artifact during semantic convergence; do not re-run or mutate GHL.
@@ -201,13 +206,13 @@ tracks:
     next_action: Wait for the canonical dispatcher and exact producer acceptance, then authorize one controlled workflow job at a time.
 
   - id: ghl_event_dispatcher
-    status: active
+    status: blocked
     owner:
       task_id: GHL-APP-CONTRACT-LANE-PR-108
       repository: shloimie-beep/onetimev2
       branch: codex/ot-launch-01-highlevel-app-contracts
       pr: 108
-      head: 47a413cb9430d1149d9d3855eb9a5d05b80d5fb3
+      head: 482ce93cf192e9de645e70665a35e8b1e153e6f9
       system: One Time outbox to HighLevel
     write_scope: One canonical dispatcher, schemas, dedupe/retry, exact golden-path producers, and tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-event-dispatcher--assigned-task.json
@@ -215,10 +220,15 @@ tracks:
     acceptance_ids: [GHL-004]
     evidence:
       - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
-      - PR #108 is an open draft at 47a413cb9430d1149d9d3855eb9a5d05b80d5fb3; its Node 24 verification is failing, so no head is accepted for semantic integration.
-    blocker: null
-    remaining_work: Terminal accepted head and handoff for the canonical app outbox, dispatcher, and exact producers.
-    next_action: Continue the existing lane; integrate only its later accepted head and forbid direct provider fanout.
+      - PR #108 head 482ce93cf192e9de645e70665a35e8b1e153e6f9 passed the fresh PostgreSQL 16 claim-race/disposable-DB proof, secret scan, full lint, typecheck, runtime/product safety, and Railway worker checks.
+      - Independent clean-detached-worktree audit with core.autocrlf=false found 38 PR-owned paths, 36 Prettier-supported paths, and all 36 green under repo-pinned Prettier 3.9.5. The earlier 32-warning Windows normalization result is invalid and is not branch-owned evidence.
+      - Node 24 remains red only on the inherited 67-file target/base formatting baseline; its intersection with all 38 PR-owned paths is zero. Accepted PR #97 commit 5615705 formats that baseline, after which PR #108 must rebase and rerun.
+      - Railway web check/deployment e145b3de-4e9a-4fae-ad67-b38e33ed7847 failed; the exact cause has not yet been read back. No PR #108 head is accepted for integration or staging deployment.
+    blocker:
+      code: PR108_RAILWAY_WEB_CAUSE_UNRESOLVED
+      reason: Railway web failed and its terminal cause/readback is not yet available; branch-owned formatting is clean.
+    remaining_work: Push the accepted PR #97 formatting baseline and governance, then the existing PR #108 lane must rebase, diagnose/fix isolated Railway web, rerun Node 24 and Railway checks, and obtain a fresh independent exact-head acceptance.
+    next_action: Keep PR #108 out of staging; publish this target baseline safely, then let the existing lane rebase and return only an independently accepted green head without direct provider fanout.
 
   - id: media_staging_integration
     status: done
@@ -407,10 +417,35 @@ tracks:
     acceptance_ids: [DEPLOY-001]
     evidence:
       - Baseline 09953ba2edfc7ba014b9fe2558dbc7f5c58972ea previously passed exact /version, /health, /ready, worker heartbeat, and browser verification.
-      - Exact runtime head 18d339f27bb715723f56f50b65d1745fab75164c is live through web deployment 42ed8541-7ff2-43a6-906a-b139705c8c6d and worker deployment 5182345f-69a9-4491-a0c6-43cec0784b9d; /health, /ready, and /version passed.
+      - Exact deployed version 6fcf0435cca744dba0e4a3337beac860d9315180 is live through web deployment 6b3b2bfb-41d5-4c0b-996d-1855a717ae0c and successful staging worker deployment 5f3b05d3-e633-4460-a596-2d2ccc72fa66; /health, /ready, and /version passed, with runtime code unchanged from verified ancestor 18d339f.
       - Predeploy readback preserved applied 2213 checksum de79b58418608f4466ffadda967411b43cfca2df477911071ed4060805b5dae1 and confirmed immutable 2214 plus exact 2215 checksum e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56.
       - Stable exact-source gates passed 6 focused files/24 tests, build/typecheck, repository conflict-marker scan, git diff --check, and 3/3 real Chromium scenarios including desktop and 360px.
       - Live click-through confirmed Admin login, all five role projections, concurrent isolated sibling tabs, preserved Admin session, Content, and Live Console; provider-off surfaces remained truthful.
     blocker: null
     remaining_work: null
     next_action: Monitor the persistent staging health and redeploy only an exact accepted PR #97 descendant; never bypass predeploy migration checks.
+
+  - id: tisha_landing_polish
+    status: active
+    owner:
+      task_id: 019f84b4-9937-74f1-8dca-0dcd0fe8bf2d
+      repository: shloimie-beep/onetimev2
+      branch: codex/tisha-bav-one-screen-staging-patch-20260722
+      pr: 109
+      head: 25483a62d44bb2d8d5216ea2a8b638f514b0fd1d
+      system: One Time Tisha landing
+    write_scope: Staging-first Tisha landing layout and copy correction, exact responsive evidence, and the explicitly authorized narrow production promotion only
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/tisha-landing-polish--019f84b4-9937-74f1-8dca-0dcd0fe8bf2d.json
+    dependencies: [goal_system, persistent_staging]
+    acceptance_ids: [TISHA-001]
+    evidence:
+      - Live production audit says assets load, the CTA is visible, and 375x667 has no horizontal overflow.
+      - Current defects are a large empty middle gap on mobile, missing exact phrase No charge, and the title Filling the World with Knowledge of Hashem must become Bringing Knowledge of Hashem into the World.
+      - PR #102 is closed and superseded by PR #97 staging plus PR #106 narrow production; its stale preview assets return 404 and are not evidence or source truth.
+      - Existing task 019f84b4-9937-74f1-8dca-0dcd0fe8bf2d owns staging-first proof at 375x667, 390x844, 430x932, 1366x768, and 1440x900, followed by the explicitly authorized narrow production promotion.
+      - This track authorizes no GHL send and no Zoom or other provider mutation.
+      - PR #109 candidate 25483a62d44bb2d8d5216ea2a8b638f514b0fd1d is exactly the reported three-file patch on base 6fcf0435cca744dba0e4a3337beac860d9315180, but it is held and not accepted because the visible H1 has an unauthorized trailing period.
+      - The existing owner task is correcting the same three-file patch and will return a superseding immutable head; do not integrate 25483a62 or duplicate its implementation.
+    blocker: null
+    remaining_work: Receive and independently accept the superseding exact PR #109 head, integrate it without overwriting governance, deploy/verify persistent staging at all five viewports, then coordinate the already-authorized narrow PR #106 production promotion and verify the live URL.
+    next_action: Hold rejected 25483a62; continue only the existing owner task, integrate its superseding independently accepted three-file head, and do not stop at the PR #109 preview.

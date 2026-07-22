@@ -13,6 +13,7 @@ import {
   registryMetadata,
   senderProfiles,
   tags,
+  workflowFolderTree,
   workflows,
   type RegistryCustomValue,
   type RegistryField,
@@ -22,6 +23,7 @@ import {
   type RegistryTag,
   type RegistryWorkflow,
 } from './canonical-registry-data.ts';
+import { workflowControlPolicy, workflowControlStates } from './workflow-control-registry.ts';
 
 type CurrentRegistry = {
   schema_id: string;
@@ -37,6 +39,19 @@ type CurrentRegistry = {
   pipelines: RegistryPipeline[];
   events: typeof eventDefinitions;
   communications_contract: typeof communicationsContract;
+  workflow_control: {
+    allowedStates: readonly string[];
+    canonicalDesiredState: string;
+    closedLoop: readonly string[];
+    approvalGates: readonly string[];
+    unknownWorkflowPolicy: {
+      report: boolean;
+      dependencyCheckRequired: boolean;
+      quarantineFolder: string;
+      quarantineOnlyWhenSafeAndAuthorized: boolean;
+      silentlyDelete: boolean;
+    };
+  };
   business_workflows: RegistryWorkflow[];
   bot_action_workflows: RegistryWorkflow[];
   deprecated_workflows: RegistryWorkflow[];
@@ -142,6 +157,11 @@ async function main() {
     'workflow sender dependency validation',
     workflowSenderDependenciesExist(current),
     `canonical_workflows=${current.business_workflows.length + current.bot_action_workflows.length}`,
+  );
+  record(
+    'GitHub workflow control contract',
+    workflowControlIsValid(current),
+    `canonical=${current.business_workflows.length + current.bot_action_workflows.length}, folders=${workflowFolderTree.length}`,
   );
   record(
     'sender custom-value coverage',
@@ -331,6 +351,55 @@ function workflowSenderDependenciesExist(current: CurrentRegistry) {
       Boolean(workflow.exactTrigger)
     );
   });
+}
+
+function workflowControlIsValid(current: CurrentRegistry) {
+  const canonical = [...current.business_workflows, ...current.bot_action_workflows];
+  const allowedStates = new Set<string>(workflowControlStates);
+  const ids = canonical.map((workflow) => workflow.ghlId);
+  const orders = canonical.map((workflow) => workflow.displayOrder);
+  const folders = new Set(
+    workflowFolderTree.flatMap((folder) => [
+      folder.name,
+      ...folder.children.map((child) => `${folder.name} / ${child}`),
+    ]),
+  );
+  return (
+    current.workflow_control.canonicalDesiredState ===
+      workflowControlPolicy.canonicalDesiredState &&
+    JSON.stringify(current.workflow_control.allowedStates) ===
+      JSON.stringify(workflowControlStates) &&
+    JSON.stringify(current.workflow_control.closedLoop) ===
+      JSON.stringify(workflowControlPolicy.closedLoop) &&
+    JSON.stringify(current.workflow_control.approvalGates) ===
+      JSON.stringify(workflowControlPolicy.approvalGates) &&
+    current.workflow_control.unknownWorkflowPolicy.report === true &&
+    current.workflow_control.unknownWorkflowPolicy.dependencyCheckRequired === true &&
+    current.workflow_control.unknownWorkflowPolicy.quarantineFolder === '99 - Deprecated' &&
+    current.workflow_control.unknownWorkflowPolicy.quarantineOnlyWhenSafeAndAuthorized === true &&
+    current.workflow_control.unknownWorkflowPolicy.silentlyDelete === false &&
+    canonical.length === 19 &&
+    ids.every(Boolean) &&
+    duplicates(ids).length === 0 &&
+    duplicates(orders.map(String)).length === 0 &&
+    canonical.every(
+      (workflow) =>
+        workflow.assetLifecycle === 'canonical' &&
+        folders.has(workflow.folder) &&
+        allowedStates.has(workflow.desiredStatus) &&
+        allowedStates.has(workflow.observedStatus) &&
+        workflow.exactOrderedTriggers.length > 0 &&
+        workflow.exactOrderedActions.length > 0 &&
+        Boolean(workflow.lastReadback.at) &&
+        Boolean(workflow.lastReadback.reference) &&
+        Boolean(workflow.canary.result) &&
+        workflow.evidence.length > 0,
+    ) &&
+    canonical.find((workflow) => workflow.key === 'OT-E01')?.observedStatus === 'ACTIVE_TESTED' &&
+    canonical.find((workflow) => workflow.key === 'OT-C01')?.observedStatus === 'SAVED_REOPENED' &&
+    canonical.find((workflow) => workflow.key === 'OT-07')?.observedStatus === 'DRAFT_SHELL' &&
+    canonical.find((workflow) => workflow.key === 'OT-08')?.observedStatus === 'DRAFT_SHELL'
+  );
 }
 
 function senderCustomValuesExist(current: CurrentRegistry) {

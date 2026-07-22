@@ -1,6 +1,6 @@
 # OT-B03 Send Member Login UI Checklist
 
-Folder: 30 - Portal Lifecycle
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed member-login adapter
 message_class: access_help
 sender_key: office

@@ -4,7 +4,7 @@ Build in HighLevel Draft state only. Do not publish, send messages, enroll produ
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-10 New Recording Available
-Folder: 40 - Classes & Content
+Folder: 40 - Learning Operations / Content
 Exact trigger: One Time marks a protected recording available for an entitled household
 message_class: recording_available
 sender_key: brand

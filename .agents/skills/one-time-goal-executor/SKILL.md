@@ -33,6 +33,16 @@ Stop if CURRENT points to missing/conflicting goal files. Do not invent a replac
 6. Never infer provider readiness, customer-send authority, or completion from a feature flag, saved draft, believable fixture, or partial readback.
 7. Produce objective evidence named by ACCEPTANCE: tests, route/browser proof, DB/provider readback, sanitized IDs/status, checksums, and negative cases.
 
+## HighLevel control boundary
+
+For a HighLevel track, also read `integrations/highlevel/workflows.yaml`, `integrations/highlevel/registry/workflow-registry.yaml`, the generated `WORKFLOW-CONTROL-REPORT.md`, and the assigned reviewed job/result. GitHub is canonical desired state; provider UI is observed evidence. Reuse the existing workflow control fields and states; never create a shadow dashboard or status model.
+
+Require the closed loop: reviewed Git-authored job -> permitted browser change -> save -> navigate/reload -> reopen/readback -> bounded authorized canary -> sanitized result committed -> drift validator. Report unknown workflows and fail closed. Dependency-check before any separately authorized move to `99 - Deprecated`; never silently delete. Activation, broad sends, payments, and destructive actions require exact authority.
+
+## Visual execution
+
+For UI work, translate operator visual intent into exact route and breakpoint acceptance. Inspect current page state and screenshots first; repair obvious in-scope violations, retest every recorded breakpoint, and verify the deployed URL/head when deployment is assigned. Ask only for a genuine product choice, not routine implementation judgment.
+
 ## Handoff contract
 
 Return machine-readable JSON containing:

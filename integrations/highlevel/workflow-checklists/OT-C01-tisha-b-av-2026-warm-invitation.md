@@ -1,6 +1,6 @@
 # OT-C01 Tisha B'Av 2026 Warm Invitation UI Checklist
 
-Folder: 10 - Nurture & Sales
+Folder: 45 - Events / 2026 / Tisha B'Av 2026
 Exact trigger: approved Tisha B'Av 2026 warm invitation audience enters the registered campaign
 message_class: rabbi_event_invitation
 sender_key: rabbi_campaign

@@ -1,6 +1,6 @@
 # OT-B01 Complete Signup UI Checklist
 
-Folder: 00 - Intake & Data
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed complete-signup adapter for an adult
 message_class: signup_confirmation
 sender_key: brand

@@ -17,9 +17,11 @@ import {
   senderProfiles,
   standardContactFields,
   tags,
+  workflowFolderTree,
   type SenderKey,
   type RegistryWorkflow,
 } from './canonical-registry-data.ts';
+import { workflowControlPolicy, workflowControlStates } from './workflow-control-registry.ts';
 
 type Args = { incomingPath: string | null };
 type PromptStatus = 'incoming' | 'candidate' | 'approved' | 'active' | 'superseded';
@@ -161,6 +163,11 @@ function buildCurrentRegistry(prompts: PromptRecord[], knowledgeBases: PromptRec
     pipelines: pipelineDefinitions,
     events: eventDefinitions,
     communications_contract: communicationsContract,
+    workflow_control: {
+      ...workflowControlPolicy,
+      allowedStates: workflowControlStates,
+      controlReport: 'integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md',
+    },
     business_workflows: businessWorkflows,
     bot_action_workflows: botActionWorkflows,
     deprecated_workflows: deprecatedWorkflows,
@@ -233,6 +240,15 @@ async function writeRegistryFiles(current: ReturnType<typeof buildCurrentRegistr
       business_workflows: businessWorkflows,
       bot_action_workflows: botActionWorkflows,
       deprecated_workflows: deprecatedWorkflows,
+      workflow_control: {
+        ...workflowControlPolicy,
+        allowed_states: workflowControlStates,
+        generated_report: 'integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md',
+        observed_evidence: [
+          'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json',
+          'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json',
+        ],
+      },
       publishing_authorized: false,
       production_enrollment_authorized: false,
       duplicate_workflows_disabled_in_this_run: 0,
@@ -1167,15 +1183,19 @@ function buildWorkflowsYaml() {
     version: 6,
     schema_id: registryMetadata.schemaId,
     schema_version: registryMetadata.schemaVersion,
-    status: 'canonical_registry_ready_ui_required',
+    status: 'github_canonical_desired_state_with_observed_readback',
     location_id: registryMetadata.locationId,
     last_reconciled_at: generatedAt,
     messages_sent_authorized: false,
     workflow_publish_authorized: false,
     production_workflow_enrollment_authorized: false,
-    workflow_folders: unique(activeWorkflows.map((workflow) => workflow.folder)).map((name) => ({
-      name,
-    })),
+    workflow_folders: workflowFolderTree,
+    workflow_control: {
+      ...workflowControlPolicy,
+      allowed_states: workflowControlStates,
+      registry: 'integrations/highlevel/registry/workflow-registry.yaml',
+      generated_report: 'integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md',
+    },
     custom_fields: contactFields,
     tags,
     custom_values: customValues,

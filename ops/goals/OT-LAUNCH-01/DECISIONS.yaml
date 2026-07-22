@@ -13,6 +13,12 @@ decisions:
     decision: A provider remains off until exact terminal evidence proves activation; independent tracks continue meanwhile.
   - id: ghl-authority
     decision: Agent Mode mutates GHL and returns sanitized readback; Codex alone updates canonical Git state.
+  - id: ghl-github-control
+    decision: GitHub workflow-registry.yaml is the canonical HighLevel desired-state/control view; the human report is generated, observed GHL is evidence rather than authority, and MISSING/DRAFT_SHELL/SAVED_REOPENED/ACTIVE_CONFIGURED/ACTIVE_TESTED/DRIFTED/BLOCKED are the only workflow control states.
+  - id: ghl-closed-loop
+    decision: A reviewed Git job may close only through browser apply, save, navigate/reload, reopen/readback, bounded authorized canary, sanitized committed result, and drift validation; unknown workflows fail closed and may enter 99 - Deprecated only after dependency checking and separate safe authorization, never silent deletion.
+  - id: visual-execution-loop
+    decision: Visual intent is converted into route/breakpoint acceptance, inspected against current screenshots/page state, automatically repaired when the violation is obvious and in scope, retested, and verified at the deployed URL; the operator is asked only for a genuine product decision.
   - id: assignment-authority
     decision: The persistent-staging conductor assigns tracks before dispatch; non-conductors verify assignment and write only their handoff, never BOARD.yaml.
   - id: ghl-dispatcher

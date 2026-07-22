@@ -13,6 +13,7 @@ import {
   protectedImportPaths,
   registryMetadata,
   standardContactFields,
+  workflowFolderTree,
   tags as canonicalTags,
   type AssetStatus,
   type RegistryCustomValue,
@@ -24,6 +25,7 @@ import {
   type RegistrySender,
   type RegistryWorkflow,
 } from './canonical-registry-data.ts';
+import { workflowControlPolicy, workflowControlStates } from './workflow-control-registry.ts';
 
 type Args = {
   apply: boolean;
@@ -158,6 +160,15 @@ type CurrentRegistry = {
   pipelines: RegistryPipeline[];
   events: RegistryEvent[];
   communications_contract: Record<string, unknown>;
+  workflow_control?: {
+    canonicalDesiredState: string;
+    browserMutationAuthority: string;
+    closedLoop: readonly string[];
+    approvalGates: readonly string[];
+    unknownWorkflowPolicy: typeof workflowControlPolicy.unknownWorkflowPolicy;
+    allowedStates: readonly string[];
+    controlReport: string;
+  };
   business_workflows: RegistryWorkflow[];
   bot_action_workflows: RegistryWorkflow[];
   deprecated_workflows: RegistryWorkflow[];
@@ -315,7 +326,7 @@ async function main() {
   }
 
   const report = await reconcileHighLevel(client, args);
-  const updatedCurrent = buildUpdatedRegistry(current, report);
+  const updatedCurrent = await buildUpdatedRegistry(current, report);
   const blockingErrors = hardBlockers(report);
   await writeReports(report);
   if (!args.skipRegistryWrite && blockingErrors.length === 0) {
@@ -1172,10 +1183,10 @@ async function listPipelines(client: HighLevelApiClient): Promise<GhlResult<GhlP
   };
 }
 
-function buildUpdatedRegistry(
+async function buildUpdatedRegistry(
   current: CurrentRegistry,
   report: ReconciliationReport,
-): CurrentRegistry {
+): Promise<CurrentRegistry> {
   const reportFields = byName(report.customFields);
   const reportTags = byName(report.tags);
   const reportCustomValues = byName(report.customValues);
@@ -1269,6 +1280,16 @@ function buildUpdatedRegistry(
         }
       : knowledgeBase,
   );
+  const promptRecords = await Promise.all(
+    current.prompts.map(async (prompt) => ({
+      ...prompt,
+      sha256: sha256(
+        await readFile(path.join(repoRoot, prompt.file_path), 'utf8').then((body) =>
+          body.replace(/\r\n/g, '\n'),
+        ),
+      ),
+    })),
+  );
 
   return {
     ...current,
@@ -1279,9 +1300,15 @@ function buildUpdatedRegistry(
     contact_fields: contactFieldRecords,
     tags: tagRecords,
     custom_values: customValueRecords,
+    workflow_control: {
+      ...workflowControlPolicy,
+      allowedStates: workflowControlStates,
+      controlReport: 'integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md',
+    },
     business_workflows: business,
     bot_action_workflows: botActions,
     deprecated_workflows: deprecated,
+    prompts: promptRecords,
     knowledge_bases: knowledgeBaseRecords,
     workflow_readback: report.workflows.records,
     provider_asset_readback: {
@@ -1345,6 +1372,15 @@ async function writeRegistryFiles(current: CurrentRegistry, report: Reconciliati
       business_workflows: current.business_workflows,
       bot_action_workflows: current.bot_action_workflows,
       deprecated_workflows: current.deprecated_workflows,
+      workflow_control: {
+        ...workflowControlPolicy,
+        allowed_states: workflowControlStates,
+        generated_report: 'integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md',
+        observed_evidence: [
+          'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json',
+          'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json',
+        ],
+      },
       publishing_authorized: false,
       production_enrollment_authorized: false,
       duplicate_workflows_disabled_in_this_run: 0,
@@ -1445,18 +1481,11 @@ function workflowWithLiveId(
 ): RegistryWorkflow {
   const id = ids.get(workflow.canonicalName) ?? workflow.ghlId;
   const live = Boolean(id);
-  const deprecationState: AssetStatus =
-    workflow.deprecationState === 'deprecated_existing'
-      ? 'deprecated_existing'
-      : live
-        ? 'active'
-        : workflow.deprecationState;
   return {
     ...workflow,
     ghlId: id,
-    deprecationState,
     lastVerifiedDate: live ? today : workflow.lastVerifiedDate,
-    lastTestedDate: live ? today : workflow.lastTestedDate,
+    lastTestedDate: workflow.canary.result === 'passed' ? today : workflow.lastTestedDate,
   };
 }
 
@@ -1496,20 +1525,14 @@ function buildWorkflowsYaml(current: CurrentRegistry, report: ReconciliationRepo
     version: 6,
     schema_id: registryMetadata.schemaId,
     schema_version: registryMetadata.schemaVersion,
-    status:
-      report.workflows.status === 'verified'
-        ? 'api_reconciled_workflows_verified'
-        : 'api_reconciled_ui_required',
+    status: 'github_canonical_desired_state_with_observed_readback',
     location_id: registryMetadata.locationId,
     last_reconciled_at: generatedAt,
     messages_sent_authorized: false,
     workflow_publish_authorized: false,
     production_workflow_enrollment_authorized: false,
-    workflow_folders: unique(
-      [...current.business_workflows, ...current.bot_action_workflows].map(
-        (workflow) => workflow.folder,
-      ),
-    ).map((name) => ({ name })),
+    workflow_folders: workflowFolderTree,
+    workflow_control: current.workflow_control,
     custom_fields: current.contact_fields,
     tags: current.tags,
     custom_values: current.custom_values,

@@ -1,6 +1,6 @@
 # OT-02B New Lead Nurture v1 UI Checklist
 
-Folder: 10 - Nurture & Sales
+Folder: 10 - Enrollment & Nurture
 Exact trigger: registered new lead nurture audience entry
 message_class: prelaunch_nurture
 sender_key: rabbi_campaign

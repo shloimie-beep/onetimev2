@@ -1,6 +1,6 @@
 # OT-E01 Tisha B'Av 2026 Registration and Reminders UI Checklist
 
-Folder: 45 - Events
+Folder: 45 - Events / 2026 / Tisha B'Av 2026
 Exact trigger: Tisha B'Av 2026 registration or approved reminder milestone is recorded
 message_class: event_registration_confirmation
 sender_key: brand

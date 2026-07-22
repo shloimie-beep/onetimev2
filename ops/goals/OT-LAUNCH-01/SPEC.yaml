@@ -15,8 +15,24 @@ golden_paths:
       - CURRENT.yaml points to one goal directory and one BOARD.yaml.
       - BOARD.yaml is the only mutable status map; reports and preview pointers derive from it.
       - The persistent-staging conductor alone assigns tracks and edits BOARD.yaml.
+      - Visual intent becomes route- and breakpoint-specific acceptance before implementation;
+        the assigned executor inspects the current page/screenshots, fixes obvious in-scope violations,
+        retests, and verifies the deployed URL without asking for non-decisions.
   ghl:
     requirements:
+      - GitHub is the canonical desired-state/control view; workflow-registry.yaml is the single
+        workflow control model and WORKFLOW-CONTROL-REPORT.md is generated from it plus committed
+        sanitized provider readbacks.
+      - Every canonical workflow records exact ordered triggers/actions, full folder ancestry and
+        order, desired and observed status, GHL ID, last readback, canary result, blocker, and evidence.
+      - Workflow control states are MISSING, DRAFT_SHELL, SAVED_REOPENED, ACTIVE_CONFIGURED,
+        ACTIVE_TESTED, DRIFTED, and BLOCKED; folder organization alone never proves operation.
+      - Close every permitted change through reviewed Git job -> browser mutation -> save ->
+        navigate/reload -> reopen/readback -> bounded safe canary -> sanitized committed result ->
+        drift validation against the registry.
+      - Report unknown workflows and fail closed; dependency-check them and move them to
+        99 - Deprecated only through a separately authorized safe job, never silently delete.
+      - Activation, broad sends, payments, and destructive actions remain exact approval gates.
       - Inventory canonical folders, workflows, bot, knowledge base, fields, tags, values,
         pipelines, senders, and campaigns across active, draft, archived, and deprecated states.
       - Account for every canonical asset by ID, key, type, and full folder ancestry with no
@@ -24,6 +40,9 @@ golden_paths:
       - Publish only an exactly authorized workflow after controlled trigger/execution,
         branch/wait, bounded-delivery, and replay/idempotency proof.
       - Keep every other workflow explicitly draft or dependency-blocked.
+      - >-
+        Preserve current truth: OT-E01 alone is ACTIVE_TESTED; OT-C01 is Draft/not sent; OT-07 and
+        OT-08 are Draft with zero enrollments; no organized Draft shell is described as operational.
       - Use one canonical outbox-backed One Time to GHL event dispatcher and exact producers;
         never add parallel direct delivery paths.
       - OT-01, OT-07, OT-08, OT-09, OT-10, and OT-B01 through OT-B05 remain

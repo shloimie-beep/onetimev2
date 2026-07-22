@@ -1,6 +1,6 @@
 # OT-B04 Send Password Help UI Checklist
 
-Folder: 30 - Portal Lifecycle
+Folder: 60 - Bot Actions
 Exact trigger: OT-A1 invokes the typed password-help adapter
 message_class: password_reset
 sender_key: account_security
