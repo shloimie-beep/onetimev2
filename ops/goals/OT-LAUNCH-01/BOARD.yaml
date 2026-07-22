@@ -168,9 +168,9 @@ tracks:
     next_action: Wait for the canonical dispatcher and exact producer acceptance, then authorize one controlled workflow job at a time.
 
   - id: ghl_event_dispatcher
-    status: unclaimed
+    status: active
     owner:
-      task_id: null
+      task_id: GHL-APP-CONTRACT-LANE
       repository: shloimie-beep/onetimev2
       branch: null
       pr: null
@@ -181,9 +181,10 @@ tracks:
     acceptance_ids: [GHL-004]
     evidence:
       - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
+      - The control tower reports the existing GHL app-contract lane is active; no head has been accepted for semantic integration yet.
     blocker: null
-    remaining_work: Conductor assignment after Experience Preview and goal files are green.
-    next_action: Assign one implementation track; reuse the canonical app outbox and forbid direct provider fanout.
+    remaining_work: Terminal accepted head and handoff for the canonical app outbox, dispatcher, and exact producers.
+    next_action: Continue the existing lane; integrate only its later accepted head and forbid direct provider fanout.
 
   - id: media_staging_integration
     status: done
@@ -226,7 +227,7 @@ tracks:
     next_action: Preserve truthful provider-off UI until the operator separately authorizes the canary.
 
   - id: zoom_meeting_sdk
-    status: active
+    status: blocked
     owner:
       task_id: ZOOM-REAL-CONTROL-ACTIVATION
       repository: shloimie-beep/onetimev2
@@ -238,14 +239,16 @@ tracks:
     dependencies: []
     acceptance_ids: [ZOOM-SDK-001]
     evidence:
-      - PR #105 head f93a3e05f1c4da927be24fe6abce589e8e9835a1 is active; no terminal handoff has been claimed.
+      - Independent audit at ee2afdd found an overlong provider customerKey and unsafe raw provider-error reflection; that head is not accepted.
       - PR #105 adds no migration and relies on existing 2212_rabbi_live_console_zoom_obs.
-    blocker: null
-    remaining_work: Terminal SDK activation/browser/negative-test handoff.
-    next_action: Continue the existing Zoom task and ingest its terminal sanitized proof.
+    blocker:
+      code: ZOOM_CONTRACT_SECURITY_AND_PROVIDER_BARRIER
+      reason: The lane must fix the audited contract/security defects and pass the current reCAPTCHA/rate-limit provider barrier.
+    remaining_work: Corrected SDK contract/security implementation plus terminal browser and negative-test handoff.
+    next_action: Continue the existing Zoom lane; do not integrate PR #105 until a later audited head is accepted.
 
   - id: zoom_s2s_host_control
-    status: active
+    status: blocked
     owner:
       task_id: ZOOM-REAL-CONTROL-ACTIVATION
       repository: shloimie-beep/onetimev2
@@ -257,10 +260,13 @@ tracks:
     dependencies: []
     acceptance_ids: [ZOOM-S2S-001]
     evidence:
-      - PR #105 is active; provider_off is not used as a substitute for terminal evidence.
-    blocker: null
-    remaining_work: Terminal S2S host-control readback for the exact occurrence.
-    next_action: Continue the existing Zoom task; do not duplicate its provider mutations.
+      - Independent audit at ee2afdd found the wrong operateSpotlight contract and unsafe provider boundary behavior; that head is not accepted.
+      - The external provider path is additionally stopped at the current reCAPTCHA/rate-limit barrier.
+    blocker:
+      code: ZOOM_SPOTLIGHT_CONTRACT_AND_PROVIDER_BARRIER
+      reason: The corrected spotlight contract and safe provider errors need audited proof after the reCAPTCHA/rate-limit barrier is resolved.
+    remaining_work: Corrected S2S host-control contract and exact-occurrence readback.
+    next_action: Continue the existing Zoom lane; do not duplicate or integrate its provider mutations yet.
 
   - id: bna_foundation
     status: done

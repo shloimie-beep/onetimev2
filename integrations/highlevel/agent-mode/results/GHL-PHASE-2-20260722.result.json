@@ -142,12 +142,21 @@
       "id": "95a6f461-1a04-4260-b379-246fdcc45af7",
       "folderPath": "One Time / 00 - Intake & Data",
       "exactTriggerFilter": "adult public signup submitted after One Time or OT-B01 creates or updates the adult contact, with known source and consent",
-      "expectedCriticalActions": ["apply OT | Lead", "apply only the canonical known source tag", "preserve unrelated tags"],
+      "expectedCriticalActions": [
+        "apply OT | Lead",
+        "apply only the canonical known source tag",
+        "preserve unrelated tags"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved blank Draft shell; editor reopened with no trigger or actions",
       "senderKey": "brand",
       "senderSelection": "not selected because no executable trigger contract exists",
-      "suppressionGates": ["email DND", "explicit opt-out", "channel consent", "known source and consent"],
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "known source and consent"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "UI editor and API readback; canonical folder breadcrumb reverified after move",
@@ -163,12 +172,20 @@
       "id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
       "folderPath": "One Time / 30 - Portal Lifecycle",
       "exactTriggerFilter": "One Time access confirmation requests the eligible parent portal companion email",
-      "expectedCriticalActions": ["send or record a non-token parent portal companion only after One Time confirms eligibility", "never store or send credentials or activation/reset tokens"],
+      "expectedCriticalActions": [
+        "send or record a non-token parent portal companion only after One Time confirms eligibility",
+        "never store or send credentials or activation/reset tokens"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved blank Draft shell; editor reopened with no trigger or actions",
       "senderKey": "brand",
       "senderSelection": "not selected because no executable trigger contract exists",
-      "suppressionGates": ["email DND", "explicit opt-out", "channel consent", "One Time access eligibility"],
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "One Time access eligibility"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "UI editor and API readback",
@@ -184,12 +201,20 @@
       "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
       "folderPath": "One Time / 30 - Portal Lifecycle",
       "exactTriggerFilter": "One Time parent portal projection becomes Active for the eligible adult contact",
-      "expectedCriticalActions": ["record the adult parent portal activation", "exclude Student data and learning progress"],
+      "expectedCriticalActions": [
+        "record the adult parent portal activation",
+        "exclude Student data and learning progress"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved Draft shell; no executable trigger/action was configured",
       "senderKey": "brand",
       "senderSelection": "not selected because no executable trigger contract exists",
-      "suppressionGates": ["email DND", "explicit opt-out", "channel consent", "One Time Active projection"],
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "One Time Active projection"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "API readback; editor was not mutated",
@@ -205,12 +230,22 @@
       "id": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
       "folderPath": "One Time / 40 - Learning Operations / Classes",
       "exactTriggerFilter": "registered confirmed class reminder schedule and consent gate pass for an entitled adult household",
-      "expectedCriticalActions": ["send only current confirmed class information supplied by One Time", "use only a canonical protected One Time URL", "never store or send a permanent raw Zoom URL"],
+      "expectedCriticalActions": [
+        "send only current confirmed class information supplied by One Time",
+        "use only a canonical protected One Time URL",
+        "never store or send a permanent raw Zoom URL"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved Draft shell; no executable trigger/action was configured",
       "senderKey": "brand",
       "senderSelection": "not selected because no executable trigger contract exists",
-      "suppressionGates": ["email DND", "explicit opt-out", "channel reminder consent", "confirmed class", "adult household entitlement"],
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel reminder consent",
+        "confirmed class",
+        "adult household entitlement"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "API readback; editor was not mutated",
@@ -226,12 +261,22 @@
       "id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
       "folderPath": "One Time / 40 - Learning Operations / Content",
       "exactTriggerFilter": "One Time marks a protected recording available for an entitled household",
-      "expectedCriticalActions": ["send the approved recording-available notice to the eligible adult", "use only the protected One Time recording URL", "never expose a raw Vimeo provider URL"],
+      "expectedCriticalActions": [
+        "send the approved recording-available notice to the eligible adult",
+        "use only the protected One Time recording URL",
+        "never expose a raw Vimeo provider URL"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved blank Draft shell; editor reopened with no trigger or actions",
       "senderKey": "brand",
       "senderSelection": "not selected because no executable trigger contract exists",
-      "suppressionGates": ["email DND", "explicit opt-out", "channel consent", "approved content", "household entitlement"],
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "approved content",
+        "household entitlement"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "UI editor and API readback",
@@ -247,12 +292,21 @@
       "id": "1c1c0bcd-6185-492e-819f-3b7c749d4c23",
       "folderPath": "One Time / 60 - Bot Actions",
       "exactTriggerFilter": "OT-A1 invokes the typed complete-signup adapter after all required adult details and consent context are complete",
-      "expectedCriticalActions": ["validate required adult fields", "invoke the protected HighLevel-to-One-Time adapter with idempotency key", "never create a Student contact"],
+      "expectedCriticalActions": [
+        "validate required adult fields",
+        "invoke the protected HighLevel-to-One-Time adapter with idempotency key",
+        "never create a Student contact"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved Draft shell; no executable trigger/action was configured",
       "senderKey": "brand",
       "senderSelection": "not selected because the typed adapter is absent",
-      "suppressionGates": ["explicit opt-out", "channel consent", "required adult fields", "idempotency key"],
+      "suppressionGates": [
+        "explicit opt-out",
+        "channel consent",
+        "required adult fields",
+        "idempotency key"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "API readback; editor was not mutated",
@@ -268,12 +322,22 @@
       "id": "cc766d32-0a47-47b5-818c-de45fefa83a7",
       "folderPath": "One Time / 60 - Bot Actions",
       "exactTriggerFilter": "OT-A1 invokes the typed next-confirmed-class-info adapter",
-      "expectedCriticalActions": ["query safe current class state from One Time", "return or send only the protected confirmed class information", "never expose a raw provider URL"],
+      "expectedCriticalActions": [
+        "query safe current class state from One Time",
+        "return or send only the protected confirmed class information",
+        "never expose a raw provider URL"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved Draft shell; no executable trigger/action was configured",
       "senderKey": "brand",
       "senderSelection": "not selected because the typed adapter is absent",
-      "suppressionGates": ["email DND", "explicit opt-out", "channel consent", "confirmed class", "adult entitlement"],
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "channel consent",
+        "confirmed class",
+        "adult entitlement"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "API readback; editor was not mutated",
@@ -289,7 +353,11 @@
       "id": "8ff00774-82fd-42d7-992b-4e9aca0a5091",
       "folderPath": "One Time / 60 - Bot Actions",
       "exactTriggerFilter": "OT-A1 invokes the typed member-login adapter for an adult contact",
-      "expectedCriticalActions": ["send only https://join.onetimeonetime.com/login", "do not claim the account is active", "never send credentials or tokens"],
+      "expectedCriticalActions": [
+        "send only https://join.onetimeonetime.com/login",
+        "do not claim the account is active",
+        "never send credentials or tokens"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved Draft shell; no executable trigger/action was configured",
       "senderKey": "office",
@@ -310,13 +378,22 @@
       "id": "9f96c105-a298-4b5d-a5e5-8c573624d242",
       "folderPath": "One Time / 60 - Bot Actions",
       "exactTriggerFilter": "OT-A1 invokes the typed password-help adapter without account enumeration",
-      "expectedCriticalActions": ["request the One Time password-help boundary", "send only the canonical forgot-password URL as a non-token companion when eligible", "leave reset-token creation and delivery to One Time and Resend"],
+      "expectedCriticalActions": [
+        "request the One Time password-help boundary",
+        "send only the canonical forgot-password URL as a non-token companion when eligible",
+        "leave reset-token creation and delivery to One Time and Resend"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved Draft shell; no executable trigger/action was configured",
       "senderKey": "account_security",
       "senderTransport": "Resend for token delivery; GHL must never store or send a reset token",
       "senderSelection": "not selected because the typed adapter is absent",
-      "suppressionGates": ["email DND", "explicit opt-out", "privacy-safe non-enumerating response", "no raw token"],
+      "suppressionGates": [
+        "email DND",
+        "explicit opt-out",
+        "privacy-safe non-enumerating response",
+        "no raw token"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "API readback; editor was not mutated",
@@ -332,12 +409,23 @@
       "id": "badd7521-913c-43b8-9b7a-1c1ccedac63c",
       "folderPath": "One Time / 60 - Bot Actions",
       "exactTriggerFilter": "OT-A1 invokes the typed opt-out adapter for STOP, unsubscribe, remove me, do not contact me, wrong number, or equivalent intent",
-      "expectedCriticalActions": ["set relevant channel DND", "update consent and suppression fields", "remove related opt-in tag", "apply OT | Marketing Suppressed when appropriate", "remove from marketing and nurture workflows", "stop bot auto-follow-up"],
+      "expectedCriticalActions": [
+        "set relevant channel DND",
+        "update consent and suppression fields",
+        "remove related opt-in tag",
+        "apply OT | Marketing Suppressed when appropriate",
+        "remove from marketing and nurture workflows",
+        "stop bot auto-follow-up"
+      ],
       "observedCriticalActions": [],
       "observedState": "saved Draft shell; no executable trigger/action was configured",
       "senderKey": "brand",
       "senderSelection": "not selected; the registry trigger says no acknowledgement is authorized and the prompt later says send one confirmation",
-      "suppressionGates": ["opt-out action must run before any further eligible send", "channel-specific DND", "canonical marketing suppression"],
+      "suppressionGates": [
+        "opt-out action must run before any further eligible send",
+        "channel-specific DND",
+        "canonical marketing suppression"
+      ],
       "actionSave": "not applicable; no action layer configured",
       "outerSave": "existing Draft saved",
       "navigateReopen": "API readback; editor was not mutated",
