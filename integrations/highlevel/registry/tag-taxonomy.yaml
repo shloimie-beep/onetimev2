@@ -1,5 +1,4 @@
--
-  canonicalName: 'OT | Lead'
+- canonicalName: 'OT | Lead'
   normalizedName: 'ot_lead'
   ghlId: 'W3sICvTUAAGOQ6Lduu7a'
   ghlKey: 'ot_lead'
@@ -8,22 +7,17 @@
   category: 'lifecycle'
   purpose: 'Public lead or imported lead.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Prelaunch'
+- canonicalName: 'OT | Prelaunch'
   normalizedName: 'ot_prelaunch'
   ghlId: 'lPRxePKusizYZ5qjlKv2'
   ghlKey: 'ot_prelaunch'
@@ -32,22 +26,17 @@
   category: 'lifecycle'
   purpose: 'Prelaunch audience member.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Existing Subscriber'
+- canonicalName: 'OT | Existing Subscriber'
   normalizedName: 'ot_existing_subscriber'
   ghlId: 'QhHrnT0RAiWnWOwmAmeB'
   ghlKey: 'ot_existing_subscriber'
@@ -56,22 +45,17 @@
   category: 'lifecycle'
   purpose: 'Known existing subscriber entering migration.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Migration 2026'
+- canonicalName: 'OT | Migration 2026'
   normalizedName: 'ot_migration_2026'
   ghlId: 'KbmanJujVcgV0aZrdMzJ'
   ghlKey: 'ot_migration_2026'
@@ -80,22 +64,17 @@
   category: 'lifecycle'
   purpose: '2026 migration audience.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Early Access Invited'
+- canonicalName: 'OT | Early Access Invited'
   normalizedName: 'ot_early_access_invited'
   ghlId: 'M6hXjSpaizGKE0NFyHBg'
   ghlKey: 'ot_early_access_invited'
@@ -104,22 +83,17 @@
   category: 'lifecycle'
   purpose: 'Early-access invitation sent or staged.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Early Access Activated'
+- canonicalName: 'OT | Early Access Activated'
   normalizedName: 'ot_early_access_activated'
   ghlId: '94rotrqjxxUp28g4JOxi'
   ghlKey: 'ot_early_access_activated'
@@ -128,22 +102,17 @@
   category: 'lifecycle'
   purpose: 'Early-access activation complete.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Checkout Started'
+- canonicalName: 'OT | Checkout Started'
   normalizedName: 'ot_checkout_started'
   ghlId: 'BadNHkr6A08m8RhGZCK1'
   ghlKey: 'ot_checkout_started'
@@ -152,22 +121,17 @@
   category: 'lifecycle'
   purpose: 'Checkout started before payment completes.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Active'
+- canonicalName: 'OT | Active'
   normalizedName: 'ot_active'
   ghlId: 'SXtHZVNE0aWL7nqfSuaI'
   ghlKey: 'ot_active'
@@ -176,22 +140,17 @@
   category: 'lifecycle'
   purpose: 'Active paid or entitled contact.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Grace'
+- canonicalName: 'OT | Grace'
   normalizedName: 'ot_grace'
   ghlId: 'TN597GG04kP6DsVBiF9d'
   ghlKey: 'ot_grace'
@@ -200,22 +159,17 @@
   category: 'lifecycle'
   purpose: 'Payment grace window.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Canceled'
+- canonicalName: 'OT | Canceled'
   normalizedName: 'ot_canceled'
   ghlId: 'aKupBqdvXV91W2eI4H7f'
   ghlKey: 'ot_canceled'
@@ -224,22 +178,17 @@
   category: 'lifecycle'
   purpose: 'Canceled subscription state.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Former'
+- canonicalName: 'OT | Former'
   normalizedName: 'ot_former'
   ghlId: 'E6TzEbLkL4SRrQnVLbpL'
   ghlKey: 'ot_former'
@@ -248,22 +197,17 @@
   category: 'lifecycle'
   purpose: 'Former customer.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Complimentary'
+- canonicalName: 'OT | Complimentary'
   normalizedName: 'ot_complimentary'
   ghlId: 'Bb2F5nNvc7asUyc4kgRh'
   ghlKey: 'ot_complimentary'
@@ -272,22 +216,17 @@
   category: 'lifecycle'
   purpose: 'Complimentary access holder.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Migration Email 1 Sent'
+- canonicalName: 'OT | Migration Email 1 Sent'
   normalizedName: 'ot_migration_email_1_sent'
   ghlId: 'Cl9VSIaKZ3LT2JSas5aO'
   ghlKey: 'ot_migration_email_1_sent'
@@ -296,22 +235,17 @@
   category: 'migration_sequence'
   purpose: 'First migration email sent.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Migration Email 2 Sent'
+- canonicalName: 'OT | Migration Email 2 Sent'
   normalizedName: 'ot_migration_email_2_sent'
   ghlId: 'eUAi34HtTR9yY4gtXems'
   ghlKey: 'ot_migration_email_2_sent'
@@ -320,22 +254,17 @@
   category: 'migration_sequence'
   purpose: 'Second migration email sent.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Migration Email 3 Sent'
+- canonicalName: 'OT | Migration Email 3 Sent'
   normalizedName: 'ot_migration_email_3_sent'
   ghlId: 'yFmgy9TdKXV82D4adRlb'
   ghlKey: 'ot_migration_email_3_sent'
@@ -344,22 +273,17 @@
   category: 'migration_sequence'
   purpose: 'Third migration email sent.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Migration Sequence Complete'
+- canonicalName: 'OT | Migration Sequence Complete'
   normalizedName: 'ot_migration_sequence_complete'
   ghlId: 'iD2TvNwKUfaUKYJFYYnx'
   ghlKey: 'ot_migration_sequence_complete'
@@ -368,22 +292,17 @@
   category: 'migration_sequence'
   purpose: 'Migration sequence complete.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Portal Invited'
+- canonicalName: 'OT | Portal Invited'
   normalizedName: 'ot_portal_invited'
   ghlId: 'RvjIOKjtueWAdezLN4Ar'
   ghlKey: 'ot_portal_invited'
@@ -392,22 +311,17 @@
   category: 'portal'
   purpose: 'Parent portal invitation sent.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Portal Active'
+- canonicalName: 'OT | Portal Active'
   normalizedName: 'ot_portal_active'
   ghlId: 'lPSHRPcLiURAMyVCrEJO'
   ghlKey: 'ot_portal_active'
@@ -416,22 +330,17 @@
   category: 'portal'
   purpose: 'Parent portal activation observed.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Email Opt-In'
+- canonicalName: 'OT | Email Opt-In'
   normalizedName: 'ot_email_opt_in'
   ghlId: 'beGT917lbxgGc99QQ7jO'
   ghlKey: 'ot_email_opt_in'
@@ -440,22 +349,17 @@
   category: 'consent_communication'
   purpose: 'Explicit email opt-in marker.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | WhatsApp Opt-In'
+- canonicalName: 'OT | WhatsApp Opt-In'
   normalizedName: 'ot_whatsapp_opt_in'
   ghlId: 'qN2B1ZWs2saXmTudBgzo'
   ghlKey: 'ot_whatsapp_opt_in'
@@ -464,22 +368,17 @@
   category: 'consent_communication'
   purpose: 'Explicit WhatsApp opt-in marker.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Consent Unknown'
+- canonicalName: 'OT | Consent Unknown'
   normalizedName: 'ot_consent_unknown'
   ghlId: '7j9yCOCNunGFfhmm0TaX'
   ghlKey: 'ot_consent_unknown'
@@ -488,22 +387,17 @@
   category: 'consent_communication'
   purpose: 'Consent unknown; do not send marketing.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Marketing Suppressed'
+- canonicalName: 'OT | Marketing Suppressed'
   normalizedName: 'ot_marketing_suppressed'
   ghlId: 'uYfDohCdnW4nYiqFbVi6'
   ghlKey: 'ot_marketing_suppressed'
@@ -512,22 +406,17 @@
   category: 'consent_communication'
   purpose: 'Marketing suppression marker.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Weekly Newsletter'
+- canonicalName: 'OT | Weekly Newsletter'
   normalizedName: 'ot_weekly_newsletter'
   ghlId: '6uJjeYuxNUhwbAjTJkAz'
   ghlKey: 'ot_weekly_newsletter'
@@ -536,22 +425,17 @@
   category: 'consent_communication'
   purpose: 'Newsletter audience marker.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Signup Website'
+- canonicalName: 'OT | Signup Website'
   normalizedName: 'ot_signup_website'
   ghlId: 'Ladbs8RIkwqNYLd3Zg2s'
   ghlKey: 'ot_signup_website'
@@ -560,22 +444,17 @@
   category: 'source'
   purpose: 'Signup source was website.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Signup WhatsApp'
+- canonicalName: 'OT | Signup WhatsApp'
   normalizedName: 'ot_signup_whatsapp'
   ghlId: 'j9vlQDQ5XFUrj5SVtdve'
   ghlKey: 'ot_signup_whatsapp'
@@ -584,22 +463,17 @@
   category: 'source'
   purpose: 'Signup source was WhatsApp.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Source | Rabbi Followers'
+- canonicalName: 'OT | Source | Rabbi Followers'
   normalizedName: 'ot_source_rabbi_followers'
   ghlId: 'F3kxEGC93isu7v4RaE5V'
   ghlKey: 'ot_source_rabbi_followers'
@@ -608,22 +482,17 @@
   category: 'source'
   purpose: 'Approved Rabbi followers import source.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Source | Subscribed Audience'
+- canonicalName: 'OT | Source | Subscribed Audience'
   normalizedName: 'ot_source_subscribed_audience'
   ghlId: 'qqqWZ0BDxagiBHiQhg06'
   ghlKey: 'ot_source_subscribed_audience'
@@ -632,22 +501,17 @@
   category: 'source'
   purpose: 'Approved subscribed audience import source.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Source | Cleaned Audience'
+- canonicalName: 'OT | Source | Cleaned Audience'
   normalizedName: 'ot_source_cleaned_audience'
   ghlId: 'JDTcyLwjRDImxzwna1M5'
   ghlKey: 'ot_source_cleaned_audience'
@@ -656,22 +520,17 @@
   category: 'source'
   purpose: 'Approved cleaned audience import source.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Source | Legacy Subscriber'
+- canonicalName: 'OT | Source | Legacy Subscriber'
   normalizedName: 'ot_source_legacy_subscriber'
   ghlId: 'AJsgTeWZcIaSP7S7JRLJ'
   ghlKey: 'ot_source_legacy_subscriber'
@@ -680,22 +539,17 @@
   category: 'source'
   purpose: 'Approved legacy subscriber import source.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Source | Existing One Time CRM'
+- canonicalName: 'OT | Source | Existing One Time CRM'
   normalizedName: 'ot_source_existing_one_time_crm'
   ghlId: 'gZ210QaOkEZcUy8LDr6p'
   ghlKey: 'ot_source_existing_one_time_crm'
@@ -704,22 +558,17 @@
   category: 'source'
   purpose: 'Existing One Time CRM source.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Payment Failed'
+- canonicalName: 'OT | Payment Failed'
   normalizedName: 'ot_payment_failed'
   ghlId: 'TLM5NIIYZLTELU5u7Lx1'
   ghlKey: 'ot_payment_failed'
@@ -728,22 +577,17 @@
   category: 'billing'
   purpose: 'Payment failure marker.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Refunded'
+- canonicalName: 'OT | Refunded'
   normalizedName: 'ot_refunded'
   ghlId: 'z1Fw6MV2gTXkMhREsD4c'
   ghlKey: 'ot_refunded'
@@ -752,22 +596,17 @@
   category: 'billing'
   purpose: 'Refund marker.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Chargeback'
+- canonicalName: 'OT | Chargeback'
   normalizedName: 'ot_chargeback'
   ghlId: '4Qk836BtHCz2BMSo2ZOe'
   ghlKey: 'ot_chargeback'
@@ -776,22 +615,17 @@
   category: 'billing'
   purpose: 'Chargeback marker.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Class Reminder Pending'
+- canonicalName: 'OT | Class Reminder Pending'
   normalizedName: 'ot_class_reminder_pending'
   ghlId: 'lxbShmvQw86lJlrHB2B5'
   ghlKey: 'ot_class_reminder_pending'
@@ -800,22 +634,17 @@
   category: 'classes_content'
   purpose: 'Parent class reminder pending.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Recording Available'
+- canonicalName: 'OT | Recording Available'
   normalizedName: 'ot_recording_available'
   ghlId: 'vfTzZAYNcHEZrJzNzDOi'
   ghlKey: 'ot_recording_available'
@@ -824,22 +653,17 @@
   category: 'classes_content'
   purpose: 'Recording available through protected portal.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Duplicate Merged'
+- canonicalName: 'OT | Duplicate Merged'
   normalizedName: 'ot_duplicate_merged'
   ghlId: 'Wc1KT4pP2GE7XN9UE3pU'
   ghlKey: 'ot_duplicate_merged'
@@ -848,22 +672,17 @@
   category: 'data_quality'
   purpose: 'Duplicate input rows merged.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Identity Conflict'
+- canonicalName: 'OT | Identity Conflict'
   normalizedName: 'ot_identity_conflict'
   ghlId: 'q2toHtyOUCEuttsHRBZQ'
   ghlKey: 'ot_identity_conflict'
@@ -872,22 +691,17 @@
   category: 'data_quality'
   purpose: 'Identity conflict requiring protected review.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'active'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-22'
   lastTestedDate: '2026-07-22'
--
-  canonicalName: 'OT | Support Requested'
+- canonicalName: 'OT | Support Requested'
   normalizedName: 'ot_support_requested'
   ghlId: 'HGoilQNAKGJ1L6OVi8K7'
   ghlKey: 'ot_support_requested'
@@ -896,16 +710,12 @@
   category: 'deprecated_existing'
   purpose: 'Legacy support tag preserved for ID history.'
   sourceOfTruth: 'Shared'
-  allowedValues:
-    []
-  workflowsAllowedToWrite:
-    []
+  allowedValues: []
+  workflowsAllowedToWrite: []
   oneTimeAllowedToWrite: false
   humansMayEdit: false
-  dependencies:
-    []
-  aliases:
-    []
+  dependencies: []
+  aliases: []
   deprecationState: 'deprecated_existing'
   createdDate: '2026-07-21'
   lastVerifiedDate: '2026-07-21'

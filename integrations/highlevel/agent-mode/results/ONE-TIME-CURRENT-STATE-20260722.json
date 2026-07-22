@@ -97,9 +97,7 @@
     "email_configured": true,
     "email_fingerprint": "fab156df2719852d",
     "exact_match_count": 1,
-    "contact_ids": [
-      "OEeBPVgcRIePsZVeLYfQ"
-    ]
+    "contact_ids": ["OEeBPVgcRIePsZVeLYfQ"]
   },
   "external_effects": {
     "assets_created": 0,

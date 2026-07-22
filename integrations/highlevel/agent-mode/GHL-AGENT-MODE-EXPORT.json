@@ -62,9 +62,7 @@
         "integrations/highlevel/registry/custom-values.yaml"
       ],
       "exact_copy_paste_prompt": "Job GHL-UI-01: create sender custom-value folder\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Settings > Custom Values\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/custom-values.yaml\n\nAllowed assets:\n- One Time - Senders custom-value folder\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- duplicate sender folders\n- renaming existing unrelated folders\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Create or verify exactly one folder named One Time - Senders.\n- Do not move or rewrite existing values in this job.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-01.result.json\nIdempotency key: one-time-ghl:GHL-UI-01:bb93fb12df1fdd31",
-      "allowed_assets": [
-        "One Time - Senders custom-value folder"
-      ],
+      "allowed_assets": ["One Time - Senders custom-value folder"],
       "forbidden_assets": [
         "Student contacts",
         "Student username fields",
@@ -84,9 +82,7 @@
         "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
         "Use only one canonical registry and do not create duplicate assets."
       ],
-      "expected_ghl_ids_to_capture": [
-        "one_time_senders_folder_id_if_visible"
-      ],
+      "expected_ghl_ids_to_capture": ["one_time_senders_folder_id_if_visible"],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
         "Do not use production contacts for verification."
@@ -141,13 +137,7 @@
             "const": "GHL-UI-01"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -163,12 +153,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -348,13 +333,7 @@
             "const": "GHL-UI-02"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -370,12 +349,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -545,13 +519,7 @@
             "const": "GHL-UI-03"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -567,12 +535,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -799,13 +762,7 @@
             "const": "GHL-UI-04"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -821,12 +778,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -1004,13 +956,7 @@
             "const": "GHL-UI-05"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -1026,12 +972,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -1199,13 +1140,7 @@
             "const": "GHL-UI-06"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -1221,12 +1156,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -1311,9 +1241,7 @@
         "integrations/highlevel/registry/message-class-registry.yaml"
       ],
       "exact_copy_paste_prompt": "Job GHL-UI-07: phase-1 seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- rabbi_campaign seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent phase-1 seed draft using sender_key rabbi_campaign.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-07.result.json\nIdempotency key: one-time-ghl:GHL-UI-07:cf4bcb9354272be6",
-      "allowed_assets": [
-        "rabbi_campaign seed draft using expected From info@onetimeonetime.com"
-      ],
+      "allowed_assets": ["rabbi_campaign seed draft using expected From info@onetimeonetime.com"],
       "forbidden_assets": [
         "Student contacts",
         "Student username fields",
@@ -1394,13 +1322,7 @@
             "const": "GHL-UI-07"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -1416,12 +1338,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -1506,9 +1423,7 @@
         "integrations/highlevel/registry/message-class-registry.yaml"
       ],
       "exact_copy_paste_prompt": "Job GHL-UI-08: office seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- office seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent office seed draft using sender_key office.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-08.result.json\nIdempotency key: one-time-ghl:GHL-UI-08:10b62bdfe47d3271",
-      "allowed_assets": [
-        "office seed draft using expected From info@onetimeonetime.com"
-      ],
+      "allowed_assets": ["office seed draft using expected From info@onetimeonetime.com"],
       "forbidden_assets": [
         "Student contacts",
         "Student username fields",
@@ -1589,13 +1504,7 @@
             "const": "GHL-UI-08"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -1611,12 +1520,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -1701,9 +1605,7 @@
         "integrations/highlevel/registry/message-class-registry.yaml"
       ],
       "exact_copy_paste_prompt": "Job GHL-UI-09: brand seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- brand seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent brand seed draft using sender_key brand.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-09.result.json\nIdempotency key: one-time-ghl:GHL-UI-09:f581f5daa77da7f5",
-      "allowed_assets": [
-        "brand seed draft using expected From info@onetimeonetime.com"
-      ],
+      "allowed_assets": ["brand seed draft using expected From info@onetimeonetime.com"],
       "forbidden_assets": [
         "Student contacts",
         "Student username fields",
@@ -1784,13 +1686,7 @@
             "const": "GHL-UI-09"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -1806,12 +1702,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -1937,10 +1828,7 @@
         "Use only one canonical registry and do not create duplicate assets.",
         "GHL-UI-04 and GHL-UI-05 saved and readback verified."
       ],
-      "expected_ghl_ids_to_capture": [
-        "all_canonical_workflow_ids",
-        "visible_workflow_statuses"
-      ],
+      "expected_ghl_ids_to_capture": ["all_canonical_workflow_ids", "visible_workflow_statuses"],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
         "Do not use production contacts for verification."
@@ -1995,13 +1883,7 @@
             "const": "GHL-UI-10"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -2017,12 +1899,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -2102,9 +1979,7 @@
         "verification_required": true
       },
       "exact_target_ui_path": "HighLevel > Opportunities > Pipelines",
-      "canonical_source_files": [
-        "integrations/highlevel/registry/pipeline-registry.yaml"
-      ],
+      "canonical_source_files": ["integrations/highlevel/registry/pipeline-registry.yaml"],
       "exact_copy_paste_prompt": "Job GHL-UI-11: capture pipeline IDs\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Opportunities > Pipelines\n\nRead these canonical source files first:\n- integrations/highlevel/registry/pipeline-registry.yaml\n\nAllowed assets:\n- One Time Enrollment and Conversion\n- One Time Member Support\n- One Time Torah Questions\n- One Time Business\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- moving opportunities\n- deleting stages\n- chat-only completion claims\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Capture safe pipeline and stage IDs plus visible status without moving opportunities.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-11.result.json\nIdempotency key: one-time-ghl:GHL-UI-11:4c9be6f4ddd859f5",
       "allowed_assets": [
         "One Time Enrollment and Conversion",
@@ -2133,10 +2008,7 @@
         "Use only one canonical registry and do not create duplicate assets.",
         "GHL-UI-03 saved and readback verified."
       ],
-      "expected_ghl_ids_to_capture": [
-        "all_canonical_pipeline_ids",
-        "all_canonical_stage_ids"
-      ],
+      "expected_ghl_ids_to_capture": ["all_canonical_pipeline_ids", "all_canonical_stage_ids"],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
         "Do not use production contacts for verification."
@@ -2191,13 +2063,7 @@
             "const": "GHL-UI-11"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -2213,12 +2079,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -2303,9 +2164,7 @@
         "integrations/highlevel/registry/AGENT-HANDOFF.md"
       ],
       "exact_copy_paste_prompt": "Job GHL-UI-12: save and readback verification\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel changed asset screens and BNA Agent Action drop-off\n\nRead these canonical source files first:\n- integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json\n- integrations/highlevel/registry/AGENT-HANDOFF.md\n\nAllowed assets:\n- Saved/readback verification for GHL-UI-01 through GHL-UI-11 results\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- unsaved chat-only completion claim\n- new asset creation\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Reopen every changed asset and saved result, verify readback, and record discrepancies without creating new assets.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-12.result.json\nIdempotency key: one-time-ghl:GHL-UI-12:326275366bf9d786",
-      "allowed_assets": [
-        "Saved/readback verification for GHL-UI-01 through GHL-UI-11 results"
-      ],
+      "allowed_assets": ["Saved/readback verification for GHL-UI-01 through GHL-UI-11 results"],
       "forbidden_assets": [
         "Student contacts",
         "Student username fields",
@@ -2326,10 +2185,7 @@
         "Use only one canonical registry and do not create duplicate assets.",
         "GHL-UI-01 through GHL-UI-11 have result records."
       ],
-      "expected_ghl_ids_to_capture": [
-        "dropoff_result_ids",
-        "readback_statuses"
-      ],
+      "expected_ghl_ids_to_capture": ["dropoff_result_ids", "readback_statuses"],
       "test_contact_rules": [
         "No contact mutation is allowed for this job.",
         "Do not use production contacts for verification."
@@ -2384,13 +2240,7 @@
             "const": "GHL-UI-12"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -2406,12 +2256,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"
@@ -2491,9 +2336,7 @@
         "verification_required": true
       },
       "exact_target_ui_path": "HighLevel email sender settings and Conversations",
-      "canonical_source_files": [
-        "integrations/highlevel/registry/sender-registry.yaml"
-      ],
+      "canonical_source_files": ["integrations/highlevel/registry/sender-registry.yaml"],
       "exact_copy_paste_prompt": "Job GHL-UI-13: phase-2 rabbi acceptance\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel email sender settings and Conversations\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n\nAllowed assets:\n- rabbi_campaign phase-2 acceptance evidence\n- rabbi_personal acceptance evidence\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- activating rabbi@ before every prerequisite passes\n- broad campaign send\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Do not activate phase 2 in this no-send queue.\n- Record the exact unmet prerequisite or, after a separately authorized acceptance run, record all safe acceptance IDs and statuses.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-13.result.json\nIdempotency key: one-time-ghl:GHL-UI-13:88fd9a2607e04eb8",
       "allowed_assets": [
         "rabbi_campaign phase-2 acceptance evidence",
@@ -2581,13 +2424,7 @@
             "const": "GHL-UI-13"
           },
           "status": {
-            "enum": [
-              "done",
-              "already_satisfied",
-              "blocked",
-              "partial",
-              "failed"
-            ]
+            "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
           },
           "ghl_location_id": {
             "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -2603,12 +2440,7 @@
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": [
-                "asset_type",
-                "name",
-                "id",
-                "status"
-              ],
+              "required": ["asset_type", "name", "id", "status"],
               "properties": {
                 "asset_type": {
                   "type": "string"

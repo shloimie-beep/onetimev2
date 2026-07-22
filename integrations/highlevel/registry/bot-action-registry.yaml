@@ -1,36 +1,31 @@
 bot_id: 'OT-A1'
 bot_name: 'OT-A1 One Time Enrollment Assistant'
 actions:
-  -
-    key: 'OT-B01'
+  - key: 'OT-B01'
     name: 'Complete Signup'
     workflow_id: ''
     adapter_required: true
     student_data_allowed: false
     messages_authorized_in_this_lane: false
-  -
-    key: 'OT-B02'
+  - key: 'OT-B02'
     name: 'Send Next Confirmed Class Info'
     workflow_id: ''
     adapter_required: true
     student_data_allowed: false
     messages_authorized_in_this_lane: false
-  -
-    key: 'OT-B03'
+  - key: 'OT-B03'
     name: 'Send Member Login'
     workflow_id: ''
     adapter_required: true
     student_data_allowed: false
     messages_authorized_in_this_lane: false
-  -
-    key: 'OT-B04'
+  - key: 'OT-B04'
     name: 'Send Password Help'
     workflow_id: ''
     adapter_required: true
     student_data_allowed: false
     messages_authorized_in_this_lane: false
-  -
-    key: 'OT-B05'
+  - key: 'OT-B05'
     name: 'Apply Opt-Out'
     workflow_id: ''
     adapter_required: true

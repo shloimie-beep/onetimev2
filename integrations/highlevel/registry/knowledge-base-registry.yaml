@@ -1,5 +1,4 @@
--
-  prompt_id: 'OT-KB-PUBLIC-1'
+- prompt_id: 'OT-KB-PUBLIC-1'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'One Time Mishnayos - Public Program and Support'
@@ -34,10 +33,8 @@
     - 'office'
     - 'brand'
     - 'account_security'
-  required_message_classes:
-    []
+  required_message_classes: []
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: '2026-07-22'
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''

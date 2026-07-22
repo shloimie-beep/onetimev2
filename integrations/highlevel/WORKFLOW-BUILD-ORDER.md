@@ -23,6 +23,7 @@ Build in Draft state only. Do not publish or enroll production contacts.
 19. OT-B05 Apply Opt-Out - 00 - Intake & Data - integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md
 
 Deprecated / do not build:
+
 - OT-11 WhatsApp Lead Qualification
 - OT-12 Support Intake / Technical Escalation
 - OT - Human Handoff

@@ -12,12 +12,14 @@ transport: GHL
 Purpose: Cancellation handling.
 
 Registry dependencies:
+
 - `integrations/highlevel/registry/sender-registry.yaml`
 - `integrations/highlevel/registry/message-class-registry.yaml`
 - `integrations/highlevel/registry/communications-contract.json`
 - `integrations/highlevel/registry/workflow-registry.yaml`
 
 Exact sender custom values to select from the picker:
+
 - One Time Office Sender Name
 - One Time Office From
 - One Time Default Reply-To
@@ -25,6 +27,7 @@ Exact sender custom values to select from the picker:
 - If a registered sender value is absent from the picker, block this workflow instead of inventing it.
 
 Required boundaries:
+
 - Use only registered One Time fields, tags and custom values from `integrations/highlevel/registry/current.json`.
 - Preserve unrelated existing tags on contacts.
 - Check suppression and consent before any non-transactional communication.
@@ -37,6 +40,7 @@ Respect current period end when present.
 Do not revoke One Time access directly from a GHL tag.
 
 Test state:
+
 - Use only a protected operator-owned test contact.
 - Record the workflow ID only after it exists in the verified location.
 - Keep publish toggle off until explicit separate approval.

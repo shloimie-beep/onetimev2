@@ -8,9 +8,7 @@
     "verification_required": true
   },
   "exact_target_ui_path": "HighLevel email sender settings and Conversations",
-  "canonical_source_files": [
-    "integrations/highlevel/registry/sender-registry.yaml"
-  ],
+  "canonical_source_files": ["integrations/highlevel/registry/sender-registry.yaml"],
   "exact_copy_paste_prompt": "Job GHL-UI-13: phase-2 rabbi acceptance\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel email sender settings and Conversations\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n\nAllowed assets:\n- rabbi_campaign phase-2 acceptance evidence\n- rabbi_personal acceptance evidence\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- activating rabbi@ before every prerequisite passes\n- broad campaign send\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Do not activate phase 2 in this no-send queue.\n- Record the exact unmet prerequisite or, after a separately authorized acceptance run, record all safe acceptance IDs and statuses.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-13.result.json\nIdempotency key: one-time-ghl:GHL-UI-13:88fd9a2607e04eb8",
   "allowed_assets": [
     "rabbi_campaign phase-2 acceptance evidence",
@@ -98,13 +96,7 @@
         "const": "GHL-UI-13"
       },
       "status": {
-        "enum": [
-          "done",
-          "already_satisfied",
-          "blocked",
-          "partial",
-          "failed"
-        ]
+        "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
       },
       "ghl_location_id": {
         "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -120,12 +112,7 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "asset_type",
-            "name",
-            "id",
-            "status"
-          ],
+          "required": ["asset_type", "name", "id", "status"],
           "properties": {
             "asset_type": {
               "type": "string"

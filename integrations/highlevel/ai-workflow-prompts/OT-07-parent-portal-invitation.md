@@ -13,12 +13,14 @@ Purpose: Parent portal invitation after One Time access confirmation.
 Companion delivery: One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.
 
 Registry dependencies:
+
 - `integrations/highlevel/registry/sender-registry.yaml`
 - `integrations/highlevel/registry/message-class-registry.yaml`
 - `integrations/highlevel/registry/communications-contract.json`
 - `integrations/highlevel/registry/workflow-registry.yaml`
 
 Exact sender custom values to select from the picker:
+
 - One Time Brand Sender Name
 - One Time Brand From
 - One Time Default Reply-To
@@ -26,6 +28,7 @@ Exact sender custom values to select from the picker:
 - If a registered sender value is absent from the picker, block this workflow instead of inventing it.
 
 Required boundaries:
+
 - Use only registered One Time fields, tags and custom values from `integrations/highlevel/registry/current.json`.
 - Preserve unrelated existing tags on contacts.
 - Check suppression and consent before any non-transactional communication.
@@ -37,6 +40,7 @@ Send or record parent portal invitation only after One Time confirms access elig
 Never send usernames, passwords, activation tokens or reset tokens through HighLevel.
 
 Test state:
+
 - Use only a protected operator-owned test contact.
 - Record the workflow ID only after it exists in the verified location.
 - Keep publish toggle off until explicit separate approval.

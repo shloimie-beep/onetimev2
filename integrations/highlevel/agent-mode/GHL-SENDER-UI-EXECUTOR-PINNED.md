@@ -74,17 +74,24 @@ Run these jobs serially and in this exact order. A blocked job blocks only itsel
    - Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-09-brand-seed.json`
    - Result: `integrations/highlevel/agent-mode/results/GHL-UI-09.result.json`
 10. **GHL-UI-10 — capture workflow IDs**
-   - Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-10-capture-workflow-ids.json`
-   - Result: `integrations/highlevel/agent-mode/results/GHL-UI-10.result.json`
+
+- Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-10-capture-workflow-ids.json`
+- Result: `integrations/highlevel/agent-mode/results/GHL-UI-10.result.json`
+
 11. **GHL-UI-11 — capture pipeline IDs**
-   - Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-11-capture-pipeline-ids.json`
-   - Result: `integrations/highlevel/agent-mode/results/GHL-UI-11.result.json`
+
+- Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-11-capture-pipeline-ids.json`
+- Result: `integrations/highlevel/agent-mode/results/GHL-UI-11.result.json`
+
 12. **GHL-UI-12 — save and readback verification**
-   - Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-12-save-and-readback-verification.json`
-   - Result: `integrations/highlevel/agent-mode/results/GHL-UI-12.result.json`
+
+- Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-12-save-and-readback-verification.json`
+- Result: `integrations/highlevel/agent-mode/results/GHL-UI-12.result.json`
+
 13. **GHL-UI-13 — phase-2 rabbi acceptance**
-   - Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json`
-   - Result: `integrations/highlevel/agent-mode/results/GHL-UI-13.result.json`
+
+- Job: `integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json`
+- Result: `integrations/highlevel/agent-mode/results/GHL-UI-13.result.json`
 
 ## Per-job execution protocol
 

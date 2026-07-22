@@ -50,10 +50,7 @@
     "Use only one canonical registry and do not create duplicate assets.",
     "GHL-UI-01 saved and readback verified."
   ],
-  "expected_ghl_ids_to_capture": [
-    "registered_sender_custom_value_ids",
-    "compatibility_alias_ids"
-  ],
+  "expected_ghl_ids_to_capture": ["registered_sender_custom_value_ids", "compatibility_alias_ids"],
   "test_contact_rules": [
     "No contact mutation is allowed for this job.",
     "Do not use production contacts for verification."
@@ -108,13 +105,7 @@
         "const": "GHL-UI-02"
       },
       "status": {
-        "enum": [
-          "done",
-          "already_satisfied",
-          "blocked",
-          "partial",
-          "failed"
-        ]
+        "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
       },
       "ghl_location_id": {
         "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -130,12 +121,7 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "asset_type",
-            "name",
-            "id",
-            "status"
-          ],
+          "required": ["asset_type", "name", "id", "status"],
           "properties": {
             "asset_type": {
               "type": "string"

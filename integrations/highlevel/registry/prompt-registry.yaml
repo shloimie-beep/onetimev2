@@ -1,5 +1,4 @@
--
-  prompt_id: 'incoming-ghl-one-time-rabbi-scheller-bot-paste-pack'
+- prompt_id: 'incoming-ghl-one-time-rabbi-scheller-bot-paste-pack'
   semantic_version: '1.0.0'
   status: 'incoming'
   title: 'Incoming GHL One Time Rabbi Scheller Bot Paste Pack'
@@ -35,15 +34,12 @@
     - 'office'
     - 'brand'
     - 'account_security'
-  required_message_classes:
-    []
+  required_message_classes: []
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: 'OT-A1-v1.0.0'
--
-  prompt_id: 'OT-A1'
+- prompt_id: 'OT-A1'
   semantic_version: '1.0.0'
   status: 'candidate'
   title: 'OT-A1 One Time Enrollment Assistant'
@@ -79,15 +75,13 @@
     - 'office'
     - 'brand'
     - 'account_security'
-  required_message_classes:
-    []
+  required_message_classes: []
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
   supersedes:
     - 'incoming-ghl-one-time-rabbi-scheller-bot-paste-pack'
   superseded_by: ''
--
-  prompt_id: 'OT-A1'
+- prompt_id: 'OT-A1'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-A1 One Time Enrollment Assistant'
@@ -123,15 +117,13 @@
     - 'office'
     - 'brand'
     - 'account_security'
-  required_message_classes:
-    []
+  required_message_classes: []
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
   supersedes:
     - 'incoming-ghl-one-time-rabbi-scheller-bot-paste-pack'
   superseded_by: ''
--
-  prompt_id: 'OT-01'
+- prompt_id: 'OT-01'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-01 New Lead Intake'
@@ -163,11 +155,9 @@
     - 'signup_confirmation'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-02A'
+- prompt_id: 'OT-02A'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-02A Existing Subscriber Migration 2026 v1'
@@ -199,11 +189,9 @@
     - 'existing_subscriber_migration'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-02B'
+- prompt_id: 'OT-02B'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-02B New Lead Nurture v1'
@@ -235,11 +223,9 @@
     - 'prelaunch_nurture'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-03'
+- prompt_id: 'OT-03'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-03 Checkout Started / Abandoned'
@@ -271,11 +257,9 @@
     - 'warm_enrollment_campaign'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-04'
+- prompt_id: 'OT-04'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-04 Payment Active'
@@ -307,11 +291,9 @@
     - 'signup_confirmation'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-05'
+- prompt_id: 'OT-05'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-05 Payment Failed / Grace'
@@ -343,11 +325,9 @@
     - 'payment_failed_support'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-06'
+- prompt_id: 'OT-06'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-06 Subscription Canceled'
@@ -379,11 +359,9 @@
     - 'cancellation_help'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-07'
+- prompt_id: 'OT-07'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-07 Parent Portal Invitation'
@@ -415,11 +393,9 @@
     - 'portal_welcome'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-08'
+- prompt_id: 'OT-08'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-08 Parent Portal Activated'
@@ -451,11 +427,9 @@
     - 'portal_activated'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-09'
+- prompt_id: 'OT-09'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-09 Parent Class Reminder'
@@ -487,11 +461,9 @@
     - 'class_reminder'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-10'
+- prompt_id: 'OT-10'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-10 New Recording Available'
@@ -523,11 +495,9 @@
     - 'recording_available'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-13'
+- prompt_id: 'OT-13'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-13 Refund / Chargeback'
@@ -559,14 +529,12 @@
     - 'refund_help'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-C01'
+- prompt_id: 'OT-C01'
   semantic_version: '1.0.0'
   status: 'active'
-  title: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+  title: "OT-C01 Tisha B'Av 2026 Warm Invitation"
   file_path: 'integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md'
   sha256: '5d406d5951d39267bfe9f2a9aeb1c8163703d1e6f41ce9719fd713cbe53f59c4'
   source: 'Canonical workflow prompt generated from registry'
@@ -595,14 +563,12 @@
     - 'rabbi_event_invitation'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-E01'
+- prompt_id: 'OT-E01'
   semantic_version: '1.0.0'
   status: 'active'
-  title: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
+  title: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
   file_path: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
   sha256: 'd6038b45c1fc0ed66228edccd8f918f1f804eaafe4fe8fbb4737cf7104206734'
   source: 'Canonical workflow prompt generated from registry'
@@ -631,11 +597,9 @@
     - 'event_registration_confirmation'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-B01'
+- prompt_id: 'OT-B01'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-B01 Complete Signup'
@@ -667,11 +631,9 @@
     - 'signup_confirmation'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-B02'
+- prompt_id: 'OT-B02'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-B02 Send Next Confirmed Class Info'
@@ -703,11 +665,9 @@
     - 'class_reminder'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-B03'
+- prompt_id: 'OT-B03'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-B03 Send Member Login'
@@ -739,11 +699,9 @@
     - 'access_help'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-B04'
+- prompt_id: 'OT-B04'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-B04 Send Password Help'
@@ -775,11 +733,9 @@
     - 'password_reset'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''
--
-  prompt_id: 'OT-B05'
+- prompt_id: 'OT-B05'
   semantic_version: '1.0.0'
   status: 'active'
   title: 'OT-B05 Apply Opt-Out'
@@ -811,6 +767,5 @@
     - 'support_acknowledgement'
   test_contact_reference: 'protected_operator_owned_test_contact'
   last_tested_date: ''
-  supersedes:
-    []
+  supersedes: []
   superseded_by: ''

@@ -98,13 +98,7 @@
         "const": "GHL-UI-03"
       },
       "status": {
-        "enum": [
-          "done",
-          "already_satisfied",
-          "blocked",
-          "partial",
-          "failed"
-        ]
+        "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
       },
       "ghl_location_id": {
         "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -120,12 +114,7 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "asset_type",
-            "name",
-            "id",
-            "status"
-          ],
+          "required": ["asset_type", "name", "id", "status"],
           "properties": {
             "asset_type": {
               "type": "string"

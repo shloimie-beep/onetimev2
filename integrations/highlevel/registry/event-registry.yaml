@@ -1,10 +1,9 @@
--
-  eventCode: 'tisha-bav-2026'
-  canonicalWorkflow: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
-  canonicalCampaign: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+- eventCode: 'tisha-bav-2026'
+  canonicalWorkflow: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
+  canonicalCampaign: "OT-C01 Tisha B'Av 2026 Warm Invitation"
   invitationSenderKey: 'rabbi_campaign'
   registrationReminderSenderKeys:
     - 'brand'
     - 'rabbi_campaign'
-  existingTagsAndValuesPolicy: 'Preserve existing Tisha B''Av lane tags and values; never duplicate them.'
+  existingTagsAndValuesPolicy: "Preserve existing Tisha B'Av lane tags and values; never duplicate them."
   sendAuthorized: false

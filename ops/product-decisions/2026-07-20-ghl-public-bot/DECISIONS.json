@@ -3,10 +3,7 @@
   "source": "Codex pasted direction",
   "decisions": {
     "one_public_bot": "OT-A1 One Time Enrollment Assistant",
-    "channels": [
-      "Website Live Chat",
-      "WhatsApp"
-    ],
+    "channels": ["Website Live Chat", "WhatsApp"],
     "voice_launch": "deferred",
     "human_handoff_workflow": false,
     "human_tasks": false,

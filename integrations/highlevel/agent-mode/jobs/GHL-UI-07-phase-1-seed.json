@@ -13,9 +13,7 @@
     "integrations/highlevel/registry/message-class-registry.yaml"
   ],
   "exact_copy_paste_prompt": "Job GHL-UI-07: phase-1 seed\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Marketing > Emails > seed preparation\n\nRead these canonical source files first:\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n\nAllowed assets:\n- rabbi_campaign seed draft using expected From info@onetimeonetime.com\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- clicking Send\n- adding a production audience\n- publishing a campaign\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Prepare and save a no-audience, unsent phase-1 seed draft using sender_key rabbi_campaign.\n- Do not click Send. Record that delivery remains blocked pending separate explicit authorization.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-07.result.json\nIdempotency key: one-time-ghl:GHL-UI-07:cf4bcb9354272be6",
-  "allowed_assets": [
-    "rabbi_campaign seed draft using expected From info@onetimeonetime.com"
-  ],
+  "allowed_assets": ["rabbi_campaign seed draft using expected From info@onetimeonetime.com"],
   "forbidden_assets": [
     "Student contacts",
     "Student username fields",
@@ -96,13 +94,7 @@
         "const": "GHL-UI-07"
       },
       "status": {
-        "enum": [
-          "done",
-          "already_satisfied",
-          "blocked",
-          "partial",
-          "failed"
-        ]
+        "enum": ["done", "already_satisfied", "blocked", "partial", "failed"]
       },
       "ghl_location_id": {
         "const": "pBSnOK2nkdxp6gf9Rg3o"
@@ -118,12 +110,7 @@
         "items": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "asset_type",
-            "name",
-            "id",
-            "status"
-          ],
+          "required": ["asset_type", "name", "id", "status"],
           "properties": {
             "asset_type": {
               "type": "string"

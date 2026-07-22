@@ -20,6 +20,7 @@ Report implementation status and evidence per change ID. Do not implement change
 ## Included Changes
 
 ### CHG-20260721-001
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > # ONE TIME HIGHLEVEL — SENDER REGISTRY CONVERGENCE AND PINNED AGENT MODE HANDOFF > # ONE TIME HIGHLEVEL — SENDER REGISTRY CONVERGENCE AND PINNED AGENT MODE HANDOFF
 - Operation: behavior
@@ -38,6 +39,7 @@ Report implementation status and evidence per change ID. Do not implement change
 - Positive assertions:
   - CHG-20260721-001-POS-001: The implementation and evidence satisfy this exact source atom: # ONE TIME HIGHLEVEL — SENDER REGISTRY CONVERGENCE AND PINNED AGENT MODE HANDOFF
   - CHG-20260721-001-POS-FULL-RAW: Full raw authority preserved verbatim for hard-signal coverage:
+
 # ONE TIME HIGHLEVEL — SENDER REGISTRY CONVERGENCE AND PINNED AGENT MODE HANDOFF
 
 Execute the task. Do not return another audit or recommendation.
@@ -781,10 +783,12 @@ integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md
 into the final response so the operator can copy it once into Agent Mode.
 
 Do not end with another recommendation.
+
 - Negative assertions:
   - CHG-20260721-001-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: # ONE TIME HIGHLEVEL — SENDER REGISTRY CONVERGENCE AND PINNED AGENT MODE HANDOFF
 
 ### CHG-20260721-002
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Execute the task. > Execute the task.
 - Operation: behavior
@@ -806,6 +810,7 @@ Do not end with another recommendation.
   - CHG-20260721-002-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Execute the task.
 
 ### CHG-20260721-003
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not return another audit or recommendation. > Do not return another audit or recommendation.
 - Operation: behavior
@@ -827,6 +832,7 @@ Do not end with another recommendation.
   - CHG-20260721-003-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not return another audit or recommendation.
 
 ### CHG-20260721-004
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Repository > ## Repository
 - Operation: behavior
@@ -848,6 +854,7 @@ Do not end with another recommendation.
   - CHG-20260721-004-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Repository
 
 ### CHG-20260721-005
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Canonical repository: > Canonical repository:
 - Operation: behavior
@@ -869,6 +876,7 @@ Do not end with another recommendation.
   - CHG-20260721-005-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Canonical repository:
 
 ### CHG-20260721-006
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > shloimie-beep/onetimev2 > shloimie-beep/onetimev2
 - Operation: behavior
@@ -890,6 +898,7 @@ Do not end with another recommendation.
   - CHG-20260721-006-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: shloimie-beep/onetimev2
 
 ### CHG-20260721-007
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not use: > Do not use:
 - Operation: behavior
@@ -911,6 +920,7 @@ Do not end with another recommendation.
   - CHG-20260721-007-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not use:
 
 ### CHG-20260721-008
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > webcraft-media/onetimev2 > webcraft-media/onetimev2
 - Operation: behavior
@@ -932,6 +942,7 @@ Do not end with another recommendation.
   - CHG-20260721-008-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: webcraft-media/onetimev2
 
 ### CHG-20260721-009
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Correct base > ## Correct base
 - Operation: behavior
@@ -953,6 +964,7 @@ Do not end with another recommendation.
   - CHG-20260721-009-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Correct base
 
 ### CHG-20260721-010
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > The current HighLevel API and Agent Mode queue is: > The current HighLevel API and Agent Mode queue is:
 - Operation: behavior
@@ -974,6 +986,7 @@ Do not end with another recommendation.
   - CHG-20260721-010-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: The current HighLevel API and Agent Mode queue is:
 
 ### CHG-20260721-011
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > PR #99 > PR #99
 - Operation: behavior
@@ -995,6 +1008,7 @@ Do not end with another recommendation.
   - CHG-20260721-011-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: PR #99
 
 ### CHG-20260721-012
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > branch: codex/highlevel-api-finalize-agent-queue > branch: codex/highlevel-api-finalize-agent-queue
 - Operation: behavior
@@ -1016,6 +1030,7 @@ Do not end with another recommendation.
   - CHG-20260721-012-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: branch: codex/highlevel-api-finalize-agent-queue
 
 ### CHG-20260721-013
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > known head when this prompt was written: > known head when this prompt was written:
 - Operation: behavior
@@ -1037,6 +1052,7 @@ Do not end with another recommendation.
   - CHG-20260721-013-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: known head when this prompt was written:
 
 ### CHG-20260721-014
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > 1000e8f46210a85f720f83fce2678b24a44fa94d > 1000e8f46210a85f720f83fce2678b24a44fa94d
 - Operation: behavior
@@ -1058,6 +1074,7 @@ Do not end with another recommendation.
   - CHG-20260721-014-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: 1000e8f46210a85f720f83fce2678b24a44fa94d
 
 ### CHG-20260721-015
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Fetch PR #99 and use its actual current descendant head. > Fetch PR #99 and use its actual current descendant head.
 - Operation: behavior
@@ -1079,6 +1096,7 @@ Do not end with another recommendation.
   - CHG-20260721-015-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Fetch PR #99 and use its actual current descendant head.
 
 ### CHG-20260721-016
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not base this work directly on PR #93. > Do not base this work directly on PR #93.
 - Operation: behavior
@@ -1100,6 +1118,7 @@ Do not end with another recommendation.
   - CHG-20260721-016-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not base this work directly on PR #93.
 
 ### CHG-20260721-017
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > PR #99 already contains the latest API reconciliation, contact-import safeguards, and 14-job Agent Mode queue. > PR #99 already contains the latest API reconciliation, contact-import safeguards, and 14-job Agent Mode queue.
 - Operation: behavior
@@ -1121,6 +1140,7 @@ Do not end with another recommendation.
   - CHG-20260721-017-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: PR #99 already contains the latest API reconciliation, contact-import safeguards, and 14-job Agent Mode queue.
 
 ### CHG-20260721-018
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Branch > ## Branch
 - Operation: behavior
@@ -1142,6 +1162,7 @@ Do not end with another recommendation.
   - CHG-20260721-018-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Branch
 
 ### CHG-20260721-019
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Create one clean isolated worktree and branch: > Create one clean isolated worktree and branch:
 - Operation: behavior
@@ -1163,6 +1184,7 @@ Do not end with another recommendation.
   - CHG-20260721-019-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Create one clean isolated worktree and branch:
 
 ### CHG-20260721-020
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > codex/highlevel-sender-registry-v1-1 > codex/highlevel-sender-registry-v1-1
 - Operation: behavior
@@ -1184,6 +1206,7 @@ Do not end with another recommendation.
   - CHG-20260721-020-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: codex/highlevel-sender-registry-v1-1
 
 ### CHG-20260721-021
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Open a draft PR against: > Open a draft PR against:
 - Operation: behavior
@@ -1205,6 +1228,7 @@ Do not end with another recommendation.
   - CHG-20260721-021-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Open a draft PR against:
 
 ### CHG-20260721-022
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > codex/highlevel-api-finalize-agent-queue > codex/highlevel-api-finalize-agent-queue
 - Operation: behavior
@@ -1226,6 +1250,7 @@ Do not end with another recommendation.
   - CHG-20260721-022-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: codex/highlevel-api-finalize-agent-queue
 
 ### CHG-20260721-023
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not start from main. > Do not start from main.
 - Operation: behavior
@@ -1247,6 +1272,7 @@ Do not end with another recommendation.
   - CHG-20260721-023-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not start from main.
 
 ### CHG-20260721-024
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Mission > ## Mission
 - Operation: behavior
@@ -1268,6 +1294,7 @@ Do not end with another recommendation.
   - CHG-20260721-024-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Mission
 
 ### CHG-20260721-025
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Create the missing canonical HighLevel sender, message-class, pipeline, and event registries. > Create the missing canonical HighLevel sender, message-class, pipeline, and event registries.
 - Operation: behavior
@@ -1289,6 +1316,7 @@ Do not end with another recommendation.
   - CHG-20260721-025-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Create the missing canonical HighLevel sender, message-class, pipeline, and event registries.
 
 ### CHG-20260721-026
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Then: > Then:
 - Operation: behavior
@@ -1310,6 +1338,7 @@ Do not end with another recommendation.
   - CHG-20260721-026-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Then:
 
 ### CHG-20260721-027
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > update every workflow prompt and checklist to use registered sender keys > update every workflow prompt and checklist to use registered sender keys
 - Operation: behavior
@@ -1331,6 +1360,7 @@ Do not end with another recommendation.
   - CHG-20260721-027-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: update every workflow prompt and checklist to use registered sender keys
 
 ### CHG-20260721-028
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > update the bot and knowledge-base dependencies > update the bot and knowledge-base dependencies
 - Operation: behavior
@@ -1352,6 +1382,7 @@ Do not end with another recommendation.
   - CHG-20260721-028-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: update the bot and knowledge-base dependencies
 
 ### CHG-20260721-029
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > use the HighLevel API for every supported safe asset > use the HighLevel API for every supported safe asset
 - Operation: behavior
@@ -1373,6 +1404,7 @@ Do not end with another recommendation.
   - CHG-20260721-029-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: use the HighLevel API for every supported safe asset
 
 ### CHG-20260721-030
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > regenerate the Agent Mode queue > regenerate the Agent Mode queue
 - Operation: behavior
@@ -1394,6 +1426,7 @@ Do not end with another recommendation.
   - CHG-20260721-030-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: regenerate the Agent Mode queue
 
 ### CHG-20260721-031
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > produce one complete Agent Mode execution prompt pinned to an immutable registry commit > produce one complete Agent Mode execution prompt pinned to an immutable registry commit
 - Operation: behavior
@@ -1415,6 +1448,7 @@ Do not end with another recommendation.
   - CHG-20260721-031-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: produce one complete Agent Mode execution prompt pinned to an immutable registry commit
 
 ### CHG-20260721-032
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > push everything > push everything
 - Operation: behavior
@@ -1436,6 +1470,7 @@ Do not end with another recommendation.
   - CHG-20260721-032-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: push everything
 
 ### CHG-20260721-033
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > do not send messages or publish workflows. > do not send messages or publish workflows.
 - Operation: behavior
@@ -1457,6 +1492,7 @@ Do not end with another recommendation.
   - CHG-20260721-033-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: do not send messages or publish workflows.
 
 ### CHG-20260721-034
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > The blocked Agent Mode report was correct: > The blocked Agent Mode report was correct:
 - Operation: behavior
@@ -1478,6 +1514,7 @@ Do not end with another recommendation.
   - CHG-20260721-034-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: The blocked Agent Mode report was correct:
 
 ### CHG-20260721-035
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > SENDER_VALUES: BLOCKED(push sender-registry PR and supply pinned SHA) > SENDER_VALUES: BLOCKED(push sender-registry PR and supply pinned SHA)
 - Operation: behavior
@@ -1499,6 +1536,7 @@ Do not end with another recommendation.
   - CHG-20260721-035-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: SENDER_VALUES: BLOCKED(push sender-registry PR and supply pinned SHA)
 
 ### CHG-20260721-036
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > PIPELINES: BLOCKED(required pipeline registry missing) > PIPELINES: BLOCKED(required pipeline registry missing)
 - Operation: behavior
@@ -1520,6 +1558,7 @@ Do not end with another recommendation.
   - CHG-20260721-036-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: PIPELINES: BLOCKED(required pipeline registry missing)
 
 ### CHG-20260721-037
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > This task removes that blocker. > This task removes that blocker.
 - Operation: behavior
@@ -1541,6 +1580,7 @@ Do not end with another recommendation.
   - CHG-20260721-037-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: This task removes that blocker.
 
 ### CHG-20260721-038
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Safety > ## Safety
 - Operation: behavior
@@ -1562,6 +1602,7 @@ Do not end with another recommendation.
   - CHG-20260721-038-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Safety
 
 ### CHG-20260721-039
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not: > Do not:
 - Operation: behavior
@@ -1583,6 +1624,7 @@ Do not end with another recommendation.
   - CHG-20260721-039-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not:
 
 ### CHG-20260721-040
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - send email, WhatsApp or SMS > - send email, WhatsApp or SMS
 - Operation: behavior
@@ -1604,6 +1646,7 @@ Do not end with another recommendation.
   - CHG-20260721-040-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - send email, WhatsApp or SMS
 
 ### CHG-20260721-041
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - publish a workflow > - publish a workflow
 - Operation: behavior
@@ -1625,6 +1668,7 @@ Do not end with another recommendation.
   - CHG-20260721-041-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - publish a workflow
 
 ### CHG-20260721-042
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - activate the Conversation AI bot > - activate the Conversation AI bot
 - Operation: behavior
@@ -1646,6 +1690,7 @@ Do not end with another recommendation.
   - CHG-20260721-042-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - activate the Conversation AI bot
 
 ### CHG-20260721-043
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - enroll imported contacts > - enroll imported contacts
 - Operation: behavior
@@ -1667,6 +1712,7 @@ Do not end with another recommendation.
   - CHG-20260721-043-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - enroll imported contacts
 
 ### CHG-20260721-044
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - create Student contacts > - create Student contacts
 - Operation: behavior
@@ -1688,6 +1734,7 @@ Do not end with another recommendation.
   - CHG-20260721-044-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - create Student contacts
 
 ### CHG-20260721-045
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - change live payment state > - change live payment state
 - Operation: behavior
@@ -1709,6 +1756,7 @@ Do not end with another recommendation.
   - CHG-20260721-045-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - change live payment state
 
 ### CHG-20260721-046
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - alter production Railway > - alter production Railway
 - Operation: behavior
@@ -1730,6 +1778,7 @@ Do not end with another recommendation.
   - CHG-20260721-046-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - alter production Railway
 
 ### CHG-20260721-047
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - print PIT, contact data, private destinations or secrets > - print PIT, contact data, private destinations or secrets
 - Operation: behavior
@@ -1751,6 +1800,7 @@ Do not end with another recommendation.
   - CHG-20260721-047-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - print PIT, contact data, private destinations or secrets
 
 ### CHG-20260721-048
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - activate rabbi@ before it is tested > - activate rabbi@ before it is tested
 - Operation: behavior
@@ -1772,6 +1822,7 @@ Do not end with another recommendation.
   - CHG-20260721-048-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - activate rabbi@ before it is tested
 
 ### CHG-20260721-049
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - create Human Handoff > - create Human Handoff
 - Operation: behavior
@@ -1793,6 +1844,7 @@ Do not end with another recommendation.
   - CHG-20260721-049-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - create Human Handoff
 
 ### CHG-20260721-050
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - create human tasks for OT-A1. > - create human tasks for OT-A1.
 - Operation: behavior
@@ -1814,6 +1866,7 @@ Do not end with another recommendation.
   - CHG-20260721-050-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - create human tasks for OT-A1.
 
 ### CHG-20260721-051
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > API writes are authorized for: > API writes are authorized for:
 - Operation: behavior
@@ -1835,6 +1888,7 @@ Do not end with another recommendation.
   - CHG-20260721-051-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: API writes are authorized for:
 
 ### CHG-20260721-052
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - canonical HighLevel custom values > - canonical HighLevel custom values
 - Operation: behavior
@@ -1856,6 +1910,7 @@ Do not end with another recommendation.
   - CHG-20260721-052-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - canonical HighLevel custom values
 
 ### CHG-20260721-053
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - canonical contact fields and tags when missing > - canonical contact fields and tags when missing
 - Operation: behavior
@@ -1877,6 +1932,7 @@ Do not end with another recommendation.
   - CHG-20260721-053-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - canonical contact fields and tags when missing
 
 ### CHG-20260721-054
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - pipelines and stages when supported > - pipelines and stages when supported
 - Operation: behavior
@@ -1898,6 +1954,7 @@ Do not end with another recommendation.
   - CHG-20260721-054-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - pipelines and stages when supported
 
 ### CHG-20260721-055
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - registry reconciliation. > - registry reconciliation.
 - Operation: behavior
@@ -1919,6 +1976,7 @@ Do not end with another recommendation.
   - CHG-20260721-055-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - registry reconciliation.
 
 ### CHG-20260721-056
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Use location: > Use location:
 - Operation: behavior
@@ -1940,6 +1998,7 @@ Do not end with another recommendation.
   - CHG-20260721-056-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Use location:
 
 ### CHG-20260721-057
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > pBSnOK2nkdxp6gf9Rg3o > pBSnOK2nkdxp6gf9Rg3o
 - Operation: behavior
@@ -1961,6 +2020,7 @@ Do not end with another recommendation.
   - CHG-20260721-057-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: pBSnOK2nkdxp6gf9Rg3o
 
 ### CHG-20260721-058
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Registry version > ## Registry version
 - Operation: behavior
@@ -1982,6 +2042,7 @@ Do not end with another recommendation.
   - CHG-20260721-058-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Registry version
 
 ### CHG-20260721-059
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Update the HighLevel schema from: > Update the HighLevel schema from:
 - Operation: behavior
@@ -2003,6 +2064,7 @@ Do not end with another recommendation.
   - CHG-20260721-059-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Update the HighLevel schema from:
 
 ### CHG-20260721-060
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > 1.0.0 > 1.0.0
 - Operation: behavior
@@ -2024,6 +2086,7 @@ Do not end with another recommendation.
   - CHG-20260721-060-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: 1.0.0
 
 ### CHG-20260721-061
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > 1.1.0 > 1.1.0
 - Operation: behavior
@@ -2045,6 +2108,7 @@ Do not end with another recommendation.
   - CHG-20260721-061-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: 1.1.0
 
 ### CHG-20260721-062
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Preserve all existing IDs and compatibility aliases. > Preserve all existing IDs and compatibility aliases.
 - Operation: behavior
@@ -2066,6 +2130,7 @@ Do not end with another recommendation.
   - CHG-20260721-062-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Preserve all existing IDs and compatibility aliases.
 
 ### CHG-20260721-063
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Create: > Create:
 - Operation: behavior
@@ -2087,6 +2152,7 @@ Do not end with another recommendation.
   - CHG-20260721-063-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Create:
 
 ### CHG-20260721-064
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/sender-registry.yaml > integrations/highlevel/registry/sender-registry.yaml
 - Operation: behavior
@@ -2108,6 +2174,7 @@ Do not end with another recommendation.
   - CHG-20260721-064-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/sender-registry.yaml
 
 ### CHG-20260721-065
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/message-class-registry.yaml > integrations/highlevel/registry/message-class-registry.yaml
 - Operation: behavior
@@ -2129,6 +2196,7 @@ Do not end with another recommendation.
   - CHG-20260721-065-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/message-class-registry.yaml
 
 ### CHG-20260721-066
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/pipeline-registry.yaml > integrations/highlevel/registry/pipeline-registry.yaml
 - Operation: behavior
@@ -2150,6 +2218,7 @@ Do not end with another recommendation.
   - CHG-20260721-066-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/pipeline-registry.yaml
 
 ### CHG-20260721-067
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/event-registry.yaml > integrations/highlevel/registry/event-registry.yaml
 - Operation: behavior
@@ -2171,6 +2240,7 @@ Do not end with another recommendation.
   - CHG-20260721-067-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/event-registry.yaml
 
 ### CHG-20260721-068
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/communications-contract.json > integrations/highlevel/registry/communications-contract.json
 - Operation: behavior
@@ -2192,6 +2262,7 @@ Do not end with another recommendation.
   - CHG-20260721-068-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/communications-contract.json
 
 ### CHG-20260721-069
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Update: > Update:
 - Operation: behavior
@@ -2213,6 +2284,7 @@ Do not end with another recommendation.
   - CHG-20260721-069-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Update:
 
 ### CHG-20260721-070
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/current.json > integrations/highlevel/registry/current.json
 - Operation: behavior
@@ -2234,6 +2306,7 @@ Do not end with another recommendation.
   - CHG-20260721-070-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/current.json
 
 ### CHG-20260721-071
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/schema.yaml > integrations/highlevel/registry/schema.yaml
 - Operation: behavior
@@ -2255,6 +2328,7 @@ Do not end with another recommendation.
   - CHG-20260721-071-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/schema.yaml
 
 ### CHG-20260721-072
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/custom-values.yaml > integrations/highlevel/registry/custom-values.yaml
 - Operation: behavior
@@ -2276,6 +2350,7 @@ Do not end with another recommendation.
   - CHG-20260721-072-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/custom-values.yaml
 
 ### CHG-20260721-073
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/workflow-registry.yaml > integrations/highlevel/registry/workflow-registry.yaml
 - Operation: behavior
@@ -2297,6 +2372,7 @@ Do not end with another recommendation.
   - CHG-20260721-073-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/workflow-registry.yaml
 
 ### CHG-20260721-074
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/bot-action-registry.yaml > integrations/highlevel/registry/bot-action-registry.yaml
 - Operation: behavior
@@ -2318,6 +2394,7 @@ Do not end with another recommendation.
   - CHG-20260721-074-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/bot-action-registry.yaml
 
 ### CHG-20260721-075
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/prompt-registry.yaml > integrations/highlevel/registry/prompt-registry.yaml
 - Operation: behavior
@@ -2339,6 +2416,7 @@ Do not end with another recommendation.
   - CHG-20260721-075-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/prompt-registry.yaml
 
 ### CHG-20260721-076
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/knowledge-base-registry.yaml > integrations/highlevel/registry/knowledge-base-registry.yaml
 - Operation: behavior
@@ -2360,6 +2438,7 @@ Do not end with another recommendation.
   - CHG-20260721-076-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/knowledge-base-registry.yaml
 
 ### CHG-20260721-077
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/AGENT-HANDOFF.md > integrations/highlevel/registry/AGENT-HANDOFF.md
 - Operation: behavior
@@ -2381,6 +2460,7 @@ Do not end with another recommendation.
   - CHG-20260721-077-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/AGENT-HANDOFF.md
 
 ### CHG-20260721-078
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/workflows.yaml > integrations/highlevel/workflows.yaml
 - Operation: behavior
@@ -2402,6 +2482,7 @@ Do not end with another recommendation.
   - CHG-20260721-078-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/workflows.yaml
 
 ### CHG-20260721-079
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/CHANGELOG.md > integrations/highlevel/CHANGELOG.md
 - Operation: behavior
@@ -2423,6 +2504,7 @@ Do not end with another recommendation.
   - CHG-20260721-079-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/CHANGELOG.md
 
 ### CHG-20260721-080
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Canonical communications boundary > ## Canonical communications boundary
 - Operation: behavior
@@ -2444,6 +2526,7 @@ Do not end with another recommendation.
   - CHG-20260721-080-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Canonical communications boundary
 
 ### CHG-20260721-081
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > HighLevel is the One Time source of truth for: > HighLevel is the One Time source of truth for:
 - Operation: behavior
@@ -2465,6 +2548,7 @@ Do not end with another recommendation.
   - CHG-20260721-081-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: HighLevel is the One Time source of truth for:
 
 ### CHG-20260721-082
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - adult/parent contacts > - adult/parent contacts
 - Operation: behavior
@@ -2486,6 +2570,7 @@ Do not end with another recommendation.
   - CHG-20260721-082-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - adult/parent contacts
 
 ### CHG-20260721-083
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - customer conversations > - customer conversations
 - Operation: behavior
@@ -2507,6 +2592,7 @@ Do not end with another recommendation.
   - CHG-20260721-083-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - customer conversations
 
 ### CHG-20260721-084
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - campaigns > - campaigns
 - Operation: behavior
@@ -2528,6 +2614,7 @@ Do not end with another recommendation.
   - CHG-20260721-084-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - campaigns
 
 ### CHG-20260721-085
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - business workflows > - business workflows
 - Operation: behavior
@@ -2549,6 +2636,7 @@ Do not end with another recommendation.
   - CHG-20260721-085-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - business workflows
 
 ### CHG-20260721-086
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - replies > - replies
 - Operation: behavior
@@ -2570,6 +2658,7 @@ Do not end with another recommendation.
   - CHG-20260721-086-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - replies
 
 ### CHG-20260721-087
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - suppression > - suppression
 - Operation: behavior
@@ -2591,6 +2680,7 @@ Do not end with another recommendation.
   - CHG-20260721-087-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - suppression
 
 ### CHG-20260721-088
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - opportunities > - opportunities
 - Operation: behavior
@@ -2612,6 +2702,7 @@ Do not end with another recommendation.
   - CHG-20260721-088-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - opportunities
 
 ### CHG-20260721-089
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - customer-support and Torah-question processing state. > - customer-support and Torah-question processing state.
 - Operation: behavior
@@ -2633,6 +2724,7 @@ Do not end with another recommendation.
   - CHG-20260721-089-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - customer-support and Torah-question processing state.
 
 ### CHG-20260721-090
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > One Time is the source of truth for: > One Time is the source of truth for:
 - Operation: behavior
@@ -2654,6 +2746,7 @@ Do not end with another recommendation.
   - CHG-20260721-090-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: One Time is the source of truth for:
 
 ### CHG-20260721-091
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - authentication > - authentication
 - Operation: behavior
@@ -2675,6 +2768,7 @@ Do not end with another recommendation.
   - CHG-20260721-091-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - authentication
 
 ### CHG-20260721-092
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - passwords and secure tokens > - passwords and secure tokens
 - Operation: behavior
@@ -2696,6 +2790,7 @@ Do not end with another recommendation.
   - CHG-20260721-092-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - passwords and secure tokens
 
 ### CHG-20260721-093
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - households > - households
 - Operation: behavior
@@ -2717,6 +2812,7 @@ Do not end with another recommendation.
   - CHG-20260721-093-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - households
 
 ### CHG-20260721-094
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - learners > - learners
 - Operation: behavior
@@ -2738,6 +2834,7 @@ Do not end with another recommendation.
   - CHG-20260721-094-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - learners
 
 ### CHG-20260721-095
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Parent and Student portals > - Parent and Student portals
 - Operation: behavior
@@ -2759,6 +2856,7 @@ Do not end with another recommendation.
   - CHG-20260721-095-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Parent and Student portals
 
 ### CHG-20260721-096
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - entitlement > - entitlement
 - Operation: behavior
@@ -2780,6 +2878,7 @@ Do not end with another recommendation.
   - CHG-20260721-096-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - entitlement
 
 ### CHG-20260721-097
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - classes > - classes
 - Operation: behavior
@@ -2801,6 +2900,7 @@ Do not end with another recommendation.
   - CHG-20260721-097-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - classes
 
 ### CHG-20260721-098
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Vimeo > - Vimeo
 - Operation: behavior
@@ -2822,6 +2922,7 @@ Do not end with another recommendation.
   - CHG-20260721-098-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Vimeo
 
 ### CHG-20260721-099
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Zoom > - Zoom
 - Operation: behavior
@@ -2843,6 +2944,7 @@ Do not end with another recommendation.
   - CHG-20260721-099-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Zoom
 
 ### CHG-20260721-100
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - progress > - progress
 - Operation: behavior
@@ -2864,6 +2966,7 @@ Do not end with another recommendation.
   - CHG-20260721-100-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - progress
 
 ### CHG-20260721-101
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - gamification > - gamification
 - Operation: behavior
@@ -2885,6 +2988,7 @@ Do not end with another recommendation.
   - CHG-20260721-101-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - gamification
 
 ### CHG-20260721-102
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - original portal submissions. > - original portal submissions.
 - Operation: behavior
@@ -2906,6 +3010,7 @@ Do not end with another recommendation.
   - CHG-20260721-102-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - original portal submissions.
 
 ### CHG-20260721-103
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Resend is limited to: > Resend is limited to:
 - Operation: behavior
@@ -2927,6 +3032,7 @@ Do not end with another recommendation.
   - CHG-20260721-103-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Resend is limited to:
 
 ### CHG-20260721-104
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - activation/setup links > - activation/setup links
 - Operation: behavior
@@ -2948,6 +3054,7 @@ Do not end with another recommendation.
   - CHG-20260721-104-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - activation/setup links
 
 ### CHG-20260721-105
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - password reset > - password reset
 - Operation: behavior
@@ -2969,6 +3076,7 @@ Do not end with another recommendation.
   - CHG-20260721-105-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - password reset
 
 ### CHG-20260721-106
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - email verification > - email verification
 - Operation: behavior
@@ -2990,6 +3098,7 @@ Do not end with another recommendation.
   - CHG-20260721-106-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - email verification
 
 ### CHG-20260721-107
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Administrator login challenge > - Administrator login challenge
 - Operation: behavior
@@ -3011,6 +3120,7 @@ Do not end with another recommendation.
   - CHG-20260721-107-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Administrator login challenge
 
 ### CHG-20260721-108
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - security-token email. > - security-token email.
 - Operation: behavior
@@ -3032,6 +3142,7 @@ Do not end with another recommendation.
   - CHG-20260721-108-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - security-token email.
 
 ### CHG-20260721-109
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Telegram is Rabbi Eli Scheller’s private interface for assigned Torah questions and Rabbi-authored content. > Telegram is Rabbi Eli Scheller’s private interface for assigned Torah questions and Rabbi-authored content.
 - Operation: behavior
@@ -3053,6 +3164,7 @@ Do not end with another recommendation.
   - CHG-20260721-109-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Telegram is Rabbi Eli Scheller’s private interface for assigned Torah questions and Rabbi-authored content.
 
 ### CHG-20260721-110
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Telegram is not a separate customer transcript. > Telegram is not a separate customer transcript.
 - Operation: behavior
@@ -3074,6 +3186,7 @@ Do not end with another recommendation.
   - CHG-20260721-110-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Telegram is not a separate customer transcript.
 
 ### CHG-20260721-111
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Human ownership > ## Human ownership
 - Operation: behavior
@@ -3095,6 +3208,7 @@ Do not end with another recommendation.
   - CHG-20260721-111-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Human ownership
 
 ### CHG-20260721-112
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Default customer-communication owner: > Default customer-communication owner:
 - Operation: behavior
@@ -3116,6 +3230,7 @@ Do not end with another recommendation.
   - CHG-20260721-112-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Default customer-communication owner:
 
 ### CHG-20260721-113
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Shloimie > Shloimie
 - Operation: behavior
@@ -3137,6 +3252,7 @@ Do not end with another recommendation.
   - CHG-20260721-113-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Shloimie
 
 ### CHG-20260721-114
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Rabbi Eli Scheller receives only: > Rabbi Eli Scheller receives only:
 - Operation: behavior
@@ -3158,6 +3274,7 @@ Do not end with another recommendation.
   - CHG-20260721-114-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Rabbi Eli Scheller receives only:
 
 ### CHG-20260721-115
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - substantive Torah questions > - substantive Torah questions
 - Operation: behavior
@@ -3179,6 +3296,7 @@ Do not end with another recommendation.
   - CHG-20260721-115-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - substantive Torah questions
 
 ### CHG-20260721-116
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Mishnah questions > - Mishnah questions
 - Operation: behavior
@@ -3200,6 +3318,7 @@ Do not end with another recommendation.
   - CHG-20260721-116-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Mishnah questions
 
 ### CHG-20260721-117
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - halachic questions requiring Rabbi authorship > - halachic questions requiring Rabbi authorship
 - Operation: behavior
@@ -3221,6 +3340,7 @@ Do not end with another recommendation.
   - CHG-20260721-117-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - halachic questions requiring Rabbi authorship
 
 ### CHG-20260721-118
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Rabbi-authored Torah newsletters > - Rabbi-authored Torah newsletters
 - Operation: behavior
@@ -3242,6 +3362,7 @@ Do not end with another recommendation.
   - CHG-20260721-118-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Rabbi-authored Torah newsletters
 
 ### CHG-20260721-119
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Rabbi-authored warm enrollment content. > - Rabbi-authored warm enrollment content.
 - Operation: behavior
@@ -3263,6 +3384,7 @@ Do not end with another recommendation.
   - CHG-20260721-119-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Rabbi-authored warm enrollment content.
 
 ### CHG-20260721-120
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not route these to Rabbi: > Do not route these to Rabbi:
 - Operation: behavior
@@ -3284,6 +3406,7 @@ Do not end with another recommendation.
   - CHG-20260721-120-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not route these to Rabbi:
 
 ### CHG-20260721-121
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - login > - login
 - Operation: behavior
@@ -3305,6 +3428,7 @@ Do not end with another recommendation.
   - CHG-20260721-121-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - login
 
 ### CHG-20260721-122
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - password help > - password help
 - Operation: behavior
@@ -3326,6 +3450,7 @@ Do not end with another recommendation.
   - CHG-20260721-122-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - password help
 
 ### CHG-20260721-123
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - billing > - billing
 - Operation: behavior
@@ -3347,6 +3472,7 @@ Do not end with another recommendation.
   - CHG-20260721-123-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - billing
 
 ### CHG-20260721-124
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - cancellation > - cancellation
 - Operation: behavior
@@ -3368,6 +3494,7 @@ Do not end with another recommendation.
   - CHG-20260721-124-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - cancellation
 
 ### CHG-20260721-125
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - refund > - refund
 - Operation: behavior
@@ -3389,6 +3516,7 @@ Do not end with another recommendation.
   - CHG-20260721-125-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - refund
 
 ### CHG-20260721-126
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - technical support > - technical support
 - Operation: behavior
@@ -3410,6 +3538,7 @@ Do not end with another recommendation.
   - CHG-20260721-126-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - technical support
 
 ### CHG-20260721-127
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - scheduling > - scheduling
 - Operation: behavior
@@ -3431,6 +3560,7 @@ Do not end with another recommendation.
   - CHG-20260721-127-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - scheduling
 
 ### CHG-20260721-128
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - class-link problems > - class-link problems
 - Operation: behavior
@@ -3452,6 +3582,7 @@ Do not end with another recommendation.
   - CHG-20260721-128-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - class-link problems
 
 ### CHG-20260721-129
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - parent administration > - parent administration
 - Operation: behavior
@@ -3473,6 +3604,7 @@ Do not end with another recommendation.
   - CHG-20260721-129-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - parent administration
 
 ### CHG-20260721-130
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - ordinary enrollment logistics > - ordinary enrollment logistics
 - Operation: behavior
@@ -3494,6 +3626,7 @@ Do not end with another recommendation.
   - CHG-20260721-130-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - ordinary enrollment logistics
 
 ### CHG-20260721-131
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - complaints > - complaints
 - Operation: behavior
@@ -3515,6 +3648,7 @@ Do not end with another recommendation.
   - CHG-20260721-131-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - complaints
 
 ### CHG-20260721-132
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - unknown messages > - unknown messages
 - Operation: behavior
@@ -3536,6 +3670,7 @@ Do not end with another recommendation.
   - CHG-20260721-132-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - unknown messages
 
 ### CHG-20260721-133
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - generic replies. > - generic replies.
 - Operation: behavior
@@ -3557,6 +3692,7 @@ Do not end with another recommendation.
   - CHG-20260721-133-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - generic replies.
 
 ### CHG-20260721-134
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Sender registry > ## Sender registry
 - Operation: behavior
@@ -3578,6 +3714,7 @@ Do not end with another recommendation.
   - CHG-20260721-134-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Sender registry
 
 ### CHG-20260721-135
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Create these exact sender keys. > Create these exact sender keys.
 - Operation: behavior
@@ -3599,6 +3736,7 @@ Do not end with another recommendation.
   - CHG-20260721-135-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Create these exact sender keys.
 
 ### CHG-20260721-136
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### rabbi_campaign > ### rabbi_campaign
 - Operation: behavior
@@ -3620,6 +3758,7 @@ Do not end with another recommendation.
   - CHG-20260721-136-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### rabbi_campaign
 
 ### CHG-20260721-137
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Purpose: > Purpose:
 - Operation: behavior
@@ -3641,6 +3780,7 @@ Do not end with another recommendation.
   - CHG-20260721-137-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Purpose:
 
 ### CHG-20260721-138
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - warm enrollment campaigns > - warm enrollment campaigns
 - Operation: behavior
@@ -3662,6 +3802,7 @@ Do not end with another recommendation.
   - CHG-20260721-138-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - warm enrollment campaigns
 
 ### CHG-20260721-139
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Torah newsletters > - Torah newsletters
 - Operation: behavior
@@ -3683,6 +3824,7 @@ Do not end with another recommendation.
   - CHG-20260721-139-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Torah newsletters
 
 ### CHG-20260721-140
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Rabbi-authored teaching emails > - Rabbi-authored teaching emails
 - Operation: behavior
@@ -3704,6 +3846,7 @@ Do not end with another recommendation.
   - CHG-20260721-140-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Rabbi-authored teaching emails
 
 ### CHG-20260721-141
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Rabbi-authored event invitations. > - Rabbi-authored event invitations.
 - Operation: behavior
@@ -3725,6 +3868,7 @@ Do not end with another recommendation.
   - CHG-20260721-141-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Rabbi-authored event invitations.
 
 ### CHG-20260721-142
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Phase 1: > Phase 1:
 - Operation: behavior
@@ -3746,6 +3890,7 @@ Do not end with another recommendation.
   - CHG-20260721-142-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Phase 1:
 
 ### CHG-20260721-143
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > display_name: > display_name:
 - Operation: behavior
@@ -3767,6 +3912,7 @@ Do not end with another recommendation.
   - CHG-20260721-143-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: display_name:
 
 ### CHG-20260721-144
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Rabbi Eli Scheller | One Time Mishnayos > Rabbi Eli Scheller | One Time Mishnayos
 - Operation: behavior
@@ -3788,6 +3934,7 @@ Do not end with another recommendation.
   - CHG-20260721-144-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Rabbi Eli Scheller | One Time Mishnayos
 
 ### CHG-20260721-145
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > from_email: > from_email:
 - Operation: behavior
@@ -3809,6 +3956,7 @@ Do not end with another recommendation.
   - CHG-20260721-145-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: from_email:
 
 ### CHG-20260721-146
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -3830,6 +3978,7 @@ Do not end with another recommendation.
   - CHG-20260721-146-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-147
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > reply_to: > reply_to:
 - Operation: behavior
@@ -3851,6 +4000,7 @@ Do not end with another recommendation.
   - CHG-20260721-147-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: reply_to:
 
 ### CHG-20260721-148
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -3872,6 +4022,7 @@ Do not end with another recommendation.
   - CHG-20260721-148-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-149
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > status: > status:
 - Operation: behavior
@@ -3893,6 +4044,7 @@ Do not end with another recommendation.
   - CHG-20260721-149-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: status:
 
 ### CHG-20260721-150
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > active_phase_1 > active_phase_1
 - Operation: behavior
@@ -3914,6 +4066,7 @@ Do not end with another recommendation.
   - CHG-20260721-150-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: active_phase_1
 
 ### CHG-20260721-151
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Phase 2: > Phase 2:
 - Operation: behavior
@@ -3935,6 +4088,7 @@ Do not end with another recommendation.
   - CHG-20260721-151-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Phase 2:
 
 ### CHG-20260721-152
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > display_name: > display_name:
 - Operation: behavior
@@ -3956,6 +4110,7 @@ Do not end with another recommendation.
   - CHG-20260721-152-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: display_name:
 
 ### CHG-20260721-153
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Rabbi Eli Scheller | One Time Mishnayos > Rabbi Eli Scheller | One Time Mishnayos
 - Operation: behavior
@@ -3977,6 +4132,7 @@ Do not end with another recommendation.
   - CHG-20260721-153-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Rabbi Eli Scheller | One Time Mishnayos
 
 ### CHG-20260721-154
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > from_email: > from_email:
 - Operation: behavior
@@ -3998,6 +4154,7 @@ Do not end with another recommendation.
   - CHG-20260721-154-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: from_email:
 
 ### CHG-20260721-155
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > rabbi@onetimeonetime.com > rabbi@onetimeonetime.com
 - Operation: behavior
@@ -4019,6 +4176,7 @@ Do not end with another recommendation.
   - CHG-20260721-155-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: rabbi@onetimeonetime.com
 
 ### CHG-20260721-156
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > reply_to: > reply_to:
 - Operation: behavior
@@ -4040,6 +4198,7 @@ Do not end with another recommendation.
   - CHG-20260721-156-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: reply_to:
 
 ### CHG-20260721-157
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -4061,6 +4220,7 @@ Do not end with another recommendation.
   - CHG-20260721-157-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-158
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > status: > status:
 - Operation: behavior
@@ -4082,6 +4242,7 @@ Do not end with another recommendation.
   - CHG-20260721-158-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: status:
 
 ### CHG-20260721-159
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > pending_mailbox_and_reply_acceptance > pending_mailbox_and_reply_acceptance
 - Operation: behavior
@@ -4103,6 +4264,7 @@ Do not end with another recommendation.
   - CHG-20260721-159-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: pending_mailbox_and_reply_acceptance
 
 ### CHG-20260721-160
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not activate phase 2 until: > Do not activate phase 2 until:
 - Operation: behavior
@@ -4124,6 +4286,7 @@ Do not end with another recommendation.
   - CHG-20260721-160-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not activate phase 2 until:
 
 ### CHG-20260721-161
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > rabbi@ mailbox or routing exists > rabbi@ mailbox or routing exists
 - Operation: behavior
@@ -4145,6 +4308,7 @@ Do not end with another recommendation.
   - CHG-20260721-161-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: rabbi@ mailbox or routing exists
 
 ### CHG-20260721-162
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > HighLevel accepts the From address > HighLevel accepts the From address
 - Operation: behavior
@@ -4166,6 +4330,7 @@ Do not end with another recommendation.
   - CHG-20260721-162-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: HighLevel accepts the From address
 
 ### CHG-20260721-163
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > a seed delivers > a seed delivers
 - Operation: behavior
@@ -4187,6 +4352,7 @@ Do not end with another recommendation.
   - CHG-20260721-163-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: a seed delivers
 
 ### CHG-20260721-164
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > a reply reaches GHL Conversations > a reply reaches GHL Conversations
 - Operation: behavior
@@ -4208,6 +4374,7 @@ Do not end with another recommendation.
   - CHG-20260721-164-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: a reply reaches GHL Conversations
 
 ### CHG-20260721-165
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > the result is recorded. > the result is recorded.
 - Operation: behavior
@@ -4229,6 +4396,7 @@ Do not end with another recommendation.
   - CHG-20260721-165-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: the result is recorded.
 
 ### CHG-20260721-166
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### rabbi_personal > ### rabbi_personal
 - Operation: behavior
@@ -4250,6 +4418,7 @@ Do not end with another recommendation.
   - CHG-20260721-166-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### rabbi_personal
 
 ### CHG-20260721-167
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > display_name: > display_name:
 - Operation: behavior
@@ -4271,6 +4440,7 @@ Do not end with another recommendation.
   - CHG-20260721-167-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: display_name:
 
 ### CHG-20260721-168
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Rabbi Eli Scheller > Rabbi Eli Scheller
 - Operation: behavior
@@ -4292,6 +4462,7 @@ Do not end with another recommendation.
   - CHG-20260721-168-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Rabbi Eli Scheller
 
 ### CHG-20260721-169
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > from_email: > from_email:
 - Operation: behavior
@@ -4313,6 +4484,7 @@ Do not end with another recommendation.
   - CHG-20260721-169-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: from_email:
 
 ### CHG-20260721-170
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > rabbi@onetimeonetime.com > rabbi@onetimeonetime.com
 - Operation: behavior
@@ -4334,6 +4506,7 @@ Do not end with another recommendation.
   - CHG-20260721-170-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: rabbi@onetimeonetime.com
 
 ### CHG-20260721-171
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > reply_to: > reply_to:
 - Operation: behavior
@@ -4355,6 +4528,7 @@ Do not end with another recommendation.
   - CHG-20260721-171-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: reply_to:
 
 ### CHG-20260721-172
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -4376,6 +4550,7 @@ Do not end with another recommendation.
   - CHG-20260721-172-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-173
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > owner: > owner:
 - Operation: behavior
@@ -4397,6 +4572,7 @@ Do not end with another recommendation.
   - CHG-20260721-173-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: owner:
 
 ### CHG-20260721-174
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Rabbi authors through Telegram > Rabbi authors through Telegram
 - Operation: behavior
@@ -4418,6 +4594,7 @@ Do not end with another recommendation.
   - CHG-20260721-174-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Rabbi authors through Telegram
 
 ### CHG-20260721-175
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Shloimie retains visibility > Shloimie retains visibility
 - Operation: behavior
@@ -4439,6 +4616,7 @@ Do not end with another recommendation.
   - CHG-20260721-175-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Shloimie retains visibility
 
 ### CHG-20260721-176
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > status: > status:
 - Operation: behavior
@@ -4460,6 +4638,7 @@ Do not end with another recommendation.
   - CHG-20260721-176-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: status:
 
 ### CHG-20260721-177
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > pending_mailbox_and_reply_acceptance > pending_mailbox_and_reply_acceptance
 - Operation: behavior
@@ -4481,6 +4660,7 @@ Do not end with another recommendation.
   - CHG-20260721-177-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: pending_mailbox_and_reply_acceptance
 
 ### CHG-20260721-178
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### office > ### office
 - Operation: behavior
@@ -4502,6 +4682,7 @@ Do not end with another recommendation.
   - CHG-20260721-178-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### office
 
 ### CHG-20260721-179
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > display_name: > display_name:
 - Operation: behavior
@@ -4523,6 +4704,7 @@ Do not end with another recommendation.
   - CHG-20260721-179-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: display_name:
 
 ### CHG-20260721-180
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Shloimie from One Time Mishnayos > Shloimie from One Time Mishnayos
 - Operation: behavior
@@ -4544,6 +4726,7 @@ Do not end with another recommendation.
   - CHG-20260721-180-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Shloimie from One Time Mishnayos
 
 ### CHG-20260721-181
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > from_email: > from_email:
 - Operation: behavior
@@ -4565,6 +4748,7 @@ Do not end with another recommendation.
   - CHG-20260721-181-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: from_email:
 
 ### CHG-20260721-182
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -4586,6 +4770,7 @@ Do not end with another recommendation.
   - CHG-20260721-182-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-183
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > reply_to: > reply_to:
 - Operation: behavior
@@ -4607,6 +4792,7 @@ Do not end with another recommendation.
   - CHG-20260721-183-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: reply_to:
 
 ### CHG-20260721-184
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -4628,6 +4814,7 @@ Do not end with another recommendation.
   - CHG-20260721-184-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-185
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > status: > status:
 - Operation: behavior
@@ -4649,6 +4836,7 @@ Do not end with another recommendation.
   - CHG-20260721-185-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: status:
 
 ### CHG-20260721-186
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > active > active
 - Operation: behavior
@@ -4670,6 +4858,7 @@ Do not end with another recommendation.
   - CHG-20260721-186-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: active
 
 ### CHG-20260721-187
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### brand > ### brand
 - Operation: behavior
@@ -4691,6 +4880,7 @@ Do not end with another recommendation.
   - CHG-20260721-187-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### brand
 
 ### CHG-20260721-188
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > display_name: > display_name:
 - Operation: behavior
@@ -4712,6 +4902,7 @@ Do not end with another recommendation.
   - CHG-20260721-188-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: display_name:
 
 ### CHG-20260721-189
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > One Time Mishnayos > One Time Mishnayos
 - Operation: behavior
@@ -4733,6 +4924,7 @@ Do not end with another recommendation.
   - CHG-20260721-189-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: One Time Mishnayos
 
 ### CHG-20260721-190
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > from_email: > from_email:
 - Operation: behavior
@@ -4754,6 +4946,7 @@ Do not end with another recommendation.
   - CHG-20260721-190-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: from_email:
 
 ### CHG-20260721-191
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -4775,6 +4968,7 @@ Do not end with another recommendation.
   - CHG-20260721-191-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-192
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > reply_to: > reply_to:
 - Operation: behavior
@@ -4796,6 +4990,7 @@ Do not end with another recommendation.
   - CHG-20260721-192-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: reply_to:
 
 ### CHG-20260721-193
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -4817,6 +5012,7 @@ Do not end with another recommendation.
   - CHG-20260721-193-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-194
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > status: > status:
 - Operation: behavior
@@ -4838,6 +5034,7 @@ Do not end with another recommendation.
   - CHG-20260721-194-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: status:
 
 ### CHG-20260721-195
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > active > active
 - Operation: behavior
@@ -4859,6 +5056,7 @@ Do not end with another recommendation.
   - CHG-20260721-195-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: active
 
 ### CHG-20260721-196
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### account_security > ### account_security
 - Operation: behavior
@@ -4880,6 +5078,7 @@ Do not end with another recommendation.
   - CHG-20260721-196-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### account_security
 
 ### CHG-20260721-197
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > display_name: > display_name:
 - Operation: behavior
@@ -4901,6 +5100,7 @@ Do not end with another recommendation.
   - CHG-20260721-197-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: display_name:
 
 ### CHG-20260721-198
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > One Time Mishnayos Account > One Time Mishnayos Account
 - Operation: behavior
@@ -4922,6 +5122,7 @@ Do not end with another recommendation.
   - CHG-20260721-198-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: One Time Mishnayos Account
 
 ### CHG-20260721-199
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > preferred_from_email: > preferred_from_email:
 - Operation: behavior
@@ -4943,6 +5144,7 @@ Do not end with another recommendation.
   - CHG-20260721-199-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: preferred_from_email:
 
 ### CHG-20260721-200
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > account@onetimeonetime.com > account@onetimeonetime.com
 - Operation: behavior
@@ -4964,6 +5166,7 @@ Do not end with another recommendation.
   - CHG-20260721-200-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: account@onetimeonetime.com
 
 ### CHG-20260721-201
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > current_fallback_from_email: > current_fallback_from_email:
 - Operation: behavior
@@ -4985,6 +5188,7 @@ Do not end with another recommendation.
   - CHG-20260721-201-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: current_fallback_from_email:
 
 ### CHG-20260721-202
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > info@onetimeonetime.com > info@onetimeonetime.com
 - Operation: behavior
@@ -5006,6 +5210,7 @@ Do not end with another recommendation.
   - CHG-20260721-202-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: info@onetimeonetime.com
 
 ### CHG-20260721-203
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > provider: > provider:
 - Operation: behavior
@@ -5027,6 +5232,7 @@ Do not end with another recommendation.
   - CHG-20260721-203-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: provider:
 
 ### CHG-20260721-204
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Resend > Resend
 - Operation: behavior
@@ -5048,6 +5254,7 @@ Do not end with another recommendation.
   - CHG-20260721-204-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Resend
 
 ### CHG-20260721-205
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > status: > status:
 - Operation: behavior
@@ -5069,6 +5276,7 @@ Do not end with another recommendation.
   - CHG-20260721-205-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: status:
 
 ### CHG-20260721-206
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > preferred_address_pending_domain_acceptance > preferred_address_pending_domain_acceptance
 - Operation: behavior
@@ -5090,6 +5298,7 @@ Do not end with another recommendation.
   - CHG-20260721-206-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: preferred_address_pending_domain_acceptance
 
 ### CHG-20260721-207
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not claim account@ is live until verified. > Do not claim account@ is live until verified.
 - Operation: behavior
@@ -5111,6 +5320,7 @@ Do not end with another recommendation.
   - CHG-20260721-207-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not claim account@ is live until verified.
 
 ### CHG-20260721-208
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Message-class registry > ## Message-class registry
 - Operation: behavior
@@ -5132,6 +5342,7 @@ Do not end with another recommendation.
   - CHG-20260721-208-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Message-class registry
 
 ### CHG-20260721-209
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Register every customer email class. > Register every customer email class.
 - Operation: behavior
@@ -5153,6 +5364,7 @@ Do not end with another recommendation.
   - CHG-20260721-209-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Register every customer email class.
 
 ### CHG-20260721-210
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### Rabbi campaign / GHL > ### Rabbi campaign / GHL
 - Operation: behavior
@@ -5174,6 +5386,7 @@ Do not end with another recommendation.
   - CHG-20260721-210-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### Rabbi campaign / GHL
 
 ### CHG-20260721-211
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - warm_enrollment_campaign > - warm_enrollment_campaign
 - Operation: behavior
@@ -5195,6 +5408,7 @@ Do not end with another recommendation.
   - CHG-20260721-211-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - warm_enrollment_campaign
 
 ### CHG-20260721-212
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - existing_subscriber_migration > - existing_subscriber_migration
 - Operation: behavior
@@ -5216,6 +5430,7 @@ Do not end with another recommendation.
   - CHG-20260721-212-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - existing_subscriber_migration
 
 ### CHG-20260721-213
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - prelaunch_nurture > - prelaunch_nurture
 - Operation: behavior
@@ -5237,6 +5452,7 @@ Do not end with another recommendation.
   - CHG-20260721-213-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - prelaunch_nurture
 
 ### CHG-20260721-214
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - torah_newsletter > - torah_newsletter
 - Operation: behavior
@@ -5258,6 +5474,7 @@ Do not end with another recommendation.
   - CHG-20260721-214-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - torah_newsletter
 
 ### CHG-20260721-215
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - rabbi_teaching_email > - rabbi_teaching_email
 - Operation: behavior
@@ -5279,6 +5496,7 @@ Do not end with another recommendation.
   - CHG-20260721-215-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - rabbi_teaching_email
 
 ### CHG-20260721-216
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - rabbi_event_invitation > - rabbi_event_invitation
 - Operation: behavior
@@ -5300,6 +5518,7 @@ Do not end with another recommendation.
   - CHG-20260721-216-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - rabbi_event_invitation
 
 ### CHG-20260721-217
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### Rabbi personal / GHL > ### Rabbi personal / GHL
 - Operation: behavior
@@ -5321,6 +5540,7 @@ Do not end with another recommendation.
   - CHG-20260721-217-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### Rabbi personal / GHL
 
 ### CHG-20260721-218
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - torah_answer > - torah_answer
 - Operation: behavior
@@ -5342,6 +5562,7 @@ Do not end with another recommendation.
   - CHG-20260721-218-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - torah_answer
 
 ### CHG-20260721-219
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - torah_follow_up > - torah_follow_up
 - Operation: behavior
@@ -5363,6 +5584,7 @@ Do not end with another recommendation.
   - CHG-20260721-219-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - torah_follow_up
 
 ### CHG-20260721-220
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### Office / GHL > ### Office / GHL
 - Operation: behavior
@@ -5384,6 +5606,7 @@ Do not end with another recommendation.
   - CHG-20260721-220-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### Office / GHL
 
 ### CHG-20260721-221
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - support_reply > - support_reply
 - Operation: behavior
@@ -5405,6 +5628,7 @@ Do not end with another recommendation.
   - CHG-20260721-221-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - support_reply
 
 ### CHG-20260721-222
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - access_help > - access_help
 - Operation: behavior
@@ -5426,6 +5650,7 @@ Do not end with another recommendation.
   - CHG-20260721-222-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - access_help
 
 ### CHG-20260721-223
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - billing_help > - billing_help
 - Operation: behavior
@@ -5447,6 +5672,7 @@ Do not end with another recommendation.
   - CHG-20260721-223-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - billing_help
 
 ### CHG-20260721-224
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - payment_failed_support > - payment_failed_support
 - Operation: behavior
@@ -5468,6 +5694,7 @@ Do not end with another recommendation.
   - CHG-20260721-224-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - payment_failed_support
 
 ### CHG-20260721-225
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - cancellation_help > - cancellation_help
 - Operation: behavior
@@ -5489,6 +5716,7 @@ Do not end with another recommendation.
   - CHG-20260721-225-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - cancellation_help
 
 ### CHG-20260721-226
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - refund_help > - refund_help
 - Operation: behavior
@@ -5510,6 +5738,7 @@ Do not end with another recommendation.
   - CHG-20260721-226-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - refund_help
 
 ### CHG-20260721-227
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - complaint_reply > - complaint_reply
 - Operation: behavior
@@ -5531,6 +5760,7 @@ Do not end with another recommendation.
   - CHG-20260721-227-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - complaint_reply
 
 ### CHG-20260721-228
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - parent_administration_reply > - parent_administration_reply
 - Operation: behavior
@@ -5552,6 +5782,7 @@ Do not end with another recommendation.
   - CHG-20260721-228-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - parent_administration_reply
 
 ### CHG-20260721-229
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### Brand / GHL > ### Brand / GHL
 - Operation: behavior
@@ -5573,6 +5804,7 @@ Do not end with another recommendation.
   - CHG-20260721-229-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### Brand / GHL
 
 ### CHG-20260721-230
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - signup_confirmation > - signup_confirmation
 - Operation: behavior
@@ -5594,6 +5826,7 @@ Do not end with another recommendation.
   - CHG-20260721-230-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - signup_confirmation
 
 ### CHG-20260721-231
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - event_registration_confirmation > - event_registration_confirmation
 - Operation: behavior
@@ -5615,6 +5848,7 @@ Do not end with another recommendation.
   - CHG-20260721-231-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - event_registration_confirmation
 
 ### CHG-20260721-232
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - event_reminder > - event_reminder
 - Operation: behavior
@@ -5636,6 +5870,7 @@ Do not end with another recommendation.
   - CHG-20260721-232-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - event_reminder
 
 ### CHG-20260721-233
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - class_reminder > - class_reminder
 - Operation: behavior
@@ -5657,6 +5892,7 @@ Do not end with another recommendation.
   - CHG-20260721-233-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - class_reminder
 
 ### CHG-20260721-234
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - schedule_change > - schedule_change
 - Operation: behavior
@@ -5678,6 +5914,7 @@ Do not end with another recommendation.
   - CHG-20260721-234-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - schedule_change
 
 ### CHG-20260721-235
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - recording_available > - recording_available
 - Operation: behavior
@@ -5699,6 +5936,7 @@ Do not end with another recommendation.
   - CHG-20260721-235-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - recording_available
 
 ### CHG-20260721-236
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - new_video_available > - new_video_available
 - Operation: behavior
@@ -5720,6 +5958,7 @@ Do not end with another recommendation.
   - CHG-20260721-236-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - new_video_available
 
 ### CHG-20260721-237
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - worksheet_available > - worksheet_available
 - Operation: behavior
@@ -5741,6 +5980,7 @@ Do not end with another recommendation.
   - CHG-20260721-237-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - worksheet_available
 
 ### CHG-20260721-238
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - portal_welcome > - portal_welcome
 - Operation: behavior
@@ -5762,6 +6002,7 @@ Do not end with another recommendation.
   - CHG-20260721-238-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - portal_welcome
 
 ### CHG-20260721-239
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - portal_activated > - portal_activated
 - Operation: behavior
@@ -5783,6 +6024,7 @@ Do not end with another recommendation.
   - CHG-20260721-239-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - portal_activated
 
 ### CHG-20260721-240
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - payment_receipt > - payment_receipt
 - Operation: behavior
@@ -5804,6 +6046,7 @@ Do not end with another recommendation.
   - CHG-20260721-240-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - payment_receipt
 
 ### CHG-20260721-241
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - cancellation_confirmation > - cancellation_confirmation
 - Operation: behavior
@@ -5825,6 +6068,7 @@ Do not end with another recommendation.
   - CHG-20260721-241-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - cancellation_confirmation
 
 ### CHG-20260721-242
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - support_acknowledgement > - support_acknowledgement
 - Operation: behavior
@@ -5846,6 +6090,7 @@ Do not end with another recommendation.
   - CHG-20260721-242-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - support_acknowledgement
 
 ### CHG-20260721-243
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### Account security / Resend > ### Account security / Resend
 - Operation: behavior
@@ -5867,6 +6112,7 @@ Do not end with another recommendation.
   - CHG-20260721-243-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### Account security / Resend
 
 ### CHG-20260721-244
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - activation_token > - activation_token
 - Operation: behavior
@@ -5888,6 +6134,7 @@ Do not end with another recommendation.
   - CHG-20260721-244-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - activation_token
 
 ### CHG-20260721-245
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - password_setup > - password_setup
 - Operation: behavior
@@ -5909,6 +6156,7 @@ Do not end with another recommendation.
   - CHG-20260721-245-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - password_setup
 
 ### CHG-20260721-246
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - password_reset > - password_reset
 - Operation: behavior
@@ -5930,6 +6178,7 @@ Do not end with another recommendation.
   - CHG-20260721-246-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - password_reset
 
 ### CHG-20260721-247
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - email_verification > - email_verification
 - Operation: behavior
@@ -5951,6 +6200,7 @@ Do not end with another recommendation.
   - CHG-20260721-247-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - email_verification
 
 ### CHG-20260721-248
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - login_challenge > - login_challenge
 - Operation: behavior
@@ -5972,6 +6222,7 @@ Do not end with another recommendation.
   - CHG-20260721-248-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - login_challenge
 
 ### CHG-20260721-249
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - security_notice > - security_notice
 - Operation: behavior
@@ -5993,6 +6244,7 @@ Do not end with another recommendation.
   - CHG-20260721-249-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - security_notice
 
 ### CHG-20260721-250
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Every canonical workflow must reference one message class and one sender key. > Every canonical workflow must reference one message class and one sender key.
 - Operation: behavior
@@ -6014,6 +6266,7 @@ Do not end with another recommendation.
   - CHG-20260721-250-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Every canonical workflow must reference one message class and one sender key.
 
 ### CHG-20260721-251
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > No workflow may contain an unregistered sender identity. > No workflow may contain an unregistered sender identity.
 - Operation: behavior
@@ -6035,6 +6288,7 @@ Do not end with another recommendation.
   - CHG-20260721-251-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: No workflow may contain an unregistered sender identity.
 
 ### CHG-20260721-252
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Pipeline registry > ## Pipeline registry
 - Operation: behavior
@@ -6056,6 +6310,7 @@ Do not end with another recommendation.
   - CHG-20260721-252-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Pipeline registry
 
 ### CHG-20260721-253
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Create or reconcile: > Create or reconcile:
 - Operation: behavior
@@ -6077,6 +6332,7 @@ Do not end with another recommendation.
   - CHG-20260721-253-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Create or reconcile:
 
 ### CHG-20260721-254
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### One Time Enrollment and Conversion > ### One Time Enrollment and Conversion
 - Operation: behavior
@@ -6098,6 +6354,7 @@ Do not end with another recommendation.
   - CHG-20260721-254-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### One Time Enrollment and Conversion
 
 ### CHG-20260721-255
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Stages: > Stages:
 - Operation: behavior
@@ -6119,6 +6376,7 @@ Do not end with another recommendation.
   - CHG-20260721-255-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Stages:
 
 ### CHG-20260721-256
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Warm Lead > - Warm Lead
 - Operation: behavior
@@ -6140,6 +6398,7 @@ Do not end with another recommendation.
   - CHG-20260721-256-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Warm Lead
 
 ### CHG-20260721-257
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Contacted > - Contacted
 - Operation: behavior
@@ -6161,6 +6420,7 @@ Do not end with another recommendation.
   - CHG-20260721-257-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Contacted
 
 ### CHG-20260721-258
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Engaged > - Engaged
 - Operation: behavior
@@ -6182,6 +6442,7 @@ Do not end with another recommendation.
   - CHG-20260721-258-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Engaged
 
 ### CHG-20260721-259
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Signup Started > - Signup Started
 - Operation: behavior
@@ -6203,6 +6464,7 @@ Do not end with another recommendation.
   - CHG-20260721-259-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Signup Started
 
 ### CHG-20260721-260
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Signed Up > - Signed Up
 - Operation: behavior
@@ -6224,6 +6486,7 @@ Do not end with another recommendation.
   - CHG-20260721-260-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Signed Up
 
 ### CHG-20260721-261
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Active Member > - Active Member
 - Operation: behavior
@@ -6245,6 +6508,7 @@ Do not end with another recommendation.
   - CHG-20260721-261-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Active Member
 
 ### CHG-20260721-262
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Not Now > - Not Now
 - Operation: behavior
@@ -6266,6 +6530,7 @@ Do not end with another recommendation.
   - CHG-20260721-262-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Not Now
 
 ### CHG-20260721-263
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Unqualified > - Unqualified
 - Operation: behavior
@@ -6287,6 +6552,7 @@ Do not end with another recommendation.
   - CHG-20260721-263-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Unqualified
 
 ### CHG-20260721-264
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### One Time Member Support > ### One Time Member Support
 - Operation: behavior
@@ -6308,6 +6574,7 @@ Do not end with another recommendation.
   - CHG-20260721-264-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### One Time Member Support
 
 ### CHG-20260721-265
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Stages: > Stages:
 - Operation: behavior
@@ -6329,6 +6596,7 @@ Do not end with another recommendation.
   - CHG-20260721-265-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Stages:
 
 ### CHG-20260721-266
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - New > - New
 - Operation: behavior
@@ -6350,6 +6618,7 @@ Do not end with another recommendation.
   - CHG-20260721-266-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - New
 
 ### CHG-20260721-267
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Triaged > - Triaged
 - Operation: behavior
@@ -6371,6 +6640,7 @@ Do not end with another recommendation.
   - CHG-20260721-267-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Triaged
 
 ### CHG-20260721-268
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - In Progress > - In Progress
 - Operation: behavior
@@ -6392,6 +6662,7 @@ Do not end with another recommendation.
   - CHG-20260721-268-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - In Progress
 
 ### CHG-20260721-269
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Waiting on Member > - Waiting on Member
 - Operation: behavior
@@ -6413,6 +6684,7 @@ Do not end with another recommendation.
   - CHG-20260721-269-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Waiting on Member
 
 ### CHG-20260721-270
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Waiting on External Fix > - Waiting on External Fix
 - Operation: behavior
@@ -6434,6 +6706,7 @@ Do not end with another recommendation.
   - CHG-20260721-270-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Waiting on External Fix
 
 ### CHG-20260721-271
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Resolved > - Resolved
 - Operation: behavior
@@ -6455,6 +6728,7 @@ Do not end with another recommendation.
   - CHG-20260721-271-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Resolved
 
 ### CHG-20260721-272
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Closed > - Closed
 - Operation: behavior
@@ -6476,6 +6750,7 @@ Do not end with another recommendation.
   - CHG-20260721-272-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Closed
 
 ### CHG-20260721-273
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### One Time Torah Questions > ### One Time Torah Questions
 - Operation: behavior
@@ -6497,6 +6772,7 @@ Do not end with another recommendation.
   - CHG-20260721-273-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### One Time Torah Questions
 
 ### CHG-20260721-274
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Stages: > Stages:
 - Operation: behavior
@@ -6518,6 +6794,7 @@ Do not end with another recommendation.
   - CHG-20260721-274-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Stages:
 
 ### CHG-20260721-275
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - New > - New
 - Operation: behavior
@@ -6539,6 +6816,7 @@ Do not end with another recommendation.
   - CHG-20260721-275-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - New
 
 ### CHG-20260721-276
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Shloimie Review > - Shloimie Review
 - Operation: behavior
@@ -6560,6 +6838,7 @@ Do not end with another recommendation.
   - CHG-20260721-276-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Shloimie Review
 
 ### CHG-20260721-277
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Assigned to Rabbi > - Assigned to Rabbi
 - Operation: behavior
@@ -6581,6 +6860,7 @@ Do not end with another recommendation.
   - CHG-20260721-277-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Assigned to Rabbi
 
 ### CHG-20260721-278
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Rabbi Reviewing > - Rabbi Reviewing
 - Operation: behavior
@@ -6602,6 +6882,7 @@ Do not end with another recommendation.
   - CHG-20260721-278-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Rabbi Reviewing
 
 ### CHG-20260721-279
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Answer Sent > - Answer Sent
 - Operation: behavior
@@ -6623,6 +6904,7 @@ Do not end with another recommendation.
   - CHG-20260721-279-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Answer Sent
 
 ### CHG-20260721-280
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Waiting on Follow-Up > - Waiting on Follow-Up
 - Operation: behavior
@@ -6644,6 +6926,7 @@ Do not end with another recommendation.
   - CHG-20260721-280-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Waiting on Follow-Up
 
 ### CHG-20260721-281
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Closed > - Closed
 - Operation: behavior
@@ -6665,6 +6948,7 @@ Do not end with another recommendation.
   - CHG-20260721-281-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Closed
 
 ### CHG-20260721-282
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > The existing: > The existing:
 - Operation: behavior
@@ -6686,6 +6970,7 @@ Do not end with another recommendation.
   - CHG-20260721-282-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: The existing:
 
 ### CHG-20260721-283
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > One Time Business > One Time Business
 - Operation: behavior
@@ -6707,6 +6992,7 @@ Do not end with another recommendation.
   - CHG-20260721-283-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: One Time Business
 
 ### CHG-20260721-284
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > pipeline remains a compatibility alias until existing opportunities are mapped. > pipeline remains a compatibility alias until existing opportunities are mapped.
 - Operation: behavior
@@ -6728,6 +7014,7 @@ Do not end with another recommendation.
   - CHG-20260721-284-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: pipeline remains a compatibility alias until existing opportunities are mapped.
 
 ### CHG-20260721-285
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not delete or silently migrate existing opportunities in this lane. > Do not delete or silently migrate existing opportunities in this lane.
 - Operation: behavior
@@ -6749,6 +7036,7 @@ Do not end with another recommendation.
   - CHG-20260721-285-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not delete or silently migrate existing opportunities in this lane.
 
 ### CHG-20260721-286
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Use the HighLevel API to create/reconcile the three pipelines and stages when the current API supports it. > Use the HighLevel API to create/reconcile the three pipelines and stages when the current API supports it.
 - Operation: behavior
@@ -6770,6 +7058,7 @@ Do not end with another recommendation.
   - CHG-20260721-286-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Use the HighLevel API to create/reconcile the three pipelines and stages when the current API supports it.
 
 ### CHG-20260721-287
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > When API rate limiting occurs: > When API rate limiting occurs:
 - Operation: behavior
@@ -6791,6 +7080,7 @@ Do not end with another recommendation.
   - CHG-20260721-287-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: When API rate limiting occurs:
 
 ### CHG-20260721-288
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - retry with bounded exponential backoff > - retry with bounded exponential backoff
 - Operation: behavior
@@ -6812,6 +7102,7 @@ Do not end with another recommendation.
   - CHG-20260721-288-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - retry with bounded exponential backoff
 
 ### CHG-20260721-289
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - respect Retry-After > - respect Retry-After
 - Operation: behavior
@@ -6833,6 +7124,7 @@ Do not end with another recommendation.
   - CHG-20260721-289-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - respect Retry-After
 
 ### CHG-20260721-290
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - do not treat failed reads as missing assets > - do not treat failed reads as missing assets
 - Operation: behavior
@@ -6854,6 +7146,7 @@ Do not end with another recommendation.
   - CHG-20260721-290-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - do not treat failed reads as missing assets
 
 ### CHG-20260721-291
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - do not create duplicates > - do not create duplicates
 - Operation: behavior
@@ -6875,6 +7168,7 @@ Do not end with another recommendation.
   - CHG-20260721-291-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - do not create duplicates
 
 ### CHG-20260721-292
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - record a safe API result. > - record a safe API result.
 - Operation: behavior
@@ -6896,6 +7190,7 @@ Do not end with another recommendation.
   - CHG-20260721-292-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - record a safe API result.
 
 ### CHG-20260721-293
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > When an operation remains UI-only, create an Agent Mode job. > When an operation remains UI-only, create an Agent Mode job.
 - Operation: behavior
@@ -6917,6 +7212,7 @@ Do not end with another recommendation.
   - CHG-20260721-293-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: When an operation remains UI-only, create an Agent Mode job.
 
 ### CHG-20260721-294
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Event registry > ## Event registry
 - Operation: behavior
@@ -6938,6 +7234,7 @@ Do not end with another recommendation.
   - CHG-20260721-294-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Event registry
 
 ### CHG-20260721-295
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Register: > Register:
 - Operation: behavior
@@ -6959,6 +7256,7 @@ Do not end with another recommendation.
   - CHG-20260721-295-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Register:
 
 ### CHG-20260721-296
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > event_code: > event_code:
 - Operation: behavior
@@ -6980,6 +7278,7 @@ Do not end with another recommendation.
   - CHG-20260721-296-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: event_code:
 
 ### CHG-20260721-297
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > tisha-bav-2026 > tisha-bav-2026
 - Operation: behavior
@@ -7001,6 +7300,7 @@ Do not end with another recommendation.
   - CHG-20260721-297-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: tisha-bav-2026
 
 ### CHG-20260721-298
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Canonical workflow: > Canonical workflow:
 - Operation: behavior
@@ -7022,6 +7322,7 @@ Do not end with another recommendation.
   - CHG-20260721-298-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Canonical workflow:
 
 ### CHG-20260721-299
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > OT-E01 Tisha B'Av 2026 Registration and Reminders > OT-E01 Tisha B'Av 2026 Registration and Reminders
 - Operation: behavior
@@ -7043,6 +7344,7 @@ Do not end with another recommendation.
   - CHG-20260721-299-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: OT-E01 Tisha B'Av 2026 Registration and Reminders
 
 ### CHG-20260721-300
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Canonical campaign: > Canonical campaign:
 - Operation: behavior
@@ -7064,6 +7366,7 @@ Do not end with another recommendation.
   - CHG-20260721-300-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Canonical campaign:
 
 ### CHG-20260721-301
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > OT-C01 Tisha B'Av 2026 Warm Invitation > OT-C01 Tisha B'Av 2026 Warm Invitation
 - Operation: behavior
@@ -7085,6 +7388,7 @@ Do not end with another recommendation.
   - CHG-20260721-301-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: OT-C01 Tisha B'Av 2026 Warm Invitation
 
 ### CHG-20260721-302
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Event invitation sender: > Event invitation sender:
 - Operation: behavior
@@ -7106,6 +7410,7 @@ Do not end with another recommendation.
   - CHG-20260721-302-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Event invitation sender:
 
 ### CHG-20260721-303
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > rabbi_campaign > rabbi_campaign
 - Operation: behavior
@@ -7127,6 +7432,7 @@ Do not end with another recommendation.
   - CHG-20260721-303-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: rabbi_campaign
 
 ### CHG-20260721-304
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Registration/reminder sender: > Registration/reminder sender:
 - Operation: behavior
@@ -7148,6 +7454,7 @@ Do not end with another recommendation.
   - CHG-20260721-304-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Registration/reminder sender:
 
 ### CHG-20260721-305
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > brand or rabbi_campaign according to the approved prompt version. > brand or rabbi_campaign according to the approved prompt version.
 - Operation: behavior
@@ -7169,6 +7476,7 @@ Do not end with another recommendation.
   - CHG-20260721-305-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: brand or rabbi_campaign according to the approved prompt version.
 
 ### CHG-20260721-306
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Preserve event tags and values from the Tisha B'Av lane when already present. > Preserve event tags and values from the Tisha B'Av lane when already present.
 - Operation: behavior
@@ -7190,6 +7498,7 @@ Do not end with another recommendation.
   - CHG-20260721-306-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Preserve event tags and values from the Tisha B'Av lane when already present.
 
 ### CHG-20260721-307
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not duplicate them. > Do not duplicate them.
 - Operation: behavior
@@ -7211,6 +7520,7 @@ Do not end with another recommendation.
   - CHG-20260721-307-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not duplicate them.
 
 ### CHG-20260721-308
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Workflow sender mapping > ## Workflow sender mapping
 - Operation: behavior
@@ -7232,6 +7542,7 @@ Do not end with another recommendation.
   - CHG-20260721-308-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Workflow sender mapping
 
 ### CHG-20260721-309
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Update all canonical workflow prompt files and checklists. > Update all canonical workflow prompt files and checklists.
 - Operation: behavior
@@ -7253,6 +7564,7 @@ Do not end with another recommendation.
   - CHG-20260721-309-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Update all canonical workflow prompt files and checklists.
 
 ### CHG-20260721-310
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### rabbi_campaign > ### rabbi_campaign
 - Operation: behavior
@@ -7274,6 +7586,7 @@ Do not end with another recommendation.
   - CHG-20260721-310-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### rabbi_campaign
 
 ### CHG-20260721-311
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-02A Existing Subscriber Migration 2026 v1 > - OT-02A Existing Subscriber Migration 2026 v1
 - Operation: behavior
@@ -7295,6 +7608,7 @@ Do not end with another recommendation.
   - CHG-20260721-311-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-02A Existing Subscriber Migration 2026 v1
 
 ### CHG-20260721-312
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-02B New Lead Nurture v1 > - OT-02B New Lead Nurture v1
 - Operation: behavior
@@ -7316,6 +7630,7 @@ Do not end with another recommendation.
   - CHG-20260721-312-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-02B New Lead Nurture v1
 
 ### CHG-20260721-313
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-C01 Tisha B'Av 2026 Warm Invitation > - OT-C01 Tisha B'Av 2026 Warm Invitation
 - Operation: behavior
@@ -7337,6 +7652,7 @@ Do not end with another recommendation.
   - CHG-20260721-313-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-C01 Tisha B'Av 2026 Warm Invitation
 
 ### CHG-20260721-314
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - future Torah newsletters > - future Torah newsletters
 - Operation: behavior
@@ -7358,6 +7674,7 @@ Do not end with another recommendation.
   - CHG-20260721-314-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - future Torah newsletters
 
 ### CHG-20260721-315
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### brand > ### brand
 - Operation: behavior
@@ -7379,6 +7696,7 @@ Do not end with another recommendation.
   - CHG-20260721-315-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### brand
 
 ### CHG-20260721-316
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-04 Payment Active confirmation > - OT-04 Payment Active confirmation
 - Operation: behavior
@@ -7400,6 +7718,7 @@ Do not end with another recommendation.
   - CHG-20260721-316-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-04 Payment Active confirmation
 
 ### CHG-20260721-317
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-07 Parent Portal companion/welcome > - OT-07 Parent Portal companion/welcome
 - Operation: behavior
@@ -7421,6 +7740,7 @@ Do not end with another recommendation.
   - CHG-20260721-317-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-07 Parent Portal companion/welcome
 
 ### CHG-20260721-318
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-08 Parent Portal Activated > - OT-08 Parent Portal Activated
 - Operation: behavior
@@ -7442,6 +7762,7 @@ Do not end with another recommendation.
   - CHG-20260721-318-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-08 Parent Portal Activated
 
 ### CHG-20260721-319
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-09 Parent Class Reminder > - OT-09 Parent Class Reminder
 - Operation: behavior
@@ -7463,6 +7784,7 @@ Do not end with another recommendation.
   - CHG-20260721-319-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-09 Parent Class Reminder
 
 ### CHG-20260721-320
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-10 New Recording Available > - OT-10 New Recording Available
 - Operation: behavior
@@ -7484,6 +7806,7 @@ Do not end with another recommendation.
   - CHG-20260721-320-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-10 New Recording Available
 
 ### CHG-20260721-321
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-E01 event registration/reminders unless explicitly Rabbi-authored > - OT-E01 event registration/reminders unless explicitly Rabbi-authored
 - Operation: behavior
@@ -7505,6 +7828,7 @@ Do not end with another recommendation.
   - CHG-20260721-321-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-E01 event registration/reminders unless explicitly Rabbi-authored
 
 ### CHG-20260721-322
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - signup confirmations > - signup confirmations
 - Operation: behavior
@@ -7526,6 +7850,7 @@ Do not end with another recommendation.
   - CHG-20260721-322-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - signup confirmations
 
 ### CHG-20260721-323
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - schedule notices > - schedule notices
 - Operation: behavior
@@ -7547,6 +7872,7 @@ Do not end with another recommendation.
   - CHG-20260721-323-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - schedule notices
 
 ### CHG-20260721-324
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - content notices > - content notices
 - Operation: behavior
@@ -7568,6 +7894,7 @@ Do not end with another recommendation.
   - CHG-20260721-324-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - content notices
 
 ### CHG-20260721-325
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### office > ### office
 - Operation: behavior
@@ -7589,6 +7916,7 @@ Do not end with another recommendation.
   - CHG-20260721-325-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### office
 
 ### CHG-20260721-326
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-05 Payment Failed / Grace > - OT-05 Payment Failed / Grace
 - Operation: behavior
@@ -7610,6 +7938,7 @@ Do not end with another recommendation.
   - CHG-20260721-326-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-05 Payment Failed / Grace
 
 ### CHG-20260721-328
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - OT-13 Refund / Chargeback > - OT-13 Refund / Chargeback
 - Operation: behavior
@@ -7631,6 +7960,7 @@ Do not end with another recommendation.
   - CHG-20260721-328-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - OT-13 Refund / Chargeback
 
 ### CHG-20260721-329
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - customer-support replies > - customer-support replies
 - Operation: behavior
@@ -7652,6 +7982,7 @@ Do not end with another recommendation.
   - CHG-20260721-329-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - customer-support replies
 
 ### CHG-20260721-330
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### account_security / Resend > ### account_security / Resend
 - Operation: behavior
@@ -7673,6 +8004,7 @@ Do not end with another recommendation.
   - CHG-20260721-330-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### account_security / Resend
 
 ### CHG-20260721-331
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - secure activation/setup > - secure activation/setup
 - Operation: behavior
@@ -7694,6 +8026,7 @@ Do not end with another recommendation.
   - CHG-20260721-331-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - secure activation/setup
 
 ### CHG-20260721-332
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - password reset > - password reset
 - Operation: behavior
@@ -7715,6 +8048,7 @@ Do not end with another recommendation.
   - CHG-20260721-332-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - password reset
 
 ### CHG-20260721-333
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - email verification > - email verification
 - Operation: behavior
@@ -7736,6 +8070,7 @@ Do not end with another recommendation.
   - CHG-20260721-333-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - email verification
 
 ### CHG-20260721-334
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Administrator challenge > - Administrator challenge
 - Operation: behavior
@@ -7757,6 +8092,7 @@ Do not end with another recommendation.
   - CHG-20260721-334-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Administrator challenge
 
 ### CHG-20260721-335
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Split OT-07 explicitly: > Split OT-07 explicitly:
 - Operation: behavior
@@ -7778,6 +8114,7 @@ Do not end with another recommendation.
   - CHG-20260721-335-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Split OT-07 explicitly:
 
 ### CHG-20260721-336
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > GHL sends the companion/welcome email. > GHL sends the companion/welcome email.
 - Operation: behavior
@@ -7799,6 +8136,7 @@ Do not end with another recommendation.
   - CHG-20260721-336-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: GHL sends the companion/welcome email.
 
 ### CHG-20260721-337
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > One Time/Resend sends the secure activation token. > One Time/Resend sends the secure activation token.
 - Operation: behavior
@@ -7820,6 +8158,7 @@ Do not end with another recommendation.
   - CHG-20260721-337-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: One Time/Resend sends the secure activation token.
 
 ### CHG-20260721-338
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > GHL must never store or send the activation/reset token. > GHL must never store or send the activation/reset token.
 - Operation: behavior
@@ -7841,6 +8180,7 @@ Do not end with another recommendation.
   - CHG-20260721-338-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: GHL must never store or send the activation/reset token.
 
 ### CHG-20260721-339
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## OT-A1 bot > ## OT-A1 bot
 - Operation: behavior
@@ -7862,6 +8202,7 @@ Do not end with another recommendation.
   - CHG-20260721-339-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## OT-A1 bot
 
 ### CHG-20260721-340
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Preserve one canonical bot: > Preserve one canonical bot:
 - Operation: behavior
@@ -7883,6 +8224,7 @@ Do not end with another recommendation.
   - CHG-20260721-340-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Preserve one canonical bot:
 
 ### CHG-20260721-341
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > OT-A1 One Time Enrollment Assistant > OT-A1 One Time Enrollment Assistant
 - Operation: behavior
@@ -7904,6 +8246,7 @@ Do not end with another recommendation.
   - CHG-20260721-341-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: OT-A1 One Time Enrollment Assistant
 
 ### CHG-20260721-342
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Channels: > Channels:
 - Operation: behavior
@@ -7925,6 +8268,7 @@ Do not end with another recommendation.
   - CHG-20260721-342-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Channels:
 
 ### CHG-20260721-343
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Website Live Chat > - Website Live Chat
 - Operation: behavior
@@ -7946,6 +8290,7 @@ Do not end with another recommendation.
   - CHG-20260721-343-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Website Live Chat
 
 ### CHG-20260721-344
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - WhatsApp > - WhatsApp
 - Operation: behavior
@@ -7967,6 +8312,7 @@ Do not end with another recommendation.
   - CHG-20260721-344-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - WhatsApp
 
 ### CHG-20260721-345
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Voice remains deferred. > Voice remains deferred.
 - Operation: behavior
@@ -7988,6 +8334,7 @@ Do not end with another recommendation.
   - CHG-20260721-345-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Voice remains deferred.
 
 ### CHG-20260721-346
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Default operational owner: > Default operational owner:
 - Operation: behavior
@@ -8009,6 +8356,7 @@ Do not end with another recommendation.
   - CHG-20260721-346-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Default operational owner:
 
 ### CHG-20260721-347
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Shloimie > Shloimie
 - Operation: behavior
@@ -8030,6 +8378,7 @@ Do not end with another recommendation.
   - CHG-20260721-347-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Shloimie
 
 ### CHG-20260721-348
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Only explicit substantive Torah questions route to: > Only explicit substantive Torah questions route to:
 - Operation: behavior
@@ -8051,6 +8400,7 @@ Do not end with another recommendation.
   - CHG-20260721-348-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Only explicit substantive Torah questions route to:
 
 ### CHG-20260721-349
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > One Time Torah Questions > One Time Torah Questions
 - Operation: behavior
@@ -8072,6 +8422,7 @@ Do not end with another recommendation.
   - CHG-20260721-349-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: One Time Torah Questions
 
 ### CHG-20260721-350
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not create: > Do not create:
 - Operation: behavior
@@ -8093,6 +8444,7 @@ Do not end with another recommendation.
   - CHG-20260721-350-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not create:
 
 ### CHG-20260721-351
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Human Handoff > - Human Handoff
 - Operation: behavior
@@ -8114,6 +8466,7 @@ Do not end with another recommendation.
   - CHG-20260721-351-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Human Handoff
 
 ### CHG-20260721-352
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - human tasks > - human tasks
 - Operation: behavior
@@ -8135,6 +8488,7 @@ Do not end with another recommendation.
   - CHG-20260721-352-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - human tasks
 
 ### CHG-20260721-353
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - separate WhatsApp qualification bot > - separate WhatsApp qualification bot
 - Operation: behavior
@@ -8156,6 +8510,7 @@ Do not end with another recommendation.
   - CHG-20260721-353-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - separate WhatsApp qualification bot
 
 ### CHG-20260721-354
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - duplicate lead workflows > - duplicate lead workflows
 - Operation: behavior
@@ -8177,6 +8532,7 @@ Do not end with another recommendation.
   - CHG-20260721-354-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - duplicate lead workflows
 
 ### CHG-20260721-355
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - automatic promise that a person will reply. > - automatic promise that a person will reply.
 - Operation: behavior
@@ -8198,6 +8554,7 @@ Do not end with another recommendation.
   - CHG-20260721-355-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - automatic promise that a person will reply.
 
 ### CHG-20260721-356
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Fallback remains: > Fallback remains:
 - Operation: behavior
@@ -8219,6 +8576,7 @@ Do not end with another recommendation.
   - CHG-20260721-356-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Fallback remains:
 
 ### CHG-20260721-357
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > I do not have that information confirmed. > I do not have that information confirmed.
 - Operation: behavior
@@ -8240,6 +8598,7 @@ Do not end with another recommendation.
   - CHG-20260721-357-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: I do not have that information confirmed.
 
 ### CHG-20260721-358
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Please email info@onetimeonetime.com. > Please email info@onetimeonetime.com.
 - Operation: behavior
@@ -8261,6 +8620,7 @@ Do not end with another recommendation.
   - CHG-20260721-358-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Please email info@onetimeonetime.com.
 
 ### CHG-20260721-359
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Telegram contract > ## Telegram contract
 - Operation: behavior
@@ -8282,6 +8642,7 @@ Do not end with another recommendation.
   - CHG-20260721-359-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Telegram contract
 
 ### CHG-20260721-360
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Create: > Create:
 - Operation: behavior
@@ -8303,6 +8664,7 @@ Do not end with another recommendation.
   - CHG-20260721-360-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Create:
 
 ### CHG-20260721-361
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/registry/rabbi-telegram-contract.yaml > integrations/highlevel/registry/rabbi-telegram-contract.yaml
 - Operation: behavior
@@ -8324,6 +8686,7 @@ Do not end with another recommendation.
   - CHG-20260721-361-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/registry/rabbi-telegram-contract.yaml
 
 ### CHG-20260721-362
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Register: > Register:
 - Operation: behavior
@@ -8345,6 +8708,7 @@ Do not end with another recommendation.
   - CHG-20260721-362-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Register:
 
 ### CHG-20260721-363
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > one_time_rabbi_torah_console > one_time_rabbi_torah_console
 - Operation: behavior
@@ -8366,6 +8730,7 @@ Do not end with another recommendation.
   - CHG-20260721-363-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: one_time_rabbi_torah_console
 
 ### CHG-20260721-364
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Allowed: > Allowed:
 - Operation: behavior
@@ -8387,6 +8752,7 @@ Do not end with another recommendation.
   - CHG-20260721-364-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Allowed:
 
 ### CHG-20260721-365
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - list assigned Torah questions > - list assigned Torah questions
 - Operation: behavior
@@ -8408,6 +8774,7 @@ Do not end with another recommendation.
   - CHG-20260721-365-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - list assigned Torah questions
 
 ### CHG-20260721-366
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - open question > - open question
 - Operation: behavior
@@ -8429,6 +8796,7 @@ Do not end with another recommendation.
   - CHG-20260721-366-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - open question
 
 ### CHG-20260721-367
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - accept Rabbi text or voice response > - accept Rabbi text or voice response
 - Operation: behavior
@@ -8450,6 +8818,7 @@ Do not end with another recommendation.
   - CHG-20260721-367-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - accept Rabbi text or voice response
 
 ### CHG-20260721-368
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - produce a preview > - produce a preview
 - Operation: behavior
@@ -8471,6 +8840,7 @@ Do not end with another recommendation.
   - CHG-20260721-368-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - produce a preview
 
 ### CHG-20260721-369
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - save draft > - save draft
 - Operation: behavior
@@ -8492,6 +8862,7 @@ Do not end with another recommendation.
   - CHG-20260721-369-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - save draft
 
 ### CHG-20260721-370
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - send confirmed reply through the same GHL conversation > - send confirmed reply through the same GHL conversation
 - Operation: behavior
@@ -8513,6 +8884,7 @@ Do not end with another recommendation.
   - CHG-20260721-370-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - send confirmed reply through the same GHL conversation
 
 ### CHG-20260721-371
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - return question to Shloimie > - return question to Shloimie
 - Operation: behavior
@@ -8534,6 +8906,7 @@ Do not end with another recommendation.
   - CHG-20260721-371-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - return question to Shloimie
 
 ### CHG-20260721-372
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - close question > - close question
 - Operation: behavior
@@ -8555,6 +8928,7 @@ Do not end with another recommendation.
   - CHG-20260721-372-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - close question
 
 ### CHG-20260721-373
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - draft Torah newsletter > - draft Torah newsletter
 - Operation: behavior
@@ -8576,6 +8950,7 @@ Do not end with another recommendation.
   - CHG-20260721-373-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - draft Torah newsletter
 
 ### CHG-20260721-374
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - draft warm enrollment email > - draft warm enrollment email
 - Operation: behavior
@@ -8597,6 +8972,7 @@ Do not end with another recommendation.
   - CHG-20260721-374-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - draft warm enrollment email
 
 ### CHG-20260721-375
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - show campaign audience and suppression results > - show campaign audience and suppression results
 - Operation: behavior
@@ -8618,6 +8994,7 @@ Do not end with another recommendation.
   - CHG-20260721-375-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - show campaign audience and suppression results
 
 ### CHG-20260721-376
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - trigger an approved campaign only after explicit confirmation. > - trigger an approved campaign only after explicit confirmation.
 - Operation: behavior
@@ -8639,6 +9016,7 @@ Do not end with another recommendation.
   - CHG-20260721-376-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - trigger an approved campaign only after explicit confirmation.
 
 ### CHG-20260721-377
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Forbidden: > Forbidden:
 - Operation: behavior
@@ -8660,6 +9038,7 @@ Do not end with another recommendation.
   - CHG-20260721-377-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Forbidden:
 
 ### CHG-20260721-378
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - general support queue > - general support queue
 - Operation: behavior
@@ -8681,6 +9060,7 @@ Do not end with another recommendation.
   - CHG-20260721-378-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - general support queue
 
 ### CHG-20260721-379
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - technical issues > - technical issues
 - Operation: behavior
@@ -8702,6 +9082,7 @@ Do not end with another recommendation.
   - CHG-20260721-379-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - technical issues
 
 ### CHG-20260721-380
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - billing > - billing
 - Operation: behavior
@@ -8723,6 +9104,7 @@ Do not end with another recommendation.
   - CHG-20260721-380-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - billing
 
 ### CHG-20260721-381
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - parent administration > - parent administration
 - Operation: behavior
@@ -8744,6 +9126,7 @@ Do not end with another recommendation.
   - CHG-20260721-381-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - parent administration
 
 ### CHG-20260721-382
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - independent AI Torah answers > - independent AI Torah answers
 - Operation: behavior
@@ -8765,6 +9148,7 @@ Do not end with another recommendation.
   - CHG-20260721-382-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - independent AI Torah answers
 
 ### CHG-20260721-383
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - independent bulk audience selection > - independent bulk audience selection
 - Operation: behavior
@@ -8786,6 +9170,7 @@ Do not end with another recommendation.
   - CHG-20260721-383-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - independent bulk audience selection
 
 ### CHG-20260721-384
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - separate Telegram transcript > - separate Telegram transcript
 - Operation: behavior
@@ -8807,6 +9192,7 @@ Do not end with another recommendation.
   - CHG-20260721-384-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - separate Telegram transcript
 
 ### CHG-20260721-385
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - vague bulk-send command. > - vague bulk-send command.
 - Operation: behavior
@@ -8828,6 +9214,7 @@ Do not end with another recommendation.
   - CHG-20260721-385-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - vague bulk-send command.
 
 ### CHG-20260721-386
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Custom values > ## Custom values
 - Operation: behavior
@@ -8849,6 +9236,7 @@ Do not end with another recommendation.
   - CHG-20260721-386-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Custom values
 
 ### CHG-20260721-387
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Create/reconcile registered sender custom values. > Create/reconcile registered sender custom values.
 - Operation: behavior
@@ -8870,6 +9258,7 @@ Do not end with another recommendation.
   - CHG-20260721-387-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Create/reconcile registered sender custom values.
 
 ### CHG-20260721-388
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Suggested folder: > Suggested folder:
 - Operation: behavior
@@ -8891,6 +9280,7 @@ Do not end with another recommendation.
   - CHG-20260721-388-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Suggested folder:
 
 ### CHG-20260721-389
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > One Time - Senders > One Time - Senders
 - Operation: behavior
@@ -8912,6 +9302,7 @@ Do not end with another recommendation.
   - CHG-20260721-389-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: One Time - Senders
 
 ### CHG-20260721-390
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Values: > Values:
 - Operation: behavior
@@ -8933,6 +9324,7 @@ Do not end with another recommendation.
   - CHG-20260721-390-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Values:
 
 ### CHG-20260721-391
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Rabbi Campaign Sender Name > - One Time Rabbi Campaign Sender Name
 - Operation: behavior
@@ -8954,6 +9346,7 @@ Do not end with another recommendation.
   - CHG-20260721-391-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Rabbi Campaign Sender Name
 
 ### CHG-20260721-392
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Rabbi Campaign Phase 1 From > - One Time Rabbi Campaign Phase 1 From
 - Operation: behavior
@@ -8975,6 +9368,7 @@ Do not end with another recommendation.
   - CHG-20260721-392-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Rabbi Campaign Phase 1 From
 
 ### CHG-20260721-393
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Rabbi Campaign Phase 2 From > - One Time Rabbi Campaign Phase 2 From
 - Operation: behavior
@@ -8996,6 +9390,7 @@ Do not end with another recommendation.
   - CHG-20260721-393-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Rabbi Campaign Phase 2 From
 
 ### CHG-20260721-394
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Rabbi Personal Sender Name > - One Time Rabbi Personal Sender Name
 - Operation: behavior
@@ -9017,6 +9412,7 @@ Do not end with another recommendation.
   - CHG-20260721-394-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Rabbi Personal Sender Name
 
 ### CHG-20260721-395
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Rabbi Personal From > - One Time Rabbi Personal From
 - Operation: behavior
@@ -9038,6 +9434,7 @@ Do not end with another recommendation.
   - CHG-20260721-395-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Rabbi Personal From
 
 ### CHG-20260721-396
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Office Sender Name > - One Time Office Sender Name
 - Operation: behavior
@@ -9059,6 +9456,7 @@ Do not end with another recommendation.
   - CHG-20260721-396-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Office Sender Name
 
 ### CHG-20260721-397
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Office From > - One Time Office From
 - Operation: behavior
@@ -9080,6 +9478,7 @@ Do not end with another recommendation.
   - CHG-20260721-397-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Office From
 
 ### CHG-20260721-398
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Brand Sender Name > - One Time Brand Sender Name
 - Operation: behavior
@@ -9101,6 +9500,7 @@ Do not end with another recommendation.
   - CHG-20260721-398-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Brand Sender Name
 
 ### CHG-20260721-399
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Brand From > - One Time Brand From
 - Operation: behavior
@@ -9122,6 +9522,7 @@ Do not end with another recommendation.
   - CHG-20260721-399-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Brand From
 
 ### CHG-20260721-400
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Account Sender Name > - One Time Account Sender Name
 - Operation: behavior
@@ -9143,6 +9544,7 @@ Do not end with another recommendation.
   - CHG-20260721-400-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Account Sender Name
 
 ### CHG-20260721-401
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Account Preferred From > - One Time Account Preferred From
 - Operation: behavior
@@ -9164,6 +9566,7 @@ Do not end with another recommendation.
   - CHG-20260721-401-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Account Preferred From
 
 ### CHG-20260721-402
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - One Time Default Reply-To > - One Time Default Reply-To
 - Operation: behavior
@@ -9185,6 +9588,7 @@ Do not end with another recommendation.
   - CHG-20260721-402-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - One Time Default Reply-To
 
 ### CHG-20260721-403
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not delete the existing generic sender values. > Do not delete the existing generic sender values.
 - Operation: behavior
@@ -9206,6 +9610,7 @@ Do not end with another recommendation.
   - CHG-20260721-403-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not delete the existing generic sender values.
 
 ### CHG-20260721-404
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Mark them as compatibility aliases and map them to the appropriate canonical sender. > Mark them as compatibility aliases and map them to the appropriate canonical sender.
 - Operation: behavior
@@ -9227,6 +9632,7 @@ Do not end with another recommendation.
   - CHG-20260721-404-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Mark them as compatibility aliases and map them to the appropriate canonical sender.
 
 ### CHG-20260721-405
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Use the HighLevel API to create the custom values when supported. > Use the HighLevel API to create the custom values when supported.
 - Operation: behavior
@@ -9248,6 +9654,7 @@ Do not end with another recommendation.
   - CHG-20260721-405-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Use the HighLevel API to create the custom values when supported.
 
 ### CHG-20260721-406
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not activate unresolved addresses. > Do not activate unresolved addresses.
 - Operation: behavior
@@ -9269,6 +9676,7 @@ Do not end with another recommendation.
   - CHG-20260721-406-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not activate unresolved addresses.
 
 ### CHG-20260721-407
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Prompt updates > ## Prompt updates
 - Operation: behavior
@@ -9290,6 +9698,7 @@ Do not end with another recommendation.
   - CHG-20260721-407-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Prompt updates
 
 ### CHG-20260721-408
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Update every workflow AI prompt and checklist under: > Update every workflow AI prompt and checklist under:
 - Operation: behavior
@@ -9311,6 +9720,7 @@ Do not end with another recommendation.
   - CHG-20260721-408-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Update every workflow AI prompt and checklist under:
 
 ### CHG-20260721-409
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/ai-workflow-prompts/ > integrations/highlevel/ai-workflow-prompts/
 - Operation: behavior
@@ -9332,6 +9742,7 @@ Do not end with another recommendation.
   - CHG-20260721-409-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/ai-workflow-prompts/
 
 ### CHG-20260721-410
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/workflow-checklists/ > integrations/highlevel/workflow-checklists/
 - Operation: behavior
@@ -9353,6 +9764,7 @@ Do not end with another recommendation.
   - CHG-20260721-410-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/workflow-checklists/
 
 ### CHG-20260721-411
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Also update: > Also update:
 - Operation: behavior
@@ -9374,6 +9786,7 @@ Do not end with another recommendation.
   - CHG-20260721-411-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Also update:
 
 ### CHG-20260721-412
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/prompts/active/ > integrations/highlevel/prompts/active/
 - Operation: behavior
@@ -9395,6 +9808,7 @@ Do not end with another recommendation.
   - CHG-20260721-412-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/prompts/active/
 
 ### CHG-20260721-413
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/agent-prompts/ > integrations/highlevel/agent-prompts/
 - Operation: behavior
@@ -9416,6 +9830,7 @@ Do not end with another recommendation.
   - CHG-20260721-413-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/agent-prompts/
 
 ### CHG-20260721-414
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/knowledge-bases/active/ > integrations/highlevel/knowledge-bases/active/
 - Operation: behavior
@@ -9437,6 +9852,7 @@ Do not end with another recommendation.
   - CHG-20260721-414-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/knowledge-bases/active/
 
 ### CHG-20260721-415
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Each workflow prompt must contain: > Each workflow prompt must contain:
 - Operation: behavior
@@ -9458,6 +9874,7 @@ Do not end with another recommendation.
   - CHG-20260721-415-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Each workflow prompt must contain:
 
 ### CHG-20260721-416
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - message_class > - message_class
 - Operation: behavior
@@ -9479,6 +9896,7 @@ Do not end with another recommendation.
   - CHG-20260721-416-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - message_class
 
 ### CHG-20260721-417
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - sender_key > - sender_key
 - Operation: behavior
@@ -9500,6 +9918,7 @@ Do not end with another recommendation.
   - CHG-20260721-417-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - sender_key
 
 ### CHG-20260721-418
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - exact workflow > - exact workflow
 - Operation: behavior
@@ -9521,6 +9940,7 @@ Do not end with another recommendation.
   - CHG-20260721-418-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - exact workflow
 
 ### CHG-20260721-419
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - exact folder > - exact folder
 - Operation: behavior
@@ -9542,6 +9962,7 @@ Do not end with another recommendation.
   - CHG-20260721-419-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - exact folder
 
 ### CHG-20260721-420
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - exact trigger > - exact trigger
 - Operation: behavior
@@ -9563,6 +9984,7 @@ Do not end with another recommendation.
   - CHG-20260721-420-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - exact trigger
 
 ### CHG-20260721-421
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - no-send/no-publish default > - no-send/no-publish default
 - Operation: behavior
@@ -9584,6 +10006,7 @@ Do not end with another recommendation.
   - CHG-20260721-421-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - no-send/no-publish default
 
 ### CHG-20260721-422
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - dependency on the registry > - dependency on the registry
 - Operation: behavior
@@ -9605,6 +10028,7 @@ Do not end with another recommendation.
   - CHG-20260721-422-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - dependency on the registry
 
 ### CHG-20260721-423
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - exact custom values selected from the picker > - exact custom values selected from the picker
 - Operation: behavior
@@ -9626,6 +10050,7 @@ Do not end with another recommendation.
   - CHG-20260721-423-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - exact custom values selected from the picker
 
 ### CHG-20260721-424
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - prohibition on guessed sender text. > - prohibition on guessed sender text.
 - Operation: behavior
@@ -9647,6 +10072,7 @@ Do not end with another recommendation.
   - CHG-20260721-424-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - prohibition on guessed sender text.
 
 ### CHG-20260721-425
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Agent Mode queue regeneration > ## Agent Mode queue regeneration
 - Operation: behavior
@@ -9668,6 +10094,7 @@ Do not end with another recommendation.
   - CHG-20260721-425-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Agent Mode queue regeneration
 
 ### CHG-20260721-426
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Update: > Update:
 - Operation: behavior
@@ -9689,6 +10116,7 @@ Do not end with another recommendation.
   - CHG-20260721-426-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Update:
 
 ### CHG-20260721-427
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json > integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json
 - Operation: behavior
@@ -9710,6 +10138,7 @@ Do not end with another recommendation.
   - CHG-20260721-427-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json
 
 ### CHG-20260721-428
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json > integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json
 - Operation: behavior
@@ -9731,6 +10160,7 @@ Do not end with another recommendation.
   - CHG-20260721-428-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json
 
 ### CHG-20260721-429
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Add ordered jobs: > Add ordered jobs:
 - Operation: behavior
@@ -9752,6 +10182,7 @@ Do not end with another recommendation.
   - CHG-20260721-429-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Add ordered jobs:
 
 ### CHG-20260721-430
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - create sender custom-value folder > - create sender custom-value folder
 - Operation: behavior
@@ -9773,6 +10204,7 @@ Do not end with another recommendation.
   - CHG-20260721-430-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - create sender custom-value folder
 
 ### CHG-20260721-431
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - reconcile sender values > - reconcile sender values
 - Operation: behavior
@@ -9794,6 +10226,7 @@ Do not end with another recommendation.
   - CHG-20260721-431-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - reconcile sender values
 
 ### CHG-20260721-432
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - create/reconcile pipelines > - create/reconcile pipelines
 - Operation: behavior
@@ -9815,6 +10248,7 @@ Do not end with another recommendation.
   - CHG-20260721-432-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - create/reconcile pipelines
 
 ### CHG-20260721-433
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - update workflow sender identities > - update workflow sender identities
 - Operation: behavior
@@ -9836,6 +10270,7 @@ Do not end with another recommendation.
   - CHG-20260721-433-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - update workflow sender identities
 
 ### CHG-20260721-434
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - update OT-A1 > - update OT-A1
 - Operation: behavior
@@ -9857,6 +10292,7 @@ Do not end with another recommendation.
   - CHG-20260721-434-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - update OT-A1
 
 ### CHG-20260721-435
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - verify sending domain > - verify sending domain
 - Operation: behavior
@@ -9878,6 +10314,7 @@ Do not end with another recommendation.
   - CHG-20260721-435-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - verify sending domain
 
 ### CHG-20260721-436
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - phase-1 seed > - phase-1 seed
 - Operation: behavior
@@ -9899,6 +10336,7 @@ Do not end with another recommendation.
   - CHG-20260721-436-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - phase-1 seed
 
 ### CHG-20260721-437
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - office seed > - office seed
 - Operation: behavior
@@ -9920,6 +10358,7 @@ Do not end with another recommendation.
   - CHG-20260721-437-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - office seed
 
 ### CHG-20260721-438
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - brand seed > - brand seed
 - Operation: behavior
@@ -9941,6 +10380,7 @@ Do not end with another recommendation.
   - CHG-20260721-438-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - brand seed
 
 ### CHG-20260721-439
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - capture workflow IDs > - capture workflow IDs
 - Operation: behavior
@@ -9962,6 +10402,7 @@ Do not end with another recommendation.
   - CHG-20260721-439-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - capture workflow IDs
 
 ### CHG-20260721-440
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - capture pipeline IDs > - capture pipeline IDs
 - Operation: behavior
@@ -9983,6 +10424,7 @@ Do not end with another recommendation.
   - CHG-20260721-440-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - capture pipeline IDs
 
 ### CHG-20260721-441
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - save/readback > - save/readback
 - Operation: behavior
@@ -10004,6 +10446,7 @@ Do not end with another recommendation.
   - CHG-20260721-441-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - save/readback
 
 ### CHG-20260721-442
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - phase-2 rabbi@ acceptance, blocked until prerequisites pass. > - phase-2 rabbi@ acceptance, blocked until prerequisites pass.
 - Operation: behavior
@@ -10025,6 +10468,7 @@ Do not end with another recommendation.
   - CHG-20260721-442-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - phase-2 rabbi@ acceptance, blocked until prerequisites pass.
 
 ### CHG-20260721-443
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Every job must instruct Agent Mode to: > Every job must instruct Agent Mode to:
 - Operation: behavior
@@ -10046,6 +10490,7 @@ Do not end with another recommendation.
   - CHG-20260721-443-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Every job must instruct Agent Mode to:
 
 ### CHG-20260721-444
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > use the pinned registry commit > use the pinned registry commit
 - Operation: behavior
@@ -10067,6 +10512,7 @@ Do not end with another recommendation.
   - CHG-20260721-444-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: use the pinned registry commit
 
 ### CHG-20260721-445
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > perform only registered actions > perform only registered actions
 - Operation: behavior
@@ -10088,6 +10534,7 @@ Do not end with another recommendation.
   - CHG-20260721-445-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: perform only registered actions
 
 ### CHG-20260721-446
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > click Save > click Save
 - Operation: behavior
@@ -10109,6 +10556,7 @@ Do not end with another recommendation.
   - CHG-20260721-446-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: click Save
 
 ### CHG-20260721-447
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > reopen and verify > reopen and verify
 - Operation: behavior
@@ -10130,6 +10578,7 @@ Do not end with another recommendation.
   - CHG-20260721-447-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: reopen and verify
 
 ### CHG-20260721-448
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > capture safe IDs > capture safe IDs
 - Operation: behavior
@@ -10151,6 +10600,7 @@ Do not end with another recommendation.
   - CHG-20260721-448-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: capture safe IDs
 
 ### CHG-20260721-449
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > return to Agent Action drop-off > return to Agent Action drop-off
 - Operation: behavior
@@ -10172,6 +10622,7 @@ Do not end with another recommendation.
   - CHG-20260721-449-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: return to Agent Action drop-off
 
 ### CHG-20260721-450
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > save the result > save the result
 - Operation: behavior
@@ -10193,6 +10644,7 @@ Do not end with another recommendation.
   - CHG-20260721-450-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: save the result
 
 ### CHG-20260721-451
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > verify readback > verify readback
 - Operation: behavior
@@ -10214,6 +10666,7 @@ Do not end with another recommendation.
   - CHG-20260721-451-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: verify readback
 
 ### CHG-20260721-452
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > never finish with a chat-only completion claim. > never finish with a chat-only completion claim.
 - Operation: behavior
@@ -10235,6 +10688,7 @@ Do not end with another recommendation.
   - CHG-20260721-452-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: never finish with a chat-only completion claim.
 
 ### CHG-20260721-453
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Immutable Agent Mode handoff > ## Immutable Agent Mode handoff
 - Operation: behavior
@@ -10256,6 +10710,7 @@ Do not end with another recommendation.
   - CHG-20260721-453-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Immutable Agent Mode handoff
 
 ### CHG-20260721-454
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Use a two-commit process. > Use a two-commit process.
 - Operation: behavior
@@ -10277,6 +10732,7 @@ Do not end with another recommendation.
   - CHG-20260721-454-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Use a two-commit process.
 
 ### CHG-20260721-455
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### Commit A — canonical registry > ### Commit A — canonical registry
 - Operation: behavior
@@ -10298,6 +10754,7 @@ Do not end with another recommendation.
   - CHG-20260721-455-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### Commit A — canonical registry
 
 ### CHG-20260721-456
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Commit all sender, message-class, pipeline, workflow and prompt changes. > Commit all sender, message-class, pipeline, workflow and prompt changes.
 - Operation: behavior
@@ -10319,6 +10776,7 @@ Do not end with another recommendation.
   - CHG-20260721-456-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Commit all sender, message-class, pipeline, workflow and prompt changes.
 
 ### CHG-20260721-457
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Record Commit A SHA. > Record Commit A SHA.
 - Operation: behavior
@@ -10340,6 +10798,7 @@ Do not end with another recommendation.
   - CHG-20260721-457-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Record Commit A SHA.
 
 ### CHG-20260721-458
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > This SHA is the immutable registry SHA. > This SHA is the immutable registry SHA.
 - Operation: behavior
@@ -10361,6 +10820,7 @@ Do not end with another recommendation.
   - CHG-20260721-458-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: This SHA is the immutable registry SHA.
 
 ### CHG-20260721-459
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ### Commit B — Agent Mode handoff > ### Commit B — Agent Mode handoff
 - Operation: behavior
@@ -10382,6 +10842,7 @@ Do not end with another recommendation.
   - CHG-20260721-459-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ### Commit B — Agent Mode handoff
 
 ### CHG-20260721-460
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Generate: > Generate:
 - Operation: behavior
@@ -10403,6 +10864,7 @@ Do not end with another recommendation.
   - CHG-20260721-460-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Generate:
 
 ### CHG-20260721-461
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md > integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md
 - Operation: behavior
@@ -10424,6 +10886,7 @@ Do not end with another recommendation.
   - CHG-20260721-461-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md
 
 ### CHG-20260721-462
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/agent-mode/GHL-SENDER-UI-JOB.private.template.json > integrations/highlevel/agent-mode/GHL-SENDER-UI-JOB.private.template.json
 - Operation: behavior
@@ -10445,6 +10908,7 @@ Do not end with another recommendation.
   - CHG-20260721-462-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/agent-mode/GHL-SENDER-UI-JOB.private.template.json
 
 ### CHG-20260721-463
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > The executor prompt must embed: > The executor prompt must embed:
 - Operation: behavior
@@ -10466,6 +10930,7 @@ Do not end with another recommendation.
   - CHG-20260721-463-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: The executor prompt must embed:
 
 ### CHG-20260721-464
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - repository > - repository
 - Operation: behavior
@@ -10487,6 +10952,7 @@ Do not end with another recommendation.
   - CHG-20260721-464-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - repository
 
 ### CHG-20260721-465
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - PR > - PR
 - Operation: behavior
@@ -10508,6 +10974,7 @@ Do not end with another recommendation.
   - CHG-20260721-465-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - PR
 
 ### CHG-20260721-466
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - branch > - branch
 - Operation: behavior
@@ -10529,6 +10996,7 @@ Do not end with another recommendation.
   - CHG-20260721-466-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - branch
 
 ### CHG-20260721-467
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Commit A immutable SHA > - Commit A immutable SHA
 - Operation: behavior
@@ -10550,6 +11018,7 @@ Do not end with another recommendation.
   - CHG-20260721-467-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Commit A immutable SHA
 
 ### CHG-20260721-468
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - exact registry paths > - exact registry paths
 - Operation: behavior
@@ -10571,6 +11040,7 @@ Do not end with another recommendation.
   - CHG-20260721-468-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - exact registry paths
 
 ### CHG-20260721-469
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - exact GHL location > - exact GHL location
 - Operation: behavior
@@ -10592,6 +11062,7 @@ Do not end with another recommendation.
   - CHG-20260721-469-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - exact GHL location
 
 ### CHG-20260721-470
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - exact job order > - exact job order
 - Operation: behavior
@@ -10613,6 +11084,7 @@ Do not end with another recommendation.
   - CHG-20260721-470-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - exact job order
 
 ### CHG-20260721-471
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - save/readback behavior. > - save/readback behavior.
 - Operation: behavior
@@ -10634,6 +11106,7 @@ Do not end with another recommendation.
   - CHG-20260721-471-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - save/readback behavior.
 
 ### CHG-20260721-472
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Commit only the prompt/template in Commit B. > Commit only the prompt/template in Commit B.
 - Operation: behavior
@@ -10655,6 +11128,7 @@ Do not end with another recommendation.
   - CHG-20260721-472-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Commit only the prompt/template in Commit B.
 
 ### CHG-20260721-473
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Push both commits. > Push both commits.
 - Operation: behavior
@@ -10676,6 +11150,7 @@ Do not end with another recommendation.
   - CHG-20260721-473-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Push both commits.
 
 ### CHG-20260721-474
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > The Agent Mode source-of-truth SHA is Commit A. > The Agent Mode source-of-truth SHA is Commit A.
 - Operation: behavior
@@ -10697,6 +11172,7 @@ Do not end with another recommendation.
   - CHG-20260721-474-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: The Agent Mode source-of-truth SHA is Commit A.
 
 ### CHG-20260721-475
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not require the operator to edit or paste a SHA manually. > Do not require the operator to edit or paste a SHA manually.
 - Operation: behavior
@@ -10718,6 +11194,7 @@ Do not end with another recommendation.
   - CHG-20260721-475-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not require the operator to edit or paste a SHA manually.
 
 ### CHG-20260721-476
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Validation > ## Validation
 - Operation: behavior
@@ -10739,6 +11216,7 @@ Do not end with another recommendation.
   - CHG-20260721-476-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Validation
 
 ### CHG-20260721-477
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Run: > Run:
 - Operation: behavior
@@ -10760,6 +11238,7 @@ Do not end with another recommendation.
   - CHG-20260721-477-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Run:
 
 ### CHG-20260721-478
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - canonical registry validation > - canonical registry validation
 - Operation: behavior
@@ -10781,6 +11260,7 @@ Do not end with another recommendation.
   - CHG-20260721-478-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - canonical registry validation
 
 ### CHG-20260721-479
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - duplicate sender detection > - duplicate sender detection
 - Operation: behavior
@@ -10802,6 +11282,7 @@ Do not end with another recommendation.
   - CHG-20260721-479-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - duplicate sender detection
 
 ### CHG-20260721-480
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - duplicate pipeline detection > - duplicate pipeline detection
 - Operation: behavior
@@ -10823,6 +11304,7 @@ Do not end with another recommendation.
   - CHG-20260721-480-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - duplicate pipeline detection
 
 ### CHG-20260721-481
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - message-class coverage validation > - message-class coverage validation
 - Operation: behavior
@@ -10844,6 +11326,7 @@ Do not end with another recommendation.
   - CHG-20260721-481-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - message-class coverage validation
 
 ### CHG-20260721-482
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - workflow sender dependency validation > - workflow sender dependency validation
 - Operation: behavior
@@ -10865,6 +11348,7 @@ Do not end with another recommendation.
   - CHG-20260721-482-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - workflow sender dependency validation
 
 ### CHG-20260721-483
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Agent Mode queue validation > - Agent Mode queue validation
 - Operation: behavior
@@ -10886,6 +11370,7 @@ Do not end with another recommendation.
   - CHG-20260721-483-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Agent Mode queue validation
 
 ### CHG-20260721-484
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - prompt dependency validation > - prompt dependency validation
 - Operation: behavior
@@ -10907,6 +11392,7 @@ Do not end with another recommendation.
   - CHG-20260721-484-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - prompt dependency validation
 
 ### CHG-20260721-485
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - bounded HighLevel API reconciliation > - bounded HighLevel API reconciliation
 - Operation: behavior
@@ -10928,6 +11414,7 @@ Do not end with another recommendation.
   - CHG-20260721-485-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - bounded HighLevel API reconciliation
 
 ### CHG-20260721-486
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - typecheck > - typecheck
 - Operation: behavior
@@ -10949,6 +11436,7 @@ Do not end with another recommendation.
   - CHG-20260721-486-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - typecheck
 
 ### CHG-20260721-487
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - lint > - lint
 - Operation: behavior
@@ -10970,6 +11458,7 @@ Do not end with another recommendation.
   - CHG-20260721-487-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - lint
 
 ### CHG-20260721-488
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - secret scan > - secret scan
 - Operation: behavior
@@ -10991,6 +11480,7 @@ Do not end with another recommendation.
   - CHG-20260721-488-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - secret scan
 
 ### CHG-20260721-489
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - git diff --check. > - git diff --check.
 - Operation: behavior
@@ -11012,6 +11502,7 @@ Do not end with another recommendation.
   - CHG-20260721-489-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - git diff --check.
 
 ### CHG-20260721-490
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not run the full product browser suite. > Do not run the full product browser suite.
 - Operation: behavior
@@ -11033,6 +11524,7 @@ Do not end with another recommendation.
   - CHG-20260721-490-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Do not run the full product browser suite.
 
 ### CHG-20260721-491
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > ## Final response > ## Final response
 - Operation: behavior
@@ -11054,6 +11546,7 @@ Do not end with another recommendation.
   - CHG-20260721-491-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: ## Final response
 
 ### CHG-20260721-492
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Begin exactly: > Begin exactly:
 - Operation: behavior
@@ -11075,6 +11568,7 @@ Do not end with another recommendation.
   - CHG-20260721-492-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Begin exactly:
 
 ### CHG-20260721-493
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > HIGHLEVEL_SCHEMA_VERSION: 1.1.0 > HIGHLEVEL_SCHEMA_VERSION: 1.1.0
 - Operation: behavior
@@ -11096,6 +11590,7 @@ Do not end with another recommendation.
   - CHG-20260721-493-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: HIGHLEVEL_SCHEMA_VERSION: 1.1.0
 
 ### CHG-20260721-494
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > SENDER_REGISTRY: COMPLETE | BLOCKED(<one exact action>) > SENDER_REGISTRY: COMPLETE | BLOCKED(<one exact action>)
 - Operation: behavior
@@ -11117,6 +11612,7 @@ Do not end with another recommendation.
   - CHG-20260721-494-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: SENDER_REGISTRY: COMPLETE | BLOCKED(<one exact action>)
 
 ### CHG-20260721-495
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > MESSAGE_CLASS_REGISTRY: COMPLETE | BLOCKED(<reason>) > MESSAGE_CLASS_REGISTRY: COMPLETE | BLOCKED(<reason>)
 - Operation: behavior
@@ -11138,6 +11634,7 @@ Do not end with another recommendation.
   - CHG-20260721-495-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: MESSAGE_CLASS_REGISTRY: COMPLETE | BLOCKED(<reason>)
 
 ### CHG-20260721-496
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > PIPELINE_REGISTRY: COMPLETE | BLOCKED(<reason>) > PIPELINE_REGISTRY: COMPLETE | BLOCKED(<reason>)
 - Operation: behavior
@@ -11159,6 +11656,7 @@ Do not end with another recommendation.
   - CHG-20260721-496-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: PIPELINE_REGISTRY: COMPLETE | BLOCKED(<reason>)
 
 ### CHG-20260721-497
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > SENDER_CUSTOM_VALUES_API: COMPLETE | PARTIAL | BLOCKED(<reason>) > SENDER_CUSTOM_VALUES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)
 - Operation: behavior
@@ -11180,6 +11678,7 @@ Do not end with another recommendation.
   - CHG-20260721-497-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: SENDER_CUSTOM_VALUES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)
 
 ### CHG-20260721-498
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > PIPELINES_API: COMPLETE | PARTIAL | BLOCKED(<reason>) > PIPELINES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)
 - Operation: behavior
@@ -11201,6 +11700,7 @@ Do not end with another recommendation.
   - CHG-20260721-498-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: PIPELINES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)
 
 ### CHG-20260721-499
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > WORKFLOW_PROMPTS_UPDATED: <count>/<total> > WORKFLOW_PROMPTS_UPDATED: <count>/<total>
 - Operation: behavior
@@ -11222,6 +11722,7 @@ Do not end with another recommendation.
   - CHG-20260721-499-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: WORKFLOW_PROMPTS_UPDATED: <count>/<total>
 
 ### CHG-20260721-500
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > AGENT_MODE_EXECUTOR: READY | BLOCKED(<reason>) > AGENT_MODE_EXECUTOR: READY | BLOCKED(<reason>)
 - Operation: behavior
@@ -11243,6 +11744,7 @@ Do not end with another recommendation.
   - CHG-20260721-500-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: AGENT_MODE_EXECUTOR: READY | BLOCKED(<reason>)
 
 ### CHG-20260721-501
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > MESSAGES_SENT: 0 > MESSAGES_SENT: 0
 - Operation: behavior
@@ -11264,6 +11766,7 @@ Do not end with another recommendation.
   - CHG-20260721-501-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: MESSAGES_SENT: 0
 
 ### CHG-20260721-502
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Then include exactly: > Then include exactly:
 - Operation: behavior
@@ -11285,6 +11788,7 @@ Do not end with another recommendation.
   - CHG-20260721-502-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Then include exactly:
 
 ### CHG-20260721-503
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - branch > - branch
 - Operation: behavior
@@ -11306,6 +11810,7 @@ Do not end with another recommendation.
   - CHG-20260721-503-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - branch
 
 ### CHG-20260721-504
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - PR > - PR
 - Operation: behavior
@@ -11327,6 +11832,7 @@ Do not end with another recommendation.
   - CHG-20260721-504-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - PR
 
 ### CHG-20260721-505
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Commit A immutable registry SHA > - Commit A immutable registry SHA
 - Operation: behavior
@@ -11348,6 +11854,7 @@ Do not end with another recommendation.
   - CHG-20260721-505-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Commit A immutable registry SHA
 
 ### CHG-20260721-506
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - Commit B final branch head > - Commit B final branch head
 - Operation: behavior
@@ -11369,6 +11876,7 @@ Do not end with another recommendation.
   - CHG-20260721-506-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - Commit B final branch head
 
 ### CHG-20260721-507
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - sender registry path > - sender registry path
 - Operation: behavior
@@ -11390,6 +11898,7 @@ Do not end with another recommendation.
   - CHG-20260721-507-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - sender registry path
 
 ### CHG-20260721-508
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - pipeline registry path > - pipeline registry path
 - Operation: behavior
@@ -11411,6 +11920,7 @@ Do not end with another recommendation.
   - CHG-20260721-508-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - pipeline registry path
 
 ### CHG-20260721-509
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - pinned Agent Mode executor path > - pinned Agent Mode executor path
 - Operation: behavior
@@ -11432,6 +11942,7 @@ Do not end with another recommendation.
   - CHG-20260721-509-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - pinned Agent Mode executor path
 
 ### CHG-20260721-510
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - GHL API asset IDs created > - GHL API asset IDs created
 - Operation: behavior
@@ -11453,6 +11964,7 @@ Do not end with another recommendation.
   - CHG-20260721-510-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - GHL API asset IDs created
 
 ### CHG-20260721-511
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > - one exact unresolved action. > - one exact unresolved action.
 - Operation: behavior
@@ -11474,6 +11986,7 @@ Do not end with another recommendation.
   - CHG-20260721-511-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: - one exact unresolved action.
 
 ### CHG-20260721-512
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Also paste the complete contents of: > Also paste the complete contents of:
 - Operation: behavior
@@ -11495,6 +12008,7 @@ Do not end with another recommendation.
   - CHG-20260721-512-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: Also paste the complete contents of:
 
 ### CHG-20260721-513
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md > integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md
 - Operation: behavior
@@ -11516,6 +12030,7 @@ Do not end with another recommendation.
   - CHG-20260721-513-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md
 
 ### CHG-20260721-514
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > into the final response so the operator can copy it once into Agent Mode. > into the final response so the operator can copy it once into Agent Mode.
 - Operation: behavior
@@ -11537,6 +12052,7 @@ Do not end with another recommendation.
   - CHG-20260721-514-NEG-001: No implementation, API action, workflow, prompt, queue job, commit, push, or PR may contradict this source atom: into the final response so the operator can copy it once into Agent Mode.
 
 ### CHG-20260721-515
+
 - Classification: HARD_EXACT
 - Target: integrations/highlevel > Sender registry convergence packet > Do not end with another recommendation. > Do not end with another recommendation.
 - Operation: behavior

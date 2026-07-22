@@ -118,35 +118,35 @@ Do not send messages, enroll contacts into workflows, publish a bot, charge a pa
 Create or normalize:
 
 integrations/highlevel/
-  workflows.yaml
-  README.md
-  CHANGELOG.md
-  registry/
-    schema.yaml
-    custom-fields.yaml
-    custom-values.yaml
-    tag-taxonomy.yaml
-    form-field-map.yaml
-    workflow-registry.yaml
-    bot-action-registry.yaml
-    prompt-registry.yaml
-    knowledge-base-registry.yaml
-    deprecations.yaml
-    current.json
-    AGENT-HANDOFF.md
-  prompts/
-    incoming/
-    candidates/
-    active/
-    superseded/
-  knowledge-bases/
-    incoming/
-    active/
-    superseded/
-  agent-mode/
-    HIGHLEVEL-BOT-UI-SETUP.md
-  imports/
-    README.md
+workflows.yaml
+README.md
+CHANGELOG.md
+registry/
+schema.yaml
+custom-fields.yaml
+custom-values.yaml
+tag-taxonomy.yaml
+form-field-map.yaml
+workflow-registry.yaml
+bot-action-registry.yaml
+prompt-registry.yaml
+knowledge-base-registry.yaml
+deprecations.yaml
+current.json
+AGENT-HANDOFF.md
+prompts/
+incoming/
+candidates/
+active/
+superseded/
+knowledge-bases/
+incoming/
+active/
+superseded/
+agent-mode/
+HIGHLEVEL-BOT-UI-SETUP.md
+imports/
+README.md
 
 Create:
 
@@ -486,34 +486,43 @@ Inventory contacts and workflows using these older tags:
 Map them:
 
 one-time:
+
 - no canonical replacement required;
 - preserve only when needed for historical reporting;
 - mark deprecated.
 
 one-time-bot:
+
 - replace with One Time Source Channel;
 - mark deprecated.
 
 one-time-signup-request:
+
 - replace with One Time Signup Status = Collecting or Submitted.
 
 one-time-signup-submitted:
+
 - replace with One Time Signup Status = Submitted.
 
 one-time-signup-confirmed:
+
 - replace with One Time Signup Status = Confirmed.
 
 one-time-class-link-request:
+
 - replace with One Time Bot Request Type = Next Class Info.
 
 one-time-password-reset:
+
 - replace with One Time Bot Request Type = Password Help.
 
 one-time-human-handoff:
+
 - no replacement;
 - disable and remove from active workflows.
 
 one-time-opt-out:
+
 - replace with:
   - OT | Marketing Suppressed;
   - channel DND;

@@ -1,6 +1,5 @@
 business_workflows:
-  -
-    key: 'OT-01'
+  - key: 'OT-01'
     canonicalName: 'OT-01 New Lead Intake'
     normalizedName: 'ot_01_new_lead_intake'
     ghlId: ''
@@ -11,16 +10,12 @@ business_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Lead intake after public signup or bot action.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -32,8 +27,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'adult public signup submitted'
     companionDelivery: ''
-  -
-    key: 'OT-02A'
+  - key: 'OT-02A'
     canonicalName: 'OT-02A Existing Subscriber Migration 2026 v1'
     normalizedName: 'ot_02a_existing_subscriber_migration_2026_v1'
     ghlId: ''
@@ -44,16 +38,12 @@ business_workflows:
     folder: '10 - Nurture & Sales'
     purpose: 'Three-email existing-subscriber migration sequence.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -65,8 +55,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'registered existing subscriber migration audience entry'
     companionDelivery: ''
-  -
-    key: 'OT-02B'
+  - key: 'OT-02B'
     canonicalName: 'OT-02B New Lead Nurture v1'
     normalizedName: 'ot_02b_new_lead_nurture_v1'
     ghlId: ''
@@ -77,16 +66,12 @@ business_workflows:
     folder: '10 - Nurture & Sales'
     purpose: 'New lead nurture separate from migration.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -98,8 +83,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'registered new lead nurture audience entry'
     companionDelivery: ''
-  -
-    key: 'OT-03'
+  - key: 'OT-03'
     canonicalName: 'OT-03 Checkout Started / Abandoned'
     normalizedName: 'ot_03_checkout_started_abandoned'
     ghlId: ''
@@ -110,16 +94,12 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Checkout started and abandoned checkout handling.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -131,8 +111,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'checkout started and not completed within the registered wait window'
     companionDelivery: ''
-  -
-    key: 'OT-04'
+  - key: 'OT-04'
     canonicalName: 'OT-04 Payment Active'
     normalizedName: 'ot_04_payment_active'
     ghlId: ''
@@ -143,16 +122,12 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Active payment state handling.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -164,8 +139,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'One Time payment/access projection becomes Active'
     companionDelivery: ''
-  -
-    key: 'OT-05'
+  - key: 'OT-05'
     canonicalName: 'OT-05 Payment Failed / Grace'
     normalizedName: 'ot_05_payment_failed_grace'
     ghlId: ''
@@ -176,16 +150,12 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Payment failure and grace handling.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -197,8 +167,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'One Time payment/access projection becomes Grace after payment failure'
     companionDelivery: ''
-  -
-    key: 'OT-06'
+  - key: 'OT-06'
     canonicalName: 'OT-06 Subscription Canceled'
     normalizedName: 'ot_06_subscription_canceled'
     ghlId: ''
@@ -209,16 +178,12 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Cancellation handling.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -230,8 +195,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'One Time subscription projection becomes Canceled when support context is required'
     companionDelivery: ''
-  -
-    key: 'OT-07'
+  - key: 'OT-07'
     canonicalName: 'OT-07 Parent Portal Invitation'
     normalizedName: 'ot_07_parent_portal_invitation'
     ghlId: ''
@@ -242,16 +206,12 @@ business_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Parent portal invitation after One Time access confirmation.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -263,8 +223,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'One Time access confirmation requests the parent portal companion email'
     companionDelivery: 'One Time/Resend separately sends activation_token through account_security; GHL never stores or sends the token.'
-  -
-    key: 'OT-08'
+  - key: 'OT-08'
     canonicalName: 'OT-08 Parent Portal Activated'
     normalizedName: 'ot_08_parent_portal_activated'
     ghlId: ''
@@ -275,16 +234,12 @@ business_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Parent portal activation projection.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -296,8 +251,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'One Time parent portal projection becomes Active'
     companionDelivery: ''
-  -
-    key: 'OT-09'
+  - key: 'OT-09'
     canonicalName: 'OT-09 Parent Class Reminder'
     normalizedName: 'ot_09_parent_class_reminder'
     ghlId: ''
@@ -308,16 +262,12 @@ business_workflows:
     folder: '40 - Classes & Content'
     purpose: 'Parent class reminder gated by access and consent.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -329,8 +279,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'registered confirmed class reminder schedule and consent gate pass'
     companionDelivery: ''
-  -
-    key: 'OT-10'
+  - key: 'OT-10'
     canonicalName: 'OT-10 New Recording Available'
     normalizedName: 'ot_10_new_recording_available'
     ghlId: ''
@@ -341,16 +290,12 @@ business_workflows:
     folder: '40 - Classes & Content'
     purpose: 'Protected recording availability notice.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -362,8 +307,7 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'One Time marks a protected recording available for an entitled household'
     companionDelivery: ''
-  -
-    key: 'OT-13'
+  - key: 'OT-13'
     canonicalName: 'OT-13 Refund / Chargeback'
     normalizedName: 'ot_13_refund_chargeback'
     ghlId: ''
@@ -374,16 +318,12 @@ business_workflows:
     folder: '20 - Billing & Access'
     purpose: 'Refund and chargeback handling.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -395,9 +335,8 @@ business_workflows:
     transport: 'GHL'
     exactTrigger: 'refund or chargeback support state is recorded'
     companionDelivery: ''
-  -
-    key: 'OT-C01'
-    canonicalName: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+  - key: 'OT-C01'
+    canonicalName: "OT-C01 Tisha B'Av 2026 Warm Invitation"
     normalizedName: 'ot_c01_tisha_b_av_2026_warm_invitation'
     ghlId: 'f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae'
     ghlKey: 'ot_c01_tisha_b_av_2026_warm_invitation'
@@ -405,18 +344,14 @@ business_workflows:
     dataType: 'workflow'
     category: 'business_workflow'
     folder: '10 - Nurture & Sales'
-    purpose: 'Registered Tisha B''Av 2026 Rabbi-authored warm invitation campaign.'
+    purpose: "Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign."
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'active'
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
@@ -426,11 +361,10 @@ business_workflows:
     messageClass: 'rabbi_event_invitation'
     senderKey: 'rabbi_campaign'
     transport: 'GHL'
-    exactTrigger: 'approved Tisha B''Av 2026 warm invitation audience enters the registered campaign'
+    exactTrigger: "approved Tisha B'Av 2026 warm invitation audience enters the registered campaign"
     companionDelivery: ''
-  -
-    key: 'OT-E01'
-    canonicalName: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
+  - key: 'OT-E01'
+    canonicalName: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
     normalizedName: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
     ghlId: 'a34ea513-4612-4f53-8bd8-49e89e6610f9'
     ghlKey: 'ot_e01_tisha_b_av_2026_registration_and_reminders'
@@ -438,18 +372,14 @@ business_workflows:
     dataType: 'workflow'
     category: 'business_workflow'
     folder: '45 - Events'
-    purpose: 'Registered Tisha B''Av 2026 registration and reminder workflow.'
+    purpose: "Registered Tisha B'Av 2026 registration and reminder workflow."
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'active'
     createdDate: '2026-07-21'
     lastVerifiedDate: '2026-07-22'
@@ -459,11 +389,10 @@ business_workflows:
     messageClass: 'event_registration_confirmation'
     senderKey: 'brand'
     transport: 'GHL'
-    exactTrigger: 'Tisha B''Av 2026 registration or approved reminder milestone is recorded'
+    exactTrigger: "Tisha B'Av 2026 registration or approved reminder milestone is recorded"
     companionDelivery: ''
 bot_action_workflows:
-  -
-    key: 'OT-B01'
+  - key: 'OT-B01'
     canonicalName: 'OT-B01 Complete Signup'
     normalizedName: 'ot_b01_complete_signup'
     ghlId: ''
@@ -474,16 +403,12 @@ bot_action_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Typed bot action adapter for adult signup.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -495,8 +420,7 @@ bot_action_workflows:
     transport: 'GHL'
     exactTrigger: 'OT-A1 invokes the typed complete-signup adapter for an adult'
     companionDelivery: ''
-  -
-    key: 'OT-B02'
+  - key: 'OT-B02'
     canonicalName: 'OT-B02 Send Next Confirmed Class Info'
     normalizedName: 'ot_b02_send_next_confirmed_class_info'
     ghlId: ''
@@ -507,16 +431,12 @@ bot_action_workflows:
     folder: '40 - Classes & Content'
     purpose: 'Safe next confirmed class info adapter.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -528,8 +448,7 @@ bot_action_workflows:
     transport: 'GHL'
     exactTrigger: 'OT-A1 invokes the typed next-confirmed-class-info adapter'
     companionDelivery: ''
-  -
-    key: 'OT-B03'
+  - key: 'OT-B03'
     canonicalName: 'OT-B03 Send Member Login'
     normalizedName: 'ot_b03_send_member_login'
     ghlId: ''
@@ -540,16 +459,12 @@ bot_action_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Send canonical member login URL.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -561,8 +476,7 @@ bot_action_workflows:
     transport: 'GHL'
     exactTrigger: 'OT-A1 invokes the typed member-login adapter'
     companionDelivery: ''
-  -
-    key: 'OT-B04'
+  - key: 'OT-B04'
     canonicalName: 'OT-B04 Send Password Help'
     normalizedName: 'ot_b04_send_password_help'
     ghlId: ''
@@ -573,16 +487,12 @@ bot_action_workflows:
     folder: '30 - Portal Lifecycle'
     purpose: 'Send canonical password-help URL.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -594,8 +504,7 @@ bot_action_workflows:
     transport: 'Resend'
     exactTrigger: 'OT-A1 invokes the typed password-help adapter'
     companionDelivery: 'GHL may request the One Time adapter but never stores or sends a reset token.'
-  -
-    key: 'OT-B05'
+  - key: 'OT-B05'
     canonicalName: 'OT-B05 Apply Opt-Out'
     normalizedName: 'ot_b05_apply_opt_out'
     ghlId: ''
@@ -606,16 +515,12 @@ bot_action_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Apply opt-out, DND, suppression and stop bot follow-up.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'pending_creation'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -628,8 +533,7 @@ bot_action_workflows:
     exactTrigger: 'OT-A1 invokes the typed opt-out adapter; no acknowledgement send is authorized by this registry lane'
     companionDelivery: ''
 deprecated_workflows:
-  -
-    key: 'OT-11'
+  - key: 'OT-11'
     canonicalName: 'OT-11 WhatsApp Lead Qualification'
     normalizedName: 'ot_11_whatsapp_lead_qualification'
     ghlId: ''
@@ -640,16 +544,12 @@ deprecated_workflows:
     folder: '00 - Intake & Data'
     purpose: 'Superseded by OT-A1 and OT-B01.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'deprecated_existing'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -661,8 +561,7 @@ deprecated_workflows:
     transport: 'GHL'
     exactTrigger: 'deprecated; no active trigger is allowed'
     companionDelivery: ''
-  -
-    key: 'OT-12'
+  - key: 'OT-12'
     canonicalName: 'OT-12 Support Intake / Technical Escalation'
     normalizedName: 'ot_12_support_intake_technical_escalation'
     ghlId: ''
@@ -673,16 +572,12 @@ deprecated_workflows:
     folder: '50 - Support'
     purpose: 'Deprecated when it creates tasks or support escalation workflows.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'deprecated_existing'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -694,8 +589,7 @@ deprecated_workflows:
     transport: 'GHL'
     exactTrigger: 'deprecated when it creates tasks; no active trigger is allowed'
     companionDelivery: ''
-  -
-    key: 'OT-HUMAN-HANDOFF'
+  - key: 'OT-HUMAN-HANDOFF'
     canonicalName: 'OT - Human Handoff'
     normalizedName: 'ot_human_handoff'
     ghlId: ''
@@ -706,16 +600,12 @@ deprecated_workflows:
     folder: '50 - Support'
     purpose: 'Human handoff workflow is not active for OT-A1.'
     sourceOfTruth: 'Shared'
-    allowedValues:
-      []
-    workflowsAllowedToWrite:
-      []
+    allowedValues: []
+    workflowsAllowedToWrite: []
     oneTimeAllowedToWrite: false
     humansMayEdit: true
-    dependencies:
-      []
-    aliases:
-      []
+    dependencies: []
+    aliases: []
     deprecationState: 'deprecated_existing'
     createdDate: '2026-07-21'
     lastVerifiedDate: ''
@@ -752,8 +642,7 @@ workflow_ui_missing:
   - 'OT-B04 Send Password Help'
   - 'OT-B05 Apply Opt-Out'
 current_state_readback:
-  -
-    canonicalName: 'OT-01 New Lead Intake'
+  - canonicalName: 'OT-01 New Lead Intake'
     id: ''
     canonicalFolder: '00 - Intake & Data'
     liveFolder: ''
@@ -761,10 +650,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-02A Existing Subscriber Migration 2026 v1'
+    duplicateCandidates: []
+  - canonicalName: 'OT-02A Existing Subscriber Migration 2026 v1'
     id: ''
     canonicalFolder: '10 - Nurture & Sales'
     liveFolder: ''
@@ -772,10 +659,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-02B New Lead Nurture v1'
+    duplicateCandidates: []
+  - canonicalName: 'OT-02B New Lead Nurture v1'
     id: ''
     canonicalFolder: '10 - Nurture & Sales'
     liveFolder: ''
@@ -783,10 +668,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-03 Checkout Started / Abandoned'
+    duplicateCandidates: []
+  - canonicalName: 'OT-03 Checkout Started / Abandoned'
     id: ''
     canonicalFolder: '20 - Billing & Access'
     liveFolder: ''
@@ -794,10 +677,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-04 Payment Active'
+    duplicateCandidates: []
+  - canonicalName: 'OT-04 Payment Active'
     id: ''
     canonicalFolder: '20 - Billing & Access'
     liveFolder: ''
@@ -805,10 +686,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-05 Payment Failed / Grace'
+    duplicateCandidates: []
+  - canonicalName: 'OT-05 Payment Failed / Grace'
     id: ''
     canonicalFolder: '20 - Billing & Access'
     liveFolder: ''
@@ -816,10 +695,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-06 Subscription Canceled'
+    duplicateCandidates: []
+  - canonicalName: 'OT-06 Subscription Canceled'
     id: ''
     canonicalFolder: '20 - Billing & Access'
     liveFolder: ''
@@ -827,10 +704,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-07 Parent Portal Invitation'
+    duplicateCandidates: []
+  - canonicalName: 'OT-07 Parent Portal Invitation'
     id: ''
     canonicalFolder: '30 - Portal Lifecycle'
     liveFolder: ''
@@ -838,10 +713,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-08 Parent Portal Activated'
+    duplicateCandidates: []
+  - canonicalName: 'OT-08 Parent Portal Activated'
     id: ''
     canonicalFolder: '30 - Portal Lifecycle'
     liveFolder: ''
@@ -849,10 +722,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-09 Parent Class Reminder'
+    duplicateCandidates: []
+  - canonicalName: 'OT-09 Parent Class Reminder'
     id: ''
     canonicalFolder: '40 - Classes & Content'
     liveFolder: ''
@@ -860,10 +731,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-10 New Recording Available'
+    duplicateCandidates: []
+  - canonicalName: 'OT-10 New Recording Available'
     id: ''
     canonicalFolder: '40 - Classes & Content'
     liveFolder: ''
@@ -871,10 +740,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-13 Refund / Chargeback'
+    duplicateCandidates: []
+  - canonicalName: 'OT-13 Refund / Chargeback'
     id: ''
     canonicalFolder: '20 - Billing & Access'
     liveFolder: ''
@@ -882,10 +749,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+    duplicateCandidates: []
+  - canonicalName: "OT-C01 Tisha B'Av 2026 Warm Invitation"
     id: 'f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae'
     canonicalFolder: '10 - Nurture & Sales'
     liveFolder: ''
@@ -893,10 +758,8 @@ current_state_readback:
     status: 'draft'
     createdAt: '2026-07-21T16:10:32.426Z'
     updatedAt: '2026-07-21T16:16:32.330Z'
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
+    duplicateCandidates: []
+  - canonicalName: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
     id: 'a34ea513-4612-4f53-8bd8-49e89e6610f9'
     canonicalFolder: '45 - Events'
     liveFolder: ''
@@ -904,10 +767,8 @@ current_state_readback:
     status: 'published'
     createdAt: '2026-07-21T13:10:47.185Z'
     updatedAt: '2026-07-22T05:33:12.698Z'
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-B01 Complete Signup'
+    duplicateCandidates: []
+  - canonicalName: 'OT-B01 Complete Signup'
     id: ''
     canonicalFolder: '00 - Intake & Data'
     liveFolder: ''
@@ -915,10 +776,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-B02 Send Next Confirmed Class Info'
+    duplicateCandidates: []
+  - canonicalName: 'OT-B02 Send Next Confirmed Class Info'
     id: ''
     canonicalFolder: '40 - Classes & Content'
     liveFolder: ''
@@ -926,10 +785,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-B03 Send Member Login'
+    duplicateCandidates: []
+  - canonicalName: 'OT-B03 Send Member Login'
     id: ''
     canonicalFolder: '30 - Portal Lifecycle'
     liveFolder: ''
@@ -937,10 +794,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-B04 Send Password Help'
+    duplicateCandidates: []
+  - canonicalName: 'OT-B04 Send Password Help'
     id: ''
     canonicalFolder: '30 - Portal Lifecycle'
     liveFolder: ''
@@ -948,10 +803,8 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-  -
-    canonicalName: 'OT-B05 Apply Opt-Out'
+    duplicateCandidates: []
+  - canonicalName: 'OT-B05 Apply Opt-Out'
     id: ''
     canonicalFolder: '00 - Intake & Data'
     liveFolder: ''
@@ -959,7 +812,5 @@ current_state_readback:
     status: 'missing'
     createdAt: ''
     updatedAt: ''
-    duplicateCandidates:
-      []
-duplicate_workflow_candidates:
-  []
+    duplicateCandidates: []
+duplicate_workflow_candidates: []

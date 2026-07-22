@@ -1,5 +1,4 @@
--
-  key: 'warm_enrollment_campaign'
+- key: 'warm_enrollment_campaign'
   senderKey: 'rabbi_campaign'
   transport: 'GHL'
   owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
@@ -7,8 +6,7 @@
   allowedWorkflows:
     - 'OT-03'
   securityTokensAllowed: false
--
-  key: 'existing_subscriber_migration'
+- key: 'existing_subscriber_migration'
   senderKey: 'rabbi_campaign'
   transport: 'GHL'
   owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
@@ -16,8 +14,7 @@
   allowedWorkflows:
     - 'OT-02A'
   securityTokensAllowed: false
--
-  key: 'prelaunch_nurture'
+- key: 'prelaunch_nurture'
   senderKey: 'rabbi_campaign'
   transport: 'GHL'
   owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
@@ -25,26 +22,21 @@
   allowedWorkflows:
     - 'OT-02B'
   securityTokensAllowed: false
--
-  key: 'torah_newsletter'
+- key: 'torah_newsletter'
   senderKey: 'rabbi_campaign'
   transport: 'GHL'
   owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'rabbi_teaching_email'
+- key: 'rabbi_teaching_email'
   senderKey: 'rabbi_campaign'
   transport: 'GHL'
   owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'rabbi_event_invitation'
+- key: 'rabbi_event_invitation'
   senderKey: 'rabbi_campaign'
   transport: 'GHL'
   owner: 'Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility'
@@ -52,26 +44,21 @@
   allowedWorkflows:
     - 'OT-C01'
   securityTokensAllowed: false
--
-  key: 'torah_answer'
+- key: 'torah_answer'
   senderKey: 'rabbi_personal'
   transport: 'GHL'
   owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'torah_follow_up'
+- key: 'torah_follow_up'
   senderKey: 'rabbi_personal'
   transport: 'GHL'
   owner: 'Rabbi authors through Telegram; Shloimie retains visibility'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'support_reply'
+- key: 'support_reply'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
@@ -79,8 +66,7 @@
   allowedWorkflows:
     - 'OT-12'
   securityTokensAllowed: false
--
-  key: 'access_help'
+- key: 'access_help'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
@@ -88,17 +74,14 @@
   allowedWorkflows:
     - 'OT-B03'
   securityTokensAllowed: false
--
-  key: 'billing_help'
+- key: 'billing_help'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'payment_failed_support'
+- key: 'payment_failed_support'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
@@ -106,8 +89,7 @@
   allowedWorkflows:
     - 'OT-05'
   securityTokensAllowed: false
--
-  key: 'cancellation_help'
+- key: 'cancellation_help'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
@@ -115,8 +97,7 @@
   allowedWorkflows:
     - 'OT-06'
   securityTokensAllowed: false
--
-  key: 'refund_help'
+- key: 'refund_help'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
@@ -124,26 +105,21 @@
   allowedWorkflows:
     - 'OT-13'
   securityTokensAllowed: false
--
-  key: 'complaint_reply'
+- key: 'complaint_reply'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'parent_administration_reply'
+- key: 'parent_administration_reply'
   senderKey: 'office'
   transport: 'GHL'
   owner: 'Shloimie'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'signup_confirmation'
+- key: 'signup_confirmation'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
@@ -153,8 +129,7 @@
     - 'OT-04'
     - 'OT-B01'
   securityTokensAllowed: false
--
-  key: 'event_registration_confirmation'
+- key: 'event_registration_confirmation'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
@@ -162,17 +137,14 @@
   allowedWorkflows:
     - 'OT-E01'
   securityTokensAllowed: false
--
-  key: 'event_reminder'
+- key: 'event_reminder'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'class_reminder'
+- key: 'class_reminder'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
@@ -181,17 +153,14 @@
     - 'OT-09'
     - 'OT-B02'
   securityTokensAllowed: false
--
-  key: 'schedule_change'
+- key: 'schedule_change'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'recording_available'
+- key: 'recording_available'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
@@ -199,26 +168,21 @@
   allowedWorkflows:
     - 'OT-10'
   securityTokensAllowed: false
--
-  key: 'new_video_available'
+- key: 'new_video_available'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'worksheet_available'
+- key: 'worksheet_available'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'portal_welcome'
+- key: 'portal_welcome'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
@@ -226,8 +190,7 @@
   allowedWorkflows:
     - 'OT-07'
   securityTokensAllowed: false
--
-  key: 'portal_activated'
+- key: 'portal_activated'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
@@ -235,26 +198,21 @@
   allowedWorkflows:
     - 'OT-08'
   securityTokensAllowed: false
--
-  key: 'payment_receipt'
+- key: 'payment_receipt'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'cancellation_confirmation'
+- key: 'cancellation_confirmation'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
   sourceOfTruth: 'HighLevel'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: false
--
-  key: 'support_acknowledgement'
+- key: 'support_acknowledgement'
   senderKey: 'brand'
   transport: 'GHL'
   owner: 'Shloimie operates; One Time Mishnayos owns the neutral brand identity'
@@ -264,26 +222,21 @@
     - 'OT-11'
     - 'OT-HUMAN-HANDOFF'
   securityTokensAllowed: false
--
-  key: 'activation_token'
+- key: 'activation_token'
   senderKey: 'account_security'
   transport: 'Resend'
   owner: 'One Time authentication and security runtime'
   sourceOfTruth: 'One Time'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: true
--
-  key: 'password_setup'
+- key: 'password_setup'
   senderKey: 'account_security'
   transport: 'Resend'
   owner: 'One Time authentication and security runtime'
   sourceOfTruth: 'One Time'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: true
--
-  key: 'password_reset'
+- key: 'password_reset'
   senderKey: 'account_security'
   transport: 'Resend'
   owner: 'One Time authentication and security runtime'
@@ -291,30 +244,24 @@
   allowedWorkflows:
     - 'OT-B04'
   securityTokensAllowed: true
--
-  key: 'email_verification'
+- key: 'email_verification'
   senderKey: 'account_security'
   transport: 'Resend'
   owner: 'One Time authentication and security runtime'
   sourceOfTruth: 'One Time'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: true
--
-  key: 'login_challenge'
+- key: 'login_challenge'
   senderKey: 'account_security'
   transport: 'Resend'
   owner: 'One Time authentication and security runtime'
   sourceOfTruth: 'One Time'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: true
--
-  key: 'security_notice'
+- key: 'security_notice'
   senderKey: 'account_security'
   transport: 'Resend'
   owner: 'One Time authentication and security runtime'
   sourceOfTruth: 'One Time'
-  allowedWorkflows:
-    []
+  allowedWorkflows: []
   securityTokensAllowed: true

@@ -136,9 +136,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Execute the task."
-      ],
+      "must_preserve": ["Execute the task."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -203,9 +201,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not return another audit or recommendation."
-      ],
+      "must_preserve": ["Do not return another audit or recommendation."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -270,9 +266,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Repository"
-      ],
+      "must_preserve": ["## Repository"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -337,9 +331,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Canonical repository:"
-      ],
+      "must_preserve": ["Canonical repository:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -404,9 +396,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "shloimie-beep/onetimev2"
-      ],
+      "must_preserve": ["shloimie-beep/onetimev2"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -471,9 +461,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not use:"
-      ],
+      "must_preserve": ["Do not use:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -538,9 +526,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "webcraft-media/onetimev2"
-      ],
+      "must_preserve": ["webcraft-media/onetimev2"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -605,9 +591,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Correct base"
-      ],
+      "must_preserve": ["## Correct base"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -672,9 +656,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "The current HighLevel API and Agent Mode queue is:"
-      ],
+      "must_preserve": ["The current HighLevel API and Agent Mode queue is:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -739,9 +721,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "PR #99"
-      ],
+      "must_preserve": ["PR #99"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -806,9 +786,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "branch: codex/highlevel-api-finalize-agent-queue"
-      ],
+      "must_preserve": ["branch: codex/highlevel-api-finalize-agent-queue"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -873,9 +851,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "known head when this prompt was written:"
-      ],
+      "must_preserve": ["known head when this prompt was written:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -940,9 +916,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "1000e8f46210a85f720f83fce2678b24a44fa94d"
-      ],
+      "must_preserve": ["1000e8f46210a85f720f83fce2678b24a44fa94d"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1007,9 +981,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Fetch PR #99 and use its actual current descendant head."
-      ],
+      "must_preserve": ["Fetch PR #99 and use its actual current descendant head."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1074,9 +1046,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not base this work directly on PR #93."
-      ],
+      "must_preserve": ["Do not base this work directly on PR #93."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1208,9 +1178,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Branch"
-      ],
+      "must_preserve": ["## Branch"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1275,9 +1243,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Create one clean isolated worktree and branch:"
-      ],
+      "must_preserve": ["Create one clean isolated worktree and branch:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1342,9 +1308,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "codex/highlevel-sender-registry-v1-1"
-      ],
+      "must_preserve": ["codex/highlevel-sender-registry-v1-1"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1409,9 +1373,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Open a draft PR against:"
-      ],
+      "must_preserve": ["Open a draft PR against:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1476,9 +1438,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "codex/highlevel-api-finalize-agent-queue"
-      ],
+      "must_preserve": ["codex/highlevel-api-finalize-agent-queue"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1543,9 +1503,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not start from main."
-      ],
+      "must_preserve": ["Do not start from main."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1610,9 +1568,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Mission"
-      ],
+      "must_preserve": ["## Mission"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1744,9 +1700,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Then:"
-      ],
+      "must_preserve": ["Then:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1811,9 +1765,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "update every workflow prompt and checklist to use registered sender keys"
-      ],
+      "must_preserve": ["update every workflow prompt and checklist to use registered sender keys"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1878,9 +1830,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "update the bot and knowledge-base dependencies"
-      ],
+      "must_preserve": ["update the bot and knowledge-base dependencies"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -1945,9 +1895,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "use the HighLevel API for every supported safe asset"
-      ],
+      "must_preserve": ["use the HighLevel API for every supported safe asset"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2012,9 +1960,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "regenerate the Agent Mode queue"
-      ],
+      "must_preserve": ["regenerate the Agent Mode queue"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2146,9 +2092,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "push everything"
-      ],
+      "must_preserve": ["push everything"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2213,9 +2157,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "do not send messages or publish workflows."
-      ],
+      "must_preserve": ["do not send messages or publish workflows."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2280,9 +2222,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "The blocked Agent Mode report was correct:"
-      ],
+      "must_preserve": ["The blocked Agent Mode report was correct:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2347,9 +2287,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "SENDER_VALUES: BLOCKED(push sender-registry PR and supply pinned SHA)"
-      ],
+      "must_preserve": ["SENDER_VALUES: BLOCKED(push sender-registry PR and supply pinned SHA)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2414,9 +2352,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "PIPELINES: BLOCKED(required pipeline registry missing)"
-      ],
+      "must_preserve": ["PIPELINES: BLOCKED(required pipeline registry missing)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2481,9 +2417,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "This task removes that blocker."
-      ],
+      "must_preserve": ["This task removes that blocker."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2548,9 +2482,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Safety"
-      ],
+      "must_preserve": ["## Safety"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2615,9 +2547,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not:"
-      ],
+      "must_preserve": ["Do not:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2682,9 +2612,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- send email, WhatsApp or SMS"
-      ],
+      "must_preserve": ["- send email, WhatsApp or SMS"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2749,9 +2677,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- publish a workflow"
-      ],
+      "must_preserve": ["- publish a workflow"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2816,9 +2742,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- activate the Conversation AI bot"
-      ],
+      "must_preserve": ["- activate the Conversation AI bot"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2883,9 +2807,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- enroll imported contacts"
-      ],
+      "must_preserve": ["- enroll imported contacts"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -2950,9 +2872,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- create Student contacts"
-      ],
+      "must_preserve": ["- create Student contacts"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3017,9 +2937,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- change live payment state"
-      ],
+      "must_preserve": ["- change live payment state"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3084,9 +3002,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- alter production Railway"
-      ],
+      "must_preserve": ["- alter production Railway"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3151,9 +3067,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- print PIT, contact data, private destinations or secrets"
-      ],
+      "must_preserve": ["- print PIT, contact data, private destinations or secrets"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3220,9 +3134,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- activate rabbi@ before it is tested"
-      ],
+      "must_preserve": ["- activate rabbi@ before it is tested"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3287,9 +3199,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- create Human Handoff"
-      ],
+      "must_preserve": ["- create Human Handoff"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3354,9 +3264,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- create human tasks for OT-A1."
-      ],
+      "must_preserve": ["- create human tasks for OT-A1."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3421,9 +3329,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "API writes are authorized for:"
-      ],
+      "must_preserve": ["API writes are authorized for:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3488,9 +3394,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- canonical HighLevel custom values"
-      ],
+      "must_preserve": ["- canonical HighLevel custom values"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3555,9 +3459,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- canonical contact fields and tags when missing"
-      ],
+      "must_preserve": ["- canonical contact fields and tags when missing"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3622,9 +3524,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- pipelines and stages when supported"
-      ],
+      "must_preserve": ["- pipelines and stages when supported"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3689,9 +3589,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- registry reconciliation."
-      ],
+      "must_preserve": ["- registry reconciliation."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3756,9 +3654,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Use location:"
-      ],
+      "must_preserve": ["Use location:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3823,9 +3719,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "pBSnOK2nkdxp6gf9Rg3o"
-      ],
+      "must_preserve": ["pBSnOK2nkdxp6gf9Rg3o"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3890,9 +3784,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Registry version"
-      ],
+      "must_preserve": ["## Registry version"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -3957,9 +3849,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Update the HighLevel schema from:"
-      ],
+      "must_preserve": ["Update the HighLevel schema from:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4024,9 +3914,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "1.0.0"
-      ],
+      "must_preserve": ["1.0.0"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4091,9 +3979,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "1.1.0"
-      ],
+      "must_preserve": ["1.1.0"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4158,9 +4044,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Preserve all existing IDs and compatibility aliases."
-      ],
+      "must_preserve": ["Preserve all existing IDs and compatibility aliases."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4225,9 +4109,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Create:"
-      ],
+      "must_preserve": ["Create:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4292,9 +4174,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/sender-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/sender-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4359,9 +4239,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/message-class-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/message-class-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4426,9 +4304,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/pipeline-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/pipeline-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4493,9 +4369,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/event-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/event-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4560,9 +4434,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/communications-contract.json"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/communications-contract.json"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4627,9 +4499,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Update:"
-      ],
+      "must_preserve": ["Update:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4694,9 +4564,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/current.json"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/current.json"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4761,9 +4629,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/schema.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/schema.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4828,9 +4694,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/custom-values.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/custom-values.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4895,9 +4759,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/workflow-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/workflow-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -4962,9 +4824,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/bot-action-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/bot-action-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5029,9 +4889,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/prompt-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/prompt-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5096,9 +4954,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/knowledge-base-registry.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/knowledge-base-registry.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5163,9 +5019,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/AGENT-HANDOFF.md"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/AGENT-HANDOFF.md"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5230,9 +5084,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/workflows.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/workflows.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5297,9 +5149,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/CHANGELOG.md"
-      ],
+      "must_preserve": ["integrations/highlevel/CHANGELOG.md"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5364,9 +5214,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Canonical communications boundary"
-      ],
+      "must_preserve": ["## Canonical communications boundary"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5431,9 +5279,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "HighLevel is the One Time source of truth for:"
-      ],
+      "must_preserve": ["HighLevel is the One Time source of truth for:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5500,9 +5346,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- adult/parent contacts"
-      ],
+      "must_preserve": ["- adult/parent contacts"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5567,9 +5411,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- customer conversations"
-      ],
+      "must_preserve": ["- customer conversations"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5634,9 +5476,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- campaigns"
-      ],
+      "must_preserve": ["- campaigns"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5701,9 +5541,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- business workflows"
-      ],
+      "must_preserve": ["- business workflows"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5768,9 +5606,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- replies"
-      ],
+      "must_preserve": ["- replies"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5835,9 +5671,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- suppression"
-      ],
+      "must_preserve": ["- suppression"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5902,9 +5736,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- opportunities"
-      ],
+      "must_preserve": ["- opportunities"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -5969,9 +5801,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- customer-support and Torah-question processing state."
-      ],
+      "must_preserve": ["- customer-support and Torah-question processing state."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6036,9 +5866,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "One Time is the source of truth for:"
-      ],
+      "must_preserve": ["One Time is the source of truth for:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6103,9 +5931,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- authentication"
-      ],
+      "must_preserve": ["- authentication"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6170,9 +5996,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- passwords and secure tokens"
-      ],
+      "must_preserve": ["- passwords and secure tokens"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6237,9 +6061,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- households"
-      ],
+      "must_preserve": ["- households"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6304,9 +6126,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- learners"
-      ],
+      "must_preserve": ["- learners"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6373,9 +6193,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Parent and Student portals"
-      ],
+      "must_preserve": ["- Parent and Student portals"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6440,9 +6258,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- entitlement"
-      ],
+      "must_preserve": ["- entitlement"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6507,9 +6323,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- classes"
-      ],
+      "must_preserve": ["- classes"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6574,9 +6388,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Vimeo"
-      ],
+      "must_preserve": ["- Vimeo"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6641,9 +6453,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Zoom"
-      ],
+      "must_preserve": ["- Zoom"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6708,9 +6518,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- progress"
-      ],
+      "must_preserve": ["- progress"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6775,9 +6583,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- gamification"
-      ],
+      "must_preserve": ["- gamification"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6842,9 +6648,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- original portal submissions."
-      ],
+      "must_preserve": ["- original portal submissions."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6909,9 +6713,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Resend is limited to:"
-      ],
+      "must_preserve": ["Resend is limited to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -6976,9 +6778,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- activation/setup links"
-      ],
+      "must_preserve": ["- activation/setup links"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7043,9 +6843,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- password reset"
-      ],
+      "must_preserve": ["- password reset"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7110,9 +6908,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- email verification"
-      ],
+      "must_preserve": ["- email verification"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7177,9 +6973,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Administrator login challenge"
-      ],
+      "must_preserve": ["- Administrator login challenge"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7244,9 +7038,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- security-token email."
-      ],
+      "must_preserve": ["- security-token email."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7378,9 +7170,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Telegram is not a separate customer transcript."
-      ],
+      "must_preserve": ["Telegram is not a separate customer transcript."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7445,9 +7235,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Human ownership"
-      ],
+      "must_preserve": ["## Human ownership"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7512,9 +7300,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Default customer-communication owner:"
-      ],
+      "must_preserve": ["Default customer-communication owner:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7579,9 +7365,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Shloimie"
-      ],
+      "must_preserve": ["Shloimie"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7646,9 +7430,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Rabbi Eli Scheller receives only:"
-      ],
+      "must_preserve": ["Rabbi Eli Scheller receives only:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7713,9 +7495,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- substantive Torah questions"
-      ],
+      "must_preserve": ["- substantive Torah questions"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7780,9 +7560,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Mishnah questions"
-      ],
+      "must_preserve": ["- Mishnah questions"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7847,9 +7625,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- halachic questions requiring Rabbi authorship"
-      ],
+      "must_preserve": ["- halachic questions requiring Rabbi authorship"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7914,9 +7690,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Rabbi-authored Torah newsletters"
-      ],
+      "must_preserve": ["- Rabbi-authored Torah newsletters"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -7981,9 +7755,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Rabbi-authored warm enrollment content."
-      ],
+      "must_preserve": ["- Rabbi-authored warm enrollment content."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8048,9 +7820,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not route these to Rabbi:"
-      ],
+      "must_preserve": ["Do not route these to Rabbi:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8115,9 +7885,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- login"
-      ],
+      "must_preserve": ["- login"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8182,9 +7950,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- password help"
-      ],
+      "must_preserve": ["- password help"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8249,9 +8015,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- billing"
-      ],
+      "must_preserve": ["- billing"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8316,9 +8080,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- cancellation"
-      ],
+      "must_preserve": ["- cancellation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8383,9 +8145,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- refund"
-      ],
+      "must_preserve": ["- refund"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8450,9 +8210,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- technical support"
-      ],
+      "must_preserve": ["- technical support"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8517,9 +8275,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- scheduling"
-      ],
+      "must_preserve": ["- scheduling"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8584,9 +8340,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- class-link problems"
-      ],
+      "must_preserve": ["- class-link problems"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8653,9 +8407,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- parent administration"
-      ],
+      "must_preserve": ["- parent administration"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8720,9 +8472,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- ordinary enrollment logistics"
-      ],
+      "must_preserve": ["- ordinary enrollment logistics"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8787,9 +8537,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- complaints"
-      ],
+      "must_preserve": ["- complaints"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8854,9 +8602,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- unknown messages"
-      ],
+      "must_preserve": ["- unknown messages"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8921,9 +8667,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- generic replies."
-      ],
+      "must_preserve": ["- generic replies."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -8988,9 +8732,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Sender registry"
-      ],
+      "must_preserve": ["## Sender registry"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9055,9 +8797,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Create these exact sender keys."
-      ],
+      "must_preserve": ["Create these exact sender keys."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9122,9 +8862,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### rabbi_campaign"
-      ],
+      "must_preserve": ["### rabbi_campaign"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9189,9 +8927,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Purpose:"
-      ],
+      "must_preserve": ["Purpose:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9256,9 +8992,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- warm enrollment campaigns"
-      ],
+      "must_preserve": ["- warm enrollment campaigns"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9323,9 +9057,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Torah newsletters"
-      ],
+      "must_preserve": ["- Torah newsletters"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9390,9 +9122,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Rabbi-authored teaching emails"
-      ],
+      "must_preserve": ["- Rabbi-authored teaching emails"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9457,9 +9187,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Rabbi-authored event invitations."
-      ],
+      "must_preserve": ["- Rabbi-authored event invitations."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9524,9 +9252,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Phase 1:"
-      ],
+      "must_preserve": ["Phase 1:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9591,9 +9317,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "display_name:"
-      ],
+      "must_preserve": ["display_name:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9658,9 +9382,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Rabbi Eli Scheller | One Time Mishnayos"
-      ],
+      "must_preserve": ["Rabbi Eli Scheller | One Time Mishnayos"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9725,9 +9447,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "from_email:"
-      ],
+      "must_preserve": ["from_email:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9792,9 +9512,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9859,9 +9577,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "reply_to:"
-      ],
+      "must_preserve": ["reply_to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9926,9 +9642,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -9993,9 +9707,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "status:"
-      ],
+      "must_preserve": ["status:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10060,9 +9772,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "active_phase_1"
-      ],
+      "must_preserve": ["active_phase_1"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10127,9 +9837,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Phase 2:"
-      ],
+      "must_preserve": ["Phase 2:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10194,9 +9902,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "display_name:"
-      ],
+      "must_preserve": ["display_name:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10261,9 +9967,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Rabbi Eli Scheller | One Time Mishnayos"
-      ],
+      "must_preserve": ["Rabbi Eli Scheller | One Time Mishnayos"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10328,9 +10032,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "from_email:"
-      ],
+      "must_preserve": ["from_email:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10395,9 +10097,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "rabbi@onetimeonetime.com"
-      ],
+      "must_preserve": ["rabbi@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10462,9 +10162,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "reply_to:"
-      ],
+      "must_preserve": ["reply_to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10529,9 +10227,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10596,9 +10292,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "status:"
-      ],
+      "must_preserve": ["status:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10663,9 +10357,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "pending_mailbox_and_reply_acceptance"
-      ],
+      "must_preserve": ["pending_mailbox_and_reply_acceptance"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10730,9 +10422,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not activate phase 2 until:"
-      ],
+      "must_preserve": ["Do not activate phase 2 until:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10797,9 +10487,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "rabbi@ mailbox or routing exists"
-      ],
+      "must_preserve": ["rabbi@ mailbox or routing exists"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10864,9 +10552,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "HighLevel accepts the From address"
-      ],
+      "must_preserve": ["HighLevel accepts the From address"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10931,9 +10617,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "a seed delivers"
-      ],
+      "must_preserve": ["a seed delivers"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -10998,9 +10682,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "a reply reaches GHL Conversations"
-      ],
+      "must_preserve": ["a reply reaches GHL Conversations"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11065,9 +10747,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "the result is recorded."
-      ],
+      "must_preserve": ["the result is recorded."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11132,9 +10812,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### rabbi_personal"
-      ],
+      "must_preserve": ["### rabbi_personal"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11199,9 +10877,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "display_name:"
-      ],
+      "must_preserve": ["display_name:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11266,9 +10942,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Rabbi Eli Scheller"
-      ],
+      "must_preserve": ["Rabbi Eli Scheller"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11333,9 +11007,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "from_email:"
-      ],
+      "must_preserve": ["from_email:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11400,9 +11072,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "rabbi@onetimeonetime.com"
-      ],
+      "must_preserve": ["rabbi@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11467,9 +11137,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "reply_to:"
-      ],
+      "must_preserve": ["reply_to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11534,9 +11202,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11601,9 +11267,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "owner:"
-      ],
+      "must_preserve": ["owner:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11668,9 +11332,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Rabbi authors through Telegram"
-      ],
+      "must_preserve": ["Rabbi authors through Telegram"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11735,9 +11397,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Shloimie retains visibility"
-      ],
+      "must_preserve": ["Shloimie retains visibility"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11802,9 +11462,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "status:"
-      ],
+      "must_preserve": ["status:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11869,9 +11527,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "pending_mailbox_and_reply_acceptance"
-      ],
+      "must_preserve": ["pending_mailbox_and_reply_acceptance"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -11936,9 +11592,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### office"
-      ],
+      "must_preserve": ["### office"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12003,9 +11657,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "display_name:"
-      ],
+      "must_preserve": ["display_name:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12070,9 +11722,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Shloimie from One Time Mishnayos"
-      ],
+      "must_preserve": ["Shloimie from One Time Mishnayos"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12137,9 +11787,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "from_email:"
-      ],
+      "must_preserve": ["from_email:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12204,9 +11852,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12271,9 +11917,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "reply_to:"
-      ],
+      "must_preserve": ["reply_to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12338,9 +11982,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12405,9 +12047,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "status:"
-      ],
+      "must_preserve": ["status:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12472,9 +12112,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "active"
-      ],
+      "must_preserve": ["active"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12539,9 +12177,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### brand"
-      ],
+      "must_preserve": ["### brand"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12606,9 +12242,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "display_name:"
-      ],
+      "must_preserve": ["display_name:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12673,9 +12307,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "One Time Mishnayos"
-      ],
+      "must_preserve": ["One Time Mishnayos"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12740,9 +12372,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "from_email:"
-      ],
+      "must_preserve": ["from_email:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12807,9 +12437,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12874,9 +12502,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "reply_to:"
-      ],
+      "must_preserve": ["reply_to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -12941,9 +12567,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13008,9 +12632,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "status:"
-      ],
+      "must_preserve": ["status:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13075,9 +12697,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "active"
-      ],
+      "must_preserve": ["active"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13142,9 +12762,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### account_security"
-      ],
+      "must_preserve": ["### account_security"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13209,9 +12827,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "display_name:"
-      ],
+      "must_preserve": ["display_name:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13276,9 +12892,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "One Time Mishnayos Account"
-      ],
+      "must_preserve": ["One Time Mishnayos Account"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13343,9 +12957,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "preferred_from_email:"
-      ],
+      "must_preserve": ["preferred_from_email:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13410,9 +13022,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "account@onetimeonetime.com"
-      ],
+      "must_preserve": ["account@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13477,9 +13087,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "current_fallback_from_email:"
-      ],
+      "must_preserve": ["current_fallback_from_email:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13544,9 +13152,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "info@onetimeonetime.com"
-      ],
+      "must_preserve": ["info@onetimeonetime.com"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13611,9 +13217,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "provider:"
-      ],
+      "must_preserve": ["provider:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13678,9 +13282,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Resend"
-      ],
+      "must_preserve": ["Resend"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13745,9 +13347,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "status:"
-      ],
+      "must_preserve": ["status:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13812,9 +13412,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "preferred_address_pending_domain_acceptance"
-      ],
+      "must_preserve": ["preferred_address_pending_domain_acceptance"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13879,9 +13477,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not claim account@ is live until verified."
-      ],
+      "must_preserve": ["Do not claim account@ is live until verified."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -13946,9 +13542,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Message-class registry"
-      ],
+      "must_preserve": ["## Message-class registry"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14013,9 +13607,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Register every customer email class."
-      ],
+      "must_preserve": ["Register every customer email class."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14080,9 +13672,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### Rabbi campaign / GHL"
-      ],
+      "must_preserve": ["### Rabbi campaign / GHL"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14147,9 +13737,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- warm_enrollment_campaign"
-      ],
+      "must_preserve": ["- warm_enrollment_campaign"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14214,9 +13802,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- existing_subscriber_migration"
-      ],
+      "must_preserve": ["- existing_subscriber_migration"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14281,9 +13867,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- prelaunch_nurture"
-      ],
+      "must_preserve": ["- prelaunch_nurture"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14348,9 +13932,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- torah_newsletter"
-      ],
+      "must_preserve": ["- torah_newsletter"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14415,9 +13997,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- rabbi_teaching_email"
-      ],
+      "must_preserve": ["- rabbi_teaching_email"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14482,9 +14062,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- rabbi_event_invitation"
-      ],
+      "must_preserve": ["- rabbi_event_invitation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14549,9 +14127,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### Rabbi personal / GHL"
-      ],
+      "must_preserve": ["### Rabbi personal / GHL"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14616,9 +14192,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- torah_answer"
-      ],
+      "must_preserve": ["- torah_answer"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14683,9 +14257,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- torah_follow_up"
-      ],
+      "must_preserve": ["- torah_follow_up"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14750,9 +14322,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### Office / GHL"
-      ],
+      "must_preserve": ["### Office / GHL"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14817,9 +14387,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- support_reply"
-      ],
+      "must_preserve": ["- support_reply"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14884,9 +14452,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- access_help"
-      ],
+      "must_preserve": ["- access_help"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -14951,9 +14517,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- billing_help"
-      ],
+      "must_preserve": ["- billing_help"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15018,9 +14582,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- payment_failed_support"
-      ],
+      "must_preserve": ["- payment_failed_support"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15085,9 +14647,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- cancellation_help"
-      ],
+      "must_preserve": ["- cancellation_help"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15152,9 +14712,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- refund_help"
-      ],
+      "must_preserve": ["- refund_help"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15219,9 +14777,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- complaint_reply"
-      ],
+      "must_preserve": ["- complaint_reply"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15286,9 +14842,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- parent_administration_reply"
-      ],
+      "must_preserve": ["- parent_administration_reply"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15353,9 +14907,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### Brand / GHL"
-      ],
+      "must_preserve": ["### Brand / GHL"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15420,9 +14972,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- signup_confirmation"
-      ],
+      "must_preserve": ["- signup_confirmation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15487,9 +15037,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- event_registration_confirmation"
-      ],
+      "must_preserve": ["- event_registration_confirmation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15554,9 +15102,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- event_reminder"
-      ],
+      "must_preserve": ["- event_reminder"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15621,9 +15167,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- class_reminder"
-      ],
+      "must_preserve": ["- class_reminder"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15688,9 +15232,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- schedule_change"
-      ],
+      "must_preserve": ["- schedule_change"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15755,9 +15297,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- recording_available"
-      ],
+      "must_preserve": ["- recording_available"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15822,9 +15362,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- new_video_available"
-      ],
+      "must_preserve": ["- new_video_available"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15889,9 +15427,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- worksheet_available"
-      ],
+      "must_preserve": ["- worksheet_available"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -15956,9 +15492,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- portal_welcome"
-      ],
+      "must_preserve": ["- portal_welcome"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16023,9 +15557,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- portal_activated"
-      ],
+      "must_preserve": ["- portal_activated"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16090,9 +15622,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- payment_receipt"
-      ],
+      "must_preserve": ["- payment_receipt"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16157,9 +15687,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- cancellation_confirmation"
-      ],
+      "must_preserve": ["- cancellation_confirmation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16224,9 +15752,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- support_acknowledgement"
-      ],
+      "must_preserve": ["- support_acknowledgement"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16291,9 +15817,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### Account security / Resend"
-      ],
+      "must_preserve": ["### Account security / Resend"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16358,9 +15882,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- activation_token"
-      ],
+      "must_preserve": ["- activation_token"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16425,9 +15947,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- password_setup"
-      ],
+      "must_preserve": ["- password_setup"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16492,9 +16012,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- password_reset"
-      ],
+      "must_preserve": ["- password_reset"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16559,9 +16077,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- email_verification"
-      ],
+      "must_preserve": ["- email_verification"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16626,9 +16142,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- login_challenge"
-      ],
+      "must_preserve": ["- login_challenge"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16693,9 +16207,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- security_notice"
-      ],
+      "must_preserve": ["- security_notice"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16827,9 +16339,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "No workflow may contain an unregistered sender identity."
-      ],
+      "must_preserve": ["No workflow may contain an unregistered sender identity."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16894,9 +16404,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Pipeline registry"
-      ],
+      "must_preserve": ["## Pipeline registry"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -16961,9 +16469,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Create or reconcile:"
-      ],
+      "must_preserve": ["Create or reconcile:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17028,9 +16534,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### One Time Enrollment and Conversion"
-      ],
+      "must_preserve": ["### One Time Enrollment and Conversion"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17095,9 +16599,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Stages:"
-      ],
+      "must_preserve": ["Stages:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17162,9 +16664,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Warm Lead"
-      ],
+      "must_preserve": ["- Warm Lead"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17229,9 +16729,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Contacted"
-      ],
+      "must_preserve": ["- Contacted"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17296,9 +16794,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Engaged"
-      ],
+      "must_preserve": ["- Engaged"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17363,9 +16859,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Signup Started"
-      ],
+      "must_preserve": ["- Signup Started"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17430,9 +16924,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Signed Up"
-      ],
+      "must_preserve": ["- Signed Up"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17497,9 +16989,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Active Member"
-      ],
+      "must_preserve": ["- Active Member"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17564,9 +17054,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Not Now"
-      ],
+      "must_preserve": ["- Not Now"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17631,9 +17119,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Unqualified"
-      ],
+      "must_preserve": ["- Unqualified"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17698,9 +17184,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### One Time Member Support"
-      ],
+      "must_preserve": ["### One Time Member Support"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17765,9 +17249,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Stages:"
-      ],
+      "must_preserve": ["Stages:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17832,9 +17314,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- New"
-      ],
+      "must_preserve": ["- New"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17899,9 +17379,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Triaged"
-      ],
+      "must_preserve": ["- Triaged"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -17966,9 +17444,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- In Progress"
-      ],
+      "must_preserve": ["- In Progress"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18033,9 +17509,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Waiting on Member"
-      ],
+      "must_preserve": ["- Waiting on Member"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18100,9 +17574,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Waiting on External Fix"
-      ],
+      "must_preserve": ["- Waiting on External Fix"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18167,9 +17639,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Resolved"
-      ],
+      "must_preserve": ["- Resolved"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18234,9 +17704,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Closed"
-      ],
+      "must_preserve": ["- Closed"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18301,9 +17769,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### One Time Torah Questions"
-      ],
+      "must_preserve": ["### One Time Torah Questions"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18368,9 +17834,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Stages:"
-      ],
+      "must_preserve": ["Stages:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18435,9 +17899,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- New"
-      ],
+      "must_preserve": ["- New"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18502,9 +17964,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Shloimie Review"
-      ],
+      "must_preserve": ["- Shloimie Review"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18569,9 +18029,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Assigned to Rabbi"
-      ],
+      "must_preserve": ["- Assigned to Rabbi"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18636,9 +18094,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Rabbi Reviewing"
-      ],
+      "must_preserve": ["- Rabbi Reviewing"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18703,9 +18159,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Answer Sent"
-      ],
+      "must_preserve": ["- Answer Sent"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18770,9 +18224,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Waiting on Follow-Up"
-      ],
+      "must_preserve": ["- Waiting on Follow-Up"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18837,9 +18289,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Closed"
-      ],
+      "must_preserve": ["- Closed"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18904,9 +18354,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "The existing:"
-      ],
+      "must_preserve": ["The existing:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -18971,9 +18419,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "One Time Business"
-      ],
+      "must_preserve": ["One Time Business"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19105,9 +18551,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not delete or silently migrate existing opportunities in this lane."
-      ],
+      "must_preserve": ["Do not delete or silently migrate existing opportunities in this lane."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19239,9 +18683,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "When API rate limiting occurs:"
-      ],
+      "must_preserve": ["When API rate limiting occurs:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19306,9 +18748,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- retry with bounded exponential backoff"
-      ],
+      "must_preserve": ["- retry with bounded exponential backoff"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19375,9 +18815,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- respect Retry-After"
-      ],
+      "must_preserve": ["- respect Retry-After"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19442,9 +18880,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- do not treat failed reads as missing assets"
-      ],
+      "must_preserve": ["- do not treat failed reads as missing assets"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19509,9 +18945,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- do not create duplicates"
-      ],
+      "must_preserve": ["- do not create duplicates"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19576,9 +19010,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- record a safe API result."
-      ],
+      "must_preserve": ["- record a safe API result."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19643,9 +19075,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "When an operation remains UI-only, create an Agent Mode job."
-      ],
+      "must_preserve": ["When an operation remains UI-only, create an Agent Mode job."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19710,9 +19140,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Event registry"
-      ],
+      "must_preserve": ["## Event registry"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19777,9 +19205,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Register:"
-      ],
+      "must_preserve": ["Register:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19844,9 +19270,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "event_code:"
-      ],
+      "must_preserve": ["event_code:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19911,9 +19335,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "tisha-bav-2026"
-      ],
+      "must_preserve": ["tisha-bav-2026"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -19978,9 +19400,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Canonical workflow:"
-      ],
+      "must_preserve": ["Canonical workflow:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20045,9 +19465,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "OT-E01 Tisha B'Av 2026 Registration and Reminders"
-      ],
+      "must_preserve": ["OT-E01 Tisha B'Av 2026 Registration and Reminders"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20112,9 +19530,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Canonical campaign:"
-      ],
+      "must_preserve": ["Canonical campaign:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20179,9 +19595,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "OT-C01 Tisha B'Av 2026 Warm Invitation"
-      ],
+      "must_preserve": ["OT-C01 Tisha B'Av 2026 Warm Invitation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20246,9 +19660,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Event invitation sender:"
-      ],
+      "must_preserve": ["Event invitation sender:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20313,9 +19725,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "rabbi_campaign"
-      ],
+      "must_preserve": ["rabbi_campaign"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20380,9 +19790,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Registration/reminder sender:"
-      ],
+      "must_preserve": ["Registration/reminder sender:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20447,9 +19855,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "brand or rabbi_campaign according to the approved prompt version."
-      ],
+      "must_preserve": ["brand or rabbi_campaign according to the approved prompt version."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20581,9 +19987,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not duplicate them."
-      ],
+      "must_preserve": ["Do not duplicate them."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20648,9 +20052,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Workflow sender mapping"
-      ],
+      "must_preserve": ["## Workflow sender mapping"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20715,9 +20117,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Update all canonical workflow prompt files and checklists."
-      ],
+      "must_preserve": ["Update all canonical workflow prompt files and checklists."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20782,9 +20182,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### rabbi_campaign"
-      ],
+      "must_preserve": ["### rabbi_campaign"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20849,9 +20247,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-02A Existing Subscriber Migration 2026 v1"
-      ],
+      "must_preserve": ["- OT-02A Existing Subscriber Migration 2026 v1"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20916,9 +20312,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-02B New Lead Nurture v1"
-      ],
+      "must_preserve": ["- OT-02B New Lead Nurture v1"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -20983,9 +20377,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-C01 Tisha B'Av 2026 Warm Invitation"
-      ],
+      "must_preserve": ["- OT-C01 Tisha B'Av 2026 Warm Invitation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21050,9 +20442,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- future Torah newsletters"
-      ],
+      "must_preserve": ["- future Torah newsletters"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21117,9 +20507,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### brand"
-      ],
+      "must_preserve": ["### brand"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21184,9 +20572,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-04 Payment Active confirmation"
-      ],
+      "must_preserve": ["- OT-04 Payment Active confirmation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21253,9 +20639,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-07 Parent Portal companion/welcome"
-      ],
+      "must_preserve": ["- OT-07 Parent Portal companion/welcome"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21322,9 +20706,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-08 Parent Portal Activated"
-      ],
+      "must_preserve": ["- OT-08 Parent Portal Activated"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21391,9 +20773,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-09 Parent Class Reminder"
-      ],
+      "must_preserve": ["- OT-09 Parent Class Reminder"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21458,9 +20838,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-10 New Recording Available"
-      ],
+      "must_preserve": ["- OT-10 New Recording Available"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21525,9 +20903,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-E01 event registration/reminders unless explicitly Rabbi-authored"
-      ],
+      "must_preserve": ["- OT-E01 event registration/reminders unless explicitly Rabbi-authored"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21592,9 +20968,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- signup confirmations"
-      ],
+      "must_preserve": ["- signup confirmations"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21659,9 +21033,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- schedule notices"
-      ],
+      "must_preserve": ["- schedule notices"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21726,9 +21098,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- content notices"
-      ],
+      "must_preserve": ["- content notices"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21793,9 +21163,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### office"
-      ],
+      "must_preserve": ["### office"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21860,9 +21228,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-05 Payment Failed / Grace"
-      ],
+      "must_preserve": ["- OT-05 Payment Failed / Grace"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21927,9 +21293,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- OT-13 Refund / Chargeback"
-      ],
+      "must_preserve": ["- OT-13 Refund / Chargeback"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -21994,9 +21358,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- customer-support replies"
-      ],
+      "must_preserve": ["- customer-support replies"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22061,9 +21423,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### account_security / Resend"
-      ],
+      "must_preserve": ["### account_security / Resend"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22128,9 +21488,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- secure activation/setup"
-      ],
+      "must_preserve": ["- secure activation/setup"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22195,9 +21553,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- password reset"
-      ],
+      "must_preserve": ["- password reset"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22262,9 +21618,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- email verification"
-      ],
+      "must_preserve": ["- email verification"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22329,9 +21683,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Administrator challenge"
-      ],
+      "must_preserve": ["- Administrator challenge"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22396,9 +21748,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Split OT-07 explicitly:"
-      ],
+      "must_preserve": ["Split OT-07 explicitly:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22463,9 +21813,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "GHL sends the companion/welcome email."
-      ],
+      "must_preserve": ["GHL sends the companion/welcome email."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22530,9 +21878,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "One Time/Resend sends the secure activation token."
-      ],
+      "must_preserve": ["One Time/Resend sends the secure activation token."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22597,9 +21943,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "GHL must never store or send the activation/reset token."
-      ],
+      "must_preserve": ["GHL must never store or send the activation/reset token."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22664,9 +22008,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## OT-A1 bot"
-      ],
+      "must_preserve": ["## OT-A1 bot"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22731,9 +22073,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Preserve one canonical bot:"
-      ],
+      "must_preserve": ["Preserve one canonical bot:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22798,9 +22138,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "OT-A1 One Time Enrollment Assistant"
-      ],
+      "must_preserve": ["OT-A1 One Time Enrollment Assistant"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22865,9 +22203,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Channels:"
-      ],
+      "must_preserve": ["Channels:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22932,9 +22268,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Website Live Chat"
-      ],
+      "must_preserve": ["- Website Live Chat"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -22999,9 +22333,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- WhatsApp"
-      ],
+      "must_preserve": ["- WhatsApp"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23066,9 +22398,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Voice remains deferred."
-      ],
+      "must_preserve": ["Voice remains deferred."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23133,9 +22463,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Default operational owner:"
-      ],
+      "must_preserve": ["Default operational owner:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23200,9 +22528,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Shloimie"
-      ],
+      "must_preserve": ["Shloimie"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23267,9 +22593,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Only explicit substantive Torah questions route to:"
-      ],
+      "must_preserve": ["Only explicit substantive Torah questions route to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23334,9 +22658,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "One Time Torah Questions"
-      ],
+      "must_preserve": ["One Time Torah Questions"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23401,9 +22723,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not create:"
-      ],
+      "must_preserve": ["Do not create:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23468,9 +22788,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Human Handoff"
-      ],
+      "must_preserve": ["- Human Handoff"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23535,9 +22853,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- human tasks"
-      ],
+      "must_preserve": ["- human tasks"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23602,9 +22918,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- separate WhatsApp qualification bot"
-      ],
+      "must_preserve": ["- separate WhatsApp qualification bot"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23669,9 +22983,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- duplicate lead workflows"
-      ],
+      "must_preserve": ["- duplicate lead workflows"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23736,9 +23048,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- automatic promise that a person will reply."
-      ],
+      "must_preserve": ["- automatic promise that a person will reply."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23803,9 +23113,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Fallback remains:"
-      ],
+      "must_preserve": ["Fallback remains:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23870,9 +23178,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "I do not have that information confirmed."
-      ],
+      "must_preserve": ["I do not have that information confirmed."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -23937,9 +23243,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Please email info@onetimeonetime.com."
-      ],
+      "must_preserve": ["Please email info@onetimeonetime.com."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24004,9 +23308,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Telegram contract"
-      ],
+      "must_preserve": ["## Telegram contract"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24071,9 +23373,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Create:"
-      ],
+      "must_preserve": ["Create:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24138,9 +23438,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/registry/rabbi-telegram-contract.yaml"
-      ],
+      "must_preserve": ["integrations/highlevel/registry/rabbi-telegram-contract.yaml"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24205,9 +23503,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Register:"
-      ],
+      "must_preserve": ["Register:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24272,9 +23568,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "one_time_rabbi_torah_console"
-      ],
+      "must_preserve": ["one_time_rabbi_torah_console"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24339,9 +23633,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Allowed:"
-      ],
+      "must_preserve": ["Allowed:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24406,9 +23698,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- list assigned Torah questions"
-      ],
+      "must_preserve": ["- list assigned Torah questions"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24473,9 +23763,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- open question"
-      ],
+      "must_preserve": ["- open question"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24540,9 +23828,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- accept Rabbi text or voice response"
-      ],
+      "must_preserve": ["- accept Rabbi text or voice response"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24607,9 +23893,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- produce a preview"
-      ],
+      "must_preserve": ["- produce a preview"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24674,9 +23958,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- save draft"
-      ],
+      "must_preserve": ["- save draft"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24743,9 +24025,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- send confirmed reply through the same GHL conversation"
-      ],
+      "must_preserve": ["- send confirmed reply through the same GHL conversation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24810,9 +24090,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- return question to Shloimie"
-      ],
+      "must_preserve": ["- return question to Shloimie"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24877,9 +24155,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- close question"
-      ],
+      "must_preserve": ["- close question"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -24944,9 +24220,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- draft Torah newsletter"
-      ],
+      "must_preserve": ["- draft Torah newsletter"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25011,9 +24285,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- draft warm enrollment email"
-      ],
+      "must_preserve": ["- draft warm enrollment email"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25078,9 +24350,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- show campaign audience and suppression results"
-      ],
+      "must_preserve": ["- show campaign audience and suppression results"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25147,9 +24417,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- trigger an approved campaign only after explicit confirmation."
-      ],
+      "must_preserve": ["- trigger an approved campaign only after explicit confirmation."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25214,9 +24482,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Forbidden:"
-      ],
+      "must_preserve": ["Forbidden:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25281,9 +24547,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- general support queue"
-      ],
+      "must_preserve": ["- general support queue"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25348,9 +24612,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- technical issues"
-      ],
+      "must_preserve": ["- technical issues"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25415,9 +24677,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- billing"
-      ],
+      "must_preserve": ["- billing"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25484,9 +24744,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- parent administration"
-      ],
+      "must_preserve": ["- parent administration"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25551,9 +24809,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- independent AI Torah answers"
-      ],
+      "must_preserve": ["- independent AI Torah answers"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25618,9 +24874,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- independent bulk audience selection"
-      ],
+      "must_preserve": ["- independent bulk audience selection"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25685,9 +24939,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- separate Telegram transcript"
-      ],
+      "must_preserve": ["- separate Telegram transcript"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25752,9 +25004,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- vague bulk-send command."
-      ],
+      "must_preserve": ["- vague bulk-send command."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25819,9 +25069,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Custom values"
-      ],
+      "must_preserve": ["## Custom values"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25886,9 +25134,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Create/reconcile registered sender custom values."
-      ],
+      "must_preserve": ["Create/reconcile registered sender custom values."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -25953,9 +25199,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Suggested folder:"
-      ],
+      "must_preserve": ["Suggested folder:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26020,9 +25264,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "One Time - Senders"
-      ],
+      "must_preserve": ["One Time - Senders"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26087,9 +25329,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Values:"
-      ],
+      "must_preserve": ["Values:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26154,9 +25394,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Rabbi Campaign Sender Name"
-      ],
+      "must_preserve": ["- One Time Rabbi Campaign Sender Name"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26221,9 +25459,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Rabbi Campaign Phase 1 From"
-      ],
+      "must_preserve": ["- One Time Rabbi Campaign Phase 1 From"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26288,9 +25524,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Rabbi Campaign Phase 2 From"
-      ],
+      "must_preserve": ["- One Time Rabbi Campaign Phase 2 From"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26355,9 +25589,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Rabbi Personal Sender Name"
-      ],
+      "must_preserve": ["- One Time Rabbi Personal Sender Name"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26422,9 +25654,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Rabbi Personal From"
-      ],
+      "must_preserve": ["- One Time Rabbi Personal From"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26489,9 +25719,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Office Sender Name"
-      ],
+      "must_preserve": ["- One Time Office Sender Name"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26556,9 +25784,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Office From"
-      ],
+      "must_preserve": ["- One Time Office From"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26623,9 +25849,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Brand Sender Name"
-      ],
+      "must_preserve": ["- One Time Brand Sender Name"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26690,9 +25914,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Brand From"
-      ],
+      "must_preserve": ["- One Time Brand From"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26757,9 +25979,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Account Sender Name"
-      ],
+      "must_preserve": ["- One Time Account Sender Name"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26824,9 +26044,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Account Preferred From"
-      ],
+      "must_preserve": ["- One Time Account Preferred From"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26891,9 +26109,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- One Time Default Reply-To"
-      ],
+      "must_preserve": ["- One Time Default Reply-To"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -26958,9 +26174,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not delete the existing generic sender values."
-      ],
+      "must_preserve": ["Do not delete the existing generic sender values."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27092,9 +26306,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Use the HighLevel API to create the custom values when supported."
-      ],
+      "must_preserve": ["Use the HighLevel API to create the custom values when supported."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27159,9 +26371,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not activate unresolved addresses."
-      ],
+      "must_preserve": ["Do not activate unresolved addresses."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27226,9 +26436,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Prompt updates"
-      ],
+      "must_preserve": ["## Prompt updates"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27295,9 +26503,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Update every workflow AI prompt and checklist under:"
-      ],
+      "must_preserve": ["Update every workflow AI prompt and checklist under:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27362,9 +26568,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/ai-workflow-prompts/"
-      ],
+      "must_preserve": ["integrations/highlevel/ai-workflow-prompts/"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27429,9 +26633,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/workflow-checklists/"
-      ],
+      "must_preserve": ["integrations/highlevel/workflow-checklists/"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27496,9 +26698,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Also update:"
-      ],
+      "must_preserve": ["Also update:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27563,9 +26763,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/prompts/active/"
-      ],
+      "must_preserve": ["integrations/highlevel/prompts/active/"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27630,9 +26828,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/agent-prompts/"
-      ],
+      "must_preserve": ["integrations/highlevel/agent-prompts/"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27697,9 +26893,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/knowledge-bases/active/"
-      ],
+      "must_preserve": ["integrations/highlevel/knowledge-bases/active/"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27764,9 +26958,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Each workflow prompt must contain:"
-      ],
+      "must_preserve": ["Each workflow prompt must contain:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27831,9 +27023,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- message_class"
-      ],
+      "must_preserve": ["- message_class"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27898,9 +27088,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- sender_key"
-      ],
+      "must_preserve": ["- sender_key"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -27965,9 +27153,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- exact workflow"
-      ],
+      "must_preserve": ["- exact workflow"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28032,9 +27218,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- exact folder"
-      ],
+      "must_preserve": ["- exact folder"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28099,9 +27283,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- exact trigger"
-      ],
+      "must_preserve": ["- exact trigger"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28166,9 +27348,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- no-send/no-publish default"
-      ],
+      "must_preserve": ["- no-send/no-publish default"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28233,9 +27413,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- dependency on the registry"
-      ],
+      "must_preserve": ["- dependency on the registry"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28300,9 +27478,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- exact custom values selected from the picker"
-      ],
+      "must_preserve": ["- exact custom values selected from the picker"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28367,9 +27543,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- prohibition on guessed sender text."
-      ],
+      "must_preserve": ["- prohibition on guessed sender text."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28434,9 +27608,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Agent Mode queue regeneration"
-      ],
+      "must_preserve": ["## Agent Mode queue regeneration"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28501,9 +27673,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Update:"
-      ],
+      "must_preserve": ["Update:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28568,9 +27738,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json"
-      ],
+      "must_preserve": ["integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28635,9 +27803,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json"
-      ],
+      "must_preserve": ["integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28704,9 +27870,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Add ordered jobs:"
-      ],
+      "must_preserve": ["Add ordered jobs:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28771,9 +27935,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- create sender custom-value folder"
-      ],
+      "must_preserve": ["- create sender custom-value folder"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28838,9 +28000,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- reconcile sender values"
-      ],
+      "must_preserve": ["- reconcile sender values"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28905,9 +28065,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- create/reconcile pipelines"
-      ],
+      "must_preserve": ["- create/reconcile pipelines"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -28972,9 +28130,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- update workflow sender identities"
-      ],
+      "must_preserve": ["- update workflow sender identities"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29039,9 +28195,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- update OT-A1"
-      ],
+      "must_preserve": ["- update OT-A1"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29106,9 +28260,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- verify sending domain"
-      ],
+      "must_preserve": ["- verify sending domain"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29173,9 +28325,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- phase-1 seed"
-      ],
+      "must_preserve": ["- phase-1 seed"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29240,9 +28390,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- office seed"
-      ],
+      "must_preserve": ["- office seed"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29307,9 +28455,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- brand seed"
-      ],
+      "must_preserve": ["- brand seed"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29374,9 +28520,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- capture workflow IDs"
-      ],
+      "must_preserve": ["- capture workflow IDs"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29441,9 +28585,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- capture pipeline IDs"
-      ],
+      "must_preserve": ["- capture pipeline IDs"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29508,9 +28650,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- save/readback"
-      ],
+      "must_preserve": ["- save/readback"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29575,9 +28715,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- phase-2 rabbi@ acceptance, blocked until prerequisites pass."
-      ],
+      "must_preserve": ["- phase-2 rabbi@ acceptance, blocked until prerequisites pass."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29642,9 +28780,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Every job must instruct Agent Mode to:"
-      ],
+      "must_preserve": ["Every job must instruct Agent Mode to:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29709,9 +28845,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "use the pinned registry commit"
-      ],
+      "must_preserve": ["use the pinned registry commit"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29776,9 +28910,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "perform only registered actions"
-      ],
+      "must_preserve": ["perform only registered actions"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29843,9 +28975,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "click Save"
-      ],
+      "must_preserve": ["click Save"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29910,9 +29040,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "reopen and verify"
-      ],
+      "must_preserve": ["reopen and verify"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -29977,9 +29105,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "capture safe IDs"
-      ],
+      "must_preserve": ["capture safe IDs"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30044,9 +29170,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "return to Agent Action drop-off"
-      ],
+      "must_preserve": ["return to Agent Action drop-off"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30111,9 +29235,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "save the result"
-      ],
+      "must_preserve": ["save the result"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30178,9 +29300,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "verify readback"
-      ],
+      "must_preserve": ["verify readback"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30245,9 +29365,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "never finish with a chat-only completion claim."
-      ],
+      "must_preserve": ["never finish with a chat-only completion claim."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30312,9 +29430,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Immutable Agent Mode handoff"
-      ],
+      "must_preserve": ["## Immutable Agent Mode handoff"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30379,9 +29495,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Use a two-commit process."
-      ],
+      "must_preserve": ["Use a two-commit process."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30446,9 +29560,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### Commit A — canonical registry"
-      ],
+      "must_preserve": ["### Commit A — canonical registry"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30513,9 +29625,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Commit all sender, message-class, pipeline, workflow and prompt changes."
-      ],
+      "must_preserve": ["Commit all sender, message-class, pipeline, workflow and prompt changes."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30580,9 +29690,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Record Commit A SHA."
-      ],
+      "must_preserve": ["Record Commit A SHA."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30647,9 +29755,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "This SHA is the immutable registry SHA."
-      ],
+      "must_preserve": ["This SHA is the immutable registry SHA."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30714,9 +29820,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "### Commit B — Agent Mode handoff"
-      ],
+      "must_preserve": ["### Commit B — Agent Mode handoff"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30781,9 +29885,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Generate:"
-      ],
+      "must_preserve": ["Generate:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30848,9 +29950,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md"
-      ],
+      "must_preserve": ["integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -30982,9 +30082,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "The executor prompt must embed:"
-      ],
+      "must_preserve": ["The executor prompt must embed:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31049,9 +30147,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- repository"
-      ],
+      "must_preserve": ["- repository"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31116,9 +30212,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- PR"
-      ],
+      "must_preserve": ["- PR"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31183,9 +30277,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- branch"
-      ],
+      "must_preserve": ["- branch"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31250,9 +30342,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Commit A immutable SHA"
-      ],
+      "must_preserve": ["- Commit A immutable SHA"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31317,9 +30407,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- exact registry paths"
-      ],
+      "must_preserve": ["- exact registry paths"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31384,9 +30472,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- exact GHL location"
-      ],
+      "must_preserve": ["- exact GHL location"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31453,9 +30539,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- exact job order"
-      ],
+      "must_preserve": ["- exact job order"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31520,9 +30604,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- save/readback behavior."
-      ],
+      "must_preserve": ["- save/readback behavior."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31587,9 +30669,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Commit only the prompt/template in Commit B."
-      ],
+      "must_preserve": ["Commit only the prompt/template in Commit B."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31654,9 +30734,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Push both commits."
-      ],
+      "must_preserve": ["Push both commits."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31721,9 +30799,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "The Agent Mode source-of-truth SHA is Commit A."
-      ],
+      "must_preserve": ["The Agent Mode source-of-truth SHA is Commit A."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31788,9 +30864,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not require the operator to edit or paste a SHA manually."
-      ],
+      "must_preserve": ["Do not require the operator to edit or paste a SHA manually."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31855,9 +30929,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Validation"
-      ],
+      "must_preserve": ["## Validation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31922,9 +30994,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Run:"
-      ],
+      "must_preserve": ["Run:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -31989,9 +31059,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- canonical registry validation"
-      ],
+      "must_preserve": ["- canonical registry validation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32056,9 +31124,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- duplicate sender detection"
-      ],
+      "must_preserve": ["- duplicate sender detection"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32123,9 +31189,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- duplicate pipeline detection"
-      ],
+      "must_preserve": ["- duplicate pipeline detection"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32190,9 +31254,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- message-class coverage validation"
-      ],
+      "must_preserve": ["- message-class coverage validation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32257,9 +31319,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- workflow sender dependency validation"
-      ],
+      "must_preserve": ["- workflow sender dependency validation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32324,9 +31384,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Agent Mode queue validation"
-      ],
+      "must_preserve": ["- Agent Mode queue validation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32391,9 +31449,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- prompt dependency validation"
-      ],
+      "must_preserve": ["- prompt dependency validation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32458,9 +31514,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- bounded HighLevel API reconciliation"
-      ],
+      "must_preserve": ["- bounded HighLevel API reconciliation"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32525,9 +31579,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- typecheck"
-      ],
+      "must_preserve": ["- typecheck"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32592,9 +31644,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- lint"
-      ],
+      "must_preserve": ["- lint"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32659,9 +31709,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- secret scan"
-      ],
+      "must_preserve": ["- secret scan"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32726,9 +31774,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- git diff --check."
-      ],
+      "must_preserve": ["- git diff --check."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32793,9 +31839,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not run the full product browser suite."
-      ],
+      "must_preserve": ["Do not run the full product browser suite."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32860,9 +31904,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "## Final response"
-      ],
+      "must_preserve": ["## Final response"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32927,9 +31969,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Begin exactly:"
-      ],
+      "must_preserve": ["Begin exactly:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -32994,9 +32034,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "HIGHLEVEL_SCHEMA_VERSION: 1.1.0"
-      ],
+      "must_preserve": ["HIGHLEVEL_SCHEMA_VERSION: 1.1.0"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33061,9 +32099,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "SENDER_REGISTRY: COMPLETE | BLOCKED(<one exact action>)"
-      ],
+      "must_preserve": ["SENDER_REGISTRY: COMPLETE | BLOCKED(<one exact action>)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33128,9 +32164,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "MESSAGE_CLASS_REGISTRY: COMPLETE | BLOCKED(<reason>)"
-      ],
+      "must_preserve": ["MESSAGE_CLASS_REGISTRY: COMPLETE | BLOCKED(<reason>)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33195,9 +32229,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "PIPELINE_REGISTRY: COMPLETE | BLOCKED(<reason>)"
-      ],
+      "must_preserve": ["PIPELINE_REGISTRY: COMPLETE | BLOCKED(<reason>)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33262,9 +32294,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "SENDER_CUSTOM_VALUES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)"
-      ],
+      "must_preserve": ["SENDER_CUSTOM_VALUES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33329,9 +32359,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "PIPELINES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)"
-      ],
+      "must_preserve": ["PIPELINES_API: COMPLETE | PARTIAL | BLOCKED(<reason>)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33396,9 +32424,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "WORKFLOW_PROMPTS_UPDATED: <count>/<total>"
-      ],
+      "must_preserve": ["WORKFLOW_PROMPTS_UPDATED: <count>/<total>"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33463,9 +32489,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "AGENT_MODE_EXECUTOR: READY | BLOCKED(<reason>)"
-      ],
+      "must_preserve": ["AGENT_MODE_EXECUTOR: READY | BLOCKED(<reason>)"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33530,9 +32554,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "MESSAGES_SENT: 0"
-      ],
+      "must_preserve": ["MESSAGES_SENT: 0"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33597,9 +32619,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Then include exactly:"
-      ],
+      "must_preserve": ["Then include exactly:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33664,9 +32684,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- branch"
-      ],
+      "must_preserve": ["- branch"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33731,9 +32749,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- PR"
-      ],
+      "must_preserve": ["- PR"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33798,9 +32814,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Commit A immutable registry SHA"
-      ],
+      "must_preserve": ["- Commit A immutable registry SHA"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33865,9 +32879,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- Commit B final branch head"
-      ],
+      "must_preserve": ["- Commit B final branch head"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33932,9 +32944,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- sender registry path"
-      ],
+      "must_preserve": ["- sender registry path"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -33999,9 +33009,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- pipeline registry path"
-      ],
+      "must_preserve": ["- pipeline registry path"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -34066,9 +33074,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- pinned Agent Mode executor path"
-      ],
+      "must_preserve": ["- pinned Agent Mode executor path"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -34133,9 +33139,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- GHL API asset IDs created"
-      ],
+      "must_preserve": ["- GHL API asset IDs created"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -34200,9 +33204,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "- one exact unresolved action."
-      ],
+      "must_preserve": ["- one exact unresolved action."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -34267,9 +33269,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Also paste the complete contents of:"
-      ],
+      "must_preserve": ["Also paste the complete contents of:"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -34334,9 +33334,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md"
-      ],
+      "must_preserve": ["integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md"],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],
@@ -34468,9 +33466,7 @@
         "properties": []
       },
       "viewport_behavior": [],
-      "must_preserve": [
-        "Do not end with another recommendation."
-      ],
+      "must_preserve": ["Do not end with another recommendation."],
       "must_remove": [],
       "conflicts": [],
       "supersedes_ids": [],

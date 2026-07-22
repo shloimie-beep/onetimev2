@@ -1,5 +1,4 @@
--
-  key: 'rabbi_campaign'
+- key: 'rabbi_campaign'
   purpose:
     - 'warm enrollment campaigns'
     - 'Torah newsletters'
@@ -36,8 +35,7 @@
     - 'torah_newsletter'
     - 'rabbi_teaching_email'
     - 'rabbi_event_invitation'
--
-  key: 'rabbi_personal'
+- key: 'rabbi_personal'
   purpose:
     - 'Rabbi-authored Torah answers and follow-up'
   provider: 'GHL'
@@ -53,8 +51,7 @@
   messageClasses:
     - 'torah_answer'
     - 'torah_follow_up'
--
-  key: 'office'
+- key: 'office'
   purpose:
     - 'customer support'
     - 'billing help'
@@ -79,8 +76,7 @@
     - 'refund_help'
     - 'complaint_reply'
     - 'parent_administration_reply'
--
-  key: 'brand'
+- key: 'brand'
   purpose:
     - 'neutral One Time program, portal, event, class, content, and receipt notices'
   provider: 'GHL'
@@ -107,8 +103,7 @@
     - 'payment_receipt'
     - 'cancellation_confirmation'
     - 'support_acknowledgement'
--
-  key: 'account_security'
+- key: 'account_security'
   purpose:
     - 'activation/setup links'
     - 'password reset'
