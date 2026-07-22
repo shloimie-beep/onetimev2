@@ -35,10 +35,7 @@ describe('Tisha BAv HighLevel client', () => {
     const fetchImpl = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ contact: { id: 'contact_operator' } }))
-      .mockResolvedValueOnce(Response.json({ contacts: ['contact_operator'] }, { status: 201 }))
-      .mockResolvedValueOnce(
-        Response.json({ contact: { id: 'contact_operator', tags: ['event-tag'] } }),
-      );
+      .mockResolvedValueOnce(Response.json({ tags: ['event-tag'] }, { status: 201 }));
     const client = new HttpHighLevelEventClient({
       baseUrl: 'https://provider.example.test',
       token: 'private-test-token',
@@ -68,15 +65,11 @@ describe('Tisha BAv HighLevel client', () => {
       },
     ]);
     expect(fetchImpl.mock.calls[1]?.[0]).toBe(
-      'https://provider.example.test/contacts/bulk/tags/update/add',
+      'https://provider.example.test/contacts/contact_operator/tags',
     );
-    expect(fetchImpl.mock.calls[1]?.[1]?.body).toBe(
-      JSON.stringify({
-        locationId: 'location_one_time',
-        contactIds: ['contact_operator'],
-        tags: ['event-tag'],
-      }),
-    );
-    expect(fetchImpl.mock.calls[2]?.[1]?.method).toBe('GET');
+    expect(fetchImpl.mock.calls[1]?.[1]).toMatchObject({
+      body: JSON.stringify({ tags: ['event-tag'] }),
+      headers: expect.objectContaining({ version: '2023-02-21' }),
+    });
   });
 });

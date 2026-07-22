@@ -98,6 +98,8 @@ const databaseEvidence = await pool.query<{
   delivery_status: string | null;
   attempts: number | null;
   workflow_configured: boolean | null;
+  failed_stage: string | null;
+  provider_http_status: number | null;
 }>(
   `SELECT
      (SELECT count(*)::int
@@ -109,7 +111,9 @@ const databaseEvidence = await pool.query<{
      count(*)::int AS delivery_count,
      max(status) AS delivery_status,
      max(attempts)::int AS attempts,
-     bool_or((public_metadata->>'workflow_configured')::boolean) AS workflow_configured
+     bool_or((public_metadata->>'workflow_configured')::boolean) AS workflow_configured,
+     max(public_metadata->>'failed_stage') AS failed_stage,
+     max((public_metadata->>'provider_http_status')::int) AS provider_http_status
    FROM onetime.event_delivery_events
    WHERE account_key = 'rabbi_sheller_provider'
      AND product_key = 'one_time_mishnah_class'
@@ -189,6 +193,8 @@ process.stdout.write(
     highlevel_delivery_status: row?.delivery_status ?? null,
     highlevel_delivery_attempts: row?.attempts ?? null,
     workflow_request_accepted: row?.workflow_configured ?? false,
+    failed_stage: row?.failed_stage ?? null,
+    provider_http_status: row?.provider_http_status ?? null,
     ghl_exact_contact_count: exactContacts.length,
     ghl_direct_contact_read: Boolean(authoritativeContact?.id),
     ghl_contact_reference_hash: exactContact?.id ? sha256(exactContact.id).slice(0, 16) : null,
