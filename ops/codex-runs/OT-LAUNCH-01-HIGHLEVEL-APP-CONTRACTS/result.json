@@ -1,7 +1,7 @@
 {
   "task": "OT-LAUNCH-01-HIGHLEVEL-APP-CONTRACTS",
   "base_branch": "codex/full-app-staging-live",
-  "base_head": "a09a38c4323c328ce038592fc328e323e22b2d45",
+  "base_head": "18d339f27bb715723f56f50b65d1745fab75164c",
   "evidence_pr": 107,
   "evidence_head": "deda8f9b04dbafcc36363628a14b6fecc94fd854",
   "location_id": "pBSnOK2nkdxp6gf9Rg3o",
@@ -11,12 +11,19 @@
   "agent_mode_jobs": 10,
   "migration": {
     "id": "2216_highlevel_application_contracts.sql",
-    "sha256": "d93ddefa8045b1a8021df3da678528b41e631c9c2ef65f93dbd8370fa03687f7",
+    "sha256": "b95b46a573606eaa00fe9339ffb68d705ee20d0393f06c0d7c7b9cb33c3c0e0c",
     "canonical_2205_restored": false,
     "canonical_2205_sha256": "3135ccd5942c649dd1133f1709806bdb77de016cfd3e78f55f04ec86cb7001fd",
     "historical_media_migrations_replayed": false
   },
   "provider_mode_default": "disabled",
+  "action_mode_default": "disabled",
+  "release_audit_fixes": {
+    "provider_backlog_isolation": "passed_exact_run_allowlist_budget_and_mode",
+    "provider_operation_fencing": "passed_claim_token_receipts_crash_and_slow_row",
+    "inbound_hmac": "passed_raw_body_freshness_nonce_replay_and_scope",
+    "highlevel_static_secret_header_allowed": false
+  },
   "external_highlevel_calls": 0,
   "messages_sent": 0,
   "broad_messages_sent": 0,
@@ -25,7 +32,9 @@
   "postgres_concurrency": {
     "sql_contract_asserted": true,
     "memory_two_worker_assertion": "passed",
+    "memory_slow_row_fence_assertion": "passed",
     "real_postgres_execution": "pending_isolated_pr_environment"
   },
-  "remaining_dependency": "Deploy to an isolated PR Environment with protected HighLevel configuration, run the real-PostgreSQL claim assertion, then execute GHL-UI-14 through GHL-UI-23 with one operator-owned destination and zero broad sends."
+  "focused_tests_passed": 51,
+  "remaining_dependency": "Approve and prove a HighLevel-side per-request raw-body HMAC signer before any OT-B01 through OT-B05 Agent Mode activation."
 }

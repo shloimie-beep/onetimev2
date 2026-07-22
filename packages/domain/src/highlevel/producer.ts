@@ -128,8 +128,8 @@ export async function enqueueHighLevelEvent(
   const inserted = await client.query(
     `INSERT INTO onetime.outbox_events
        (delivery_key, account_key, product_key, contact_key, event_type, channel,
-        transport_mode, payload, status, next_attempt_at)
-     VALUES ($1, $2, $3, $4, $5, 'highlevel', $6, $7::jsonb, 'pending', $8)
+         transport_mode, transport_authorization_state, payload, status, next_attempt_at)
+     VALUES ($1, $2, $3, $4, $5, 'highlevel', $6, 'held', $7::jsonb, 'pending', $8)
      ON CONFLICT (delivery_key) DO NOTHING
      RETURNING delivery_key`,
     [

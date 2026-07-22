@@ -2,13 +2,14 @@ import type { AppConfig } from '../../../../packages/config/src/index.ts';
 import type {
   HighLevelAdapter,
   HighLevelProjection,
+  HighLevelProviderOperationContext,
 } from '../../../../packages/domain/src/highlevel/dispatcher.ts';
 
 export class HighLevelHttpAdapter implements HighLevelAdapter {
   constructor(private readonly config: AppConfig) {}
 
-  async project(input: HighLevelProjection) {
-    const contact = await this.request('/contacts/upsert', {
+  async upsertContact(input: HighLevelProjection, context: HighLevelProviderOperationContext) {
+    const contact = await this.request('/contacts/upsert', context, {
       method: 'POST',
       body: JSON.stringify({
         locationId: input.locationId,
@@ -22,23 +23,34 @@ export class HighLevelHttpAdapter implements HighLevelAdapter {
       }),
     });
     const contactId = providerContactId(contact);
-    await this.request(`/contacts/${encodeURIComponent(contactId)}/tags`, {
-      method: 'POST',
-      body: JSON.stringify({ tags: input.tagsToAdd }),
-    });
     return { providerContactId: contactId };
   }
 
-  private async request(path: string, init: RequestInit) {
+  async addTags(
+    input: { locationId: string; providerContactId: string; tagsToAdd: string[] },
+    context: HighLevelProviderOperationContext,
+  ) {
+    await this.request(`/contacts/${encodeURIComponent(input.providerContactId)}/tags`, context, {
+      method: 'POST',
+      body: JSON.stringify({ tags: input.tagsToAdd }),
+    });
+  }
+
+  private async request(
+    path: string,
+    context: HighLevelProviderOperationContext,
+    init: RequestInit,
+  ) {
     const token = this.config.highLevelPrivateIntegrationsToken;
     if (!token) throw new Error('HIGHLEVEL_PROVIDER_UNCONFIGURED');
     const response = await fetch(new URL(path, this.config.highLevelApiBaseUrl), {
       ...init,
-      signal: AbortSignal.timeout(15_000),
+      signal: AbortSignal.timeout(this.config.highLevelProviderTimeoutMs),
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
+        'Idempotency-Key': context.operationKey,
         Version: this.config.highLevelApiVersion,
       },
     });

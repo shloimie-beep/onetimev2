@@ -1,4 +1,4 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import type { AppConfig } from '../../../config/src/index.ts';
 import {
   assertHighLevelPayloadSafe,
@@ -14,6 +14,16 @@ import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
 import { enqueueHighLevelEvent } from './producer.ts';
 
 export type HighLevelActionHttpResult = { status: number; body: HighLevelActionResult };
+
+export type HighLevelActionSignatureHeaders = {
+  keyId?: string;
+  timestamp?: string;
+  nonce?: string;
+  idempotencyKey?: string;
+  signature?: string;
+};
+
+const memoryNonceTails = new WeakMap<object, Promise<void>>();
 
 type AdultContact = {
   contact_key: string;
@@ -32,24 +42,27 @@ type AdultContact = {
 export async function handleHighLevelAction(input: {
   pool: DbPool;
   config: AppConfig;
-  keyId?: string;
-  secret?: string;
-  payload: unknown;
+  headers: HighLevelActionSignatureHeaders;
+  rawBody: Buffer;
   now?: Date;
 }): Promise<HighLevelActionHttpResult> {
   if (input.config.highLevelActionsMode !== 'enabled') {
     return blocked(503, 'HIGHLEVEL_ACTIONS_OFF', true);
   }
-  if (!authenticated(input.config, input.keyId, input.secret)) {
+  const requestNow = input.now ?? new Date();
+  if (!authenticated(input.config, input.headers, input.rawBody, requestNow)) {
     return blocked(401, 'HIGHLEVEL_ACTION_AUTH_FAILED', false);
   }
 
   let action: HighLevelInboundAction;
   try {
-    action = highLevelInboundActionSchema.parse(input.payload);
+    action = highLevelInboundActionSchema.parse(JSON.parse(input.rawBody.toString('utf8')));
     assertHighLevelPayloadSafe(action);
   } catch {
     return blocked(400, 'HIGHLEVEL_CONTACT_INELIGIBLE', false);
+  }
+  if (action.idempotency_key !== input.headers.idempotencyKey) {
+    return blocked(401, 'HIGHLEVEL_ACTION_AUTH_FAILED', false);
   }
   if (
     action.scope.account_key !== input.config.accountKey ||
@@ -59,17 +72,26 @@ export async function handleHighLevelAction(input: {
     return blocked(403, 'HIGHLEVEL_SCOPE_MISMATCH', false);
   }
 
+  const nonceAccepted = await consumeSignedNonce(
+    input.pool,
+    input.config,
+    input.headers,
+    input.rawBody,
+    requestNow,
+  );
+  if (!nonceAccepted) return blocked(409, 'HIGHLEVEL_ACTION_REPLAYED', false);
+
   const requestHash = digest(action);
   const existing = await loadReceipt(input.pool, input.config, action.idempotency_key);
   if (existing) {
-    const replayed = replay(existing, requestHash, input.now ?? new Date());
+    const replayed = replay(existing, requestHash, requestNow);
     if (replayed) return replayed;
   }
 
   const rateLimit = await consumeRateLimitBudgets({
     pool: input.pool,
     config: input.config,
-    now: input.now ?? new Date(),
+    now: requestNow,
     budgets: [
       {
         scope: 'highlevel_bot_action_contact',
@@ -98,7 +120,7 @@ export async function handleHighLevelAction(input: {
   if (!claimed) {
     const raced = await loadReceipt(input.pool, input.config, action.idempotency_key);
     return raced
-      ? (replay(raced, requestHash, input.now ?? new Date()) ??
+      ? (replay(raced, requestHash, requestNow) ??
           blocked(503, 'HIGHLEVEL_DEPENDENCY_UNAVAILABLE', true))
       : blocked(503, 'HIGHLEVEL_DEPENDENCY_UNAVAILABLE', true);
   }
@@ -333,11 +355,55 @@ async function isAdultAccount(pool: DbPool, config: AppConfig, email: string) {
   return Boolean(result.rowCount);
 }
 
-function authenticated(config: AppConfig, keyId?: string, secret?: string) {
-  return (
-    secureEqual(keyId, config.highLevelActionKeyId) &&
-    secureEqual(secret, config.highLevelActionSecret)
-  );
+export function signHighLevelActionRequest(input: {
+  secret: string;
+  keyId: string;
+  timestamp: string;
+  nonce: string;
+  idempotencyKey: string;
+  rawBody: Buffer;
+}) {
+  return `v1=${createHmac('sha256', input.secret)
+    .update(highLevelActionCanonicalRequest(input))
+    .digest('hex')}`;
+}
+
+function authenticated(
+  config: AppConfig,
+  headers: HighLevelActionSignatureHeaders,
+  rawBody: Buffer,
+  now: Date,
+) {
+  if (
+    !config.highLevelActionSecret ||
+    !headers.keyId ||
+    !headers.timestamp ||
+    !headers.nonce ||
+    !headers.idempotencyKey ||
+    !headers.signature ||
+    !secureEqual(headers.keyId, config.highLevelActionKeyId) ||
+    !/^\d{10}$/.test(headers.timestamp) ||
+    !/^[A-Za-z0-9_-]{16,160}$/.test(headers.nonce) ||
+    !/^[A-Za-z0-9._:-]{8,160}$/.test(headers.idempotencyKey)
+  ) {
+    return false;
+  }
+  const timestampMs = Number(headers.timestamp) * 1000;
+  if (
+    !Number.isSafeInteger(timestampMs) ||
+    Math.abs(now.getTime() - timestampMs) > config.highLevelActionSignatureToleranceMs
+  ) {
+    return false;
+  }
+  const expected = signHighLevelActionRequest({
+    secret: config.highLevelActionSecret,
+    keyId: headers.keyId,
+    timestamp: headers.timestamp,
+    nonce: headers.nonce,
+    idempotencyKey: headers.idempotencyKey,
+    rawBody,
+  });
+  return secureEqual(headers.signature, expected);
 }
 
 function secureEqual(left?: string, right?: string) {
@@ -345,6 +411,109 @@ function secureEqual(left?: string, right?: string) {
   const leftDigest = createHash('sha256').update(left).digest();
   const rightDigest = createHash('sha256').update(right).digest();
   return timingSafeEqual(leftDigest, rightDigest);
+}
+
+function highLevelActionCanonicalRequest(input: {
+  keyId: string;
+  timestamp: string;
+  nonce: string;
+  idempotencyKey: string;
+  rawBody: Buffer;
+}) {
+  return Buffer.concat([
+    Buffer.from(
+      ['highlevel-action-v1', input.keyId, input.timestamp, input.nonce, input.idempotencyKey].join(
+        '\n',
+      ) + '\n',
+      'utf8',
+    ),
+    input.rawBody,
+  ]);
+}
+
+async function consumeSignedNonce(
+  pool: DbPool,
+  config: AppConfig,
+  headers: HighLevelActionSignatureHeaders,
+  rawBody: Buffer,
+  now: Date,
+) {
+  const keyId = headers.keyId;
+  const nonce = headers.nonce;
+  const idempotencyKey = headers.idempotencyKey;
+  if (!keyId || !nonce || !idempotencyKey) return false;
+  const expiresAt = new Date(now.getTime() + config.highLevelActionSignatureToleranceMs);
+  if (isMemoryPool(pool)) {
+    return withMemoryNonceLock(pool, async () => {
+      const existing = await pool.query(
+        `SELECT 1 FROM onetime.highlevel_action_nonces WHERE key_id = $1 AND nonce = $2`,
+        [keyId, nonce],
+      );
+      if (existing.rows.length > 0) return false;
+      await insertNonce(pool, config, { keyId, nonce, idempotencyKey }, rawBody, expiresAt, now);
+      return true;
+    });
+  }
+  const result = await insertNonce(
+    pool,
+    config,
+    { keyId, nonce, idempotencyKey },
+    rawBody,
+    expiresAt,
+    now,
+  );
+  return result.rows.length === 1;
+}
+
+function insertNonce(
+  pool: DbPool,
+  config: AppConfig,
+  headers: { keyId: string; nonce: string; idempotencyKey: string },
+  rawBody: Buffer,
+  expiresAt: Date,
+  now: Date,
+) {
+  return pool.query(
+    `INSERT INTO onetime.highlevel_action_nonces
+       (key_id, nonce, account_key, product_key, idempotency_key, request_hash,
+        expires_at, created_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     ON CONFLICT (key_id, nonce) DO NOTHING
+     RETURNING nonce`,
+    [
+      headers.keyId,
+      headers.nonce,
+      config.accountKey,
+      config.productKey,
+      headers.idempotencyKey,
+      createHash('sha256').update(rawBody).digest('hex'),
+      expiresAt,
+      now,
+    ],
+  );
+}
+
+async function withMemoryNonceLock<T>(pool: DbPool, run: () => Promise<T>) {
+  const key = pool as object;
+  const previous = memoryNonceTails.get(key) ?? Promise.resolve();
+  let release: () => void = () => {};
+  const current = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  memoryNonceTails.set(
+    key,
+    previous.then(() => current),
+  );
+  await previous;
+  try {
+    return await run();
+  } finally {
+    release();
+  }
+}
+
+function isMemoryPool(pool: DbPool) {
+  return Boolean((pool as DbPool & { __memory?: boolean }).__memory);
 }
 
 function digest(value: unknown) {

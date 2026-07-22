@@ -72,5 +72,30 @@ describe('HighLevel application contracts', () => {
     expect(HIGHLEVEL_CLAIM_SQL).toContain('outbox.product_key = $2');
     expect(HIGHLEVEL_CLAIM_SQL).toContain('FOR UPDATE OF outbox SKIP LOCKED');
     expect(HIGHLEVEL_CLAIM_SQL).toContain('WHERE outbox.id = candidates.id');
+    expect(HIGHLEVEL_CLAIM_SQL).toContain("transport_authorization_state = 'authorized'");
+    expect(HIGHLEVEL_CLAIM_SQL).toContain('outbox.transport_mode = $8');
+    expect(HIGHLEVEL_CLAIM_SQL).toContain('outbox.transport_authorization_run_id = $6');
+    expect(HIGHLEVEL_CLAIM_SQL).toContain('transport_claim_token = $10');
+    expect(HIGHLEVEL_CLAIM_SQL).toContain('outbox.transport_lease_expires_at <= $3');
+  });
+
+  it('rejects provider mode without an exact canary run, allowlist, and budget', () => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
+        HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+      }),
+    ).toThrow(/exact canary run ID/i);
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
+        HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-provider-token',
+        HIGHLEVEL_CANARY_RUN_ID: 'canary-run-0001',
+        HIGHLEVEL_CANARY_DELIVERY_KEYS: 'delivery-a,delivery-b',
+        HIGHLEVEL_CANARY_BUDGET: '1',
+      }),
+    ).toThrow(/sufficient positive budget/i);
   });
 });

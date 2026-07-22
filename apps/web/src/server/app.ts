@@ -528,9 +528,13 @@ export function createApp({
     res.redirect(302, providerUrl);
   });
 
+  app.use(
+    '/internal/highlevel/v1/actions',
+    express.raw({ type: 'application/json', limit: '32kb' }),
+    createHighLevelActionsRouter({ config, pool }),
+  );
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
-  app.use('/internal/highlevel/v1/actions', createHighLevelActionsRouter({ config, pool }));
 
   registerOpsRoutes({
     app,
