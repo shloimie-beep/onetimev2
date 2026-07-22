@@ -214,7 +214,10 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       body: { tags: input.tags },
       apiVersion: '2023-02-21',
     });
-    const currentTags = new Set(Array.isArray(response.tags) ? response.tags.map(String) : []);
+    const currentTags = new Set([
+      ...(Array.isArray(response.tags) ? response.tags.map(String) : []),
+      ...(Array.isArray(response.tagsAdded) ? response.tagsAdded.map(String) : []),
+    ]);
     if (input.tags.some((tag) => !currentTags.has(tag))) {
       throw new Error('HighLevel contact tag verification failed.');
     }
