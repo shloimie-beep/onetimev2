@@ -2,7 +2,12 @@ import { createHash } from 'node:crypto';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
-import { createAccountUser } from '../../packages/domain/src/index.ts';
+import {
+  createAccountUser,
+  generateContentFactoryDraftFromTranscript,
+  ingestContentFactoryItem,
+  performContentFactoryAction,
+} from '../../packages/domain/src/index.ts';
 import {
   W12_PORTAL_TEST_LAB,
   seedPortalTestLab,
@@ -83,6 +88,7 @@ await createAccountUser({
   mfaCapable: false,
 });
 await seedDayOneBrowserRecords();
+await seedContentFactoryBrowserSample();
 await seedPortalTestLab({ pool, config });
 await seedW12AdminSession();
 const testClock = process.env.OT_TEST_CLOCK
@@ -280,6 +286,85 @@ async function seedActiveSupportEntitlement(userKey: string) {
       `evt_support_${userKey.slice(0, 12)}`,
     ],
   );
+}
+
+async function seedContentFactoryBrowserSample() {
+  const segments = [
+    'The Mishnah introduces the first case for the browser smoke.',
+    'Rabbi Scheller reads the wording used in the source.',
+    'The class compares the first example with the second example.',
+    'A student repeats the key words from the Mishnah.',
+    'The Masechta language is reviewed directly from the transcript.',
+    'The lesson closes by reviewing the examples from class.',
+  ].map((text, index) => ({
+    segment_id: `browser_segment_${index + 1}`,
+    start_ms: index * 10_000,
+    end_ms: index * 10_000 + 9_000,
+    text,
+  }));
+  const transcript = segments.map((segment) => segment.text).join(' ');
+  const webvtt =
+    'WEBVTT\n\n00:00:00.000 --> 00:00:09.000\nThe Mishnah introduces the first case for the browser smoke.\n';
+  const sourceKey = 'factory_browser_sample_2026_07_22';
+  await ingestContentFactoryItem({
+    pool,
+    config,
+    item: {
+      sourceKey,
+      sourceKind: 'local_drop',
+      sourceRefDigest: sha256('factory-browser-source-ref'),
+      sourceSha256: sha256('factory-browser-source'),
+      displayName: 'operator-owned-browser-sample.mov',
+      mimeType: 'video/quicktime',
+      byteLength: 4_200_000,
+      originalDurationMs: 72_000,
+      preparedDurationMs: 60_000,
+      trimStartMs: 6_000,
+      trimEndMs: 66_000,
+      removedStartMs: 6_000,
+      removedEndMs: 6_000,
+      trimConfidence: 0.91,
+      transcriptSegments: segments,
+      normalizedTranscript: transcript,
+      transcriptSha256: sha256(transcript),
+      webvtt,
+      webvttSha256: sha256(webvtt),
+      transcriptionModel: 'gpt-4o-mini-transcribe',
+      transcriptionLanguage: 'en',
+      draft: {
+        ...generateContentFactoryDraftFromTranscript({
+          displayName: 'operator-owned-browser-sample.mov',
+          segments,
+          classLabel: 'Browser Smoke Mishnayos',
+          classDate: '2026-07-22',
+        }),
+        title: 'Browser Smoke Mishnah Class',
+        short_description:
+          'Approved browser-smoke summary grounded in the timestamped class transcript.',
+      },
+      providerVideoId: 'factory_browser_private_video',
+      providerEmbedUrl: 'https://player.vimeo.com/video/factory_browser_private_video',
+      providerTextTrackId: 'factory_browser_private_track',
+      vimeoPrivacy: 'private',
+      captionsActive: true,
+    },
+  });
+  await performContentFactoryAction({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    action: 'approve',
+  });
+  await performContentFactoryAction({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    action: 'publish',
+  });
 }
 
 async function seedW12AdminSession() {
