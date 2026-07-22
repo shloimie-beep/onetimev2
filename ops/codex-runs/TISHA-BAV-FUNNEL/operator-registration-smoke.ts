@@ -63,9 +63,30 @@ const existingRegistration = await pool.query<{ registration_key: string }>(
   [email],
 );
 const readOnly = process.env.OPERATOR_SMOKE_READ_ONLY === '1';
+const repairFalsePositive = process.env.OPERATOR_SMOKE_RETRY_DELIVERY === '1';
+const existingRegistrationKey = existingRegistration.rows[0]?.registration_key;
+if (repairFalsePositive) {
+  if (!existingRegistrationKey) {
+    throw new Error('The operator registration is unavailable for a bounded retry.');
+  }
+  await pool.query(
+    `UPDATE onetime.event_delivery_events
+        SET status = 'failed',
+            completed_at = NULL,
+            public_metadata = public_metadata || '{"reconciled_false_positive":true}'::jsonb,
+            updated_at = now()
+      WHERE account_key = 'rabbi_sheller_provider'
+        AND product_key = 'one_time_mishnah_class'
+        AND event_code = 'tisha-bav-2026'
+        AND registration_key = $1
+        AND provider = 'highlevel'
+        AND status = 'succeeded'`,
+    [existingRegistrationKey],
+  );
+}
 const first = readOnly ? null : await register();
 const second = readOnly ? null : await register();
-const registrationKey = first?.registration_key ?? existingRegistration.rows[0]?.registration_key;
+const registrationKey = first?.registration_key ?? existingRegistrationKey;
 if (!registrationKey) throw new Error('The operator registration is unavailable.');
 if (!readOnly && first?.registration_key !== second?.registration_key) {
   throw new Error('The repeated registration did not preserve one registration key.');
@@ -155,6 +176,7 @@ process.stdout.write(
   `${JSON.stringify({
     contact_fingerprint: sha256(email).slice(0, 16),
     read_only: readOnly,
+    false_positive_repair_requested: repairFalsePositive,
     first_success: first?.success ?? null,
     first_duplicate: first?.duplicate_submission ?? null,
     first_confirmation_queued: first?.confirmation_queued ?? null,
