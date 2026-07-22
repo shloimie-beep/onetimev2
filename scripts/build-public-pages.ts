@@ -92,7 +92,7 @@ function pageShell(
     icon?: string;
     appleTouchIcon?: string;
     app?: boolean;
-    appEntry?: 'crm' | 'portal';
+    appEntry?: 'crm' | 'live' | 'portal' | 'experience-preview-student';
   } = {},
 ) {
   const description = options.description ?? landingContent.seo.description;
@@ -602,6 +602,15 @@ await writeFile(
     description: 'One Time authenticated CRM.',
   }).replace('index, follow', 'noindex, nofollow'),
 );
+await writeFile(
+  path.join(outDir, 'app', 'live.html'),
+  pageShell('Live Console | One Time Mishnayos', `<div id="live-root"></div>`, {
+    app: true,
+    appEntry: 'live',
+    canonicalPath: '/app/live-console',
+    description: 'One Time protected live classroom console and stage.',
+  }).replace('index, follow', 'noindex, nofollow'),
+);
 for (const [fileName, title, description] of [
   ['dashboard.html', 'Dashboard | One Time Mishnayos', 'One Time owner/admin dashboard.'],
   ['classes.html', 'Classes | One Time Mishnayos', 'One Time class occurrence status.'],
@@ -634,4 +643,17 @@ await writeFile(
     canonicalPath: '/app/student',
     description: 'One Time protected student portal.',
   }).replace('index, follow', 'noindex, nofollow'),
+);
+await writeFile(
+  path.join(outDir, 'app', 'experience-preview-student.html'),
+  pageShell(
+    'Fictional Student Preview | One Time Mishnayos',
+    `<div id="experience-preview-student-root"></div>`,
+    {
+      app: true,
+      appEntry: 'experience-preview-student',
+      canonicalPath: '/app/experience-preview/student',
+      description: 'One Time isolated read-only fictional Student preview.',
+    },
+  ).replace('index, follow', 'noindex, nofollow'),
 );
