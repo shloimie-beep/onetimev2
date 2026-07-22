@@ -110,6 +110,7 @@ import {
   CrmVersionConflictError,
   ContentIdempotencyConflictError,
   ContentFactoryError,
+  ContentFactoryPublicationError,
   Ot110aContentWorkspaceError,
   IdempotencyConflictError,
   AccountLifecycleError,
@@ -241,6 +242,7 @@ import type {
 import {
   collectOpsReadiness,
   exposeServerTiming,
+  logger,
   publicError,
   traceMiddleware,
   withTiming,
@@ -2487,6 +2489,12 @@ export function createApp({
         );
         res.json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
       } catch (error) {
+        if (error instanceof ContentFactoryPublicationError) {
+          logger.error(
+            { stage: error.stage, safe_error_code: error.safeErrorCode },
+            'content_factory_publication_failed',
+          );
+        }
         handleApiError(error, req, res);
       }
     },
