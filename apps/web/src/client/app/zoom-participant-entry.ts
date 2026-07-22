@@ -76,6 +76,17 @@ function sdkKeyFromSignature(signature: string) {
   return payload.sdkKey;
 }
 
+function sdkErrorCode(error: unknown) {
+  if (!error || typeof error !== 'object') return 'unknown';
+  const value =
+    (error as { errorCode?: unknown; error_code?: unknown }).errorCode ??
+    (error as { error_code?: unknown }).error_code;
+  const normalized = String(value ?? '')
+    .replace(/[^a-z0-9_-]/gi, '')
+    .slice(0, 32);
+  return normalized || 'unknown';
+}
+
 function studentNumber() {
   const match = location.pathname.match(/\/zoom-participant\/(1|2|3)$/);
   if (!match) throw new Error('Fictional student reference is invalid.');
@@ -114,10 +125,20 @@ async function start() {
             userName: bootstrap.data.user_name,
             customerKey: bootstrap.data.customer_key,
             success: () => resolve(),
-            error: () => reject(new Error('Meeting SDK participant join was rejected.')),
+            error: (error: unknown) =>
+              reject(
+                new Error(
+                  `Meeting SDK participant join was rejected (code ${sdkErrorCode(error)}).`,
+                ),
+              ),
           });
         },
-        error: () => reject(new Error('Meeting SDK participant initialization failed.')),
+        error: (error: unknown) =>
+          reject(
+            new Error(
+              `Meeting SDK participant initialization failed (code ${sdkErrorCode(error)}).`,
+            ),
+          ),
       });
     });
     setStatus(
