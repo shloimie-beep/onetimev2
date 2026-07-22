@@ -694,7 +694,7 @@ describe('Tisha BAv event HTTP routes', () => {
         '<meta name="twitter:image" content="https://join.onetimeonetime.com/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png">',
         '<link rel="icon" type="image/png" href="/assets/events/tisha-bav-2026/tisha-bav-favicon-v20260722.png">',
         '<link rel="apple-touch-icon" href="/assets/events/tisha-bav-2026/tisha-bav-apple-touch-icon-v20260722.png">',
-        '</head><body><p lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p><h1>Live Zoom class with Rabbi Eli Scheller for boys</h1><p>Live class with Rabbi Eli Scheller</p><p>3 p.m. Eastern Time</p><p>No charge</p><button>Reserve My Spot</button><p>By reserving, you’ll receive emails about this event.</p></body></html>',
+        '</head><body><p lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p><h1>Bringing Knowledge of Hashem into the World</h1><p>Live class with Rabbi Eli Scheller</p><p>3 p.m. Eastern Time</p><p>No charge</p><button>Reserve My Spot</button><p>By reserving, you’ll receive emails about this event.</p></body></html>',
       ].join(''),
     );
     const server = await startServer(config, openWindow, distDir);
@@ -708,7 +708,7 @@ describe('Tisha BAv event HTTP routes', () => {
 
         const html = await response.text();
         expect(html).toContain('כי מלאה הארץ דעה את השם');
-        expect(html).toContain('Live Zoom class with Rabbi Eli Scheller for boys');
+        expect(html).toContain('Bringing Knowledge of Hashem into the World');
         expect(html).toContain('Live class with Rabbi Eli Scheller');
         expect(html).toContain('3 p.m. Eastern Time');
         expect(html).toContain('No charge');
@@ -721,7 +721,6 @@ describe('Tisha BAv event HTTP routes', () => {
         expect(html).toContain('tisha-bav-apple-touch-icon-v20260722.png');
         expect(html).not.toContain('10:00 PM Israel');
         expect(html).not.toContain('Ki Mala Haaretz Deas Hashem');
-        expect(html).not.toContain('Bringing Knowledge of Hashem into the World');
         expect(html).not.toContain('Filling the World with Knowledge of Hashem');
         expect(html).not.toContain('Rabbi Elly');
       }

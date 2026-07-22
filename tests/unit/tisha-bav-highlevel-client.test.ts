@@ -118,14 +118,17 @@ describe('Tisha BAv HighLevel client', () => {
     ).rejects.toThrow(`status ${status}`);
   });
 
-  it('rejects provider mode without the exact workflow and location contract', () => {
+  it('keeps the Tisha workflow optional for unrelated projections and enforces the location contract', () => {
     const base = {
       NODE_ENV: 'test',
       PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
       HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
       HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-only-private-token',
+      HIGHLEVEL_CANARY_RUN_ID: 'tisha-config-canary-run-0001',
+      HIGHLEVEL_CANARY_DELIVERY_KEYS: 'tisha-config-delivery-key-0001',
+      HIGHLEVEL_CANARY_BUDGET: '1',
     };
-    expect(() => loadConfig(base)).toThrow('HIGHLEVEL_TISHA_BAV_WORKFLOW_ID');
+    expect(loadConfig(base).highLevelTishaBavWorkflowId).toBeUndefined();
     expect(() =>
       loadConfig({
         ...base,

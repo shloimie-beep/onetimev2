@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T16:02:00Z
+updated_at: 2026-07-22T16:28:00Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,7 +23,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'Exact PR #97 checkpoint 06f66568a587c333fbab416e9eb17e323e2b885a is live on persistent staging through web deployment 10db6e83-2677-4c52-965d-6e6e1309614e and worker deployment 410e9030-489f-48b8-831f-588801cc1048; /health and /ready are healthy and migration 2215 remains exact. Live Admin verification proves Dashboard discovery, all explicit fictional roles, the actual sibling-scoped StudentPortalFeature in the inert preview shell, and preserved Admin session; real Chromium supplies the separate-tab opener-null and 360px/hamburger proof. PR #107 terminal head 1e247c70004dffb6247fc1ee407f1153d753bd7d proves the exact One Time Tisha ancestry/tag trigger and approved Email A saved/reopened Published on the same OT-E01 ID with zero messages this run, while the newest production signup added no registered tag, created no enrollment, and received no event confirmation. OT-TISHA-HANDOFF-01 remains the P0 application-handoff owner. The same-name OT-C01 wrapper, one legacy KB, archived workflows, and hidden/backend Conversation AI rows remain fail-closed findings. PR #108 has been notified to rebase onto 06f66568 and remains unaccepted. Accepted narrow Tisha production remains acddcc8; PR #110 3835896 is isolated-preview verified but production-blocked on the registration-to-GHL hotfix.'
+  current_summary: 'PR #97 has semantically integrated accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad with HighLevel event/actions modes disabled, PR #105 unique range 9dfabade8b9cff9dfa3edd6d0677deb4d07b8e18..50989b336838d2029a0e0abc075bfd209b9c65ef with real Zoom controls provider-off, and accepted Tisha delta acddcc8cd012c5cdc5bfc08cbc80550bef8719ba..100b4cf3371f4b2da88a16cf95e25960e35f0fc8 with event-only permission migration 2220. Combined typecheck and 22-file focused validation pass 130/130; exact-head commit, Railway deployment, migration ledger readback, and browser journeys remain pending verification. PR #104 is already semantically present and superseded by PR #97; it was not merged again. Existing live persistent staging remains checkpoint 06f66568a587c333fbab416e9eb17e323e2b885a until exact descendant deployment succeeds. HighLevel modes, canary budget, run ID, and allowlist remain fail-closed; real Zoom prerequisites remain incomplete; no GHL/provider/customer mutation, message, reprocess, or production change occurred in this integration.'
   external_action_count: 4
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -41,7 +41,7 @@ conductor:
   head:
     ref: refs/heads/codex/full-app-staging-live
     last_verified_commit: 06f66568a587c333fbab416e9eb17e323e2b885a
-    resolution: Live /version readback on 2026-07-22 returned exact commit 06f66568a587c333fbab416e9eb17e323e2b885a and web deployment 10db6e83-2677-4c52-965d-6e6e1309614e; worker deployment 410e9030-489f-48b8-831f-588801cc1048 succeeded, and /health plus /ready returned 200 with latest migration 2215_experience_preview_sessions.
+    resolution: 'Live /version still records exact commit 06f66568a587c333fbab416e9eb17e323e2b885a through web deployment 10db6e83-2677-4c52-965d-6e6e1309614e and worker deployment 410e9030-489f-48b8-831f-588801cc1048; the accepted PR #108, PR #105, and Tisha integration is locally green and pending an immutable PR #97 checkpoint plus exact-head deployment/readback.'
   system: One Time persistent staging
 
 tracks:
@@ -258,7 +258,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/ot-launch-01-highlevel-app-contracts
       pr: 108
-      head: 891293f2bd269f4918394c6078096f81d7ed8695
+      head: 4540861a7f7ad950041e4ae58202537055fe59ad
       system: HighLevel UI jobs after governed app-contract convergence
     write_scope: 'Future reviewed GHL-UI-14..23 jobs only; no shell configuration, publication, enrollment, or send in PR #97'
     handoff_path: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
@@ -270,18 +270,19 @@ tracks:
       - OT-B05 has no acknowledgement action. Its canonical future contract also forbids acknowledgement unless a separately reviewed delivery contract authorizes one.
       - "The deployed app does not yet emit every required canonical HighLevel event/tag or bot-adapter invocation. PR #108's reviewed GHL-UI-14..23 jobs are the future execution path only after the dispatcher and event-permission lane converge."
       - Closeout sends, enrollments, contact changes, and provider mutations are zero.
+      - 'Accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad is semantically integrated into the current PR #97 checkpoint candidate with GHL-UI-14..23 still review-only and every provider/publication/enrollment gate closed.'
     blocker: null
     remaining_work: Independently accept and integrate the canonical outbox dispatcher plus durable event-permission contract, then run one reviewed GHL UI job at a time with save/reopen/readback and bounded canary evidence.
     next_action: 'Keep every shell Draft and empty; do not create a duplicate delivery path or publish/configure them from PR #97.'
 
   - id: ghl_event_dispatcher
-    status: waiting_external
+    status: active
     owner:
       task_id: GHL-APP-CONTRACT-LANE-PR-108
       repository: shloimie-beep/onetimev2
       branch: codex/ot-launch-01-highlevel-app-contracts
       pr: 108
-      head: 891293f2bd269f4918394c6078096f81d7ed8695
+      head: 4540861a7f7ad950041e4ae58202537055fe59ad
       system: One Time outbox to HighLevel
     write_scope: One canonical dispatcher, schemas, dedupe/retry, exact golden-path producers, and tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-event-dispatcher--assigned-task.json
@@ -289,14 +290,13 @@ tracks:
     acceptance_ids: [GHL-004]
     evidence:
       - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
-      - 'PR #108 head 482ce93cf192e9de645e70665a35e8b1e153e6f9 passed the fresh PostgreSQL 16 claim-race/disposable-DB proof, secret scan, full lint, typecheck, runtime/product safety, and Railway worker checks.'
-      - Independent clean-detached-worktree audit with core.autocrlf=false found 38 PR-owned paths, 36 Prettier-supported paths, and all 36 green under repo-pinned Prettier 3.9.5. The earlier 32-warning Windows normalization result is invalid and is not branch-owned evidence.
-      - 'PR #108 exact rebased head 891293f2bd269f4918394c6078096f81d7ed8695 has terminal-green isolated Railway diagnostics: web deployment ee68c6a3-93b3-4fbe-ab7c-bb9262c7bb10 and worker c7bc3bb8-34cc-475e-aab5-0e022b59e371 succeeded; /version is exact, /health and /ready are 200, and isolated schema latest is 2216.'
-      - HIGHLEVEL_EVENT_SYNC_MODE and HIGHLEVEL_ACTIONS_MODE are disabled, canary budget is zero, run/allowlist are unset, and isolated external calls/sends are zero.
-      - 'Governed target 06f66568a587c333fbab416e9eb17e323e2b885a contains the target-owned Student fixture repair and was pushed with local gates plus exact-head staging deployment green. The PR #108 task was notified; 891293f remains unaccepted until rebased and independently audited.'
+      - 'Terminal accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad has exact merge base ca89b900a6faf8e4915b1b4fa72f3eb107cdb896, 39 owned paths, and all five GitHub suites green.'
+      - 'Its isolated web deployment 725536de-368a-4596-b7c4-0e98af2e18d7 is exact-version healthy at schema 2216; worker deployment dfc5bb6b-d1df-4916-92a1-a560f97841b7 is exact-source SUCCESS/RUNNING. Direct heartbeat-table readback is unavailable only because the PR database is private-network-only; no proxy was opened.'
+      - HIGHLEVEL_EVENT_SYNC_MODE and HIGHLEVEL_ACTIONS_MODE are disabled, canary budget is zero, run ID and allowlist are absent, and external calls, messages, and actions are zero. Optional inherited email/WhatsApp readiness flags are not HighLevel provider modes.
+      - 'The exact PR #108 range is fast-forward integrated once into the current PR #97 checkpoint candidate. Combined HighLevel, portal, Experience Preview, Zoom, Tisha, and content validation passes 130/130 with typecheck green.'
     blocker: null
-    remaining_work: Rebase onto exact governed target 06f66568a587c333fbab416e9eb17e323e2b885a, rerun every check, and obtain fresh independent exact-head acceptance.
-    next_action: 'Keep PR #108 out of persistent staging until that exact rebased head is independently accepted with provider modes still disabled.'
+    remaining_work: 'Commit and deploy the exact PR #97 descendant, read back schema 2216 plus 2220 and the worker, then keep all HighLevel modes disabled until a separately reviewed bounded activation job is authorized.'
+    next_action: 'Converge only through the current PR #97 exact-head deployment; do not activate a workflow, contact provider, or open a database proxy.'
 
   - id: event_service_email_permission
     status: blocked
@@ -316,7 +316,7 @@ tracks:
       - Typed deny precedence is complaint/hard bounce, global suppression/DND, global unsubscribe, event withdrawal/cancellation, invalid or ambiguous identity, then missing active event permission.
       - OT-E01 requires a matching registration plus active event permission, does not require newsletter opt-in, and rechecks every deny gate at send time. OT-C01 remains Draft, unseeded, unscheduled, and unsent.
       - The 207 provider-email-capable contacts are classified read-only by identity confidence, event permission, marketing permission, and delivery state; deliverability is never consent.
-      - Migration is forward-only at the next globally free prefix after convergence, with no number assumed now. Tests are synthetic/operator-owned; customer email, WhatsApp, GHL mutation, inferred consent, and production change are all zero.
+      - 'Accepted staging integration adds forward-only 2220_tisha_bav_event_email_permission.sql with canonical Git-content SHA-256 06e6329f63232aed3f546431e1908e700379932064dee643a496524c569c317f; tests are synthetic/operator-owned and customer email, WhatsApp, GHL mutation, inferred consent, reprocess, and production change remain zero.'
       - 'Fresh exact PR #106 source audit at acddcc8 confirms event_service_consent purpose=event_access_communication/email is stored separately, newsletter_opt_in defaults false, the weekly-newsletter tag is added only when explicitly true, and student_contact is false. A read-only public-page review submitted no registration.'
       - GHL OT-E01 enrollment is proven to rely on the exact event-registration tag, but a separate durable GHL event-permission custom field/tag and send-time projection readback were not proven. Existing enrollment and one delivered operator confirmation must not be treated as completion of this application/GHL contract.
       - Newest live production evidence is an end-to-end failure: the operator's real Tisha signup yielded an account/login-code email, not the OT-E01 event confirmation. The application registration transaction, canonical registered-tag projection, GHL enrollment, and send-time event-permission chain must be diagnosed as one system before promotion.
@@ -343,6 +343,7 @@ tracks:
       - 'PR #104 terminal head 5c0a5ef81ce10df4e40f135be1e2c648f643996a owns immutable 2214_learning_delivery_content_factory.'
       - Exact-head Railway /version and /ready were verified in its isolated preview; Admin and Student browser acceptance passed without mobile overflow.
       - 'Synthetic VIDEO_TO_STUDENT_CLASSROOM acceptance is complete and its commits are semantically integrated into the PR #97 descendant under combined 22/22 focused, build/typecheck, and 3/3 browser proof.'
+      - 'PR #104 is superseded by PR #97 for convergence: its seven unique media/content-factory commits are already represented as 5223edc, e8b2c84, 312f8ed, b65c7ca, 956662f, e3bf66c, and b281fff. The stale PR #104 range was not integrated again.'
     blocker: null
     remaining_work: null
     next_action: Preserve immutable 2214 and keep persistent-staging deployment evidence in the persistent_staging track.
@@ -368,7 +369,7 @@ tracks:
     next_action: Preserve truthful provider-off UI until the operator separately authorizes the canary.
 
   - id: zoom_meeting_sdk
-    status: ready_for_convergence
+    status: active
     owner:
       task_id: ZOOM-REAL-CONTROL-ACTIVATION
       repository: shloimie-beep/onetimev2
@@ -383,12 +384,13 @@ tracks:
     zoom_ui_preview_state: READY
     zoom_real_control_state: PROVIDER_OFF
     evidence:
-      - 'PR #105 corrected code head 50989b336838d2029a0e0abc075bfd209b9c65ef is provider-off and passed 33/33 focused tests; it is not integrated or deployed to persistent staging.'
+      - 'PR #105 exact head 50989b336838d2029a0e0abc075bfd209b9c65ef is independently accepted provider-off with 39/39 focused tests and all five GitHub suites green.'
       - 'Agent Mode created or reused the admin-managed General app, enabled Meeting SDK, restricted it to the PR #105 isolated preview, and installed protected ZOOM_MEETING_SDK_CLIENT_ID, ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION there.'
       - 'The persistent-staging origin is not allowlisted. ZOOM_MEETING_SDK_KEY and ZOOM_MEETING_SDK_SECRET remain legacy aliases only; Meeting SDK credentials stay separate from S2S OAuth and host/meeting identity.'
       - 'PR #105 adds no migration and relies on existing 2212_rabbi_live_console_zoom_obs; isolated-preview SDK setup does not prove a live provider join/control canary.'
+      - 'The unique range 9dfabade8b9cff9dfa3edd6d0677deb4d07b8e18..50989b336838d2029a0e0abc075bfd209b9c65ef is semantically integrated into the current PR #97 checkpoint candidate without re-merging the stale PR #100 base. Customer-facing copy now reports generic provider prerequisites.'
     blocker: null
-    remaining_work: 'Integrate exact PR #105 head 50989b336838d2029a0e0abc075bfd209b9c65ef provider-off in a later governed phase, retain the corrected config/readiness reporting, and keep persistent-staging real control unavailable until its origin and all real-control gates are separately accepted.'
+    remaining_work: 'Deploy the exact PR #97 descendant and prove the fake controlled Rabbi/Student flow remains usable while real controls remain provider-off.'
     next_action: Preserve the READY isolated-preview SDK setup and do not infer persistent-staging or real-control readiness from it.
 
   - id: zoom_s2s_host_control
@@ -407,13 +409,13 @@ tracks:
     zoom_ui_preview_state: READY
     zoom_real_control_state: PROVIDER_OFF
     evidence:
-      - 'PR #105 corrected code head 50989b336838d2029a0e0abc075bfd209b9c65ef passed 33/33 focused tests for the provider-off host-control implementation and remains unintegrated and undeployed on persistent staging.'
+      - 'PR #105 corrected code head 50989b336838d2029a0e0abc075bfd209b9c65ef passed 39/39 independent focused tests for the provider-off host-control implementation and is semantically integrated into the current PR #97 checkpoint candidate.'
       - 'The admin-managed General app and canonical Meeting SDK credentials exist only for the PR #105 isolated preview; persistent staging is not allowlisted.'
       - Independent isolated-Railway readback finds all six canonical host-control prerequisites absent: ZOOM_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE. Meeting SDK credentials remain separate from S2S OAuth and host/meeting identity.
     blocker:
       code: ZOOM_PROVIDER_CONFIG_AND_HUMAN_CANARY_BARRIER
-      reason: 'The six S2S/host/meeting values are absent, persistent staging is not allowlisted, exact PR #105 head 50989b336838d2029a0e0abc075bfd209b9c65ef is not governed-integrated there, and a separately authorized human canary is still blocked by Zoom reCAPTCHA/rate limiting.'
-    remaining_work: 'After governed PR #105 provider-off integration, require the six protected real-control prerequisites plus the exact persistent-staging allowlist and then run one separately authorized human-cleared exact-occurrence host and Student join/control canary.'
+      reason: 'The six S2S/host/meeting values are absent, persistent staging is not allowlisted, the integrated checkpoint is not yet deployed there, and a separately authorized human canary is still blocked by Zoom reCAPTCHA/rate limiting.'
+    remaining_work: 'After provider-off deployment proof, require the six protected real-control prerequisites plus the exact persistent-staging allowlist and then run one separately authorized human-cleared exact-occurrence host and Student join/control canary.'
     next_action: Keep provider controls unavailable and never infer host control from partial SDK configuration.
 
   - id: bna_foundation
@@ -521,7 +523,7 @@ tracks:
     next_action: 'Keep unclaimed in this conductor pass; the conductor may assign it only after PR #108 integration acceptance.'
 
   - id: persistent_staging
-    status: done
+    status: active
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -550,9 +552,10 @@ tracks:
       - Exact checkpoint 06f66568a587c333fbab416e9eb17e323e2b885a deployed through web 10db6e83-2677-4c52-965d-6e6e1309614e and worker 410e9030-489f-48b8-831f-588801cc1048; /version matched the full SHA, /health and /ready returned 200, and /ready retained latest=2215_experience_preview_sessions.
       - Node 24, OPS-06, PostgreSQL 18, PostgreSQL 16 assurance, learner-seat concurrency, Railway web, and Railway worker all completed successfully for checkpoint 06f66568.
       - Live desktop browser proof completed bounded Admin email-code login, Dashboard discovery, explicit role selection, actual fictional Student portal rendering in the dedicated shell, and restored authenticated Admin Dashboard. Real Chromium 5/5 supplies the exact separate-tab opener-null, sibling-tab, production-gating, and 360px hamburger proof; the in-app viewport override did not change its 1280px surface and is not cited as mobile evidence.
+      - 'Current combined checkpoint candidate integrates accepted PR #108, PR #105 unique range, and Tisha delta with typecheck green and 22 focused files/130 tests passing. Git-content migration 2220 checksum is exact; no provider or production action occurred.'
     blocker: null
-    remaining_work: null
-    next_action: Preserve exact-head deployment/readback discipline for later semantic integrations; do not treat docs-only Board updates as provider activation.
+    remaining_work: Commit and push the governed descendant, wait for exact-head GitHub and Railway web/worker checks, verify /version, /health, /ready, schema 2220, worker state, and the complete browser journey set.
+    next_action: 'Deploy only the exact immutable PR #97 checkpoint with HighLevel and real Zoom controls disabled; do not treat source integration as live proof.'
 
   - id: tisha_landing_polish
     status: blocked
@@ -586,6 +589,7 @@ tracks:
       - Fresh production-source audit confirms event consent is separate and newsletter_opt_in defaults false, but the durable application-to-GHL event-permission projection/readback remains unaccepted. OT-E01 enrollment is not sufficient promotion evidence.
       - P0 production acceptance failed on the operator's newest live signup: an account/login-code email arrived instead of the OT-E01 event confirmation. No duplicate signup, manual/substitute/fallback email, GHL customer test, or provider send is allowed while the exact registered-tag handoff is diagnosed.
       - 'OT-TISHA-HANDOFF-01 is queued on release/tisha-bav-2026-live as client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef and owns only the server handoff/fallback repair plus narrow production hotfix. It is not part of PR #110, PR #108, or the GHL UI executor lane.'
+      - 'Accepted combined Tisha delta acddcc8cd012c5cdc5bfc08cbc80550bef8719ba..100b4cf3371f4b2da88a16cf95e25960e35f0fc8 is semantically integrated into the PR #97 checkpoint candidate with exact title Bringing Knowledge of Hashem into the World, No charge, exact event-only disclosure, Rabbi Eli Scheller, route-specific no-cache headers, migration 2220, and zero sends/reprocess/provider mutations.'
     blocker:
       code: TISHA_REGISTRATION_TO_GHL_HANDOFF_BLOCK
       reason: 'PR #110 visual preview is verified, but the newest real production signup still failed to produce the exact registered tag, OT-E01 enrollment, or event confirmation; production promotion remains gated by the separate durable server registration-to-GHL hotfix and event-permission acceptance.'

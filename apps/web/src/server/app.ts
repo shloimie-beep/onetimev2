@@ -3201,6 +3201,7 @@ export function createApp({
 
 function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
+  if (pathname === '/tisha-bav.html') return 'tisha-bav.html';
   if (pathname.startsWith('/app/content/')) return 'app/content.html';
   const staticPages = new Set([
     '/signup',
@@ -3234,10 +3235,16 @@ async function sendPublicHtml(
   canonicalPath: string,
 ) {
   const html = await readFile(filePath, 'utf8');
-  res
-    .type('html')
-    .set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache')
-    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+  const response = res.type('html');
+  if (canonicalPath === '/tisha-bav' || canonicalPath === '/tisha-bav.html') {
+    response
+      .set('Cache-Control', 'no-cache, max-age=0, must-revalidate')
+      .set('Pragma', 'no-cache')
+      .set('Expires', '0');
+  } else {
+    response.set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache');
+  }
+  response.send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
 }
 
 async function sendNoStorePublicHtml(

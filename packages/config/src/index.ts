@@ -302,10 +302,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('HighLevel action key ID and secret are required when actions are enabled.');
   }
 
-  if (parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' && !parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID) {
-    throw new Error('HIGHLEVEL_TISHA_BAV_WORKFLOW_ID is required for provider event sync.');
-  }
-
   if (
     parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
     parsed.HIGHLEVEL_LOCATION_ID !== 'pBSnOK2nkdxp6gf9Rg3o'
@@ -558,8 +554,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomClassroomClassDurationMinutes: parsed.ZOOM_CLASSROOM_CLASS_DURATION_MINUTES,
     zoomClassroomJoinOpenOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_OPEN_OFFSET_MINUTES,
     zoomClassroomJoinCloseOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES,
-    zoomMeetingSdkClientId:
-      parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
+    zoomMeetingSdkClientId: parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
     zoomMeetingSdkClientSecret:
       parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
     zoomMeetingSdkWebVersion: parsed.ZOOM_MEETING_SDK_WEB_VERSION,
@@ -569,7 +564,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkClientSecretConfigured: Boolean(
       parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
     ),
-    zoomMeetingSdkWebVersionConfigured: Boolean(parsed.ZOOM_MEETING_SDK_WEB_VERSION),
     zoomMeetingSdkLegacyAliasUsed: Boolean(
       (!parsed.ZOOM_MEETING_SDK_CLIENT_ID && parsed.ZOOM_MEETING_SDK_KEY) ||
       (!parsed.ZOOM_MEETING_SDK_CLIENT_SECRET && parsed.ZOOM_MEETING_SDK_SECRET),

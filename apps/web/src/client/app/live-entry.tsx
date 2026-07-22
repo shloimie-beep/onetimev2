@@ -442,8 +442,8 @@ function ZoomHealth({ data }: { data: ConsoleData | null }) {
         </>
       ) : (
         <p>
-          Provider off: Meeting SDK General-app credentials are absent. Controlled fake execution
-          remains active in this preview.
+          Provider off: required Zoom provider prerequisites are incomplete. Controlled fake
+          execution remains active in this preview.
         </p>
       )}
       {job && (

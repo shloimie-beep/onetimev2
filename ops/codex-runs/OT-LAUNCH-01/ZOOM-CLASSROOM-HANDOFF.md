@@ -1,5 +1,10 @@
 # OT-LAUNCH-01 — Zoom classroom handoff
 
+> Historical isolated-preview evidence only. Current status and acceptance live exclusively in
+> `ops/goals/OT-LAUNCH-01/BOARD.yaml`. The accepted provider-off integration source is PR #105 head
+> `50989b336838d2029a0e0abc075bfd209b9c65ef`; this document must not be used as current readiness
+> proof.
+
 ## Scope
 
 - Branch: `codex/zoom-real-control-activation`
