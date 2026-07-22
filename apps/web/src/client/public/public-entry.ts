@@ -384,7 +384,6 @@ if (eventRegistrationForm) {
       const response = await postJson('/api/v1/events/tisha-bav-2026/register', {
         email: String(data.get('email') ?? ''),
         first_name: String(data.get('first_name') ?? ''),
-        newsletter_opt_in: data.get('newsletter_opt_in') === 'yes',
         source: 'tisha_bav_2026_landing',
         idempotency_key: idempotencyKey,
         homepage: String(data.get('homepage') ?? ''),

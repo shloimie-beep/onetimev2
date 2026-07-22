@@ -28,6 +28,10 @@ const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
 const tishaBavDesktopImage = '/assets/events/tisha-bav-2026/tisha%20beav(1).png';
 const tishaBavMobileImage = '/assets/events/tisha-bav-2026/tishea%20beav%20mobile(1).png';
+const tishaBavSocialImage = '/assets/events/tisha-bav-2026/tisha-bav-social-card-v20260722.png';
+const tishaBavFavicon = '/assets/events/tisha-bav-2026/tisha-bav-favicon-v20260722.png';
+const tishaBavAppleTouchIcon =
+  '/assets/events/tisha-bav-2026/tisha-bav-apple-touch-icon-v20260722.png';
 
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
@@ -50,6 +54,9 @@ const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp', [1600, 1200]],
   [tishaBavDesktopImage, [1366, 768]],
   [tishaBavMobileImage, [1080, 1350]],
+  [tishaBavSocialImage, [1200, 630]],
+  [tishaBavFavicon, [64, 64]],
+  [tishaBavAppleTouchIcon, [180, 180]],
 ]);
 
 function mediaSizeAttributes(src: string) {
@@ -73,6 +80,17 @@ function pageShell(
   options: {
     description?: string;
     canonicalPath?: string;
+    ogTitle?: string;
+    ogDescription?: string;
+    ogImage?: string;
+    ogImageSecureUrl?: string;
+    ogImageType?: string;
+    ogImageWidth?: number;
+    ogImageHeight?: number;
+    ogImageAlt?: string;
+    twitterImage?: string;
+    icon?: string;
+    appleTouchIcon?: string;
     app?: boolean;
     appEntry?: 'crm' | 'portal';
   } = {},
@@ -83,8 +101,19 @@ function pageShell(
     body,
     description,
     canonical: publicCanonicalUrl(options.canonicalPath ?? '/'),
-    ogTitle: landingContent.seo.ogTitle,
-    ogDescription: landingContent.seo.ogDescription,
+    ogTitle: options.ogTitle ?? landingContent.seo.ogTitle,
+    ogDescription: options.ogDescription ?? landingContent.seo.ogDescription,
+    ...(options.ogImage === undefined ? {} : { ogImage: options.ogImage }),
+    ...(options.ogImageSecureUrl === undefined
+      ? {}
+      : { ogImageSecureUrl: options.ogImageSecureUrl }),
+    ...(options.ogImageType === undefined ? {} : { ogImageType: options.ogImageType }),
+    ...(options.ogImageWidth === undefined ? {} : { ogImageWidth: options.ogImageWidth }),
+    ...(options.ogImageHeight === undefined ? {} : { ogImageHeight: options.ogImageHeight }),
+    ...(options.ogImageAlt === undefined ? {} : { ogImageAlt: options.ogImageAlt }),
+    ...(options.twitterImage === undefined ? {} : { twitterImage: options.twitterImage }),
+    ...(options.icon === undefined ? {} : { icon: options.icon }),
+    ...(options.appleTouchIcon === undefined ? {} : { appleTouchIcon: options.appleTouchIcon }),
     ...(options.app === undefined ? {} : { app: options.app }),
     ...(options.appEntry === undefined ? {} : { appEntry: options.appEntry }),
   });
@@ -310,9 +339,9 @@ function tishaBavLandingPage() {
       </div>
     </div>
     <div class="tisha-details" aria-label="Event details">
+      <p class="event-intro">Tonight's Tisha B'Av live class</p>
+      <p class="event-date">Thursday, July 23, 2026</p>
       <p class="event-time"><strong>3 p.m. Eastern Time</strong></p>
-    </div>
-    <div class="tisha-cta-block">
       <p class="event-charge">No charge</p>
       <button class="button button-primary tisha-primary-cta" type="button" data-event-open-modal aria-haspopup="dialog" aria-controls="event-register-modal" aria-expanded="false">Reserve My Spot</button>
     </div>
@@ -330,13 +359,17 @@ function tishaBavLandingPage() {
           <div class="field"><label for="event_email">Email</label><input id="event_email" name="email" type="email" inputmode="email" autocomplete="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
           <div class="field"><label for="event_first_name">First name <span>optional</span></label><input id="event_first_name" name="first_name" autocomplete="given-name"><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
           <button class="button button-primary" type="submit" data-event-submit hidden>Reserve My Spot</button>
+          <p class="event-submit-disclosure">By reserving, you’ll receive emails about this event.</p>
           <p class="form-status" role="status" data-form-status></p>
         </form>
       </div>
       <div class="event-success-panel" data-event-success-panel hidden tabindex="-1">
-        <p class="event-success-eyebrow">We got your request.</p>
-        <h2>Your spot has been reserved.</h2>
-        <p>We'll send the Zoom link and event details to your email.</p>
+        <div class="event-success-copy">
+          <p class="event-success-eyebrow">Registration complete</p>
+          <h2 lang="he" dir="rtl">שֶׁנִּזְכֶּה לִרְאוֹת אֶת יְרוּשָׁלַיִם בְּבִנְיָנָהּ</h2>
+          <p>May we merit to see Jerusalem rebuilt.</p>
+          <p>We'll email the private Zoom link and event details.</p>
+        </div>
         <div class="event-share-actions" aria-label="Share this event">
           <a class="button button-primary event-share-button" href="${escapeHtml(whatsappShareUrl)}" data-event-share-link target="_blank" rel="noopener">WhatsApp share</a>
           <a class="button event-share-button" href="${escapeHtml(emailShareUrl)}" data-event-share-link>Email a Friend</a>
@@ -352,6 +385,17 @@ function tishaBavLandingPage() {
       canonicalPath: '/tisha-bav',
       description:
         "Reserve a spot for a special Tisha B'Av live Zoom class with Rabbi Eli Scheller.",
+      ogTitle: "Tisha B'Av Live Zoom Class",
+      ogDescription: 'Live Zoom class with Rabbi Eli Scheller for boys. No charge.',
+      ogImage: publicCanonicalUrl(tishaBavSocialImage),
+      ogImageSecureUrl: publicCanonicalUrl(tishaBavSocialImage),
+      ogImageType: 'image/png',
+      ogImageWidth: 1200,
+      ogImageHeight: 630,
+      ogImageAlt: "One Time logo for the Tisha B'Av live Zoom class",
+      twitterImage: publicCanonicalUrl(tishaBavSocialImage),
+      icon: tishaBavFavicon,
+      appleTouchIcon: tishaBavAppleTouchIcon,
     },
   );
 }
