@@ -10,7 +10,6 @@ import {
 import type { AppConfig } from '../../../config/src/index.ts';
 import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
-import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../legal/policies.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import {
   TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
@@ -34,6 +33,7 @@ export const TISHA_BAV_JOIN_CLOSE_AT = new Date(
   new Date(TISHA_BAV_EVENT_START).getTime() + 180 * 60_000,
 ).toISOString();
 export const TISHA_BAV_SERVICE_CONSENT_POLICY = 'tisha-bav-2026-service-v1';
+export const TISHA_BAV_EVENT_EMAIL_DISCLOSURE_VERSION = 'tisha-bav-2026-event-email-v1';
 export const TISHA_BAV_SOURCE_VALUE = "Tisha B'Av 2026 Landing";
 export const TISHA_BAV_REQUIRED_TAGS = [
   "OT | Event | Tisha B'Av 2026 | Invited",
@@ -49,6 +49,9 @@ type RegistrationResult = TishaBavRegistrationSuccessResponse & {
   highLevelDeliveryKey: string | null;
 };
 
+type HighLevelSyncAttemptStatus =
+  TishaBavRegistrationSuccessResponse['ghl_sync_status'] | 'in_flight' | null;
+
 type RegistrationRow = {
   registration_key: string;
   email_normalized: string;
@@ -62,6 +65,22 @@ type EventDefinitionRow = {
   join_open_at: string | Date;
   join_close_at: string | Date;
 };
+
+type EventEmailPermissionStatus =
+  'granted' | 'withdrawn' | 'suppressed' | 'unsubscribed' | 'complained' | 'hard_bounced';
+
+type EventEmailPermissionRow = {
+  status: EventEmailPermissionStatus;
+  deny_reason: string | null;
+};
+
+const EVENT_EMAIL_DENY_STATUSES = new Set<EventEmailPermissionStatus>([
+  'withdrawn',
+  'suppressed',
+  'unsubscribed',
+  'complained',
+  'hard_bounced',
+]);
 
 export class TishaBavIdempotencyConflictError extends Error {
   constructor() {
@@ -214,10 +233,17 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       body: { tags: input.tags },
       apiVersion: '2023-02-21',
     });
-    const currentTags = new Set([
+    let currentTags = new Set([
       ...(Array.isArray(response.tags) ? response.tags.map(String) : []),
       ...(Array.isArray(response.tagsAdded) ? response.tagsAdded.map(String) : []),
     ]);
+    if (input.tags.some((tag) => !currentTags.has(tag))) {
+      const readback = await this.request(`/contacts/${encodeURIComponent(input.contactId)}`, {
+        method: 'GET',
+      });
+      const contact = (readback.contact ?? readback) as Record<string, unknown>;
+      currentTags = new Set(Array.isArray(contact.tags) ? contact.tags.map(String) : []);
+    }
     if (input.tags.some((tag) => !currentTags.has(tag))) {
       throw new Error('HighLevel contact tag verification failed.');
     }
@@ -232,7 +258,6 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       {
         method: 'POST',
         body: {},
-        allowConflict: true,
       },
     );
   }
@@ -257,12 +282,38 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       },
       ...(options.body ? { body: JSON.stringify(options.body) } : {}),
     });
-    if (options.allowConflict && (response.status === 409 || response.status === 422)) return {};
-    if (!response.ok) {
-      throw new Error(`HighLevel API request failed with status ${response.status}.`);
+    const responseBody = ((await response.json().catch(() => ({}))) ?? {}) as Record<
+      string,
+      unknown
+    >;
+    if (
+      options.allowConflict &&
+      (response.status === 409 || response.status === 422) &&
+      exactProviderConflict(responseBody)
+    ) {
+      return responseBody;
     }
-    return ((await response.json().catch(() => ({}))) ?? {}) as Record<string, unknown>;
+    if (!response.ok) {
+      throw new Error(
+        `HighLevel API request failed with status ${response.status}: ${providerErrorCode(responseBody)}.`,
+      );
+    }
+    return responseBody;
   }
+}
+
+function exactProviderConflict(response: Record<string, unknown>) {
+  const message = Array.isArray(response.message)
+    ? response.message.map(String).join(' ')
+    : String(response.message ?? response.error ?? '');
+  return /already (?:exists|enrolled|in (?:the )?workflow)|duplicate/i.test(message);
+}
+
+function providerErrorCode(response: Record<string, unknown>) {
+  const message = Array.isArray(response.message)
+    ? response.message.map(String).join(' ')
+    : String(response.message ?? response.error ?? 'provider_error');
+  return message.replace(/[^a-z0-9_-]+/gi, '_').slice(0, 80) || 'provider_error';
 }
 
 export function createHighLevelEventClient(config: AppConfig): HighLevelEventClient | null {
@@ -291,18 +342,114 @@ export async function captureTishaBavRegistration(input: {
   );
 
   if (!response.highLevelDeliveryKey) return withoutInternalKeys(response);
-  const syncStatus = await maybeSyncHighLevel({
+  const syncAttempt = await maybeSyncHighLevel({
     pool: input.pool,
     config: input.config,
     deliveryKey: response.highLevelDeliveryKey,
     registrationKey: response.registration_key ?? '',
+    now,
     ...(input.highLevelClient === undefined ? {} : { highLevelClient: input.highLevelClient }),
   });
+  const syncStatus = syncAttempt === 'in_flight' ? 'pending' : syncAttempt;
+  const fallbackQueued =
+    syncAttempt === 'in_flight' || syncStatus === 'succeeded'
+      ? false
+      : await queueFallbackAfterHighLevelFailure({
+          pool: input.pool,
+          config: input.config,
+          registrationKey: response.registration_key ?? '',
+          highLevelDeliveryKey: response.highLevelDeliveryKey,
+          now,
+        });
+  const confirmationQueued = syncStatus === 'succeeded' || fallbackQueued;
 
   return {
     ...withoutInternalKeys(response),
+    confirmation_queued: confirmationQueued,
     ghl_sync_status: syncStatus ?? response.ghl_sync_status,
+    message: registrationMessage(
+      response.registration_key,
+      response.duplicate_submission,
+      confirmationQueued,
+    ).message,
   };
+}
+
+export async function reprocessTishaBavRegistrationDelivery(input: {
+  pool: DbPool;
+  config: AppConfig;
+  registrationKey: string;
+  now?: Date;
+  highLevelClient?: HighLevelEventClient | null;
+}) {
+  const now = input.now ?? new Date();
+  const delivery = await input.pool.query<{ delivery_key: string; status: string }>(
+    `SELECT delivery_key, status
+       FROM onetime.event_delivery_events
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND registration_key = $4
+        AND provider = 'highlevel'
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE, input.registrationKey],
+  );
+  const row = delivery.rows[0];
+  if (!row) return { status: 'missing' as const, fallback_queued: false };
+  await materializeLegacyEventEmailPermission(input.pool, input.config, input.registrationKey);
+  if (row.status === 'succeeded') {
+    return { status: 'succeeded' as const, fallback_queued: false };
+  }
+  if (!['provider_off', 'failed', 'pending', 'skipped'].includes(row.status)) {
+    return { status: 'blocked' as const, fallback_queued: false };
+  }
+  const retryReservation = await reserveHighLevelReprocess(
+    input.pool,
+    input.config,
+    row.delivery_key,
+    input.registrationKey,
+    now,
+  );
+  if (!retryReservation.allowed) {
+    return { status: 'blocked' as const, fallback_queued: false };
+  }
+  let syncAttempt: HighLevelSyncAttemptStatus = null;
+  try {
+    syncAttempt = await maybeSyncHighLevel({
+      pool: input.pool,
+      config: input.config,
+      deliveryKey: row.delivery_key,
+      registrationKey: input.registrationKey,
+      now,
+      allowPendingFallbackRetry: true,
+      reprocessLeaseOwnerHash: retryReservation.leaseOwnerHash,
+      ...(input.highLevelClient === undefined ? {} : { highLevelClient: input.highLevelClient }),
+    });
+  } finally {
+    if (retryReservation.leaseOwnerHash) {
+      await releaseReprocessReservation(
+        input.pool,
+        input.config,
+        input.registrationKey,
+        retryReservation.leaseOwnerHash,
+      );
+    }
+  }
+  if (syncAttempt === 'in_flight') {
+    return { status: 'blocked' as const, fallback_queued: false };
+  }
+  const syncStatus = syncAttempt;
+  const fallbackQueued =
+    syncStatus === 'succeeded'
+      ? false
+      : await queueFallbackAfterHighLevelFailure({
+          pool: input.pool,
+          config: input.config,
+          registrationKey: input.registrationKey,
+          highLevelDeliveryKey: row.delivery_key,
+          now,
+        });
+  return { status: syncStatus ?? 'blocked', fallback_queued: fallbackQueued };
 }
 
 export async function requestTishaBavJoin(input: {
@@ -471,7 +618,6 @@ async function persistRegistration(
     email,
   ]);
   const registeredAt = now.toISOString();
-  const marketingPolicy = payload.newsletter_opt_in ? COMMUNICATION_CONSENT_POLICY_VERSION : null;
   const registration = await client.query<RegistrationRow>(
     `INSERT INTO onetime.event_registrations (
        registration_key, event_definition_key, account_key, product_key, event_code,
@@ -487,20 +633,13 @@ async function persistRegistration(
      ON CONFLICT (account_key, product_key, event_code, email_normalized)
      DO UPDATE SET
        first_name = COALESCE(EXCLUDED.first_name, onetime.event_registrations.first_name),
-       newsletter_opt_in = onetime.event_registrations.newsletter_opt_in OR EXCLUDED.newsletter_opt_in,
-       marketing_consent_policy_version = CASE
-         WHEN EXCLUDED.newsletter_opt_in THEN EXCLUDED.marketing_consent_policy_version
-         ELSE onetime.event_registrations.marketing_consent_policy_version
-       END,
-       marketing_consent_recorded_at = CASE
-         WHEN EXCLUDED.newsletter_opt_in AND onetime.event_registrations.marketing_consent_recorded_at IS NULL
-           THEN EXCLUDED.marketing_consent_recorded_at
-         ELSE onetime.event_registrations.marketing_consent_recorded_at
-       END,
+       newsletter_opt_in = false,
+       marketing_consent_policy_version = NULL,
+       marketing_consent_recorded_at = NULL,
        latest_source = EXCLUDED.latest_source,
        last_seen_at = EXCLUDED.last_seen_at,
        last_registered_at = EXCLUDED.last_registered_at,
-       metadata = onetime.event_registrations.metadata || EXCLUDED.metadata,
+       metadata = EXCLUDED.metadata,
        updated_at = now()
      RETURNING registration_key, email_normalized, first_name, newsletter_opt_in`,
     [
@@ -511,9 +650,9 @@ async function persistRegistration(
       TISHA_BAV_EVENT_CODE,
       email,
       payload.first_name ?? null,
-      payload.newsletter_opt_in,
+      false,
       TISHA_BAV_SERVICE_CONSENT_POLICY,
-      marketingPolicy,
+      null,
       registeredAt,
       normalizeSource(payload.source),
       JSON.stringify({
@@ -526,29 +665,24 @@ async function persistRegistration(
           captured_at: registeredAt,
         },
         marketing_consent: {
-          policy_version: marketingPolicy,
+          policy_version: null,
           purpose: 'weekly_newsletter',
           source: normalizeSource(payload.source),
-          channels: payload.newsletter_opt_in ? ['email'] : [],
-          captured_at: payload.newsletter_opt_in ? registeredAt : null,
-          granted: payload.newsletter_opt_in,
+          channels: [],
+          captured_at: null,
+          granted: false,
         },
       }),
     ],
   );
   const row = requireRow(registration.rows[0], 'Event registration write failed.');
+  await recordEventEmailPermission(client, config, row, payload, now);
   const highLevelDeliveryKey = await upsertHighLevelDelivery(client, config, row, payload, now);
-  if (
-    config.oneTimeEventEmailFallback === 'resend' &&
-    now <= new Date('2026-07-24T23:59:59.000Z')
-  ) {
-    await upsertFallbackDelivery(client, config, row, payload, now);
-  }
   await insertAudit(client, config, row.registration_key, payload, now);
 
   const responseBase: RegistrationResult = {
     ...registrationMessage(row.registration_key, false),
-    confirmation_queued: true,
+    confirmation_queued: false,
     ghl_sync_status: config.highLevelEventSyncMode === 'disabled' ? 'provider_off' : 'pending',
     highLevelDeliveryKey,
   };
@@ -592,6 +726,438 @@ function assertJoinWindow(event: EventDefinitionRow, now: Date, config: AppConfi
   if (!config.tishaBavZoomJoinUrl) {
     throw new TishaBavJoinError(503, 'EVENT_UNAVAILABLE', 'Private access is not available yet.');
   }
+}
+
+async function recordEventEmailPermission(
+  client: Queryable,
+  config: AppConfig,
+  registration: RegistrationRow,
+  payload: TishaBavRegistrationPayload,
+  now: Date,
+) {
+  const existing = await client.query<EventEmailPermissionRow>(
+    `SELECT status, deny_reason
+       FROM onetime.event_email_permissions
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND email_normalized = $4
+      LIMIT 1`,
+    [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registration.email_normalized],
+  );
+  const contact = await client.query<{ suppression_state: string }>(
+    `SELECT suppression_state
+       FROM onetime.contacts
+      WHERE account_key = $1
+        AND product_key = $2
+        AND email_normalized = $3
+      LIMIT 1`,
+    [config.accountKey, config.productKey, registration.email_normalized],
+  );
+  const current = existing.rows[0];
+  const contactSuppressed =
+    (contact.rowCount ?? 0) > 0 &&
+    String(contact.rows[0]?.suppression_state ?? 'unknown') !== 'active';
+  const status: EventEmailPermissionStatus =
+    current && EVENT_EMAIL_DENY_STATUSES.has(current.status)
+      ? current.status
+      : contactSuppressed
+        ? 'suppressed'
+        : 'granted';
+  const reasonCode =
+    current && EVENT_EMAIL_DENY_STATUSES.has(current.status)
+      ? (current.deny_reason ?? `existing_${current.status}`)
+      : contactSuppressed
+        ? 'contact_suppression_active'
+        : null;
+  const permissionEventKey = stableKey('event_email_permission_event', [
+    config.accountKey,
+    config.productKey,
+    TISHA_BAV_EVENT_CODE,
+    registration.registration_key,
+    eventIdempotencyKey(payload.idempotency_key),
+  ]);
+  const permissionKey = stableKey('event_email_permission', [
+    config.accountKey,
+    config.productKey,
+    TISHA_BAV_EVENT_CODE,
+    registration.email_normalized,
+  ]);
+  await client.query(
+    `INSERT INTO onetime.event_email_permission_events (
+       permission_event_key, account_key, product_key, event_code, registration_key,
+       email_normalized, permission_scope, action, disclosure_version, source,
+       idempotency_key, reason_code, metadata, recorded_at
+     ) VALUES ($1,$2,$3,$4,$5,$6,'event_service_email',$7,$8,$9,$10,$11,$12::jsonb,$13)
+     ON CONFLICT (account_key, product_key, event_code, idempotency_key) DO NOTHING`,
+    [
+      permissionEventKey,
+      config.accountKey,
+      config.productKey,
+      TISHA_BAV_EVENT_CODE,
+      registration.registration_key,
+      registration.email_normalized,
+      status,
+      TISHA_BAV_EVENT_EMAIL_DISCLOSURE_VERSION,
+      normalizeSource(payload.source),
+      eventIdempotencyKey(payload.idempotency_key),
+      reasonCode,
+      JSON.stringify({
+        channel: 'email',
+        event_only: true,
+        newsletter_permission_granted: false,
+        student_contact: false,
+      }),
+      now,
+    ],
+  );
+  await client.query(
+    `INSERT INTO onetime.event_email_permissions (
+       permission_key, account_key, product_key, event_code, registration_key,
+       email_normalized, permission_scope, status, disclosure_version, source,
+       granted_at, denied_at, deny_reason, latest_permission_event_key
+     ) VALUES (
+       $1,$2,$3,$4,$5,$6,'event_service_email',$7,$8,$9,
+       CASE WHEN $7 = 'granted' THEN $10::timestamptz ELSE NULL END,
+       CASE WHEN $7 = 'granted' THEN NULL ELSE $10::timestamptz END,
+       $11,$12
+     )
+     ON CONFLICT (account_key, product_key, event_code, email_normalized)
+     DO UPDATE SET
+       registration_key = EXCLUDED.registration_key,
+       status = CASE
+         WHEN onetime.event_email_permissions.status IN
+           ('withdrawn','suppressed','unsubscribed','complained','hard_bounced')
+           THEN onetime.event_email_permissions.status
+         ELSE EXCLUDED.status
+       END,
+       disclosure_version = EXCLUDED.disclosure_version,
+       source = EXCLUDED.source,
+       granted_at = CASE
+         WHEN onetime.event_email_permissions.status IN
+           ('withdrawn','suppressed','unsubscribed','complained','hard_bounced')
+           THEN onetime.event_email_permissions.granted_at
+         ELSE COALESCE(onetime.event_email_permissions.granted_at, EXCLUDED.granted_at)
+       END,
+       denied_at = COALESCE(onetime.event_email_permissions.denied_at, EXCLUDED.denied_at),
+       deny_reason = COALESCE(onetime.event_email_permissions.deny_reason, EXCLUDED.deny_reason),
+       latest_permission_event_key = EXCLUDED.latest_permission_event_key,
+       updated_at = now()`,
+    [
+      permissionKey,
+      config.accountKey,
+      config.productKey,
+      TISHA_BAV_EVENT_CODE,
+      registration.registration_key,
+      registration.email_normalized,
+      status,
+      TISHA_BAV_EVENT_EMAIL_DISCLOSURE_VERSION,
+      normalizeSource(payload.source),
+      now,
+      reasonCode,
+      permissionEventKey,
+    ],
+  );
+}
+
+async function eventEmailPermissionEligibility(
+  pool: Queryable,
+  config: AppConfig,
+  registrationKey: string,
+) {
+  const result = await pool.query<{
+    status: EventEmailPermissionStatus;
+    contact_suppression_state: string | null;
+  }>(
+    `SELECT permissions.status,
+            contacts.suppression_state AS contact_suppression_state
+       FROM onetime.event_email_permissions AS permissions
+       LEFT JOIN onetime.contacts AS contacts
+         ON contacts.account_key = permissions.account_key
+        AND contacts.product_key = permissions.product_key
+        AND contacts.email_normalized = permissions.email_normalized
+      WHERE permissions.account_key = $1
+        AND permissions.product_key = $2
+        AND permissions.event_code = $3
+        AND permissions.registration_key = $4
+      LIMIT 1`,
+    [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey],
+  );
+  const row = result.rows[0];
+  if (!row) return { allowed: false, reason: 'event_permission_missing' } as const;
+  if (EVENT_EMAIL_DENY_STATUSES.has(row.status)) {
+    return { allowed: false, reason: `event_permission_${row.status}` } as const;
+  }
+  if (row.contact_suppression_state && row.contact_suppression_state !== 'active') {
+    return { allowed: false, reason: 'contact_suppression_active' } as const;
+  }
+  return { allowed: true, reason: null } as const;
+}
+
+async function materializeLegacyEventEmailPermission(
+  pool: DbPool,
+  config: AppConfig,
+  registrationKey: string,
+) {
+  await inTransaction(pool, async (client) => {
+    const current = await client.query<{ permission_key: string }>(
+      `SELECT permission_key
+         FROM onetime.event_email_permissions
+        WHERE account_key = $1
+          AND product_key = $2
+          AND event_code = $3
+          AND registration_key = $4
+        LIMIT 1`,
+      [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey],
+    );
+    if (current.rows[0]) return;
+    const registration = await client.query<{
+      registration_key: string;
+      email_normalized: string;
+      event_service_consent_policy_version: string;
+      latest_source: string;
+      registered_at: Date | string;
+      metadata: Record<string, unknown> | string;
+    }>(
+      `SELECT registration_key, email_normalized, event_service_consent_policy_version,
+              latest_source, registered_at, metadata
+         FROM onetime.event_registrations
+        WHERE account_key = $1
+          AND product_key = $2
+          AND event_code = $3
+          AND registration_key = $4
+        LIMIT 1`,
+      [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey],
+    );
+    const row = registration.rows[0];
+    if (!row) return;
+    const metadata = normalizeJsonRecord(row.metadata);
+    const serviceConsent = normalizeJsonRecord(metadata.event_service_consent);
+    const channels = Array.isArray(serviceConsent.channels)
+      ? serviceConsent.channels.map(String)
+      : [];
+    const capturedAt =
+      typeof serviceConsent.captured_at === 'string'
+        ? new Date(serviceConsent.captured_at)
+        : new Date(Number.NaN);
+    const hasStoredProof =
+      row.event_service_consent_policy_version === TISHA_BAV_SERVICE_CONSENT_POLICY &&
+      serviceConsent.policy_version === TISHA_BAV_SERVICE_CONSENT_POLICY &&
+      serviceConsent.purpose === 'event_access_communication' &&
+      channels.includes('email') &&
+      !Number.isNaN(capturedAt.getTime());
+    if (!hasStoredProof) return;
+    const contact = await client.query<{ suppression_state: string }>(
+      `SELECT suppression_state
+         FROM onetime.contacts
+        WHERE account_key = $1
+          AND product_key = $2
+          AND email_normalized = $3
+        LIMIT 1`,
+      [config.accountKey, config.productKey, row.email_normalized],
+    );
+    const suppressed =
+      (contact.rowCount ?? 0) > 0 &&
+      String(contact.rows[0]?.suppression_state ?? 'unknown') !== 'active';
+    const action: EventEmailPermissionStatus = suppressed ? 'suppressed' : 'granted';
+    const permissionEventKey = stableKey('event_email_permission_event', [
+      config.accountKey,
+      config.productKey,
+      TISHA_BAV_EVENT_CODE,
+      registrationKey,
+      'legacy_reprocess',
+    ]);
+    const permissionKey = stableKey('event_email_permission', [
+      config.accountKey,
+      config.productKey,
+      TISHA_BAV_EVENT_CODE,
+      row.email_normalized,
+    ]);
+    const idempotencyKey = `legacy_reprocess:${registrationKey}`;
+    const disclosureVersion = `legacy:${row.event_service_consent_policy_version}`;
+    const registeredAt = new Date(row.registered_at);
+    if (Number.isNaN(registeredAt.getTime())) return;
+    const recordedAt = capturedAt;
+    await client.query(
+      `INSERT INTO onetime.event_email_permission_events (
+         permission_event_key, account_key, product_key, event_code, registration_key,
+         email_normalized, permission_scope, action, disclosure_version, source,
+         idempotency_key, reason_code, metadata, recorded_at
+       ) VALUES ($1,$2,$3,$4,$5,$6,'event_service_email',$7,$8,$9,$10,$11,$12::jsonb,$13)
+       ON CONFLICT (account_key, product_key, event_code, idempotency_key) DO NOTHING`,
+      [
+        permissionEventKey,
+        config.accountKey,
+        config.productKey,
+        TISHA_BAV_EVENT_CODE,
+        row.registration_key,
+        row.email_normalized,
+        action,
+        disclosureVersion,
+        normalizeSource(row.latest_source),
+        idempotencyKey,
+        suppressed ? 'contact_suppression_active' : 'legacy_registration_service_consent_proof',
+        JSON.stringify({
+          materialized_from_existing_registration: true,
+          original_registered_at: registeredAt.toISOString(),
+          original_consent_captured_at: capturedAt.toISOString(),
+          event_only: true,
+          newsletter_permission_granted: false,
+          student_contact: false,
+        }),
+        recordedAt,
+      ],
+    );
+    await client.query(
+      `INSERT INTO onetime.event_email_permissions (
+         permission_key, account_key, product_key, event_code, registration_key,
+         email_normalized, permission_scope, status, disclosure_version, source,
+         granted_at, denied_at, deny_reason, latest_permission_event_key
+       ) VALUES (
+         $1,$2,$3,$4,$5,$6,'event_service_email',$7,$8,$9,
+         CASE WHEN $7 = 'granted' THEN $10::timestamptz ELSE NULL END,
+         CASE WHEN $7 = 'granted' THEN NULL ELSE $10::timestamptz END,
+         $11,$12
+       )
+       ON CONFLICT (account_key, product_key, event_code, email_normalized) DO NOTHING`,
+      [
+        permissionKey,
+        config.accountKey,
+        config.productKey,
+        TISHA_BAV_EVENT_CODE,
+        row.registration_key,
+        row.email_normalized,
+        action,
+        disclosureVersion,
+        normalizeSource(row.latest_source),
+        recordedAt,
+        suppressed ? 'contact_suppression_active' : null,
+        permissionEventKey,
+      ],
+    );
+  });
+}
+
+async function reserveHighLevelReprocess(
+  pool: DbPool,
+  config: AppConfig,
+  highLevelDeliveryKey: string,
+  registrationKey: string,
+  now: Date,
+) {
+  return inTransaction(pool, async (client) => {
+    const lockClause = isMemoryPool(pool) ? '' : 'FOR UPDATE';
+    const fallback = await client.query<{
+      delivery_key: string;
+      status: string;
+      lease_expires_at: Date | string | null;
+    }>(
+      `SELECT delivery_key, status, lease_expires_at
+         FROM onetime.event_delivery_events
+        WHERE account_key = $1
+          AND product_key = $2
+          AND event_code = $3
+          AND registration_key = $4
+          AND provider = 'resend_fallback'
+        LIMIT 1
+        ${lockClause}`,
+      [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey],
+    );
+    const row = fallback.rows[0];
+    if (row?.status === 'succeeded') return { allowed: false as const, leaseOwnerHash: null };
+    const fallbackLeaseExpiresAt = row?.lease_expires_at ? new Date(row.lease_expires_at) : null;
+    if (fallbackLeaseExpiresAt && fallbackLeaseExpiresAt > now) {
+      return { allowed: false as const, leaseOwnerHash: null };
+    }
+    const leaseOwnerHash = sha256(`highlevel-reprocess:${registrationKey}:${randomUUID()}`);
+    const leaseDurationMs = Math.max(
+      120_000,
+      config.deliveryProviderTimeoutMs + config.deliveryProviderTimeoutLeaseSafetyMs,
+    );
+    const leaseExpiresAt = new Date(now.getTime() + leaseDurationMs);
+    if (row && ['pending', 'failed'].includes(row.status)) {
+      const fallbackUpdated = await client.query(
+        `UPDATE onetime.event_delivery_events
+          SET lease_owner_hash = $5,
+              lease_expires_at = $6,
+              updated_at = $4
+        WHERE delivery_key = $1
+          AND account_key = $2
+          AND product_key = $3
+          AND status IN ('pending','failed')
+          AND (lease_expires_at IS NULL OR lease_expires_at <= $4)
+        RETURNING delivery_key`,
+        [
+          row.delivery_key,
+          config.accountKey,
+          config.productKey,
+          now,
+          leaseOwnerHash,
+          leaseExpiresAt,
+        ],
+      );
+      if (!fallbackUpdated.rowCount) {
+        return { allowed: false as const, leaseOwnerHash: null };
+      }
+    }
+    const highLevelUpdated = await client.query(
+      `UPDATE onetime.event_delivery_events
+          SET lease_owner_hash = $5,
+              lease_expires_at = $6,
+              updated_at = $4
+        WHERE delivery_key = $1
+          AND account_key = $2
+          AND product_key = $3
+          AND provider = 'highlevel'
+          AND status IN ('provider_off','failed','pending','skipped')
+          AND (lease_expires_at IS NULL OR lease_expires_at <= $4)
+        RETURNING delivery_key`,
+      [
+        highLevelDeliveryKey,
+        config.accountKey,
+        config.productKey,
+        now,
+        leaseOwnerHash,
+        leaseExpiresAt,
+      ],
+    );
+    if (highLevelUpdated.rowCount) return { allowed: true as const, leaseOwnerHash };
+    if (row && ['pending', 'failed'].includes(row.status)) {
+      await client.query(
+        `UPDATE onetime.event_delivery_events
+            SET lease_owner_hash = NULL,
+                lease_expires_at = NULL,
+                updated_at = $4
+          WHERE delivery_key = $1
+            AND account_key = $2
+            AND product_key = $3
+            AND lease_owner_hash = $5`,
+        [row.delivery_key, config.accountKey, config.productKey, now, leaseOwnerHash],
+      );
+    }
+    return { allowed: false as const, leaseOwnerHash: null };
+  });
+}
+
+async function releaseReprocessReservation(
+  pool: Queryable,
+  config: AppConfig,
+  registrationKey: string,
+  leaseOwnerHash: string,
+) {
+  await pool.query(
+    `UPDATE onetime.event_delivery_events
+        SET lease_owner_hash = NULL,
+            lease_expires_at = NULL,
+            updated_at = now()
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND registration_key = $4
+        AND provider IN ('highlevel', 'resend_fallback')
+        AND lease_owner_hash = $5`,
+    [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey, leaseOwnerHash],
+  );
 }
 
 async function upsertHighLevelDelivery(
@@ -649,13 +1215,43 @@ async function upsertHighLevelDelivery(
   return deliveryKey;
 }
 
-async function upsertFallbackDelivery(
-  client: Queryable,
-  config: AppConfig,
-  registration: RegistrationRow,
-  payload: TishaBavRegistrationPayload,
-  now: Date,
-) {
+async function queueFallbackAfterHighLevelFailure(input: {
+  pool: DbPool;
+  config: AppConfig;
+  registrationKey: string;
+  highLevelDeliveryKey: string;
+  now: Date;
+}) {
+  if (input.config.oneTimeEventEmailFallback !== 'resend') return false;
+  if (input.now > new Date('2026-07-24T23:59:59.000Z')) return false;
+  const highLevel = await input.pool.query<{ status: string }>(
+    `SELECT status
+       FROM onetime.event_delivery_events
+      WHERE delivery_key = $1
+        AND registration_key = $2
+        AND provider = 'highlevel'
+      LIMIT 1`,
+    [input.highLevelDeliveryKey, input.registrationKey],
+  );
+  if (highLevel.rows[0]?.status === 'succeeded') return false;
+  const eligibility = await eventEmailPermissionEligibility(
+    input.pool,
+    input.config,
+    input.registrationKey,
+  );
+  if (!eligibility.allowed) return false;
+  const registrationResult = await input.pool.query<RegistrationRow & { latest_source: string }>(
+    `SELECT registration_key, email_normalized, first_name, newsletter_opt_in, latest_source
+       FROM onetime.event_registrations
+      WHERE registration_key = $1
+        AND account_key = $2
+        AND product_key = $3
+        AND event_code = $4
+      LIMIT 1`,
+    [input.registrationKey, input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE],
+  );
+  const registration = registrationResult.rows[0];
+  if (!registration) return false;
   const idempotencyKey = `resend_fallback:${TISHA_BAV_EVENT_CODE}:${registration.registration_key}`;
   const protectedPayload = {
     email_normalized: registration.email_normalized,
@@ -668,10 +1264,10 @@ async function upsertFallbackDelivery(
     reply_to: TISHA_BAV_EMAIL_SENDER.replyTo,
     sender: TISHA_BAV_EMAIL_SENDER.visibleName,
     from: TISHA_BAV_EMAIL_SENDER.from,
-    source: normalizeSource(payload.source),
+    source: normalizeSource(registration.latest_source),
     expires_after: '2026-07-24T23:59:59.000Z',
   };
-  await client.query(
+  const inserted = await input.pool.query(
     `INSERT INTO onetime.event_delivery_events (
        delivery_key, account_key, product_key, event_code, registration_key, event_type, provider,
        transport_mode, status, idempotency_key, payload_digest, protected_payload, public_metadata,
@@ -681,8 +1277,8 @@ async function upsertFallbackDelivery(
      ON CONFLICT (account_key, product_key, event_code, idempotency_key) DO NOTHING`,
     [
       stableKey('event_delivery', [idempotencyKey]),
-      config.accountKey,
-      config.productKey,
+      input.config.accountKey,
+      input.config.productKey,
       TISHA_BAV_EVENT_CODE,
       registration.registration_key,
       'tisha_bav_2026.resend_fallback_confirmation.v1',
@@ -695,9 +1291,21 @@ async function upsertFallbackDelivery(
         warm_list_invitation: false,
         expires_after: '2026-07-24T23:59:59.000Z',
       }),
-      now,
+      input.now,
     ],
   );
+  if (inserted.rowCount) return true;
+  const existing = await input.pool.query<{ status: string }>(
+    `SELECT status
+       FROM onetime.event_delivery_events
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND idempotency_key = $4
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE, idempotencyKey],
+  );
+  return ['pending', 'succeeded'].includes(existing.rows[0]?.status ?? '');
 }
 
 async function insertAudit(
@@ -742,12 +1350,64 @@ async function maybeSyncHighLevel(input: {
   deliveryKey: string;
   registrationKey: string;
   highLevelClient?: HighLevelEventClient | null;
-}): Promise<TishaBavRegistrationSuccessResponse['ghl_sync_status'] | null> {
+  allowPendingFallbackRetry?: boolean;
+  now?: Date;
+  reprocessLeaseOwnerHash?: string | null;
+}): Promise<HighLevelSyncAttemptStatus> {
+  const eligibility = await eventEmailPermissionEligibility(
+    input.pool,
+    input.config,
+    input.registrationKey,
+  );
+  if (!eligibility.allowed) {
+    await markHighLevelDelivery(
+      input.pool,
+      input.deliveryKey,
+      'skipped',
+      {
+        workflow_configured: Boolean(input.config.highLevelTishaBavWorkflowId),
+        blocked_reason: eligibility.reason,
+      },
+      input.reprocessLeaseOwnerHash,
+    );
+    return 'skipped';
+  }
   if (input.config.highLevelEventSyncMode === 'disabled') return 'provider_off';
+  const fallback = await input.pool.query<{
+    status: string;
+    lease_expires_at: Date | string | null;
+    lease_owner_hash: string | null;
+  }>(
+    `SELECT status, lease_expires_at, lease_owner_hash
+       FROM onetime.event_delivery_events
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND registration_key = $4
+        AND provider = 'resend_fallback'
+      LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, TISHA_BAV_EVENT_CODE, input.registrationKey],
+  );
+  const fallbackStatus = fallback.rows[0]?.status ?? '';
+  const fallbackLease = fallback.rows[0]?.lease_expires_at
+    ? new Date(fallback.rows[0].lease_expires_at)
+    : null;
+  const fallbackLeaseOwnedByRetry = Boolean(
+    input.reprocessLeaseOwnerHash &&
+    fallback.rows[0]?.lease_owner_hash === input.reprocessLeaseOwnerHash,
+  );
+  if (
+    fallbackStatus === 'succeeded' ||
+    (fallbackLease && fallbackLease > (input.now ?? new Date()) && !fallbackLeaseOwnedByRetry) ||
+    (!input.allowPendingFallbackRetry && ['pending', 'failed'].includes(fallbackStatus))
+  ) {
+    return 'skipped';
+  }
   const client = input.highLevelClient ?? createHighLevelEventClient(input.config);
   if (!client) return 'provider_off';
   const rows = await input.pool.query<{
     status: string;
+    lease_owner_hash: string | null;
     protected_payload: {
       location_id: string;
       email_normalized: string;
@@ -758,30 +1418,50 @@ async function maybeSyncHighLevel(input: {
       workflow_request_key: string;
     };
   }>(
-    `SELECT status, protected_payload
+    `SELECT status, lease_owner_hash, protected_payload
        FROM onetime.event_delivery_events
       WHERE delivery_key = $1
         AND registration_key = $2
       LIMIT 1`,
     [input.deliveryKey, input.registrationKey],
   );
+  if (
+    input.reprocessLeaseOwnerHash &&
+    rows.rows[0]?.lease_owner_hash !== input.reprocessLeaseOwnerHash
+  ) {
+    return 'skipped';
+  }
   if (rows.rows[0]?.status === 'succeeded') return 'succeeded';
   const payload = normalizeHighLevelPayload(rows.rows[0]?.protected_payload);
   if (!payload) return null;
-  if (!payload.workflow_id) {
-    await markHighLevelDelivery(input.pool, input.deliveryKey, 'provider_off', {
-      workflow_configured: false,
-    });
+  const workflowId = payload.workflow_id ?? input.config.highLevelTishaBavWorkflowId;
+  if (!workflowId) {
+    await markHighLevelDelivery(
+      input.pool,
+      input.deliveryKey,
+      'provider_off',
+      {
+        workflow_configured: false,
+      },
+      input.reprocessLeaseOwnerHash,
+    );
     return 'provider_off';
   }
+  const leaseOwnerHash =
+    input.reprocessLeaseOwnerHash ??
+    (await claimHighLevelDeliveryForSync(
+      input.pool,
+      input.config,
+      input.deliveryKey,
+      input.registrationKey,
+      input.now ?? new Date(),
+    ));
+  if (!leaseOwnerHash) return 'in_flight';
   let providerStage = 'ensure_tags';
   try {
     await client.ensureTags({
       locationId: payload.location_id,
-      tags: [
-        ...TISHA_BAV_REQUIRED_TAGS,
-        ...(payload.tags.includes(TISHA_BAV_NEWSLETTER_TAG) ? [TISHA_BAV_NEWSLETTER_TAG] : []),
-      ],
+      tags: payload.tags,
     });
     providerStage = 'upsert_contact';
     const contact = await client.upsertContact({
@@ -800,39 +1480,197 @@ async function maybeSyncHighLevel(input: {
     providerStage = 'add_to_workflow';
     await client.addToWorkflow({
       contactId: contact.contactId,
-      workflowId: payload.workflow_id,
+      workflowId,
       idempotencyKey: payload.workflow_request_key,
     });
-    await markHighLevelDelivery(input.pool, input.deliveryKey, 'succeeded', {
-      workflow_configured: true,
-      contact_reference_hash: sha256(contact.contactId),
-    });
+    await markHighLevelDelivery(
+      input.pool,
+      input.deliveryKey,
+      'succeeded',
+      {
+        workflow_configured: true,
+        contact_reference_hash: sha256(contact.contactId),
+        tags_verified: true,
+      },
+      leaseOwnerHash,
+    );
+    await cancelUnsentFallback(
+      input.pool,
+      input.config,
+      input.registrationKey,
+      leaseOwnerHash,
+      input.now ?? new Date(),
+    );
     return 'succeeded';
   } catch (error) {
-    await markHighLevelDelivery(input.pool, input.deliveryKey, 'failed', {
-      error_class: error instanceof Error ? error.name : 'Error',
-      failed_stage: providerStage,
-      provider_http_status: highLevelErrorStatus(error),
-    });
+    await markHighLevelDelivery(
+      input.pool,
+      input.deliveryKey,
+      'failed',
+      {
+        error_class: error instanceof Error ? error.name : 'Error',
+        failed_stage: providerStage,
+        provider_http_status: highLevelErrorStatus(error),
+      },
+      leaseOwnerHash,
+    );
     return 'pending';
+  } finally {
+    await releaseHighLevelSyncReservation(
+      input.pool,
+      input.config,
+      input.registrationKey,
+      leaseOwnerHash,
+    );
   }
+}
+
+async function claimHighLevelDeliveryForSync(
+  pool: Queryable,
+  config: AppConfig,
+  deliveryKey: string,
+  registrationKey: string,
+  now: Date,
+) {
+  const leaseOwnerHash = sha256(`highlevel-sync:${registrationKey}:${randomUUID()}`);
+  const leaseDurationMs = Math.max(
+    120_000,
+    config.deliveryProviderTimeoutMs + config.deliveryProviderTimeoutLeaseSafetyMs,
+  );
+  const claimed = await pool.query(
+    `UPDATE onetime.event_delivery_events
+        SET lease_owner_hash = $5,
+            lease_expires_at = $6,
+            updated_at = $4
+      WHERE delivery_key = $1
+        AND account_key = $2
+        AND product_key = $3
+        AND registration_key = $7
+        AND provider = 'highlevel'
+        AND status IN ('provider_off','failed','pending','skipped')
+        AND (lease_expires_at IS NULL OR lease_expires_at <= $4)
+      RETURNING delivery_key`,
+    [
+      deliveryKey,
+      config.accountKey,
+      config.productKey,
+      now,
+      leaseOwnerHash,
+      new Date(now.getTime() + leaseDurationMs),
+      registrationKey,
+    ],
+  );
+  return claimed.rowCount ? leaseOwnerHash : null;
+}
+
+async function releaseHighLevelSyncReservation(
+  pool: Queryable,
+  config: AppConfig,
+  registrationKey: string,
+  leaseOwnerHash: string,
+) {
+  await pool.query(
+    `UPDATE onetime.event_delivery_events
+        SET lease_owner_hash = NULL,
+            lease_expires_at = NULL,
+            updated_at = now()
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND registration_key = $4
+        AND provider = 'highlevel'
+        AND lease_owner_hash = $5`,
+    [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey, leaseOwnerHash],
+  );
 }
 
 async function markHighLevelDelivery(
   pool: DbPool,
   deliveryKey: string,
-  status: 'succeeded' | 'failed' | 'provider_off',
+  status: 'succeeded' | 'failed' | 'provider_off' | 'skipped',
   metadata: Record<string, unknown>,
+  leaseOwnerHash?: string | null,
 ) {
-  await pool.query(
-    `UPDATE onetime.event_delivery_events
+  const current = await pool.query<{ public_metadata: Record<string, unknown> }>(
+    `SELECT public_metadata
+       FROM onetime.event_delivery_events
+      WHERE delivery_key = $1
+      LIMIT 1`,
+    [deliveryKey],
+  );
+  const publicMetadata = {
+    ...normalizeJsonRecord(current.rows[0]?.public_metadata),
+    ...metadata,
+  };
+  const baseSql = `UPDATE onetime.event_delivery_events
         SET status = $2,
             attempts = attempts + 1,
             completed_at = CASE WHEN $2 = 'succeeded' THEN now() ELSE completed_at END,
             public_metadata = $3::jsonb,
+            lease_owner_hash = NULL,
+            lease_expires_at = NULL,
             updated_at = now()
-      WHERE delivery_key = $1`,
-    [deliveryKey, status, JSON.stringify(metadata)],
+      WHERE delivery_key = $1`;
+  if (leaseOwnerHash) {
+    await pool.query(`${baseSql} AND lease_owner_hash = $4`, [
+      deliveryKey,
+      status,
+      JSON.stringify(publicMetadata),
+      leaseOwnerHash,
+    ]);
+    return;
+  }
+  await pool.query(baseSql, [deliveryKey, status, JSON.stringify(publicMetadata)]);
+}
+
+async function cancelUnsentFallback(
+  pool: Queryable,
+  config: AppConfig,
+  registrationKey: string,
+  leaseOwnerHash: string | null | undefined,
+  now: Date,
+) {
+  if (leaseOwnerHash) {
+    await pool.query(
+      `UPDATE onetime.event_delivery_events
+          SET status = 'skipped',
+              public_metadata = '{"blocked_reason":"highlevel_succeeded"}'::jsonb,
+              lease_owner_hash = NULL,
+              lease_expires_at = NULL,
+              updated_at = $6
+        WHERE account_key = $1
+          AND product_key = $2
+          AND event_code = $3
+          AND registration_key = $4
+          AND provider = 'resend_fallback'
+          AND status IN ('pending', 'failed')
+          AND lease_owner_hash = $5`,
+      [
+        config.accountKey,
+        config.productKey,
+        TISHA_BAV_EVENT_CODE,
+        registrationKey,
+        leaseOwnerHash,
+        now,
+      ],
+    );
+    return;
+  }
+  await pool.query(
+    `UPDATE onetime.event_delivery_events
+        SET status = 'skipped',
+            public_metadata = '{"blocked_reason":"highlevel_succeeded"}'::jsonb,
+            lease_owner_hash = NULL,
+            lease_expires_at = NULL,
+            updated_at = $5
+      WHERE account_key = $1
+        AND product_key = $2
+        AND event_code = $3
+        AND registration_key = $4
+        AND provider = 'resend_fallback'
+        AND status IN ('pending', 'failed')
+        AND (lease_expires_at IS NULL OR lease_expires_at <= $5)`,
+    [config.accountKey, config.productKey, TISHA_BAV_EVENT_CODE, registrationKey, now],
   );
 }
 
@@ -841,11 +1679,7 @@ function highLevelProtectedPayload(
   registration: RegistrationRow,
   payload: TishaBavRegistrationPayload,
 ) {
-  const tags = [
-    "OT | Event | Tisha B'Av 2026 | Registered",
-    "OT | Source | Tisha B'Av 2026",
-    ...(registration.newsletter_opt_in ? [TISHA_BAV_NEWSLETTER_TAG] : []),
-  ];
+  const tags = ["OT | Event | Tisha B'Av 2026 | Registered", "OT | Source | Tisha B'Av 2026"];
   return {
     location_id: config.highLevelLocationId,
     email_normalized: registration.email_normalized,
@@ -901,20 +1735,35 @@ function normalizeHighLevelPayload(value: unknown) {
   };
 }
 
+function normalizeJsonRecord(value: unknown): Record<string, unknown> {
+  if (typeof value === 'string') {
+    const parsed = JSON.parse(value) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : {};
+  }
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
 function registrationMessage(
   registrationKey: string | null,
   duplicate: boolean,
+  confirmationQueued = false,
 ): TishaBavRegistrationSuccessResponse {
   return {
     success: true,
     duplicate_submission: duplicate,
     event_code: TISHA_BAV_EVENT_CODE,
     registration_key: registrationKey,
-    confirmation_queued: true,
+    confirmation_queued: confirmationQueued,
     ghl_sync_status: 'pending',
     message: {
       heading: 'Thank you — your spot has been reserved.',
-      body: "We'll send your Zoom link and event details by email.",
+      body: confirmationQueued
+        ? "We'll send your Zoom link and event details by email."
+        : 'Your spot is reserved, but event email delivery is not confirmed yet.',
       schedule: 'Thursday, July 23\n3:00 PM Eastern / 10:00 PM Israel',
     },
   };
@@ -979,6 +1828,10 @@ function sha256(value: string) {
 
 function canonicalJson(value: unknown) {
   return JSON.stringify(value, Object.keys(flattenKeys(value)).sort());
+}
+
+function isMemoryPool(pool: DbPool) {
+  return Boolean((pool as DbPool & { __memory?: boolean }).__memory);
 }
 
 function requireRow<T>(row: T | undefined, message: string): T {

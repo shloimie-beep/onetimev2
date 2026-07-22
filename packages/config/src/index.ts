@@ -227,6 +227,32 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
   }
 
+  if (parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' && !parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID) {
+    throw new Error('HIGHLEVEL_TISHA_BAV_WORKFLOW_ID is required for provider event sync.');
+  }
+
+  if (
+    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
+    parsed.HIGHLEVEL_LOCATION_ID !== 'pBSnOK2nkdxp6gf9Rg3o'
+  ) {
+    throw new Error('Provider event sync is restricted to the canonical One Time location.');
+  }
+
+  if (parsed.ONE_TIME_EVENT_EMAIL_FALLBACK === 'resend') {
+    const missing = [
+      !parsed.RESEND_API_KEY && 'RESEND_API_KEY',
+      !parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED &&
+        'ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED',
+      !parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED && 'ONE_TIME_RESEND_TRANSPORT_ENABLED',
+      !parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID && 'DELIVERY_PROVIDER_AUTHORIZATION_ID',
+      parsed.DELIVERY_PROVIDER_PER_RUN_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_RUN_BUDGET',
+      parsed.DELIVERY_PROVIDER_PER_PROVIDER_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
+    ].filter(Boolean);
+    if (missing.length) {
+      throw new Error(`Tisha B'Av Resend fallback config missing: ${missing.join(', ')}`);
+    }
+  }
+
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
     throw new Error('Production web startup cannot run migrations automatically.');
   }

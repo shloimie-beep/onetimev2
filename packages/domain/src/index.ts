@@ -277,11 +277,16 @@ export {
   TishaBavJoinError,
   captureTishaBavRegistration,
   createHighLevelEventClient,
+  reprocessTishaBavRegistrationDelivery,
   requestTishaBavJoin,
   resolveTishaBavRedirect,
   tishaBavEventState,
   type HighLevelEventClient,
 } from './events/tisha-bav.ts';
+export {
+  runTishaBavEventEmailFallbackBatch,
+  type TishaBavFallbackBatchSummary,
+} from './events/tisha-bav-delivery.ts';
 export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
 export { buildOwnerDashboard, ownerAdminVisibleActions } from './dashboard/service.ts';
 export {
