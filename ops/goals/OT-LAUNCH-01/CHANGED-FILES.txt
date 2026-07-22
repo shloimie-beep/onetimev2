@@ -13,6 +13,7 @@ apps/web/src/client/app/experience-preview/ExperiencePreview.tsx
 apps/web/src/client/app/experience-preview/RolePreview.tsx
 apps/web/src/client/app/experience-preview/student-entry.tsx
 apps/web/src/client/features/portals/PortalFeatures.tsx
+apps/web/src/client/public/public-entry.ts
 apps/web/src/server/app.ts
 apps/web/src/server/features/experience-preview/router.ts
 apps/web/vite.app.config.ts
@@ -60,6 +61,7 @@ tests/integration/content/content-factory.test.ts
 tests/integration/experience-preview-ui-contract.test.ts
 tests/integration/experience-preview.test.ts
 tests/integration/runtime-version-proof.test.ts
+tests/integration/security/auth-browser-boundaries.test.ts
 tests/support/test-server.ts
 tests/unit/content/content-factory-migration.test.ts
 tests/unit/content/content-factory.test.ts

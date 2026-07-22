@@ -124,9 +124,7 @@ describe('W12-100-01 auth browser security boundaries', () => {
       `${harness.baseUrl}/login?return_to=${encodeURIComponent('/app/parent?view=learners#top')}`,
     );
     const safeHtml = await safePage.text();
-    expect(safeHtml).toContain(
-      'name="return_to" value="/app/parent?view=learners#top"',
-    );
+    expect(safeHtml).toContain('name="return_to" value="/app/parent?view=learners#top"');
     expect(safeHtml).toContain('data-email-link-confirm hidden');
     expect(safeHtml).toContain('Confirm email sign-in');
 
