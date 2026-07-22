@@ -98,6 +98,7 @@ Normal browser payloads expose no raw Drive path, Vimeo URL, provider ID, upload
 - `tests/unit/content/learning-delivery.test.ts`
 - `tests/integration/content/content-factory.test.ts`
 - `tests/integration/content/learning-delivery-demo-route.test.ts`
+- `tests/integration/runtime-version-proof.test.ts`
 - `tests/e2e/content-factory.spec.ts`
 - `npm run typecheck`
 - `npm run build`
