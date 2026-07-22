@@ -344,7 +344,7 @@ function tishaBavLandingPage() {
       </div>
     </div>
     <div class="tisha-details" aria-label="Event details">
-      <p class="event-intro">Tonight's Tisha B'Av live class</p>
+      <p class="event-intro">Live class with Rabbi Eli Scheller</p>
       <p class="event-date">Thursday, July 23, 2026</p>
       <p class="event-time"><strong>3 p.m. Eastern Time</strong></p>
       <p class="event-charge">No charge</p>

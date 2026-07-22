@@ -78,6 +78,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     const cta = page.getByRole('button', { name: 'Reserve My Spot' });
 
     await waitForHeroImage(page);
+    await assertAcceptedPublicCopy(page, label);
     await assertFullyVisible(page, headline, `${label} headline`);
     await assertFullyVisible(page, pasuk, `${label} pasuk line`);
     await expect(page.locator('.event-pasuk'), `${label} Hebrew pasuk lang`).toHaveAttribute(
@@ -157,6 +158,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     await page.goto(`/tisha-bav?desktop=${label}`, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     await waitForHeroImage(page);
+    await assertAcceptedPublicCopy(page, label);
 
     await expect(page.getByRole('heading', { name: eventTitle })).toBeVisible();
     await expect(page.getByText(eventPasuk, { exact: true })).toBeVisible();
@@ -274,11 +276,42 @@ async function assertEventOnlyRegistrationForm(page: Page, label: string) {
   await expect(form.locator('[role="switch"], [aria-checked]'), label).toHaveCount(0);
   await expect(form.locator('.button'), label).toHaveCount(1);
   await expect(form.getByText(eventDisclosure, { exact: true }), label).toBeVisible();
+  const disclosureFollowsSubmit = await form.evaluate((node, text) => {
+    const submit = node.querySelector('button[type="submit"]');
+    const disclosureNode = submit?.nextElementSibling;
+    return (
+      disclosureNode?.classList.contains('event-submit-disclosure') === true &&
+      disclosureNode.textContent?.trim() === text
+    );
+  }, eventDisclosure);
+  expect(disclosureFollowsSubmit, `${label} disclosure follows submit button`).toBe(true);
   await expect(page.locator('body'), label).not.toContainText('Send me future One Time emails.');
   await expect(page.locator('body'), label).not.toContainText('We will use this email');
   await expect(page.locator('body'), label).not.toContainText(
     /newsletter|marketing|future One Time/i,
   );
+}
+
+async function assertAcceptedPublicCopy(page: Page, label: string) {
+  await expect(page.locator('.event-intro'), `${label} event intro`).toHaveText(
+    'Live class with Rabbi Eli Scheller',
+  );
+  await expect(page.locator('body'), `${label} accepted rabbi spelling`).toContainText(
+    'Rabbi Eli Scheller',
+  );
+  await expect(page.locator('body'), `${label} rejected rabbi spelling`).not.toContainText(
+    'Rabbi Elly',
+  );
+  const html = await page.content();
+  expect(html, `${label} generated HTML disclosure`).toContain(eventDisclosure);
+  expect(html, `${label} generated HTML rejected rabbi spelling`).not.toContain('Rabbi Elly');
+  const description = await page
+    .locator('meta[name="description"]')
+    .getAttribute('content', { timeout: 5_000 });
+  expect(description, `${label} meta description accepted spelling`).toContain(
+    'Rabbi Eli Scheller',
+  );
+  expect(description, `${label} meta description rejected spelling`).not.toContain('Rabbi Elly');
 }
 
 async function scrollMetric(page: Page, viewport: string): Promise<ScrollMetric> {
@@ -596,10 +629,14 @@ async function assertSuccessShareState(page: Page, label: string) {
   const email = dialog.getByRole('link', { name: 'Email a Friend' });
   await expect(whatsApp, label).toBeVisible();
   await expect(email, label).toBeVisible();
-  expect(decodeURIComponent((await whatsApp.getAttribute('href')) ?? ''), label).toContain(
-    shareUrl,
-  );
-  expect(decodeURIComponent((await email.getAttribute('href')) ?? ''), label).toContain(shareUrl);
+  const whatsAppHref = decodeURIComponent((await whatsApp.getAttribute('href')) ?? '');
+  const emailHref = decodeURIComponent((await email.getAttribute('href')) ?? '');
+  expect(whatsAppHref, label).toContain(shareUrl);
+  expect(whatsAppHref, `${label} WhatsApp rabbi spelling`).toContain('Rabbi Eli Scheller');
+  expect(whatsAppHref, `${label} WhatsApp rejected spelling`).not.toContain('Rabbi Elly');
+  expect(emailHref, label).toContain(shareUrl);
+  expect(emailHref, `${label} email share rabbi spelling`).toContain('Rabbi Eli Scheller');
+  expect(emailHref, `${label} email share rejected spelling`).not.toContain('Rabbi Elly');
   await expect(dialog.getByRole('button', { name: 'Copy Link' }), label).toBeVisible();
   const nativeShareSupported = await page.evaluate(() => typeof navigator.share === 'function');
   const nativeShare = dialog.getByRole('button', { name: 'Share' });
