@@ -25,6 +25,7 @@ import type {
 } from '../../../contracts/src/telegram/types.ts';
 import { stableKey } from '../lead/normalize.ts';
 import { PortalServiceError } from '../portals/services.ts';
+import { assertZoomCustomerKey, zoomCustomerKey } from './zoom-identifiers.ts';
 
 export const LIVE_CLASS_POLICY_VERSION = 'ot-live-class-control-v1';
 export const LIVE_CLASS_STAGE_SURFACE_LABEL = 'One Time Zoom Stage Host';
@@ -289,7 +290,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       }
       return deps.zoomHostLaunchPort.resolveTestParticipantLaunch({
         occurrenceKey: session.occurrence_key,
-        customerKey: participant.customer_key,
+        customerKey: assertZoomCustomerKey(participant.customer_key),
         userName: participant.approved_display_name,
         now,
       });
@@ -378,7 +379,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         session.occurrence_key,
         payload.idempotency_key,
       ]);
-      const customerKey = stableKey('zoom_customer_key', [
+      const customerKey = zoomCustomerKey([
         actor.account_key,
         actor.product_key,
         session.occurrence_key,
