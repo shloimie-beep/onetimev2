@@ -495,6 +495,8 @@ if (loginForm) {
   const trustDevice = loginForm.querySelector<HTMLInputElement>('input[name="trust_device"]');
   const resendButton = loginForm.querySelector<HTMLButtonElement>('[data-resend-challenge]');
   const resendStatus = loginForm.querySelector<HTMLElement>('[data-resend-status]');
+  const emailLinkConfirm = loginForm.querySelector<HTMLElement>('[data-email-link-confirm]');
+  const emailLinkConfirmButton = emailLinkConfirm?.querySelector<HTMLButtonElement>('button');
   let challengeToken = '';
   let resendTimer: number | undefined;
   const setError = (name: string, message: string) => {
@@ -538,16 +540,21 @@ if (loginForm) {
 
   const emailLinkToken = consumeFragmentValue(['email_challenge_token', 'link_token']);
   if (emailLinkToken) {
-    if (status) status.textContent = 'Confirming email sign-in...';
-    void postJson('/api/v1/auth/email-challenge/link', {
-      link_token: emailLinkToken,
-      return_to: returnTo(),
-      trust_device: false,
-    }).then((response) => {
+    if (emailLinkConfirm) emailLinkConfirm.hidden = false;
+    if (status) status.textContent = 'Confirm this email sign-in to continue.';
+    emailLinkConfirmButton?.addEventListener('click', async () => {
+      emailLinkConfirmButton.disabled = true;
+      if (status) status.textContent = 'Confirming email sign-in...';
+      const response = await postJson('/api/v1/auth/email-challenge/link', {
+        link_token: emailLinkToken,
+        return_to: returnTo(),
+        trust_device: false,
+      });
       if (response.ok && response.json.success) {
         window.location.assign(String(response.json.return_to ?? '/app/crm'));
         return;
       }
+      emailLinkConfirmButton.disabled = false;
       if (status)
         status.textContent = String(
           response.json.message ?? 'Email confirmation was not accepted.',
