@@ -85,9 +85,9 @@ const tracks = arrayAt<Record<string, unknown>>(board, 'tracks');
 const trackIds = tracks.map((track) => String(track.id));
 record('unique tracks', new Set(trackIds).size === trackIds.length, `${trackIds.length} tracks`);
 const criticalParsedSubstrings = [
-  'PR #97 has semantically integrated accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad',
+  'PR #97 exact head 312097c0d8707b48b68cf282169b04d62b71ba6d semantically integrates accepted PR #105 successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885',
   'PR #104 prefix 2214',
-  'PR #105 corrected code head 50989b336838d2029a0e0abc075bfd209b9c65ef',
+  'PR #105 exact successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885',
   'PR #106 exact production head acddcc8cd012c5cdc5bfc08cbc80550bef8719ba',
   'Terminal PR #107 head 1e247c70004dffb6247fc1ee407f1153d753bd7d',
   'PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad',
@@ -167,8 +167,8 @@ record(
     const owner = objectAt(track, 'owner');
     return (
       track.id === 'zoom_meeting_sdk' &&
-      ['active', 'ready_for_convergence'].includes(String(track.status)) &&
-      owner.head === '50989b336838d2029a0e0abc075bfd209b9c65ef' &&
+      track.status === 'provider_off' &&
+      owner.head === 'e81de91a7372114c6b0a67a7cbb0abc9cb548885' &&
       track.zoom_ui_preview_state === 'READY' &&
       track.zoom_real_control_state === 'PROVIDER_OFF'
     );
@@ -178,7 +178,7 @@ record(
       return (
         track.id === 'zoom_s2s_host_control' &&
         track.status === 'provider_off' &&
-        owner.head === '50989b336838d2029a0e0abc075bfd209b9c65ef' &&
+        owner.head === 'e81de91a7372114c6b0a67a7cbb0abc9cb548885' &&
         track.zoom_ui_preview_state === 'READY' &&
         track.zoom_real_control_state === 'PROVIDER_OFF'
       );
