@@ -646,19 +646,43 @@ async function assertScheduleComposition(page: Page, label: string) {
   const schedule = page.locator('.event-schedule');
   const date = schedule.getByText('Thursday, July 23, 2026', { exact: true });
   const time = schedule.getByText('3:00 p.m. Eastern Time', { exact: true });
+  const noCharge = page.getByText('No charge', { exact: true });
+  const cta = page.getByRole('button', { name: 'Reserve My Spot' });
   await expect(schedule, label).toBeVisible();
   await expect(date, label).toBeVisible();
   await expect(time, label).toBeVisible();
   const dateBox = await date.boundingBox();
   const timeBox = await time.boundingBox();
+  const scheduleBox = await schedule.boundingBox();
+  const noChargeBox = await noCharge.boundingBox();
+  const ctaBox = await cta.boundingBox();
   expect(dateBox, `${label} date box`).not.toBeNull();
   expect(timeBox, `${label} time box`).not.toBeNull();
-  if (!dateBox || !timeBox) return;
+  expect(scheduleBox, `${label} schedule box`).not.toBeNull();
+  expect(noChargeBox, `${label} no-charge box`).not.toBeNull();
+  expect(ctaBox, `${label} CTA box`).not.toBeNull();
+  if (!dateBox || !timeBox || !scheduleBox || !noChargeBox || !ctaBox) return;
   expect(dateBox.x + dateBox.width, `${label} date before time`).toBeLessThanOrEqual(timeBox.x + 2);
   expect(
     Math.abs(dateBox.y + dateBox.height / 2 - (timeBox.y + timeBox.height / 2)),
     `${label} date/time vertical alignment`,
   ).toBeLessThanOrEqual(10);
+  expect(
+    boxesIntersect(scheduleBox, noChargeBox),
+    `${label} schedule does not overlap no-charge label`,
+  ).toBe(false);
+  expect(boxesIntersect(noChargeBox, ctaBox), `${label} no-charge label does not overlap CTA`).toBe(
+    false,
+  );
+}
+
+function boxesIntersect(first: Box, second: Box) {
+  return !(
+    first.x + first.width <= second.x ||
+    second.x + second.width <= first.x ||
+    first.y + first.height <= second.y ||
+    second.y + second.height <= first.y
+  );
 }
 
 async function assertDisplayTitle(page: Page, label: string) {

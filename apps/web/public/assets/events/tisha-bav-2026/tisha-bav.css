@@ -227,26 +227,37 @@
     font-size: 0.8rem;
   }
 
-  .tisha-title-event {
-    font-size: clamp(1.8rem, 11svh, 2.45rem);
+  .tisha-bav-page .tisha-artwork .tisha-copy {
+    height: 25%;
+    align-content: center;
+    overflow: hidden;
+    padding: 3px 8px 8px;
   }
 
-  .tisha-title-rabbi {
+  .tisha-bav-page .tisha-artwork .tisha-title-event {
+    font-size: clamp(1.55rem, 8svh, 2rem);
+    letter-spacing: -0.025em;
+    line-height: 0.82;
+    white-space: nowrap;
+  }
+
+  .tisha-bav-page .tisha-artwork .tisha-title-rabbi {
     margin-top: 1px;
-    font-size: 0.9rem;
+    font-size: 0.78rem;
   }
 
-  .tisha-artwork,
-  .tisha-details {
+  .tisha-artwork {
     width: min(100%, calc((100svh - 142px) * 1.778));
+  }
+
+  .tisha-details {
+    width: min(100%, 720px);
+    grid-template-columns: minmax(310px, 2fr) minmax(100px, 0.7fr) minmax(170px, 1.1fr);
+    gap: 5px;
   }
 
   .tisha-artwork img {
     max-height: calc(100svh - 142px);
-  }
-
-  .tisha-details {
-    gap: 5px;
   }
 
   .tisha-bav-page .event-schedule,
