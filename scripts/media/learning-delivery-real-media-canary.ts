@@ -14,11 +14,7 @@ import {
   projectLearningDeliveryTranscriptForTrim,
   suggestLearningDeliveryAutomaticTrim,
 } from '../../packages/domain/src/content/learning-delivery.ts';
-import type {
-  LearningDeliveryProbeSummary,
-  LearningDeliveryTranscriptSegment,
-  LearningDeliveryTrimDecision,
-} from '../../packages/contracts/src/content/index.ts';
+import type { LearningDeliveryProbeSummary } from '../../packages/contracts/src/content/index.ts';
 
 const RUN_DIR = 'ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR';
 const SAFE_JSON_PATH = path.join(RUN_DIR, 'REAL-MEDIA-CANARY.json');
@@ -767,7 +763,36 @@ function assertNoRawLeak(value: string) {
   }
 }
 
-function safeMarkdown(report: Record<string, any>) {
+function safeMarkdown(report: {
+  generated_at: string;
+  source: {
+    original_duration_ms: number;
+    prepared_duration_ms: number;
+    source_sha256: string;
+    prepared_sha256: string;
+  };
+  trim: {
+    auto_cut_performed: boolean;
+    start_ms: number;
+    end_ms: number;
+    removed_start_ms: number;
+    removed_end_ms: number;
+    confidence: number;
+  };
+  transcription: {
+    segment_count: number;
+    transcript_sha256: string;
+    webvtt_sha256: string;
+  };
+  vimeo: {
+    status: string;
+    text_track_active: boolean;
+    provider_video_ref_digest: string | null;
+    provider_text_track_ref_digest: string | null;
+  };
+  preview: { route: string };
+  contact_notifications: number;
+}) {
   return [
     '# Vimeo Automatic Trim and Real Transcription Canary',
     '',
