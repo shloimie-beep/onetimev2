@@ -4,9 +4,9 @@ import path from 'node:path';
 import { loadConfig, type AppConfig } from '../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
 
-export const CONTENT_FACTORY_MIGRATION_ID = '2221_video_to_classroom_e2e';
+export const CONTENT_FACTORY_MIGRATION_ID = '2222_content_factory_provider_constraint';
 export const CONTENT_FACTORY_MIGRATION_CHECKSUM =
-  '25559ae6b514864c02e2e9ef2139a4906733cdeb9fe2208ca2db1b0a42f40536';
+  '79a3f3f60a2cd9b4c08bcd08b4d694f1d652f90ab288da79d578d87ce1cd32c0';
 
 export type NarrowContentFactoryRuntime = {
   appConfig: AppConfig;
