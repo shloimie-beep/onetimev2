@@ -1,0 +1,90 @@
+.tisha-bav-page .event-time-overlay {
+  position: absolute;
+  top: clamp(10px, 1.4vw, 18px);
+  right: clamp(10px, 1.4vw, 18px);
+  z-index: 1;
+  display: block;
+  padding: 9px 14px;
+  border: 1px solid rgba(255, 210, 31, 0.42);
+  border-radius: 999px;
+  color: var(--color-yellow-soft);
+  background: rgba(5, 5, 5, 0.78);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.tisha-bav-page .event-time-overlay strong {
+  font-size: clamp(1.1rem, 1.8vw, 1.5rem);
+}
+
+@media (max-width: 820px), (orientation: portrait) and (max-width: 900px) {
+  .tisha-bav-page .event-time-overlay {
+    top: 9px;
+    right: 9px;
+    padding: 7px 10px;
+  }
+
+  .tisha-bav-page .event-time-overlay strong {
+    font-size: clamp(0.92rem, 4vw, 1.12rem);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .tisha-page {
+    width: calc(100vw - 20px);
+    height: 100svh;
+    min-height: 0;
+    max-height: 100svh;
+    overflow: hidden;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: 2px;
+    padding: 2px 0;
+  }
+
+  .event-pasuk {
+    font-size: 0.8rem;
+  }
+
+  .tisha-title-event {
+    font-size: clamp(1.8rem, 11svh, 2.45rem);
+  }
+
+  .tisha-title-rabbi {
+    margin-top: 1px;
+    font-size: 0.9rem;
+  }
+
+  .tisha-artwork,
+  .tisha-details {
+    width: min(100%, calc((100svh - 142px) * 1.778));
+  }
+
+  .tisha-artwork img {
+    max-height: calc(100svh - 142px);
+  }
+
+  .tisha-details {
+    gap: 5px;
+  }
+
+  .tisha-bav-page .event-date,
+  .event-charge,
+  .tisha-primary-cta {
+    grid-column: auto;
+  }
+
+  .tisha-bav-page .event-date {
+    font-size: 0.72rem;
+  }
+
+  .event-charge {
+    font-size: 1rem;
+  }
+
+  .tisha-primary-cta {
+    width: 100%;
+    min-height: 34px;
+    padding: 0 5px;
+    font-size: 0.75rem;
+  }
+}

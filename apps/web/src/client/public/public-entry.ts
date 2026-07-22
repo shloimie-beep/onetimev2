@@ -387,10 +387,17 @@ if (eventRegistrationForm) {
         first_name: String(data.get('first_name') ?? ''),
         source: 'tisha_bav_2026_landing',
         idempotency_key: idempotencyKey,
-        homepage: String(data.get('homepage') ?? ''),
       });
-      if (!response.ok || !response.json.success) {
+      if (!response.ok || response.json.success !== true) {
         applyApiErrors(eventRegistrationForm, response.json);
+        return;
+      }
+      const registrationKey = response.json.registration_key;
+      if (typeof registrationKey !== 'string' || !registrationKey.trim()) {
+        setFormStatus(
+          eventRegistrationForm,
+          'We could not confirm that registration. Please try again.',
+        );
         return;
       }
       const responseMessage = response.json.message;

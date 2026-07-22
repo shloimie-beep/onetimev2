@@ -86,6 +86,7 @@ export function renderPageShell({
   twitterImage,
   icon,
   appleTouchIcon,
+  extraStylesheet,
   app = false,
   appEntry = 'crm',
 }: {
@@ -104,6 +105,7 @@ export function renderPageShell({
   twitterImage?: string;
   icon?: string;
   appleTouchIcon?: string;
+  extraStylesheet?: string;
   app?: boolean;
   appEntry?: 'crm' | 'portal';
 }) {
@@ -141,6 +143,7 @@ export function renderPageShell({
   ${iconMetadata}
   <link rel="preload" href="/assets/fonts/dm-serif-display-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="${stylesheet}">
+  ${extraStylesheet ? `<link rel="stylesheet" href="${escapeHtml(extraStylesheet)}">` : ''}
 </head>
 <body>
 ${body}
