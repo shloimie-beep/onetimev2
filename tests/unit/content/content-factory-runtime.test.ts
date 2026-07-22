@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { loadNarrowContentFactoryRuntime } from '../../../apps/worker/src/content-factory/runtime.ts';
+import { contentFactoryWorkerSafeErrorCode } from '../../../packages/domain/src/content/content-factory-worker.ts';
 
 const valid = {
   DATABASE_URL: 'postgres://isolated.invalid/onetime',
@@ -49,5 +50,14 @@ describe('narrow content-factory worker runtime', () => {
     ['CONTENT_FACTORY_STORAGE_ROOT', '', 'content_factory_storage_root_required'],
   ])('fails closed for %s', (key, value, code) => {
     expect(() => loadNarrowContentFactoryRuntime({ ...valid, [key]: value })).toThrow(code);
+  });
+
+  it('records only a safe SQLSTATE when PostgreSQL rejects a worker stage', () => {
+    expect(contentFactoryWorkerSafeErrorCode({ code: '23514', detail: 'private row detail' })).toBe(
+      'content_factory_database_23514',
+    );
+    expect(contentFactoryWorkerSafeErrorCode(new Error('private database message'))).toBe(
+      'content_factory_processing_failed',
+    );
   });
 });

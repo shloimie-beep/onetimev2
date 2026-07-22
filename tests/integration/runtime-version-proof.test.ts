@@ -53,7 +53,7 @@ describe('runtime version proof', () => {
 
     expect(body).toEqual({
       version: 'rollback-proof-candidate',
-      commit_sha: railwayGitCommit,
+      commit_sha: runtimeCommit,
       target_app: 'one-time',
       deployment: {
         provider: 'railway',
