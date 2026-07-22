@@ -1,0 +1,30 @@
+contract_id: 'one_time_rabbi_torah_console'
+owner: 'Rabbi Eli Scheller authors; Shloimie operates and retains visibility'
+customer_transcript_system: 'HighLevel Conversations'
+telegram_is_separate_customer_transcript: false
+allowed:
+  - 'list assigned Torah questions'
+  - 'open question'
+  - 'accept Rabbi text or voice response'
+  - 'produce a preview'
+  - 'save draft'
+  - 'send confirmed reply through the same GHL conversation'
+  - 'return question to Shloimie'
+  - 'close question'
+  - 'draft Torah newsletter'
+  - 'draft warm enrollment email'
+  - 'show campaign audience and suppression results'
+  - 'trigger an approved campaign only after explicit confirmation'
+forbidden:
+  - 'general support queue'
+  - 'technical issues'
+  - 'billing'
+  - 'parent administration'
+  - 'independent AI Torah answers'
+  - 'independent bulk audience selection'
+  - 'separate Telegram transcript'
+  - 'vague bulk-send command'
+safety:
+  messages_sent_authorized_by_registry: false
+  campaign_trigger_requires_explicit_confirmation: true
+  same_ghl_conversation_required: true

@@ -4,14 +4,20 @@ import {
   LEARNING_DELIVERY_PRODUCT_KEY,
   learningDeliveryBusinessEventPayloadSchema,
   learningDeliveryDriveFileMetadataSchema,
+  learningDeliveryPreparedDemoProjectionSchema,
   learningDeliveryProbeSummarySchema,
+  learningDeliverySilenceRangeSchema,
+  learningDeliveryTranscriptArtifactSchema,
   learningDeliveryTranscriptSegmentSchema,
   learningDeliveryTrimDecisionSchema,
   type LearningDeliveryBusinessEventPayload,
   type LearningDeliveryBusinessEventType,
   type LearningDeliveryDriveFileMetadata,
   type LearningDeliveryMediaState,
+  type LearningDeliveryPreparedDemoProjection,
   type LearningDeliveryProbeSummary,
+  type LearningDeliverySilenceRange,
+  type LearningDeliveryTranscriptArtifact,
   type LearningDeliveryTranscriptSegment,
   type LearningDeliveryTrimDecision,
 } from '../../../contracts/src/content/index.ts';
@@ -29,6 +35,27 @@ const VIDEO_MIME_TYPES = new Set([
   'video/x-msvideo',
   'video/x-matroska',
 ]);
+
+export const LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT = [
+  'Vocabulary context for transcription only:',
+  'Mishnah; masechta names; Hebrew and Aramaic terms; Rabbi Eli Scheller; One Time terminology.',
+  'Transcribe the spoken content faithfully. Do not add interpretation or commentary.',
+].join(' ');
+
+const DEFAULT_AUTOMATIC_TRIM_CONFIG = {
+  openingWindowMs: 2 * 60_000,
+  closingWindowMs: 2 * 60_000,
+  startPaddingMs: 8_000,
+  endPaddingMs: 12_000,
+  minimumSpeechMs: 900,
+  minimumEdgeSilenceMs: 2_000,
+  silenceMergeGapMs: 750,
+  edgeGuardMs: 1_000,
+  maxRemovedPercent: 0.25,
+  minimumPreparedDurationMs: 20_000,
+  minimumTrimMs: 1_000,
+  confidenceThreshold: 0.72,
+} as const;
 
 export const LEARNING_DELIVERY_MEDIA_STATES: LearningDeliveryMediaState[] = [
   'discovered',
@@ -191,6 +218,207 @@ export function parseLearningDeliveryFfprobeJson(raw: string): LearningDeliveryP
   return summary;
 }
 
+export function parseLearningDeliverySilencedetectLog(
+  raw: string,
+  input: { durationMs?: number } = {},
+): LearningDeliverySilenceRange[] {
+  const ranges: LearningDeliverySilenceRange[] = [];
+  let pendingStartMs: number | null = null;
+  for (const line of raw.split(/\r?\n/)) {
+    const start = line.match(/silence_start:\s*([0-9.]+)/);
+    if (start?.[1]) {
+      pendingStartMs = secondsToMs(Number(start[1]));
+      continue;
+    }
+    const end = line.match(/silence_end:\s*([0-9.]+)/);
+    if (end?.[1] && pendingStartMs !== null) {
+      const endMs = secondsToMs(Number(end[1]));
+      if (endMs > pendingStartMs) {
+        ranges.push(
+          learningDeliverySilenceRangeSchema.parse({
+            start_ms: pendingStartMs,
+            end_ms: endMs,
+          }),
+        );
+      }
+      pendingStartMs = null;
+    }
+  }
+  if (pendingStartMs !== null && input.durationMs && input.durationMs > pendingStartMs) {
+    ranges.push(
+      learningDeliverySilenceRangeSchema.parse({
+        start_ms: pendingStartMs,
+        end_ms: input.durationMs,
+      }),
+    );
+  }
+  return ranges;
+}
+
+export function suggestLearningDeliveryAutomaticTrim(input: {
+  durationMs: number;
+  hasAudio: boolean;
+  silenceRanges: Array<{ startMs: number; endMs: number }>;
+  transcriptSegments: LearningDeliveryTranscriptSegment[];
+  config?: Partial<typeof DEFAULT_AUTOMATIC_TRIM_CONFIG>;
+}): LearningDeliveryTrimDecision {
+  const config = { ...DEFAULT_AUTOMATIC_TRIM_CONFIG, ...(input.config ?? {}) };
+  const durationMs = Math.max(0, Math.round(input.durationMs));
+  const reasonCodes: string[] = [];
+  if (!Number.isSafeInteger(durationMs) || durationMs < config.minimumPreparedDurationMs) {
+    return noAutomaticTrim(
+      durationMs,
+      'duration_implausible',
+      0,
+      ['duration_below_minimum'],
+      config,
+    );
+  }
+  if (!input.hasAudio) {
+    return noAutomaticTrim(durationMs, 'audio_missing', 0, ['audio_missing'], config);
+  }
+
+  const speechSegments = input.transcriptSegments
+    .filter((segment) => {
+      const text = segment.text.replace(/\s+/g, ' ').trim();
+      return text.length >= 2 && segment.end_ms - segment.start_ms >= config.minimumSpeechMs;
+    })
+    .sort((left, right) => left.start_ms - right.start_ms);
+  if (speechSegments.length < 1) {
+    return noAutomaticTrim(
+      durationMs,
+      'transcript_segments_missing',
+      0.2,
+      ['audio_present', 'transcript_segments_missing'],
+      config,
+    );
+  }
+
+  const silenceRanges = normalizeSilenceRanges(
+    input.silenceRanges.map((range) => ({
+      start_ms: range.startMs,
+      end_ms: range.endMs,
+    })),
+    durationMs,
+    config.silenceMergeGapMs,
+  );
+  const leadingSilence = silenceRanges.find(
+    (range) =>
+      range.start_ms <= config.edgeGuardMs &&
+      range.end_ms <= config.openingWindowMs &&
+      range.end_ms - range.start_ms >= config.minimumEdgeSilenceMs,
+  );
+  const trailingSilence = [...silenceRanges]
+    .reverse()
+    .find(
+      (range) =>
+        durationMs - range.end_ms <= config.edgeGuardMs &&
+        range.start_ms >= durationMs - config.closingWindowMs &&
+        range.end_ms - range.start_ms >= config.minimumEdgeSilenceMs,
+    );
+  const firstOpeningSpeech = speechSegments.find(
+    (segment) => segment.start_ms <= config.openingWindowMs,
+  );
+  const lastClosingSpeech = [...speechSegments]
+    .reverse()
+    .find((segment) => segment.end_ms >= durationMs - config.closingWindowMs);
+
+  if (!firstOpeningSpeech && !lastClosingSpeech) {
+    return noAutomaticTrim(
+      durationMs,
+      'edge_speech_not_found',
+      0.35,
+      ['audio_present', 'transcript_present', 'edge_speech_not_found'],
+      config,
+    );
+  }
+
+  let confidence = 0.3;
+  reasonCodes.push('audio_present', 'transcript_present', 'middle_silence_ignored');
+  if (firstOpeningSpeech) confidence += 0.14;
+  if (lastClosingSpeech) confidence += 0.14;
+  if (leadingSilence) {
+    confidence += 0.16;
+    reasonCodes.push('leading_silence_detected');
+  }
+  if (trailingSilence) {
+    confidence += 0.16;
+    reasonCodes.push('trailing_silence_detected');
+  }
+
+  const firstSpeechStartMs =
+    firstOpeningSpeech && leadingSilence
+      ? Math.max(firstOpeningSpeech.start_ms, leadingSilence.end_ms)
+      : (firstOpeningSpeech?.start_ms ?? leadingSilence?.end_ms ?? 0);
+  const lastSpeechEndMs =
+    lastClosingSpeech && trailingSilence
+      ? Math.min(lastClosingSpeech.end_ms, trailingSilence.start_ms)
+      : (lastClosingSpeech?.end_ms ?? trailingSilence?.start_ms ?? durationMs);
+  const startMs = Math.min(durationMs, Math.max(0, firstSpeechStartMs - config.startPaddingMs));
+  const endMs = Math.max(startMs, Math.min(durationMs, lastSpeechEndMs + config.endPaddingMs));
+  const removedStartMs = startMs >= config.minimumTrimMs ? startMs : 0;
+  const removedEndMs = durationMs - endMs >= config.minimumTrimMs ? durationMs - endMs : 0;
+  const effectiveStartMs = removedStartMs > 0 ? startMs : 0;
+  const effectiveEndMs = removedEndMs > 0 ? endMs : durationMs;
+  const removedMs = effectiveStartMs + (durationMs - effectiveEndMs);
+  const removedPercent = durationMs > 0 ? removedMs / durationMs : 0;
+  const preparedDurationMs = effectiveEndMs - effectiveStartMs;
+
+  if (removedMs < config.minimumTrimMs) {
+    return noAutomaticTrim(durationMs, 'no_edge_trim_needed', confidence, reasonCodes, config);
+  }
+  if (removedPercent > config.maxRemovedPercent) {
+    return noAutomaticTrim(
+      durationMs,
+      'removed_percentage_exceeds_max',
+      Math.min(confidence, 0.65),
+      [...reasonCodes, 'removed_percentage_exceeds_max'],
+      config,
+      {
+        startMs: effectiveStartMs,
+        endMs: effectiveEndMs,
+        removedStartMs,
+        removedEndMs,
+        removedPercent,
+      },
+    );
+  }
+  if (preparedDurationMs < config.minimumPreparedDurationMs || effectiveEndMs <= effectiveStartMs) {
+    return noAutomaticTrim(
+      durationMs,
+      'duration_implausible',
+      Math.min(confidence, 0.65),
+      [...reasonCodes, 'duration_implausible'],
+      config,
+    );
+  }
+  if (confidence < config.confidenceThreshold) {
+    return noAutomaticTrim(
+      durationMs,
+      'low_confidence',
+      confidence,
+      [...reasonCodes, 'low_confidence'],
+      config,
+    );
+  }
+
+  return learningDeliveryTrimDecisionSchema.parse({
+    start_ms: effectiveStartMs,
+    end_ms: effectiveEndMs,
+    reason_code: 'automatic_edge_trim',
+    requires_operator_approval: false,
+    auto_cut_performed: true,
+    confidence: roundConfidence(confidence),
+    confidence_reason_codes: reasonCodes,
+    safe_exception_code: null,
+    removed_start_ms: removedStartMs,
+    removed_end_ms: removedEndMs,
+    removed_percent: roundPercent(removedPercent),
+    opening_window_ms: config.openingWindowMs,
+    closing_window_ms: config.closingWindowMs,
+  });
+}
+
 export function suggestLearningDeliveryTrim(input: {
   durationMs: number;
   silenceRanges: Array<{ startMs: number; endMs: number }>;
@@ -236,15 +464,22 @@ export function buildLearningDeliveryFfmpegRenderPlan(input: {
       'Input and output paths are required.',
     );
   }
-  if (input.trim && !input.trim.approvedByActorId) {
+  if (input.trim?.requires_operator_approval && !input.trim.approvedByActorId) {
     throw new LearningDeliveryError(
       'LEARNING_DELIVERY_TRIM_APPROVAL_REQUIRED',
       'Trim plans must be approved by an operator before render.',
     );
   }
   const args = ['-hide_banner', '-y'];
-  if (input.trim) {
-    args.push('-ss', seconds(input.trim.start_ms), '-to', seconds(input.trim.end_ms));
+  const trimDurationMs = input.trim ? input.trim.end_ms - input.trim.start_ms : 0;
+  if (input.trim && input.trim.start_ms > 0) {
+    args.push('-ss', seconds(input.trim.start_ms));
+  }
+  if (input.trim && trimDurationMs <= 0) {
+    throw new LearningDeliveryError(
+      'LEARNING_DELIVERY_INVALID_TRIM_RANGE',
+      'Trim end must be after trim start.',
+    );
   }
   args.push(
     '-i',
@@ -257,8 +492,11 @@ export function buildLearningDeliveryFfmpegRenderPlan(input: {
     'aac',
     '-movflags',
     '+faststart',
-    input.outputPath,
   );
+  if (input.trim && (input.trim.start_ms > 0 || input.trim.auto_cut_performed)) {
+    args.push('-t', seconds(trimDurationMs));
+  }
+  args.push(input.outputPath);
   return { executable: 'ffmpeg', args };
 }
 
@@ -285,6 +523,113 @@ export function buildLearningDeliveryWebVtt(segments: LearningDeliveryTranscript
   return ['WEBVTT', ...cues].join('\n\n') + '\n';
 }
 
+export function projectLearningDeliveryTranscriptForTrim(input: {
+  segments: LearningDeliveryTranscriptSegment[];
+  trim: Pick<LearningDeliveryTrimDecision, 'start_ms' | 'end_ms'>;
+}): LearningDeliveryTranscriptSegment[] {
+  const trimStartMs = input.trim.start_ms;
+  const trimEndMs = input.trim.end_ms;
+  return normalizeLearningDeliveryTranscriptSegments(
+    input.segments
+      .filter((segment) => segment.end_ms > trimStartMs && segment.start_ms < trimEndMs)
+      .map((segment) => ({
+        segmentId: segment.segment_id,
+        startMs: Math.max(0, segment.start_ms - trimStartMs),
+        endMs: Math.max(0, Math.min(segment.end_ms, trimEndMs) - trimStartMs),
+        text: segment.text,
+      }))
+      .filter((segment) => segment.endMs > segment.startMs && segment.text.trim()),
+  );
+}
+
+export function buildLearningDeliveryTranscriptArtifact(input: {
+  sourceSha256: string;
+  providerModel: string;
+  providerModelVersion?: string | null;
+  language?: string | null;
+  correctedTranscriptVersion?: string | null;
+  durationMs: number;
+  segments: LearningDeliveryTranscriptSegment[];
+  vocabularyPrompt?: string | null;
+}): LearningDeliveryTranscriptArtifact & { webvtt: string } {
+  const segments = normalizeLearningDeliveryTranscriptSegments(
+    input.segments.map((segment) => ({
+      segmentId: segment.segment_id,
+      startMs: segment.start_ms,
+      endMs: segment.end_ms,
+      text: segment.text,
+    })),
+  );
+  const canonicalSegments = JSON.stringify(
+    segments.map((segment) => ({
+      segment_id: segment.segment_id,
+      start_ms: segment.start_ms,
+      end_ms: segment.end_ms,
+      text: segment.text,
+    })),
+  );
+  const webvtt = buildLearningDeliveryWebVtt(segments);
+  const artifact = learningDeliveryTranscriptArtifactSchema.parse({
+    provider: 'openai',
+    provider_model: input.providerModel,
+    provider_model_version: input.providerModelVersion ?? input.providerModel,
+    source_sha256: input.sourceSha256,
+    transcript_sha256: learningDeliverySha256Hex(canonicalSegments),
+    webvtt_sha256: learningDeliverySha256Hex(webvtt),
+    language: input.language ?? 'und',
+    corrected_transcript_version: input.correctedTranscriptVersion ?? 'v1-reviewed-webvtt',
+    vocabulary_prompt_sha256: input.vocabularyPrompt
+      ? learningDeliverySha256Hex(input.vocabularyPrompt)
+      : null,
+    segment_count: segments.length,
+    duration_ms: input.durationMs,
+    segments,
+    raw_transcript_present: false,
+    approved_torah_interpretation: false,
+  });
+  return { ...artifact, webvtt };
+}
+
+export function buildLearningDeliveryPreparedDemoProjection(input: {
+  demoLessonKey: string;
+  originalDurationMs: number;
+  preparedDurationMs: number;
+  trim: LearningDeliveryTrimDecision;
+  captionsStatus: 'ready' | 'blocked' | 'not_requested';
+  vimeoPrivacy: 'private' | 'unlisted' | 'password' | 'review_required';
+  sourceKey: string;
+  providerVideoId?: string | null;
+  providerTextTrackId?: string | null;
+  transcriptSha256?: string | null;
+  webvttSha256?: string | null;
+}): LearningDeliveryPreparedDemoProjection {
+  return learningDeliveryPreparedDemoProjectionSchema.parse({
+    demo_lesson_key: input.demoLessonKey,
+    account_key: LEARNING_DELIVERY_ACCOUNT_KEY,
+    product_key: LEARNING_DELIVERY_PRODUCT_KEY,
+    original_duration_ms: input.originalDurationMs,
+    prepared_duration_ms: input.preparedDurationMs,
+    trim_start_ms: input.trim.start_ms,
+    trim_end_ms: input.trim.end_ms,
+    trim_confidence: input.trim.confidence ?? 0,
+    captions_status: input.captionsStatus,
+    vimeo_privacy: input.vimeoPrivacy,
+    playback_kind: 'server_authorized_vimeo_playback',
+    playback_route: `/api/v1/content/vimeo/${input.sourceKey}/playback`,
+    provider_video_id_present: Boolean(input.providerVideoId),
+    provider_video_ref_digest: input.providerVideoId
+      ? learningDeliverySha256Hex(input.providerVideoId)
+      : null,
+    provider_text_track_ref_digest: input.providerTextTrackId
+      ? learningDeliverySha256Hex(input.providerTextTrackId)
+      : null,
+    transcript_sha256: input.transcriptSha256 ?? null,
+    webvtt_sha256: input.webvttSha256 ?? null,
+    raw_provider_url_present: false,
+    raw_transcript_present: false,
+  });
+}
+
 export function createLearningDeliveryOpenAiTranscriptionAdapter(input: {
   apiKey: string;
   model: string;
@@ -297,6 +642,62 @@ export function createLearningDeliveryOpenAiTranscriptionAdapter(input: {
     );
   }
   const fetchImpl = input.fetchImpl ?? fetch;
+  async function transcribeAudioBufferWithMetadata(request: {
+    audio: Buffer | Uint8Array;
+    fileName: string;
+    mimeType: string;
+    prompt?: string;
+  }) {
+    const form = new FormData();
+    form.set('model', input.model);
+    form.set('response_format', 'verbose_json');
+    form.set('timestamp_granularities[]', 'segment');
+    if (request.prompt) form.set('prompt', request.prompt);
+    const audioBuffer = new ArrayBuffer(request.audio.byteLength);
+    new Uint8Array(audioBuffer).set(request.audio);
+    form.set(
+      'file',
+      new Blob([audioBuffer], { type: request.mimeType }),
+      sanitizeFileName(request.fileName),
+    );
+    const response = await fetchImpl('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { authorization: `Bearer ${input.apiKey}` },
+      body: form,
+    });
+    if (!response.ok) {
+      throw new LearningDeliveryError(
+        'LEARNING_DELIVERY_TRANSCRIPTION_FAILED',
+        `Transcription provider returned ${response.status}.`,
+      );
+    }
+    const payload = (await response.json()) as {
+      text?: string;
+      language?: string;
+      duration?: number;
+      segments?: Array<{ id?: number | string; start?: number; end?: number; text?: string }>;
+    };
+    const segments = normalizeLearningDeliveryTranscriptSegments(
+      (payload.segments ?? [{ start: 0, end: 0, text: payload.text ?? '' }]).map(
+        (segment, index) => ({
+          segmentId: segment.id ? `seg_${segment.id}` : `seg_${String(index + 1).padStart(4, '0')}`,
+          startMs: Math.max(0, Math.round(Number(segment.start ?? 0) * 1000)),
+          endMs: Math.max(0, Math.round(Number(segment.end ?? 0) * 1000)),
+          text: segment.text ?? '',
+        }),
+      ),
+    );
+    return {
+      provider: 'openai' as const,
+      provider_model: input.model,
+      provider_model_version: input.model,
+      language: payload.language ?? 'und',
+      provider_duration_ms: Number.isFinite(Number(payload.duration))
+        ? Math.max(0, Math.round(Number(payload.duration) * 1000))
+        : null,
+      segments,
+    };
+  }
   return {
     async transcribeAudioBuffer(request: {
       audio: Buffer | Uint8Array;
@@ -304,46 +705,10 @@ export function createLearningDeliveryOpenAiTranscriptionAdapter(input: {
       mimeType: string;
       prompt?: string;
     }) {
-      const form = new FormData();
-      form.set('model', input.model);
-      form.set('response_format', 'verbose_json');
-      form.set('timestamp_granularities[]', 'segment');
-      if (request.prompt) form.set('prompt', request.prompt);
-      const audioBuffer = new ArrayBuffer(request.audio.byteLength);
-      new Uint8Array(audioBuffer).set(request.audio);
-      form.set(
-        'file',
-        new Blob([audioBuffer], { type: request.mimeType }),
-        sanitizeFileName(request.fileName),
-      );
-      const response = await fetchImpl('https://api.openai.com/v1/audio/transcriptions', {
-        method: 'POST',
-        headers: { authorization: `Bearer ${input.apiKey}` },
-        body: form,
-      });
-      if (!response.ok) {
-        throw new LearningDeliveryError(
-          'LEARNING_DELIVERY_TRANSCRIPTION_FAILED',
-          `Transcription provider returned ${response.status}.`,
-        );
-      }
-      const payload = (await response.json()) as {
-        text?: string;
-        segments?: Array<{ id?: number | string; start?: number; end?: number; text?: string }>;
-      };
-      return normalizeLearningDeliveryTranscriptSegments(
-        (payload.segments ?? [{ start: 0, end: 0, text: payload.text ?? '' }]).map(
-          (segment, index) => ({
-            segmentId: segment.id
-              ? `seg_${segment.id}`
-              : `seg_${String(index + 1).padStart(4, '0')}`,
-            startMs: Math.max(0, Math.round(Number(segment.start ?? 0) * 1000)),
-            endMs: Math.max(0, Math.round(Number(segment.end ?? 0) * 1000)),
-            text: segment.text ?? '',
-          }),
-        ),
-      );
+      const result = await transcribeAudioBufferWithMetadata(request);
+      return result.segments;
     },
+    transcribeAudioBufferWithMetadata,
   };
 }
 
@@ -432,6 +797,64 @@ export function assertSafeLearningDeliveryBusinessEvent(
   }
 }
 
+function noAutomaticTrim(
+  durationMs: number,
+  safeExceptionCode: NonNullable<LearningDeliveryTrimDecision['safe_exception_code']>,
+  confidence: number,
+  reasonCodes: string[],
+  config: typeof DEFAULT_AUTOMATIC_TRIM_CONFIG,
+  candidate: {
+    startMs: number;
+    endMs: number;
+    removedStartMs: number;
+    removedEndMs: number;
+    removedPercent: number;
+  } | null = null,
+): LearningDeliveryTrimDecision {
+  return learningDeliveryTrimDecisionSchema.parse({
+    start_ms: candidate?.startMs ?? 0,
+    end_ms: candidate?.endMs ?? Math.max(0, durationMs),
+    reason_code:
+      safeExceptionCode === 'no_edge_trim_needed'
+        ? 'no_safe_trim_detected'
+        : 'safe_no_trim_exception',
+    requires_operator_approval: false,
+    auto_cut_performed: false,
+    confidence: roundConfidence(confidence),
+    confidence_reason_codes: reasonCodes,
+    safe_exception_code: safeExceptionCode,
+    removed_start_ms: candidate?.removedStartMs ?? 0,
+    removed_end_ms: candidate?.removedEndMs ?? 0,
+    removed_percent: candidate ? roundPercent(candidate.removedPercent) : 0,
+    opening_window_ms: config.openingWindowMs,
+    closing_window_ms: config.closingWindowMs,
+  });
+}
+
+function normalizeSilenceRanges(
+  ranges: LearningDeliverySilenceRange[],
+  durationMs: number,
+  mergeGapMs: number,
+) {
+  const sorted = ranges
+    .map((range) => ({
+      start_ms: Math.max(0, Math.min(durationMs, Math.round(range.start_ms))),
+      end_ms: Math.max(0, Math.min(durationMs, Math.round(range.end_ms))),
+    }))
+    .filter((range) => range.end_ms > range.start_ms)
+    .sort((left, right) => left.start_ms - right.start_ms);
+  const merged: LearningDeliverySilenceRange[] = [];
+  for (const range of sorted) {
+    const previous = merged[merged.length - 1];
+    if (previous && range.start_ms - previous.end_ms <= mergeGapMs) {
+      previous.end_ms = Math.max(previous.end_ms, range.end_ms);
+      continue;
+    }
+    merged.push(learningDeliverySilenceRangeSchema.parse(range));
+  }
+  return merged;
+}
+
 function sanitizeUnknown(value: unknown): { value: unknown; count: number } {
   if (Array.isArray(value)) {
     let count = 0;
@@ -469,6 +892,18 @@ function sanitizeFileName(fileName: string) {
 
 function seconds(ms: number) {
   return (ms / 1000).toFixed(3);
+}
+
+function secondsToMs(value: number) {
+  return Math.max(0, Math.round(value * 1000));
+}
+
+function roundConfidence(value: number) {
+  return Math.max(0, Math.min(1, Math.round(value * 1000) / 1000));
+}
+
+function roundPercent(value: number) {
+  return Math.max(0, Math.min(1, Math.round(value * 10_000) / 10_000));
 }
 
 function vttTime(ms: number) {

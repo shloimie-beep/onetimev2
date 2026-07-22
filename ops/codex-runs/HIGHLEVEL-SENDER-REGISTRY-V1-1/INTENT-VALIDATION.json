@@ -1,0 +1,636 @@
+{
+  "ok": true,
+  "ready": true,
+  "prompt_ready": true,
+  "errors": [],
+  "warnings": [],
+  "raw_path": "C:\\Users\\User\\.onetime-worktrees\\HIGHLEVEL-SENDER-REGISTRY-V1-1\\ops\\codex-runs\\HIGHLEVEL-SENDER-REGISTRY-V1-1\\RAW.md",
+  "raw_sha256": "4d21cf954d5ed121d3d184387c2a1ce68bd08c9bd93c0b99db3d9f7146ccfdc3",
+  "computed_fingerprint": "f9ae235ee4556b9e9cc633e3ffe7b1181c0639e4869645bfdf2d2fefedc44877",
+  "hard_signals": [
+    {
+      "id": "number:341:343:99",
+      "kind": "number",
+      "text": "99",
+      "start": 341,
+      "end": 343
+    },
+    {
+      "id": "number:491:493:99",
+      "kind": "number",
+      "text": "99",
+      "start": 491,
+      "end": 493
+    },
+    {
+      "id": "number:579:581:93",
+      "kind": "number",
+      "text": "93",
+      "start": 579,
+      "end": 581
+    },
+    {
+      "id": "number:587:589:99",
+      "kind": "number",
+      "text": "99",
+      "start": 587,
+      "end": 589
+    },
+    {
+      "id": "number:669:671:14",
+      "kind": "number",
+      "text": "14",
+      "start": 669,
+      "end": 671
+    },
+    {
+      "id": "number:795:796:1",
+      "kind": "number",
+      "text": "1",
+      "start": 795,
+      "end": 796
+    },
+    {
+      "id": "number:1019:1020:1",
+      "kind": "number",
+      "text": "1",
+      "start": 1019,
+      "end": 1020
+    },
+    {
+      "id": "number:1097:1098:2",
+      "kind": "number",
+      "text": "2",
+      "start": 1097,
+      "end": 1098
+    },
+    {
+      "id": "number:1149:1150:3",
+      "kind": "number",
+      "text": "3",
+      "start": 1149,
+      "end": 1150
+    },
+    {
+      "id": "number:1207:1208:4",
+      "kind": "number",
+      "text": "4",
+      "start": 1207,
+      "end": 1208
+    },
+    {
+      "id": "number:1244:1245:5",
+      "kind": "number",
+      "text": "5",
+      "start": 1244,
+      "end": 1245
+    },
+    {
+      "id": "number:1337:1338:6",
+      "kind": "number",
+      "text": "6",
+      "start": 1337,
+      "end": 1338
+    },
+    {
+      "id": "number:1358:1359:7",
+      "kind": "number",
+      "text": "7",
+      "start": 1358,
+      "end": 1359
+    },
+    {
+      "id": "position:1928:1934:before",
+      "kind": "position",
+      "text": "before",
+      "start": 1928,
+      "end": 1934
+    },
+    {
+      "id": "number:2304:2305:1",
+      "kind": "number",
+      "text": "1",
+      "start": 2304,
+      "end": 2305
+    },
+    {
+      "id": "number:2306:2307:0",
+      "kind": "number",
+      "text": "0",
+      "start": 2306,
+      "end": 2307
+    },
+    {
+      "id": "number:2308:2309:0",
+      "kind": "number",
+      "text": "0",
+      "start": 2308,
+      "end": 2309
+    },
+    {
+      "id": "number:2320:2321:1",
+      "kind": "number",
+      "text": "1",
+      "start": 2320,
+      "end": 2321
+    },
+    {
+      "id": "number:2322:2323:1",
+      "kind": "number",
+      "text": "1",
+      "start": 2322,
+      "end": 2323
+    },
+    {
+      "id": "number:2324:2325:0",
+      "kind": "number",
+      "text": "0",
+      "start": 2324,
+      "end": 2325
+    },
+    {
+      "id": "preservation:2329:2337:Preserve",
+      "kind": "preservation",
+      "text": "Preserve",
+      "start": 2329,
+      "end": 2337
+    },
+    {
+      "id": "asset_or_file:2620:2680:integrations/highlevel/registry/communications-contract.json",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/registry/communications-contract.json",
+      "start": 2620,
+      "end": 2680
+    },
+    {
+      "id": "asset_or_file:2695:2739:integrations/highlevel/registry/current.json",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/registry/current.json",
+      "start": 2695,
+      "end": 2739
+    },
+    {
+      "id": "asset_or_file:3068:3116:integrations/highlevel/registry/AGENT-HANDOFF.md",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/registry/AGENT-HANDOFF.md",
+      "start": 3068,
+      "end": 3116
+    },
+    {
+      "id": "asset_or_file:3157:3192:integrations/highlevel/CHANGELOG.md",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/CHANGELOG.md",
+      "start": 3157,
+      "end": 3192
+    },
+    {
+      "id": "position:3294:3300:parent",
+      "kind": "position",
+      "text": "parent",
+      "start": 3294,
+      "end": 3300
+    },
+    {
+      "id": "position:3602:3608:Parent",
+      "kind": "position",
+      "text": "Parent",
+      "start": 3602,
+      "end": 3608
+    },
+    {
+      "id": "position:4520:4526:parent",
+      "kind": "position",
+      "text": "parent",
+      "start": 4520,
+      "end": 4526
+    },
+    {
+      "id": "number:4859:4860:1",
+      "kind": "number",
+      "text": "1",
+      "start": 4859,
+      "end": 4860
+    },
+    {
+      "id": "number:5034:5035:2",
+      "kind": "number",
+      "text": "2",
+      "start": 5034,
+      "end": 5035
+    },
+    {
+      "id": "number:5248:5249:2",
+      "kind": "number",
+      "text": "2",
+      "start": 5248,
+      "end": 5249
+    },
+    {
+      "id": "number:5260:5261:1",
+      "kind": "number",
+      "text": "1",
+      "start": 5260,
+      "end": 5261
+    },
+    {
+      "id": "number:5298:5299:2",
+      "kind": "number",
+      "text": "2",
+      "start": 5298,
+      "end": 5299
+    },
+    {
+      "id": "number:5338:5339:3",
+      "kind": "number",
+      "text": "3",
+      "start": 5338,
+      "end": 5339
+    },
+    {
+      "id": "number:5359:5360:4",
+      "kind": "number",
+      "text": "4",
+      "start": 5359,
+      "end": 5360
+    },
+    {
+      "id": "number:5398:5399:5",
+      "kind": "number",
+      "text": "5",
+      "start": 5398,
+      "end": 5399
+    },
+    {
+      "id": "removal:8055:8061:delete",
+      "kind": "removal",
+      "text": "delete",
+      "start": 8055,
+      "end": 8061
+    },
+    {
+      "id": "position:8325:8330:After",
+      "kind": "position",
+      "text": "After",
+      "start": 8325,
+      "end": 8330
+    },
+    {
+      "id": "number:8562:8566:2026",
+      "kind": "number",
+      "text": "2026",
+      "start": 8562,
+      "end": 8566
+    },
+    {
+      "id": "number:8611:8615:2026",
+      "kind": "number",
+      "text": "2026",
+      "start": 8611,
+      "end": 8615
+    },
+    {
+      "id": "number:8687:8691:2026",
+      "kind": "number",
+      "text": "2026",
+      "start": 8687,
+      "end": 8691
+    },
+    {
+      "id": "preservation:8859:8867:Preserve",
+      "kind": "preservation",
+      "text": "Preserve",
+      "start": 8859,
+      "end": 8867
+    },
+    {
+      "id": "number:9119:9123:2026",
+      "kind": "number",
+      "text": "2026",
+      "start": 9119,
+      "end": 9123
+    },
+    {
+      "id": "number:9178:9182:2026",
+      "kind": "number",
+      "text": "2026",
+      "start": 9178,
+      "end": 9182
+    },
+    {
+      "id": "number:9248:9250:04",
+      "kind": "number",
+      "text": "04",
+      "start": 9248,
+      "end": 9250
+    },
+    {
+      "id": "number:9285:9287:07",
+      "kind": "number",
+      "text": "07",
+      "start": 9285,
+      "end": 9287
+    },
+    {
+      "id": "position:9288:9294:Parent",
+      "kind": "position",
+      "text": "Parent",
+      "start": 9288,
+      "end": 9294
+    },
+    {
+      "id": "number:9326:9328:08",
+      "kind": "number",
+      "text": "08",
+      "start": 9326,
+      "end": 9328
+    },
+    {
+      "id": "position:9329:9335:Parent",
+      "kind": "position",
+      "text": "Parent",
+      "start": 9329,
+      "end": 9335
+    },
+    {
+      "id": "number:9359:9361:09",
+      "kind": "number",
+      "text": "09",
+      "start": 9359,
+      "end": 9361
+    },
+    {
+      "id": "position:9362:9368:Parent",
+      "kind": "position",
+      "text": "Parent",
+      "start": 9362,
+      "end": 9368
+    },
+    {
+      "id": "number:9390:9392:10",
+      "kind": "number",
+      "text": "10",
+      "start": 9390,
+      "end": 9392
+    },
+    {
+      "id": "number:9574:9576:05",
+      "kind": "number",
+      "text": "05",
+      "start": 9574,
+      "end": 9576
+    },
+    {
+      "id": "number:9606:9608:06",
+      "kind": "number",
+      "text": "06",
+      "start": 9606,
+      "end": 9608
+    },
+    {
+      "id": "number:9668:9670:13",
+      "kind": "number",
+      "text": "13",
+      "start": 9668,
+      "end": 9670
+    },
+    {
+      "id": "number:9860:9862:07",
+      "kind": "number",
+      "text": "07",
+      "start": 9860,
+      "end": 9862
+    },
+    {
+      "id": "number:9878:9879:1",
+      "kind": "number",
+      "text": "1",
+      "start": 9878,
+      "end": 9879
+    },
+    {
+      "id": "number:9921:9922:2",
+      "kind": "number",
+      "text": "2",
+      "start": 9921,
+      "end": 9922
+    },
+    {
+      "id": "preservation:10054:10062:Preserve",
+      "kind": "preservation",
+      "text": "Preserve",
+      "start": 10054,
+      "end": 10062
+    },
+    {
+      "id": "position:10918:10922:same",
+      "kind": "position",
+      "text": "same",
+      "start": 10918,
+      "end": 10922
+    },
+    {
+      "id": "position:11139:11144:after",
+      "kind": "position",
+      "text": "after",
+      "start": 11139,
+      "end": 11144
+    },
+    {
+      "id": "position:11246:11252:parent",
+      "kind": "position",
+      "text": "parent",
+      "start": 11246,
+      "end": 11252
+    },
+    {
+      "id": "number:11604:11605:1",
+      "kind": "number",
+      "text": "1",
+      "start": 11604,
+      "end": 11605
+    },
+    {
+      "id": "number:11644:11645:2",
+      "kind": "number",
+      "text": "2",
+      "start": 11644,
+      "end": 11645
+    },
+    {
+      "id": "removal:11936:11942:delete",
+      "kind": "removal",
+      "text": "delete",
+      "start": 11936,
+      "end": 11942
+    },
+    {
+      "id": "position:12247:12252:under",
+      "kind": "position",
+      "text": "under",
+      "start": 12247,
+      "end": 12252
+    },
+    {
+      "id": "asset_or_file:12818:12877:integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
+      "start": 12818,
+      "end": 12877
+    },
+    {
+      "id": "asset_or_file:12879:12939:integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-EXPORT.json",
+      "start": 12879,
+      "end": 12939
+    },
+    {
+      "id": "position:12947:12954:ordered",
+      "kind": "position",
+      "text": "ordered",
+      "start": 12947,
+      "end": 12954
+    },
+    {
+      "id": "number:13150:13151:1",
+      "kind": "number",
+      "text": "1",
+      "start": 13150,
+      "end": 13151
+    },
+    {
+      "id": "number:13266:13267:2",
+      "kind": "number",
+      "text": "2",
+      "start": 13266,
+      "end": 13267
+    },
+    {
+      "id": "number:13366:13367:1",
+      "kind": "number",
+      "text": "1",
+      "start": 13366,
+      "end": 13367
+    },
+    {
+      "id": "number:13402:13403:2",
+      "kind": "number",
+      "text": "2",
+      "start": 13402,
+      "end": 13403
+    },
+    {
+      "id": "number:13439:13440:3",
+      "kind": "number",
+      "text": "3",
+      "start": 13439,
+      "end": 13440
+    },
+    {
+      "id": "number:13455:13456:4",
+      "kind": "number",
+      "text": "4",
+      "start": 13455,
+      "end": 13456
+    },
+    {
+      "id": "number:13478:13479:5",
+      "kind": "number",
+      "text": "5",
+      "start": 13478,
+      "end": 13479
+    },
+    {
+      "id": "number:13500:13501:6",
+      "kind": "number",
+      "text": "6",
+      "start": 13500,
+      "end": 13501
+    },
+    {
+      "id": "number:13537:13538:7",
+      "kind": "number",
+      "text": "7",
+      "start": 13537,
+      "end": 13538
+    },
+    {
+      "id": "number:13558:13559:8",
+      "kind": "number",
+      "text": "8",
+      "start": 13558,
+      "end": 13559
+    },
+    {
+      "id": "number:13579:13580:9",
+      "kind": "number",
+      "text": "9",
+      "start": 13579,
+      "end": 13580
+    },
+    {
+      "id": "asset_or_file:13927:13993:integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md",
+      "start": 13927,
+      "end": 13993
+    },
+    {
+      "id": "asset_or_file:13995:14068:integrations/highlevel/agent-mode/GHL-SENDER-UI-JOB.private.template.json",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/agent-mode/GHL-SENDER-UI-JOB.private.template.json",
+      "start": 13995,
+      "end": 14068
+    },
+    {
+      "id": "position:14227:14232:order",
+      "kind": "position",
+      "text": "order",
+      "start": 14227,
+      "end": 14232
+    },
+    {
+      "id": "number:14931:14932:1",
+      "kind": "number",
+      "text": "1",
+      "start": 14931,
+      "end": 14932
+    },
+    {
+      "id": "number:14933:14934:1",
+      "kind": "number",
+      "text": "1",
+      "start": 14933,
+      "end": 14934
+    },
+    {
+      "id": "number:14935:14936:0",
+      "kind": "number",
+      "text": "0",
+      "start": 14935,
+      "end": 14936
+    },
+    {
+      "id": "number:15325:15326:0",
+      "kind": "number",
+      "text": "0",
+      "start": 15325,
+      "end": 15326
+    },
+    {
+      "id": "asset_or_file:15632:15698:integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md",
+      "kind": "asset_or_file",
+      "text": "integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md",
+      "start": 15632,
+      "end": 15698
+    }
+  ],
+  "coverage": {
+    "hard_signal_count": 88,
+    "hard_signal_covered_count": 88,
+    "hard_signal_coverage_ratio": 1,
+    "actionable_span_count": 515,
+    "covered_actionable_span_count": 515,
+    "actionable_span_coverage_ratio": 1
+  }
+}

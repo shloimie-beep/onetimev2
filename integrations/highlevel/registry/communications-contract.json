@@ -1,0 +1,69 @@
+{
+  "highLevelSourceOfTruth": [
+    "adult/parent contacts",
+    "customer conversations",
+    "campaigns",
+    "business workflows",
+    "replies",
+    "suppression",
+    "opportunities",
+    "customer-support and Torah-question processing state"
+  ],
+  "oneTimeSourceOfTruth": [
+    "authentication",
+    "passwords and secure tokens",
+    "households",
+    "learners",
+    "Parent and Student portals",
+    "entitlement",
+    "classes",
+    "Vimeo",
+    "Zoom",
+    "progress",
+    "gamification",
+    "original portal submissions"
+  ],
+  "resendOnly": [
+    "activation/setup links",
+    "password reset",
+    "email verification",
+    "Administrator login challenge",
+    "security-token email"
+  ],
+  "telegram": {
+    "role": "Rabbi Eli Scheller's private interface for assigned Torah questions and Rabbi-authored content",
+    "separateCustomerTranscript": false
+  },
+  "defaultCustomerCommunicationOwner": "Shloimie",
+  "rabbiReceivesOnly": [
+    "substantive Torah questions",
+    "Mishnah questions",
+    "halachic questions requiring Rabbi authorship",
+    "Rabbi-authored Torah newsletters",
+    "Rabbi-authored warm enrollment content"
+  ],
+  "rabbiMustNotReceive": [
+    "login",
+    "password help",
+    "billing",
+    "cancellation",
+    "refund",
+    "technical support",
+    "scheduling",
+    "class-link problems",
+    "parent administration",
+    "ordinary enrollment logistics",
+    "complaints",
+    "unknown messages",
+    "generic replies"
+  ],
+  "safety": {
+    "messagesSent": 0,
+    "workflowsPublished": 0,
+    "botActivated": false,
+    "contactsEnrolled": 0,
+    "studentContactsCreated": 0,
+    "paymentStateChanged": false,
+    "railwayChanged": false
+  }
+}

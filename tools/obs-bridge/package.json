@@ -1,0 +1,9 @@
+{
+  "name": "@onetime/obs-bridge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bridge": "node --import tsx src/index.ts",
+    "bridge:fake": "node --import tsx src/index.ts --fake"
+  }
+}

@@ -26,9 +26,7 @@ import {
   createPortalGamificationAdapter,
   createStudentPortalService,
   ONE_TIME_CLASS_SERIES_KEY,
-  ONE_TIME_CLASS_TITLE,
   PortalServiceError,
-  stableKey,
   type PortalServiceDeps,
 } from '../../packages/domain/src/index.ts';
 import { AesGcmPayloadCodec } from '../../packages/domain/src/telegram/crypto.ts';
@@ -42,6 +40,9 @@ const CONTENT_REVISION_KEY = 'full_app_demo_mishnayos_video_rev_1';
 const LESSON_KEY = 'full_app_demo_mishnayos_lesson';
 const VIMEO_SOURCE_KEY = 'full_app_private_vimeo_demo_source';
 const CLASS_BOARD_KEY = 'full_app_demo_class_board';
+const RABBI_LIVE_CONSOLE_ROUTE = '/app/live-console';
+const VIMEO_DEMO_ROUTE = '/app/learning-delivery/demo/vimeo-autotrim';
+const TISHA_BAV_ROUTE = '/tisha-bav';
 const HANDOFF_PATH =
   process.env.FULL_APP_HANDOFF_PATH ??
   path.join(
@@ -78,7 +79,10 @@ type FullAppPreviewResult = {
   household_key: string;
   class_key: string;
   lesson_key: string;
-  latest_required_migration: '2209_class_series_scope_unique';
+  rabbi_live_console_route: typeof RABBI_LIVE_CONSOLE_ROUTE;
+  vimeo_demo_route: typeof VIMEO_DEMO_ROUTE;
+  tisha_bav_route: typeof TISHA_BAV_ROUTE;
+  latest_required_migration: '2213_learning_delivery_autotrim_transcripts';
   students: PreviewStudent[];
 };
 
@@ -132,7 +136,7 @@ export async function runFullAppProvision(
   const parentPassword = strongPassword('Par');
   const studentPasswords = previewLearners.map((_, index) => strongPassword(`Stu${index + 1}`));
 
-  const adminUserKey = await createAccountUser({
+  await createAccountUser({
     pool: input.pool,
     config: input.config,
     email: destinations.adminDestination,
@@ -174,7 +178,13 @@ export async function runFullAppProvision(
   });
   await verifyParentOperations(parentService, parentActor, firstLearner, runId);
 
-  const classKey = await ensureOpenDemoClass(input.pool, input.config, parentActor, firstLearner, now);
+  const classKey = await ensureOpenDemoClass(
+    input.pool,
+    input.config,
+    parentActor,
+    firstLearner,
+    now,
+  );
   await seedLearningContent(input.pool, input.config, classKey, now);
   await seedProgressAndRewards(input.pool, input.config, parentUserKey, classKey, learners, now);
 
@@ -182,7 +192,9 @@ export async function runFullAppProvision(
   const liveParentService = createParentPortalService(deps);
   const studentService = createStudentPortalService(deps);
   const parentDashboard = await liveParentService.dashboard(parentActor, HOUSEHOLD_KEY);
-  if (parentDashboard.learners.filter((learner) => learner.learner_status === 'active').length !== 3) {
+  if (
+    parentDashboard.learners.filter((learner) => learner.learner_status === 'active').length !== 3
+  ) {
     throw new Error('Preview parent dashboard did not expose exactly three active learners.');
   }
 
@@ -280,7 +292,10 @@ export async function runFullAppProvision(
     household_key: HOUSEHOLD_KEY,
     class_key: classKey,
     lesson_key: LESSON_KEY,
-    latest_required_migration: '2209_class_series_scope_unique',
+    rabbi_live_console_route: RABBI_LIVE_CONSOLE_ROUTE,
+    vimeo_demo_route: VIMEO_DEMO_ROUTE,
+    tisha_bav_route: TISHA_BAV_ROUTE,
+    latest_required_migration: '2213_learning_delivery_autotrim_transcripts',
     students,
   };
 
@@ -603,9 +618,15 @@ async function verifyParentOperations(
   if (restored.status !== 'active') {
     throw new Error('Student restore operation did not leave the preview learner active.');
   }
-  await service.studentAccessOperation(actor, HOUSEHOLD_KEY, learner.learner_key, 'revoke_sessions', {
-    idempotency_key: `full-app-revoke-sessions-${runId}`,
-  });
+  await service.studentAccessOperation(
+    actor,
+    HOUSEHOLD_KEY,
+    learner.learner_key,
+    'revoke_sessions',
+    {
+      idempotency_key: `full-app-revoke-sessions-${runId}`,
+    },
+  );
 }
 
 async function ensureOpenDemoClass(
@@ -1018,10 +1039,7 @@ function studentActorContext(
   };
 }
 
-function resolveDestinations(
-  config: AppConfig,
-  options: { requirePrivateDestinations: boolean },
-) {
+function resolveDestinations(config: AppConfig, options: { requirePrivateDestinations: boolean }) {
   const adminDestination =
     firstEmail(
       process.env.FULL_APP_ADMIN_EMAIL,
@@ -1048,7 +1066,10 @@ function resolveDestinations(
 }
 
 function assertStagingScope(config: AppConfig, requirePrivateDestinations: boolean) {
-  if (config.deliveryEnvironment === 'production' || config.oneTimeRuntimeEnvironment === 'production') {
+  if (
+    config.deliveryEnvironment === 'production' ||
+    config.oneTimeRuntimeEnvironment === 'production'
+  ) {
     throw new Error('Refusing full app preview provisioning in production runtime scope.');
   }
   if (config.accountKey !== EXPECTED_ACCOUNT_KEY || config.productKey !== EXPECTED_PRODUCT_KEY) {
@@ -1063,7 +1084,9 @@ function assertStagingScope(config: AppConfig, requirePrivateDestinations: boole
     throw new Error('ZOOM_CLASSROOM_PROVIDER_MODE must be sink for the managed staging fallback.');
   }
   if (requirePrivateDestinations && config.deliveryEnvironment !== 'isolated_staging') {
-    throw new Error('Full app preview provisioning requires DELIVERY_ENVIRONMENT=isolated_staging.');
+    throw new Error(
+      'Full app preview provisioning requires DELIVERY_ENVIRONMENT=isolated_staging.',
+    );
   }
 }
 
@@ -1079,6 +1102,11 @@ async function writePrivateHandoff(input: {
     generated_at: input.result.generated_at,
     staging_url: input.result.staging_url,
     login_url: input.result.login_url,
+    administrator_login_label: 'Full App Preview Admin',
+    parent_login_label: 'Full App Preview Parent',
+    rabbi_live_console_route: input.result.rabbi_live_console_route,
+    vimeo_demo_route: input.result.vimeo_demo_route,
+    tisha_bav_route: input.result.tisha_bav_route,
     account_key: input.result.account_key,
     product_key: input.result.product_key,
     admin: {
@@ -1115,6 +1143,8 @@ async function writePrivateHandoff(input: {
     cleanup: {
       instruction:
         'Staging preview records use full_app_preview_* keys. Revoke sessions and archive the preview household when testing is complete.',
+      expires_at: input.testExpiresAt,
+      accounts_left_active_for_operator_review: true,
       production_changed: false,
     },
   };
@@ -1127,8 +1157,10 @@ function mapLearner(row: Record<string, unknown>): LearnerProfile {
     learner_key: String(row.learner_key),
     household_key: String(row.household_key),
     display_name: String(row.display_name),
-    hebrew_name: row.hebrew_name === null || row.hebrew_name === undefined ? null : String(row.hebrew_name),
-    grade_label: row.grade_label === null || row.grade_label === undefined ? null : String(row.grade_label),
+    hebrew_name:
+      row.hebrew_name === null || row.hebrew_name === undefined ? null : String(row.hebrew_name),
+    grade_label:
+      row.grade_label === null || row.grade_label === undefined ? null : String(row.grade_label),
     learner_status: String(row.learner_status) as LearnerProfile['learner_status'],
     version: Number(row.version ?? 1),
     created_at: new Date(String(row.created_at)).toISOString(),
@@ -1151,7 +1183,10 @@ function strongPassword(prefix: string) {
 }
 
 function compactDate(value: Date) {
-  return value.toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
+  return value
+    .toISOString()
+    .replace(/[-:T.Z]/g, '')
+    .slice(0, 14);
 }
 
 function addDays(value: Date, days: number) {
@@ -1176,6 +1211,9 @@ function publicSummary(result: FullAppPreviewResult) {
     vimeo_demo_lesson_ready: result.vimeo_demo_lesson_ready,
     zoom_demo_class_ready: result.zoom_demo_class_ready,
     zoom_provider_mode: result.zoom_provider_mode,
+    rabbi_live_console_route: result.rabbi_live_console_route,
+    vimeo_demo_route: result.vimeo_demo_route,
+    tisha_bav_route: result.tisha_bav_route,
     handoff_path: result.handoff_path,
     latest_required_migration: result.latest_required_migration,
     raw_links_printed: false,
@@ -1194,7 +1232,7 @@ async function main() {
       writePrivateHandoff: true,
       requirePrivateDestinations: true,
     });
-    console.log(JSON.stringify(publicSummary(result), null, 2));
+    process.stdout.write(`${JSON.stringify(publicSummary(result), null, 2)}\n`);
   } finally {
     await pool.end();
   }

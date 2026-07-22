@@ -1,0 +1,17 @@
+apps/web/src/server/app.ts
+apps/web/src/server/features/learning-delivery-demo/router.ts
+ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR/CHANGED-FILES.txt
+ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR/PR-BODY.md
+ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR/REAL-MEDIA-CANARY.json
+ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR/REAL-MEDIA-CANARY.md
+ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR/STATE.json
+ops/day-one/visible-action-registry.json
+package.json
+packages/config/src/index.ts
+packages/contracts/src/content/learning-delivery.ts
+packages/db/migrations/2213_learning_delivery_autotrim_transcripts.sql
+packages/domain/src/content/learning-delivery.ts
+packages/domain/src/index.ts
+scripts/media/learning-delivery-real-media-canary.ts
+tests/integration/content/learning-delivery-demo-route.test.ts
+tests/unit/content/learning-delivery.test.ts

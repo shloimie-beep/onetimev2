@@ -110,6 +110,322 @@
       ]
     },
     {
+      "action_id": "public.tisha_bav.route",
+      "label": "Tisha B'Av Program",
+      "surface": "route",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "public:event:read",
+      "handler": {
+        "method": "GET",
+        "path": "/tisha-bav"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_event_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/tisha-bav-event-funnel.test.ts",
+        "tests/e2e/tisha-bav-funnel.spec.ts"
+      ]
+    },
+    {
+      "action_id": "public.tisha_bav.registration_modal.open",
+      "label": "Reserve My Spot",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:register:open",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_registration_modal_open"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Registration modal is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.registration_modal.close",
+      "label": "Close registration modal",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:register:close",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_registration_modal_close"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Registration modal is closed.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.register.form",
+      "label": "Reserve My Spot",
+      "surface": "form",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:register",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/events/tisha-bav-2026/register"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "domain_audit",
+        "event": "tisha_bav_2026_event_registered"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "event_sync_provider_default_off",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/integration/tisha-bav-event-funnel.test.ts",
+        "tests/e2e/tisha-bav-funnel.spec.ts"
+      ]
+    },
+    {
+      "action_id": "public.tisha_bav.share.whatsapp.link",
+      "label": "WhatsApp share",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "GET",
+        "path": "https://wa.me/?text=:encoded_public_event_url"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_whatsapp_share_open"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The browser opens the WhatsApp share target.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.share.email_friend.link",
+      "label": "Email a Friend",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "GET",
+        "path": "mailto:?subject=:event_subject&body=:public_event_url"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_email_friend_open"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The browser opens the email share target.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.share.copy_link.button",
+      "label": "Copy Link",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_copy_share_link"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The canonical public event link is copied.",
+        "error": "A local copy-unavailable message is shown.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.share.native.button",
+      "label": "Share",
+      "surface": "button",
+      "route": "/tisha-bav",
+      "roles": ["anonymous"],
+      "capability": "events:share",
+      "handler": {
+        "method": "CLIENT",
+        "path": "apps/web/src/client/public/public-entry.ts"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_native_share"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "The browser native share sheet opens when supported.",
+        "error": "A local share-unavailable state is shown.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "browser_share_only",
+      "external_mutation": false,
+      "test_evidence": ["tests/e2e/tisha-bav-funnel.spec.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.live.route",
+      "label": "Private event access",
+      "surface": "route",
+      "route": "/tisha-bav/live",
+      "roles": ["anonymous"],
+      "capability": "events:join:start",
+      "handler": {
+        "method": "GET",
+        "path": "/tisha-bav/live"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "none",
+        "event": "tisha_bav_live_page_view"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "zoom_provider_default_off",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/tisha-bav-event-funnel.test.ts"]
+    },
+    {
+      "action_id": "public.tisha_bav.join.form",
+      "label": "Join the Live Program",
+      "surface": "form",
+      "route": "/tisha-bav/live",
+      "roles": ["anonymous"],
+      "capability": "events:join",
+      "handler": {
+        "method": "POST",
+        "path": "/api/v1/events/tisha-bav-2026/join"
+      },
+      "idempotency": {
+        "required": true,
+        "key_source": "client-generated idempotency_key"
+      },
+      "audit": {
+        "mode": "local_write",
+        "event": "tisha_bav_join_session_created"
+      },
+      "states": {
+        "loading": "Loading bounded local data.",
+        "success": "Action completed or the route is visible.",
+        "error": "A local error state is shown and no external mutation is attempted.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached data is used while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "zoom_provider_default_off",
+      "external_mutation": false,
+      "test_evidence": ["tests/integration/tisha-bav-event-funnel.test.ts"]
+    },
+    {
       "action_id": "public.login.route",
       "label": "Member Login",
       "surface": "route",
@@ -1747,6 +2063,187 @@
       "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/support/ot89a-subscriber-support.test.ts"]
+    },
+    {
+      "action_id": "learning_delivery.vimeo_autotrim_demo.route",
+      "label": "Prepared Vimeo Demo",
+      "surface": "route",
+      "route": "/app/learning-delivery/demo/vimeo-autotrim",
+      "roles": ["owner", "admin"],
+      "capability": "learning-delivery:demo-read",
+      "handler": {
+        "method": "GET",
+        "path": "/app/learning-delivery/demo/vimeo-autotrim"
+      },
+      "idempotency": {
+        "required": false,
+        "key_source": null
+      },
+      "audit": {
+        "mode": "local_read",
+        "event": "learning_delivery_vimeo_autotrim_demo_read"
+      },
+      "states": {
+        "loading": "Loading sanitized prepared-media metadata.",
+        "success": "Protected demo route is visible with safe prepared-asset metadata.",
+        "error": "A safe blocker state is shown without provider URLs or transcript text.",
+        "permission": "Unauthorized roles are denied by server session scope.",
+        "offline": "No protected cached media or transcript is exposed while offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "isolated_private_vimeo_canary",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/content/learning-delivery.test.ts",
+        "tests/integration/content/learning-delivery-demo-route.test.ts"
+      ]
+    },
+    {
+      "action_id": "live_class.console.route",
+      "label": "Rabbi Live Console",
+      "surface": "route",
+      "route": "/app/live-console",
+      "roles": ["owner", "admin"],
+      "capability": "live-class:control",
+      "handler": { "method": "GET", "path": "/app/live-console" },
+      "idempotency": { "required": false, "key_source": null },
+      "audit": { "mode": "local_read", "event": "live_class_console_read" },
+      "states": {
+        "loading": "Loading the private question queue and classroom state.",
+        "success": "The live console shows the bounded class queue, roster, and stage controls.",
+        "error": "A local error state is shown without exposing private student questions.",
+        "permission": "Only owner and admin sessions may open the console.",
+        "offline": "No private question or classroom state is cached for offline use."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "fake_or_meeting_sdk_host",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
+    },
+    {
+      "action_id": "live_class.question.submit.form",
+      "label": "Submit private question",
+      "surface": "form",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:class:question",
+      "handler": { "method": "POST", "path": "/api/v1/live-class/questions" },
+      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
+      "audit": { "mode": "first_party", "event": "live_question_submitted" },
+      "states": {
+        "loading": "Submitting the question privately.",
+        "success": "The question is queued for the Rabbi without exposing sibling data.",
+        "error": "A bounded retry state is shown.",
+        "permission": "The server derives the submitting student from the session.",
+        "offline": "Questions are not queued offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": ["tests/unit/live-class/live-class-service.test.ts"]
+    },
+    {
+      "action_id": "live_class.question.select.button",
+      "label": "Select",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["owner", "admin"],
+      "capability": "live-class:control",
+      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/select" },
+      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
+      "audit": { "mode": "first_party", "event": "live_question_selected" },
+      "states": {
+        "loading": "Selecting the private question.",
+        "success": "The selected student receives the readiness prompt.",
+        "error": "The queue remains unchanged and a bounded error is shown.",
+        "permission": "Only owner and admin sessions may select questions.",
+        "offline": "Selection is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "fake_or_meeting_sdk_host",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
+    },
+    {
+      "action_id": "live_class.question.ready.button",
+      "label": "Student Ready",
+      "surface": "button",
+      "route": "/app/student",
+      "roles": ["student"],
+      "capability": "student:class:question",
+      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/ready" },
+      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
+      "audit": { "mode": "first_party", "event": "live_student_ready" },
+      "states": {
+        "loading": "Saving the student's readiness choice.",
+        "success": "The Rabbi sees that the selected student is ready.",
+        "error": "The readiness choice is not advanced and a retry state is shown.",
+        "permission": "Only the selected student's session may mark readiness.",
+        "offline": "Readiness is unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "not_provider_dependent",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
+    },
+    {
+      "action_id": "live_class.question.feature.button",
+      "label": "Feature",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["owner", "admin"],
+      "capability": "live-class:control",
+      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/live" },
+      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
+      "audit": { "mode": "first_party", "event": "live_question_featured" },
+      "states": {
+        "loading": "Queuing bounded classroom and stage commands.",
+        "success": "The ready student becomes the featured stage participant.",
+        "error": "No stage advance is claimed and a retry state is shown.",
+        "permission": "Only owner and admin sessions may feature a student.",
+        "offline": "Feature controls are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "fake_or_meeting_sdk_host",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
+    },
+    {
+      "action_id": "live_class.question.done.button",
+      "label": "Done",
+      "surface": "button",
+      "route": "/app/live-console",
+      "roles": ["owner", "admin"],
+      "capability": "live-class:control",
+      "handler": { "method": "POST", "path": "/api/v1/live-class/questions/:id/complete" },
+      "idempotency": { "required": true, "key_source": "body.idempotency_key" },
+      "audit": { "mode": "first_party", "event": "live_question_completed" },
+      "states": {
+        "loading": "Returning the stage to slides and clearing the featured question.",
+        "success": "The question is completed and the stage is reset.",
+        "error": "The current state remains visible for a bounded retry.",
+        "permission": "Only owner and admin sessions may complete a question.",
+        "offline": "Done/reset controls are unavailable offline."
+      },
+      "readiness_state": "ready",
+      "provider_mode": "fake_or_meeting_sdk_host",
+      "external_mutation": false,
+      "test_evidence": [
+        "tests/unit/live-class/live-class-service.test.ts",
+        "tests/e2e/rabbi-live-console-fake.spec.ts"
+      ]
     },
     {
       "action_id": "portal_test_lab.view.route",

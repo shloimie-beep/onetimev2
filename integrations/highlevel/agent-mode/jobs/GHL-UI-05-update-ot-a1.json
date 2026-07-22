@@ -1,0 +1,205 @@
+{
+  "job_id": "GHL-UI-05",
+  "order": 5,
+  "title": "update OT-A1",
+  "ghl_location": {
+    "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+    "location_fingerprint": "31fcbd2792f131dc",
+    "verification_required": true
+  },
+  "exact_target_ui_path": "HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant",
+  "canonical_source_files": [
+    "integrations/highlevel/prompts/active/OT-A1-v1.0.0.md",
+    "integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md",
+    "integrations/highlevel/registry/bot-action-registry.yaml",
+    "integrations/highlevel/registry/rabbi-telegram-contract.yaml",
+    "integrations/highlevel/registry/pipeline-registry.yaml"
+  ],
+  "exact_copy_paste_prompt": "Job GHL-UI-05: update OT-A1\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > AI Agent Studio > Conversation AI > Bots > OT-A1 One Time Enrollment Assistant\n\nRead these canonical source files first:\n- integrations/highlevel/prompts/active/OT-A1-v1.0.0.md\n- integrations/highlevel/knowledge-bases/active/one-time-public-kb-v1.0.0.md\n- integrations/highlevel/registry/bot-action-registry.yaml\n- integrations/highlevel/registry/rabbi-telegram-contract.yaml\n- integrations/highlevel/registry/pipeline-registry.yaml\n\nAllowed assets:\n- OT-A1 One Time Enrollment Assistant\n- Website Live Chat\n- WhatsApp\n- One Time Torah Questions routing for explicit substantive Torah questions\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- Voice AI\n- Human Handoff\n- human tasks\n- separate WhatsApp qualification bot\n- automatic promise that a person will reply\n- generic support routed to Rabbi\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Update only the canonical OT-A1 bot and public knowledge base dependencies.\n- Keep the bot inactive/unpublished. Route only explicit substantive Torah questions to One Time Torah Questions.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-05.result.json\nIdempotency key: one-time-ghl:GHL-UI-05:7a48ed5459d973c7",
+  "allowed_assets": [
+    "OT-A1 One Time Enrollment Assistant",
+    "Website Live Chat",
+    "WhatsApp",
+    "One Time Torah Questions routing for explicit substantive Torah questions"
+  ],
+  "forbidden_assets": [
+    "Student contacts",
+    "Student username fields",
+    "Student password fields",
+    "workflow publish actions",
+    "production workflow enrollment",
+    "message sends",
+    "Stripe or live payment mutations",
+    "duplicate tags, fields, values, workflows, bots, or knowledge bases",
+    "Voice AI",
+    "Human Handoff",
+    "human tasks",
+    "separate WhatsApp qualification bot",
+    "automatic promise that a person will reply",
+    "generic support routed to Rabbi"
+  ],
+  "prerequisites": [
+    "Read integrations/highlevel/registry/AGENT-HANDOFF.md.",
+    "Read integrations/highlevel/registry/current.json.",
+    "Read integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md and verify its immutable Commit A SHA before any action.",
+    "Verify HighLevel location ID is pBSnOK2nkdxp6gf9Rg3o.",
+    "Use only one canonical registry and do not create duplicate assets.",
+    "GHL-UI-04 saved and readback verified."
+  ],
+  "expected_ghl_ids_to_capture": [
+    "bot_id",
+    "knowledge_base_id",
+    "channel_statuses",
+    "torah_routing_status"
+  ],
+  "test_contact_rules": [
+    "No contact mutation is allowed for this job.",
+    "Do not use production contacts for verification."
+  ],
+  "defaults": {
+    "no_send": true,
+    "no_publish": true,
+    "no_production_workflow_enrollment": true,
+    "no_live_payment_mutation": true,
+    "no_student_contacts": true,
+    "save_required": true,
+    "readback_required": true
+  },
+  "completion_checklist": [
+    "Visible HighLevel location matched pBSnOK2nkdxp6gf9Rg3o.",
+    "Canonical source files for GHL-UI-05 were read before edits.",
+    "Only allowed assets were created, edited, or verified.",
+    "Forbidden assets and actions were not used.",
+    "Every changed asset was saved in the HighLevel UI.",
+    "Saved asset state was verified after save.",
+    "Safe GHL IDs and visible statuses were captured.",
+    "Messages sent = 0.",
+    "Workflow publish actions = 0.",
+    "Production contacts enrolled = 0.",
+    "Stripe or live payment mutations = 0.",
+    "Result JSON was saved to the BNA Agent Action drop-off lane.",
+    "Readback result ID was verified."
+  ],
+  "result_json_schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "job_id",
+      "status",
+      "ghl_location_id",
+      "saved",
+      "verified",
+      "captured_ids",
+      "messages_sent",
+      "workflows_published",
+      "production_contacts_enrolled",
+      "stripe_mutations",
+      "student_contacts_created",
+      "dropoff_result_id",
+      "readback_verified",
+      "idempotency_key",
+      "notes"
+    ],
+    "properties": {
+      "job_id": {
+        "const": "GHL-UI-05"
+      },
+      "status": {
+        "enum": [
+          "done",
+          "already_satisfied",
+          "blocked",
+          "partial",
+          "failed"
+        ]
+      },
+      "ghl_location_id": {
+        "const": "pBSnOK2nkdxp6gf9Rg3o"
+      },
+      "saved": {
+        "type": "boolean"
+      },
+      "verified": {
+        "type": "boolean"
+      },
+      "captured_ids": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "asset_type",
+            "name",
+            "id",
+            "status"
+          ],
+          "properties": {
+            "asset_type": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "messages_sent": {
+        "const": 0
+      },
+      "workflows_published": {
+        "const": 0
+      },
+      "production_contacts_enrolled": {
+        "const": 0
+      },
+      "stripe_mutations": {
+        "const": 0
+      },
+      "student_contacts_created": {
+        "const": 0
+      },
+      "dropoff_result_id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "readback_verified": {
+        "type": "boolean"
+      },
+      "idempotency_key": {
+        "type": "string",
+        "minLength": 1
+      },
+      "blockers": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "notes": {
+        "type": "string"
+      }
+    }
+  },
+  "idempotency_key": "one-time-ghl:GHL-UI-05:7a48ed5459d973c7",
+  "bna_agent_action_dropoff": {
+    "lane": "highlevel_agent_mode",
+    "return_surface": "BNA Agent Action drop-off page",
+    "return_route": "/ops/agent-actions/highlevel/drop-off",
+    "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-05.result.json",
+    "readback_verification": "After saving the result, reopen/read it and record the returned result ID.",
+    "metadata": {
+      "repository": "shloimie-beep/onetimev2",
+      "registry_root": "integrations/highlevel/registry/",
+      "queue_file": "integrations/highlevel/agent-mode/GHL-AGENT-MODE-QUEUE.json",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-05-update-ot-a1.json",
+      "result_file": "integrations/highlevel/agent-mode/results/GHL-UI-05.result.json"
+    }
+  }
+}

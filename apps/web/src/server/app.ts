@@ -10,6 +10,7 @@ import type { DbPool } from '../../../../packages/db/src/index.ts';
 import { createPostgresBillingRepositories } from '../../../../packages/db/src/billing/repository.ts';
 import { createClassroomRepository } from '../../../../packages/db/src/classroom/repository.ts';
 import { createGamificationRepository } from '../../../../packages/db/src/gamification/repository.ts';
+import { createLiveClassRepository } from '../../../../packages/db/src/live-class/repository.ts';
 import { createPortalRepository } from '../../../../packages/db/src/portals/repository.ts';
 import { TelegramSqlInboxRepository } from '../../../../packages/db/src/telegram/repositories.ts';
 import type { BillingProviderAdapter } from '../../../../packages/contracts/src/billing/index.ts';
@@ -36,6 +37,19 @@ import {
   createContactSchema,
   ownerDashboardResponseSchema,
   leadPayloadSchema,
+  liveClassCommandResponseSchema,
+  liveClassConsoleSnapshotSchema,
+  liveClassObsCommandPayloadSchema,
+  liveClassObsCommandPollResponseSchema,
+  liveClassObsCommandReportPayloadSchema,
+  liveClassQuestionActionPayloadSchema,
+  liveClassQuestionCompletePayloadSchema,
+  liveClassQuestionListResponseSchema,
+  liveClassQuestionReadyPayloadSchema,
+  liveClassQuestionSubmitPayloadSchema,
+  liveClassQuestionSubmitResponseSchema,
+  liveClassStageResponseSchema,
+  liveClassZoomControlPayloadSchema,
   loginPayloadSchema,
   publicFieldErrors,
   updateContactSchema,
@@ -107,6 +121,7 @@ import {
   createClassPortalAccessAdapter,
   createClassroomPortalAccessAdapter,
   createClassroomService,
+  createLiveClassService,
   createContentPortalAccessAdapter,
   createGamificationService,
   createLoginCsrf,
@@ -132,6 +147,7 @@ import {
   buildWhatsAppPublicAssistantStatus,
   inspectAccountLifecycleToken,
   buildOwnerDashboard,
+  captureTishaBavRegistration,
   listClassOccurrences,
   listContentLibrary,
   listAssignableUsers,
@@ -157,6 +173,8 @@ import {
   rotateSessionCsrf,
   removeCrmTag,
   receiveWhatsAppWebhook,
+  requestTishaBavJoin,
+  resolveTishaBavRedirect,
   updateContact,
   verifyEmailChallengeCode,
   verifyEmailChallengeLink,
@@ -165,6 +183,8 @@ import {
   verifyRecentEmailAssurance,
   verifySessionCsrf,
   verifyWhatsAppWebhookChallenge,
+  TishaBavIdempotencyConflictError,
+  TishaBavJoinError,
   type AuthenticatedSession,
   PortalServiceError,
   type PortalServiceDeps,
@@ -200,23 +220,26 @@ import {
   type ReadOnlySessionScopePort,
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
+import { registerLearningDeliveryDemoRoutes } from './features/learning-delivery-demo/router.ts';
 import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
-import { leadRateLimit } from './rate-limit.ts';
+import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
 
 type AppDeps = {
   config: AppConfig;
   pool: DbPool;
   distDir?: string;
+  learningDeliveryDemoReportPath?: string;
   clock?: () => Date;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
 const CSRF_COOKIE = 'otcrm_csrf';
 const TRUSTED_DEVICE_COOKIE = 'otcrm_trusted_device';
+const TISHA_BAV_EVENT_COOKIE = 'ot_tisha_bav_2026_session';
 type AccountLifecycleTokenType = z.infer<typeof accountLifecycleTokenTypeSchema>;
 const ACTIVATION_TOKEN_TYPES = accountLifecycleTokenTypeSchema.options.filter(
   (tokenType) => tokenType !== 'password_reset',
@@ -289,6 +312,7 @@ export function createApp({
   config,
   pool,
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
+  learningDeliveryDemoReportPath,
   clock,
 }: AppDeps) {
   const app = express();
@@ -508,6 +532,16 @@ export function createApp({
       requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
       setPrivateNoStore,
     },
+  });
+
+  registerLearningDeliveryDemoRoutes({
+    app,
+    config,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      setPrivateNoStore,
+    },
+    ...(learningDeliveryDemoReportPath ? { reportPath: learningDeliveryDemoReportPath } : {}),
   });
 
   app.get('/health', (_req, res) => {
@@ -790,6 +824,48 @@ export function createApp({
     },
   );
 
+  app.get(/^\/app\/live-console(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(
+        302,
+        `/login?return_to=${encodeURIComponent(
+          safeReturnPath(req.path, config) ?? '/app/live-console',
+        )}`,
+      );
+      return;
+    }
+    if (session.user.role !== 'owner' && session.user.role !== 'admin') {
+      setPrivateNoStore(res);
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
+    setPrivateNoStore(res);
+    await sendAppHtml(res, distDir, 'live');
+  });
+
+  app.get(/^\/app\/live-stage\/([^/]+)(?:\/.*)?$/, async (_req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Permissions-Policy', 'camera=(self), microphone=(self), fullscreen=(self)');
+    res.setHeader(
+      'Content-Security-Policy',
+      [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "script-src 'self'",
+        "style-src 'self'",
+        "connect-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "frame-ancestors 'self'",
+      ].join('; '),
+    );
+    await sendAppHtml(res, distDir, 'live');
+  });
+
   app.get(/^\/app\/parent(?:\/.*)?$/, async (req: RequestWithTrace, res) => {
     await serveProtectedAppShell(req, res, {
       pool,
@@ -847,6 +923,75 @@ export function createApp({
 
   app.post('/api/v1/leads', leadRateLimit(config, pool), handleLeadPost);
   app.post('/api/one-time/interest', leadRateLimit(config, pool), handleLeadPost);
+
+  app.post(
+    '/api/v1/events/tisha-bav-2026/register',
+    eventRateLimit(config, pool),
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      try {
+        const result = await withTiming(req, 'tisha_bav_register', () =>
+          captureTishaBavRegistration({ pool, config, payload: req.body }),
+        );
+        res.status(200).json(result);
+      } catch (error) {
+        handleTishaBavRouteError(error, req, res, 'We could not save that event registration yet.');
+      }
+    },
+  );
+
+  app.post(
+    '/api/v1/events/tisha-bav-2026/join',
+    eventRateLimit(config, pool),
+    async (req: RequestWithTrace, res) => {
+      setEventAccessNoStore(res);
+      try {
+        const userAgent = req.header('user-agent') ?? undefined;
+        const result = await withTiming(req, 'tisha_bav_join', () =>
+          requestTishaBavJoin({
+            pool,
+            config,
+            payload: req.body,
+            ...(req.ip ? { ip: req.ip } : {}),
+            ...(userAgent ? { userAgent } : {}),
+            ...(clock ? { now: clock() } : {}),
+          }),
+        );
+        res.cookie(TISHA_BAV_EVENT_COOKIE, result.sessionToken, {
+          httpOnly: true,
+          secure: config.isProduction,
+          sameSite: 'strict',
+          path: '/',
+          maxAge: Math.max(1, new Date(result.response.expires_at).getTime() - Date.now()),
+        });
+        if (req.accepts(['json', 'html']) === 'html') {
+          res.redirect(303, result.response.redirect_path);
+          return;
+        }
+        res.status(200).json(result.response);
+      } catch (error) {
+        handleTishaBavRouteError(error, req, res, 'Private access is not available yet.');
+      }
+    },
+  );
+
+  app.get('/api/v1/events/tisha-bav-2026/redirect', async (req: RequestWithTrace, res) => {
+    setEventAccessNoStore(res);
+    try {
+      const sessionToken = getCookie(req, TISHA_BAV_EVENT_COOKIE);
+      const result = await withTiming(req, 'tisha_bav_redirect', () =>
+        resolveTishaBavRedirect({
+          pool,
+          config,
+          ...(sessionToken ? { sessionToken } : {}),
+          ...(clock ? { now: clock() } : {}),
+        }),
+      );
+      res.redirect(302, result.joinUrl);
+    } catch (error) {
+      handleTishaBavRouteError(error, req, res, 'Private access is not available yet.');
+    }
+  });
 
   app.post('/api/v1/auth/login', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
@@ -1197,6 +1342,15 @@ export function createApp({
     questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
     ...(clock ? { clock } : {}),
   });
+  const liveClassRepository = createLiveClassRepository(pool);
+  const liveClassService = createLiveClassService({
+    config,
+    repository: liveClassRepository,
+    questionCodec: new AesGcmPayloadCodec(
+      `${config.mfaSecretEncryptionKey}:live-class-question-v1`,
+    ),
+    ...(clock ? { clock } : {}),
+  });
   const gamificationRepository = createGamificationRepository(pool);
   const gamificationService = createGamificationService({
     repository: gamificationRepository,
@@ -1336,6 +1490,222 @@ export function createApp({
         success: true,
         data: classroomQuestionListResponseSchema.parse({ questions }),
       });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const occurrenceKey = optionalQueryString(req.query.occurrence_key);
+      if (actor.actor_role === 'owner' || actor.actor_role === 'admin') {
+        const snapshot = await liveClassService.consoleSnapshot(actor, occurrenceKey);
+        res.json(liveClassConsoleSnapshotSchema.parse(snapshot));
+        return;
+      }
+      const questions = await liveClassService.listQuestions(actor, occurrenceKey);
+      res.json(liveClassQuestionListResponseSchema.parse({ success: true, data: { questions } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionSubmitPayloadSchema.parse(req.body);
+      const result = await liveClassService.submitQuestion(actor, payload);
+      res.status(201).json(
+        liveClassQuestionSubmitResponseSchema.parse({
+          success: true,
+          data: result,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/select', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionActionPayloadSchema.parse(req.body);
+      const data = await liveClassService.selectQuestion(
+        actor,
+        String(req.params.id),
+        payload.idempotency_key,
+      );
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/ready', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionReadyPayloadSchema.parse(req.body);
+      const question = await liveClassService.markReady(actor, String(req.params.id), payload);
+      res.json({ success: true, data: { question } });
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/live', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionActionPayloadSchema.parse(req.body);
+      const data = await liveClassService.goLive(
+        actor,
+        String(req.params.id),
+        payload.idempotency_key,
+      );
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/questions/:id/complete', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassQuestionCompletePayloadSchema.parse(req.body);
+      const data = await liveClassService.completeQuestion(actor, String(req.params.id), payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/zoom/control', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassZoomControlPayloadSchema.parse(req.body);
+      const data = await liveClassService.zoomControl(actor, payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/obs/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (!requireObsBridgeToken(req, res, config)) return;
+    try {
+      const occurrenceKey = String(req.query.occurrence_key ?? '');
+      const commands = await liveClassService.pollObsCommands(
+        { account_key: config.accountKey, product_key: config.productKey },
+        occurrenceKey,
+      );
+      res.json(liveClassObsCommandPollResponseSchema.parse({ success: true, data: { commands } }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/live-class/obs/commands', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    if (req.body && typeof req.body === 'object' && 'command_key' in req.body) {
+      if (!requireObsBridgeToken(req, res, config)) return;
+      try {
+        const payload = liveClassObsCommandReportPayloadSchema.parse(req.body);
+        const result = await liveClassService.reportObsCommand(
+          { account_key: config.accountKey, product_key: config.productKey },
+          payload,
+        );
+        res.json({ success: true, data: result });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+      return;
+    }
+
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!requireSameOriginPost(req, res, config)) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    const actor = await resolvePortalActor(req);
+    if (!actor) {
+      res.status(401).json(publicError('UNAUTHENTICATED', 'Please log in again.', req.traceId));
+      return;
+    }
+    try {
+      const payload = liveClassObsCommandPayloadSchema.parse(req.body);
+      const data = await liveClassService.obsCommand(actor, payload);
+      res.json(liveClassCommandResponseSchema.parse({ success: true, data }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.get('/api/v1/live-class/stage/:stageSession', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    try {
+      const stage = await liveClassService.stageSnapshot(String(req.params.stageSession));
+      res.json(liveClassStageResponseSchema.parse({ success: true, data: stage }));
     } catch (error) {
       handleApiError(error, req, res);
     }
@@ -2354,6 +2724,15 @@ export function createApp({
     distDir,
   });
 
+  app.get('/tisha-bav/live', async (_req, res) => {
+    await sendNoStorePublicHtml(
+      res,
+      path.join(distDir, 'tisha-bav-live.html'),
+      config,
+      '/tisha-bav/live',
+    );
+  });
+
   app.use(async (req, res, next) => {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       next();
@@ -2383,6 +2762,7 @@ function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
   const staticPages = new Set([
     '/signup',
+    '/tisha-bav',
     '/login',
     '/privacy',
     '/terms',
@@ -2397,6 +2777,7 @@ function publicHtmlFileForPath(pathname: string) {
     '/app/classes',
     '/app/content',
     '/app/billing',
+    '/app/live-console',
     '/app/parent',
     '/app/student',
   ]);
@@ -2414,6 +2795,23 @@ async function sendPublicHtml(
   res
     .type('html')
     .set('Cache-Control', config.isProduction ? 'public, max-age=3600' : 'no-cache')
+    .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
+}
+
+async function sendNoStorePublicHtml(
+  res: Response,
+  filePath: string,
+  config: AppConfig,
+  canonicalPath: string,
+) {
+  const html = await readFile(filePath, 'utf8');
+  res
+    .type('html')
+    .set('Cache-Control', 'no-store, private')
+    .set('Pragma', 'no-cache')
+    .set('Expires', '0')
+    .set('Referrer-Policy', 'no-referrer')
+    .set('X-Robots-Tag', 'noindex, nofollow')
     .send(rewritePublicMetadata(html, config.publicBaseUrl, canonicalPath));
 }
 
@@ -2632,6 +3030,34 @@ function requireSameOriginPost(req: RequestWithTrace, res: Response, config: App
   return false;
 }
 
+function requireObsBridgeToken(req: RequestWithTrace, res: Response, config: AppConfig) {
+  const expected = config.liveClassObsBridgeToken;
+  const submitted =
+    req.header('x-ot-live-bridge-token') ?? optionalQueryString(req.query.bridge_token);
+  if (!expected || !submitted || !constantDigestEqual(expected, submitted)) {
+    res
+      .status(403)
+      .json(publicError('FORBIDDEN', 'Live OBS bridge token is required.', req.traceId));
+    return false;
+  }
+  return true;
+}
+
+function optionalQueryString(value: unknown) {
+  if (typeof value === 'string' && value.trim()) return value.trim();
+  if (Array.isArray(value) && typeof value[0] === 'string' && value[0].trim()) {
+    return value[0].trim();
+  }
+  return undefined;
+}
+
+function constantDigestEqual(left: string, right: string) {
+  return (
+    createHash('sha256').update(left).digest('hex') ===
+    createHash('sha256').update(right).digest('hex')
+  );
+}
+
 function providerCanaryAllowlist(config: AppConfig, env: NodeJS.ProcessEnv) {
   const values = [
     'ops05_fixture_webhook',
@@ -2733,7 +3159,11 @@ async function serveProtectedAppShell(
   await sendAppHtml(res, input.distDir, input.appPage);
 }
 
-async function sendAppHtml(res: Response, distDir: string, appPage: 'crm' | 'parent' | 'student') {
+async function sendAppHtml(
+  res: Response,
+  distDir: string,
+  appPage: 'crm' | 'live' | 'parent' | 'student',
+) {
   try {
     const html = await readFile(path.join(distDir, 'app', `${appPage}.html`), 'utf8');
     res.status(200).type('html').send(html);
@@ -3377,6 +3807,12 @@ function setPrivateNoStore(res: Response) {
   res.removeHeader('Last-Modified');
 }
 
+function setEventAccessNoStore(res: Response) {
+  setPrivateNoStore(res);
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+}
+
 function toIso(value: unknown) {
   if (value instanceof Date) return value.toISOString();
   return new Date(String(value)).toISOString();
@@ -3459,6 +3895,44 @@ function handleLifecycleRouteError(
       success: false,
       code: error.code,
       message: lifecycleMessage(error.code),
+      request_id: req.traceId,
+    });
+    return;
+  }
+  res.status(500).json(publicError('SERVER_ERROR', fallbackMessage, req.traceId));
+}
+
+function handleTishaBavRouteError(
+  error: unknown,
+  req: RequestWithTrace,
+  res: Response,
+  fallbackMessage: string,
+) {
+  if (res.headersSent) return;
+  if (error instanceof ZodError) {
+    res.status(400).json({
+      success: false,
+      code: 'VALIDATION_ERROR',
+      message: 'Please check the event form.',
+      field_errors: publicFieldErrors(error),
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof TishaBavIdempotencyConflictError) {
+    res.status(409).json({
+      success: false,
+      code: 'IDEMPOTENCY_CONFLICT',
+      message: 'This request key was already used. Refresh and try again.',
+      request_id: req.traceId,
+    });
+    return;
+  }
+  if (error instanceof TishaBavJoinError) {
+    res.status(error.status).json({
+      success: false,
+      code: error.code,
+      message: error.publicMessage,
       request_id: req.traceId,
     });
     return;

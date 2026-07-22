@@ -1,0 +1,73 @@
+{
+  "run_id": "TISHA-BAV-FUNNEL",
+  "status": "ready_for_operator_review",
+  "raw_prompt_sha256": "9EB1D52CC26C3C858E19502DA3FBABEB44E13A2EE9DB12B5B4C2742FD8C8BC94",
+  "repo": "shloimie-beep/onetimev2",
+  "base_branch": "codex/full-app-staging-live",
+  "branch": "codex/tisha-bav-2026-funnel",
+  "worktree": "C:/Users/User/.onetime-worktrees/TISHA-BAV-2026-FUNNEL",
+  "event_code": "tisha-bav-2026",
+  "event_start": "2026-07-23T15:00:00-04:00",
+  "event_start_israel": "2026-07-23T22:00:00+03:00",
+  "preview_url": "https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav",
+  "landing_assets": {
+    "desktop_hero": "apps/web/public/assets/events/tisha-bav-2026/tisha beav(1).png",
+    "mobile_hero": "apps/web/public/assets/events/tisha-bav-2026/tishea beav mobile(1).png",
+    "desktop_visual_evidence": "ops/codex-runs/TISHA-BAV-FUNNEL/screenshots/one-screen-local/desktop-1440x900-landscape-hero.png",
+    "mobile_visual_evidence": "ops/codex-runs/TISHA-BAV-FUNNEL/screenshots/one-screen-local/mobile-360x640-initial.png",
+    "success_visual_evidence": "ops/codex-runs/TISHA-BAV-FUNNEL/screenshots/one-screen-local/mobile-360x640-success.png",
+    "one_screen_metrics": "ops/codex-runs/TISHA-BAV-FUNNEL/screenshots/one-screen-local/mobile-scroll-results.json"
+  },
+  "provider_scope": {
+    "account_key": "rabbi_sheller_provider",
+    "product_key": "one_time_mishnah_class",
+    "event_definition_key": "event_tisha_bav_2026_rabbi_sheller_provider"
+  },
+  "email_copy": {
+    "raw_id": "RAW-20260721-010",
+    "raw_sha256": "c970d6cae8311ace88c20bb0702e4a1f022f36ef165ad554bffa7af5b10a050f",
+    "spec_id": "SPEC-20260721-010",
+    "spec_fingerprint": "df3cbccf409bfe09788297eec926817918c86fe3e326a98d915f02f308709f39",
+    "catalog_version": "tisha-bav-2026-email-copy-v1",
+    "one_hour_reminder_at": "2026-07-23T18:00:00.000Z",
+    "ten_minute_reminder_at": "2026-07-23T18:50:00.000Z",
+    "external_send_authorized": false
+  },
+  "production_changed": false,
+  "external_provider_mutations_performed": false,
+  "validation": {
+    "build": "passed",
+    "lint": "passed",
+    "focused_unit": "passed",
+    "focused_integration": "passed",
+    "mobile_browser_smoke": "passed_7_of_7_one_screen_viewports",
+    "secret_scan": "passed",
+    "brand_check": "passed",
+    "intent_preservation": "passed_22_of_22_hard_signals",
+    "email_copy_contract": "passed_2_tests",
+    "pqc_validators_and_evals": "passed_with_pre_existing_watchdog_findings",
+    "railway_preview_deploy": "passed_b986237c42ddb44a80c7917cbb96d62875494632_with_provider_registration_fix",
+    "railway_preview_provider_migration": "passed_2211_tisha_bav_provider_event_scope_applied",
+    "railway_preview_registration_domain_smoke": "passed_success_confirmation_queued_provider_off",
+    "railway_preview_http_registration": "passed_success_confirmation_queued_provider_off",
+    "railway_preview_smoke": "passed_http_200_no_raw_zoom_url",
+    "final_landing_copy_and_hero": "passed_desktop_mobile_title_overlay_full_page_modal_form_thank_you",
+    "preview_zoom_runtime": "configured_without_committing_raw_url",
+    "git_diff_check": "passed",
+    "scoped_prettier": "passed",
+    "full_repo_prettier": "pre_existing_backlog"
+  },
+  "notes": [
+    "Original prompt preserved in ORIGINAL-PROMPT.md.",
+    "Preview provider-scoped registration required migration 2211 and runtime event_definition_key event_tisha_bav_2026_rabbi_sheller_provider.",
+    "Final landing hero assets are committed as desktop and mobile PNGs; no final artwork blocker remains for the preview route.",
+    "The visible registration form is closed on initial load and opens in a full-page same-page modal on mobile and desktop.",
+    "The newsletter checkbox and visible event consent paragraph were removed from the Tisha landing flow.",
+    "The Hebrew line is positioned above the English title on top of the image.",
+    "Operator-provided Zoom join URL was stored only in the protected Railway PR runtime and is not present in repo files.",
+    "Exact event email copy is preserved and implemented through EMAIL-COPY-MANIFEST.json and the versioned communication catalog.",
+    "Warm invitation audience selection and any external send remain unapproved; no email was sent.",
+    "The current base branch lacks the divergent HighLevel integration branch; this run keeps GHL work scoped to event registration intents and provider-off safe defaults.",
+    "No raw Zoom URL or secret is stored in repo files."
+  ]
+}

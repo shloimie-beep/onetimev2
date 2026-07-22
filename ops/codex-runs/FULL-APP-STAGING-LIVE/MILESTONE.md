@@ -10,12 +10,14 @@ Base: `codex/one-time-finish-now-20260719`
 Deployed source: `944f46b5435d648e6e175c69746ca7a4895ffec4`
 
 Staging deployment:
+
 - Web: `59112f43-29be-4a14-a2da-d932d798d78e`
 - Worker: `4f823e75-aee6-4524-bb36-8a7ced027355`
 - Version: `full-app-staging-live-944f46b`
 - Latest migration: `2209_class_series_scope_unique`
 
 Preview status:
+
 - Admin password reaches the email challenge screen.
 - Parent login reaches the Parent Portal with three active learners.
 - Student login reaches the Student Portal with demo class, Vimeo lesson, progress, rewards, and leaderboard.
@@ -24,6 +26,7 @@ Preview status:
 - Production was not changed.
 
 Validation:
+
 - `npm ci`
 - `npm run typecheck`
 - `npm run build`
@@ -34,6 +37,7 @@ Validation:
 - Live browser smoke: passed.
 
 Safe screenshots:
+
 - `ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/admin-email-challenge.png`
 - `ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/parent-dashboard.png`
 - `ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/student-dashboard-mobile.png`

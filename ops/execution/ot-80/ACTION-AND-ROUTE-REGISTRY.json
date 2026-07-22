@@ -74,6 +74,57 @@
       "mounted_in_ot80": true,
       "guards": ["schema_validation", "idempotency", "school_no_public_send_policy"],
       "side_effects": "creates lead/contact/audit records and sink-mode outbox intents only"
+    },
+    {
+      "id": "route.tisha_bav.public.landing",
+      "method": "GET",
+      "path": "/tisha-bav",
+      "source": "scripts/build-public-pages.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe", "no_student_data", "no_payment"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.tisha_bav.events.register",
+      "method": "POST",
+      "path": "/api/v1/events/tisha-bav-2026/register",
+      "source": "apps/web/src/server/app.ts",
+      "mounted_in_ot80": true,
+      "guards": ["schema_validation", "honeypot", "durable_rate_limit", "idempotency"],
+      "side_effects": "creates or updates first-party event registration and provider-off HighLevel delivery intent"
+    },
+    {
+      "id": "route.tisha_bav.public.live",
+      "method": "GET",
+      "path": "/tisha-bav/live",
+      "source": "apps/web/src/server/app.ts",
+      "mounted_in_ot80": true,
+      "guards": ["anonymous_safe", "no_store", "no_referrer"],
+      "side_effects": "none"
+    },
+    {
+      "id": "route.tisha_bav.events.join",
+      "method": "POST",
+      "path": "/api/v1/events/tisha-bav-2026/join",
+      "source": "apps/web/src/server/app.ts",
+      "mounted_in_ot80": true,
+      "guards": ["schema_validation", "durable_rate_limit", "registered_email", "join_window"],
+      "side_effects": "creates short-lived event access session cookie only"
+    },
+    {
+      "id": "route.tisha_bav.events.redirect",
+      "method": "GET",
+      "path": "/api/v1/events/tisha-bav-2026/redirect",
+      "source": "apps/web/src/server/app.ts",
+      "mounted_in_ot80": true,
+      "guards": [
+        "event_session_cookie",
+        "join_window",
+        "protected_zoom_env",
+        "no_store",
+        "no_referrer"
+      ],
+      "side_effects": "server-side redirect to protected event URL only when configured"
     }
   ],
   "actions": [
@@ -204,6 +255,29 @@
       "status": "active_sink_mode",
       "route_id": "route.ot73.leads.create",
       "guards": ["schema_validation", "idempotency", "communications_school_public_send_block"],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.tisha_bav.public.register",
+      "surface": "Tisha B'Av event registration form",
+      "source": "apps/web/src/client/public/public-entry.ts",
+      "status": "active_provider_off_default",
+      "route_id": "route.tisha_bav.events.register",
+      "guards": [
+        "schema_validation",
+        "idempotency",
+        "newsletter_separate_consent",
+        "no_student_contact"
+      ],
+      "external_mutation_allowed": false
+    },
+    {
+      "id": "action.tisha_bav.public.join",
+      "surface": "Tisha B'Av private access form",
+      "source": "apps/web/src/client/public/public-entry.ts",
+      "status": "active_requires_protected_zoom_mapping",
+      "route_id": "route.tisha_bav.events.join",
+      "guards": ["registered_email", "join_window", "short_lived_event_session"],
       "external_mutation_allowed": false
     },
     {

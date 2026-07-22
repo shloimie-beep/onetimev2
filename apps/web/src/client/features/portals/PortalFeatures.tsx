@@ -17,6 +17,7 @@ import type {
   StudentPortalDashboard,
   UpcomingClassSummary,
 } from '../../../../../../packages/contracts/src/portals/index.ts';
+import type { LiveClassQuestion } from '../../../../../../packages/contracts/src/live-class/index.ts';
 import type { GamificationSummary } from '../../../../../../packages/contracts/src/gamification/index.ts';
 
 export type PortalViewState =
@@ -71,6 +72,8 @@ export type StudentPortalFeatureProps = {
   onQueryHelper?: (question: string) => Promise<HelperAnswer>;
   onSubmitQuestion?: (question: string, classKey?: string | undefined) => void;
   onSubmitClassroomQuestion?: (occurrenceKey: string, body: string) => void;
+  liveClassQuestions?: LiveClassQuestion[];
+  onMarkLiveClassReady?: (questionKey: string, ready: boolean) => void;
   onPreviewSupport?: () => void;
   onRetry?: () => void;
 };
@@ -369,6 +372,8 @@ export function StudentPortalFeature({
   onQueryHelper,
   onSubmitQuestion,
   onSubmitClassroomQuestion,
+  liveClassQuestions = [],
+  onMarkLiveClassReady,
   onPreviewSupport,
   onRetry,
 }: StudentPortalFeatureProps) {
@@ -447,6 +452,10 @@ export function StudentPortalFeature({
               </div>
             </form>
           )}
+          <LiveClassReadyPanel
+            questions={liveClassQuestions}
+            {...(onMarkLiveClassReady ? { onMarkReady: onMarkLiveClassReady } : {})}
+          />
         </section>
         <section className="ot-panel" aria-labelledby="student-library-heading">
           <h2 id="student-library-heading">Library</h2>
@@ -487,6 +496,47 @@ export function StudentPortalFeature({
         </section>
       </div>
     </section>
+  );
+}
+
+function LiveClassReadyPanel({
+  questions,
+  onMarkReady,
+}: {
+  questions: LiveClassQuestion[];
+  onMarkReady?: (questionKey: string, ready: boolean) => void;
+}) {
+  const selected = questions.find((question) =>
+    ['selected', 'student_ready', 'live'].includes(question.status),
+  );
+  if (!selected) return null;
+  const ready = selected.status === 'student_ready' || selected.status === 'live';
+  return (
+    <div className="ot-live-ready" role="status">
+      <div>
+        <strong>Rabbi selected your question.</strong>
+        <p>Enable microphone and video in Zoom when you are ready to answer.</p>
+      </div>
+      <div className="ot-action-row">
+        <button
+          type="button"
+          className="ot-button"
+          onClick={() => onMarkReady?.(selected.question_key, true)}
+          disabled={!onMarkReady || ready}
+        >
+          I'm ready
+        </button>
+        <button
+          type="button"
+          className="ot-button secondary"
+          onClick={() => onMarkReady?.(selected.question_key, false)}
+          disabled={!onMarkReady || selected.readiness === 'declined'}
+        >
+          Decline
+        </button>
+        <span>{ready ? 'Ready sent' : selected.readiness}</span>
+      </div>
+    </div>
   );
 }
 

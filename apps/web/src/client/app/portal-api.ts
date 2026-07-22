@@ -1,7 +1,9 @@
 import type {
-  ClassroomQuestionSubmitResponse,
   HelperAnswer,
   LearnerProfile,
+  LiveClassQuestion,
+  LiveClassQuestionListResponse,
+  LiveClassQuestionSubmitResponse,
   ParentLearnerMaterials,
   ParentPortalDashboard,
   ParentRewardGoal,
@@ -224,19 +226,44 @@ export async function submitClassroomQuestion(input: {
   occurrenceKey: string;
   body: string;
 }) {
-  const json = await api<{ success: true; data: ClassroomQuestionSubmitResponse }>(
-    '/api/v1/classroom/questions',
+  const json = await api<LiveClassQuestionSubmitResponse>('/api/v1/live-class/questions', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
+    body: JSON.stringify({
+      occurrence_key: input.occurrenceKey,
+      body: input.body,
+      idempotency_key: createIdempotencyKey(),
+    }),
+  });
+  return json.data;
+}
+
+export async function getLiveClassQuestions(occurrenceKey: string) {
+  const json = await api<LiveClassQuestionListResponse>(
+    `/api/v1/live-class/questions?occurrence_key=${encodeURIComponent(occurrenceKey)}`,
+  );
+  return json.data.questions;
+}
+
+export async function markLiveClassQuestionReady(input: {
+  csrfToken: string;
+  questionKey: string;
+  ready: boolean;
+}) {
+  const json = await api<{ success: true; data: { question: LiveClassQuestion } }>(
+    `/api/v1/live-class/questions/${encodeURIComponent(input.questionKey)}/ready`,
     {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-csrf-token': input.csrfToken },
       body: JSON.stringify({
-        occurrence_key: input.occurrenceKey,
-        body: input.body,
         idempotency_key: createIdempotencyKey(),
+        ready: input.ready,
+        mic_ready: input.ready,
+        video_ready: input.ready,
       }),
     },
   );
-  return json.data;
+  return json.data.question;
 }
 
 export async function previewParentSupport(input: {

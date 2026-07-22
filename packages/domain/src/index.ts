@@ -42,6 +42,19 @@ export {
   type ClassroomRepository,
   type ClassroomService,
 } from './classroom/service.ts';
+export {
+  CANONICAL_OBS_SCENES,
+  CANONICAL_OBS_SOURCES,
+  LIVE_CLASS_POLICY_VERSION,
+  LIVE_CLASS_STAGE_SURFACE_LABEL,
+  createLiveClassService,
+  verifySignedLiveClassCommand,
+  type LiveClassCommandInsert,
+  type LiveClassLearnerRecord,
+  type LiveClassRepository,
+  type LiveClassService,
+  type LiveClassSessionRecord,
+} from './live-class/service.ts';
 export { createClassroomReminderJob } from './classroom/reminders.ts';
 export {
   ZoomApiError,
@@ -161,17 +174,23 @@ export {
   LearningDeliveryError,
   assertSafeLearningDeliveryBusinessEvent,
   assertLearningDeliveryTransition,
+  buildLearningDeliveryPreparedDemoProjection,
   buildLearningDeliveryBusinessEvent,
   buildLearningDeliveryFfmpegRenderPlan,
   buildLearningDeliveryFfprobePlan,
+  buildLearningDeliveryTranscriptArtifact,
   buildLearningDeliveryWebVtt,
   createLearningDeliveryOpenAiTranscriptionAdapter,
+  LEARNING_DELIVERY_TRANSCRIPTION_VOCABULARY_PROMPT,
   learningDeliverySha256Hex,
   normalizeLearningDeliveryDriveFile,
   normalizeLearningDeliveryTranscriptSegments,
+  parseLearningDeliverySilencedetectLog,
+  projectLearningDeliveryTranscriptForTrim,
   parseLearningDeliveryFfprobeJson,
   recordLearningDeliveryBusinessEvent,
   sanitizeLearningDeliveryMetadata,
+  suggestLearningDeliveryAutomaticTrim,
   suggestLearningDeliveryTrim,
 } from './content/learning-delivery.ts';
 export {
@@ -276,6 +295,31 @@ export {
   type AuthenticatedSession,
 } from './auth/service.ts';
 export { consumeRateLimitBudgets } from './security/rate-limit.ts';
+export {
+  TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
+  TISHA_BAV_EMAIL_CATALOG,
+  TISHA_BAV_EMAIL_SENDER,
+  TISHA_BAV_EVENT_DISPLAY,
+  TISHA_BAV_EVENT_START,
+  TISHA_BAV_WORKFLOW_SCHEDULE,
+} from './events/tisha-bav-communications.ts';
+export {
+  HttpHighLevelEventClient,
+  MockHighLevelEventClient,
+  TISHA_BAV_EVENT_CODE,
+  TISHA_BAV_EVENT_TITLE,
+  TISHA_BAV_JOIN_PATH,
+  TISHA_BAV_LANDING_PATH,
+  TISHA_BAV_REDIRECT_PATH,
+  TishaBavIdempotencyConflictError,
+  TishaBavJoinError,
+  captureTishaBavRegistration,
+  createHighLevelEventClient,
+  requestTishaBavJoin,
+  resolveTishaBavRedirect,
+  tishaBavEventState,
+  type HighLevelEventClient,
+} from './events/tisha-bav.ts';
 export { createAccountLifecycleCredentialAdapter } from './portals/account-lifecycle-adapter.ts';
 export { buildOwnerDashboard, ownerAdminVisibleActions } from './dashboard/service.ts';
 export {

@@ -52,7 +52,11 @@
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",
     "version:print": "tsx scripts/print-version.ts",
     "director:truth": "node scripts/check-director-truth.mjs",
-    "director:truth:live": "node scripts/check-director-truth.mjs --live"
+    "director:truth:live": "node scripts/check-director-truth.mjs --live",
+    "learning-delivery:real-canary": "tsx scripts/media/learning-delivery-real-media-canary.ts",
+    "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
+    "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
+    "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

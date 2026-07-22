@@ -6,6 +6,14 @@ const booleanFromString = z
   .default(false)
   .transform((value) => value === true || value === 'true' || value === '1');
 
+const optionalBooleanFromString = z
+  .union([z.boolean(), z.string()])
+  .optional()
+  .transform((value) => {
+    if (value === undefined || value === '') return undefined;
+    return value === true || value === 'true' || value === '1';
+  });
+
 const numberFromString = z
   .union([z.number(), z.string()])
   .optional()
@@ -157,6 +165,18 @@ const envSchema = z.object({
   ZOOM_MEETING_SDK_KEY: z.string().optional(),
   ZOOM_MEETING_SDK_SECRET: z.string().optional(),
   ZOOM_ACCOUNT_ID: z.string().optional(),
+  ONE_TIME_EVENT_EMAIL_FALLBACK: z.enum(['disabled', 'resend']).default('disabled'),
+  ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: z.url().optional(),
+  ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF: optionalTrimmedString(4, 240),
+  HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
+  HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
+  HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
+  HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
+  HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
+  HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: optionalTrimmedString(1, 160),
+  LIVE_CLASS_FAKE_ADAPTER_ENABLED: optionalBooleanFromString,
+  LIVE_CLASS_OBS_BRIDGE_TOKEN: optionalTrimmedString(12, 160),
+  LIVE_CLASS_TELEGRAM_ENABLED: booleanFromString,
   SUPPORT_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
   SUPPORT_RATE_LIMIT_MAX: numberFromString.default(6),
   SUPPORT_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(120),
@@ -172,6 +192,7 @@ const envSchema = z.object({
   OT89_SUPPORT_DEPLOYMENT_ID: z.string().min(1).max(64).default('local-ot89a'),
   LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
   PORTAL_TEST_LAB_ENABLED: booleanFromString,
+  LEARNING_DELIVERY_DEMO_ENABLED: booleanFromString,
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -211,6 +232,13 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Zoom canary execution is outside this local task and must remain disabled.');
   }
 
+  if (
+    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
+    !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
+  ) {
+    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
+  }
+
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
     throw new Error('Production web startup cannot run migrations automatically.');
   }
@@ -237,6 +265,21 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.NODE_ENV === 'production' && parsed.PORTAL_TEST_LAB_ENABLED) {
     throw new Error('Portal Test Lab is forbidden in production.');
+  }
+
+  if (
+    parsed.NODE_ENV === 'production' &&
+    deliveryEnvironment === 'production' &&
+    parsed.LEARNING_DELIVERY_DEMO_ENABLED
+  ) {
+    throw new Error('Learning Delivery demo is forbidden in production.');
+  }
+
+  if (
+    parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED &&
+    (deliveryEnvironment === 'production' || oneTimeRuntimeEnvironment === 'production')
+  ) {
+    throw new Error('Live class fake adapter is forbidden in production.');
   }
 
   const ot89ProvidedSecrets = [
@@ -419,6 +462,22 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkKeyConfigured: Boolean(parsed.ZOOM_MEETING_SDK_KEY),
     zoomMeetingSdkSecretConfigured: Boolean(parsed.ZOOM_MEETING_SDK_SECRET),
     zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID),
+    oneTimeEventEmailFallback: parsed.ONE_TIME_EVENT_EMAIL_FALLBACK,
+    tishaBavZoomJoinUrl: parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL,
+    tishaBavZoomMeetingRefConfigured: Boolean(parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF),
+    highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
+    highLevelApiBaseUrl: parsed.HIGHLEVEL_API_BASE_URL,
+    highLevelApiVersion: parsed.HIGHLEVEL_API_VERSION,
+    highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
+    highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
+    highLevelTishaBavWorkflowId: parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID,
+    liveClassFakeAdapterEnabled:
+      parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED ?? oneTimeRuntimeEnvironment !== 'production',
+    liveClassObsBridgeToken:
+      parsed.LIVE_CLASS_OBS_BRIDGE_TOKEN ??
+      (parsed.NODE_ENV === 'production' ? undefined : 'local-live-class-obs-bridge'),
+    liveClassObsBridgeTokenConfigured: Boolean(parsed.LIVE_CLASS_OBS_BRIDGE_TOKEN),
+    liveClassTelegramEnabled: parsed.LIVE_CLASS_TELEGRAM_ENABLED,
     supportRateLimitWindowMs: parsed.SUPPORT_RATE_LIMIT_WINDOW_MS,
     supportRateLimitMax: parsed.SUPPORT_RATE_LIMIT_MAX,
     supportAccountRateLimitMax: parsed.SUPPORT_ACCOUNT_RATE_LIMIT_MAX,
@@ -448,5 +507,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     bufferOrganizationId: parsed.BUFFER_ORGANIZATION_ID,
     bufferDestinationIds: parsed.BUFFER_DESTINATION_IDS,
     portalTestLabEnabled: parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED,
+    learningDeliveryDemoEnabled:
+      parsed.NODE_ENV === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
   };
 }

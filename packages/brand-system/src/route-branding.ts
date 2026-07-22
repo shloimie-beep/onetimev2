@@ -16,7 +16,7 @@ export type RouteVisualState =
   | 'not-found'
   | 'redirect';
 
-export type RouteBundle = 'public' | 'app-crm' | 'app-portal' | 'server-static';
+export type RouteBundle = 'public' | 'app-crm' | 'app-live' | 'app-portal' | 'server-static';
 
 export type RouteBranding = {
   route: string;
@@ -65,6 +65,26 @@ export const routeBranding: RouteBranding[] = [
     navigationLabel: 'Sign Up Now',
     navigationGroup: 'public',
     evidenceSelector: '.signup-page',
+  },
+  {
+    route: '/tisha-bav',
+    shell: 'public-marketing',
+    role: 'public',
+    bundle: 'public',
+    ticker: false,
+    states: ['ready', 'loading', 'error', 'denied'],
+    navigationLabel: "Tisha B'Av Program",
+    navigationGroup: 'public',
+    evidenceSelector: '.tisha-bav-page',
+  },
+  {
+    route: '/tisha-bav/live',
+    shell: 'public-marketing',
+    role: 'public',
+    bundle: 'public',
+    ticker: false,
+    states: ['ready', 'loading', 'error', 'denied'],
+    evidenceSelector: '.event-live-page',
   },
   {
     route: '/login',
@@ -283,6 +303,26 @@ export const routeBranding: RouteBranding[] = [
     ticker: false,
     states: ['ready', 'loading', 'error', 'denied', 'session-expired', 'not-found'],
     evidenceSelector: '.state-panel',
+  },
+  {
+    route: '/app/live-console',
+    shell: 'owner-admin',
+    role: 'owner-admin',
+    bundle: 'app-live',
+    ticker: false,
+    states: appStates,
+    navigationLabel: 'Live Console',
+    navigationGroup: 'owner-admin',
+    evidenceSelector: '#live-root, .live-console',
+  },
+  {
+    route: '/app/live-stage/:stageSession',
+    shell: 'owner-admin',
+    role: 'authenticated',
+    bundle: 'app-live',
+    ticker: false,
+    states: ['ready', 'loading', 'error', 'not-found'],
+    evidenceSelector: '#live-root, .live-stage',
   },
   {
     route: '/app/parent',

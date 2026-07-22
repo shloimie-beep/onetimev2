@@ -1,0 +1,241 @@
+-
+  key: 'one_time_enrollment_and_conversion'
+  canonicalName: 'One Time Enrollment and Conversion'
+  status: 'pending_creation'
+  purpose: 'Adult lead, nurture, signup, and conversion opportunity state.'
+  owner: 'Shloimie'
+  stages:
+    -
+      name: 'Warm Lead'
+      position: 0
+    -
+      name: 'Contacted'
+      position: 1
+    -
+      name: 'Engaged'
+      position: 2
+    -
+      name: 'Signup Started'
+      position: 3
+    -
+      name: 'Signed Up'
+      position: 4
+    -
+      name: 'Active Member'
+      position: 5
+    -
+      name: 'Not Now'
+      position: 6
+    -
+      name: 'Unqualified'
+      position: 7
+  aliases:
+    - 'One Time Business'
+  deleteOrMigrateExistingOpportunities: false
+  reconciliation:
+    name: 'One Time Enrollment and Conversion'
+    status: 'verified'
+    id: 'RTTGVfbMv5aM92BQqklL'
+    stages:
+      -
+        name: 'Warm Lead'
+        id: 'd4a0adcc-627d-4557-b963-da0950050748'
+        position: 0
+      -
+        name: 'Contacted'
+        id: 'be1af44d-6d33-488e-a034-e958455a9e0f'
+        position: 1
+      -
+        name: 'Engaged'
+        id: '7582d13a-3d0e-463d-923f-b7d4bf660a52'
+        position: 2
+      -
+        name: 'Signup Started'
+        id: '0ae744df-b0bb-468e-913a-79188b03e76f'
+        position: 3
+      -
+        name: 'Signed Up'
+        id: 'b87ce5c3-d877-4009-99bd-6012da7e455d'
+        position: 4
+      -
+        name: 'Active Member'
+        id: '05900897-e5b0-472a-b89d-70978f29f825'
+        position: 5
+      -
+        name: 'Not Now'
+        id: 'a262b166-c2f3-4b2a-9306-a7b79d8555e1'
+        position: 6
+      -
+        name: 'Unqualified'
+        id: 'bb4af305-fedd-42e4-8307-98767b0945b5'
+        position: 7
+-
+  key: 'one_time_member_support'
+  canonicalName: 'One Time Member Support'
+  status: 'pending_creation'
+  purpose: 'Customer-support and external-fix opportunity state.'
+  owner: 'Shloimie'
+  stages:
+    -
+      name: 'New'
+      position: 0
+    -
+      name: 'Triaged'
+      position: 1
+    -
+      name: 'In Progress'
+      position: 2
+    -
+      name: 'Waiting on Member'
+      position: 3
+    -
+      name: 'Waiting on External Fix'
+      position: 4
+    -
+      name: 'Resolved'
+      position: 5
+    -
+      name: 'Closed'
+      position: 6
+  aliases:
+    - 'One Time Business'
+  deleteOrMigrateExistingOpportunities: false
+  reconciliation:
+    name: 'One Time Member Support'
+    status: 'verified'
+    id: 'u2TzNK7t25ZdqqIrgjkE'
+    stages:
+      -
+        name: 'New'
+        id: 'de6f7e08-ec97-4f27-a5ad-adf922db34ae'
+        position: 0
+      -
+        name: 'Triaged'
+        id: '654e7272-2fdc-4857-b073-eda8af611e65'
+        position: 1
+      -
+        name: 'In Progress'
+        id: '60709dab-e5c3-4f98-ab94-560df405cc82'
+        position: 2
+      -
+        name: 'Waiting on Member'
+        id: '6d9da475-b03a-43b9-a09c-1eedc0c60528'
+        position: 3
+      -
+        name: 'Waiting on External Fix'
+        id: '795b1f1a-1cf0-46e5-9a58-9dd158b53d8d'
+        position: 4
+      -
+        name: 'Resolved'
+        id: 'a6dee446-3c4d-41c9-ade5-d4019b9a0f21'
+        position: 5
+      -
+        name: 'Closed'
+        id: '21383964-8714-4e22-8b06-ca70060b0869'
+        position: 6
+-
+  key: 'one_time_torah_questions'
+  canonicalName: 'One Time Torah Questions'
+  status: 'pending_creation'
+  purpose: 'Substantive Torah, Mishnah, and halachic question state.'
+  owner: 'Shloimie triages; Rabbi Eli Scheller authors assigned answers through Telegram'
+  stages:
+    -
+      name: 'New'
+      position: 0
+    -
+      name: 'Shloimie Review'
+      position: 1
+    -
+      name: 'Assigned to Rabbi'
+      position: 2
+    -
+      name: 'Rabbi Reviewing'
+      position: 3
+    -
+      name: 'Answer Sent'
+      position: 4
+    -
+      name: 'Waiting on Follow-Up'
+      position: 5
+    -
+      name: 'Closed'
+      position: 6
+  aliases:
+    - 'One Time Business'
+  deleteOrMigrateExistingOpportunities: false
+  reconciliation:
+    name: 'One Time Torah Questions'
+    status: 'verified'
+    id: 'wabcK1pPBuqj1T4cjpI7'
+    stages:
+      -
+        name: 'New'
+        id: '003652bd-73a8-4b8d-9f35-f4c37854fec8'
+        position: 0
+      -
+        name: 'Shloimie Review'
+        id: '58f3ebc9-c3b8-45cd-a54a-f855722b8d30'
+        position: 1
+      -
+        name: 'Assigned to Rabbi'
+        id: '9518925f-656f-4d2b-a559-32b42ac8be71'
+        position: 2
+      -
+        name: 'Rabbi Reviewing'
+        id: 'e526a96d-0e87-4835-8be3-e885fe5e9c67'
+        position: 3
+      -
+        name: 'Answer Sent'
+        id: 'd68b0149-4017-4483-b823-e0de121e3b8b'
+        position: 4
+      -
+        name: 'Waiting on Follow-Up'
+        id: 'ec263678-3b92-4b00-9de8-0b68608f9de3'
+        position: 5
+      -
+        name: 'Closed'
+        id: '75989802-095c-45ed-9271-4ba6c53cb96b'
+        position: 6
+-
+  key: 'one_time_business_compatibility_alias'
+  canonicalName: 'One Time Business'
+  status: 'compatibility_alias'
+  purpose: 'Compatibility alias until existing opportunities are explicitly mapped.'
+  owner: 'Shloimie'
+  stages:
+    []
+  aliases:
+    - 'One Time Enrollment and Conversion'
+    - 'One Time Member Support'
+    - 'One Time Torah Questions'
+  deleteOrMigrateExistingOpportunities: false
+  reconciliation:
+    name: 'One Time Business'
+    status: 'verified'
+    id: 'T8xEp9woujGVqvNJlqoz'
+    stages:
+      -
+        name: 'Lead'
+        id: 'a59ea712-d1e0-44e6-ac57-419fb3c71367'
+        position: 0
+      -
+        name: 'Checkout Started'
+        id: '00cf536c-25ce-46a5-a292-1a72822d565f'
+        position: 1
+      -
+        name: 'Active Customer'
+        id: '3177add5-e536-4a5f-a969-fc4f2cb00f83'
+        position: 2
+      -
+        name: 'Grace'
+        id: '3e567591-4cc9-403c-a4b8-b843712ddd86'
+        position: 3
+      -
+        name: 'Canceled'
+        id: '3cebc246-f63f-4cb1-87f3-72e139efd455'
+        position: 4
+      -
+        name: 'Former'
+        id: '68680d55-15d4-42c3-b5be-dbb26a27c9cc'
+        position: 5

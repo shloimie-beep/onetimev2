@@ -1,0 +1,32 @@
+-
+  form_field: 'adult_name'
+  maps_to: 'Full Name'
+  object_type: 'standard_contact_field'
+-
+  form_field: 'email'
+  maps_to: 'Email'
+  object_type: 'standard_contact_field'
+-
+  form_field: 'phone'
+  maps_to: 'Phone'
+  object_type: 'standard_contact_field'
+-
+  form_field: 'family_or_school'
+  maps_to: 'One Time Family or School Name'
+  object_type: 'contact_custom_field'
+-
+  form_field: 'audience_type'
+  maps_to: 'One Time Audience Type'
+  object_type: 'contact_custom_field'
+-
+  form_field: 'reminder_preference'
+  maps_to: 'One Time Reminder Preference'
+  object_type: 'contact_custom_field'
+-
+  form_field: 'source_channel'
+  maps_to: 'One Time Source Channel'
+  object_type: 'contact_custom_field'
+-
+  form_field: 'signup_status'
+  maps_to: 'One Time Signup Status'
+  object_type: 'contact_custom_field'
