@@ -190,15 +190,27 @@ function sdkKeyFromSignature(signature: string) {
   return payload.sdkKey;
 }
 
-function sdkErrorCode(error: unknown) {
-  if (!error || typeof error !== 'object') return 'unknown';
-  const value =
-    (error as { errorCode?: unknown; error_code?: unknown }).errorCode ??
-    (error as { error_code?: unknown }).error_code;
+function sdkErrorSummary(error: unknown) {
+  if (!error || typeof error !== 'object') return 'code unknown';
+  const record = error as {
+    errorCode?: unknown;
+    error_code?: unknown;
+    reason?: unknown;
+    errorMessage?: unknown;
+    message?: unknown;
+  };
+  const value = record.errorCode ?? record.error_code;
   const normalized = String(value ?? '')
     .replace(/[^a-z0-9_-]/gi, '')
     .slice(0, 32);
-  return normalized || 'unknown';
+  const reason = String(record.reason ?? record.errorMessage ?? record.message ?? '')
+    .replace(/https?:\/\/\S+/gi, '[redacted]')
+    .replace(/\b\d{6,}\b/g, '[redacted]')
+    .replace(/\b(zak|token|pass(?:word|code)?)\s*[:=]\s*\S+/gi, '$1=[redacted]')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 140);
+  return reason ? `code ${normalized || 'unknown'}: ${reason}` : `code ${normalized || 'unknown'}`;
 }
 
 async function report(
@@ -314,15 +326,11 @@ async function start() {
             zak: bootstrap.data.zak,
             success: () => resolve(),
             error: (error: unknown) =>
-              reject(
-                new Error(`Meeting SDK host join was rejected (code ${sdkErrorCode(error)}).`),
-              ),
+              reject(new Error(`Meeting SDK host join was rejected (${sdkErrorSummary(error)}).`)),
           });
         },
         error: (error: unknown) =>
-          reject(
-            new Error(`Meeting SDK host initialization failed (code ${sdkErrorCode(error)}).`),
-          ),
+          reject(new Error(`Meeting SDK host initialization failed (${sdkErrorSummary(error)}).`)),
       });
     });
     setStatus('Protected host joined. Participant consent remains required for camera and unmute.');
