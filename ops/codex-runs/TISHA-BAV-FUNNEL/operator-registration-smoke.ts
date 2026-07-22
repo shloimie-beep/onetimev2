@@ -119,7 +119,24 @@ const exactContacts = (contactsPayload.contacts ?? []).filter(
   (contact) => contact.email?.trim().toLocaleLowerCase() === email,
 );
 const exactContact = exactContacts[0];
-const tags = new Set(exactContact?.tags ?? []);
+let authoritativeContact: { id?: string; tags?: string[] } | undefined;
+if (exactContact?.id) {
+  const contactResponse = await fetch(
+    new URL(
+      `/contacts/${encodeURIComponent(exactContact.id)}`,
+      'https://services.leadconnectorhq.com',
+    ),
+    { headers: highLevelHeaders },
+  );
+  if (!contactResponse.ok) {
+    throw new Error(`HighLevel contact read returned HTTP ${contactResponse.status}.`);
+  }
+  const contactPayload = (await contactResponse.json()) as {
+    contact?: { id?: string; tags?: string[] };
+  };
+  authoritativeContact = contactPayload.contact;
+}
+const tags = new Set(authoritativeContact?.tags ?? exactContact?.tags ?? []);
 
 const workflowsUrl = new URL('/workflows/', 'https://services.leadconnectorhq.com');
 workflowsUrl.searchParams.set('locationId', locationId);
@@ -151,6 +168,7 @@ process.stdout.write(
     highlevel_delivery_attempts: row?.attempts ?? null,
     workflow_request_accepted: row?.workflow_configured ?? false,
     ghl_exact_contact_count: exactContacts.length,
+    ghl_direct_contact_read: Boolean(authoritativeContact?.id),
     ghl_contact_reference_hash: exactContact?.id ? sha256(exactContact.id).slice(0, 16) : null,
     registered_tag_present: tags.has("OT | Event | Tisha B'Av 2026 | Registered"),
     source_tag_present: tags.has("OT | Source | Tisha B'Av 2026"),
