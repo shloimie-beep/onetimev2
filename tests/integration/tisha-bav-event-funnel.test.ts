@@ -143,6 +143,36 @@ describe('Tisha BAv event registration', () => {
     expect(highLevel.workflowRequests).toHaveLength(1);
   });
 
+  it('does not request the workflow again after a successful idempotent replay', async () => {
+    const config = testConfig({
+      HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+      HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
+    });
+    const highLevel = new MockHighLevelEventClient();
+    const payload = registrationPayload('operator@example.test', {
+      idempotency_key: 'operator-idempotency-1',
+    });
+
+    const first = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload,
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+    const second = await captureTishaBavRegistration({
+      pool,
+      config,
+      payload,
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+
+    expect(first.ghl_sync_status).toBe('succeeded');
+    expect(second).toMatchObject({ duplicate_submission: true, ghl_sync_status: 'succeeded' });
+    expect(highLevel.workflowRequests).toHaveLength(1);
+  });
+
   it('does not add the weekly newsletter tag without explicit consent', async () => {
     const config = testConfig({
       HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
