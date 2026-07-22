@@ -13,7 +13,6 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import {
   TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
-  TISHA_BAV_EMAIL_CATALOG,
   TISHA_BAV_EMAIL_SENDER,
   TISHA_BAV_EVENT_START,
   TISHA_BAV_JOIN_PATH,
@@ -44,6 +43,28 @@ export const TISHA_BAV_REQUIRED_TAGS = [
   "OT | Source | Tisha B'Av 2026",
 ] as const;
 export const TISHA_BAV_NEWSLETTER_TAG = 'OT | Weekly Newsletter';
+const TISHA_BAV_REGISTERED_TAG = "OT | Event | Tisha B'Av 2026 | Registered";
+const TISHA_BAV_DIRECT_CONFIRMATION_TEMPLATE = 'tisha_bav_2026_registration_confirmation_direct_v2';
+const TISHA_BAV_DIRECT_CONFIRMATION_SUBJECT =
+  "You're registered for Rabbi Eli Scheller's live Tisha B'Av Zoom class";
+const TISHA_BAV_DIRECT_CONFIRMATION_BODY = [
+  'Hi {{default contact.first_name "there"}},',
+  '',
+  "Your son's place is saved for Rabbi Eli Scheller's live Tisha B'Av Zoom class for boys.",
+  '',
+  'Thursday, July 23, 2026',
+  '3:00 PM Eastern',
+  '10:00 PM Israel',
+  '',
+  'The direct Zoom class link is below.',
+  '',
+  '[Join the Zoom Class]',
+  '',
+  'Please do not forward the class link.',
+  '',
+  'One Time Mishnayos',
+  'info@onetimeonetime.com',
+].join('\n');
 
 type RegistrationResult = TishaBavRegistrationSuccessResponse & {
   highLevelDeliveryKey: string | null;
@@ -103,6 +124,16 @@ export class TishaBavJoinError extends Error {
   }
 }
 
+class HighLevelProviderRequestError extends Error {
+  constructor(
+    readonly status: number,
+    readonly category: string,
+  ) {
+    super(`HighLevel API request failed with status ${status}: ${category}.`);
+    this.name = 'HighLevelProviderRequestError';
+  }
+}
+
 export type HighLevelEventClient = {
   ensureTags(input: { locationId: string; tags: readonly string[] }): Promise<void>;
   upsertContact(input: {
@@ -117,13 +148,17 @@ export type HighLevelEventClient = {
     contactId: string;
     workflowId: string;
     idempotencyKey: string;
-  }): Promise<void>;
+  }): Promise<HighLevelWorkflowEnrollmentOutcome>;
 };
+
+export type HighLevelWorkflowEnrollmentOutcome =
+  { outcome: 'enrolled' } | { outcome: 'already_active' };
 
 export class MockHighLevelEventClient implements HighLevelEventClient {
   readonly tags = new Set<string>();
   readonly contacts = new Map<string, { contactId: string; tags: string[] }>();
   readonly workflowRequests: string[] = [];
+  readonly operationLog: string[] = [];
 
   async ensureTags(input: { locationId: string; tags: readonly string[] }) {
     void input.locationId;
@@ -150,6 +185,7 @@ export class MockHighLevelEventClient implements HighLevelEventClient {
   }
 
   async addTags(input: { contactId: string; tags: readonly string[] }) {
+    this.operationLog.push(`tags:${input.tags.map(normalizeTagName).sort().join('|')}`);
     for (const contact of this.contacts.values()) {
       if (contact.contactId !== input.contactId) continue;
       contact.tags = [...new Set([...contact.tags, ...input.tags])];
@@ -157,10 +193,16 @@ export class MockHighLevelEventClient implements HighLevelEventClient {
     }
   }
 
-  async addToWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
+  async addToWorkflow(input: {
+    contactId: string;
+    workflowId: string;
+    idempotencyKey: string;
+  }): Promise<HighLevelWorkflowEnrollmentOutcome> {
+    this.operationLog.push('workflow:accepted');
     this.workflowRequests.push(
       `${input.contactId}:${input.workflowId}:${stableKey('workflow', [input.idempotencyKey])}`,
     );
+    return { outcome: 'enrolled' as const };
   }
 }
 
@@ -258,16 +300,27 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
 
   async addToWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
     void input.idempotencyKey;
-    await this.request(
-      `/contacts/${encodeURIComponent(input.contactId)}/workflow/${encodeURIComponent(
-        input.workflowId,
-      )}`,
-      {
-        method: 'POST',
-        body: {},
-        allowConflict: 'workflow_enrollment',
-      },
-    );
+    try {
+      await this.request(
+        `/contacts/${encodeURIComponent(input.contactId)}/workflow/${encodeURIComponent(
+          input.workflowId,
+        )}`,
+        {
+          method: 'POST',
+          body: {},
+        },
+      );
+      return { outcome: 'enrolled' as const };
+    } catch (error) {
+      if (
+        error instanceof HighLevelProviderRequestError &&
+        [409, 422].includes(error.status) &&
+        error.category === 'workflow_already_enrolled'
+      ) {
+        return { outcome: 'already_active' as const };
+      }
+      throw error;
+    }
   }
 
   private async request(
@@ -275,7 +328,7 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
     options: {
       method: 'GET' | 'POST';
       body?: Record<string, unknown>;
-      allowConflict?: 'resource_exists' | 'workflow_enrollment';
+      allowConflict?: 'resource_exists';
       apiVersion?: string;
     },
   ): Promise<Record<string, unknown>> {
@@ -297,29 +350,29 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
     if (
       options.allowConflict &&
       (response.status === 409 || response.status === 422) &&
-      exactProviderConflict(responseBody, options.allowConflict)
+      exactProviderConflict(responseBody)
     ) {
       return responseBody;
     }
     if (!response.ok) {
-      throw new Error(
-        `HighLevel API request failed with status ${response.status}: ${providerErrorCode(responseBody)}.`,
+      const providerCode = providerErrorCode(responseBody);
+      throw new HighLevelProviderRequestError(
+        response.status,
+        /already_(?:enrolled|in_(?:(?:the|this)_)?workflow|part_of_(?:(?:the|this)_)?workflow)/i.test(
+          providerCode,
+        )
+          ? 'workflow_already_enrolled'
+          : providerCode,
       );
     }
     return responseBody;
   }
 }
 
-function exactProviderConflict(
-  response: Record<string, unknown>,
-  kind: 'resource_exists' | 'workflow_enrollment',
-) {
+function exactProviderConflict(response: Record<string, unknown>) {
   const message = Array.isArray(response.message)
     ? response.message.map(String).join(' ')
     : String(response.message ?? response.error ?? '');
-  if (kind === 'workflow_enrollment') {
-    return /already (?:enrolled|in (?:the )?workflow|part of (?:the )?workflow)/i.test(message);
-  }
   return /already exists|duplicate/i.test(message);
 }
 
@@ -403,6 +456,7 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
   registrationKey: string;
   now?: Date;
   highLevelClient?: HighLevelEventClient | null;
+  allowAlreadyEnrolledRecovery?: boolean;
 }) {
   const now = input.now ?? new Date();
   const delivery = await input.pool.query<{
@@ -423,7 +477,16 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
   const row = delivery.rows[0];
   if (!row) return { status: 'missing' as const, fallback_queued: false };
   await materializeLegacyEventEmailPermission(input.pool, input.config, input.registrationKey);
-  if (row.status === 'succeeded' && highLevelDeliveryVerified(row.public_metadata)) {
+  const rowMetadata = normalizeJsonRecord(row.public_metadata);
+  const legacyFalseSuccessRecovery =
+    input.allowAlreadyEnrolledRecovery === true &&
+    highLevelDeliveryVerified(rowMetadata) &&
+    rowMetadata.new_enrollment_accepted !== true;
+  if (
+    row.status === 'succeeded' &&
+    highLevelDeliveryVerified(rowMetadata) &&
+    !legacyFalseSuccessRecovery
+  ) {
     return { status: 'succeeded' as const, fallback_queued: false };
   }
   if (row.status === 'succeeded') {
@@ -457,17 +520,24 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
     return { status: 'blocked' as const, fallback_queued: false };
   }
   let syncAttempt: HighLevelSyncAttemptStatus = null;
+  const knownExistingMembership =
+    normalizeJsonRecord(row.public_metadata).membership_existing === true;
   try {
-    syncAttempt = await maybeSyncHighLevel({
-      pool: input.pool,
-      config: input.config,
-      deliveryKey: row.delivery_key,
-      registrationKey: input.registrationKey,
-      now,
-      allowPendingFallbackRetry: true,
-      reprocessLeaseOwnerHash: retryReservation.leaseOwnerHash,
-      ...(input.highLevelClient === undefined ? {} : { highLevelClient: input.highLevelClient }),
-    });
+    syncAttempt =
+      knownExistingMembership && input.allowAlreadyEnrolledRecovery === true
+        ? 'skipped'
+        : await maybeSyncHighLevel({
+            pool: input.pool,
+            config: input.config,
+            deliveryKey: row.delivery_key,
+            registrationKey: input.registrationKey,
+            now,
+            allowPendingFallbackRetry: true,
+            reprocessLeaseOwnerHash: retryReservation.leaseOwnerHash,
+            ...(input.highLevelClient === undefined
+              ? {}
+              : { highLevelClient: input.highLevelClient }),
+          });
   } finally {
     if (retryReservation.leaseOwnerHash) {
       await releaseReprocessReservation(
@@ -491,6 +561,7 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
           registrationKey: input.registrationKey,
           highLevelDeliveryKey: row.delivery_key,
           now,
+          allowAlreadyEnrolledRecovery: input.allowAlreadyEnrolledRecovery === true,
         });
   return { status: syncStatus ?? 'blocked', fallback_queued: fallbackQueued };
 }
@@ -1225,18 +1296,26 @@ async function upsertHighLevelDelivery(
      DO UPDATE SET
        protected_payload = EXCLUDED.protected_payload,
        public_metadata = CASE
-         WHEN onetime.event_delivery_events.status = 'succeeded'
-          AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
-         THEN onetime.event_delivery_events.public_metadata
-         ELSE EXCLUDED.public_metadata
-       END,
+          WHEN onetime.event_delivery_events.status = 'succeeded'
+           AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
+          THEN onetime.event_delivery_events.public_metadata
+          WHEN onetime.event_delivery_events.public_metadata->>'membership_existing' = 'true'
+          THEN onetime.event_delivery_events.public_metadata
+          WHEN onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
+          THEN onetime.event_delivery_events.public_metadata
+          ELSE EXCLUDED.public_metadata
+        END,
        payload_digest = EXCLUDED.payload_digest,
        status = CASE
-         WHEN onetime.event_delivery_events.status = 'succeeded'
-          AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
-         THEN 'succeeded'
-         ELSE EXCLUDED.status
-       END,
+          WHEN onetime.event_delivery_events.status = 'succeeded'
+           AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
+          THEN 'succeeded'
+          WHEN onetime.event_delivery_events.public_metadata->>'membership_existing' = 'true'
+          THEN 'skipped'
+          WHEN onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
+          THEN onetime.event_delivery_events.status
+          ELSE EXCLUDED.status
+        END,
        updated_at = now()
      RETURNING delivery_key`,
     [
@@ -1271,11 +1350,17 @@ async function queueFallbackAfterHighLevelFailure(input: {
   registrationKey: string;
   highLevelDeliveryKey: string;
   now: Date;
+  allowAlreadyEnrolledRecovery?: boolean;
 }) {
   if (input.config.oneTimeEventEmailFallback !== 'resend') return false;
   if (input.now > new Date('2026-07-24T23:59:59.000Z')) return false;
-  const highLevel = await input.pool.query<{ status: string }>(
-    `SELECT status
+  const protectedJoinUrl = input.config.tishaBavZoomJoinUrl;
+  if (!protectedJoinUrl) return false;
+  const highLevel = await input.pool.query<{
+    status: string;
+    public_metadata: Record<string, unknown>;
+  }>(
+    `SELECT status, public_metadata
        FROM onetime.event_delivery_events
       WHERE delivery_key = $1
         AND registration_key = $2
@@ -1283,7 +1368,10 @@ async function queueFallbackAfterHighLevelFailure(input: {
       LIMIT 1`,
     [input.highLevelDeliveryKey, input.registrationKey],
   );
-  if (highLevel.rows[0]?.status === 'succeeded') return false;
+  const highLevelRow = highLevel.rows[0];
+  if (!fallbackIsSafeAfterHighLevel(highLevelRow, input.allowAlreadyEnrolledRecovery === true)) {
+    return false;
+  }
   const eligibility = await eventEmailPermissionEligibility(
     input.pool,
     input.config,
@@ -1307,10 +1395,11 @@ async function queueFallbackAfterHighLevelFailure(input: {
     email_normalized: registration.email_normalized,
     first_name: registration.first_name,
     communication_catalog_version: TISHA_BAV_COMMUNICATION_CATALOG_VERSION,
-    template: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.templateId,
-    subject: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.subject,
-    body: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.body,
-    cta: TISHA_BAV_EMAIL_CATALOG.registration_confirmation.cta,
+    template: TISHA_BAV_DIRECT_CONFIRMATION_TEMPLATE,
+    subject: TISHA_BAV_DIRECT_CONFIRMATION_SUBJECT,
+    body: TISHA_BAV_DIRECT_CONFIRMATION_BODY,
+    cta: { label: 'Join the Zoom Class', kind: 'protected_runtime_url' },
+    join_url: protectedJoinUrl,
     reply_to: TISHA_BAV_EMAIL_SENDER.replyTo,
     sender: TISHA_BAV_EMAIL_SENDER.visibleName,
     from: TISHA_BAV_EMAIL_SENDER.from,
@@ -1339,6 +1428,7 @@ async function queueFallbackAfterHighLevelFailure(input: {
         bounded: true,
         confirmation_only: true,
         warm_list_invitation: false,
+        protected_direct_link_present: true,
         expires_after: '2026-07-24T23:59:59.000Z',
       }),
       input.now,
@@ -1484,11 +1574,28 @@ async function maybeSyncHighLevel(input: {
     return 'skipped';
   }
   const deliveryRow = rows.rows[0];
+  const deliveryMetadata = normalizeJsonRecord(deliveryRow?.public_metadata);
+  if (
+    deliveryRow?.status === 'skipped' &&
+    deliveryMetadata.membership_existing === true &&
+    !input.allowPendingFallbackRetry
+  ) {
+    return 'skipped';
+  }
   if (
     deliveryRow?.status === 'succeeded' &&
-    highLevelDeliveryVerified(deliveryRow.public_metadata)
+    highLevelDeliveryVerified(deliveryRow.public_metadata) &&
+    deliveryMetadata.new_enrollment_accepted === true
   ) {
     return 'succeeded';
+  }
+  if (
+    deliveryRow?.status === 'succeeded' &&
+    (!highLevelDeliveryVerified(deliveryRow.public_metadata) ||
+      deliveryMetadata.new_enrollment_accepted !== true) &&
+    !input.allowPendingFallbackRetry
+  ) {
+    return 'skipped';
   }
   if (deliveryRow?.status === 'succeeded') {
     const reopened = await input.pool.query(
@@ -1548,17 +1655,87 @@ async function maybeSyncHighLevel(input: {
       customFields: payload.custom_fields,
       ...(payload.first_name ? { firstName: payload.first_name } : {}),
     });
-    providerStage = 'add_tags';
+    const preEnrollmentTags = payload.tags.filter(
+      (tag) => normalizeTagName(tag) !== normalizeTagName(TISHA_BAV_REGISTERED_TAG),
+    );
+    if (preEnrollmentTags.length) {
+      providerStage = 'add_pre_enrollment_tags';
+      await client.addTags({
+        locationId: payload.location_id,
+        contactId: contact.contactId,
+        tags: preEnrollmentTags,
+      });
+    }
+    const enrollmentWasPreviouslyAccepted =
+      deliveryMetadata.new_enrollment_accepted === true &&
+      deliveryMetadata.workflow_enrollment_verified === true &&
+      deliveryMetadata.membership_existing !== true;
+    if (!enrollmentWasPreviouslyAccepted) {
+      providerStage = 'add_to_workflow';
+      const enrollment = await client.addToWorkflow({
+        contactId: contact.contactId,
+        workflowId,
+        idempotencyKey: payload.workflow_request_key,
+      });
+      const progressRecorded = await recordHighLevelDeliveryProgress(
+        input.pool,
+        input.deliveryKey,
+        enrollment.outcome === 'enrolled'
+          ? {
+              workflow_configured: true,
+              contact_reference_hash: sha256(contact.contactId),
+              workflow_request_accepted: true,
+              workflow_enrollment_verified: true,
+              new_enrollment_accepted: true,
+              membership_existing: false,
+              confirmation_queued: true,
+            }
+          : {
+              workflow_configured: true,
+              contact_reference_hash: sha256(contact.contactId),
+              workflow_request_accepted: false,
+              workflow_enrollment_verified: false,
+              new_enrollment_accepted: false,
+              membership_existing: true,
+              confirmation_queued: false,
+              provider_result_category: 'workflow_already_enrolled',
+            },
+        leaseOwnerHash,
+      );
+      if (!progressRecorded) return 'in_flight';
+      if (enrollment.outcome === 'already_active') {
+        providerStage = 'add_post_enrollment_tags';
+        await client.addTags({
+          locationId: payload.location_id,
+          contactId: contact.contactId,
+          tags: payload.tags,
+        });
+        const marked = await markHighLevelDelivery(
+          input.pool,
+          input.deliveryKey,
+          'skipped',
+          {
+            workflow_configured: true,
+            contact_reference_hash: sha256(contact.contactId),
+            tags_verified: true,
+            workflow_request_accepted: false,
+            workflow_enrollment_verified: false,
+            new_enrollment_accepted: false,
+            membership_existing: true,
+            confirmation_queued: false,
+            provider_result_category: 'workflow_already_enrolled',
+          },
+          leaseOwnerHash,
+        );
+        if (!marked) return 'in_flight';
+        return 'skipped';
+      }
+    }
+    providerStage = 'add_post_enrollment_tags';
     await client.addTags({
       locationId: payload.location_id,
       contactId: contact.contactId,
       tags: payload.tags,
-    });
-    providerStage = 'add_to_workflow';
-    await client.addToWorkflow({
-      contactId: contact.contactId,
-      workflowId,
-      idempotencyKey: payload.workflow_request_key,
     });
     const marked = await markHighLevelDelivery(
       input.pool,
@@ -1568,7 +1745,11 @@ async function maybeSyncHighLevel(input: {
         workflow_configured: true,
         contact_reference_hash: sha256(contact.contactId),
         tags_verified: true,
+        workflow_request_accepted: true,
         workflow_enrollment_verified: true,
+        new_enrollment_accepted: true,
+        membership_existing: false,
+        confirmation_queued: true,
       },
       leaseOwnerHash,
     );
@@ -1590,6 +1771,7 @@ async function maybeSyncHighLevel(input: {
         error_class: error instanceof Error ? error.name : 'Error',
         failed_stage: providerStage,
         provider_http_status: highLevelErrorStatus(error),
+        provider_result_category: highLevelErrorCategory(error),
       },
       leaseOwnerHash,
     );
@@ -1704,6 +1886,36 @@ async function markHighLevelDelivery(
   return true;
 }
 
+async function recordHighLevelDeliveryProgress(
+  pool: Queryable,
+  deliveryKey: string,
+  metadata: Record<string, unknown>,
+  leaseOwnerHash: string,
+) {
+  const current = await pool.query<{ public_metadata: Record<string, unknown> }>(
+    `SELECT public_metadata
+       FROM onetime.event_delivery_events
+      WHERE delivery_key = $1
+        AND lease_owner_hash = $2
+      LIMIT 1`,
+    [deliveryKey, leaseOwnerHash],
+  );
+  if (!current.rowCount) return false;
+  const publicMetadata = {
+    ...normalizeJsonRecord(current.rows[0]?.public_metadata),
+    ...metadata,
+  };
+  const updated = await pool.query(
+    `UPDATE onetime.event_delivery_events
+        SET public_metadata = $3::jsonb,
+            updated_at = now()
+      WHERE delivery_key = $1
+        AND lease_owner_hash = $2`,
+    [deliveryKey, leaseOwnerHash, JSON.stringify(publicMetadata)],
+  );
+  return Boolean(updated.rowCount);
+}
+
 async function cancelUnsentFallback(
   pool: Queryable,
   config: AppConfig,
@@ -1784,9 +1996,44 @@ function highLevelProtectedPayload(
 }
 
 function highLevelErrorStatus(error: unknown) {
+  if (error instanceof HighLevelProviderRequestError) return error.status;
   if (!(error instanceof Error)) return null;
   const match = error.message.match(/status (\d{3})\b/);
   return match ? Number(match[1]) : null;
+}
+
+function highLevelErrorCategory(error: unknown) {
+  if (error instanceof HighLevelProviderRequestError) return error.category;
+  if (
+    error instanceof Error &&
+    /already_(?:enrolled|in_(?:(?:the|this)_)?workflow|part_of_(?:(?:the|this)_)?workflow)|already (?:enrolled|in (?:(?:the|this) )?workflow|part of (?:(?:the|this) )?workflow)/i.test(
+      error.message,
+    )
+  ) {
+    return 'workflow_already_enrolled';
+  }
+  return error instanceof Error ? error.name : 'provider_error';
+}
+
+function fallbackIsSafeAfterHighLevel(
+  row: { status: string; public_metadata: Record<string, unknown> } | undefined,
+  allowAlreadyEnrolledRecovery: boolean,
+) {
+  if (!row) return false;
+  if (row.status === 'provider_off') return true;
+  const metadata = normalizeJsonRecord(row.public_metadata);
+  const stage = String(metadata.failed_stage ?? '');
+  const category = String(metadata.provider_result_category ?? '');
+  const status = Number(metadata.provider_http_status);
+  if (metadata.membership_existing === true || category === 'workflow_already_enrolled') {
+    return allowAlreadyEnrolledRecovery;
+  }
+  if (row.status !== 'failed') return false;
+  if (['ensure_tags', 'upsert_contact', 'add_pre_enrollment_tags'].includes(stage)) return true;
+  if (stage === 'add_to_workflow') {
+    return status >= 400 && status < 500 && ![409, 422].includes(status);
+  }
+  return false;
 }
 
 function normalizeHighLevelPayload(value: unknown) {
@@ -1830,10 +2077,7 @@ function normalizeJsonRecord(value: unknown): Record<string, unknown> {
 
 function highLevelDeliveryVerified(value: unknown) {
   const metadata = normalizeJsonRecord(value);
-  return (
-    metadata.tags_verified === true &&
-    (metadata.workflow_enrollment_verified === true || metadata.workflow_configured === true)
-  );
+  return metadata.tags_verified === true && metadata.workflow_enrollment_verified === true;
 }
 
 function registrationMessage(

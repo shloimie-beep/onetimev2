@@ -129,12 +129,15 @@ describe('Tisha BAv HighLevel client', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(4);
   });
 
-  it.each([409, 422])(
-    'treats an exact workflow already-enrolled %s response as idempotent success',
-    async (status) => {
+  it.each([
+    [409, 'Contact is already enrolled'],
+    [422, 'Contact is already part of this workflow and can not be added again.'],
+  ] as const)(
+    'returns the typed already-active outcome for an exact workflow membership %s response',
+    async (status, message) => {
       const fetchImpl = vi
         .fn<typeof fetch>()
-        .mockResolvedValue(Response.json({ message: 'Contact is already enrolled' }, { status }));
+        .mockResolvedValue(Response.json({ message }, { status }));
       const client = new HttpHighLevelEventClient({
         baseUrl: 'https://provider.example.test',
         token: 'private-test-token',
@@ -148,9 +151,27 @@ describe('Tisha BAv HighLevel client', () => {
           workflowId: 'workflow_tisha',
           idempotencyKey: 'workflow-request-key',
         }),
-      ).resolves.toBeUndefined();
+      ).resolves.toEqual({ outcome: 'already_active' });
     },
   );
+
+  it('returns enrolled only for a successful workflow request', async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(Response.json({}, { status: 201 }));
+    const client = new HttpHighLevelEventClient({
+      baseUrl: 'https://provider.example.test',
+      token: 'private-test-token',
+      apiVersion: '2021-07-28',
+      fetchImpl,
+    });
+
+    await expect(
+      client.addToWorkflow({
+        contactId: 'contact_operator',
+        workflowId: 'workflow_tisha',
+        idempotencyKey: 'workflow-request-key',
+      }),
+    ).resolves.toEqual({ outcome: 'enrolled' });
+  });
 
   it.each([409, 422])('does not treat workflow %s as enrollment success', async (status) => {
     const fetchImpl = vi

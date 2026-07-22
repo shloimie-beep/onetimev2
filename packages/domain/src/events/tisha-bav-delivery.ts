@@ -209,9 +209,18 @@ async function sendFallback(input: {
   const email = requiredString(payload, 'email_normalized');
   const firstName = optionalString(payload, 'first_name') ?? 'there';
   const subject = requiredString(payload, 'subject');
+  const joinUrl = requiredString(payload, 'join_url');
   const body = requiredString(payload, 'body')
     .replace('{{default contact.first_name "there"}}', firstName)
+    .replace('[Join the Zoom Class]', joinUrl)
     .replace('[View Event Details]', `${input.config.publicBaseUrl}${TISHA_BAV_LANDING_PATH}`);
+  const htmlBody = escapeHtml(requiredString(payload, 'body'))
+    .replace('{{default contact.first_name &quot;there&quot;}}', escapeHtml(firstName))
+    .replace('[Join the Zoom Class]', `<a href="${escapeHtml(joinUrl)}">Join the Zoom Class</a>`)
+    .replace(
+      '[View Event Details]',
+      `<a href="${escapeHtml(`${input.config.publicBaseUrl}${TISHA_BAV_LANDING_PATH}`)}">View Event Details</a>`,
+    );
   const response = await input.fetchImpl('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -225,7 +234,7 @@ async function sendFallback(input: {
       reply_to: [TISHA_BAV_EMAIL_SENDER.replyTo],
       subject,
       text: body,
-      html: `<div style="white-space:pre-line">${escapeHtml(body)}</div>`,
+      html: `<div style="white-space:pre-line">${htmlBody}</div>`,
       tags: [
         { name: 'message_key', value: 'tisha_bav_2026_registration_confirmation' },
         { name: 'purpose', value: 'event_service_email' },

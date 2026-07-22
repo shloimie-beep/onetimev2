@@ -6,6 +6,8 @@ import { reprocessTishaBavRegistrationDelivery } from '../../packages/domain/src
 
 const registrationKey = process.env.TISHA_BAV_REGISTRATION_KEY?.trim();
 if (!registrationKey) throw new Error('TISHA_BAV_REGISTRATION_KEY is required.');
+const allowAlreadyEnrolledRecovery =
+  process.env.TISHA_BAV_ALLOW_ALREADY_ENROLLED_RECOVERY === 'true';
 
 const config = loadConfig(process.env);
 if (config.highLevelEventSyncMode !== 'provider') {
@@ -18,6 +20,7 @@ try {
     pool,
     config,
     registrationKey,
+    allowAlreadyEnrolledRecovery,
   });
   process.stdout.write(
     `${JSON.stringify(

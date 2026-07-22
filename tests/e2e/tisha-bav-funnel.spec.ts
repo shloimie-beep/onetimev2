@@ -82,7 +82,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     });
     const pasuk = page.getByText(eventPasuk, { exact: true });
     const image = page.locator('[data-event-hero-image]');
-    const time = page.getByText('3 p.m. Eastern Time', { exact: true });
+    const time = page.getByText('3:00 p.m. Eastern Time', { exact: true });
     const noCharge = page.getByText('No charge', { exact: true });
     const cta = page.getByRole('button', { name: 'Reserve My Spot' });
 
@@ -103,7 +103,8 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     await assertFullyVisible(page, noCharge, `${label} no charge`);
     await assertFullyVisible(page, cta, `${label} CTA`);
     await assertDisplayTitle(page, `${label} display title`);
-    await assertTitleAboveArtwork(page, headline, pasuk, image, `${label} title composition`);
+    await assertTitleOnArtwork(page, headline, pasuk, image, `${label} title composition`);
+    await assertScheduleComposition(page, `${label} schedule composition`);
 
     await expect(cta).toHaveCount(1);
     await expect(page.locator('form.event-form')).toBeHidden();
@@ -149,6 +150,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
 
     await assertSuccessShareState(page, `${label} success state`);
     await assertFullPageModal(page, `${label} success modal`, { successBackground: true });
+    await assertSuccessComposition(page, `${label} success composition`);
     expect(registrationRequests, `${label} intercepted registration count`).toHaveLength(index + 1);
     assertRegistrationPayload(registrationRequests.at(-1), email, label);
     await page.screenshot({
@@ -180,7 +182,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
       'dir',
       'rtl',
     );
-    await expect(page.getByText('3 p.m. Eastern Time', { exact: true })).toBeVisible();
+    await expect(page.getByText('3:00 p.m. Eastern Time', { exact: true })).toBeVisible();
     await expect(page.getByText('No charge', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Reserve My Spot' })).toHaveCount(1);
     await expect(page.locator('form.event-form')).toBeHidden();
@@ -198,13 +200,14 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
       naturalHeight: 768,
       label,
     });
-    await assertTitleAboveArtwork(
+    await assertTitleOnArtwork(
       page,
       page.getByRole('heading', { name: eventTitle }),
       page.getByText(eventPasuk, { exact: true }),
       page.locator('[data-event-hero-image]'),
       `${label} title composition`,
     );
+    await assertScheduleComposition(page, `${label} schedule composition`);
     await assertDisplayTitle(page, `${label} display title`);
     await assertDesktopComposition(page, label);
     await assertSocialMetadata(page, label);
@@ -234,6 +237,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     await page.locator('form.event-form button[type="submit"]').click();
     await assertSuccessShareState(page, `${label} success state`);
     await assertFullPageModal(page, `${label} success modal`, { successBackground: true });
+    await assertSuccessComposition(page, `${label} success composition`);
     expect(registrationRequests, `${label} intercepted registration count`).toHaveLength(index + 1);
     assertRegistrationPayload(registrationRequests.at(-1), email, label);
     await page.screenshot({
@@ -264,7 +268,7 @@ test('Tisha BAv keeps tablet and phone-landscape compositions centered and uncli
     const headline = page.getByRole('heading', { name: eventTitle });
     const pasuk = page.getByText(eventPasuk, { exact: true });
     const date = page.getByText('Thursday, July 23, 2026', { exact: true });
-    const time = page.getByText('3 p.m. Eastern Time', { exact: true });
+    const time = page.getByText('3:00 p.m. Eastern Time', { exact: true });
     const noCharge = page.getByText('No charge', { exact: true });
     const cta = page.getByRole('button', { name: 'Reserve My Spot' });
     await assertFullyVisible(page, headline, `${label} headline`);
@@ -274,7 +278,8 @@ test('Tisha BAv keeps tablet and phone-landscape compositions centered and uncli
     await assertFullyVisible(page, time, `${label} time`);
     await assertFullyVisible(page, noCharge, `${label} free-of-charge label`);
     await assertFullyVisible(page, cta, `${label} CTA`);
-    await assertTitleAboveArtwork(page, headline, pasuk, image, `${label} title composition`);
+    await assertTitleOnArtwork(page, headline, pasuk, image, `${label} title composition`);
+    await assertScheduleComposition(page, `${label} schedule composition`);
     await assertCenteredElement(page, image, `${label} centered artwork`);
     await assertCenteredElement(page, page.locator('.tisha-details'), `${label} centered details`);
     await assertHeroImage(page, {
@@ -587,7 +592,7 @@ async function installNativeShareCapture(page: Page) {
   });
 }
 
-async function assertTitleAboveArtwork(
+async function assertTitleOnArtwork(
   page: Page,
   headline: Locator,
   pasuk: Locator,
@@ -601,11 +606,82 @@ async function assertTitleAboveArtwork(
   expect(pasukBox, `${label} pasuk box`).not.toBeNull();
   expect(imageBox, `${label} image box`).not.toBeNull();
   if (!headlineBox || !pasukBox || !imageBox) return;
-  expect(pasukBox.y + pasukBox.height, `${label} pasuk above headline`).toBeLessThanOrEqual(
-    headlineBox.y + 2,
-  );
-  expect(headlineBox.y + headlineBox.height, `${label} headline above artwork`).toBeLessThanOrEqual(
+  expect(pasukBox.y + pasukBox.height, `${label} pasuk above artwork`).toBeLessThanOrEqual(
     imageBox.y + 2,
+  );
+  expect(headlineBox.y, `${label} headline starts inside artwork`).toBeGreaterThanOrEqual(
+    imageBox.y - 2,
+  );
+  expect(
+    headlineBox.y + headlineBox.height,
+    `${label} headline stays in artwork top quarter`,
+  ).toBeLessThanOrEqual(imageBox.y + imageBox.height * 0.27);
+  expect(headlineBox.x, `${label} headline left edge inside artwork`).toBeGreaterThanOrEqual(
+    imageBox.x - 2,
+  );
+  expect(
+    headlineBox.x + headlineBox.width,
+    `${label} headline right edge inside artwork`,
+  ).toBeLessThanOrEqual(imageBox.x + imageBox.width + 2);
+  const titleBand = page.locator('.tisha-artwork .tisha-copy');
+  const titleBandBox = await titleBand.boundingBox();
+  expect(titleBandBox, `${label} title band box`).not.toBeNull();
+  if (titleBandBox) {
+    expect(titleBandBox.y, `${label} title band aligned to image top`).toBeCloseTo(imageBox.y, 0);
+    expect(
+      titleBandBox.height / imageBox.height,
+      `${label} title band occupies artwork top quarter`,
+    ).toBeCloseTo(0.25, 2);
+  }
+  const titleIsInsideArtwork = await headline.evaluate(
+    (node) => node.closest('[data-event-artwork]') !== null,
+  );
+  expect(titleIsInsideArtwork, `${label} headline DOM placement`).toBe(true);
+}
+
+async function assertScheduleComposition(page: Page, label: string) {
+  await expect(page.locator('.event-time-overlay'), `${label} floating time removed`).toHaveCount(
+    0,
+  );
+  const schedule = page.locator('.event-schedule');
+  const date = schedule.getByText('Thursday, July 23, 2026', { exact: true });
+  const time = schedule.getByText('3:00 p.m. Eastern Time', { exact: true });
+  const noCharge = page.getByText('No charge', { exact: true });
+  const cta = page.getByRole('button', { name: 'Reserve My Spot' });
+  await expect(schedule, label).toBeVisible();
+  await expect(date, label).toBeVisible();
+  await expect(time, label).toBeVisible();
+  const dateBox = await date.boundingBox();
+  const timeBox = await time.boundingBox();
+  const scheduleBox = await schedule.boundingBox();
+  const noChargeBox = await noCharge.boundingBox();
+  const ctaBox = await cta.boundingBox();
+  expect(dateBox, `${label} date box`).not.toBeNull();
+  expect(timeBox, `${label} time box`).not.toBeNull();
+  expect(scheduleBox, `${label} schedule box`).not.toBeNull();
+  expect(noChargeBox, `${label} no-charge box`).not.toBeNull();
+  expect(ctaBox, `${label} CTA box`).not.toBeNull();
+  if (!dateBox || !timeBox || !scheduleBox || !noChargeBox || !ctaBox) return;
+  expect(dateBox.x + dateBox.width, `${label} date before time`).toBeLessThanOrEqual(timeBox.x + 2);
+  expect(
+    Math.abs(dateBox.y + dateBox.height / 2 - (timeBox.y + timeBox.height / 2)),
+    `${label} date/time vertical alignment`,
+  ).toBeLessThanOrEqual(10);
+  expect(
+    boxesIntersect(scheduleBox, noChargeBox),
+    `${label} schedule does not overlap no-charge label`,
+  ).toBe(false);
+  expect(boxesIntersect(noChargeBox, ctaBox), `${label} no-charge label does not overlap CTA`).toBe(
+    false,
+  );
+}
+
+function boxesIntersect(first: Box, second: Box) {
+  return !(
+    first.x + first.width <= second.x ||
+    second.x + second.width <= first.x ||
+    first.y + first.height <= second.y ||
+    second.y + second.height <= first.y
   );
 }
 
@@ -736,8 +812,8 @@ async function assertSuccessShareState(page: Page, label: string) {
   await expect(
     successPanel.getByText("We'll email the private Zoom link and event details."),
   ).toBeVisible();
-  const whatsApp = dialog.getByRole('link', { name: 'WhatsApp share' });
-  const email = dialog.getByRole('link', { name: 'Email a Friend' });
+  const whatsApp = dialog.getByRole('link', { name: 'Share on WhatsApp' });
+  const email = dialog.getByRole('link', { name: 'Email a friend' });
   await expect(whatsApp, label).toBeVisible();
   await expect(email, label).toBeVisible();
   const whatsAppHref = decodeURIComponent((await whatsApp.getAttribute('href')) ?? '');
@@ -748,7 +824,8 @@ async function assertSuccessShareState(page: Page, label: string) {
   expect(emailHref, label).toContain(shareUrl);
   expect(emailHref, `${label} email share rabbi spelling`).toContain('Rabbi Eli Scheller');
   expect(emailHref, `${label} email share rejected spelling`).not.toContain('Rabbi Elly');
-  await expect(dialog.getByRole('button', { name: 'Copy Link' }), label).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Copy link' }), label).toBeVisible();
+  await expect(dialog.locator('.event-share-icon'), `${label} compact share icons`).toHaveCount(4);
   const nativeShareSupported = await page.evaluate(() => typeof navigator.share === 'function');
   const nativeShare = dialog.getByRole('button', { name: 'Share' });
   if (nativeShareSupported) {
@@ -762,6 +839,35 @@ async function assertSuccessShareState(page: Page, label: string) {
   } else {
     await expect(nativeShare, label).toBeHidden();
   }
+}
+
+async function assertSuccessComposition(page: Page, label: string) {
+  const shell = page.locator('.tisha-bav-page .event-register-shell');
+  const copy = page.locator('[data-event-success-panel] .event-success-copy');
+  const actions = page.locator('[data-event-success-panel] .event-share-actions');
+  const shellBox = await shell.boundingBox();
+  const copyBox = await copy.boundingBox();
+  const actionsBox = await actions.boundingBox();
+  expect(shellBox, `${label} shell box`).not.toBeNull();
+  expect(copyBox, `${label} copy box`).not.toBeNull();
+  expect(actionsBox, `${label} actions box`).not.toBeNull();
+  if (!shellBox || !copyBox || !actionsBox) return;
+  expect(copyBox.y, `${label} copy starts in top zone`).toBeGreaterThanOrEqual(shellBox.y - 1);
+  expect(copyBox.y + copyBox.height, `${label} copy stays in top 40 percent`).toBeLessThanOrEqual(
+    shellBox.y + shellBox.height * 0.43,
+  );
+  expect(actionsBox.y, `${label} share row stays in bottom 15 percent`).toBeGreaterThanOrEqual(
+    shellBox.y + shellBox.height * 0.82,
+  );
+  expect(actionsBox.y + actionsBox.height, `${label} share row inside image`).toBeLessThanOrEqual(
+    shellBox.y + shellBox.height + 1,
+  );
+  const panelStyle = await page.locator('[data-event-success-panel]').evaluate((node) => {
+    const style = getComputedStyle(node);
+    return { backgroundImage: style.backgroundImage, boxShadow: style.boxShadow };
+  });
+  expect(panelStyle.backgroundImage, `${label} success panel has no opaque card`).toBe('none');
+  expect(panelStyle.boxShadow, `${label} success panel has no card shadow`).toBe('none');
 }
 
 async function assertNoRawZoom(page: Page) {
