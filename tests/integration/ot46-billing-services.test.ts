@@ -147,7 +147,18 @@ describe('OT-46 fixture checkout, portal, webhook, and public signup isolation',
     });
     await expectCount('contacts', 1);
     await expectCount('signup_leads', 1);
-    await expectCount('outbox_events', 3);
+    await expectCount('outbox_events', 4);
+    const highLevelOutbox = await pool.query(
+      `SELECT status, transport_authorization_state
+         FROM onetime.outbox_events
+        WHERE channel = 'highlevel'
+          AND event_type = 'highlevel.adult.signup.submitted.v1'`,
+    );
+    expect(highLevelOutbox.rowCount).toBe(1);
+    expect(highLevelOutbox.rows[0]).toMatchObject({
+      status: 'pending',
+      transport_authorization_state: 'held',
+    });
     await expectCount('billing_checkout_sessions', 0);
     expect(adapter.invocationCounts.createCheckoutSession).toBe(0);
   });

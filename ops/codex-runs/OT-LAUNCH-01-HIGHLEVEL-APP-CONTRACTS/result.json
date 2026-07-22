@@ -52,5 +52,6 @@
     "real_postgres_assertion": "scripts/highlevel/postgres-claim-assurance.ts"
   },
   "focused_tests_passed": 51,
+  "full_integration_tests_passed": 260,
   "remaining_dependency": "Approve and prove a HighLevel-side per-request raw-body HMAC signer before any OT-B01 through OT-B05 Agent Mode activation."
 }
