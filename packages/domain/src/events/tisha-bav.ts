@@ -737,6 +737,7 @@ async function maybeSyncHighLevel(input: {
   const client = input.highLevelClient ?? createHighLevelEventClient(input.config);
   if (!client) return 'provider_off';
   const rows = await input.pool.query<{
+    status: string;
     protected_payload: {
       location_id: string;
       email_normalized: string;
@@ -747,13 +748,14 @@ async function maybeSyncHighLevel(input: {
       workflow_request_key: string;
     };
   }>(
-    `SELECT protected_payload
+    `SELECT status, protected_payload
        FROM onetime.event_delivery_events
       WHERE delivery_key = $1
         AND registration_key = $2
       LIMIT 1`,
     [input.deliveryKey, input.registrationKey],
   );
+  if (rows.rows[0]?.status === 'succeeded') return 'succeeded';
   const payload = normalizeHighLevelPayload(rows.rows[0]?.protected_payload);
   if (!payload) return null;
   if (!payload.workflow_id) {

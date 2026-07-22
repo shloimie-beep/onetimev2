@@ -48,16 +48,29 @@ const register = async () => {
   };
 };
 
-const first = await register();
-const second = await register();
-if (!first.registration_key || first.registration_key !== second.registration_key) {
-  throw new Error('The repeated registration did not preserve one registration key.');
-}
-
 const pool = new pg.Pool({
   connectionString: databaseUrl,
   ssl: { rejectUnauthorized: false },
 });
+const existingRegistration = await pool.query<{ registration_key: string }>(
+  `SELECT registration_key
+     FROM onetime.event_registrations
+    WHERE account_key = 'rabbi_sheller_provider'
+      AND product_key = 'one_time_mishnah_class'
+      AND event_code = 'tisha-bav-2026'
+      AND email_normalized = $1
+    LIMIT 1`,
+  [email],
+);
+const readOnly = process.env.OPERATOR_SMOKE_READ_ONLY === '1';
+const first = readOnly ? null : await register();
+const second = readOnly ? null : await register();
+const registrationKey = first?.registration_key ?? existingRegistration.rows[0]?.registration_key;
+if (!registrationKey) throw new Error('The operator registration is unavailable.');
+if (!readOnly && first?.registration_key !== second?.registration_key) {
+  throw new Error('The repeated registration did not preserve one registration key.');
+}
+
 const databaseEvidence = await pool.query<{
   registration_count: number;
   delivery_count: number;
@@ -82,7 +95,7 @@ const databaseEvidence = await pool.query<{
      AND event_code = 'tisha-bav-2026'
      AND registration_key = $2
      AND provider = 'highlevel'`,
-  [email, first.registration_key],
+  [email, registrationKey],
 );
 await pool.end();
 
@@ -124,13 +137,14 @@ const row = databaseEvidence.rows[0];
 process.stdout.write(
   `${JSON.stringify({
     contact_fingerprint: sha256(email).slice(0, 16),
-    first_success: first.success,
-    first_duplicate: first.duplicate_submission,
-    first_confirmation_queued: first.confirmation_queued,
-    first_ghl_sync_status: first.ghl_sync_status,
-    second_success: second.success,
-    second_duplicate: second.duplicate_submission,
-    same_registration_key: first.registration_key === second.registration_key,
+    read_only: readOnly,
+    first_success: first?.success ?? null,
+    first_duplicate: first?.duplicate_submission ?? null,
+    first_confirmation_queued: first?.confirmation_queued ?? null,
+    first_ghl_sync_status: first?.ghl_sync_status ?? null,
+    second_success: second?.success ?? null,
+    second_duplicate: second?.duplicate_submission ?? null,
+    same_registration_key: readOnly ? null : first?.registration_key === second?.registration_key,
     registration_count: row?.registration_count ?? 0,
     highlevel_delivery_count: row?.delivery_count ?? 0,
     highlevel_delivery_status: row?.delivery_status ?? null,
