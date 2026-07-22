@@ -32,12 +32,6 @@ ALTER TABLE onetime.learning_delivery_trim_reviews
   DROP CONSTRAINT IF EXISTS learning_delivery_trim_reviews_auto_cut_performed_check;
 
 ALTER TABLE onetime.learning_delivery_trim_reviews
-  DROP CONSTRAINT IF EXISTS learning_delivery_trim_reviews_automatic_decision_check;
-
-ALTER TABLE onetime.learning_delivery_trim_reviews
-  DROP CONSTRAINT IF EXISTS learning_delivery_trim_reviews_confidence_check;
-
-ALTER TABLE onetime.learning_delivery_trim_reviews
   ADD CONSTRAINT learning_delivery_trim_reviews_reason_code_check
   CHECK (reason_code IN (
     'leading_trailing_silence',
