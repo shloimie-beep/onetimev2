@@ -123,9 +123,12 @@ describe('W12-100-01 auth browser security boundaries', () => {
     const safePage = await fetch(
       `${harness.baseUrl}/login?return_to=${encodeURIComponent('/app/parent?view=learners#top')}`,
     );
-    expect(await safePage.text()).toContain(
+    const safeHtml = await safePage.text();
+    expect(safeHtml).toContain(
       'name="return_to" value="/app/parent?view=learners#top"',
     );
+    expect(safeHtml).toContain('data-email-link-confirm hidden');
+    expect(safeHtml).toContain('Confirm email sign-in');
 
     const csrf = await getCsrf(harness, '/login');
     const parentLogin = await fetch(`${harness.baseUrl}/api/v1/auth/login`, {

@@ -4304,6 +4304,9 @@ function loginPageHtml(csrfToken: string, returnTo: string) {
             <span class="form-status" role="status" data-resend-status></span>
           </div>
         </div>
+        <div class="email-challenge-actions" data-email-link-confirm hidden>
+          <button class="button" type="button">Confirm email sign-in</button>
+        </div>
         <button class="button button-primary" type="submit">Login</button>
         <a class="form-link" href="/forgot-password">Forgot password?</a>
         <p class="form-status" role="status" data-form-status></p>
