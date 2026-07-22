@@ -208,19 +208,13 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
   }
 
   async addTags(input: { locationId: string; contactId: string; tags: readonly string[] }) {
-    await this.request('/contacts/bulk/tags/update/add', {
+    void input.locationId;
+    const response = await this.request(`/contacts/${encodeURIComponent(input.contactId)}/tags`, {
       method: 'POST',
-      body: {
-        locationId: input.locationId,
-        contactIds: [input.contactId],
-        tags: input.tags,
-      },
+      body: { tags: input.tags },
+      apiVersion: '2023-02-21',
     });
-    const response = await this.request(`/contacts/${encodeURIComponent(input.contactId)}`, {
-      method: 'GET',
-    });
-    const contact = (response.contact ?? response) as Record<string, unknown>;
-    const currentTags = new Set(Array.isArray(contact.tags) ? contact.tags.map(String) : []);
+    const currentTags = new Set(Array.isArray(response.tags) ? response.tags.map(String) : []);
     if (input.tags.some((tag) => !currentTags.has(tag))) {
       throw new Error('HighLevel contact tag verification failed.');
     }
@@ -246,6 +240,7 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       method: 'GET' | 'POST';
       body?: Record<string, unknown>;
       allowConflict?: boolean;
+      apiVersion?: string;
     },
   ): Promise<Record<string, unknown>> {
     const base = this.options.baseUrl.replace(/\/$/, '');
@@ -253,7 +248,7 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       method: options.method,
       headers: {
         authorization: `Bearer ${this.options.token}`,
-        version: this.options.apiVersion,
+        version: options.apiVersion ?? this.options.apiVersion,
         'content-type': 'application/json',
         accept: 'application/json',
       },
