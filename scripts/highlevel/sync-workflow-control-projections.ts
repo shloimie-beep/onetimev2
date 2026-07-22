@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { format, resolveConfig } from 'prettier';
+import { canonicalTextForHash } from '../ops/canonical-text.ts';
 import {
   businessWorkflowRecords,
   botActionWorkflowRecords,
@@ -12,6 +13,7 @@ import {
   nonWorkflowAssets,
   workflowControlPolicy,
   workflowFolderTree,
+  workflowRoot,
   workflowRegistryPath,
 } from './workflow-registry-source.ts';
 
@@ -24,8 +26,8 @@ const repoRoot = process.cwd();
 const currentPath = 'integrations/highlevel/registry/current.json';
 const manifestPath = 'integrations/highlevel/workflows.yaml';
 const write = process.argv.includes('--write');
-const registryBytes = await readFile(path.join(repoRoot, workflowRegistryPath));
-const sourceSha256 = createHash('sha256').update(registryBytes).digest('hex');
+const registryText = await readFile(path.join(repoRoot, workflowRegistryPath), 'utf8');
+const sourceSha256 = createHash('sha256').update(canonicalTextForHash(registryText)).digest('hex');
 const projectionMetadata = {
   generated_from: workflowRegistryPath,
   source_sha256: sourceSha256,
@@ -126,6 +128,7 @@ function buildCurrentProjection(source: string) {
 
 function buildManifestProjection(source: string) {
   const controlBlock = dumpYaml({
+    workflow_root: workflowRoot,
     workflow_projection: projectionMetadata,
     workflow_folders: workflowFolderTree,
     workflow_control: workflowControlPolicy,
@@ -139,9 +142,11 @@ function buildManifestProjection(source: string) {
     },
   });
   const deprecatedBlock = dumpYaml({ deprecated_workflows: deprecatedWorkflowRecords });
-  const controlStart = source.includes('\nworkflow_projection:')
-    ? 'workflow_projection'
-    : 'workflow_folders';
+  const controlStart = source.includes('\nworkflow_root:')
+    ? 'workflow_root'
+    : source.includes('\nworkflow_projection:')
+      ? 'workflow_projection'
+      : 'workflow_folders';
   const automationStart = source.includes('\nautomation_assets:')
     ? 'automation_assets'
     : 'workflows';

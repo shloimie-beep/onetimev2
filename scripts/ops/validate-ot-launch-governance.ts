@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { canonicalTextForHash } from './canonical-text.ts';
 
 const require = createRequire(import.meta.url);
 const yaml = require('js-yaml') as { load(source: string): unknown };
@@ -17,8 +18,7 @@ const acceptance = await readYaml<Record<string, unknown>>(
   'ops/goals/OT-LAUNCH-01/ACCEPTANCE.yaml',
 );
 const decisions = await readYaml<Record<string, unknown>>('ops/goals/OT-LAUNCH-01/DECISIONS.yaml');
-const boardBytes = await readFile(path.join(repoRoot, boardPath));
-const boardText = boardBytes.toString('utf8');
+const boardText = await readFile(path.join(repoRoot, boardPath), 'utf8');
 const board = parseYaml<Record<string, unknown>>(boardText, boardPath);
 const ramble = await readText('ops/goals/OT-LAUNCH-01/RAMBLE-PROTOCOL.md');
 const goalSkill = await readSkill('.agents/skills/one-time-goal-executor/SKILL.md');
@@ -30,7 +30,7 @@ const ghlSkillUi = await readYaml<Record<string, unknown>>(
   '.agents/skills/one-time-ghl-ui-job/agents/openai.yaml',
 );
 
-const sourceHash = `sha256:${createHash('sha256').update(boardBytes).digest('hex')}`;
+const sourceHash = `sha256:${createHash('sha256').update(canonicalTextForHash(boardText)).digest('hex')}`;
 const expectedPointer = {
   schema_version: 1,
   goal_id: 'OT-LAUNCH-01',
@@ -97,23 +97,26 @@ record(
   'VIDEO-TO-CLASSROOM-E2E remains unclaimed',
 );
 record(
-  'terminal Tisha evidence',
+  'accepted Tisha production plus isolated preview block',
   tracks.some((track) => {
     const owner = objectAt(track, 'owner');
     return (
       track.id === 'tisha_landing_polish' &&
-      track.status === 'done' &&
-      owner.pr === 106 &&
-      owner.head === 'fab0dfa110e4712f4a63bf8a84641d355accdac0'
+      track.status === 'blocked' &&
+      owner.pr === 110 &&
+      owner.head === 'bcfae3f57f23169de0de8d34b45f4a8b7ae256b1' &&
+      track.preview_review_state === 'BLOCKED_CI_PREVIEW_AND_PERMISSION' &&
+      boardText.includes('acddcc8cd012c5cdc5bfc08cbc80550bef8719ba') &&
+      boardText.includes('81317abe-f3ef-42cd-b5db-5814b014b6a3')
     );
   }),
-  'PR #106 fab0dfa terminal',
+  'PR #106 acddcc8 remains accepted production while PR #110 is isolated',
 );
 record(
   'honest GHL enrollment truth',
-  !/OT-07 and OT-08[^\n]*zero (?:total|active|enrollment)/iu.test(boardText) &&
-    boardText.includes('enrollment counts are Unavailable'),
-  'Draft existence is separate from count readback',
+  boardText.includes('OT-07 and OT-08 each read back 0 total / 0 active') &&
+    boardText.includes('GHL-GOVERNANCE-CLOSEOUT-20260722.result.json'),
+  'zero counts require the committed timestamped closeout readback',
 );
 record(
   'goal decisions parsed',

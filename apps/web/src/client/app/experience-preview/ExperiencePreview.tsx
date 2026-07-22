@@ -139,6 +139,7 @@ export function ExperiencePreview({
             <button
               type="button"
               className="experience-role-card"
+              aria-label={`Preview ${role.label}: ${role.subtitle}`}
               aria-pressed={role.role_id === selectedRoleId}
               onClick={() => {
                 setSelectedRoleId(role.role_id);
@@ -146,8 +147,9 @@ export function ExperiencePreview({
                 setPreparedLaunch(null);
               }}
             >
-              <span>{role.label}</span>
+              <span>Choose {role.label}</span>
               <strong>{role.subtitle}</strong>
+              <span className="experience-role-card-action">Preview {role.label}</span>
               <small data-state={role.state}>{stateLabel(role.state)}</small>
             </button>
           </li>
@@ -156,6 +158,14 @@ export function ExperiencePreview({
 
       {selected && (
         <>
+          <div className="experience-selected-role" role="status">
+            <strong>Selected preview: {selected.label}</strong>
+            <span>
+              {selected.can_open_student_session
+                ? 'Inspect the read-only projection, then prepare and open its separate fictional Student session.'
+                : 'This Parent or Rabbi/Classroom projection renders read-only below; no account session is replaced.'}
+            </span>
+          </div>
           <RolePreview preview={selected} />
           {selected.can_open_student_session && (
             <div className="experience-session-action">

@@ -36,7 +36,7 @@ Required boundaries:
 - A GHL tag or field is not authorization for One Time portal access.
 
 When the contact says STOP, unsubscribe, remove me, do not contact me, wrong number, or equivalent, set relevant channel DND, update consent and suppression fields, remove related opt-in tag, add OT | Marketing Suppressed when appropriate, remove from marketing/nurture workflows, and stop bot auto-follow-up.
-Send one confirmation only.
+Send no acknowledgement from this registry lane. A future acknowledgement requires its own reviewed content, channel, eligibility, and send authorization.
 
 Test state:
 

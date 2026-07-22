@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { studentPortalDashboardSchema } from '../portals/index.ts';
 
 export const experiencePreviewRoleIdSchema = z.enum([
   'parent',
@@ -69,4 +70,5 @@ export const fictionalStudentSessionResponseSchema = z.object({
   success: z.literal(true),
   expires_at: z.string().datetime(),
   preview: experiencePreviewRoleSchema,
+  student_portal: studentPortalDashboardSchema,
 });

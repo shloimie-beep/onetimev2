@@ -67,6 +67,7 @@ export type WorkflowRegistryRecord = {
   exactOrderedActions: string[];
   observedTriggers: string[];
   observedActions: string[];
+  essentialValues?: Record<string, string | number | boolean | string[]>;
   providerContract?: {
     exactTriggerFilter: string;
     orderedCriticalActions: string[];
@@ -111,6 +112,7 @@ export type NonWorkflowAsset = {
 };
 
 type WorkflowRegistryDocument = {
+  workflow_root: string;
   workflow_folders: WorkflowFolderNode[];
   business_workflows: WorkflowRegistryRecord[];
   bot_action_workflows: WorkflowRegistryRecord[];
@@ -135,6 +137,7 @@ type WorkflowRegistryDocument = {
 };
 
 export const workflowRegistrySource = loadWorkflowRegistry();
+export const workflowRoot = workflowRegistrySource.workflow_root;
 export const workflowFolderTree = workflowRegistrySource.workflow_folders;
 export const workflowControlPolicy = workflowRegistrySource.workflow_control;
 export const businessWorkflowRecords = workflowRegistrySource.business_workflows;
@@ -157,6 +160,8 @@ function loadWorkflowRegistry(): WorkflowRegistryDocument {
   }
   const document = parsed as Partial<WorkflowRegistryDocument>;
   if (
+    typeof document.workflow_root !== 'string' ||
+    !document.workflow_root.trim() ||
     !Array.isArray(document.workflow_folders) ||
     !Array.isArray(document.business_workflows) ||
     !Array.isArray(document.bot_action_workflows) ||
@@ -166,7 +171,7 @@ function loadWorkflowRegistry(): WorkflowRegistryDocument {
   ) {
     throw new Error('workflow_registry_yaml_missing_required_sections');
   }
-  validateFolders(document.workflow_folders);
+  validateFolders(document.workflow_folders, document.workflow_root);
   const records = [
     ...document.business_workflows,
     ...document.bot_action_workflows,

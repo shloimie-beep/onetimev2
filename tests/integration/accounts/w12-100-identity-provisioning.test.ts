@@ -586,6 +586,24 @@ async function seedVisibilityFixtures() {
      DO UPDATE SET entitlement_state = 'active', revoked_at = NULL`,
     [config.accountKey, config.productKey],
   );
+  await pool.query(
+    `INSERT INTO onetime.classroom_lesson_publications
+       (lesson_key, account_key, product_key, class_series_key, occurrence_key, content_item_key,
+        title, description, publication_state, featured, published_at,
+        controlled_by_actor_ref, raw_private_url_present, transcript_state, resource_count,
+        resources_json)
+     VALUES ('w12_100_lesson_video',$1,$2,'w12_100_class_series','w12_100_class_occurrence',
+             'w12_100_content_video','W12-100 Synthetic Video',
+             'Deterministic approved W12-100 fixture projection.','published',false,$3,
+             'w12_100_fixture',false,'available',0,'[]'::jsonb)
+     ON CONFLICT (lesson_key)
+     DO UPDATE SET publication_state = 'published',
+                   published_at = EXCLUDED.published_at,
+                   controlled_by_actor_ref = 'w12_100_fixture',
+                   raw_private_url_present = false,
+                   updated_at = now()`,
+    [config.accountKey, config.productKey, new Date('2026-07-17T13:00:00.000Z')],
+  );
 }
 
 async function lifecycleProof(purpose: string, idempotencyKey: string) {

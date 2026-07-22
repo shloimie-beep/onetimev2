@@ -7,9 +7,10 @@ last_reconciled_at: '2026-07-22T11:35:08.953Z'
 messages_sent_authorized: false
 workflow_publish_authorized: false
 production_workflow_enrollment_authorized: false
+workflow_root: One Time
 workflow_projection:
   generated_from: integrations/highlevel/registry/workflow-registry.yaml
-  source_sha256: de0f1745345bf951babdc72a02cbbbcb17beaccdcffef80f4949e28524dae78a
+  source_sha256: 729e5e6ae071adc5520c98071161eb1f66ad462557ba014ad575de423efabfc3
   editable: false
 workflow_folders:
   - order: 0
@@ -94,6 +95,7 @@ workflow_control:
     - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
     - integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
     - integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json
+    - integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
 custom_fields:
   - canonicalName: 'One Time CRM Contact ID'
     normalizedName: 'one_time_crm_contact_id'
@@ -3210,7 +3212,7 @@ knowledge_base_readback:
     duplicateCandidates: []
 automation_assets:
   generated_from: integrations/highlevel/registry/workflow-registry.yaml
-  source_sha256: de0f1745345bf951babdc72a02cbbbcb17beaccdcffef80f4949e28524dae78a
+  source_sha256: 729e5e6ae071adc5520c98071161eb1f66ad462557ba014ad575de423efabfc3
   editable: false
   workflows:
     - key: OT-01
@@ -3252,7 +3254,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 1
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the canonical adult public-signup event from One Time or OT-B01.
         - Require a known source and recorded adult channel-consent state.
@@ -3264,9 +3266,9 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -3306,7 +3308,7 @@ automation_assets:
       companionDelivery: ''
       displayOrder: 2
       desiredStatus: SAVED_REOPENED
-      observedStatus: SAVED_REOPENED
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Enter only an explicitly approved 2026 existing-subscriber migration audience.
         - Require service/marketing eligibility and no suppression before each message.
@@ -3319,10 +3321,18 @@ automation_assets:
         - Exit immediately on activation, opt-out, or suppression.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        configured_state: draft_saved_reopened
+        audience_scope: explicitly approved 2026 existing-subscriber migration segment only
+        sequence_length: 3
+        sender_registry_key: rabbi_campaign
+        price_and_offer_source: registered custom values only
+        enrollment_authorized: false
+        publication_authorized: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
@@ -3361,7 +3371,7 @@ automation_assets:
       companionDelivery: ''
       displayOrder: 3
       desiredStatus: SAVED_REOPENED
-      observedStatus: SAVED_REOPENED
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Enter only the canonical new-lead nurture audience.
         - Require explicit consent and no suppression before each message.
@@ -3372,10 +3382,21 @@ automation_assets:
         - Exit on checkout start, Active status, opt-out, or suppression.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        configured_state: draft_saved_reopened
+        audience_scope: consented unsuppressed new leads only
+        stop_states:
+          - checkout_started
+          - active
+          - opt_out
+          - suppressed
+        sender_registry_key: rabbi_campaign
+        enrollment_authorized: false
+        publication_authorized: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
@@ -3414,7 +3435,7 @@ automation_assets:
       companionDelivery: ''
       displayOrder: 4
       desiredStatus: SAVED_REOPENED
-      observedStatus: SAVED_REOPENED
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the canonical checkout-started event.
         - Wait the registered abandonment window.
@@ -3426,10 +3447,17 @@ automation_assets:
         - Send the single approved abandonment message only with valid consent and no suppression.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        configured_state: draft_saved_reopened
+        abandonment_window_source: registered value required; no hardcoded fallback
+        price_source: published canonical custom values only
+        sender_registry_key: rabbi_campaign
+        enrollment_authorized: false
+        publication_authorized: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
@@ -3468,7 +3496,7 @@ automation_assets:
       companionDelivery: ''
       displayOrder: 5
       desiredStatus: SAVED_REOPENED
-      observedStatus: SAVED_REOPENED
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the canonical One Time payment/access projection becoming Active.
       exactOrderedActions:
@@ -3478,10 +3506,17 @@ automation_assets:
         - Send the approved confirmation only when separately authorized.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        configured_state: draft_saved_reopened
+        access_authority: One Time protected billing/access adapter only
+        sender_registry_key: brand
+        customer_send_authorized: false
+        enrollment_authorized: false
+        publication_authorized: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
@@ -3520,7 +3555,7 @@ automation_assets:
       companionDelivery: ''
       displayOrder: 6
       desiredStatus: SAVED_REOPENED
-      observedStatus: SAVED_REOPENED
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the canonical payment-failure projection that places access in Grace.
       exactOrderedActions:
@@ -3530,10 +3565,18 @@ automation_assets:
         - Never charge, retry, or mutate Stripe from GHL.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        configured_state: draft_saved_reopened
+        grace_timing_source: canonical One Time projection only
+        payment_mutation_allowed: false
+        sender_registry_key: office
+        customer_send_authorized: false
+        enrollment_authorized: false
+        publication_authorized: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
@@ -3572,7 +3615,7 @@ automation_assets:
       companionDelivery: ''
       displayOrder: 7
       desiredStatus: SAVED_REOPENED
-      observedStatus: SAVED_REOPENED
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the canonical Canceled subscription projection when support context is required.
       exactOrderedActions:
@@ -3583,10 +3626,18 @@ automation_assets:
         - Never revoke One Time access from a GHL tag alone.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        configured_state: draft_saved_reopened
+        access_revocation_authority: One Time only; never a GHL tag
+        current_period_end_source: canonical One Time projection when present
+        sender_registry_key: office
+        customer_send_authorized: false
+        enrollment_authorized: false
+        publication_authorized: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
@@ -3632,7 +3683,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 9
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive One Time access confirmation for an eligible adult parent contact.
       exactOrderedActions:
@@ -3641,16 +3692,16 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       enrollmentReadback:
-        status: unavailable
-        at: ''
-        total: ''
-        active: ''
-        reference: ''
-        reason: No committed timestamped sanitized enrollment-count readback exists; Draft status only is proven.
+        status: available
+        at: '2026-07-22T14:00:12.763Z'
+        total: 0
+        active: 0
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
+        reason: Exact visible Draft workflow enrollment counters were read back as zero.
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas/read-count readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -3697,7 +3748,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 10
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the One Time parent-portal projection becoming Active for the eligible adult.
       exactOrderedActions:
@@ -3706,16 +3757,16 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       enrollmentReadback:
-        status: unavailable
-        at: ''
-        total: ''
-        active: ''
-        reference: ''
-        reason: No committed timestamped sanitized enrollment-count readback exists; Draft status only is proven.
+        status: available
+        at: '2026-07-22T14:00:12.763Z'
+        total: 0
+        active: 0
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
+        reason: Exact visible Draft workflow enrollment counters were read back as zero.
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas/read-count readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -3763,7 +3814,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 11
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive a confirmed-class reminder event for an entitled adult household after consent passes.
       exactOrderedActions:
@@ -3773,9 +3824,9 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -3823,7 +3874,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 12
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive recording.available after Admin approval for an entitled household.
       exactOrderedActions:
@@ -3833,9 +3884,9 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -3875,7 +3926,7 @@ automation_assets:
       companionDelivery: ''
       displayOrder: 8
       desiredStatus: SAVED_REOPENED
-      observedStatus: SAVED_REOPENED
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive a verified refund or chargeback support projection.
       exactOrderedActions:
@@ -3885,10 +3936,17 @@ automation_assets:
         - Never mutate Stripe or send a customer message from this workflow without separate approval.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        configured_state: draft_saved_reopened
+        payment_mutation_allowed: false
+        sender_registry_key: office
+        customer_send_authorized: false
+        enrollment_authorized: false
+        publication_authorized: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
@@ -3905,7 +3963,7 @@ automation_assets:
       dataType: workflow
       asset_kind: workflow
       category: business_workflow
-      folder: 45 - Events / 2026 / Tisha B'Av 2026
+      folder: One Time / 45 - Events / 2026 / Tisha B'Av 2026
       purpose: Registered Tisha B'Av 2026 registration and reminder workflow.
       sourceOfTruth: Shared
       allowedValues: []
@@ -3923,40 +3981,72 @@ automation_assets:
       messageClass: event_registration_confirmation
       senderKey: brand
       transport: GHL
-      exactTrigger: Tisha B'Av 2026 registration or approved reminder milestone is recorded
+      exactTrigger: Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered
       companionDelivery: ''
       displayOrder: 13
       desiredStatus: ACTIVE_TESTED
       observedStatus: ACTIVE_TESTED
       exactOrderedTriggers:
-        - Receive the canonical Tisha B'Av 2026 registration event and event/source tags.
+        - Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered.
+        - Require exact event-registration communications permission plus no email DND, suppression, unsubscribe, complaint, or hard-bounce state; do not require or create newsletter/general marketing consent.
         - Reject a duplicate active registration run for the same idempotency scope.
         - Enter each approved reminder milestone only when it is still in the future.
       exactOrderedActions:
-        - Apply the canonical event and source tags without adding newsletter consent.
-        - Send one immediate confirmation using only the protected One Time event URL.
-        - Schedule the approved one-hour and ten-minute reminders.
-        - Skip reminder actions already in the past for late registrants.
-        - Preserve one active run on replay and never expose a raw Zoom URL.
+        - 'Email A - Immediate Confirmation: exact approved subject/preheader/body, rabbi_campaign sender, canonical One Time Tisha page, event-only permission gates, and no provider link.'
+        - Wait until exactly one hour before the event; skip when already past.
+        - 'Email C - One Hour: send only to the still-eligible registered-event enrollment with the protected registered-attendee class link.'
+        - Wait until exactly ten minutes before the event; skip when already past.
+        - 'Email D - Join Now: send only to the still-eligible registered-event enrollment with the protected registered-attendee class link; preserve one active run on replay.'
       observedTriggers:
-        - Canonical Tisha B'Av registration and source tags were read back.
-        - Duplicate replay did not create a second active run.
+        - Published workflow trigger is exactly Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered.
+        - Fresh production signup did not receive that tag and therefore created no new workflow enrollment.
       observedActions:
-        - Immediate confirmation delivered once.
-        - One-hour and ten-minute reminders scheduled.
-        - Late past actions skipped; protected URLs retained; raw Zoom URL absent.
+        - Email A saved and reopened on the same workflow ID with the approved copy, rabbi_campaign sender, canonical One Time Tisha page, and no provider link.
+        - Workflow remained Published; existing operator enrollment remained at the one-hour wait; counts stayed one active / two historical.
+        - Terminal run sent zero messages and applied no manual tag, enrollment, fallback, or duplicate signup.
+      essentialValues:
+        registration_trigger_tag: OT | Event | Tisha B'Av 2026 | Registered
+        immediate_confirmation_count: 1
+        immediate_email_subject: You're registered — let's strengthen ourselves together
+        immediate_email_preheader: Join Rabbi Eli Scheller live from the Holy Land this Tisha B'Av.
+        immediate_email_sender_key: rabbi_campaign
+        immediate_email_link_custom_value_key: one_time_tisha_bav_landing_url
+        immediate_email_live_link_readback: sanitized_present_valid
+        immediate_email_provider_link_present: false
+        one_hour_reminder_scheduled_at: '2026-07-23T21:00:00+03:00'
+        ten_minute_reminder_scheduled_at: '2026-07-23T21:50:00+03:00'
+        historical_enrollments: 2
+        active_enrollments: 1
+        messages_sent_terminal_run: 0
+        fresh_signup_registered_tag_observed: false
+        fresh_signup_new_enrollment_observed: false
+        manual_tag_enrollment_or_send_applied: false
+        duplicate_active_run_created: false
+        late_past_actions_skipped: true
+        protected_direct_class_link: sanitized_present_valid_operator_authorized
+        protected_link_may_appear_in_public_campaign: false
+        event_communications_permission_required: true
+        registration_disclosure: By reserving, you’ll receive emails about this event.
+        newsletter_checkbox_present: false
+        newsletter_or_general_marketing_consent_created: false
+        provider_email_eligibility_is_consent: false
+        suppression_dnd_unsubscribe_complaint_hard_bounce_win: true
+        synthetic_or_operator_owned_verification_only: true
+        whatsapp_allowed: false
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T17:47:25.2776573+03:00'
+        method: fresh server-version save plus exact builder reopen/readback and production-signup enrollment readback
+        reference: integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json
       canary:
         result: passed
         reference: GHL-E01-operator-fab156df2719852d
-        detail: Bounded operator-owned controlled execution and replay/idempotency proof passed.
-      blocker: ''
+        detail: Historical bounded GHL-only execution/replay proof passed; newest production application registration did not add the trigger tag or create an enrollment, so end-to-end signup is failed and not claimed.
+      blocker: 'P0_APP_HANDOFF: fresh production signup added no canonical registered-event tag and created no OT-E01 enrollment; OT-TISHA-HANDOFF-01 must repair/prove the application handoff before reprocessing the one affected operator contact.'
       evidence:
         - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
         - integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        - integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json
+        - integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
     - key: OT-B01
       canonicalName: OT-B01 Complete Signup
       normalizedName: ot_b01_complete_signup
@@ -3996,7 +4086,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 15
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the typed OT-A1 complete-signup invocation with required adult data and consent.
       exactOrderedActions:
@@ -4006,9 +4096,9 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -4056,7 +4146,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 16
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the typed OT-A1 next-confirmed-class-info invocation.
       exactOrderedActions:
@@ -4066,9 +4156,9 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -4116,7 +4206,7 @@ automation_assets:
         senderKey: office
       displayOrder: 17
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the typed OT-A1 member-login invocation for an adult contact.
       exactOrderedActions:
@@ -4126,9 +4216,9 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -4176,7 +4266,7 @@ automation_assets:
         senderKey: account_security
       displayOrder: 18
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the typed OT-A1 password-help invocation without account enumeration.
       exactOrderedActions:
@@ -4186,9 +4276,9 @@ automation_assets:
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -4239,7 +4329,7 @@ automation_assets:
         senderKey: brand
       displayOrder: 19
       desiredStatus: DRAFT_WAITING_EXTERNAL
-      observedStatus: DRAFT_WAITING_EXTERNAL
+      observedStatus: DRAFT_SHELL
       exactOrderedTriggers:
         - Receive the typed OT-A1 opt-out invocation for STOP or equivalent intent.
       exactOrderedActions:
@@ -4247,13 +4337,13 @@ automation_assets:
         - Update canonical consent and suppression fields.
         - Remove related opt-in tags and apply OT | Marketing Suppressed when appropriate.
         - Remove the adult from marketing/nurture workflows and stop bot auto-follow-up.
-        - Send no acknowledgement until the registry wording conflict is separately resolved.
+        - Send no acknowledgement; any future confirmation requires a separately reviewed and authorized delivery contract.
       observedTriggers: []
       observedActions: []
       lastReadback:
-        at: '2026-07-22T09:37:00.000Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact empty-canvas/no-acknowledgement readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
         reference: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
@@ -4266,13 +4356,13 @@ automation_assets:
     - key: OT-C01
       canonicalName: OT-C01 Tisha B'Av 2026 Warm Invitation
       normalizedName: ot_c01_tisha_b_av_2026_warm_invitation
-      ghlId: f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae
+      ghlId: 6a5f750b557817806a14b19e
       ghlKey: ot_c01_tisha_b_av_2026_warm_invitation
       objectType: email_marketing_campaign
       dataType: campaign
       asset_kind: email_marketing_campaign
       category: email_marketing_campaign
-      folder: 45 - Events / 2026 / Tisha B'Av 2026
+      folder: Marketing / Email Campaigns / Home
       purpose: Registered Tisha B'Av 2026 Rabbi-authored warm invitation campaign.
       sourceOfTruth: Shared
       allowedValues: []
@@ -4296,31 +4386,49 @@ automation_assets:
       desiredStatus: SAVED_REOPENED
       observedStatus: SAVED_REOPENED
       exactOrderedTriggers:
-        - Require an explicitly approved Tisha B'Av 2026 warm audience.
-        - Require explicit campaign authorization, channel consent, and no suppression.
+        - Keep exact existing OT-C01 in Draft while the independently permissioned invitation audience is classified read-only.
+        - Never infer newsletter/general marketing consent from provider email eligibility or Tisha event registration.
+        - Exclude every Student identity and fail closed when defensible permission evidence or suppression readback is unavailable.
       exactOrderedActions:
-        - Select only the approved audience.
-        - Send the approved Rabbi-authored phase-one invitation with rabbi_campaign.
-        - Record the bounded execution result and stop on opt-out or suppression.
+        - Read back the exact campaign, canonical sender key, content identity, and public CTA without selecting an audience.
+        - Classify invitation eligibility only from independently proven permission plus DND, suppression, unsubscribe, complaint, hard-bounce, dedupe, and Student-exclusion evidence.
+        - Record exact sanitized eligible, excluded, unknown-permission, enrollment, and send counts.
+        - Keep the campaign unscheduled and unsent; perform no proof send, customer send, enrollment, or WhatsApp action.
       observedTriggers: []
       observedActions: []
+      essentialValues:
+        channel: email_only
+        public_cta: https://join.onetimeonetime.com/tisha-bav
+        sender_registry_key: rabbi_campaign
+        content_identity: 55517d8f236dec6dc069756e3c681350cdc385c44a4c112f1dec582e9a5d57f2
+        audience_scope: independently permissioned deduplicated adults only; provider eligibility is insufficient
+        require_dnd_suppression_unsubscribe_exclusion: true
+        require_student_exclusion: true
+        whatsapp_allowed: false
+        bounded_operator_proofs: 0
+        authorized_invitation_sends: 0
+        audience_selection_allowed: false
+        scheduling_allowed: false
+        synthetic_or_operator_owned_verification_only: true
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        method: navigate-away/reopen plus sanitized UI/API readback
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        method: read-only exhaustive visible UI inventory and exact campaign reopen/readback
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       canary:
         result: not_run
-        reference: integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
-        detail: Draft preserved; no contact enrolled and no send authorized.
-      blocker: Campaign audience and send authorization are absent; observed sends and enrollments are zero.
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
+        detail: Draft preserved; exact saved all-AND selector returned zero eligible contacts and was never selected, tested, scheduled, seeded, or sent.
+      blocker: No nonzero independently permissioned invitation audience is proven; the exact saved all-AND selector count is zero and send authority is withdrawn. Observed state remains DRAFT_NOT_SENT with zero sends.
       audienceReadback:
         status: DRAFT_NOT_SENT
         audienceConfigured: false
         scheduled: false
         sends: 0
-        reference: integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       evidence:
         - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+        - integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json
+        - integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
   non_workflow_assets:
     - key: OT-A1
       asset_kind: conversation_ai_bot
@@ -4328,26 +4436,28 @@ automation_assets:
       ghlId: 0Z5YvlziuXqZmBntYFU0
       folder: One Time / 60 - Bot Actions
       desiredStatus: 'OFF'
-      observedStatus: 'OFF'
+      observedStatus: UNVERIFIED_NOT_VISIBLE
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        reference: integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       evidence:
         - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
         - integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json
+        - integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
     - key: one-time-public-kb-v1
       asset_kind: knowledge_base
       canonicalName: One Time Mishnayos - Public Program and Support
       ghlId: ps6jttZ8WUGycLeQX6uF
-      folder: One Time / 60 - Bot Actions
+      folder: AI Agents / Knowledge Base
       desiredStatus: ACTIVE_REFERENCE
       observedStatus: ACTIVE_REFERENCE
       lastReadback:
-        at: '2026-07-22T09:09:54.117Z'
-        reference: integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json
+        at: '2026-07-22T14:00:12.763Z'
+        reference: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
       evidence:
         - integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
         - integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json
+        - integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
 workflow_readback:
   - canonicalName: 'OT-01 New Lead Intake'
     id: '95a6f461-1a04-4260-b379-246fdcc45af7'

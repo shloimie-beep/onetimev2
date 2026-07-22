@@ -19,15 +19,15 @@ criteria:
     proof: [ramble_intake, browser_desktop, browser_mobile, deployed_url_readback]
   - id: GHL-001
     track: ghl_organization
-    observable: Exactly 19 canonical automation assets are accounted for as 18 workflows plus OT-C01 Email Marketing campaign; OT-A1 and the KB are separate non-workflow assets, and every asset has its exact ID/kind/full ancestry/state with zero unexplained duplicates.
+    observable: The 19 canonical desired automation assets remain separately accounted from observed drift; OT-C01 workflow wrapper f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae and Email Marketing campaign 6a5f750b557817806a14b19e have distinct exact kind/path/configuration/state evidence, neither is collapsed/activated/quarantined/deleted, and every additional visible asset is reported while unexposed archived/hidden-AI scope fails closed. OT-A1 and knowledge bases remain separate non-workflow assets.
     proof: [provider_readback, PR_107_result_artifact]
   - id: GHL-002
     track: ghl_ot_e01
-    observable: OT-E01 is PUBLISHED/ACTIVE_TESTED; protected event URL survives reload, raw Zoom URL is absent, scheduling and replay/idempotency pass, and broad sends remain zero.
+    observable: OT-E01 remains the same Published workflow ID and retains its historical controlled GHL-only canary; the exact registered-event-tag trigger, approved Email A copy/rabbi_campaign sender/canonical One Time page, one-hour/ten-minute waits, suppression gates, and one-active/two-historical enrollment state save/reopen/read back exactly with zero messages in the terminal run. Current registration end to end is not accepted until the application adds the exact tag, creates the expected enrollment, reprocesses the one affected operator contact after repair proof, and delivers one event confirmation without duplicate enrollment/delivery; protected links remain sanitized and no provider URL is committed.
     proof: [provider_readback, sanitized_execution_reference]
   - id: GHL-003
     track: ghl_app_contract_shells
-    observable: OT-01/07/08/09/10/B01-B05 are labeled DRAFT_WAITING_EXTERNAL with exact app/adapter contract references, no claimed trigger/action readiness, and no publication.
+    observable: Every non-Tisha canonical workflow is observed DRAFT_SHELL with exact zero-trigger/zero-action/zero-enrollment readback; desired future contracts remain DRAFT_WAITING_EXTERNAL where applicable, with no claimed configuration, publication, enrollment, or canary readiness.
     proof: [provider_readback, board_state]
   - id: GHL-004
     track: ghl_event_dispatcher
@@ -35,9 +35,20 @@ criteria:
     proof: [integration_test, database_readback, controlled_GHL_test]
   - id: GHL-005
     track: ghl_organization
-    observable: Canonical workflow-registry.yaml contains all 19 automation IDs and exact asset kinds, full nested folder/order, exact provider trigger plus ordered actions/essential values, DRAFT_WAITING_EXTERNAL where applicable, desired/observed state, readback, canary, blocker, and evidence; source-hashed current.json/workflows.yaml projections and the generated report match it across LF/CRLF checkouts, while drift/unknown assets fail closed without mutating GHL.
+    observable: Canonical workflow-registry.yaml contains all 19 automation IDs and exact asset kinds, literal One Time root, full nested folder/order, exact provider trigger plus ordered actions/essential values, DRAFT_WAITING_EXTERNAL where applicable, desired/observed state, readback, canary, blocker, and evidence; an exhaustive live-location inventory covers root-level, nested, archived, and 99 Deprecated assets; source-hashed current.json/workflows.yaml projections and the generated report match across LF/CRLF checkouts, while drift/unknown assets fail closed without mutating GHL.
     proof:
       [repository_diff, registry_validation, generated_control_report, sanitized_provider_readback]
+  - id: GHL-006
+    track: event_service_email_permission
+    observable: Application DB stores append-only account/product/event/contact-scoped event_service_email permission history and current projection; Tisha registration atomically and idempotently grants only the disclosed event scope, queues the exact registered-event tag, never infers/backfills marketing permission, and cannot override withdrawal/suppression. OT-E01 requires matching registration plus active event permission and rechecks typed deny precedence at send time; the newest production signup currently fails this acceptance because no tag/enrollment arrived. After repair proof, the one affected operator contact is reprocessed exactly once with no duplicate delivery. OT-C01 remains Draft/unseeded/unscheduled/unsent, and the 207 contacts remain read-only classified rather than consented.
+    proof:
+      [
+        synthetic_transaction_tests,
+        typed_denial_tests,
+        database_readback,
+        zero_provider_mutation_readback,
+        forward_only_next_free_migration_proof,
+      ]
   - id: CONTENT-001
     track: media_staging_integration
     observable: /app/content proves private intake -> conservative trim -> transcript/VTT -> editable metadata/questions draft -> private Vimeo -> Admin approval -> protected Student playback for one operator-owned asset.
@@ -72,15 +83,15 @@ criteria:
     proof: [provider_readback, audit_readback, send_count]
   - id: EXP-001
     track: admin_experience_preview
-    observable: Owner/Admin sees the exact nav label Experience Preview and, only when ready, Live Console; non-admin and production see neither capability/dead link and /app/experience-preview fails closed in production.
-    proof: [api, browser_desktop, production_negative_test]
+    observable: Owner/Admin Dashboard shows the explicit card/CTA Preview Parent & Student portals and opens /app/experience-preview; the same capability remains discoverable through the mobile hamburger, while non-admin and production see no card/nav/dead link and the route fails closed in production.
+    proof: [api, browser_desktop, browser_mobile, production_negative_test]
   - id: EXP-002
     track: admin_experience_preview
     observable: /app/experience-preview shows five exact role cards and renders only exact seeded credential, enrollment, attendance, progress/reward, lesson, review-question, occurrence/Zoom, private-question, and Tisha rows; missing rows become unavailable/provider_off.
     proof: [api, browser_desktop, exact_row_negative_tests]
   - id: EXP-003
     track: fictional_student_session
-    observable: One explicit user-click opens a dedicated no-opener GET-only shell with no Admin nav/logout/mutation controls; opaque exchange is one-use, session-bound, account-bound, route-scoped, <=5 minutes, no-store, and audited.
+    observable: One explicit user-click opens a dedicated no-opener GET-only shell rendering the actual exact sibling-scoped StudentPortalFeature data inside a visibly labeled inert Read-only preview, with no Admin nav/logout/mutation path; opaque exchange is one-use, session-bound, account-bound, route-scoped, <=5 minutes, no-store, and audited.
     proof: [api, browser_desktop, security_negative_tests]
   - id: EXP-004
     track: fictional_student_session

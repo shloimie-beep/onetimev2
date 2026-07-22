@@ -207,6 +207,35 @@ describe('OT-71 content library outcome admission', () => {
       },
     });
     await grantHouseholdBillingAccess('household_alpha');
+    await pool.query(
+      `INSERT INTO onetime.learning_delivery_content_factory_items
+         (source_key, account_key, product_key, source_kind, source_ref_digest, source_sha256,
+          display_name, mime_type, byte_length, factory_state, original_duration_ms,
+          prepared_duration_ms, trim_start_ms, trim_end_ms, trim_confidence,
+          normalized_transcript, transcript_sha256, webvtt, webvtt_sha256,
+          transcription_model, transcription_language, transcript_review_state, draft_json,
+          provider_video_id, provider_embed_url, provider_text_track_id, vimeo_privacy,
+          captions_active, approved_by_user_key, approved_at,
+          published_by_user_key, published_at)
+       VALUES ('portal_video',$1,$2,'local_drop',$3,$4,'portal-video.mp4','video/mp4',1024,
+          'published',60000,60000,0,60000,1,'Approved fixture transcript.',$5,
+          'WEBVTT',$6,'fixture-transcriber','en','approved',$7::jsonb,'fixture_video',
+          'https://player.vimeo.com/video/fixture_video','fixture_track','private',true,
+          'content_library_fixture',$8,'content_library_fixture',$8)`,
+      [
+        config.accountKey,
+        config.productKey,
+        '1'.repeat(64),
+        '2'.repeat(64),
+        '3'.repeat(64),
+        '4'.repeat(64),
+        JSON.stringify({
+          short_description: 'Approved canonical factory fixture.',
+          review_questions: [],
+        }),
+        new Date('2026-07-15T10:00:00.000Z'),
+      ],
+    );
 
     const adapter = createContentPortalAccessAdapter({ pool, config });
     const actor = {

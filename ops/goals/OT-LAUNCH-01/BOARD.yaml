@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T12:45:00Z
+updated_at: 2026-07-22T14:50:00Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -20,15 +20,18 @@ outcome:
   authorized_production_promotions:
     - scope: Narrow Tisha B'Av public landing only
       pr: 106
-      head: fab0dfa110e4712f4a63bf8a84641d355accdac0
-      deployment: 94fb446c-41f8-4921-9585-697088ffa6da
+      head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
+      deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: PR #97 deployed version 092a5b6 is live on persistent staging with migration 2215, the accepted Tisha polish, and independently verified Student portal access. The conductor is repairing the single-YAML HighLevel projections, exact portal fixture boundary, Zoom config contract, and a newly exposed fictional Admin credential before the next exact-head deployment; PR #108, live Zoom proof, BNA durability, Telegram bridge, media canary, and narrow Tisha production remain separate truthful tracks.
-  external_action_count: 1
+  current_summary: Exact PR #97 head b44077fad3890e3e6b02120b5cc33096c29e43c9 is live on persistent staging through web deployment 2e937030-a1ea-4411-b50d-5c78b5da3485 with healthy /health and /ready plus migration 2215. The fictional staging Administrator credential was rotated and every prior Admin session revoked. The governed worktree adds an obvious Admin Dashboard preview CTA plus the actual sibling-scoped StudentPortalFeature inside the existing inert GET-only preview shell; focused tests, build, and real Chromium are green before the checkpoint push. PR #107 terminal head 1e247c70004dffb6247fc1ee407f1153d753bd7d proves the exact One Time Tisha ancestry/tag trigger and the approved Email A copy saved/reopened Published on the same OT-E01 ID with zero messages this run, while the newest production signup added no registered tag, created no enrollment, and received no event confirmation. OT-TISHA-HANDOFF-01 is queued on release/tisha-bav-2026-live for that P0 application handoff repair and affected-operator reprocessing after proof. The same-name OT-C01 wrapper, one legacy KB, archived workflows, and hidden/backend Conversation AI rows remain fail-closed control findings. PR #108 head 891293f remains provider-disabled and isolated-green but awaits this governed target descendant. Accepted narrow Tisha production remains acddcc8; PR #110 stays visual-only and blocked on CSS budget, exact-head preview, and the event-permission/handoff boundary.
+  external_action_count: 3
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
+      count: 2
+      scope: Two bounded operator-owned staging login-code emails only (one before and one after Admin rotation); no customer/broad send, workflow enrollment, provider workflow execution, or production mutation.
+    - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
-      scope: One operator-owned staging login-code email only; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation.
+      scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -37,13 +40,13 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 092a5b63e6d290eabf2d467156857012dd56a1e2
-    resolution: Current persistent-staging /version at conductor repair start; replace with the next exact accepted/deployed head and deployment readback before terminal handoff.
+    last_verified_commit: b44077fad3890e3e6b02120b5cc33096c29e43c9
+    resolution: Live /version readback on 2026-07-22 returned exact commit b44077fad3890e3e6b02120b5cc33096c29e43c9 and web deployment 2e937030-a1ea-4411-b50d-5c78b5da3485; /health and /ready returned 200 with latest migration 2215_experience_preview_sessions.
   system: One Time persistent staging
 
 tracks:
   - id: goal_system
-    status: active
+    status: blocked
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -61,19 +64,21 @@ tracks:
       - Fresh conductor review reconciled structured owners, accepted external heads, dependency-only states, production impact, and board-derived preview metadata.
       - Goal execution and RAMBLE now turn visual intent into route/breakpoint acceptance, current-page/screenshot inspection, obvious in-scope repair, retest, and deployed-URL proof; only real product decisions return to the operator.
       - Both modified skill packages pass repository-native frontmatter/name/UI-metadata/control-clause validation and Prettier YAML/Markdown parsing. The bundled official quick_validate.py was attempted for each but could not inspect either skill because bundled Python lacks yaml; no package was installed or vendored and no false validator pass is claimed.
-    blocker: null
-    remaining_work: Complete the single-YAML projection/report checks, goal/skill validation, final board audit, and pointer regeneration on the accepted deployed checkpoint.
-    next_action: Finish the governed repair and preserve BOARD.yaml as the single status map.
+    blocker:
+      code: GHL_ARCHIVED_AND_HIDDEN_AI_SCOPE_UNVERIFIED
+      reason: PR #107 closeout c9f7794 exhaustively records every visible workflow, the Deleted view, exact nested folders, 99 Deprecated, campaigns, and knowledge bases, but the live UI exposes no separate archived-workflow view and does not prove hidden/backend Conversation AI rows; the control report therefore cannot declare an exhaustive zero-unknown result.
+    remaining_work: Preserve the visible unknown OT-C01 workflow wrapper and legacy KB as drift, keep archived/hidden AI scope unverified, regenerate the Board-derived pointer, and push the governed checkpoint; exact-head staging deployment proof remains in admin_experience_preview.
+    next_action: Keep workflow-registry.yaml and BOARD.yaml as the only editable desired/current sources; do not infer empty archived/hidden scope or silently quarantine/delete either visible unknown asset.
 
   - id: admin_experience_preview
-    status: done
+    status: active
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
       branch: codex/full-app-staging-live
       pr: 97
       system: One Time web
-    write_scope: Experience Preview config, server catalog/routes, Admin UI, contracts, migration, and focused tests
+    write_scope: Experience Preview config, server catalog/routes, Admin Dashboard discovery CTA, actual read-only fictional Student portal rendering, contracts, migration, and focused browser/security tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/experience-preview--persistent-staging-conductor.json
     dependencies: [media_staging_integration]
     acceptance_ids: [EXP-001, EXP-002, MIG-001]
@@ -84,9 +89,14 @@ tracks:
       - Migration audit preserves historical live 2209/2210 duplicate-prefix rows, reserves 2216 only for new schema, and requires exact 2215 checksum/ledger readback.
       - Persistent-staging web deployment 6b3b2bfb-41d5-4c0b-996d-1855a717ae0c served exact /version 6fcf0435cca744dba0e4a3337beac860d9315180, a docs-only descendant of verified runtime code 18d339f; /ready read back 2215_experience_preview_sessions with checksum e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56.
       - Live Admin browser proof reached Experience Preview and selected Parent, all three siblings, and Rabbi/Classroom; both Experience Preview and Live Console navigation were visible.
+      - Binding UX re-audit reopened this track because direct URL/nav-only discovery is insufficient below the desktop sidebar breakpoint and the dedicated Student tab previously rendered only a RolePreview summary rather than the actual StudentPortalFeature UI.
+      - Current governed worktree adds an Admin Dashboard card titled Preview Parent & Student portals with an Open portal preview CTA, still gated by the server-delivered isolated-staging capability; production receives neither card nor nav item.
+      - The dedicated Student preview now obtains the exact sibling-scoped dashboard through the existing GET-only route-bound preview session and renders the actual StudentPortalFeature inside an inert Read-only preview container. No Student cookie, real-user impersonation, mutation callback, Admin AppShell/nav/logout, or opener is introduced.
+      - Focused Experience Preview tests pass 19/19 after this repair, including exact learner/class/library/progress projection, single-use exchange, expiry/replay, CSRF, Admin-session binding, cross-account denial, sibling-tab isolation, no-store/audit, provider truth, and UI contract coverage. Scoped Prettier and typecheck pass.
+      - Build-backed real Chromium proof passed 5/5 on the stable combined worktree: Dashboard -> Preview Parent & Student portals card -> all explicit role choices -> Student 1 prepare/open, null opener, actual sibling-scoped Student portal inside the dedicated GET-only shell, two isolated sibling tabs, unchanged Admin session, production 404/nav gating, mobile hamburger at 360px, and the existing Parent/Student portal regression journeys.
     blocker: null
-    remaining_work: null
-    next_action: Preserve fail-closed production gating and truthful provider-off projections.
+    remaining_work: Deploy the exact governed checkpoint and repeat the Dashboard -> card -> separate actual Student portal journey on persistent staging.
+    next_action: Keep production gating, no-store/audit, sibling scope, inert read-only rendering, and provider-off truth unchanged; do not claim READY before exact-head browser proof.
 
   - id: fictional_student_session
     status: done
@@ -109,7 +119,7 @@ tracks:
     next_action: Preserve single-use exchanges, per-session route scope, sibling isolation, and the five-minute ceiling.
 
   - id: coherent_demo
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -129,9 +139,11 @@ tracks:
       - The accidental untracked file pool.end()) was exactly zero bytes, contained no credential/private marker, and was removed before commit; the container handoff copy and unused local SSH key material are absent.
       - Independent live staging proof logged fictional Student 1 into /app/student and showed Today, one featured approved lesson, Class Helper provider-off truth, private progress/question entry, and updates with no sibling, Admin, or billing data.
       - The fictional Administrator login reached the real email-code challenge once. A diagnostic DOM snapshot rendered that fictional password value, the form was immediately cleared, and the credential is treated as compromised; no replacement value enters Git or logs.
+      - Admin-only rotation completed at 2026-07-22T13:12:07.041Z: security version incremented, active Admin sessions changed from 2 to 0, and the protected handoff was replaced without printing the credential. Parent, Student, production, and customer credentials were not changed by this rotation.
+      - Exact replacement scans found zero matches across 2,275 Git-tracked files, 291 tracked screenshots, and 20 Chrome/Edge/Codex history stores; the replacement was never rendered or logged. The unused short-lived local Railway key material and return path were removed, and no container handoff or registered SSH key remained.
     blocker: null
-    remaining_work: Rotate only the fictional staging Administrator password, invalidate its old sessions/credential, update the protected private handoff, and complete sanitized Git/log/screenshot/browser-history scans.
-    next_action: Complete the bounded Admin-only rotation after the target fixes; do not rotate Parent, Student, production, or customer credentials.
+    remaining_work: null
+    next_action: Preserve the rotated protected handoff and never render fictional credentials in DOM/tool diagnostics.
 
   - id: git_history_privacy_remediation
     status: needs_operator_decision
@@ -156,96 +168,112 @@ tracks:
     next_action: Do not rewrite history or force-push; preserve the current-file redaction until the operator makes a separate decision.
 
   - id: ghl_organization
-    status: done
+    status: blocked
     owner:
-      task_id: GHL-PHASE-2-20260722
+      task_id: 019f84c1-956f-7e82-8e8b-fd940588e440
       repository: shloimie-beep/onetimev2
       branch: codex/highlevel-final-results-20260722
       pr: 107
-      system: HighLevel Agent Mode
-    write_scope: Sanitized result artifact only; GHL mutation belonged to the authorized Agent Mode job
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+      head: 1e247c70004dffb6247fc1ee407f1153d753bd7d
+      system: HighLevel read-only governance closeout
+    write_scope: Sanitized read-only result artifact only; zero GHL/contact/provider/customer mutation
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
     dependencies: []
     acceptance_ids: [GHL-001, GHL-005]
     evidence:
-      - PR #107 head deda8f9b04dbafcc36363628a14b6fecc94fd854 and GHL-PHASE-2-20260722.result.json are authoritative.
-      - Folder tree is fully corrected; OT-01 and OT-02A were moved and reopened with no duplicates or content changes.
-      - Exactly 19 canonical automation assets are correctly nested: 18 workflows plus OT-C01 Email Marketing campaign. OT-A1 0Z5YvlziuXqZmBntYFU0 is Off with Live Chat and WhatsApp only; KB ps6jttZ8WUGycLeQX6uF is tracked outside workflow counts.
-      - No duplicate/deprecated assets; 241 contacts, one One Time tag, and zero broad sends.
-      - Git is the canonical desired-state/control view: the existing registry records exact folder/order, all 19 live IDs, ordered triggers/actions, desired/observed state, readback, canary, blocker, and evidence; its generated control report and fail-closed drift check use the committed sanitized readbacks.
-      - OT-07 and OT-08 are Draft; because no committed timestamped sanitized count readback exists, enrollment counts are Unavailable rather than hardcoded zero. OT-C01 remains Draft/not sent with no audience/schedule and zero sends; organized folders are not operational proof and OT-E01 remains the sole ACTIVE_TESTED workflow.
-      - workflow-registry.yaml is the single editable inventory. Source-hashed current.json/workflows.yaml projections and the generated report cover exact asset kind, nested folder topology, provider triggers, ordered actions/essential values, IDs, states, canaries, blockers, unknown assets, and separate approval gates.
-    blocker: null
-    remaining_work: null
-    next_action: Preserve the result artifact during semantic convergence; do not re-run or mutate GHL.
+      - Exact PR #107 head c9f779495ea40a61684c5f01c02ce3f68e450227 contributes only sanitized artifact GHL-GOVERNANCE-CLOSEOUT-20260722.result.json; its Git blob is d4e3e92a0d8ce0227139dd58ae4c02c49431c836.
+      - Read-only UI inventory verifies literal root One Time, exact ten direct folders, all visible nested workflow folders, every visible workflow row, the empty Deleted view, 99 Deprecated, Email Campaigns Home, the visible Conversation AI list, and knowledge bases. No separate archived view or hidden/backend Conversation AI inventory was exposed.
+      - Live truth is 19 visible workflows plus one separate Email Marketing campaign. Seventeen non-Tisha workflows are empty Draft canvases with zero triggers, actions, and enrollments; OT-07 and OT-08 each read back 0 total / 0 active. OT-E01 is the sole ACTIVE_TESTED workflow.
+      - The same OT-C01 name identifies two different Draft unsent assets: workflow wrapper f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae at One Time / 45 - Events / 2026 / Tisha B'Av 2026 and campaign 6a5f750b557817806a14b19e at Marketing / Email Campaigns / Home. They are never collapsed.
+      - The canonical KB ps6jttZ8WUGycLeQX6uF is visible; one legacy Existing knowledge base has no exposed ID. OT-A1 0Z5YvlziuXqZmBntYFU0 is not visible in the current list, so current live status remains unverified rather than inherited as Off.
+      - workflow-registry.yaml remains the only editable Git desired-state inventory. Generated current.json/workflows.yaml projections and WORKFLOW-CONTROL-REPORT.md are LF/CRLF-portable and compare exact folder topology, IDs, asset kinds, observed empty/configured actions, timing/essential values, canaries, blockers, unknown assets, and human approval gates.
+      - Closeout safety is zero GHL mutations, imports/contact changes, workflow enrollments, proof/customer emails, WhatsApp actions/sends, or raw provider URLs recorded.
+    blocker:
+      code: GHL_ARCHIVED_AND_HIDDEN_AI_SCOPE_UNVERIFIED
+      reason: Archived workflows and hidden/backend Conversation AI rows were not exposed by the live UI; visible unknown/cross-kind assets also require dependency review before any separately authorized quarantine decision.
+    remaining_work: Keep the control report fail-closed on archived/hidden-AI scope and the visible OT-C01 wrapper/legacy KB; never infer empty scope, activate, enroll, send, quarantine, or delete.
+    next_action: Accept only a later sanitized read-only inventory that actually covers the missing scopes; otherwise preserve this terminal honest state.
 
   - id: ghl_ot_e01
-    status: done
+    status: blocked
     owner:
-      task_id: GHL-PHASE-2-20260722
+      task_id: 019f84c1-956f-7e82-8e8b-fd940588e440
       repository: shloimie-beep/onetimev2
       branch: codex/highlevel-final-results-20260722
       pr: 107
+      head: 1e247c70004dffb6247fc1ee407f1153d753bd7d
       system: HighLevel Agent Mode
-    write_scope: OT-E01 authorized controlled test only
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+    write_scope: Exact OT-E01 production registration-handoff readback and the reviewed Email A registered-attendee copy only; no substitute, fallback, duplicate signup, OT-C01 action, audience mutation, or customer test/send
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json
     dependencies: [ghl_organization]
     acceptance_ids: [GHL-002]
     evidence:
       - OT-E01 a34ea513-4612-4f53-8bd8-49e89e6610f9 is PUBLISHED/ACTIVE_TESTED; raw Zoom URL removed, protected event URL survived reload, scheduling and idempotency passed.
-      - The newest operator instruction authorizes a narrow registered-contact email exception tonight: the immediate confirmation and/or one-hour/ten-minute reminders may contain the protected direct class link already supplied only inside the sole GHL executor, for contacts enrolled through the canonical registration trigger and still email-eligible. The pending mutation/readback is owned by ghl_ot_c01_tisha_invitation; no protected URL enters Git or evidence.
-    blocker: null
-    remaining_work: null
-    next_action: Keep ACTIVE_TESTED evidence immutable unless a new authorized job supersedes it.
+      - Terminal PR #107 readback verifies immediate, exact one-hour, and exact ten-minute emails contain the protected direct class link, legacy 24-hour delivery is absent, expired outbound actions are skipped, in-flight enrollment is preserved, and no new email was sent in the run. No protected URL enters Git or evidence.
+      - Eligibility is exact event-registration permission only, never newsletter/general-marketing consent; DND, suppression, unsubscribe, complaint, and hard-bounce gates win, Student contacts are forbidden, and WhatsApp is absent.
+      - Fresh read-only closeout confirms the exact tag trigger, immediate / fixed one-hour / fixed ten-minute email sequence, no current legacy 24-hour action, no reentry, two historical enrollments and one existing operator row active at the one-hour wait. One older finished pre-repair row retains only historical legacy-wait history; no new enrollment or duplicate was created.
+      - Connected Gmail readback directly observes exactly one immediate confirmation delivered for the existing controlled operator proof at 2026-07-22T06:32:59Z. The fresh review performed no signup or send and observed no recent contact spreadsheet/list attachment.
+      - A separate durable GHL event-permission field/tag beyond the registered-event marker was not proven; ACTIVE_TESTED enrollment is not proof that the application/GHL permission projection contract is complete.
+      - P0 live production acceptance now fails: the operator completed the live Tisha signup but received an account/login-code email rather than the OT-E01 event confirmation. Fresh sole-executor GHL readback proves that signup created no new OT-E01 enrollment and the canonical registered-event tag never arrived; the failure is upstream in the application-to-GHL handoff, not evidence that the existing workflow fired incorrectly.
+      - No substitute or manual email, duplicate signup, fallback send, customer test, OT-C01 send, or WhatsApp action is authorized while this failure is diagnosed.
+      - Terminal PR #107 head 1e247c70004dffb6247fc1ee407f1153d753bd7d preserves exact ancestry One Time / 45 - Events / 2026 / Tisha B'Av 2026 and exact Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered trigger. On a fresh server version, the same workflow ID saved and reopened with the approved Email A subject/preheader/body, registered Rabbi campaign sender, canonical One Time Tisha page, Published toggle, and no provider link in Email A.
+      - The first workflow save was correctly rejected as an outdated-version conflict after a concurrent user edit. The executor refreshed, applied only the governed Email A fields once, and did not overwrite the user's newer version. Existing enrollment stayed at the one-hour wait; counts remain one active / two historical; zero new enrollment, zero message this run, and no manual tag/enrollment/send occurred.
+    blocker:
+      code: LIVE_TISHA_REGISTRATION_DID_NOT_TRIGGER_OT_E01
+      reason: The newest real production signup produced the wrong message class; GHL readback shows no new enrollment because the canonical registered-event tag never arrived from the application handoff.
+    remaining_work: OT-TISHA-HANDOFF-01 must repair and prove the server registration/tag/enrollment boundary without a duplicate signup or substitute send, then safely reprocess the one affected existing operator contact after the repair proof and verify one event confirmation without duplicate enrollment/delivery.
+    next_action: Preserve the existing workflow ID and in-flight history; make no manual GHL tag/enrollment/send and fail closed until exact repaired registered-tag, enrollment, affected-contact reprocessing, and event-confirmation evidence returns.
 
   - id: ghl_ot_c01_tisha_invitation
-    status: active
+    status: blocked
     owner:
       task_id: 019f84c1-956f-7e82-8e8b-fd940588e440
       repository: shloimie-beep/onetimev2
-      branch: null
-      pr: null
-      system: HighLevel Agent Mode
-    write_scope: Exact existing OT-C01 email campaign plus the narrow exact OT-E01 registered-contact email exception; one bounded operator proof and one consented-adult invitation send
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-OT-C01-TISHA-INVITATION-20260722.result.json
-    dependencies: [ghl_organization, ghl_ot_e01, tisha_landing_polish]
-    acceptance_ids: [GHL-001, GHL-005]
-    desired_status: ONE_EMAIL_INVITATION_AND_REGISTERED_DELIVERY_EXCEPTION_AUTHORIZED_PENDING_PROOF
+      branch: codex/highlevel-final-results-20260722
+      pr: 107
+      head: c9f779495ea40a61684c5f01c02ce3f68e450227
+      system: HighLevel read-only invitation governance
+    write_scope: Read-only OT-C01 campaign/wrapper identity, audience classification, and zero-send readback
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
+    dependencies: [ghl_organization, event_service_email_permission, tisha_landing_polish]
+    acceptance_ids: [GHL-001, GHL-005, GHL-006]
+    desired_status: DRAFT_NOT_SENT_READ_ONLY_AUDIENCE_CLASSIFICATION
     observed_status: DRAFT_NOT_SENT
     evidence:
-      - The operator explicitly authorized tonight's exact OT-C01 Tisha B'Av email invitation; this supersedes DRAFT_NOT_SENT only as the desired next action for canonical campaign f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae and does not change the current observed Draft/zero-send truth.
-      - Existing task 019f84c1-956f-7e82-8e8b-fd940588e440 is the sole GHL writer. PR #108 provider modes remain disabled and this browser mutation must not enter PR #108.
-      - The permitted ancestry is exactly 45 - Events / 2026 / Tisha B'Av 2026; OT-E01 remains exact workflow a34ea513-4612-4f53-8bd8-49e89e6610f9 and its immutable ACTIVE_TESTED evidence is not authorization for any other asset.
-      - The final URL must fresh-read exactly https://join.onetimeonetime.com/tisha-bav before send. Email is the only permitted channel; WhatsApp actions, branches, tests, and sends are forbidden.
-      - Exact existing assets must be reused and duplicate or multiple matches fail closed. Sender and reply-to must resolve through the canonical active sender registry/picker; rabbi@ or any other identity must not be inferred.
-      - OT-C01 eligibility requires consented adults only, email DND/suppression/unsubscribe filtering, dedupe, Student exclusion, and no raw Zoom/provider links. One bounded operator proof precedes the one invitation send.
-      - OT-C01 must contain only the exact public landing CTA and never the direct class link. For exact OT-E01 registered-contact delivery only, the newest operator instruction permits the protected direct class link already supplied to the executor in the immediate confirmation and/or one-hour/ten-minute reminders, limited to canonical registration-trigger enrollments that remain email-eligible.
-      - OT-E01 must preserve the same ID, idempotent registration, late-skip timing, in-flight enrollments, and save plus navigate/reload/reopen readback. Evidence may say only protected direct class link present/valid and must never reproduce the URL in Git, BOARD, logs, screenshots, browser evidence, final reports, or a public/customer page.
-      - Terminal evidence must record desired/observed state, save plus navigate/reload/reopen readback, exact audience and exclusion counts, live enrollment/send counts, and a sanitized committed result path. Until that handoff arrives, no send or audience count is claimed here.
-    blocker: null
-    remaining_work: Sole writer must reconcile exact OT-C01 and OT-E01, fresh-read the public CTA, resolve the exact active sender/reply-to, prove the eligible consented-adult audience and exclusions, apply the protected direct-class-link exception only to canonical registered-contact OT-E01 email delivery, save/reopen/read back both assets, run one bounded operator proof, perform the one authorized email invitation send, and return sanitized terminal evidence.
-    next_action: Await the existing GHL writer's sanitized result; keep every unrelated campaign, enrollment, payment, provider activation, destructive cleanup, and production change approval-gated.
+      - The newest event-permission instruction withdraws invitation send authority. No newsletter checkbox is permitted; registration disclosure is exactly "By reserving, you'll receive emails about this event." Event registration never grants newsletter/general-marketing consent.
+      - Canonical Email Marketing campaign 6a5f750b557817806a14b19e is Draft at Marketing / Email Campaigns / Home with registered rabbi_campaign sender, copy identity 55517d8f236dec6dc069756e3c681350cdc385c44a4c112f1dec582e9a5d57f2, public CTA https://join.onetimeonetime.com/tisha-bav, zero selected recipients, zero proof sends, and zero campaign sends.
+      - Separate same-name workflow wrapper f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae is Draft at One Time / 45 - Events / 2026 / Tisha B'Av 2026. It has an unfiltered Created trigger, three non-enforcing Add notes steps, and one configured Draft email step; it is not the campaign and remains unsent.
+      - The nine-gate saved audience classification has zero unique eligible contacts, is not selected in the campaign, and was not used for proof or send. The historical 1,415-source / 1,312-file-exclusion counts are file-only candidates, never live eligibility or import authorization.
+      - The 207 provider-email-capable contacts remain deliverability-only, not consented. No new contact list was found in fresh Gmail sent/attachment searches and no import, list mutation, seed, schedule, enrollment, customer email, WhatsApp, or provider mutation occurred.
+      - OT-C01 never contains the protected direct class link. The narrow OT-E01 exception remains sanitized and applies only to already registered event-service communication.
+    blocker:
+      code: NO_INDEPENDENTLY_PERMISSIONED_INVITATION_AUDIENCE
+      reason: Exact eligible audience is zero, send authority is withdrawn, and durable event-permission projection/readback is not accepted; the same-name workflow wrapper and campaign must remain separate Draft assets.
+    remaining_work: Preserve both Draft assets and zero sends. Any future invitation requires a separately accepted durable permission contract, defensible nonzero audience evidence, and new exact operator authority.
+    next_action: Do not activate, quarantine, delete, test, enroll, schedule, import, send, or collapse either asset.
 
   - id: ghl_app_contract_shells
     status: waiting_external
     owner:
-      task_id: GHL-PHASE-2-VERIFICATION
+      task_id: GHL-UI-14-THROUGH-23-FUTURE
       repository: shloimie-beep/onetimev2
-      branch: codex/highlevel-final-results-20260722
-      pr: 107
-      system: HighLevel plus One Time application contract
-    write_scope: Readback only until the One Time dispatcher track lands
-    handoff_path: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
-    dependencies: [ghl_event_dispatcher]
+      branch: codex/ot-launch-01-highlevel-app-contracts
+      pr: 108
+      head: 891293f2bd269f4918394c6078096f81d7ed8695
+      system: HighLevel UI jobs after governed app-contract convergence
+    write_scope: Future reviewed GHL-UI-14..23 jobs only; no shell configuration, publication, enrollment, or send in PR #97
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json
+    dependencies: [ghl_event_dispatcher, event_service_email_permission]
     acceptance_ids: [GHL-003]
     evidence:
-      - OT-01/07/08/09/10/B01-B05 are DRAFT_WAITING_EXTERNAL with exact app/adapter contract references in the Phase 2 artifact; no target crossed the publication threshold.
-      - The deployed app does not emit their canonical HighLevel tags/events or bot-adapter invocations; Agent Mode refused false readiness.
-      - OT-C01 f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae remains observed DRAFT_NOT_SENT and is now governed by the separate exact email-invitation track; the other non-E01 workflows remain explicit draft/dependency states without new activation authority.
-      - Phase 2 sends, broad sends, and Student contacts are all zero; production app is unchanged.
+      - Terminal closeout proves OT-01, OT-02A, OT-02B, OT-03, OT-04, OT-05, OT-06, OT-07, OT-08, OT-09, OT-10, OT-13, and OT-B01 through OT-B05 are empty Draft canvases with zero trigger, zero actions, and zero enrollments.
+      - Their desired future contracts remain DRAFT_WAITING_EXTERNAL in Git, but observed live state is DRAFT_SHELL. Organized folders and stable IDs do not imply configured or operational workflows.
+      - OT-B05 has no acknowledgement action. Its canonical future contract also forbids acknowledgement unless a separately reviewed delivery contract authorizes one.
+      - The deployed app does not yet emit every required canonical HighLevel event/tag or bot-adapter invocation. PR #108's reviewed GHL-UI-14..23 jobs are the future execution path only after the dispatcher and event-permission lane converge.
+      - Closeout sends, enrollments, contact changes, and provider mutations are zero.
     blocker: null
-    remaining_work: Real canonical app-side outbox events/tags and bot adapter calls; do not publish shells or create a second delivery path.
-    next_action: Wait for the canonical dispatcher and exact producer acceptance, then authorize one controlled workflow job at a time.
+    remaining_work: Independently accept and integrate the canonical outbox dispatcher plus durable event-permission contract, then run one reviewed GHL UI job at a time with save/reopen/readback and bounded canary evidence.
+    next_action: Keep every shell Draft and empty; do not create a duplicate delivery path or publish/configure them from PR #97.
 
   - id: ghl_event_dispatcher
     status: waiting_external
@@ -254,7 +282,7 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/ot-launch-01-highlevel-app-contracts
       pr: 108
-      head: 98b2473c1782e6344a8415f614ef8235e59120d7
+      head: 891293f2bd269f4918394c6078096f81d7ed8695
       system: One Time outbox to HighLevel
     write_scope: One canonical dispatcher, schemas, dedupe/retry, exact golden-path producers, and tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-event-dispatcher--assigned-task.json
@@ -264,11 +292,41 @@ tracks:
       - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
       - PR #108 head 482ce93cf192e9de645e70665a35e8b1e153e6f9 passed the fresh PostgreSQL 16 claim-race/disposable-DB proof, secret scan, full lint, typecheck, runtime/product safety, and Railway worker checks.
       - Independent clean-detached-worktree audit with core.autocrlf=false found 38 PR-owned paths, 36 Prettier-supported paths, and all 36 green under repo-pinned Prettier 3.9.5. The earlier 32-warning Windows normalization result is invalid and is not branch-owned evidence.
-      - Accepted PR #97 formatting/governance and lint-fix target 018cc72e5fe036fe64704db3b507e043505a9bc9 is pushed; the existing PR #108 lane rebased to exact head 98b2473c1782e6344a8415f614ef8235e59120d7.
-      - The prior Railway web check/deployment e145b3de-4e9a-4fae-ad67-b38e33ed7847 failed; the rebased head's Node 24, Railway web/worker, PostgreSQL, and independent acceptance gates are running. No PR #108 head is accepted for integration or staging deployment.
+      - PR #108 exact rebased head 891293f2bd269f4918394c6078096f81d7ed8695 has terminal-green isolated Railway diagnostics: web deployment ee68c6a3-93b3-4fbe-ab7c-bb9262c7bb10 and worker c7bc3bb8-34cc-475e-aab5-0e022b59e371 succeeded; /version is exact, /health and /ready are 200, and isolated schema latest is 2216.
+      - HIGHLEVEL_EVENT_SYNC_MODE and HIGHLEVEL_ACTIONS_MODE are disabled, canary budget is zero, run/allowlist are unset, and isolated external calls/sends are zero.
+      - Its only current blocker is inherited target-owned Student fixture projection coverage on b44077f; PR #97 owns the repair. PR #108 remains unaccepted and must rebase onto the repaired governed target before independent audit.
     blocker: null
-    remaining_work: The existing PR #108 lane must finish Node 24 and Railway checks on rebased head 98b2473c1782e6344a8415f614ef8235e59120d7 and obtain fresh independent exact-head acceptance.
-    next_action: Keep PR #108 out of staging until the existing lane returns an independently accepted green head without direct provider fanout.
+    remaining_work: Rebase onto the next governed PR #97 descendant after the inherited Student fixture repair, rerun every check, and obtain fresh independent exact-head acceptance.
+    next_action: Keep PR #108 out of persistent staging until that exact rebased head is independently accepted with provider modes still disabled.
+
+  - id: event_service_email_permission
+    status: blocked
+    owner:
+      task_id: client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef
+      repository: shloimie-beep/onetimev2
+      branch: release/tisha-bav-2026-live
+      pr: null
+      system: OT-TISHA-HANDOFF-01 queued governed application hotfix
+    write_scope: Server registration/tag/enrollment/fallback diagnosis and repair plus narrow production hotfix; forward-only event_service_email permission schema/projection, send-time eligibility, read-only audience classification, and synthetic tests; no GHL UI mutation or substitute/customer delivery
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/event-service-email-permission--queued.json
+    dependencies: [goal_system, ghl_event_dispatcher]
+    acceptance_ids: [GHL-006]
+    evidence:
+      - Application DB is authoritative. The implementation must add append-only account/product/event/contact-scoped event_service_email permission history plus a current projection; GHL fields/tags are projections only and existing contacts receive no inferred or backfilled permission.
+      - Registration atomically grants only the fixed Tisha event scope, records disclosure version/source/timestamps, queues the GHL projection, is idempotent, never grants newsletter/general-marketing consent, and cannot override prior withdrawal or suppression.
+      - Typed deny precedence is complaint/hard bounce, global suppression/DND, global unsubscribe, event withdrawal/cancellation, invalid or ambiguous identity, then missing active event permission.
+      - OT-E01 requires a matching registration plus active event permission, does not require newsletter opt-in, and rechecks every deny gate at send time. OT-C01 remains Draft, unseeded, unscheduled, and unsent.
+      - The 207 provider-email-capable contacts are classified read-only by identity confidence, event permission, marketing permission, and delivery state; deliverability is never consent.
+      - Migration is forward-only at the next globally free prefix after convergence, with no number assumed now. Tests are synthetic/operator-owned; customer email, WhatsApp, GHL mutation, inferred consent, and production change are all zero.
+      - Fresh exact PR #106 source audit at acddcc8 confirms event_service_consent purpose=event_access_communication/email is stored separately, newsletter_opt_in defaults false, the weekly-newsletter tag is added only when explicitly true, and student_contact is false. A read-only public-page review submitted no registration.
+      - GHL OT-E01 enrollment is proven to rely on the exact event-registration tag, but a separate durable GHL event-permission custom field/tag and send-time projection readback were not proven. Existing enrollment and one delivered operator confirmation must not be treated as completion of this application/GHL contract.
+      - Newest live production evidence is an end-to-end failure: the operator's real Tisha signup yielded an account/login-code email, not the OT-E01 event confirmation. The application registration transaction, canonical registered-tag projection, GHL enrollment, and send-time event-permission chain must be diagnosed as one system before promotion.
+      - Separate governed hotfix OT-TISHA-HANDOFF-01 is queued as client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef on release/tisha-bav-2026-live. Its claim is pending and its scope is only the server registration/tag/enrollment/fallback repair plus a narrow production hotfix; PR #110 stays visual-only and the PR #107 executor stays the sole GHL UI writer.
+    blocker:
+      code: LIVE_EVENT_PERMISSION_AND_GHL_HANDOFF_UNPROVEN
+      reason: A real live signup did not produce the event-service confirmation, and the exact point where the authoritative application permission/registration state failed to project or enroll is still under readback.
+    remaining_work: Diagnose and repair the exact production transaction and registered-tag handoff, reconcile the already present PR #106 event_service_consent source with the full append-only/current-projection/idempotency/deny-order contract, prove durable GHL projection plus send-time readback, and only after proof reprocess the one affected existing operator contact without duplicate enrollment or delivery.
+    next_action: Do not fold into PR #108, send a fallback, repeat the signup, infer permission from contact state, or promote PR #110 until exact failure evidence and the separate governed repair are accepted.
 
   - id: media_staging_integration
     status: done
@@ -486,35 +544,48 @@ tracks:
       - Stable exact-source gates passed 6 focused files/24 tests, build/typecheck, repository conflict-marker scan, git diff --check, and 3/3 real Chromium scenarios including desktop and 360px.
       - Live click-through confirmed Admin login, all five role projections, concurrent isolated sibling tabs, preserved Admin session, Content, and Live Console; provider-off surfaces remained truthful.
       - Exact-head Tisha browser proof at 375x667, 390x844, 430x932, 1366x768, and 1440x900 found viewport-equal scroll dimensions, visible CTA, exact no-period title and No charge copy, correct 1080x1350 mobile and 1366x768 desktop assets, and a full-viewport scroll-locked modal with visible Close; no live registration was submitted.
+      - Live readback on 2026-07-22 returned exact commit b44077fad3890e3e6b02120b5cc33096c29e43c9 and deployment 2e937030-a1ea-4411-b50d-5c78b5da3485; /health returned 200 and /ready returned 200 with database ok, no blockers, and latest migration 2215_experience_preview_sessions.
     blocker: null
     remaining_work: Commit, push, deploy, and read back the next accepted PR #97 descendant after combined focused tests/build/marker/diff/Playwright gates and Admin credential rotation pass.
     next_action: Deploy only the exact accepted head; verify /version, /health, /ready, migration 2215, and the Admin/Student browser journey without bypassing predeploy checks.
 
   - id: tisha_landing_polish
-    status: done
+    status: blocked
     owner:
       task_id: 019f84b4-9937-74f1-8dca-0dcd0fe8bf2d
       repository: shloimie-beep/onetimev2
-      branch: release/tisha-bav-2026-live
-      pr: 106
-      head: fab0dfa110e4712f4a63bf8a84641d355accdac0
+      branch: codex/tisha-bav-visual-repair
+      pr: 110
+      head: bcfae3f57f23169de0de8d34b45f4a8b7ae256b1
       system: One Time Tisha landing
     write_scope: Staging-first Tisha landing layout and copy correction, exact responsive evidence, and the explicitly authorized narrow production promotion only
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/tisha-landing-polish--019f84b4-9937-74f1-8dca-0dcd0fe8bf2d.json
     dependencies: [goal_system, persistent_staging]
     acceptance_ids: [TISHA-001]
+    preview_review_state: BLOCKED_CI_PREVIEW_AND_PERMISSION
     evidence:
       - Initial live production audit found a large empty middle gap on mobile, missing exact phrase No charge, and the old title Filling the World with Knowledge of Hashem; production remains unverified until the authorized narrow promotion completes.
       - PR #102 is closed and superseded by PR #97 staging plus PR #106 narrow production; its stale preview assets return 404 and are not evidence or source truth.
       - Existing task 019f84b4-9937-74f1-8dca-0dcd0fe8bf2d owns staging-first proof at 375x667, 390x844, 430x932, 1366x768, and 1440x900, followed by the explicitly authorized narrow production promotion.
-      - This landing implementation track itself authorizes no GHL send and no Zoom or other provider mutation; the later bounded OT-C01 email-only authorization is isolated in ghl_ot_c01_tisha_invitation.
+      - This landing implementation track authorizes no GHL send and no Zoom or other provider mutation; the later OT-C01 send authority was withdrawn and the campaign remains Draft at zero sends in ghl_ot_c01_tisha_invitation.
       - Superseded PR #109 head 25483a62d44bb2d8d5216ea2a8b638f514b0fd1d remains rejected because its H1 had an unauthorized trailing period.
       - Root and subagent independent audits accepted superseding PR #109 head 1779254768dacebb84aeac5d71b56b5abfba2534, exactly three files on base 6fcf0435cca744dba0e4a3337beac860d9315180; exact copy, diff check, source checks, screenshots, five breakpoints, asset 200/dimensions, modal close/success/share, and zero provider mutation passed.
       - The accepted patch is integrated in PR #97 commit 75c675abf6c11d1492d19e870d2ab990aa9b6eab; the target-owned lint repair is exact deployed descendant 018cc72e5fe036fe64704db3b507e043505a9bc9.
       - Persistent-staging browser proof at all five required viewports confirms exact no-period title, No charge, viewport-equal scroll metrics, visible CTA, correct responsive assets, no dead mobile gap, and a full-page modal with visible Close; no live registration or provider send occurred.
-      - PR #106 exact production head fab0dfa110e4712f4a63bf8a84641d355accdac0 on release/tisha-bav-2026-live is live through deployment 94fb446c-41f8-4921-9585-697088ffa6da; /version is exact and /health plus /ready are healthy.
-      - All five GitHub workflow suites, including Node 24, are terminal success. Live 375x667, 390x844, 430x932, 1366x768, and 1440x900 browser proof confirms exact no-period title, No charge, correct responsive assets, viewport-equal/no-scroll layout, visible CTA, full-page modal/Close, and intercepted thank-you success with no real registration or provider send.
-      - Bare HTML cache headers now read Cache-Control no-cache, max-age=0, must-revalidate; Pragma no-cache; Expires 0. The stale Filling title is absent, and the PR #106 evidence comment is posted.
-    blocker: null
-    remaining_work: null
-    next_action: Preserve the narrow production evidence and cache headers; keep the separately authorized OT-C01 email-only operation isolated in its sole-writer track.
+      - Prior PR #106 head fab0dfa110e4712f4a63bf8a84641d355accdac0 and deployment 94fb446c-41f8-4921-9585-697088ffa6da are superseded in this same track by the later terminal landing release.
+      - PR #106 exact production head acddcc8cd012c5cdc5bfc08cbc80550bef8719ba is live through deployment 81317abe-f3ef-42cd-b5db-5814b014b6a3; /version is tisha-bav-2026-acddcc8 and /health plus /ready return 200.
+      - All five workflow suites are green. Live mobile proof at 375x667, 390x844, and 430x932 passed with the exact no-period title, No charge, correct responsive layout/assets, CTA, and no GHL/provider mutation.
+      - The accepted production head remains acddcc8cd012c5cdc5bfc08cbc80550bef8719ba through deployment 81317abe-f3ef-42cd-b5db-5814b014b6a3; PR #110 does not supersede or change that live evidence.
+      - New isolated draft PR #110 on codex/tisha-bav-visual-repair is exact head bcfae3f57f23169de0de8d34b45f4a8b7ae256b1 from production-release base acddcc8. Its scope is 12 Tisha visual/metadata/test assets only; local five-viewport no-scroll, modal/success/share, accessibility, build, lint, brand, secret, and diff checks pass. Exact event disclosure is present and newsletter form/payload are removed.
+      - PR #110 caused no live registration, GHL/Zoom/provider mutation, or production deployment and is not integrated into PR #97.
+      - Independent audit result is PASS_FOR_ISOLATED_PREVIEW_ONLY for bcfae3f: exact 12-file visual/test scope, disclosure, no newsletter field in browser payload, five viewport assertions, and no provider/config/domain/migration change. It is not production or PR #97 acceptance.
+      - Exact CI blocker is seo-bundle-performance.spec.ts:119; built public CSS is 36,220 bytes versus the unchanged 35,000-byte gate, over by 1,220 bytes. The same visual lane owns a narrow Tisha CSS consolidation and native Share Eli/Elly spelling correction; the budget will not be weakened.
+      - No working exact-head Railway preview exists for bcfae3f: the conventional preview URL returns 404 and the local screenshot path is absent from the immutable head. Provider-off /version plus deployed five-viewport proof are mandatory.
+      - Fresh production-source audit confirms event consent is separate and newsletter_opt_in defaults false, but the durable application-to-GHL event-permission projection/readback remains unaccepted. OT-E01 enrollment is not sufficient promotion evidence.
+      - P0 production acceptance failed on the operator's newest live signup: an account/login-code email arrived instead of the OT-E01 event confirmation. No duplicate signup, manual/substitute/fallback email, GHL customer test, or provider send is allowed while the exact registered-tag handoff is diagnosed.
+      - OT-TISHA-HANDOFF-01 is queued on release/tisha-bav-2026-live as client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef and owns only the server handoff/fallback repair plus narrow production hotfix. It is not part of PR #110, PR #108, or the GHL UI executor lane.
+    blocker:
+      code: TISHA_PR110_CI_PREVIEW_AND_PERMISSION_BLOCK
+      reason: PR #110 exceeds the CSS budget, still needs the Eli spelling correction and a working exact-head provider-off Railway preview, and the newest real production signup failed to produce OT-E01; live-registration promotion remains gated by exact handoff diagnosis plus the separate durable event-permission/GHL-projection acceptance.
+    remaining_work: Same visual lane must return a superseding exact head with green CSS budget and spelling, terminal GitHub checks, exact /version preview, and five deployed viewport proofs; separately diagnose the failed live registered-tag/enrollment path and accept the durable event-permission contract before any live-registration promotion.
+    next_action: Keep PR #110 isolated and production on acddcc8; do not integrate into PR #97 or promote until every listed gate is independently green.

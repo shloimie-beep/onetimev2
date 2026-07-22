@@ -39,19 +39,53 @@ golden_paths:
         quarantine/deprecation, and destructive actions remain separate exact approval gates.
       - Inventory canonical folders, workflows, bot, knowledge base, fields, tags, values,
         pipelines, senders, and campaigns across active, draft, archived, and deprecated states.
+      - Exhaustive drift evidence names the literal observed One Time root and covers root-level,
+        every nested folder, archived, and 99 - Deprecated assets; a curated canonical list cannot
+        prove that unknown assets are absent.
       - Account for every canonical asset by ID, key, type, and full folder ancestry with no
         unexplained duplicate.
       - Publish only an exactly authorized workflow after controlled trigger/execution,
         branch/wait, bounded-delivery, and replay/idempotency proof.
       - Keep every other workflow explicitly draft or dependency-blocked.
       - >-
-        Preserve current truth: OT-E01 alone is ACTIVE_TESTED; OT-C01 is an Email Marketing campaign
-        that is Draft/not sent with no audience or schedule and zero sends; OT-07 and OT-08 are Draft,
-        but enrollment counts are Unavailable until a committed timestamped sanitized readback exists.
-        OT-A1 and its knowledge base are tracked outside workflow counts, and no organized Draft shell
-        is described as operational.
+        Preserve current GHL-asset truth: OT-E01 alone retains a historical controlled ACTIVE_TESTED
+        canary, and terminal PR #107 head 1e247c7 saved/reopened the approved Email A copy on the same
+        Published ID with zero messages. This does not prove current registration end to end: the newest
+        production signup added no exact registered-event tag and created no enrollment. Two distinct OT-C01-named assets are
+        present: a Draft workflow wrapper with a broad unfiltered Created trigger, three contact-note
+        steps, and one configured Draft email step, plus the separate Draft Email Marketing campaign.
+        Both are unsent and must keep distinct exact IDs/kinds/paths/configuration; neither is activated,
+        collapsed, quarantined, or deleted. Every other visible canonical workflow is an empty DRAFT_SHELL
+        with zero trigger/actions/enrollments; OT-07 and OT-08 each have exact committed 0 total / 0 active
+        readback. OT-A1 is tracked outside workflow counts and its current live status is unverified/not
+        visible; the canonical KB plus one legacy unknown KB are also separate. Archived/hidden AI scope
+        remains unverified, and no organized Draft shell is described as operational.
+      - >-
+        Tisha registration has no newsletter checkbox and discloses exactly “By reserving, you’ll
+        receive emails about this event.” It grants only scoped Tisha event-email permission, never
+        newsletter/general-marketing consent. OT-E01 uses the exact event-registration marker plus
+        DND/suppression/unsubscribe/complaint/hard-bounce gates. OT-C01 remains Draft, unseeded,
+        unscheduled, and zero-send; 207 email-capable contacts are not opted in, invitation-audience
+        classification is read-only, and only synthetic/operator-owned verification is allowed.
+        OT-TISHA-HANDOFF-01 owns the separate application registration/tag/enrollment repair; after proof it
+        must reprocess the one affected operator contact exactly once without a manual GHL tag, duplicate
+        signup, substitute/fallback send, or duplicate enrollment/delivery.
       - Use one canonical outbox-backed One Time to GHL event dispatcher and exact producers;
         never add parallel direct delivery paths.
+      - >-
+        Application DB is authoritative for append-only account/product/event/contact-scoped
+        event_service_email permission history plus current projection; GHL fields/tags are projections
+        only and no existing contact receives inferred or backfilled permission. Tisha registration
+        atomically and idempotently grants only the fixed disclosed event scope, queues projection,
+        records disclosure version/source/timestamps, and cannot override withdrawal/suppression or
+        grant marketing consent.
+      - >-
+        Typed deny precedence is complaint/hard bounce, global suppression/DND, global unsubscribe,
+        event withdrawal/cancellation, invalid or ambiguous identity, then missing active event
+        permission. OT-E01 requires matching registration plus active event permission, never newsletter
+        opt-in, and rechecks at send time. The 207 contacts are classified read-only by identity
+        confidence, event permission, marketing permission, and delivery state; deliverability is not
+        consent. Use only a forward-only next-free migration after convergence, with no number assumed.
       - OT-01, OT-07, OT-08, OT-09, OT-10, and OT-B01 through OT-B05 remain
         DRAFT_WAITING_EXTERNAL until canonical app events/tags and bot-adapter invocations exist;
         their exact waiting dependency is the app/adapter contract, not provider readiness.

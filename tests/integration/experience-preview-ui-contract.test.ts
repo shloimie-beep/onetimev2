@@ -18,6 +18,9 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
     expect(crmSource).toContain("href: '/app/experience-preview'");
     expect(crmSource).toContain("label: 'Live Console'");
     expect(crmSource).toContain("href: '/app/live-console'");
+    expect(crmSource).toContain('Preview Parent &amp; Student portals');
+    expect(crmSource).toContain('dashboard.open_experience_preview.button');
+    expect(crmSource).toContain('Open portal preview');
   });
 
   it('omits engineering diagnostics and dead provider cards from ordinary landing views', () => {
@@ -38,7 +41,10 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
     expect(studentShellSource).toContain("method: 'GET'");
     expect(studentShellSource).not.toContain('/api/v1/auth/logout');
     expect(studentShellSource).not.toContain('AppShell');
-    expect(studentShellSource).not.toContain('<form');
+    expect(studentShellSource).toContain('StudentPortalFeature');
+    expect(studentShellSource).toContain('student_portal');
+    expect(studentShellSource).toContain('inert');
+    expect(studentShellSource).not.toContain("method: 'POST'");
     expect(previewCss).toContain('@media (max-width: 480px)');
     expect(previewCss).toMatch(/minmax\(min\(100%, 220px\), 1fr\)/);
   });

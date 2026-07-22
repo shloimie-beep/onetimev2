@@ -42,7 +42,12 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
     }
   });
 
-  await page.goto(`${staging.baseUrl}/app/experience-preview`);
+  await page.goto(`${staging.baseUrl}/app/dashboard`);
+  await expect(
+    page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Open portal preview' }).click();
+  await expect(page).toHaveURL(`${staging.baseUrl}/app/experience-preview`);
   await expect(
     page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
   ).toBeVisible();
@@ -51,9 +56,12 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   await expect(appNavigation.getByRole('link', { name: 'Live Console' })).toBeVisible();
 
   for (const label of ['Parent', 'Student 1', 'Student 2', 'Student 3', 'Rabbi/Classroom']) {
-    const role = page.getByRole('button', { name: new RegExp(`^${escapeRegex(label)}`) });
+    const role = page.getByRole('button', {
+      name: new RegExp(`^Preview ${escapeRegex(label)}:`),
+    });
     await role.click();
     await expect(role).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByText(`Selected preview: ${label}`, { exact: true })).toBeVisible();
   }
 
   const studentOne = await openStudentPreview(page, context, 'Student 1');
@@ -66,12 +74,12 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   expect(studentOne.url()).not.toBe(studentTwo.url());
 
   await studentOne.reload();
-  await expect(studentOne.getByRole('heading', { name: "Ari Cohen's learning day" })).toBeVisible();
+  await expect(studentOne.getByRole('heading', { name: 'Student Portal' })).toBeVisible();
+  await expect(studentOne.getByText('Ari Cohen', { exact: true }).first()).toBeVisible();
   await expect(studentOne.getByText('Dovid Cohen')).toHaveCount(0);
   await studentTwo.reload();
-  await expect(
-    studentTwo.getByRole('heading', { name: "Dovid Cohen's learning day" }),
-  ).toBeVisible();
+  await expect(studentTwo.getByRole('heading', { name: 'Student Portal' })).toBeVisible();
+  await expect(studentTwo.getByText('Dovid Cohen', { exact: true }).first()).toBeVisible();
   await expect(studentTwo.getByText('Ari Cohen')).toHaveCount(0);
 
   const adminSession = await page.evaluate(async () => {
@@ -85,9 +93,20 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   await expect(appNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
 
   await page.setViewportSize({ width: 360, height: 800 });
+  await page.goto(`${staging.baseUrl}/app/dashboard`);
+  await expect(
+    page.getByRole('heading', { name: 'Preview Parent & Student portals' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Open navigation' }).click();
+  const drawer = page.getByRole('dialog', { name: 'One Time navigation' });
+  await expect(drawer.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
+  await drawer.getByRole('button', { name: 'Close navigation' }).click();
+  await page.getByRole('button', { name: 'Open portal preview' }).click();
   await expect(
     page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
   ).toBeVisible();
+  await page.getByRole('button', { name: /^Preview Student 1:/ }).click();
+  await expect(page.getByText('Selected preview: Student 1', { exact: true })).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   await studentOne.setViewportSize({ width: 360, height: 800 });
   expect(await horizontalOverflow(studentOne)).toBeLessThanOrEqual(1);
@@ -100,7 +119,10 @@ test('Admin Experience Preview is isolated, responsive, sibling-scoped, and prod
   const productionContext = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   await useAdminSession(productionContext, production);
   const productionPage = await productionContext.newPage();
-  await productionPage.goto(`${production.baseUrl}/app/crm`);
+  await productionPage.goto(`${production.baseUrl}/app/dashboard`);
+  await expect(
+    productionPage.getByRole('heading', { name: 'Preview Parent & Student portals' }),
+  ).toHaveCount(0);
   await expect(productionPage.getByRole('link', { name: 'Experience Preview' })).toHaveCount(0);
   await expect(productionPage.getByRole('link', { name: 'Live Console' })).toHaveCount(0);
   const rejected = await productionPage.goto(`${production.baseUrl}/app/experience-preview`);
@@ -113,23 +135,27 @@ async function openStudentPreview(
   context: BrowserContext,
   roleLabel: 'Student 1' | 'Student 2',
 ) {
-  await page.getByRole('button', { name: new RegExp(`^${escapeRegex(roleLabel)}`) }).click();
+  await page
+    .getByRole('button', { name: new RegExp(`^Preview ${escapeRegex(roleLabel)}:`) })
+    .click();
   await page.getByRole('button', { name: 'Prepare fictional Student session' }).click();
   const link = page.getByRole('link', { name: 'Open fictional Student session' });
   await expect(link).toHaveAttribute('target', '_blank');
   await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   const [studentPage] = await Promise.all([context.waitForEvent('page'), link.click()]);
   await expect(
-    studentPage.getByRole('heading', { name: 'Fictional Student session' }),
+    studentPage.getByRole('heading', { name: 'Fictional Student portal preview' }),
   ).toBeVisible();
   return studentPage;
 }
 
 async function assertDedicatedStudentShell(page: Page, learnerName: string) {
-  await expect(page.getByRole('heading', { name: `${learnerName}'s learning day` })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Student Portal' })).toBeVisible();
+  await expect(page.getByText(learnerName, { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Library' })).toBeVisible();
+  await expect(page.locator('.fictional-student-portal-preview')).toHaveAttribute('inert', '');
   await expect(page.locator('nav')).toHaveCount(0);
-  await expect(page.locator('form')).toHaveCount(0);
-  await expect(page.locator('button')).toHaveCount(0);
   await expect(page.locator('#crm-root')).toHaveCount(0);
   await expect(page.locator('.crm-shell')).toHaveCount(0);
   await expect(page.getByRole('link', { name: /logout/i })).toHaveCount(0);

@@ -305,6 +305,23 @@ describe('OT-LAUNCH-01 Experience Preview security boundary', () => {
       const projectionText = await projection.text();
       expect(projection.status, projectionText).toBe(200);
       expect(projection.headers.get('cache-control')).toContain('no-store');
+      const projectionJson = JSON.parse(projectionText) as {
+        student_portal: {
+          learner: { learner_key: string; display_name: string };
+          upcoming_classes: unknown[];
+          library_items: unknown[];
+          progress: unknown;
+          questions: unknown[];
+        };
+      };
+      expect(projectionJson.student_portal.learner).toMatchObject({
+        learner_key: 'full_app_preview_student_1',
+        display_name: 'Ari Cohen',
+      });
+      expect(projectionJson.student_portal.upcoming_classes.length).toBeGreaterThan(0);
+      expect(projectionJson.student_portal.library_items.length).toBeGreaterThan(0);
+      expect(projectionJson.student_portal.progress).toBeDefined();
+      expect(projectionJson.student_portal.questions).toEqual([]);
       expect(projectionText).toContain('Ari Cohen');
       expect(projectionText).not.toContain('Dovid Cohen');
       expect(projectionText).not.toContain('Noam Cohen');

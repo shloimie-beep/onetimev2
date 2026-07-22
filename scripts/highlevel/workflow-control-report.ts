@@ -8,12 +8,13 @@ import {
   nonWorkflowAssets,
   workflowControlPolicy,
   workflowFolderTree,
+  workflowRoot,
   type WorkflowControlState,
   type WorkflowFolderNode,
   type WorkflowRegistryRecord,
 } from './workflow-registry-source.ts';
 
-type ObservedFolder = { name: string; children?: ObservedFolder[] };
+type ObservedFolder = { name: string; id: string; children?: ObservedFolder[] };
 type FinalWorkflow = {
   key: string;
   name: string;
@@ -22,49 +23,167 @@ type FinalWorkflow = {
   status: 'draft' | 'published';
   reopenedVerified: string;
   testStatus: 'draft_blocked' | 'active_tested';
+  assetKind: 'workflow' | 'email_marketing_campaign';
+  configurationEmpty: boolean;
+  observedTriggers: string[];
+  observedActions: string[];
 };
-type FinalResult = {
+type LiveLocationInventory = {
+  schemaVersion: string;
   generatedAt: string;
-  folderTree: ObservedFolder;
-  workflows: FinalWorkflow[];
-  tishaBavControlledTest: {
-    workflowId: string;
-    eventTagVerified: boolean;
-    sourceTagVerified: boolean;
-    newsletterTagPresent: boolean;
-    immediateConfirmationAcceptedDelivered: boolean;
-    duplicateRegistrationCreatedSecondActiveRun: boolean;
-    oneHourReminderScheduled: string;
-    tenMinuteReminderScheduled: string;
-    lateRegistrantPastOutboundActionsSkipped: boolean;
-    rawZoomUrlPresent: boolean;
-    protectedEventPage: string;
-    protectedLivePage: string;
-    messagesSentDuringThisFinalOrganizationRun: number;
+  mutationPerformed: false;
+  locationFingerprint: string;
+  root: { name: string; id: string };
+  scope: {
+    locationRoot: boolean;
+    nestedFolders: boolean;
+    archived: boolean;
+    deprecatedFolder: boolean;
+    workflows: boolean;
+    campaigns: boolean;
+    botsAndKnowledgeBases: boolean;
   };
-};
-type PhaseWorkflow = {
-  key: string;
-  id: string;
-  folderPath: string;
-  exactTriggerFilter: string;
-  expectedCriticalActions: string[];
-  observedCriticalActions: string[];
-  senderKey: string;
-  deliveryCategory: string;
-  terminalState: string;
-};
-type PhaseTwoResult = { workflowResults: PhaseWorkflow[] };
-type AssetKindReadback = {
   assets: Array<{
-    key: string;
-    assetKind: string;
+    key?: string;
+    name: string;
     id: string;
+    assetKind: string;
     fullPath: string;
     observedStatus: string;
-    audienceConfigured?: boolean;
-    scheduled?: boolean;
-    sends?: number;
+    lifecycleView: 'active' | 'draft' | 'archived' | 'deprecated' | 'off' | 'reference';
+  }>;
+};
+type GovernanceCloseoutResult = {
+  generatedAt: string;
+  mode: string;
+  location: { id: string; fingerprint: string; matchVerified: boolean };
+  scopeCoverage: {
+    literalLocationRoot: boolean;
+    literalOneTimeRoot: boolean;
+    allTenDirectOneTimeFolders: boolean;
+    allVisibleNestedWorkflowFolders: boolean;
+    allVisibleWorkflowRows: boolean;
+    deletedWorkflowView: boolean;
+    archivedWorkflowView: boolean;
+    deprecated99Folder: boolean;
+    marketingEmailCampaignsHome: boolean;
+    conversationAiVisibleList: boolean;
+    conversationAiBackendOrHiddenRows: boolean;
+    knowledgeBases: boolean;
+    unverifiedScopesAreNotAssertedEmpty: boolean;
+  };
+  safety: {
+    ghlMutations: number;
+    contactsImportedOrChanged: number;
+    workflowEnrollments: number;
+    customerEmailsSent: number;
+    whatsAppActionsOrSends: number;
+    rawProviderUrlsRecorded: boolean;
+  };
+  folderTree: ObservedFolder & { path: string; directChildCount: number };
+  workflowInventory: Array<{
+    key: string;
+    id: string;
+    kind: 'workflow';
+    name: string;
+    fullPath: string;
+    observedStatus: 'Draft' | 'Published';
+    enrollments: { total?: number; historical?: number; active: number };
+    configuration: {
+      trigger: null | Record<string, unknown>;
+      orderedActions: Array<Record<string, unknown>>;
+      canvas?: string;
+      acknowledgementActionPresent?: boolean;
+      legacy24HourActionPresent?: boolean;
+      whatsAppActionsPresent?: boolean;
+      allowReentry?: boolean;
+      idempotentEnrollment?: boolean;
+      inFlightEnrollmentRetained?: boolean;
+      deliveryEligibility?: Record<string, unknown>;
+    };
+  }>;
+  workflowLifecycleViews: {
+    deleted: { verified: boolean; rows: unknown[] };
+    archived: { verified: boolean; reason: string };
+  };
+  marketingEmailCampaigns: Array<{
+    key: string;
+    id: string;
+    kind: 'email_campaign';
+    name: string;
+    fullPath: string;
+    observedStatus: 'Draft';
+    senderRegistryKey: string;
+    registeredSenderPickerPresent: boolean;
+    copyIdentitySha256: string;
+    publicCta: string;
+    protectedDirectClassLinkPresent: boolean;
+    selectedRecipients: number;
+    proofSends: number;
+    campaignSends: number;
+  }>;
+  savedAudienceClassification: {
+    filterCount: number;
+    uniqueEligibleCount: number;
+    selectedInCampaign: boolean;
+    usedForProofOrSend: boolean;
+  };
+  conversationAi: {
+    visibleListVerified: boolean;
+    visibleRows: Array<{ id: string; name: string; observedStatus: string }>;
+    priorRegistryCandidate: {
+      key: string;
+      id: string;
+      name: string;
+      currentLiveStatus: string;
+    };
+  };
+  knowledgeBases: Array<{
+    id: string;
+    kind: 'knowledge_base';
+    name: string;
+    fullPath: string;
+    observedStatus: string;
+  }>;
+};
+type TishaActivationResult = {
+  generatedAt: string;
+  assets: Array<{
+    key: string;
+    id?: string;
+    kind: string;
+    folderAncestry?: string;
+    triggerOrEnrollment?: string;
+    orderedActions?: Array<{
+      order: number;
+      kind: string;
+      name: string;
+      senderKey?: string;
+      subject?: string;
+      preheader?: string;
+      linkCustomValueKey?: string;
+      liveLinkReadback?: string;
+      rawProviderUrlRecorded?: boolean;
+      directClassLink?: string | boolean;
+      at?: string;
+      lateBehavior?: string;
+    }>;
+    observedStatus?: string;
+    saved?: boolean;
+    reopenedVerified?: boolean;
+    liveCounts?: {
+      activeEnrollments?: number;
+      historicalEnrollments?: number;
+      messagesSentDuringThisRun?: number;
+    };
+    registrationHandoffReadback?: {
+      userReportedFreshProductionSignup?: boolean;
+      newEnrollmentObserved?: boolean;
+      registeredEventTagObservedByWorkflow?: boolean;
+      manualTagOrEnrollmentApplied?: boolean;
+      loginCodeEmailIsSeparateFromEventConfirmation?: boolean;
+    };
+    remainingBlocker?: string | null;
   }>;
 };
 type Comparison = {
@@ -77,32 +196,47 @@ type Comparison = {
 
 const repoRoot = process.cwd();
 const reportPath = 'integrations/highlevel/registry/WORKFLOW-CONTROL-REPORT.md';
-const finalPath =
-  'integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json';
-const phaseTwoPath = 'integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json';
-const assetKindPath =
-  'integrations/highlevel/agent-mode/results/GHL-ASSET-KIND-READBACK-20260722.result.json';
+const governanceCloseoutPath =
+  'integrations/highlevel/agent-mode/results/GHL-GOVERNANCE-CLOSEOUT-20260722.result.json';
+const tishaActivationPath =
+  'integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json';
 const canonical = [...canonicalAutomationAssets].sort(
   (left, right) => left.displayOrder - right.displayOrder,
 );
 
-const finalResult = await readJson<FinalResult>(finalPath);
-const phaseTwoResult = await readJson<PhaseTwoResult>(phaseTwoPath);
-const assetKindResult = await readJson<AssetKindReadback>(assetKindPath);
-const phaseByKey = new Map(phaseTwoResult.workflowResults.map((record) => [record.key, record]));
-const observedByKey = new Map(finalResult.workflows.map((workflow) => [workflow.key, workflow]));
-const assetKindByKey = new Map(assetKindResult.assets.map((asset) => [asset.key, asset]));
+const governanceCloseout = await readJson<GovernanceCloseoutResult>(governanceCloseoutPath);
+const tishaActivation = await readJson<TishaActivationResult>(tishaActivationPath);
+const liveInventory = liveInventoryFromGovernanceCloseout(governanceCloseout);
+const observedByKey = new Map(
+  [
+    ...governanceCloseout.workflowInventory
+      .filter((workflow) => workflow.key !== 'OT-C01')
+      .map(toObservedWorkflow),
+    ...governanceCloseout.marketingEmailCampaigns.map(toObservedCampaign),
+  ].map((asset) => [asset.key, asset]),
+);
 const comparisons = canonical.map(compareAsset);
-const canonicalKeys = new Set(canonical.map((workflow) => workflow.key));
-const unknown = finalResult.workflows.filter((workflow) => !canonicalKeys.has(workflow.key));
+const unknown = findUnknownAssets(liveInventory);
 const folderDisagreements = compareOrderedList(
   flattenExpectedFolders(workflowFolderTree),
-  flattenObservedFolders(finalResult.folderTree.children ?? []),
+  flattenObservedFolders(governanceCloseout.folderTree.children ?? []),
   'folder path',
 );
+if (governanceCloseout.folderTree.name !== workflowRoot) {
+  folderDisagreements.unshift(
+    `literal root registry=${workflowRoot} observed=${governanceCloseout.folderTree.name}`,
+  );
+}
+const inventoryDisagreements = validateLiveInventory(liveInventory);
 const nonWorkflowDisagreements = compareNonWorkflowAssets();
 const report = await format(
-  buildReport(comparisons, unknown, folderDisagreements, nonWorkflowDisagreements),
+  buildReport(
+    comparisons,
+    unknown,
+    folderDisagreements,
+    inventoryDisagreements,
+    nonWorkflowDisagreements,
+  ),
   { filepath: reportPath },
 );
 const write = process.argv.includes('--write');
@@ -116,6 +250,7 @@ const passed =
   drifted.length === 0 &&
   unknown.length === 0 &&
   folderDisagreements.length === 0 &&
+  inventoryDisagreements.length === 0 &&
   nonWorkflowDisagreements.length === 0;
 
 process.stdout.write(
@@ -127,13 +262,21 @@ process.stdout.write(
       canonicalCampaignAssets: canonicalCampaignAssets.length,
       nonWorkflowAssets: nonWorkflowAssets.length,
       drifted: drifted.map(({ key, disagreements }) => ({ key, disagreements })),
-      unknownAssets: unknown.map((workflow) => ({
-        key: workflow.key,
-        id: workflow.id,
-        folderPath: workflow.folderPath,
+      unknownAssets: unknown.map((asset) => ({
+        key: asset.key ?? null,
+        name: asset.name,
+        id: asset.id,
+        assetKind: asset.assetKind,
+        folderPath: asset.fullPath,
+        lifecycleView: asset.lifecycleView,
         disposition: 'DEPENDENCY_CHECK_REQUIRED_BEFORE_SAFE_AUTHORIZED_QUARANTINE',
       })),
+      unknownAssetStatus:
+        inventoryDisagreements.length === 0
+          ? 'exhaustive_inventory_checked'
+          : 'unavailable_incomplete_inventory',
       folderDisagreements,
+      inventoryDisagreements,
       nonWorkflowDisagreements,
       reportMatches,
       reportPath,
@@ -147,8 +290,7 @@ if (!passed || !reportMatches) process.exitCode = 1;
 
 function compareAsset(registry: WorkflowRegistryRecord): Comparison {
   const observed = observedByKey.get(registry.key) ?? null;
-  const phase = phaseByKey.get(registry.key);
-  const derivedObservedStatus = observed ? deriveObservedStatus(observed, phase) : 'MISSING';
+  const derivedObservedStatus = observed ? deriveObservedStatus(observed) : 'MISSING';
   const disagreements: string[] = [];
   if (!observed) {
     disagreements.push('asset missing from sanitized GHL readback');
@@ -159,7 +301,7 @@ function compareAsset(registry: WorkflowRegistryRecord): Comparison {
     if (observed.id !== registry.ghlId) {
       disagreements.push(`id registry=${registry.ghlId} observed=${observed.id}`);
     }
-    const expectedPath = `One Time / ${registry.folder}`;
+    const expectedPath = expectedAssetPath(registry);
     if (observed.folderPath !== expectedPath) {
       disagreements.push(`folder registry=${expectedPath} observed=${observed.folderPath}`);
     }
@@ -169,107 +311,137 @@ function compareAsset(registry: WorkflowRegistryRecord): Comparison {
       `status registry=${registry.observedStatus} observed=${derivedObservedStatus}`,
     );
   }
-  if (phase) compareProviderContract(registry, phase, disagreements);
-  if (registry.key === 'OT-E01') compareE01Canary(registry, disagreements);
+  if (registry.assetLifecycle === 'canonical') {
+    compareObservedConfiguration(registry, observed, disagreements);
+  }
+  if (registry.key === 'OT-E01') compareTerminalE01(registry, disagreements);
+  if (registry.key === 'OT-C01') compareTerminalC01(registry, disagreements);
   if (registry.asset_kind === 'email_marketing_campaign') {
     compareCampaignReadback(registry, disagreements);
   }
   return { key: registry.key, registry, observed, derivedObservedStatus, disagreements };
 }
 
-function compareProviderContract(
+function compareObservedConfiguration(
   registry: WorkflowRegistryRecord,
-  phase: PhaseWorkflow,
+  observed: FinalWorkflow | null,
   disagreements: string[],
 ) {
-  const contract = registry.providerContract;
-  if (!contract) {
-    disagreements.push('provider contract missing from canonical YAML');
-    return;
-  }
-  compareExact(
-    'provider trigger',
-    contract.exactTriggerFilter,
-    phase.exactTriggerFilter,
-    disagreements,
+  if (!observed || registry.key === 'OT-E01' || registry.key === 'OT-C01') return;
+  disagreements.push(
+    ...compareOrderedList(registry.observedTriggers, observed.observedTriggers, 'observed trigger'),
   );
   disagreements.push(
-    ...compareOrderedList(
-      contract.orderedCriticalActions,
-      phase.expectedCriticalActions,
-      'provider ordered action',
-    ),
+    ...compareOrderedList(registry.observedActions, observed.observedActions, 'observed action'),
   );
-  disagreements.push(
-    ...compareOrderedList(
-      registry.observedActions,
-      phase.observedCriticalActions,
-      'observed action',
-    ),
-  );
-  compareExact('provider sender', contract.senderKey, phase.senderKey, disagreements);
-  compareExact(
-    'provider delivery category',
-    contract.deliveryCategory,
-    phase.deliveryCategory,
-    disagreements,
-  );
-  compareExact('provider ID', registry.ghlId, phase.id, disagreements);
-  compareExact(
-    'provider full path',
-    `One Time / ${registry.folder}`,
-    phase.folderPath,
-    disagreements,
-  );
-  if (!phase.terminalState.startsWith('DRAFT_WAITING_EXTERNAL(')) {
-    disagreements.push(
-      `terminal state expected=DRAFT_WAITING_EXTERNAL observed=${phase.terminalState}`,
-    );
+  if (registry.observedStatus === 'DRAFT_SHELL' && !observed.configurationEmpty) {
+    disagreements.push('DRAFT_SHELL must have zero trigger and zero actions');
   }
 }
 
-function compareE01Canary(registry: WorkflowRegistryRecord, disagreements: string[]) {
-  const canary = finalResult.tishaBavControlledTest;
+function compareTerminalE01(registry: WorkflowRegistryRecord, disagreements: string[]) {
+  const asset = tishaActivation.assets.find((candidate) => candidate.key === 'OT-E01');
+  const expected = registry.essentialValues;
+  const expectedActions = [
+    ['email', 'Email A - Immediate Confirmation'],
+    ['fixed_wait', 'Wait until 1 hour before event'],
+    ['email', 'Email C - One Hour'],
+    ['fixed_wait', 'Wait until 10 minutes before event'],
+    ['email', 'Email D - Join Now'],
+  ];
   const passed =
-    canary.workflowId === registry.ghlId &&
-    canary.eventTagVerified &&
-    canary.sourceTagVerified &&
-    !canary.newsletterTagPresent &&
-    canary.immediateConfirmationAcceptedDelivered &&
-    !canary.duplicateRegistrationCreatedSecondActiveRun &&
-    Boolean(canary.oneHourReminderScheduled) &&
-    Boolean(canary.tenMinuteReminderScheduled) &&
-    canary.lateRegistrantPastOutboundActionsSkipped &&
-    !canary.rawZoomUrlPresent &&
-    canary.protectedEventPage === 'https://join.onetimeonetime.com/tisha-bav' &&
-    canary.protectedLivePage === 'https://join.onetimeonetime.com/tisha-bav/live' &&
-    canary.messagesSentDuringThisFinalOrganizationRun === 0;
+    Boolean(asset) &&
+    Boolean(expected) &&
+    asset?.id === registry.ghlId &&
+    asset?.kind === 'workflow' &&
+    asset?.folderAncestry === expectedAssetPath(registry) &&
+    asset?.triggerOrEnrollment?.startsWith(`${registry.exactTrigger};`) === true &&
+    asset?.observedStatus === 'published' &&
+    asset?.saved === true &&
+    asset?.reopenedVerified === true &&
+    asset?.liveCounts?.historicalEnrollments === expected?.historical_enrollments &&
+    asset?.liveCounts?.activeEnrollments === expected?.active_enrollments &&
+    asset?.liveCounts?.messagesSentDuringThisRun === expected?.messages_sent_terminal_run &&
+    asset?.orderedActions?.length === expectedActions.length &&
+    expectedActions.every(
+      ([kind, name], index) =>
+        asset?.orderedActions?.[index]?.order === index + 1 &&
+        asset?.orderedActions?.[index]?.kind === kind &&
+        asset?.orderedActions?.[index]?.name === name,
+    ) &&
+    asset?.orderedActions?.[0]?.senderKey === expected?.immediate_email_sender_key &&
+    asset?.orderedActions?.[0]?.subject === expected?.immediate_email_subject &&
+    asset?.orderedActions?.[0]?.preheader === expected?.immediate_email_preheader &&
+    asset?.orderedActions?.[0]?.linkCustomValueKey ===
+      expected?.immediate_email_link_custom_value_key &&
+    asset?.orderedActions?.[0]?.liveLinkReadback === expected?.immediate_email_live_link_readback &&
+    asset?.orderedActions?.[0]?.rawProviderUrlRecorded === false &&
+    asset?.orderedActions?.[0]?.directClassLink === false &&
+    asset?.orderedActions?.[1]?.at === expected?.one_hour_reminder_scheduled_at &&
+    asset?.orderedActions?.[2]?.directClassLink === 'sanitized_present_valid_operator_authorized' &&
+    asset?.orderedActions?.[3]?.at === expected?.ten_minute_reminder_scheduled_at &&
+    asset?.orderedActions?.[4]?.directClassLink === 'sanitized_present_valid_operator_authorized' &&
+    asset?.orderedActions?.[1]?.lateBehavior ===
+      'skip_expired_outbound_until_next_wait_or_event_start' &&
+    asset?.orderedActions?.[3]?.lateBehavior ===
+      'skip_expired_outbound_until_next_wait_or_event_start' &&
+    asset?.registrationHandoffReadback?.userReportedFreshProductionSignup === true &&
+    asset?.registrationHandoffReadback?.newEnrollmentObserved === false &&
+    asset?.registrationHandoffReadback?.registeredEventTagObservedByWorkflow === false &&
+    asset?.registrationHandoffReadback?.manualTagOrEnrollmentApplied === false &&
+    asset?.registrationHandoffReadback?.loginCodeEmailIsSeparateFromEventConfirmation === true &&
+    Boolean(asset?.remainingBlocker);
   if (!passed || registry.canary.result !== 'passed') {
-    disagreements.push('OT-E01 controlled trigger/action/value canary readback mismatch');
+    disagreements.push('OT-E01 terminal save/readback or upstream-handoff blocker mismatch');
   }
+}
+
+function compareTerminalC01(registry: WorkflowRegistryRecord, disagreements: string[]) {
+  const asset = governanceCloseout.marketingEmailCampaigns.find(
+    (candidate) => candidate.key === 'OT-C01',
+  );
+  const expected = registry.essentialValues;
+  const passed =
+    Boolean(asset) &&
+    Boolean(expected) &&
+    asset?.id === registry.ghlId &&
+    asset?.kind === 'email_campaign' &&
+    asset?.fullPath === expectedAssetPath(registry) &&
+    asset?.senderRegistryKey === registry.senderKey &&
+    asset?.registeredSenderPickerPresent === true &&
+    asset?.copyIdentitySha256 === expected?.content_identity &&
+    asset?.publicCta === expected?.public_cta &&
+    asset?.protectedDirectClassLinkPresent === false &&
+    asset?.observedStatus === 'Draft' &&
+    asset?.selectedRecipients === 0 &&
+    asset?.proofSends === 0 &&
+    asset?.campaignSends === 0 &&
+    governanceCloseout.savedAudienceClassification.filterCount === 9 &&
+    governanceCloseout.savedAudienceClassification.uniqueEligibleCount === 0 &&
+    !governanceCloseout.savedAudienceClassification.selectedInCampaign &&
+    !governanceCloseout.savedAudienceClassification.usedForProofOrSend &&
+    governanceCloseout.safety.customerEmailsSent === 0 &&
+    governanceCloseout.safety.whatsAppActionsOrSends === 0;
+  if (!passed) disagreements.push('OT-C01 exact sender/copy/CTA/audience/safety readback mismatch');
 }
 
 function compareCampaignReadback(registry: WorkflowRegistryRecord, disagreements: string[]) {
-  const observed = assetKindByKey.get(registry.key);
+  const observed = governanceCloseout.marketingEmailCampaigns.find(
+    (campaign) => campaign.key === registry.key,
+  );
   if (!observed) {
     disagreements.push('campaign asset-kind readback missing');
     return;
   }
-  compareExact('asset kind', registry.asset_kind, observed.assetKind, disagreements);
+  compareExact('asset kind', 'email_campaign', observed.kind, disagreements);
   compareExact('campaign ID', registry.ghlId, observed.id, disagreements);
-  compareExact(
-    'campaign full path',
-    `One Time / ${registry.folder}`,
-    observed.fullPath,
-    disagreements,
-  );
+  compareExact('campaign full path', expectedAssetPath(registry), observed.fullPath, disagreements);
   const expected = registry.audienceReadback;
   if (
     !expected ||
-    observed.observedStatus !== expected.status ||
-    observed.audienceConfigured !== expected.audienceConfigured ||
-    observed.scheduled !== expected.scheduled ||
-    observed.sends !== expected.sends
+    observed.observedStatus !== 'Draft' ||
+    observed.selectedRecipients !== 0 ||
+    observed.campaignSends !== expected.sends
   ) {
     disagreements.push('campaign Draft/audience/schedule/send readback mismatch');
   }
@@ -278,16 +450,24 @@ function compareCampaignReadback(registry: WorkflowRegistryRecord, disagreements
 function compareNonWorkflowAssets() {
   const disagreements: string[] = [];
   for (const expected of nonWorkflowAssets) {
-    const observed = assetKindByKey.get(expected.key);
-    if (!observed) {
-      disagreements.push(`${expected.key}: observed asset missing`);
+    if (expected.key === 'OT-A1') {
+      const observed = governanceCloseout.conversationAi.priorRegistryCandidate;
+      if (
+        observed.id !== expected.ghlId ||
+        observed.currentLiveStatus !== 'unverified_not_visible_in_current_list' ||
+        expected.observedStatus !== 'UNVERIFIED_NOT_VISIBLE'
+      ) {
+        disagreements.push(`${expected.key}: id/current-visible-status disagreement`);
+      }
       continue;
     }
+    const observed = governanceCloseout.knowledgeBases.find((asset) => asset.id === expected.ghlId);
     if (
-      observed.assetKind !== expected.asset_kind ||
-      observed.id !== expected.ghlId ||
+      !observed ||
+      observed.kind !== expected.asset_kind ||
+      observed.name !== expected.canonicalName ||
       observed.fullPath !== expected.folder ||
-      observed.observedStatus !== expected.observedStatus
+      observed.observedStatus !== 'visible'
     ) {
       disagreements.push(`${expected.key}: kind/id/path/status disagreement`);
     }
@@ -295,24 +475,20 @@ function compareNonWorkflowAssets() {
   return disagreements;
 }
 
-function deriveObservedStatus(
-  observed: FinalWorkflow,
-  phase: PhaseWorkflow | undefined,
-): WorkflowControlState {
+function deriveObservedStatus(observed: FinalWorkflow): WorkflowControlState {
   if (observed.status === 'published' && observed.testStatus === 'active_tested') {
     return 'ACTIVE_TESTED';
   }
-  if (phase?.terminalState.startsWith('DRAFT_WAITING_EXTERNAL(')) {
-    return 'DRAFT_WAITING_EXTERNAL';
-  }
+  if (observed.status === 'draft' && observed.configurationEmpty) return 'DRAFT_SHELL';
   if (observed.status === 'draft' && observed.reopenedVerified) return 'SAVED_REOPENED';
   return 'DRIFTED';
 }
 
 function buildReport(
   records: Comparison[],
-  unknownAssets: FinalWorkflow[],
+  unknownAssets: LiveLocationInventory['assets'],
   folderDrift: string[],
+  inventoryDrift: string[],
   nonWorkflowDrift: string[],
 ) {
   const counts = records.reduce<Record<string, number>>((result, record) => {
@@ -325,9 +501,9 @@ function buildReport(
     '',
     '> Generated from `workflow-registry.yaml` plus committed sanitized GHL readbacks. Do not edit this report by hand.',
     '',
-    `GitHub desired state: **canonical**. Observed GHL readback: ${finalResult.generatedAt}.`,
+    `GitHub desired state: **canonical**. Exhaustive observed GHL readback: ${governanceCloseout.generatedAt}; terminal OT-E01 save/handoff readback: ${tishaActivation.generatedAt}; visible location inventory: ${liveInventory.generatedAt}.`,
     '',
-    `Summary: ${canonicalWorkflowAssets.length} workflow assets; ${canonicalCampaignAssets.length} Email Marketing campaign; ${nonWorkflowAssets.length} separately tracked bot/KB assets; ${counts.ACTIVE_TESTED ?? 0} ACTIVE_TESTED; ${counts.DRAFT_WAITING_EXTERNAL ?? 0} DRAFT_WAITING_EXTERNAL; ${counts.SAVED_REOPENED ?? 0} SAVED_REOPENED; ${driftCount} DRIFTED; ${unknownAssets.length} unknown.`,
+    `Summary: ${canonicalWorkflowAssets.length} canonical workflow assets; ${canonicalCampaignAssets.length} canonical Email Marketing campaign; ${nonWorkflowAssets.length} separately tracked bot/KB assets; ${counts.ACTIVE_TESTED ?? 0} ACTIVE_TESTED; ${counts.DRAFT_SHELL ?? 0} DRAFT_SHELL; ${counts.SAVED_REOPENED ?? 0} SAVED_REOPENED; ${driftCount} registry/readback disagreements; ${unknownAssets.length} visible unknown/cross-kind assets; archived and hidden AI scope ${inventoryDrift.length ? 'UNVERIFIED' : 'verified'}.`,
     '',
     'Organized folders prove location only. They do not prove triggers, actions, activation, enrollment, delivery, or canary success.',
     '',
@@ -338,35 +514,60 @@ function buildReport(
     ...(folderDrift.length
       ? ['Folder drift:', ...folderDrift.map((item) => `- **DRIFTED:** ${item}`), '']
       : ['Full nested folder readback: **MATCHED**.', '']),
+    ...(inventoryDrift.length
+      ? [
+          'Exhaustive inventory drift:',
+          ...inventoryDrift.map((item) => `- **DRIFTED:** ${item}`),
+          '',
+        ]
+      : [
+          `Exhaustive inventory scope: **VERIFIED** for literal root ${workflowRoot}, nested folders, location root, archived, 99 Deprecated, workflows, campaigns, bots, and knowledge bases.`,
+          '',
+        ]),
     '## Automation control',
     '',
     '| # | Key | Asset kind | Folder | Desired | Observed | GHL ID | Exact config/readback | Canary | Blocker / drift |',
     '| ---: | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
     ...records.map((record) => {
       const asset = record.registry;
-      const configuration = asset.providerContract
-        ? 'Exact trigger, ordered critical actions, sender, delivery category and full path checked'
-        : record.derivedObservedStatus === 'ACTIVE_TESTED'
-          ? 'Controlled trigger/action/value canary checked'
-          : 'Saved/reopened; detailed trigger/action readback unavailable';
+      const configuration =
+        record.key === 'OT-E01'
+          ? 'GHL configuration saved/reopened; historical controlled canary retained; current application registration handoff FAILED'
+          : record.derivedObservedStatus === 'DRAFT_SHELL'
+            ? 'Exact empty canvas: zero trigger and zero actions'
+            : record.derivedObservedStatus === 'ACTIVE_TESTED'
+              ? 'Exact trigger, ordered actions, timing, protected-link semantics and canary checked'
+              : asset.asset_kind === 'email_marketing_campaign'
+                ? 'Exact sender, copy identity, public CTA, zero audience and zero sends checked'
+                : 'Observed configuration checked';
       const drift = record.disagreements.length
         ? `DRIFTED: ${record.disagreements.join('; ')}`
         : asset.blocker || 'None';
       return `| ${asset.displayOrder} | ${asset.key} | ${asset.asset_kind} | ${escapeCell(asset.folder)} | ${asset.desiredStatus} | ${record.derivedObservedStatus} | ${asset.ghlId} | ${configuration} | ${asset.canary.result}: ${escapeCell(asset.canary.detail)} | ${escapeCell(drift)} |`;
     }),
     '',
-    'OT-07 and OT-08 are verified Draft assets, but no committed timestamped sanitized enrollment-count readback exists. Their enrollment counts are therefore **Unavailable**, not hardcoded zero.',
+    'OT-07 and OT-08 are verified empty Draft canvases with exact visible enrollment counters of **0 total / 0 active** in the committed timestamped closeout artifact.',
     '',
-    'OT-C01 is an Email Marketing campaign, remains DRAFT_NOT_SENT, has no configured audience or schedule, and has zero sends. OT-A1 is Off and its KB is tracked outside workflow counts.',
+    'OT-E01 is Published and its approved Email A copy/sender/canonical One Time page were saved and reopened on the same ID. This does **not** prove current registration end to end: the newest production signup added no exact registered-event tag, created no new enrollment, and received no event confirmation. The application handoff is the P0 blocker; no manual tag, enrollment, fallback, duplicate signup, or send was applied.',
+    '',
+    'OT-C01 is two distinct assets: the canonical Email Marketing campaign remains Draft with zero recipients/sends, while the separate same-name Draft workflow wrapper is reported below as cross-kind drift and must not be activated, quarantined, deleted, or collapsed. OT-A1 is currently unverified/not visible; the canonical KB and one unknown legacy KB are tracked outside workflow counts.',
     '',
     '## Unknown assets',
     '',
-    ...(unknownAssets.length
-      ? unknownAssets.map(
-          (workflow) =>
-            `- **UNKNOWN / DRIFTED:** ${workflow.name} (${workflow.id}) at ${workflow.folderPath}. Dependency-check first; quarantine to 99 - Deprecated only through an authorized job when safe. Never silently delete.`,
-        )
-      : ['- None in the committed readback.']),
+    ...(inventoryDrift.length
+      ? [
+          '- **FAIL CLOSED:** visible unknown/cross-kind assets are listed below, but the result cannot be declared exhaustive while archived workflows and hidden/backend Conversation AI rows remain unverified.',
+          ...unknownAssets.map(
+            (asset) =>
+              `- **UNKNOWN / DRIFTED:** ${asset.name} (${asset.id}) [${asset.assetKind}; ${asset.lifecycleView}] at ${asset.fullPath}. Dependency-check first; quarantine to 99 - Deprecated only through an authorized job when safe. Never silently delete.`,
+          ),
+        ]
+      : unknownAssets.length
+        ? unknownAssets.map(
+            (workflow) =>
+              `- **UNKNOWN / DRIFTED:** ${workflow.name} (${workflow.id}) [${workflow.assetKind}; ${workflow.lifecycleView}] at ${workflow.fullPath}. Dependency-check first; quarantine to 99 - Deprecated only through an authorized job when safe. Never silently delete.`,
+          )
+        : ['- None in the committed readback.']),
     '',
     ...(nonWorkflowDrift.length
       ? ['Non-workflow drift:', ...nonWorkflowDrift.map((item) => `- **DRIFTED:** ${item}`), '']
@@ -380,14 +581,169 @@ function buildReport(
   ].join('\n');
 }
 
-function flattenExpectedFolders(folders: WorkflowFolderNode[], parent = 'One Time'): string[] {
+function validateLiveInventory(inventory: LiveLocationInventory) {
+  const disagreements: string[] = [];
+  if (inventory.mutationPerformed !== false) {
+    disagreements.push('live inventory must be read-only');
+  }
+  if (!inventory.locationFingerprint) disagreements.push('location fingerprint missing');
+  if (inventory.root.name !== workflowRoot) {
+    disagreements.push(`literal root registry=${workflowRoot} inventory=${inventory.root.name}`);
+  }
+  if (inventory.root.id !== governanceCloseout.folderTree.id) {
+    disagreements.push(
+      `root id closeout=${governanceCloseout.folderTree.id} inventory=${inventory.root.id}`,
+    );
+  }
+  for (const [scope, covered] of Object.entries(inventory.scope)) {
+    if (!covered) disagreements.push(`inventory scope not verified: ${scope}`);
+  }
+  const duplicateIds = inventory.assets
+    .map((asset) => asset.id)
+    .filter((id, index, all) => id && all.indexOf(id) !== index);
+  if (duplicateIds.length) {
+    disagreements.push(`inventory duplicate IDs: ${[...new Set(duplicateIds)].join(', ')}`);
+  }
+  return disagreements;
+}
+
+function liveInventoryFromGovernanceCloseout(
+  result: GovernanceCloseoutResult,
+): LiveLocationInventory {
+  const workflowAssets: LiveLocationInventory['assets'] = result.workflowInventory.map((asset) => ({
+    key: asset.key,
+    name: asset.name,
+    id: asset.id,
+    assetKind: 'workflow',
+    fullPath: asset.fullPath,
+    observedStatus: asset.observedStatus,
+    lifecycleView: asset.observedStatus === 'Published' ? 'active' : 'draft',
+  }));
+  const campaignAssets: LiveLocationInventory['assets'] = result.marketingEmailCampaigns.map(
+    (asset) => ({
+      key: asset.key,
+      name: asset.name,
+      id: asset.id,
+      assetKind: 'email_marketing_campaign',
+      fullPath: asset.fullPath,
+      observedStatus: asset.observedStatus,
+      lifecycleView: 'draft',
+    }),
+  );
+  const knowledgeBaseAssets: LiveLocationInventory['assets'] = result.knowledgeBases.map(
+    (asset) => ({
+      name: asset.name,
+      id: asset.id,
+      assetKind: asset.kind,
+      fullPath: asset.fullPath,
+      observedStatus: asset.observedStatus,
+      lifecycleView: 'reference',
+    }),
+  );
+  return {
+    schemaVersion: 'one-time-highlevel-governance-closeout@1.0.0',
+    generatedAt: result.generatedAt,
+    mutationPerformed: false,
+    locationFingerprint: result.location.fingerprint,
+    root: { name: result.folderTree.name, id: result.folderTree.id },
+    scope: {
+      locationRoot: result.scopeCoverage.literalLocationRoot,
+      nestedFolders:
+        result.scopeCoverage.allTenDirectOneTimeFolders &&
+        result.scopeCoverage.allVisibleNestedWorkflowFolders,
+      archived: result.scopeCoverage.archivedWorkflowView,
+      deprecatedFolder: result.scopeCoverage.deprecated99Folder,
+      workflows:
+        result.scopeCoverage.allVisibleWorkflowRows &&
+        result.workflowLifecycleViews.deleted.verified,
+      campaigns: result.scopeCoverage.marketingEmailCampaignsHome,
+      botsAndKnowledgeBases:
+        result.scopeCoverage.conversationAiVisibleList &&
+        result.scopeCoverage.conversationAiBackendOrHiddenRows &&
+        result.scopeCoverage.knowledgeBases,
+    },
+    assets: [...workflowAssets, ...campaignAssets, ...knowledgeBaseAssets],
+  };
+}
+
+function toObservedWorkflow(
+  asset: GovernanceCloseoutResult['workflowInventory'][number],
+): FinalWorkflow {
+  const trigger = asset.configuration.trigger;
+  const actions = asset.configuration.orderedActions;
+  return {
+    key: asset.key,
+    name: asset.name,
+    id: asset.id,
+    folderPath: asset.fullPath,
+    status: asset.observedStatus === 'Published' ? 'published' : 'draft',
+    reopenedVerified: 'read_back',
+    testStatus: asset.key === 'OT-E01' ? 'active_tested' : 'draft_blocked',
+    assetKind: 'workflow',
+    configurationEmpty: trigger === null && actions.length === 0,
+    observedTriggers: trigger === null ? [] : [stableObservedValue(trigger)],
+    observedActions: actions.map(stableObservedValue),
+  };
+}
+
+function toObservedCampaign(
+  asset: GovernanceCloseoutResult['marketingEmailCampaigns'][number],
+): FinalWorkflow {
+  return {
+    key: asset.key,
+    name: asset.name,
+    id: asset.id,
+    folderPath: asset.fullPath,
+    status: 'draft',
+    reopenedVerified: 'read_back',
+    testStatus: 'draft_blocked',
+    assetKind: 'email_marketing_campaign',
+    configurationEmpty: false,
+    observedTriggers: [],
+    observedActions: [],
+  };
+}
+
+function stableObservedValue(value: Record<string, unknown>) {
+  return JSON.stringify(
+    Object.fromEntries(Object.entries(value).sort(([left], [right]) => left.localeCompare(right))),
+  );
+}
+
+function expectedAssetPath(registry: WorkflowRegistryRecord) {
+  return registry.asset_kind === 'email_marketing_campaign'
+    ? registry.folder
+    : registry.folder.startsWith(`${workflowRoot} / `)
+      ? registry.folder
+      : `${workflowRoot} / ${registry.folder}`;
+}
+
+function findUnknownAssets(inventory: LiveLocationInventory) {
+  const canonicalIds = new Set(
+    [...canonicalAutomationAssets, ...nonWorkflowAssets]
+      .map((asset) => asset.ghlId)
+      .filter(Boolean),
+  );
+  const canonicalKindAndNames = new Set(
+    [...canonicalAutomationAssets, ...nonWorkflowAssets].map(
+      (asset) => `${asset.asset_kind}\u0000${asset.canonicalName}`,
+    ),
+  );
+  return inventory.assets.filter(
+    (asset) =>
+      !canonicalIds.has(asset.id) &&
+      !canonicalKindAndNames.has(`${asset.assetKind}\u0000${asset.name}`),
+  );
+}
+
+function flattenExpectedFolders(folders: WorkflowFolderNode[], parent = workflowRoot): string[] {
   return folders.flatMap((folder) => {
     const current = `${parent} / ${folder.name}`;
     return [current, ...flattenExpectedFolders(folder.children, current)];
   });
 }
 
-function flattenObservedFolders(folders: ObservedFolder[], parent = 'One Time'): string[] {
+function flattenObservedFolders(folders: ObservedFolder[], parent = workflowRoot): string[] {
   return folders.flatMap((folder) => {
     const current = `${parent} / ${folder.name}`;
     return [current, ...flattenObservedFolders(folder.children ?? [], current)];

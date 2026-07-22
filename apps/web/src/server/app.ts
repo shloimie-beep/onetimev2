@@ -552,19 +552,6 @@ export function createApp({
     },
   });
 
-  registerExperiencePreviewRoutes({
-    app,
-    config,
-    pool,
-    distDir,
-    session: {
-      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
-      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
-      setPrivateNoStore,
-    },
-    ...(clock ? { clock } : {}),
-  });
-
   registerLearningDeliveryDemoRoutes({
     app,
     config,
@@ -1431,6 +1418,34 @@ export function createApp({
     helper: createStudentClassHelperAdapter({ pool, config, ...(clock ? { clock } : {}) }),
     billing: createParentBillingSummaryAdapter(billingRuntime.config, billingRuntime.repositories),
   };
+  const previewStudentPortalService = createStudentPortalService(portalServiceDeps);
+  registerExperiencePreviewRoutes({
+    app,
+    config,
+    pool,
+    distDir,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      setPrivateNoStore,
+    },
+    studentDashboardForPreview: ({ learnerKey, householdKey, accessStateKey, previewSessionKey }) =>
+      previewStudentPortalService.dashboard({
+        account_key: config.accountKey,
+        product_key: config.productKey,
+        actor_user_ref: previewSessionKey,
+        actor_role: 'student',
+        session_key: previewSessionKey,
+        capabilities: ['student:dashboard:read', 'rewards:read', 'gamification:read'],
+        authorized_households: [],
+        student_learner: {
+          learner_key: learnerKey,
+          household_key: householdKey,
+          access_state_key: accessStateKey,
+        },
+      }),
+    ...(clock ? { clock } : {}),
+  });
   const resolvePortalActor = (req: Request) => portalActorFromRequest(req, pool, config);
   const verifyPortalCsrf = (req: Request, actor: PortalActorContext) =>
     isSameOriginPost(req, config) &&

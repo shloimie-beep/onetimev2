@@ -26,6 +26,7 @@ export type WorkflowControlBinding = Pick<
   | 'exactOrderedActions'
   | 'observedTriggers'
   | 'observedActions'
+  | 'essentialValues'
   | 'lastReadback'
   | 'canary'
   | 'blocker'
@@ -47,6 +48,7 @@ export const workflowControlByKey = Object.fromEntries(
       exactOrderedActions: workflow.exactOrderedActions,
       observedTriggers: workflow.observedTriggers,
       observedActions: workflow.observedActions,
+      ...(workflow.essentialValues ? { essentialValues: workflow.essentialValues } : {}),
       lastReadback: workflow.lastReadback,
       canary: workflow.canary,
       blocker: workflow.blocker,

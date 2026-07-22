@@ -1,0 +1,713 @@
+{
+  "schemaVersion": "one-time-highlevel-governance-closeout@1.0.0",
+  "generatedAt": "2026-07-22T14:00:12.763Z",
+  "mode": "read_only_live_ui_inventory",
+  "location": {
+    "id": "pBSnOK2nkdxp6gf9Rg3o",
+    "fingerprint": "sha256:018d4f8e5cb779b0",
+    "matchVerified": true
+  },
+  "scopeCoverage": {
+    "literalLocationRoot": true,
+    "literalOneTimeRoot": true,
+    "allTenDirectOneTimeFolders": true,
+    "allVisibleNestedWorkflowFolders": true,
+    "allVisibleWorkflowRows": true,
+    "deletedWorkflowView": true,
+    "archivedWorkflowView": false,
+    "deprecated99Folder": true,
+    "marketingEmailCampaignsHome": true,
+    "conversationAiVisibleList": true,
+    "conversationAiBackendOrHiddenRows": false,
+    "knowledgeBases": true,
+    "unverifiedScopesAreNotAssertedEmpty": true
+  },
+  "safety": {
+    "ghlMutations": 0,
+    "assetsSavedOrPublished": 0,
+    "contactsImportedOrChanged": 0,
+    "workflowEnrollments": 0,
+    "proofEmailsSent": 0,
+    "customerEmailsSent": 0,
+    "whatsAppActionsOrSends": 0,
+    "rawProviderUrlsRecorded": false,
+    "rawRecipientDataRecorded": false,
+    "senderAddressesRecorded": false
+  },
+  "folderTree": {
+    "name": "One Time",
+    "id": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+    "path": "One Time",
+    "directChildCount": 10,
+    "extraRootOrDirectChildFolders": [],
+    "children": [
+      {
+        "name": "00 - Intake & Data",
+        "id": "35b75aaa-7b52-44a6-ada6-646f621b69b6",
+        "path": "One Time / 00 - Intake & Data"
+      },
+      {
+        "name": "10 - Enrollment & Nurture",
+        "id": "a84014ad-9885-4468-9a79-6c65379d0062",
+        "path": "One Time / 10 - Enrollment & Nurture"
+      },
+      {
+        "name": "20 - Billing & Access",
+        "id": "174690e2-831e-49ee-ac09-4650e9843526",
+        "path": "One Time / 20 - Billing & Access"
+      },
+      {
+        "name": "30 - Portal Lifecycle",
+        "id": "250ff9f0-4985-46c0-a587-f7e3a0251bab",
+        "path": "One Time / 30 - Portal Lifecycle"
+      },
+      {
+        "name": "40 - Learning Operations",
+        "id": "37cce184-3c98-4229-a3ac-55e457f85d0c",
+        "path": "One Time / 40 - Learning Operations",
+        "children": [
+          {
+            "name": "Classes",
+            "id": "3fcc9185-8bb6-4158-9055-90d732db9bc5",
+            "path": "One Time / 40 - Learning Operations / Classes"
+          },
+          {
+            "name": "Content",
+            "id": "196a6d36-f31c-40e6-88b3-aa5abdb267e3",
+            "path": "One Time / 40 - Learning Operations / Content"
+          }
+        ]
+      },
+      {
+        "name": "45 - Events",
+        "id": "fe96808a-038b-4c93-99d8-8dc1446ca546",
+        "path": "One Time / 45 - Events",
+        "children": [
+          {
+            "name": "2026",
+            "id": "8f27941f-dc16-41cf-8c2e-e6d206c4d997",
+            "path": "One Time / 45 - Events / 2026",
+            "children": [
+              {
+                "name": "Tisha B'Av 2026",
+                "id": "95b8b770-269e-427f-a872-7112dc7a5f22",
+                "path": "One Time / 45 - Events / 2026 / Tisha B'Av 2026"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "50 - Support",
+        "id": "3d11b0e6-989b-4066-94e5-d646adc51cd7",
+        "path": "One Time / 50 - Support"
+      },
+      {
+        "name": "60 - Bot Actions",
+        "id": "4213ea27-6bd8-444e-9fe2-b75cc2c2ed70",
+        "path": "One Time / 60 - Bot Actions"
+      },
+      {
+        "name": "90 - Internal Operations",
+        "id": "03256645-423b-473a-a96f-b9e09aa5b4e8",
+        "path": "One Time / 90 - Internal Operations"
+      },
+      {
+        "name": "99 - Deprecated",
+        "id": "6ad6cfa2-a2a4-41ff-85bc-8051a497efbe",
+        "path": "One Time / 99 - Deprecated"
+      }
+    ]
+  },
+  "workflowInventory": [
+    {
+      "key": "OT-01",
+      "id": "95a6f461-1a04-4260-b379-246fdcc45af7",
+      "kind": "workflow",
+      "name": "OT-01 New Lead Intake",
+      "fullPath": "One Time / 00 - Intake & Data",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 12:36 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-02A",
+      "id": "368d47ca-c6d2-4545-acb0-664f98bac8f2",
+      "kind": "workflow",
+      "name": "OT-02A Existing Subscriber Migration 2026 v1",
+      "fullPath": "One Time / 10 - Enrollment & Nurture",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 12:37 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "waits": [],
+        "branches": [],
+        "senderRegistryKey": "unavailable_no_email_action",
+        "deliveryCategory": "unavailable_no_delivery_action",
+        "essentialValues": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-02B",
+      "id": "a7038e32-79d2-4d2d-b103-5722ab0abcfc",
+      "kind": "workflow",
+      "name": "OT-02B New Lead Nurture v1",
+      "fullPath": "One Time / 10 - Enrollment & Nurture",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:48 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "waits": [],
+        "branches": [],
+        "senderRegistryKey": "unavailable_no_email_action",
+        "deliveryCategory": "unavailable_no_delivery_action",
+        "essentialValues": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-03",
+      "id": "b5c3e702-a7e6-415d-9ffc-fa2b0027a27f",
+      "kind": "workflow",
+      "name": "OT-03 Checkout Started / Abandoned",
+      "fullPath": "One Time / 20 - Billing & Access",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:49 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "waits": [],
+        "branches": [],
+        "senderRegistryKey": "unavailable_no_email_action",
+        "deliveryCategory": "unavailable_no_delivery_action",
+        "essentialValues": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-04",
+      "id": "dd1e90ea-f9bd-4c3b-97de-2230f119f38b",
+      "kind": "workflow",
+      "name": "OT-04 Payment Active",
+      "fullPath": "One Time / 20 - Billing & Access",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:50 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "waits": [],
+        "branches": [],
+        "senderRegistryKey": "unavailable_no_email_action",
+        "deliveryCategory": "unavailable_no_delivery_action",
+        "essentialValues": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-05",
+      "id": "8c7a0a37-6747-492f-99f6-1a1fb90518de",
+      "kind": "workflow",
+      "name": "OT-05 Payment Failed / Grace",
+      "fullPath": "One Time / 20 - Billing & Access",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:51 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "waits": [],
+        "branches": [],
+        "senderRegistryKey": "unavailable_no_email_action",
+        "deliveryCategory": "unavailable_no_delivery_action",
+        "essentialValues": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-06",
+      "id": "7421cd97-a61b-4434-b7f3-163b8cc7237c",
+      "kind": "workflow",
+      "name": "OT-06 Subscription Canceled",
+      "fullPath": "One Time / 20 - Billing & Access",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:52 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "waits": [],
+        "branches": [],
+        "senderRegistryKey": "unavailable_no_email_action",
+        "deliveryCategory": "unavailable_no_delivery_action",
+        "essentialValues": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-13",
+      "id": "9459a4a1-c5fa-4912-920e-e30c86f1fbe9",
+      "kind": "workflow",
+      "name": "OT-13 Refund / Chargeback",
+      "fullPath": "One Time / 20 - Billing & Access",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:57 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "waits": [],
+        "branches": [],
+        "senderRegistryKey": "unavailable_no_email_action",
+        "deliveryCategory": "unavailable_no_delivery_action",
+        "essentialValues": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-07",
+      "id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
+      "kind": "workflow",
+      "name": "OT-07 Parent Portal Invitation",
+      "fullPath": "One Time / 30 - Portal Lifecycle",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:53 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-08",
+      "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
+      "kind": "workflow",
+      "name": "OT-08 Parent Portal Activated",
+      "fullPath": "One Time / 30 - Portal Lifecycle",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:57 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-09",
+      "id": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
+      "kind": "workflow",
+      "name": "OT-09 Parent Class Reminder",
+      "fullPath": "One Time / 40 - Learning Operations / Classes",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:53 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-10",
+      "id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
+      "kind": "workflow",
+      "name": "OT-10 New Recording Available",
+      "fullPath": "One Time / 40 - Learning Operations / Content",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:57 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-C01",
+      "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "kind": "workflow",
+      "name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "fullPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:35 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": {
+          "name": "Registered Audience Entry for Tisha B'Av 2026 Campaign",
+          "type": "Created",
+          "filters": []
+        },
+        "orderedActions": [
+          {
+            "order": 1,
+            "name": "Validate Required Custom Values",
+            "observedType": "Add notes",
+            "enforcement": false
+          },
+          {
+            "order": 2,
+            "name": "Check Suppression/Consent Flags",
+            "observedType": "Add notes",
+            "enforcement": false
+          },
+          {
+            "order": 3,
+            "name": "Send Tisha B'Av 2026 Warm Rabbinic Invitation (Test Contact Only)",
+            "observedType": "Email",
+            "senderRegistryKey": "rabbi_campaign",
+            "registeredSenderPickerPresent": true,
+            "contentSha256": "8db48ae8816ffa86334f200e8388644f4a75e6a3707da04c10d3380fe295899f",
+            "contentLength": 440,
+            "subjectPresent": true,
+            "publicLandingCtaPresent": false,
+            "protectedDirectClassLinkPresent": false
+          },
+          {
+            "order": 4,
+            "name": "Preserve Unrelated Tags and Record Workflow ID",
+            "observedType": "Add notes"
+          }
+        ],
+        "allowReentry": false,
+        "timezone": "account",
+        "suppressionOrConsentConditionsEnforced": false
+      }
+    },
+    {
+      "key": "OT-E01",
+      "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+      "kind": "workflow",
+      "name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+      "fullPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "observedStatus": "Published",
+      "lastModifiedVisible": "2026-07-22 12:09 Asia/Jerusalem",
+      "enrollments": { "historical": 2, "active": 1 },
+      "configuration": {
+        "trigger": {
+          "type": "exact_event_registration_tag",
+          "tagKey": "ot_event_tisha_bav_2026_registered",
+          "permissionClass": "event_registration_only"
+        },
+        "orderedActions": [
+          {
+            "order": 1,
+            "kind": "email",
+            "name": "Email A - Immediate Confirmation",
+            "senderRegistryKey": "brand",
+            "protectedDirectClassLink": "sanitized_present_valid_operator_authorized"
+          },
+          {
+            "order": 2,
+            "kind": "fixed_wait",
+            "name": "Wait until 1 hour before event",
+            "atUtc": "2026-07-23T18:00:00Z",
+            "atEastern": "2026-07-23 14:00",
+            "atIsrael": "2026-07-23 21:00",
+            "lateBehavior": "skip_expired"
+          },
+          {
+            "order": 3,
+            "kind": "email",
+            "name": "Email C - One Hour",
+            "senderRegistryKey": "brand",
+            "protectedDirectClassLink": "sanitized_present_valid_operator_authorized"
+          },
+          {
+            "order": 4,
+            "kind": "fixed_wait",
+            "name": "Wait until 10 minutes before event",
+            "atUtc": "2026-07-23T18:50:00Z",
+            "atEastern": "2026-07-23 14:50",
+            "atIsrael": "2026-07-23 21:50",
+            "lateBehavior": "skip_expired"
+          },
+          {
+            "order": 5,
+            "kind": "email",
+            "name": "Email D - Join Now",
+            "senderRegistryKey": "brand",
+            "protectedDirectClassLink": "sanitized_present_valid_operator_authorized"
+          }
+        ],
+        "legacy24HourActionPresent": false,
+        "whatsAppActionsPresent": false,
+        "allowReentry": false,
+        "idempotentEnrollment": true,
+        "inFlightEnrollmentRetained": true,
+        "deliveryEligibility": {
+          "permission": "exact_event_registration",
+          "globalNewsletterConsentRequired": false,
+          "emailDndMustBeFalse": true,
+          "activeSuppressionStateRequired": true,
+          "unsubscribeComplaintHardBounceAlwaysWin": true,
+          "studentContactsAllowed": false
+        }
+      }
+    },
+    {
+      "key": "OT-B01",
+      "id": "1c1c0bcd-6185-492e-819f-3b7c749d4c23",
+      "kind": "workflow",
+      "name": "OT-B01 Complete Signup",
+      "fullPath": "One Time / 60 - Bot Actions",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:54 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-B02",
+      "id": "cc766d32-0a47-47b5-818c-de45fefa83a7",
+      "kind": "workflow",
+      "name": "OT-B02 Send Next Confirmed Class Info",
+      "fullPath": "One Time / 60 - Bot Actions",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:54 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-B03",
+      "id": "8ff00774-82fd-42d7-992b-4e9aca0a5091",
+      "kind": "workflow",
+      "name": "OT-B03 Send Member Login",
+      "fullPath": "One Time / 60 - Bot Actions",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:55 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-B04",
+      "id": "9f96c105-a298-4b5d-a5e5-8c573624d242",
+      "kind": "workflow",
+      "name": "OT-B04 Send Password Help",
+      "fullPath": "One Time / 60 - Bot Actions",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:55 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    },
+    {
+      "key": "OT-B05",
+      "id": "badd7521-913c-43b8-9b7a-1c1ccedac63c",
+      "kind": "workflow",
+      "name": "OT-B05 Apply Opt-Out",
+      "fullPath": "One Time / 60 - Bot Actions",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 11:58 Asia/Jerusalem",
+      "enrollments": { "total": 0, "active": 0 },
+      "configuration": {
+        "trigger": null,
+        "orderedActions": [],
+        "acknowledgementActionPresent": false,
+        "canvas": "empty_add_new_trigger_to_end"
+      }
+    }
+  ],
+  "emptyWorkflowFolders": [
+    "One Time / 50 - Support",
+    "One Time / 90 - Internal Operations",
+    "One Time / 99 - Deprecated"
+  ],
+  "workflowLifecycleViews": {
+    "deleted": { "verified": true, "rows": [] },
+    "archived": {
+      "verified": false,
+      "reason": "no separate archived lifecycle view was exposed by the live UI"
+    }
+  },
+  "marketingEmailCampaigns": [
+    {
+      "key": "OT-C01",
+      "id": "6a5f750b557817806a14b19e",
+      "kind": "email_campaign",
+      "name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "fullPath": "Marketing / Email Campaigns / Home",
+      "observedStatus": "Draft",
+      "lastModifiedVisible": "2026-07-22 16:14 Asia/Jerusalem",
+      "senderRegistryKey": "rabbi_campaign",
+      "registeredSenderPickerPresent": true,
+      "copyIdentitySha256": "55517d8f236dec6dc069756e3c681350cdc385c44a4c112f1dec582e9a5d57f2",
+      "publicCta": "https://join.onetimeonetime.com/tisha-bav",
+      "protectedDirectClassLinkPresent": false,
+      "selectedRecipients": 0,
+      "proofSends": 0,
+      "campaignSends": 0,
+      "delivered": 0,
+      "bounced": 0,
+      "unsubscribed": 0
+    }
+  ],
+  "savedAudienceClassification": {
+    "id": "gjuLL8C3YwYpvgxqMYms",
+    "name": "45 - Events / 2026 / Tisha B'Av 2026 / OT-C01 Eligible Adult Email Opt-In",
+    "logic": "ALL",
+    "filterCount": 9,
+    "uniqueEligibleCount": 0,
+    "savedAndReopenedBeforeReadOnlyCloseout": true,
+    "selectedInCampaign": false,
+    "usedForProofOrSend": false,
+    "gates": [
+      "one_time_email_consent=opted_in",
+      "one_time_suppression_state=active",
+      "built_in_email_dnd=false",
+      "email_present",
+      "email_status=valid",
+      "ot_email_opt_in_tag_present",
+      "ot_consent_unknown_tag_absent",
+      "ot_marketing_suppressed_tag_absent",
+      "tisha_bav_2026_registered_tag_absent"
+    ],
+    "adultStudentBoundary": "location_governance_invariant_adult_parent_only",
+    "dedupe": "zero_result_set_no_delivery_possible"
+  },
+  "conversationAi": {
+    "visibleListVerified": true,
+    "visibleRows": [],
+    "createAndManageUiOnly": true,
+    "priorRegistryCandidate": {
+      "key": "OT-A1",
+      "id": "0Z5YvlziuXqZmBntYFU0",
+      "name": "OT-A1 One Time Enrollment Assistant",
+      "priorObservedStatus": "OFF",
+      "currentLiveStatus": "unverified_not_visible_in_current_list"
+    }
+  },
+  "knowledgeBases": [
+    {
+      "id": "ps6jttZ8WUGycLeQX6uF",
+      "kind": "knowledge_base",
+      "name": "One Time Mishnayos - Public Program and Support",
+      "fullPath": "AI Agents / Knowledge Base",
+      "observedStatus": "visible",
+      "lastModifiedVisible": "2026-07-21 19:43 Asia/Jerusalem",
+      "knowledgeGaps": 0
+    },
+    {
+      "id": "unavailable_not_exposed_in_list",
+      "kind": "knowledge_base",
+      "name": "Existing knowledge base",
+      "fullPath": "AI Agents / Knowledge Base",
+      "observedStatus": "visible",
+      "lastModifiedVisible": "2026-07-21 19:29 Asia/Jerusalem",
+      "knowledgeGaps": 0
+    }
+  ],
+  "unknownOrDuplicateCandidates": [
+    {
+      "classification": "cross_kind_name_collision",
+      "name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "workflowId": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "campaignId": "6a5f750b557817806a14b19e",
+      "bothObservedStatus": "Draft",
+      "sent": false
+    },
+    {
+      "classification": "knowledge_base_legacy_or_unknown",
+      "name": "Existing knowledge base",
+      "id": "unavailable_not_exposed_in_list"
+    },
+    {
+      "classification": "conversation_ai_registry_candidate_not_currently_visible",
+      "name": "OT-A1 One Time Enrollment Assistant",
+      "id": "0Z5YvlziuXqZmBntYFU0"
+    }
+  ],
+  "downloadedHistoricalAudienceEvidence": {
+    "classification": "operator_asserted_old_app_link_opt_in_source_candidates",
+    "files": [
+      {
+        "name": "Rabbi Scheller Followers.xlsx",
+        "dataRows": 811,
+        "validEmailFormatRows": 811,
+        "uniqueEmails": 808,
+        "duplicateRows": 3,
+        "explicitConsentOrSuppressionColumnsPresent": false
+      },
+      {
+        "name": "subscribed_email_audience_export_b12dfa345d.csv",
+        "dataRows": 1311,
+        "uniqueEmails": 1311,
+        "marketingOptInTrue": 82,
+        "marketingOptInFalse": 49,
+        "marketingOptInBlank": 1180,
+        "optInTimestampPresent": 1311,
+        "confirmTimestampPresent": 1311
+      },
+      {
+        "name": "unsubscribed_email_audience_export_b12dfa345d.csv",
+        "uniqueEmails": 152
+      },
+      {
+        "name": "cleaned_email_audience_export_b12dfa345d.csv",
+        "uniqueEmails": 57
+      }
+    ],
+    "reconciliation": {
+      "historicalSourceUniqueUnion": 1415,
+      "overlapBetweenTwoHistoricalSources": 704,
+      "historicalUnionOverlappingUnsubscribedExport": 71,
+      "historicalUnionOverlappingCleanedExport": 32,
+      "fileOnlyCandidatesAfterDownloadedExclusions": 1312
+    },
+    "liveEligibleSendCount": "unavailable_not_imported_or_live_gated",
+    "requiredBeforeAnyFutureImportOrSend": [
+      "defensible_permission_mapping",
+      "valid_email",
+      "email_dnd_false",
+      "no_unsubscribe_complaint_hard_bounce_or_suppression",
+      "adult_parent_only_and_no_students",
+      "exclude_operator_and_test_contacts",
+      "exclude_already_registered_where_appropriate",
+      "dedupe_by_canonical_identity_and_email"
+    ]
+  },
+  "terminalState": {
+    "otE01": "published_active_and_preserved",
+    "otE01ActiveEnrollments": 1,
+    "otC01WorkflowWrapper": "draft_unsent",
+    "otC01EmailCampaign": "draft_zero_recipients_zero_sends",
+    "customerEmailsSentDuringCloseout": 0,
+    "remainingBlocker": "Historical old-app addresses are only a file-level candidate pool; no live GHL import and exclusion readback was authorized or performed in this read-only closeout."
+  },
+  "sanitizedEvidenceSources": [
+    "integrations/highlevel/agent-mode/results/GHL-TISHA-BAV-ACTIVATION-20260722.result.json",
+    "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+    "integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json",
+    "integrations/highlevel/registry/sender-registry.yaml",
+    "integrations/highlevel/registry/custom-values.yaml",
+    "integrations/highlevel/registry/custom-fields.yaml",
+    "integrations/highlevel/registry/tag-taxonomy.yaml",
+    "integrations/highlevel/registry/communications-contract.json"
+  ]
+}

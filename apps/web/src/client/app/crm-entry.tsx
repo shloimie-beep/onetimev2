@@ -834,6 +834,9 @@ function CrmApp() {
           dashboard={dashboard}
           loading={dashboardState.loading}
           error={dashboardState.error}
+          showExperiencePreview={Boolean(
+            session?.capabilities?.operator_experience?.experience_preview,
+          )}
           onRetry={() => void loadDashboard()}
           onOpen={(href) => {
             const ownerSurface = ownerSurfaceFromPath(href);
@@ -1023,12 +1026,14 @@ function DashboardPanel({
   dashboard,
   loading,
   error,
+  showExperiencePreview,
   onRetry,
   onOpen,
 }: {
   dashboard: OwnerDashboardResponse | null;
   loading: boolean;
   error: string;
+  showExperiencePreview: boolean;
   onRetry: () => void;
   onOpen: (href: string) => void;
 }) {
@@ -1067,6 +1072,27 @@ function DashboardPanel({
   return (
     <section className="dashboard-surface" data-usable="owner-dashboard" aria-busy={loading}>
       <div className="dashboard-grid">
+        {showExperiencePreview && (
+          <article className="dashboard-card experience-preview-dashboard-card state-ready">
+            <header>
+              <h2>Preview Parent &amp; Student portals</h2>
+              <Chip label="Staging only" tone="status" />
+            </header>
+            <strong>Walk through the fictional Cohen household</strong>
+            <p>
+              Choose Parent, each sibling, or Rabbi/Classroom in a read-only preview. Fictional
+              Student sessions open separately and never replace this Administrator session.
+            </p>
+            <button
+              type="button"
+              className="button-primary"
+              data-action-id="dashboard.open_experience_preview.button"
+              onClick={() => onOpen('/app/experience-preview')}
+            >
+              Open portal preview
+            </button>
+          </article>
+        )}
         {visibleSections.map((section) => {
           const href = section.href;
           const actionId = dashboardOpenActionId(href);

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { canonicalTextForHash } from '../ops/canonical-text.ts';
 import {
   botActionWorkflows,
   businessWorkflows,
@@ -384,11 +385,16 @@ function workflowControlIsValid(current: CurrentRegistry) {
     canonical.every(
       (workflow) =>
         workflow.assetLifecycle === 'canonical' &&
-        folders.has(workflow.folder) &&
+        (workflow.asset_kind === 'email_marketing_campaign'
+          ? workflow.folder === 'Marketing / Email Campaigns / Home'
+          : folders.has(workflow.folder) ||
+            (workflow.folder.startsWith('One Time / ') &&
+              folders.has(workflow.folder.slice('One Time / '.length)))) &&
         allowedStates.has(workflow.desiredStatus) &&
         allowedStates.has(workflow.observedStatus) &&
         workflow.exactOrderedTriggers.length > 0 &&
         workflow.exactOrderedActions.length > 0 &&
+        (Boolean(workflow.providerContract) || Boolean(workflow.essentialValues)) &&
         Boolean(workflow.lastReadback.at) &&
         Boolean(workflow.lastReadback.reference) &&
         Boolean(workflow.canary.result) &&
@@ -398,10 +404,8 @@ function workflowControlIsValid(current: CurrentRegistry) {
     canonical.find((workflow) => workflow.key === 'OT-C01')?.asset_kind ===
       'email_marketing_campaign' &&
     canonical.find((workflow) => workflow.key === 'OT-C01')?.audienceReadback?.sends === 0 &&
-    canonical.find((workflow) => workflow.key === 'OT-07')?.observedStatus ===
-      'DRAFT_WAITING_EXTERNAL' &&
-    canonical.find((workflow) => workflow.key === 'OT-08')?.observedStatus ===
-      'DRAFT_WAITING_EXTERNAL'
+    canonical.find((workflow) => workflow.key === 'OT-07')?.observedStatus === 'DRAFT_SHELL' &&
+    canonical.find((workflow) => workflow.key === 'OT-08')?.observedStatus === 'DRAFT_SHELL'
   );
 }
 
@@ -620,9 +624,5 @@ function writeStdoutJson(value: unknown) {
 }
 
 function sha256(value: string) {
-  return createHash('sha256').update(canonicalHashText(value)).digest('hex');
-}
-
-function canonicalHashText(value: string) {
-  return value.replace(/\r\n/g, '\n');
+  return createHash('sha256').update(canonicalTextForHash(value)).digest('hex');
 }

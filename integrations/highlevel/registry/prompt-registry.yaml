@@ -536,7 +536,7 @@
   status: 'active'
   title: "OT-C01 Tisha B'Av 2026 Warm Invitation"
   file_path: 'integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md'
-  sha256: 'e0d4fd237341ddd9927a72443b9b5f866f2fbfb00eac8f67242ca6ff5ed974dd'
+  sha256: '381431b541e37f3d13f1c967d3be89848de7d81473983c60fd13404e6449dd60'
   source: 'Canonical workflow prompt generated from registry'
   created_date: '2026-07-21'
   approved_date: ''
@@ -570,7 +570,7 @@
   status: 'active'
   title: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
   file_path: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
-  sha256: 'd6abded6a85f0332e8cde1ad5c21a8ceee1bdce41f9b7f83eded76723258ec9f'
+  sha256: 'a675a56e56b220e275e83fff16e89d5dc1ecc6ec21d759020056fee21b3736b6'
   source: 'Canonical workflow prompt generated from registry'
   created_date: '2026-07-21'
   approved_date: ''
@@ -740,7 +740,7 @@
   status: 'active'
   title: 'OT-B05 Apply Opt-Out'
   file_path: 'integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md'
-  sha256: 'efc87ebc9f22dde39441cd5ef121ce72a137e282f5014a6790b0131c735b9e92'
+  sha256: '902e4d2f653a4d5a674d174c7eca4ab71238109ff88360d97e420239e35362c5'
   source: 'Canonical workflow prompt generated from registry'
   created_date: '2026-07-21'
   approved_date: ''

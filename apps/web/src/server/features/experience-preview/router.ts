@@ -12,6 +12,7 @@ import {
   type ExperiencePreviewRole,
   type ExperiencePreviewRoleId,
   type ExperiencePreviewState,
+  type StudentPortalDashboard,
 } from '../../../../../../packages/contracts/src/index.ts';
 import type { DbPool } from '../../../../../../packages/db/src/index.ts';
 import type { AuthenticatedSession } from '../../../../../../packages/domain/src/index.ts';
@@ -146,6 +147,12 @@ export function registerExperiencePreviewRoutes(input: {
   pool: DbPool;
   distDir: string;
   session: SessionPorts;
+  studentDashboardForPreview(subject: {
+    learnerKey: string;
+    householdKey: string;
+    accessStateKey: string;
+    previewSessionKey: string;
+  }): Promise<StudentPortalDashboard>;
   clock?: () => Date;
 }) {
   const now = input.clock ?? (() => new Date());
@@ -369,6 +376,38 @@ export function registerExperiencePreviewRoutes(input: {
       res.status(409).json({ success: false, code: 'fictional_student_unavailable' });
       return;
     }
+    const fictionalStudent = FICTIONAL_STUDENTS.find(
+      (student) =>
+        student.roleId === previewSession.roleId &&
+        student.learnerKey === previewSession.learnerKey,
+    );
+    if (!fictionalStudent) {
+      res.status(409).json({ success: false, code: 'fictional_student_unavailable' });
+      return;
+    }
+    const studentPortalReadback = await input.studentDashboardForPreview({
+      learnerKey: fictionalStudent.learnerKey,
+      householdKey: HOUSEHOLD_KEY,
+      accessStateKey: fictionalStudent.accessStateKey,
+      previewSessionKey: previewSession.previewSessionKey,
+    });
+    if (studentPortalReadback.learner.learner_key !== previewSession.learnerKey) {
+      res.status(409).json({ success: false, code: 'fictional_student_unavailable' });
+      return;
+    }
+    const studentPortal: StudentPortalDashboard = {
+      ...studentPortalReadback,
+      ...(studentPortalReadback.leaderboard
+        ? {
+            leaderboard: {
+              ...studentPortalReadback.leaderboard,
+              entries: studentPortalReadback.leaderboard.entries.filter(
+                (entry) => entry.learner_key === previewSession.learnerKey,
+              ),
+            },
+          }
+        : {}),
+    };
     await recordPreviewAudit(input.pool, input.config, {
       userKey: previewSession.adminUserRef,
       role: 'admin_preview',
@@ -386,6 +425,7 @@ export function registerExperiencePreviewRoutes(input: {
         success: true,
         expires_at: previewSession.expiresAt,
         preview,
+        student_portal: studentPortal,
       }),
     );
   });
