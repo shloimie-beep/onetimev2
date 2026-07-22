@@ -91,6 +91,7 @@ function pageShell(
     twitterImage?: string;
     icon?: string;
     appleTouchIcon?: string;
+    extraStylesheet?: string;
     app?: boolean;
     appEntry?: 'crm' | 'portal';
   } = {},
@@ -114,6 +115,7 @@ function pageShell(
     ...(options.twitterImage === undefined ? {} : { twitterImage: options.twitterImage }),
     ...(options.icon === undefined ? {} : { icon: options.icon }),
     ...(options.appleTouchIcon === undefined ? {} : { appleTouchIcon: options.appleTouchIcon }),
+    ...(options.extraStylesheet === undefined ? {} : { extraStylesheet: options.extraStylesheet }),
     ...(options.app === undefined ? {} : { app: options.app }),
     ...(options.appEntry === undefined ? {} : { appEntry: options.appEntry }),
   });
@@ -320,33 +322,32 @@ function signupPage() {
 
 function tishaBavLandingPage() {
   const shareUrl = 'https://join.onetimeonetime.com/tisha-bav';
-  const shareText = `Reserve your spot for the Tisha B'Av live Zoom class with Rabbi Eli Scheller: ${shareUrl}`;
+  const shareText = `Reserve your spot for the live Tisha B'Av event with Rabbi Eli Scheller: ${shareUrl}`;
   const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-  const emailShareUrl = `mailto:?subject=${encodeURIComponent("Tisha B'Av VIP Zoom Class")}&body=${encodeURIComponent(shareText)}`;
+  const emailShareUrl = `mailto:?subject=${encodeURIComponent("Live Tisha B'Av Event")}&body=${encodeURIComponent(shareText)}`;
 
   return pageShell(
-    "Live Zoom class with Rabbi Eli Scheller for boys | Tisha B'Av VIP Zoom Class",
+    "Live Tisha B'Av Event with Rabbi Eli Scheller | One Time Mishnayos",
     `<main class="event-page tisha-bav-page">
   <section class="tisha-page" aria-labelledby="tisha-bav-title">
-    <p class="event-pasuk" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
-    <div class="tisha-artwork" data-event-artwork>
-      <picture class="tisha-picture">
-        <source media="(max-width: 767px)" srcset="${tishaBavMobileImage}">
-        <img src="${tishaBavDesktopImage}" alt=""${mediaSizeAttributes(tishaBavDesktopImage)} decoding="async" fetchpriority="high" data-event-hero-image>
-      </picture>
+    <header class="tisha-heading">
+      <p class="event-pasuk" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
       <div class="tisha-copy">
-        <h1 id="tisha-bav-title" aria-label="Live Zoom class with Rabbi Eli Scheller for boys">
-          <span class="tisha-title-line tisha-title-live">Live Zoom</span>
-          <span class="tisha-title-line tisha-title-class">Class</span>
+        <h1 id="tisha-bav-title" aria-label="Live Tisha B'Av Event with Rabbi Eli Scheller">
+          <span class="tisha-title-line tisha-title-event">Live Tisha B'Av Event</span>
           <span class="tisha-title-line tisha-title-rabbi">with Rabbi Eli Scheller</span>
-          <span class="tisha-title-line tisha-title-audience">for boys</span>
         </h1>
       </div>
+    </header>
+    <div class="tisha-artwork" data-event-artwork>
+      <picture class="tisha-picture">
+        <source media="(max-width: 820px), (orientation: portrait) and (max-width: 900px)" srcset="${tishaBavMobileImage}">
+        <img src="${tishaBavDesktopImage}" alt=""${mediaSizeAttributes(tishaBavDesktopImage)} decoding="async" fetchpriority="high" data-event-hero-image>
+      </picture>
+      <p class="event-time event-time-overlay"><strong>3 p.m. Eastern Time</strong></p>
     </div>
     <div class="tisha-details" aria-label="Event details">
-      <p class="event-intro">Live class with Rabbi Eli Scheller</p>
       <p class="event-date">Thursday, July 23, 2026</p>
-      <p class="event-time"><strong>3 p.m. Eastern Time</strong></p>
       <p class="event-charge">No charge</p>
       <button class="button button-primary tisha-primary-cta" type="button" data-event-open-modal aria-haspopup="dialog" aria-controls="event-register-modal" aria-expanded="false">Reserve My Spot</button>
     </div>
@@ -357,10 +358,9 @@ function tishaBavLandingPage() {
       <button class="event-modal-close" type="button" data-event-close-modal aria-label="Close registration modal">Close</button>
       <div class="event-registration-content" data-event-registration-content>
         <h2 id="event-register-title">Reserve My Spot</h2>
-        <p class="event-form-note">Join an international live Zoom class and receive the event link by email.</p>
+        <p class="event-form-note">Join this live Tisha B'Av event and receive the private link by email.</p>
         <div class="noscript-panel" role="status" data-event-noscript><strong>JavaScript is required for secure event registration.</strong><span>Please use a browser with JavaScript enabled.</span></div>
         <form class="event-form" action="/api/v1/events/tisha-bav-2026/register" method="post" data-event-registration-form novalidate>
-          <input type="text" name="homepage" autocomplete="off" tabindex="-1" aria-hidden="true" class="honeypot-field">
           <div class="field"><label for="event_email">Email</label><input id="event_email" name="email" type="email" inputmode="email" autocomplete="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
           <div class="field"><label for="event_first_name">First name <span>optional</span></label><input id="event_first_name" name="first_name" autocomplete="given-name"><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
           <button class="button button-primary" type="submit" data-event-submit hidden>Reserve My Spot</button>
@@ -388,19 +388,19 @@ function tishaBavLandingPage() {
 </main>`,
     {
       canonicalPath: '/tisha-bav',
-      description:
-        "Reserve a spot for a special Tisha B'Av live Zoom class with Rabbi Eli Scheller.",
-      ogTitle: "Tisha B'Av Live Zoom Class",
-      ogDescription: 'Live Zoom class with Rabbi Eli Scheller for boys. No charge.',
+      description: "Reserve a spot for a live Tisha B'Av event with Rabbi Eli Scheller.",
+      ogTitle: "Live Tisha B'Av Event",
+      ogDescription: "Live Tisha B'Av event with Rabbi Eli Scheller. No charge.",
       ogImage: publicCanonicalUrl(tishaBavSocialImage),
       ogImageSecureUrl: publicCanonicalUrl(tishaBavSocialImage),
       ogImageType: 'image/png',
       ogImageWidth: 1200,
       ogImageHeight: 630,
-      ogImageAlt: "One Time logo for the Tisha B'Av live Zoom class",
+      ogImageAlt: "One Time logo for the live Tisha B'Av event",
       twitterImage: publicCanonicalUrl(tishaBavSocialImage),
       icon: tishaBavFavicon,
       appleTouchIcon: tishaBavAppleTouchIcon,
+      extraStylesheet: '/assets/events/tisha-bav-2026/tisha-bav.css',
     },
   );
 }

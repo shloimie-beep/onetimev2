@@ -3,14 +3,14 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const shareUrl = 'https://join.onetimeonetime.com/tisha-bav';
-const eventTitle = 'Live Zoom class with Rabbi Eli Scheller for boys';
+const eventTitle = "Live Tisha B'Av Event with Rabbi Eli Scheller";
 const eventPasuk = 'כי מלאה הארץ דעה את השם';
 const eventDisclosure = 'By reserving, you’ll receive emails about this event.';
 const successHebrew = 'שֶׁנִּזְכֶּה לִרְאוֹת אֶת יְרוּשָׁלַיִם בְּבִנְיָנָהּ';
 const successDesktopBackground =
   '/assets/events/tisha-bav-2026/tisha-bav-success-bg-desktop-v20260722b.png';
 const successMobileBackground =
-  '/assets/events/tisha-bav-2026/tisha-bav-success-bg-mobile-v20260722.png';
+  '/assets/events/tisha-bav-2026/tisha-bav-success-bg-mobile-v20260722b.png';
 const screenshotDir = path.resolve(
   process.env.TISHA_BAV_SCREENSHOT_DIR ?? 'test-results/tisha-bav-funnel',
 );
@@ -24,6 +24,15 @@ const mobileViewports = [
 const desktopViewports = [
   { width: 1366, height: 768 },
   { width: 1440, height: 900 },
+];
+
+const responsiveEdgeViewports = [
+  { width: 768, height: 1024, mobileArtwork: true },
+  { width: 834, height: 1194, mobileArtwork: true },
+  { width: 821, height: 768, mobileArtwork: false },
+  { width: 900, height: 768, mobileArtwork: false },
+  { width: 844, height: 390, mobileArtwork: false },
+  { width: 932, height: 430, mobileArtwork: false },
 ];
 
 type Box = { x: number; y: number; width: number; height: number };
@@ -94,7 +103,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     await assertFullyVisible(page, noCharge, `${label} no charge`);
     await assertFullyVisible(page, cta, `${label} CTA`);
     await assertDisplayTitle(page, `${label} display title`);
-    await assertTitleOnTopOfArtwork(page, headline, pasuk, image, `${label} title overlay`);
+    await assertTitleAboveArtwork(page, headline, pasuk, image, `${label} title composition`);
 
     await expect(cta).toHaveCount(1);
     await expect(page.locator('form.event-form')).toBeHidden();
@@ -107,6 +116,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     );
     await expect(page.locator('body')).not.toContainText('10:00 PM Israel');
     await expect(page.locator('body')).not.toContainText("Special Tisha B'Av VIP Zoom Class");
+    await expect(page.locator('body')).not.toContainText(/for boys/i);
     await expect(page.locator('body')).not.toContainText('Ki Mala Haaretz Deas Hashem');
 
     await assertHeroImage(page, {
@@ -188,12 +198,12 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
       naturalHeight: 768,
       label,
     });
-    await assertTitleOnTopOfArtwork(
+    await assertTitleAboveArtwork(
       page,
       page.getByRole('heading', { name: eventTitle }),
       page.getByText(eventPasuk, { exact: true }),
       page.locator('[data-event-hero-image]'),
-      `${label} title overlay`,
+      `${label} title composition`,
     );
     await assertDisplayTitle(page, `${label} display title`);
     await assertDesktopComposition(page, label);
@@ -233,12 +243,62 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
   }
 });
 
+test('Tisha BAv keeps tablet and phone-landscape compositions centered and unclipped', async ({
+  page,
+}) => {
+  for (const viewport of responsiveEdgeViewports) {
+    const label = `${viewport.width}x${viewport.height}`;
+    await page.setViewportSize(viewport);
+    await page.goto(`/tisha-bav?responsive-edge=${label}`, { waitUntil: 'load' });
+    await page.evaluate(() => document.fonts.ready);
+    await waitForHeroImage(page);
+
+    const metric = await scrollMetric(page, label);
+    scrollMetrics.push(metric);
+    expect(metric.scrollWidth, `${label} document width`).toBeLessThanOrEqual(metric.innerWidth);
+    expect(metric.scrollHeight, `${label} document height`).toBeLessThanOrEqual(
+      metric.innerHeight + 2,
+    );
+
+    const image = page.locator('[data-event-hero-image]');
+    const headline = page.getByRole('heading', { name: eventTitle });
+    const pasuk = page.getByText(eventPasuk, { exact: true });
+    const date = page.getByText('Thursday, July 23, 2026', { exact: true });
+    const time = page.getByText('3 p.m. Eastern Time', { exact: true });
+    const noCharge = page.getByText('No charge', { exact: true });
+    const cta = page.getByRole('button', { name: 'Reserve My Spot' });
+    await assertFullyVisible(page, headline, `${label} headline`);
+    await assertFullyVisible(page, pasuk, `${label} Hebrew verse`);
+    await assertFullyVisible(page, image, `${label} artwork`);
+    await assertFullyVisible(page, date, `${label} date`);
+    await assertFullyVisible(page, time, `${label} time`);
+    await assertFullyVisible(page, noCharge, `${label} free-of-charge label`);
+    await assertFullyVisible(page, cta, `${label} CTA`);
+    await assertTitleAboveArtwork(page, headline, pasuk, image, `${label} title composition`);
+    await assertCenteredElement(page, image, `${label} centered artwork`);
+    await assertCenteredElement(page, page.locator('.tisha-details'), `${label} centered details`);
+    await assertHeroImage(page, {
+      expectedName: viewport.mobileArtwork ? 'tishea beav mobile(1).png' : 'tisha beav(1).png',
+      unexpectedName: viewport.mobileArtwork ? 'tisha beav(1).png' : 'tishea beav mobile(1).png',
+      naturalWidth: viewport.mobileArtwork ? 1080 : 1366,
+      naturalHeight: viewport.mobileArtwork ? 1350 : 768,
+      label,
+    });
+
+    await page.screenshot({
+      path: path.join(screenshotDir, `responsive-${label}-initial.png`),
+      fullPage: false,
+    });
+  }
+});
+
 test('Tisha BAv success panel reports an unconfirmed email handoff truthfully', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await interceptRegistration(page, {
     success: true,
+    registration_key: 'registration-unconfirmed',
     confirmation_queued: false,
     message: {
       body: 'Your spot is reserved, but event email delivery is not confirmed yet.',
@@ -258,10 +318,33 @@ test('Tisha BAv success panel reports an unconfirmed email handoff truthfully', 
   );
 });
 
+test('Tisha BAv never shows registration complete without a persisted registration key', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await interceptRegistration(page, {
+    success: true,
+    registration_key: null,
+    confirmation_queued: false,
+    ghl_sync_status: 'skipped',
+  });
+  await page.goto('/tisha-bav?delivery=unpersisted', { waitUntil: 'load' });
+  await page.getByRole('button', { name: 'Reserve My Spot' }).click();
+  await page.locator('input[name="email"]').fill('unpersisted@example.test');
+  await page.locator('form.event-form button[type="submit"]').click();
+
+  await expect(page.locator('form.event-form')).toBeVisible();
+  await expect(page.locator('[data-event-success-panel]')).toBeHidden();
+  await expect(page.locator('[data-form-status]')).toHaveText(
+    'We could not confirm that registration. Please try again.',
+  );
+});
+
 async function interceptRegistration(
   page: Page,
   responseBody: Record<string, unknown> = {
     success: true,
+    registration_key: 'registration-intercepted',
     confirmation_queued: true,
     message: { body: "We'll email the private Zoom link and event details." },
   },
@@ -287,13 +370,13 @@ function assertRegistrationPayload(
     email,
     first_name: 'Miriam',
     source: 'tisha_bav_2026_landing',
-    homepage: '',
   });
   expect(String(payload?.idempotency_key ?? ''), `${label} idempotency key`).toMatch(/^tisha-bav-/);
   expect(JSON.stringify(payload), `${label} provider mutation fields`).not.toMatch(
     /ghl|highlevel|provider|workflow|zoom/i,
   );
   expect(payload, `${label} newsletter field absent`).not.toHaveProperty('newsletter_opt_in');
+  expect(payload, `${label} browser honeypot field absent`).not.toHaveProperty('homepage');
   expect(JSON.stringify(payload), `${label} broad consent fields`).not.toMatch(
     /marketing|newsletter/i,
   );
@@ -303,6 +386,7 @@ async function assertEventOnlyRegistrationForm(page: Page, label: string) {
   const form = page.locator('.event-registration-content form.event-form');
   await expect(form.locator('input[name="email"]'), label).toBeVisible();
   await expect(form.locator('input[name="first_name"]'), label).toBeVisible();
+  await expect(form.locator('input[name="homepage"]'), label).toHaveCount(0);
   await expect(form.locator('input[type="checkbox"]'), label).toHaveCount(0);
   await expect(form.locator('input[type="checkbox"]:checked'), label).toHaveCount(0);
   await expect(form.locator('[role="switch"], [aria-checked]'), label).toHaveCount(0);
@@ -325,8 +409,9 @@ async function assertEventOnlyRegistrationForm(page: Page, label: string) {
 }
 
 async function assertAcceptedPublicCopy(page: Page, label: string) {
-  await expect(page.locator('.event-intro'), `${label} event intro`).toHaveText(
-    'Live class with Rabbi Eli Scheller',
+  await expect(page.locator('.event-intro'), `${label} repeated event intro`).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: eventTitle }), `${label} event title`).toHaveText(
+    /Live Tisha B'Av Event\s+with Rabbi Eli Scheller/,
   );
   await expect(page.locator('body'), `${label} accepted rabbi spelling`).toContainText(
     'Rabbi Eli Scheller',
@@ -370,6 +455,17 @@ async function assertFullyVisible(page: Page, locator: Locator, label: string) {
   expect(box.y, `${label} top`).toBeGreaterThanOrEqual(-1);
   expect(box.x + box.width, `${label} right`).toBeLessThanOrEqual(viewport.width + 1);
   expect(box.y + box.height, `${label} bottom`).toBeLessThanOrEqual(viewport.height + 1);
+}
+
+async function assertCenteredElement(page: Page, locator: Locator, label: string) {
+  const box = await locator.boundingBox();
+  const viewport = page.viewportSize();
+  expect(box, `${label} bounding box`).not.toBeNull();
+  expect(viewport, `${label} viewport`).not.toBeNull();
+  if (!box || !viewport) return;
+  const leftGutter = box.x;
+  const rightGutter = viewport.width - (box.x + box.width);
+  expect(Math.abs(leftGutter - rightGutter), `${label} balanced gutters`).toBeLessThanOrEqual(3);
 }
 
 async function assertHeroImage(
@@ -455,7 +551,7 @@ async function assertSocialMetadata(page: Page, label: string) {
   await expect(
     page.locator('meta[property="og:image:alt"]'),
     `${label} og image alt`,
-  ).toHaveAttribute('content', "One Time logo for the Tisha B'Av live Zoom class");
+  ).toHaveAttribute('content', "One Time logo for the live Tisha B'Av event");
 
   const response = await page.request.get(ogImageUrl.pathname, {
     headers: { 'cache-control': 'no-cache', pragma: 'no-cache' },
@@ -491,7 +587,7 @@ async function installNativeShareCapture(page: Page) {
   });
 }
 
-async function assertTitleOnTopOfArtwork(
+async function assertTitleAboveArtwork(
   page: Page,
   headline: Locator,
   pasuk: Locator,
@@ -505,27 +601,19 @@ async function assertTitleOnTopOfArtwork(
   expect(pasukBox, `${label} pasuk box`).not.toBeNull();
   expect(imageBox, `${label} image box`).not.toBeNull();
   if (!headlineBox || !pasukBox || !imageBox) return;
-  expect(pasukBox.y + pasukBox.height, `${label} pasuk above artwork`).toBeLessThanOrEqual(
-    imageBox.y + 1,
+  expect(pasukBox.y + pasukBox.height, `${label} pasuk above headline`).toBeLessThanOrEqual(
+    headlineBox.y + 2,
   );
-  expect(headlineBox.y, `${label} headline inside image top`).toBeGreaterThanOrEqual(
-    imageBox.y - 1,
-  );
-  const upperBand = imageBox.y + imageBox.height * 0.32;
-  expect(headlineBox.y + headlineBox.height, `${label} headline upper image band`).toBeLessThan(
-    upperBand,
+  expect(headlineBox.y + headlineBox.height, `${label} headline above artwork`).toBeLessThanOrEqual(
+    imageBox.y + 2,
   );
 }
 
 async function assertDisplayTitle(page: Page, label: string) {
-  const liveZoom = page.locator('.tisha-title-live');
-  const titleClass = page.locator('.tisha-title-class');
+  const event = page.locator('.tisha-title-event');
   const rabbi = page.locator('.tisha-title-rabbi');
-  const audience = page.locator('.tisha-title-audience');
-  await expect(liveZoom, label).toHaveText('Live Zoom');
-  await expect(titleClass, label).toHaveText('Class');
+  await expect(event, label).toHaveText("Live Tisha B'Av Event");
   await expect(rabbi, label).toHaveText('with Rabbi Eli Scheller');
-  await expect(audience, label).toHaveText('for boys');
 
   const sizes = await page.evaluate(() => {
     const read = (selector: string) => {
@@ -539,27 +627,16 @@ async function assertDisplayTitle(page: Page, label: string) {
       };
     };
     return {
-      liveZoom: read('.tisha-title-live'),
-      titleClass: read('.tisha-title-class'),
+      event: read('.tisha-title-event'),
       rabbi: read('.tisha-title-rabbi'),
-      audience: read('.tisha-title-audience'),
     };
   });
 
-  expect(sizes.liveZoom.fontSize, `${label} live zoom emphasis`).toBeGreaterThan(
+  expect(sizes.event.fontSize, `${label} event title emphasis`).toBeGreaterThan(
     sizes.rabbi.fontSize * 1.8,
   );
-  expect(sizes.titleClass.fontSize, `${label} class emphasis`).toBeGreaterThan(
-    sizes.rabbi.fontSize * 2.2,
-  );
-  expect(sizes.liveZoom.bottom, `${label} first line above class`).toBeLessThan(
-    sizes.titleClass.bottom,
-  );
-  expect(sizes.titleClass.bottom, `${label} class above rabbi line`).toBeLessThan(
+  expect(sizes.event.bottom, `${label} event line above rabbi line`).toBeLessThan(
     sizes.rabbi.bottom,
-  );
-  expect(sizes.rabbi.bottom, `${label} rabbi above audience line`).toBeLessThan(
-    sizes.audience.bottom,
   );
 }
 
@@ -572,16 +649,18 @@ async function assertDesktopComposition(page: Page, label: string) {
   expect(imageBox, `${label} image box`).not.toBeNull();
   if (!viewport || !detailsBox || !imageBox) return;
 
-  expect(detailsBox.x + detailsBox.width, `${label} details left of artwork`).toBeLessThan(
-    imageBox.x,
-  );
   expect(imageBox.width, `${label} desktop artwork width`).toBeGreaterThanOrEqual(950);
   expect(imageBox.width, `${label} desktop artwork width`).toBeLessThanOrEqual(1100);
+  expect(detailsBox.x, `${label} details aligned with artwork left`).toBeGreaterThanOrEqual(
+    imageBox.x - 2,
+  );
+  expect(
+    detailsBox.x + detailsBox.width,
+    `${label} details aligned with artwork right`,
+  ).toBeLessThanOrEqual(imageBox.x + imageBox.width + 2);
 
-  const leftEdge = Math.min(detailsBox.x, imageBox.x);
-  const rightEdge = Math.max(detailsBox.x + detailsBox.width, imageBox.x + imageBox.width);
-  const leftGutter = leftEdge;
-  const rightGutter = viewport.width - rightEdge;
+  const leftGutter = imageBox.x;
+  const rightGutter = viewport.width - (imageBox.x + imageBox.width);
   expect(leftGutter, `${label} desktop left gutter`).toBeGreaterThanOrEqual(24);
   expect(rightGutter, `${label} desktop right gutter`).toBeGreaterThanOrEqual(24);
   expect(

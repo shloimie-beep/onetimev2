@@ -30,11 +30,20 @@ describe('Tisha BAv public generated copy', () => {
       path.resolve(process.cwd(), 'apps/web/src/client/public/public-entry.ts'),
       'utf8',
     );
+    const publicCssSource = await readFile(
+      path.resolve(process.cwd(), 'packages/brand-system/src/styles/public.css'),
+      'utf8',
+    );
 
     expect(generatedHtml).toContain(disclosure);
-    expect(generatedHtml).toContain('Live class with Rabbi Eli Scheller');
+    expect(generatedHtml).toContain("Live Tisha B'Av Event");
+    expect(generatedHtml).toContain('with Rabbi Eli Scheller');
     expect(generatedHtml).toContain('Rabbi Eli Scheller');
     expect(generatedHtml).toContain('data-event-success-message');
+    expect(publicCssSource).toContain('tisha-bav-success-bg-mobile-v20260722b.png');
+    expect(generatedHtml).toContain('/assets/events/tisha-bav-2026/tisha-bav.css');
+    expect(generatedHtml).not.toContain('name="homepage"');
+    expect(generatedHtml).not.toContain('class="event-intro"');
     expect(generatedHtml).not.toContain('Rabbi Elly');
     expect(generatedHtml).not.toContain('newsletter');
     expect(generatedHtml).not.toContain('marketing');
