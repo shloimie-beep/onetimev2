@@ -495,6 +495,8 @@ export const portalErrorCodeSchema = z.enum([
   'OCCURRENCE_UNAVAILABLE',
   'LAUNCH_EXPIRED',
   'ADAPTER_UNAVAILABLE',
+  'PROVIDER_OFF',
+  'PROVIDER_NOT_READY',
   'SERVER_ERROR',
 ]);
 export type PortalErrorCode = z.infer<typeof portalErrorCodeSchema>;

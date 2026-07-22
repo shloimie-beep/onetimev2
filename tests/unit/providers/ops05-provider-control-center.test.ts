@@ -10,6 +10,7 @@ import {
   buildWebhookEndpoints,
   planProviderCanary,
 } from '../../../packages/domain/src/providers/control-center.ts';
+import { ZOOM_HOST_CONTROL_REQUIRED_VARIABLES } from '../../../packages/domain/src/live-class/zoom-host.ts';
 import { fixtureWebhookSignature } from '../../../packages/domain/src/billing/fixture-adapter.ts';
 import {
   OT89_EVENT_TARGET,
@@ -96,6 +97,68 @@ describe('OPS-05 provider control center projection', () => {
       if (!found) throw new Error(`Missing endpoint ${provider}`);
       return found;
     }
+  });
+
+  it('reports complete canonical Zoom host-control prerequisites without values', () => {
+    const env: NodeJS.ProcessEnv = {
+      NODE_ENV: 'test',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      ZOOM_CLASSROOM_ENABLED: 'true',
+      ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
+      ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk-client-control-center-fixture',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret-control-center-fixture',
+      ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+      ZOOM_ACCOUNT_ID: 'zoom-account-control-center-fixture',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-control-center-fixture',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-secret-control-center-fixture',
+      ZOOM_HOST_USER_ID: 'host-control-center-fixture',
+      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-control-center-fixture',
+    };
+    const matrix = buildProviderControlCenter({ config: loadConfig(env), env, now });
+    const zoom = matrix.providers.find((provider) => provider.provider === 'zoom_classroom');
+    if (!zoom) throw new Error('Zoom provider readiness missing.');
+
+    expect(zoom.required_variable_names).toEqual([...ZOOM_HOST_CONTROL_REQUIRED_VARIABLES]);
+    expect(zoom.configured_variable_names).toEqual([...ZOOM_HOST_CONTROL_REQUIRED_VARIABLES]);
+    expect(zoom.missing_variable_names).toEqual([]);
+    expect(zoom.status).toBe('degraded');
+    expect(zoom.required_variable_names).not.toContain('ZOOM_MEETING_SDK_KEY');
+    expect(zoom.required_variable_names).not.toContain('ZOOM_MEETING_SDK_SECRET');
+    expect(JSON.stringify(zoom)).not.toContain('sdk-secret-control-center-fixture');
+    expect(JSON.stringify(zoom)).not.toContain('s2s-secret-control-center-fixture');
+    expect(JSON.stringify(zoom)).not.toContain('meeting-passcode-control-center-fixture');
+  });
+
+  it('keeps legacy SDK aliases visible only as aliases, never real readiness', () => {
+    const env: NodeJS.ProcessEnv = {
+      NODE_ENV: 'test',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      ZOOM_CLASSROOM_ENABLED: 'true',
+      ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
+      ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+      ZOOM_MEETING_SDK_KEY: 'legacy-sdk-key-fixture',
+      ZOOM_MEETING_SDK_SECRET: 'legacy-sdk-secret-fixture',
+      ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+      ZOOM_ACCOUNT_ID: 'zoom-account-fixture',
+      ZOOM_S2S_CLIENT_ID: 's2s-client-fixture',
+      ZOOM_S2S_CLIENT_SECRET: 's2s-secret-fixture',
+      ZOOM_HOST_USER_ID: 'host-fixture',
+      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
+    };
+    const zoom = buildProviderControlCenter({ config: loadConfig(env), env, now }).providers.find(
+      (provider) => provider.provider === 'zoom_classroom',
+    );
+
+    expect(zoom).toMatchObject({
+      status: 'not_configured',
+      missing_variable_names: expect.arrayContaining([
+        'ZOOM_MEETING_SDK_CLIENT_ID',
+        'ZOOM_MEETING_SDK_CLIENT_SECRET',
+      ]),
+    });
   });
 
   it('keeps provider-specific fixtures distinct for Stripe, Meta, Telegram, and BNA support', () => {

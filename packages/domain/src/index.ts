@@ -56,7 +56,13 @@ export {
   type LiveClassSessionRecord,
   type ZoomHostLaunchPort,
 } from './live-class/service.ts';
-export { createZoomHostLaunchPort } from './live-class/zoom-host.ts';
+export {
+  createZoomHostLaunchPort,
+  inspectZoomHostControlReadiness,
+  ZOOM_HOST_CONTROL_PROVIDER_GATE_VARIABLES,
+  ZOOM_HOST_CONTROL_READINESS_VARIABLES,
+  ZOOM_HOST_CONTROL_REQUIRED_VARIABLES,
+} from './live-class/zoom-host.ts';
 export {
   ZOOM_CUSTOMER_KEY_MAX_LENGTH,
   assertZoomCustomerKey,

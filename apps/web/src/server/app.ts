@@ -3732,7 +3732,9 @@ function statusForPortalError(code: string) {
     return 409;
   }
   if (code === 'OCCURRENCE_UNAVAILABLE' || code === 'LAUNCH_EXPIRED') return 410;
-  if (code === 'ADAPTER_UNAVAILABLE') return 503;
+  if (code === 'ADAPTER_UNAVAILABLE' || code === 'PROVIDER_OFF' || code === 'PROVIDER_NOT_READY') {
+    return 503;
+  }
   return 500;
 }
 
