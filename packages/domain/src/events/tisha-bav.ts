@@ -93,7 +93,7 @@ export type HighLevelEventClient = {
     source: string;
     customFields: Record<string, string>;
   }): Promise<{ contactId: string }>;
-  addTags(input: { contactId: string; tags: readonly string[] }): Promise<void>;
+  addTags(input: { locationId: string; contactId: string; tags: readonly string[] }): Promise<void>;
   addToWorkflow(input: {
     contactId: string;
     workflowId: string;
@@ -207,11 +207,23 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
     return { contactId };
   }
 
-  async addTags(input: { contactId: string; tags: readonly string[] }) {
-    await this.request(`/contacts/${encodeURIComponent(input.contactId)}/tags`, {
+  async addTags(input: { locationId: string; contactId: string; tags: readonly string[] }) {
+    await this.request('/contacts/bulk/tags/update/add', {
       method: 'POST',
-      body: { tags: input.tags },
+      body: {
+        locationId: input.locationId,
+        contactIds: [input.contactId],
+        tags: input.tags,
+      },
     });
+    const response = await this.request(`/contacts/${encodeURIComponent(input.contactId)}`, {
+      method: 'GET',
+    });
+    const contact = (response.contact ?? response) as Record<string, unknown>;
+    const currentTags = new Set(Array.isArray(contact.tags) ? contact.tags.map(String) : []);
+    if (input.tags.some((tag) => !currentTags.has(tag))) {
+      throw new Error('HighLevel contact tag verification failed.');
+    }
   }
 
   async addToWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
@@ -782,7 +794,11 @@ async function maybeSyncHighLevel(input: {
       ...(payload.first_name ? { firstName: payload.first_name } : {}),
     });
     providerStage = 'add_tags';
-    await client.addTags({ contactId: contact.contactId, tags: payload.tags });
+    await client.addTags({
+      locationId: payload.location_id,
+      contactId: contact.contactId,
+      tags: payload.tags,
+    });
     providerStage = 'add_to_workflow';
     await client.addToWorkflow({
       contactId: contact.contactId,
