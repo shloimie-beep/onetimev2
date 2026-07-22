@@ -2,7 +2,12 @@ import { createHash } from 'node:crypto';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createMemoryPool, runMigrations } from '../../packages/db/src/index.ts';
 import { createApp } from '../../apps/web/src/server/app.ts';
-import { createAccountUser } from '../../packages/domain/src/index.ts';
+import {
+  createAccountUser,
+  generateContentFactoryDraftFromTranscript,
+  ingestContentFactoryItem,
+  performContentFactoryAction,
+} from '../../packages/domain/src/index.ts';
 import {
   W12_PORTAL_TEST_LAB,
   seedPortalTestLab,
@@ -83,6 +88,7 @@ await createAccountUser({
   mfaCapable: false,
 });
 await seedDayOneBrowserRecords();
+await seedContentFactoryBrowserSample();
 await seedPortalTestLab({ pool, config });
 await seedW12AdminSession();
 const testClock = process.env.OT_TEST_CLOCK
@@ -280,6 +286,85 @@ async function seedActiveSupportEntitlement(userKey: string) {
       `evt_support_${userKey.slice(0, 12)}`,
     ],
   );
+}
+
+async function seedContentFactoryBrowserSample() {
+  const segments = [
+    'The fictional Mishnah review introduces returning a lost object.',
+    'Students identify a unique mark as a sign the owner can describe.',
+    'The class asks why an ordinary color may not identify the owner.',
+    'A bundle with a sign is compared with loose identical objects.',
+    'An announcement invites the owner to provide the identifying sign.',
+    'The lesson closes by stating that this is classroom review, not a ruling.',
+  ].map((text, index) => ({
+    segment_id: `browser_segment_${index + 1}`,
+    start_ms: index * 10_000,
+    end_ms: index * 10_000 + 9_000,
+    text,
+  }));
+  const transcript = segments.map((segment) => segment.text).join(' ');
+  const webvtt =
+    'WEBVTT\n\n00:00:00.000 --> 00:00:09.000\nThe fictional Mishnah review introduces returning a lost object.\n';
+  const sourceKey = 'ot_launch_01_demo_hashavas_aveidah';
+  await ingestContentFactoryItem({
+    pool,
+    config,
+    item: {
+      sourceKey,
+      sourceKind: 'local_drop',
+      sourceRefDigest: sha256('factory-browser-source-ref'),
+      sourceSha256: sha256('factory-browser-source'),
+      displayName: 'ot-launch-01-approved-synthetic-demo.mp4',
+      mimeType: 'video/quicktime',
+      byteLength: 4_200_000,
+      originalDurationMs: 72_000,
+      preparedDurationMs: 60_000,
+      trimStartMs: 6_000,
+      trimEndMs: 66_000,
+      removedStartMs: 6_000,
+      removedEndMs: 6_000,
+      trimConfidence: 0.91,
+      transcriptSegments: segments,
+      normalizedTranscript: transcript,
+      transcriptSha256: sha256(transcript),
+      webvtt,
+      webvttSha256: sha256(webvtt),
+      transcriptionModel: 'synthetic-demo-no-provider',
+      transcriptionLanguage: 'en',
+      draft: {
+        ...generateContentFactoryDraftFromTranscript({
+          displayName: 'ot-launch-01-approved-synthetic-demo.mp4',
+          segments,
+          classLabel: 'OT-LAUNCH-01 Mishnayos',
+          classDate: '2026-07-22',
+        }),
+        title: '[Demo] Hashavas Aveidah: Signs and Announcements',
+        short_description:
+          'An approved synthetic review lesson about identifying a lost object and the purpose of an announcement.',
+      },
+      providerVideoId: 'synthetic_demo_no_provider_resource',
+      providerEmbedUrl: 'https://player.vimeo.com/video/synthetic_demo_no_provider_resource',
+      providerTextTrackId: 'synthetic_demo_caption_track',
+      vimeoPrivacy: 'private',
+      captionsActive: true,
+    },
+  });
+  await performContentFactoryAction({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    action: 'approve',
+  });
+  await performContentFactoryAction({
+    pool,
+    config,
+    sourceKey,
+    actorUserKey: ownerUserKey,
+    actorRole: 'owner',
+    action: 'publish',
+  });
 }
 
 async function seedW12AdminSession() {

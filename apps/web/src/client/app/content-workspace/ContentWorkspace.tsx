@@ -17,6 +17,9 @@ import type {
   ContentAdminSourceDetail,
   ContentAdminSourceDetailResponse,
   ContentAdminSourceSummary,
+  ContentFactoryEditPayload,
+  ContentFactorySafeItem,
+  ContentFactoryWorkspaceResponse,
 } from '@onetime/contracts';
 import {
   Badge,
@@ -33,7 +36,15 @@ import {
 import './content-workspace.css';
 
 type RouteKind =
-  'overview' | 'processing' | 'create' | 'social' | 'knowledge' | 'prompts' | 'activity' | 'detail';
+  | 'overview'
+  | 'processing'
+  | 'factory'
+  | 'create'
+  | 'social'
+  | 'knowledge'
+  | 'prompts'
+  | 'activity'
+  | 'detail';
 
 type RouteState = {
   kind: RouteKind;
@@ -57,6 +68,7 @@ type FilterState = {
 const navItems: Array<{ href: string; label: string; kind: RouteKind }> = [
   { href: '/app/content', label: 'Overview', kind: 'overview' },
   { href: '/app/content/processing', label: 'Processing', kind: 'processing' },
+  { href: '/app/content/factory', label: 'Content Factory', kind: 'factory' },
   { href: '/app/content/create', label: 'Create', kind: 'create' },
   { href: '/app/content/social', label: 'Social', kind: 'social' },
   { href: '/app/content/knowledge', label: 'Knowledge', kind: 'knowledge' },
@@ -96,6 +108,7 @@ export function ContentWorkspace({
   const [notice, setNotice] = useState('');
   const [overview, setOverview] = useState<ContentAdminOverviewResponse | null>(null);
   const [processing, setProcessing] = useState<ContentAdminProcessingResponse | null>(null);
+  const [factory, setFactory] = useState<ContentFactoryWorkspaceResponse | null>(null);
   const [createData, setCreateData] = useState<ContentAdminCreateWorkspaceResponse | null>(null);
   const [social, setSocial] = useState<ContentAdminSocialWorkspaceResponse | null>(null);
   const [knowledge, setKnowledge] = useState<ContentAdminKnowledgeResponse | null>(null);
@@ -128,6 +141,13 @@ export function ContentWorkspace({
         setProcessing(
           await apiGet<ContentAdminProcessingResponse>(
             '/api/v1/admin/content/processing',
+            onProtectedStateCleared,
+          ),
+        );
+      } else if (route.kind === 'factory') {
+        setFactory(
+          await apiGet<ContentFactoryWorkspaceResponse>(
+            '/api/v1/admin/content/factory',
             onProtectedStateCleared,
           ),
         );
@@ -239,6 +259,17 @@ export function ContentWorkspace({
         <ProcessingView
           data={processing}
           onRetry={(sourceKey) => postSourceAction(sourceKey, 'retry', 'Retry from admin queue')}
+        />
+      )}
+      {!loading && !error && route.kind === 'factory' && factory && (
+        <FactoryView
+          data={factory}
+          csrfToken={csrfToken}
+          onProtectedStateCleared={onProtectedStateCleared}
+          onChanged={async (message) => {
+            setNotice(message);
+            await loadRoute();
+          }}
         />
       )}
       {!loading && !error && route.kind === 'create' && createData && (
@@ -406,6 +437,506 @@ function ProcessingView({
         </section>
       )}
     </>
+  );
+}
+
+function FactoryView({
+  data,
+  csrfToken,
+  onProtectedStateCleared,
+  onChanged,
+}: {
+  data: ContentFactoryWorkspaceResponse;
+  csrfToken: string;
+  onProtectedStateCleared: () => void;
+  onChanged: (message: string) => Promise<void>;
+}) {
+  const [selectedKey, setSelectedKey] = useState(data.items[0]?.source_key ?? '');
+  const [showIntake, setShowIntake] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadClass, setUploadClass] = useState('');
+  const [uploadDate, setUploadDate] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const selected =
+    data.items.find((item) => item.source_key === selectedKey) ?? data.items[0] ?? null;
+
+  useEffect(() => {
+    if (selectedKey && data.items.some((item) => item.source_key === selectedKey)) return;
+    setSelectedKey(data.items[0]?.source_key ?? '');
+  }, [data.items, selectedKey]);
+
+  async function upload(event: React.FormEvent) {
+    event.preventDefault();
+    if (!uploadFile) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      await apiUpload(
+        '/api/v1/admin/content/factory/intake',
+        uploadFile,
+        { classLabel: uploadClass, classDate: uploadDate },
+        csrfToken,
+        onProtectedStateCleared,
+      );
+      setUploadFile(null);
+      setUploadClass('');
+      setUploadDate('');
+      setShowIntake(false);
+      await onChanged('Video received in protected staging. No external provider was contacted.');
+    } catch (error) {
+      setUploadError(errorMessage(error));
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <>
+      <Card className="content-factory-hero">
+        <div>
+          <p className="content-factory-kicker">Class video workflow</p>
+          <h1>Content Factory</h1>
+          <p>
+            Add a class video, review its transcript and lesson drafts, then publish approved
+            material to students.
+          </p>
+        </div>
+        <Button type="button" variant="primary" onClick={() => setShowIntake(!showIntake)}>
+          {showIntake ? 'Cancel' : 'Add class video'}
+        </Button>
+      </Card>
+      {showIntake && (
+        <Card className="content-panel content-factory-intake-panel">
+          <h2>Add class video</h2>
+          <p>
+            The original is copied to protected local staging. Processing and external providers do
+            not start from this action.
+          </p>
+          {uploadError && (
+            <p className="notice-banner" role="alert">
+              {uploadError}
+            </p>
+          )}
+          <form className="content-editor-form" onSubmit={(event) => void upload(event)}>
+            <label>
+              <span>Video file</span>
+              <input
+                required
+                type="file"
+                accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.m4v"
+                disabled={uploading}
+                onChange={(event) => setUploadFile(event.currentTarget.files?.[0] ?? null)}
+              />
+            </label>
+            <div className="content-factory-fields">
+              <label>
+                <span>Class assignment</span>
+                <Input
+                  maxLength={180}
+                  disabled={uploading}
+                  value={uploadClass}
+                  onChange={(event) => setUploadClass(event.currentTarget.value)}
+                />
+              </label>
+              <label>
+                <span>Class date</span>
+                <Input
+                  type="date"
+                  disabled={uploading}
+                  value={uploadDate}
+                  onChange={(event) => setUploadDate(event.currentTarget.value)}
+                />
+              </label>
+            </div>
+            <Button type="submit" variant="primary" disabled={!uploadFile || uploading}>
+              {uploading ? 'Copying privately…' : 'Add to protected staging'}
+            </Button>
+          </form>
+        </Card>
+      )}
+      <section className="provider-ports" aria-label="Private intake status">
+        <Card className="provider-port-card">
+          <strong>Private intake</strong>
+          <Badge>{data.input_adapter === 'DRIVE' ? 'Drive ready' : 'Local drop ready'}</Badge>
+          <span>
+            {data.input_adapter === 'DRIVE'
+              ? 'Incoming Drive files remain protected.'
+              : 'Uploads remain in protected local staging.'}
+          </span>
+        </Card>
+      </section>
+      {data.intakes.length > 0 && (
+        <section className="content-stack" aria-labelledby="received-videos-title">
+          <h2 id="received-videos-title">Received videos</h2>
+          {data.intakes.map((intake) => (
+            <Card className="content-row-card content-factory-intake" key={intake.intake_key}>
+              <div>
+                <strong>{intake.display_name}</strong>
+                <span>{intake.class_label ?? 'Class assignment pending'}</span>
+              </div>
+              <Badge>{readable(intake.state)}</Badge>
+              <span>{formatBytes(intake.byte_length)}</span>
+            </Card>
+          ))}
+        </section>
+      )}
+      {data.items.length === 0 && data.intakes.length === 0 ? (
+        <EmptyState
+          title="No incoming videos"
+          body="Use Add class video to place a private source in the content factory."
+        />
+      ) : data.items.length > 0 ? (
+        <div className="content-factory-layout">
+          <section className="content-stack" aria-label="Content factory queue">
+            {data.items.map((item) => (
+              <button
+                type="button"
+                className="content-factory-item"
+                aria-pressed={selected?.source_key === item.source_key}
+                key={item.source_key}
+                onClick={() => setSelectedKey(item.source_key)}
+              >
+                <span>
+                  <strong>{item.draft.title}</strong>
+                  <small>{item.is_demo ? 'Synthetic demo lesson' : item.display_name}</small>
+                </span>
+                <Badge>{readable(item.state)}</Badge>
+              </button>
+            ))}
+          </section>
+          {selected && (
+            <FactoryEditor
+              key={`${selected.source_key}:${selected.updated_at}`}
+              item={selected}
+              csrfToken={csrfToken}
+              onProtectedStateCleared={onProtectedStateCleared}
+              onChanged={onChanged}
+            />
+          )}
+        </div>
+      ) : null}
+    </>
+  );
+}
+
+const factoryTimeline = [
+  'received',
+  'inspecting',
+  'trimming',
+  'transcribing',
+  'drafting',
+  'uploading',
+  'review',
+  'approved',
+  'published',
+] as const;
+
+function FactoryTimeline({ state }: { state: (typeof factoryTimeline)[number] | 'failed' }) {
+  const currentIndex = state === 'failed' ? -1 : factoryTimeline.indexOf(state);
+  return (
+    <section className="content-factory-timeline" aria-label="Video processing status">
+      <ol>
+        {factoryTimeline.map((step, index) => (
+          <li
+            key={step}
+            data-state={
+              state === 'failed'
+                ? 'stopped'
+                : index < currentIndex
+                  ? 'complete'
+                  : index === currentIndex
+                    ? 'current'
+                    : 'upcoming'
+            }
+            aria-current={step === state ? 'step' : undefined}
+          >
+            <span aria-hidden="true">{index + 1}</span>
+            <strong>{readable(step)}</strong>
+          </li>
+        ))}
+        {state === 'failed' && (
+          <li data-state="failed" aria-current="step">
+            <span aria-hidden="true">!</span>
+            <strong>Failed</strong>
+          </li>
+        )}
+      </ol>
+    </section>
+  );
+}
+
+function factoryTimelineState(state: ContentFactorySafeItem['state']) {
+  if (state === 'incoming') return 'received' as const;
+  if (state === 'processing') return 'inspecting' as const;
+  if (state === 'transcribed') return 'drafting' as const;
+  if (state === 'rendered') return 'uploading' as const;
+  if (state === 'uploaded' || state === 'needs_review') return 'review' as const;
+  return state;
+}
+
+function FactoryEditor({
+  item,
+  csrfToken,
+  onProtectedStateCleared,
+  onChanged,
+}: {
+  item: ContentFactorySafeItem;
+  csrfToken: string;
+  onProtectedStateCleared: () => void;
+  onChanged: (message: string) => Promise<void>;
+}) {
+  const [form, setForm] = useState({
+    title: item.draft.title,
+    short_description: item.draft.short_description,
+    class_label: item.draft.class_label ?? '',
+    class_date: item.draft.class_date ?? '',
+    topics: item.draft.topics.join(', '),
+    mishnah_terms: item.draft.mishnah_terms.join(', '),
+    normalized_transcript: item.normalized_transcript,
+    review_questions: item.draft.review_questions.join('\n'),
+    key_takeaways: item.draft.key_takeaways.join('\n'),
+  });
+  const [busy, setBusy] = useState(false);
+  const [localError, setLocalError] = useState('');
+  const canEdit = item.state !== 'published';
+
+  async function save(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setLocalError('');
+    const payload: ContentFactoryEditPayload = {
+      title: form.title,
+      short_description: form.short_description,
+      class_label: form.class_label || null,
+      class_date: form.class_date || null,
+      topics: splitCommaList(form.topics),
+      mishnah_terms: splitCommaList(form.mishnah_terms),
+      normalized_transcript: form.normalized_transcript,
+      review_questions: splitLineList(form.review_questions),
+      key_takeaways: splitLineList(form.key_takeaways),
+    };
+    try {
+      await apiPatch(
+        `/api/v1/admin/content/factory/${encodeURIComponent(item.source_key)}`,
+        payload,
+        csrfToken,
+        onProtectedStateCleared,
+      );
+      await onChanged('Factory draft saved; approval is required before publication.');
+    } catch (saveError) {
+      setLocalError(errorMessage(saveError));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function act(action: 'approve' | 'publish' | 'unpublish' | 'retry') {
+    setBusy(true);
+    setLocalError('');
+    try {
+      await apiPost(
+        `/api/v1/admin/content/factory/${encodeURIComponent(item.source_key)}/${action}`,
+        {},
+        csrfToken,
+        onProtectedStateCleared,
+      );
+      await onChanged(`${readable(action)} completed.`);
+    } catch (actionError) {
+      setLocalError(errorMessage(actionError));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Card className="content-panel content-factory-editor">
+      <header className="content-panel-heading">
+        <div>
+          <h2>{item.draft.title}</h2>
+          <p>
+            {item.is_demo
+              ? 'Demo — approved synthetic lesson data; no external provider media was used.'
+              : 'AI-assisted drafts are never authoritative Torah interpretation.'}
+          </p>
+        </div>
+        <Badge>{readable(item.state)}</Badge>
+      </header>
+      <FactoryTimeline state={factoryTimelineState(item.state)} />
+      <dl className="content-factory-metadata">
+        <div>
+          <dt>Prepared duration</dt>
+          <dd>{formatDuration(item.trim.prepared_duration_ms)}</dd>
+        </div>
+        <div>
+          <dt>Trim confidence</dt>
+          <dd>{Math.round(item.trim.confidence * 100)}%</dd>
+        </div>
+        <div>
+          <dt>Captions</dt>
+          <dd>{item.vimeo.captions_active ? 'Active' : 'Needs attention'}</dd>
+        </div>
+        <div>
+          <dt>Transcript</dt>
+          <dd>{readable(item.transcript_review_state)}</dd>
+        </div>
+      </dl>
+      {localError && (
+        <p className="notice-banner" role="alert">
+          {localError}
+        </p>
+      )}
+      <form className="content-editor-form" onSubmit={(event) => void save(event)}>
+        <label>
+          <span>Title</span>
+          <Input
+            required
+            maxLength={180}
+            disabled={!canEdit || busy}
+            value={form.title}
+            onChange={(event) => setForm({ ...form, title: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Short description</span>
+          <textarea
+            required
+            rows={4}
+            maxLength={1200}
+            disabled={!canEdit || busy}
+            value={form.short_description}
+            onChange={(event) => setForm({ ...form, short_description: event.currentTarget.value })}
+          />
+        </label>
+        <div className="content-factory-fields">
+          <label>
+            <span>Class</span>
+            <Input
+              required
+              maxLength={180}
+              disabled={!canEdit || busy}
+              value={form.class_label}
+              onChange={(event) => setForm({ ...form, class_label: event.currentTarget.value })}
+            />
+          </label>
+          <label>
+            <span>Class date</span>
+            <Input
+              required
+              type="date"
+              disabled={!canEdit || busy}
+              value={form.class_date}
+              onChange={(event) => setForm({ ...form, class_date: event.currentTarget.value })}
+            />
+          </label>
+        </div>
+        <label>
+          <span>Topics (comma separated)</span>
+          <Input
+            disabled={!canEdit || busy}
+            value={form.topics}
+            onChange={(event) => setForm({ ...form, topics: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Mishnah / masechta terms (comma separated)</span>
+          <Input
+            disabled={!canEdit || busy}
+            value={form.mishnah_terms}
+            onChange={(event) => setForm({ ...form, mishnah_terms: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Transcript</span>
+          <textarea
+            required
+            rows={12}
+            disabled={!canEdit || busy}
+            value={form.normalized_transcript}
+            onChange={(event) =>
+              setForm({ ...form, normalized_transcript: event.currentTarget.value })
+            }
+          />
+        </label>
+        <label>
+          <span>Review questions (5–10, one per line)</span>
+          <textarea
+            required
+            rows={10}
+            disabled={!canEdit || busy}
+            value={form.review_questions}
+            onChange={(event) => setForm({ ...form, review_questions: event.currentTarget.value })}
+          />
+        </label>
+        <label>
+          <span>Key takeaways (3–5, one per line)</span>
+          <textarea
+            required
+            rows={6}
+            disabled={!canEdit || busy}
+            value={form.key_takeaways}
+            onChange={(event) => setForm({ ...form, key_takeaways: event.currentTarget.value })}
+          />
+        </label>
+        <div className="content-action-row">
+          {canEdit && (
+            <Button type="submit" variant="secondary" disabled={busy}>
+              Save draft
+            </Button>
+          )}
+          {item.state === 'needs_review' && (
+            <Button
+              type="button"
+              variant="primary"
+              disabled={busy}
+              onClick={() => void act('approve')}
+            >
+              Approve transcript and drafts
+            </Button>
+          )}
+          {item.state === 'approved' && (
+            <Button
+              type="button"
+              variant="primary"
+              disabled={busy}
+              onClick={() => void act('publish')}
+            >
+              Publish
+            </Button>
+          )}
+          {item.state === 'published' && (
+            <>
+              <a
+                className="content-preview-link"
+                href={item.playback_route}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Preview approved playback
+              </a>
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={busy}
+                onClick={() => void act('unpublish')}
+              >
+                Unpublish
+              </Button>
+            </>
+          )}
+          {item.retry_eligible && (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={busy}
+              onClick={() => void act('retry')}
+            >
+              Retry failed step
+            </Button>
+          )}
+        </div>
+      </form>
+    </Card>
   );
 }
 
@@ -1076,6 +1607,7 @@ function routeFromPath(path: string): RouteState {
   if (cleanPath === '/app/content') return { kind: 'overview' };
   const segment = cleanPath.replace(/^\/app\/content\/?/, '').split('/')[0] ?? '';
   if (segment === 'processing') return { kind: 'processing' };
+  if (segment === 'factory') return { kind: 'factory' };
   if (segment === 'create') return { kind: 'create' };
   if (segment === 'social') return { kind: 'social' };
   if (segment === 'knowledge') return { kind: 'knowledge' };
@@ -1100,6 +1632,49 @@ async function apiPost<T = unknown>(
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-csrf-token': csrfToken },
       body: JSON.stringify(body),
+    },
+    onProtectedStateCleared,
+  );
+}
+
+async function apiPatch<T = unknown>(
+  path: string,
+  body: Record<string, unknown>,
+  csrfToken: string,
+  onProtectedStateCleared: () => void,
+): Promise<T> {
+  return apiRequest<T>(
+    path,
+    {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': csrfToken },
+      body: JSON.stringify(body),
+    },
+    onProtectedStateCleared,
+  );
+}
+
+async function apiUpload<T = unknown>(
+  path: string,
+  file: File,
+  metadata: { classLabel: string; classDate: string },
+  csrfToken: string,
+  onProtectedStateCleared: () => void,
+): Promise<T> {
+  return apiRequest<T>(
+    path,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': file.type || 'application/octet-stream',
+        'x-csrf-token': csrfToken,
+        'x-file-name': encodeURIComponent(file.name),
+        ...(metadata.classLabel
+          ? { 'x-class-label': encodeURIComponent(metadata.classLabel) }
+          : {}),
+        ...(metadata.classDate ? { 'x-class-date': metadata.classDate } : {}),
+      },
+      body: file,
     },
     onProtectedStateCleared,
   );
@@ -1144,11 +1719,35 @@ function activeVersion(template: ContentAdminPromptTemplate | undefined) {
   );
 }
 
+function formatBytes(value: number) {
+  if (value < 1024 * 1024) return `${Math.max(1, Math.round(value / 1024))} KB`;
+  return `${(value / (1024 * 1024)).toFixed(value >= 100 * 1024 * 1024 ? 0 : 1)} MB`;
+}
+
 function readable(value: string) {
   return value
     .replaceAll('_', ' ')
     .replaceAll('.', ' ')
     .replace(/^\w/, (letter) => letter.toUpperCase());
+}
+
+function splitLineList(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function splitCommaList(value: string) {
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
+function formatDuration(durationMs: number) {
+  const seconds = Math.round(durationMs / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
 function formatDate(value: string) {

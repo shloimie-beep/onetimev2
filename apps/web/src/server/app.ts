@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
+import { chmod, mkdir, open, readFile, rename, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
@@ -62,6 +62,11 @@ import {
   contentAdminSocialWorkspaceResponseSchema,
   contentAdminSourceDetailResponseSchema,
   contentAdminWorkspaceQuerySchema,
+  contentFactoryActionSchema,
+  contentFactoryEditPayloadSchema,
+  contentFactoryIntakeResponseSchema,
+  contentFactoryMutationResponseSchema,
+  contentFactoryWorkspaceResponseSchema,
   accomplishmentEventSchema,
   adminGamificationDashboardResponseSchema,
   gamificationCorrectionAuditSchema,
@@ -84,6 +89,7 @@ import {
   CrmDuplicateError,
   CrmVersionConflictError,
   ContentIdempotencyConflictError,
+  ContentFactoryError,
   Ot110aContentWorkspaceError,
   IdempotencyConflictError,
   AccountLifecycleError,
@@ -108,6 +114,7 @@ import {
   createClassroomPortalAccessAdapter,
   createClassroomService,
   createContentPortalAccessAdapter,
+  createContentFactoryIntake,
   createGamificationService,
   createLoginCsrf,
   createOt110aGeneratedArtifact,
@@ -122,6 +129,8 @@ import {
   resendEmailChallenge,
   getClassOccurrenceDetail,
   getContentItemDetail,
+  getContentFactoryPlayback,
+  getContentFactoryWorkspace,
   getContactDetail,
   getOt110aContentCreateWorkspace,
   getOt110aContentProcessingQueue,
@@ -142,6 +151,7 @@ import {
   listOt110aSocialWorkspace,
   ownerAdminVisibleActions,
   performOt110aContentAction,
+  performContentFactoryAction,
   previewOt110aPromptPatch,
   inspectOt86bBufferReadinessFromEnv,
   listCrmTags,
@@ -158,6 +168,8 @@ import {
   removeCrmTag,
   receiveWhatsAppWebhook,
   updateContact,
+  editContentFactoryItem,
+  inspectLearningDeliveryInputAdapters,
   verifyEmailChallengeCode,
   verifyEmailChallengeLink,
   CrmReplyError,
@@ -310,6 +322,7 @@ export function createApp({
           objectSrc: ["'none'"],
           baseUri: ["'self'"],
           frameAncestors: ["'none'"],
+          frameSrc: ["'self'", 'https://player.vimeo.com'],
         },
       },
     }),
@@ -544,7 +557,7 @@ export function createApp({
   app.get('/version', (_req, res) => {
     res.json({
       version: config.appVersion,
-      commit_sha: config.commitSha,
+      commit_sha: config.railwayGitCommitSha ?? config.commitSha,
       target_app: 'one-time',
       deployment: {
         provider: 'railway',
@@ -1664,6 +1677,182 @@ export function createApp({
     }
   });
 
+  app.get('/api/v1/admin/content/factory', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!isContentFactoryAdmin(session)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const workspace = await withTiming(req, 'db', () =>
+        getContentFactoryWorkspace({ pool, config }),
+      );
+      const adapter = inspectLearningDeliveryInputAdapters({
+        driveFolderIdPresent: Boolean(process.env.GOOGLE_DRIVE_FOLDER_ID),
+        driveServiceAccountPresent: Boolean(process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON),
+      });
+      res.json(
+        contentFactoryWorkspaceResponseSchema.parse({
+          success: true,
+          input_adapter: adapter.inputAdapter,
+          adapters: adapter.adapters,
+          ...workspace,
+        }),
+      );
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post('/api/v1/admin/content/factory/intake', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    if (!isContentFactoryAdmin(session)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Owner or Admin access required.', req.traceId));
+      return;
+    }
+    try {
+      const staged = await stageProtectedContentFactoryUpload(req);
+      const classDateHeader = req.header('x-class-date')?.trim() || null;
+      const classDate =
+        classDateHeader && z.string().date().safeParse(classDateHeader).success
+          ? classDateHeader
+          : null;
+      const intake = await withTiming(req, 'db', () =>
+        createContentFactoryIntake({
+          pool,
+          config,
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+          displayName: staged.displayName,
+          mimeType: staged.mimeType,
+          byteLength: staged.byteLength,
+          sourceSha256: staged.sourceSha256,
+          privateRefDigest: staged.privateRefDigest,
+          classLabel: safeDecodedHeader(req.header('x-class-label')),
+          classDate,
+        }),
+      );
+      res.status(201).json(contentFactoryIntakeResponseSchema.parse({ success: true, intake }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.patch('/api/v1/admin/content/factory/:sourceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!(await requireSessionCsrf(req, res, pool, session))) return;
+    try {
+      const payload = contentFactoryEditPayloadSchema.parse(req.body);
+      const item = await withTiming(req, 'db', () =>
+        editContentFactoryItem({
+          pool,
+          config,
+          sourceKey: String(req.params.sourceKey),
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+          payload,
+        }),
+      );
+      res.json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
+  app.post(
+    '/api/v1/admin/content/factory/:sourceKey/:action',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        const action = contentFactoryActionSchema.parse(req.params.action);
+        const item = await withTiming(req, 'db', () =>
+          performContentFactoryAction({
+            pool,
+            config,
+            sourceKey: String(req.params.sourceKey),
+            actorUserKey: session.user.user_key,
+            actorRole: session.user.role,
+            action,
+          }),
+        );
+        res.json(contentFactoryMutationResponseSchema.parse({ success: true, item }));
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
+  app.get('/app/learning/items/:sourceKey', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(302, `/login?return_to=${encodeURIComponent(req.originalUrl)}`);
+      return;
+    }
+    if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
+      res.status(403).type('html').send('Protected learning access required.');
+      return;
+    }
+    try {
+      const playback = await getContentFactoryPlayback({
+        pool,
+        config,
+        sourceKey: String(req.params.sourceKey),
+      });
+      res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
+    } catch (error) {
+      const status = error instanceof ContentFactoryError && error.code === 'NOT_FOUND' ? 404 : 409;
+      res.status(status).type('html').send('Approved lesson playback is unavailable.');
+    }
+  });
+
+  app.get('/api/v1/content/factory/:sourceKey/embed', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    const session = await requireApiSession(req, res, pool, config);
+    if (!session) return;
+    if (!['owner', 'admin', 'parent', 'student'].includes(session.user.role)) {
+      res
+        .status(403)
+        .json(publicError('FORBIDDEN', 'Protected learning access required.', req.traceId));
+      return;
+    }
+    try {
+      const playback = await getContentFactoryPlayback({
+        pool,
+        config,
+        sourceKey: String(req.params.sourceKey),
+      });
+      if (playback.isDemo) {
+        res.setHeader(
+          'Content-Security-Policy',
+          "default-src 'self'; style-src 'self'; frame-ancestors 'self'; base-uri 'self'",
+        );
+        res.status(200).type('html').send(contentFactoryDemoEmbedHtml(playback));
+        return;
+      }
+      if (!playback.privateProviderEmbedUrl) {
+        throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Protected playback is unavailable.');
+      }
+      res.redirect(302, playback.privateProviderEmbedUrl);
+    } catch (error) {
+      handleApiError(error, req, res);
+    }
+  });
+
   app.get('/api/v1/admin/content/processing', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await requireApiSession(req, res, pool, config);
@@ -2398,6 +2587,7 @@ export function createApp({
 
 function publicHtmlFileForPath(pathname: string) {
   if (pathname === '/') return 'index.html';
+  if (pathname.startsWith('/app/content/')) return 'app/content.html';
   const staticPages = new Set([
     '/signup',
     '/login',
@@ -3212,6 +3402,23 @@ function handleApiError(error: unknown, req: RequestWithTrace, res: Response) {
     });
     return;
   }
+  if (error instanceof ContentFactoryError) {
+    const status =
+      error.code === 'FORBIDDEN'
+        ? 403
+        : error.code === 'NOT_FOUND'
+          ? 404
+          : error.code === 'VALIDATION_ERROR'
+            ? 400
+            : 409;
+    res.status(status).json({
+      success: false,
+      code: error.code,
+      message: error.message,
+      request_id: req.traceId,
+    });
+    return;
+  }
   if (error instanceof Ot110aContentWorkspaceError) {
     res.status(statusForOt110aError(error.code)).json({
       success: false,
@@ -3274,6 +3481,10 @@ function canReadContacts(role: string) {
 
 function canReadContentLibrary(role: string) {
   return role === 'owner' || role === 'admin';
+}
+
+function isContentFactoryAdmin(session: AuthenticatedSession) {
+  return session.user.role === 'owner' || session.user.role === 'admin';
 }
 
 function canUseOwnerDashboard(role: string) {
@@ -3748,6 +3959,183 @@ function classroomLaunchHtml() {
   <script type="module" src="/assets/app-classroom-launch.js"></script>
 </body>
 </html>`;
+}
+
+function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#050505">
+  <title>${escapeHtml(playback.title)} | One Time Mishnayos</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace learning-player-page" data-protected-player="true">
+    <section class="state-panel learning-player-shell" aria-labelledby="learning-player-title">
+      <p class="eyebrow">${playback.isDemo ? 'Protected synthetic demo lesson' : 'Protected One Time lesson'}</p>
+      <h1 id="learning-player-title">${escapeHtml(playback.title)}</h1>
+      <p>${escapeHtml(playback.summary)}</p>
+      <div class="protected-player-frame">
+        <iframe
+          src="${escapeHtml(playback.playbackRoute)}"
+          title="${escapeHtml(playback.title)}"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          loading="eager"
+        ></iframe>
+      </div>
+      <dl class="content-factory-safe-metadata">
+        <div><dt>Captions</dt><dd>${playback.captionsActive ? 'Active' : 'Unavailable'}</dd></div>
+        <div><dt>Progress</dt><dd>${escapeHtml(playback.progressState.replaceAll('_', ' '))}</dd></div>
+      </dl>
+      <section aria-labelledby="review-questions-title">
+        <h2 id="review-questions-title">Review questions</h2>
+        <ol>${playback.reviewQuestions.map((question) => `<li>${escapeHtml(question)}</li>`).join('')}</ol>
+      </section>
+      <p class="ot-guardrail-note">${
+        playback.isDemo
+          ? 'Approved synthetic demo data only. No external provider media was used.'
+          : 'Approved class material only. No raw Vimeo link is displayed.'
+      }</p>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+function contentFactoryDemoEmbedHtml(
+  playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>,
+) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>${escapeHtml(playback.title)} — synthetic demo</title>
+  <link rel="stylesheet" href="/assets/app-crm.css">
+</head>
+<body>
+  <main class="app-workspace learning-player-page" data-protected-demo-player="true">
+    <section class="state-panel learning-player-shell" aria-labelledby="demo-player-title">
+      <p class="eyebrow">Synthetic classroom preview</p>
+      <h1 id="demo-player-title">${escapeHtml(playback.title)}</h1>
+      <p>This protected demo uses approved synthetic lesson data while the fresh provider canary waits for operator approval.</p>
+      <div role="group" aria-label="Demo caption track">
+        <strong>Captions active</strong>
+        <p>00:00 — The Mishnah introduces returning a lost object.</p>
+        <p>00:20 — The class identifies the signs an owner may use.</p>
+        <p>00:40 — Students review when an announcement is required.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>`;
+}
+
+async function stageProtectedContentFactoryUpload(req: Request) {
+  const displayName = safeVideoUploadName(req.header('x-file-name'));
+  const extension = path.extname(displayName).toLowerCase();
+  const declaredMimeType = String(req.header('content-type') ?? '')
+    .split(';')[0]!
+    .trim();
+  const mimeType = declaredMimeType.startsWith('video/')
+    ? declaredMimeType
+    : extension === '.mov'
+      ? 'video/quicktime'
+      : extension === '.webm'
+        ? 'video/webm'
+        : 'video/mp4';
+  const configuredMax = Number(process.env.CONTENT_FACTORY_MAX_UPLOAD_BYTES ?? 2_147_483_648);
+  const maxBytes =
+    Number.isSafeInteger(configuredMax) && configuredMax > 0 ? configuredMax : 2_147_483_648;
+  const declaredLength = Number(req.header('content-length') ?? 0);
+  if (declaredLength > maxBytes) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Video exceeds the protected upload limit.');
+  }
+  const privateDirectory = path.resolve(
+    process.env.CONTENT_FACTORY_LOCAL_DROP_DIR ??
+      path.join(process.cwd(), 'tmp', 'content-factory-local-drop'),
+  );
+  await mkdir(privateDirectory, { recursive: true });
+  const temporaryPath = path.join(privateDirectory, `.upload-${randomUUID()}.partial`);
+  const file = await open(temporaryPath, 'wx', 0o600);
+  const digest = createHash('sha256');
+  let byteLength = 0;
+  try {
+    for await (const value of req) {
+      const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value);
+      byteLength += chunk.length;
+      if (byteLength > maxBytes) {
+        throw new ContentFactoryError(
+          'VALIDATION_ERROR',
+          'Video exceeds the protected upload limit.',
+        );
+      }
+      digest.update(chunk);
+      await file.write(chunk);
+    }
+    if (byteLength < 1) {
+      throw new ContentFactoryError('VALIDATION_ERROR', 'Choose a non-empty video file.');
+    }
+    await file.sync();
+    await file.close();
+    const sourceSha256 = digest.digest('hex');
+    const finalPath = path.join(
+      privateDirectory,
+      `${sourceSha256.slice(0, 20)}-${randomUUID()}${extension}`,
+    );
+    if (!path.resolve(finalPath).startsWith(`${privateDirectory}${path.sep}`)) {
+      throw new ContentFactoryError('VALIDATION_ERROR', 'Protected intake path is invalid.');
+    }
+    await rename(temporaryPath, finalPath);
+    try {
+      await chmod(finalPath, 0o600);
+    } catch {
+      // Windows and managed volumes retain their protected inherited ACL.
+    }
+    return {
+      displayName,
+      mimeType,
+      byteLength,
+      sourceSha256,
+      privateRefDigest: createHash('sha256').update(`local_drop\0${sourceSha256}`).digest('hex'),
+    };
+  } catch (error) {
+    await file.close().catch(() => undefined);
+    await unlink(temporaryPath).catch(() => undefined);
+    throw error;
+  }
+}
+
+function safeVideoUploadName(value: string | undefined) {
+  const decoded = safeDecodedHeader(value);
+  if (!decoded || decoded.length > 240 || path.basename(decoded) !== decoded) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'A safe video filename is required.');
+  }
+  const extension = path.extname(decoded).toLowerCase();
+  if (!['.mp4', '.mov', '.m4v', '.webm', '.avi', '.mkv'].includes(extension)) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Choose a supported video file.');
+  }
+  return decoded;
+}
+
+function safeDecodedHeader(value: string | undefined) {
+  if (!value) return null;
+  try {
+    const decoded = decodeURIComponent(value).trim();
+    for (const character of decoded) {
+      const code = character.charCodeAt(0);
+      if (code <= 0x1f || code === 0x7f) return null;
+    }
+    return decoded || null;
+  } catch {
+    return null;
+  }
 }
 
 function escapeHtml(value: string) {
