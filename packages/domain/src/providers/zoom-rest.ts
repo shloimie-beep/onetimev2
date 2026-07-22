@@ -332,6 +332,13 @@ export function createZoomRestClient(options: ZoomRestClientOptions) {
       });
     },
 
+    async disableMeetingRegistration(meetingId: string) {
+      await zoomJson(`/meetings/${encodeURIComponent(meetingId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ settings: { approval_type: 2 } }),
+      });
+    },
+
     async getHostZakToken(hostUserId: string) {
       const json = await zoomJson(`/users/${encodeURIComponent(hostUserId)}/token?type=zak`, {
         method: 'GET',

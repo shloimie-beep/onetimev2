@@ -16,6 +16,7 @@ import type {
   LiveClassZoomControlPayload,
   LiveClassZoomHostBootstrapResponse,
   LiveClassZoomParticipantSyncPayload,
+  LiveClassZoomTestParticipantBootstrapResponse,
 } from '../../../contracts/src/live-class/index.ts';
 import type { PortalActorContext } from '../../../contracts/src/portals/index.ts';
 import type {
@@ -70,6 +71,12 @@ export type ZoomHostLaunchPort = {
     occurrenceKey: string;
     now: Date;
   }): Promise<LiveClassZoomHostBootstrapResponse['data']>;
+  resolveTestParticipantLaunch(input: {
+    occurrenceKey: string;
+    customerKey: string;
+    userName: string;
+    now: Date;
+  }): Promise<LiveClassZoomTestParticipantBootstrapResponse['data']>;
 };
 
 export type LiveClassRepository = {
@@ -243,6 +250,47 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       const session = await ensureSession(deps, actor, now, occurrenceKey);
       return deps.zoomHostLaunchPort.resolveHostLaunch({
         occurrenceKey: session.occurrence_key,
+        now,
+      });
+    },
+
+    async zoomTestParticipantBootstrap(
+      actor: PortalActorContext,
+      studentNumber: number,
+      occurrenceKey?: string | undefined,
+    ) {
+      requireRabbi(actor);
+      if (!zoomHostControlConfigured(deps.config) || !deps.zoomHostLaunchPort) {
+        throw new PortalServiceError(
+          'ADAPTER_UNAVAILABLE',
+          'Meeting SDK participant control is not configured for this preview.',
+        );
+      }
+      if (!liveClassFakeAdapterEnabled(deps.config) || ![1, 2, 3].includes(studentNumber)) {
+        throw new PortalServiceError(
+          'FORBIDDEN',
+          'The isolated fictional-participant surface is unavailable.',
+        );
+      }
+      const now = clock();
+      const session = await ensureSession(deps, actor, now, occurrenceKey, true);
+      const participants = await deps.repository.listParticipants({
+        actor,
+        occurrence_key: session.occurrence_key,
+      });
+      const participant = participants.find(
+        (item) => item.learner_key === `live_demo_learner_${studentNumber}`,
+      );
+      if (!participant) {
+        throw new PortalServiceError(
+          'NOT_FOUND',
+          'The isolated fictional participant was not found.',
+        );
+      }
+      return deps.zoomHostLaunchPort.resolveTestParticipantLaunch({
+        occurrenceKey: session.occurrence_key,
+        customerKey: participant.customer_key,
+        userName: participant.approved_display_name,
         now,
       });
     },

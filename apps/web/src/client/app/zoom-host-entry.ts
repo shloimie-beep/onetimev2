@@ -181,10 +181,10 @@ async function syncDeparture(event: { userId?: number | string; userID?: number 
 function sdkKeyFromSignature(signature: string) {
   const encoded = signature.split('.')[1];
   if (!encoded) throw new Error('Meeting SDK signature is invalid.');
-  const base64 = encoded.replaceAll('-', '+').replaceAll('_', '/').padEnd(
-    encoded.length + ((4 - (encoded.length % 4)) % 4),
-    '=',
-  );
+  const base64 = encoded
+    .replaceAll('-', '+')
+    .replaceAll('_', '/')
+    .padEnd(encoded.length + ((4 - (encoded.length % 4)) % 4), '=');
   const payload = JSON.parse(atob(base64)) as { sdkKey?: string };
   if (!payload.sdkKey) throw new Error('Meeting SDK signature is invalid.');
   return payload.sdkKey;
@@ -283,8 +283,10 @@ async function start() {
     for (const event of ['onUserJoin', 'onUserUpdate', 'onActiveSpeaker']) {
       zoom.inMeetingServiceListener(event, refresh);
     }
-    zoom.inMeetingServiceListener('onUserLeave', (event: unknown) =>
-      void syncDeparture(event as { userId?: number | string; userID?: number | string }),
+    zoom.inMeetingServiceListener(
+      'onUserLeave',
+      (event: unknown) =>
+        void syncDeparture(event as { userId?: number | string; userID?: number | string }),
     );
     await new Promise<void>((resolve, reject) => {
       zoom.init({

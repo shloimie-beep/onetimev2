@@ -2,10 +2,7 @@ import { createHmac } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  ZoomApiError,
-  createZoomRestClient,
-} from '../packages/domain/src/providers/zoom-rest.ts';
+import { ZoomApiError, createZoomRestClient } from '../packages/domain/src/providers/zoom-rest.ts';
 
 const keyholderDir =
   process.env.BNA_KEYHOLDER_DIR ?? path.join(process.env.USERPROFILE ?? '.', 'BNA-Keyholder');
@@ -34,6 +31,7 @@ type ProtectedState = {
   schema_version: 1;
   status: 'meeting_created' | 'registrants_created' | 'registration_blocked';
   registration_block_reason?: 'registration_not_enabled' | undefined;
+  registration_disabled_for_sdk_join?: boolean | undefined;
   created_at: string;
   meeting_id: string;
   passcode: string;
@@ -103,7 +101,9 @@ if (state.status !== 'registrants_created') {
       });
       await persistPrivateState(state);
     }
+    await client.disableMeetingRegistration(state.meeting_id);
     state.status = 'registrants_created';
+    state.registration_disabled_for_sdk_join = true;
     delete state.registration_block_reason;
   } catch (error) {
     if (!(error instanceof ZoomApiError) || error.code !== 'ZOOM_404') throw error;
@@ -123,6 +123,7 @@ process.stdout.write(
       resumed_existing_meeting: resumedExistingMeeting,
       fictional_registrant_count: state.registrants.length,
       registrants_created: state.status === 'registrants_created',
+      registration_disabled_for_sdk_join: state.registration_disabled_for_sdk_join === true,
       registration_block_reason: state.registration_block_reason ?? null,
       protected_state_written: true,
       invitations_sent: false,

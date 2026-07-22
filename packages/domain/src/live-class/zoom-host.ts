@@ -1,6 +1,10 @@
 import type { AppConfig } from '../../../config/src/index.ts';
 import type { ZoomHostLaunchPort } from './service.ts';
-import { createHostZoomSdkSignature, createZoomRestClient } from '../providers/zoom-rest.ts';
+import {
+  createHostZoomSdkSignature,
+  createLearnerZoomSdkSignature,
+  createZoomRestClient,
+} from '../providers/zoom-rest.ts';
 
 export function createZoomHostLaunchPort(config: AppConfig): ZoomHostLaunchPort | undefined {
   const sdkKey = config.zoomMeetingSdkClientId;
@@ -51,6 +55,24 @@ export function createZoomHostLaunchPort(config: AppConfig): ZoomHostLaunchPort 
         password,
         zak,
         user_name: 'One Time Zoom Stage Host',
+        leave_url: '/app/live-console',
+        video_start_model: 'PARTICIPANT_CONSENT',
+      };
+    },
+    async resolveTestParticipantLaunch({ occurrenceKey, customerKey, userName, now }) {
+      return {
+        occurrence_key: occurrenceKey,
+        sdk_web_version: config.zoomMeetingSdkWebVersion,
+        meeting_number: meetingNumber,
+        signature: createLearnerZoomSdkSignature({
+          credentials: { sdkKey, sdkSecret },
+          meetingNumber,
+          issuedAt: now,
+          ttlSeconds: 30 * 60,
+        }),
+        password,
+        customer_key: customerKey,
+        user_name: userName,
         leave_url: '/app/live-console',
         video_start_model: 'PARTICIPANT_CONSENT',
       };

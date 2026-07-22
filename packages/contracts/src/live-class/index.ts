@@ -241,6 +241,24 @@ export type LiveClassZoomHostBootstrapResponse = z.infer<
   typeof liveClassZoomHostBootstrapResponseSchema
 >;
 
+export const liveClassZoomTestParticipantBootstrapResponseSchema = z.object({
+  success: z.literal(true),
+  data: z.object({
+    occurrence_key: opaqueIdSchema,
+    sdk_web_version: z.string().regex(/^\d+\.\d+\.\d+$/),
+    meeting_number: z.string().trim().min(9).max(32),
+    signature: z.string().trim().min(16).max(2048),
+    password: z.string().max(64),
+    customer_key: opaqueIdSchema,
+    user_name: z.string().trim().min(1).max(160),
+    leave_url: z.string().trim().min(1).max(240),
+    video_start_model: z.literal('PARTICIPANT_CONSENT'),
+  }),
+});
+export type LiveClassZoomTestParticipantBootstrapResponse = z.infer<
+  typeof liveClassZoomTestParticipantBootstrapResponseSchema
+>;
+
 export const liveClassZoomParticipantSyncPayloadSchema = z.object({
   occurrence_key: opaqueIdSchema,
   participants: z
