@@ -156,7 +156,22 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
   ) {}
 
   async ensureTags(input: { locationId: string; tags: readonly string[] }) {
+    const response = await this.request(`/locations/${encodeURIComponent(input.locationId)}/tags`, {
+      method: 'GET',
+    });
+    const existingTags = new Set(
+      (Array.isArray(response.tags) ? response.tags : [])
+        .map((tag) =>
+          tag && typeof tag === 'object' && 'name' in tag
+            ? String((tag as { name?: unknown }).name ?? '')
+                .trim()
+                .toLocaleLowerCase()
+            : '',
+        )
+        .filter(Boolean),
+    );
     for (const tag of input.tags) {
+      if (existingTags.has(tag.trim().toLocaleLowerCase())) continue;
       await this.request(`/locations/${encodeURIComponent(input.locationId)}/tags`, {
         method: 'POST',
         body: { name: tag },
