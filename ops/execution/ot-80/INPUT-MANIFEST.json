@@ -108,7 +108,7 @@
     "isolated_onetime_railway_staging_create_or_update": true,
     "isolated_staging_postgres_create_or_migrate": true,
     "synthetic_demo_seed": true,
-    "single_admin_activation_recipient": "sdratler@gmail.com",
+    "single_admin_activation_recipient": "<PRIVATE_ADMIN_DESTINATION_REDACTED>",
     "single_admin_activation_send": true,
     "admin_activation_channel": "email only",
     "provider_mode": "sink or test only",

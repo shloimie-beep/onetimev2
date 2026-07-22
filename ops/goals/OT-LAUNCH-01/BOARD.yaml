@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T10:12:00Z
+updated_at: 2026-07-22T10:56:10Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -15,8 +15,9 @@ status_definitions:
 outcome:
   status: active
   target: Production-believable persistent staging with complete operator preview and coherent fictional scenario.
+  production_changed: YES_TRANSIENT_RESTORED
   production_impact: BNA production was transiently changed in error, restored, and independently evidenced at canonical master cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c; One Time production remains untouched.
-  current_summary: Experience Preview, the synthetic content factory, and goal control pass combined local gates; no follow-up head is deployed yet.
+  current_summary: PR #97 runtime head 18d339f is live on persistent staging with migration 2215, a rotated coherent fictional household, and the Admin-to-role browser journey verified; external GHL dispatcher, Zoom provider, BNA durability, Telegram bridge, and media-canary tracks remain independently truthful.
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -25,13 +26,13 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: bf858634f0a275222eb9a09687216b9272868aa2
-    resolution: Update from PR readback and /version after the next commit/deploy; do not copy this value into reports.
+    last_verified_commit: 18d339f27bb715723f56f50b65d1745fab75164c
+    resolution: Exact deployed runtime commit; the next commit is a board/pointer-only convergence checkpoint and must not be reported as runtime code until /version reads it back.
   system: One Time persistent staging
 
 tracks:
   - id: goal_system
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -44,13 +45,15 @@ tracks:
     acceptance_ids: [GOAL-001]
     evidence:
       - Current goal files and skills are present in the conductor worktree.
-      - Both repository skills passed the official bundled Codex skill validator; five goal YAML files and the preview pointer parsed successfully.
+      - Both unchanged repository skills passed the official bundled Codex skill validator earlier in this task; this board-only checkpoint does not claim that the later PyYAML-dependent rerun passed.
+      - Modified goal, board, and pointer files pass repository-native YAML/JSON parsing; the pointer hash is generated from the formatted BOARD.yaml bytes.
+      - Fresh conductor review reconciled structured owners, accepted external heads, dependency-only states, production impact, and board-derived preview metadata.
     blocker: null
-    remaining_work: Official skill validation, YAML/JSON parse, review, commit, and PR readback.
-    next_action: Run the official bundled-environment validator and fresh on-disk review.
+    remaining_work: null
+    next_action: Preserve BOARD.yaml as the single status map and regenerate the pointer after each conductor update.
 
   - id: admin_experience_preview
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -59,19 +62,21 @@ tracks:
       system: One Time web
     write_scope: Experience Preview config, server catalog/routes, Admin UI, contracts, migration, and focused tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/experience-preview--persistent-staging-conductor.json
-    dependencies: [media_staging_integration, zoom_meeting_sdk, zoom_s2s_host_control]
+    dependencies: [media_staging_integration]
     acceptance_ids: [EXP-001, EXP-002, MIG-001]
     evidence:
       - Combined focused Experience Preview/content-factory suite passed 22/22 on 2026-07-22.
       - Fresh-server Playwright passed 3/3 across all five role cards, two isolated sibling tabs, production nav/route rejection, protected Student playback, and desktop/360px layout.
       - Migration prefix proof reserves 2215 and preserves PR #104 prefix 2214.
       - Migration audit preserves historical live 2209/2210 duplicate-prefix rows, reserves 2216 only for new schema, and requires exact 2215 checksum/ledger readback.
+      - Persistent-staging deployment 42ed8541-7ff2-43a6-906a-b139705c8c6d served exact runtime head 18d339f27bb715723f56f50b65d1745fab75164c; /ready read back 2215_experience_preview_sessions with checksum e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56.
+      - Live Admin browser proof reached Experience Preview and selected Parent, all three siblings, and Rabbi/Classroom; both Experience Preview and Live Console navigation were visible.
     blocker: null
-    remaining_work: Commit/readback, persistent staging seed/deploy, 2215 ledger readback, and live browser proof.
-    next_action: Commit the stable combined snapshot, rerun exact-commit gates, then deploy only persistent staging.
+    remaining_work: null
+    next_action: Preserve fail-closed production gating and truthful provider-off projections.
 
   - id: fictional_student_session
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -85,12 +90,13 @@ tracks:
     evidence:
       - Focused tests prove single-use, expiry, Admin-session binding, cross-account denial, and two sibling route scopes.
       - Build-backed Playwright proves opener null, GET-only dedicated shells with no Admin controls, two sibling tabs, and unchanged originating Owner session.
+      - Live persistent-staging proof opened Ari and Dovid concurrently in dedicated fictional Student shells with no usable opener or Admin controls; each retained its own sibling scope and the original Admin tab remained authenticated after both closed.
     blocker: null
-    remaining_work: Exact-head persistent-staging browser readback.
-    next_action: Repeat the proven browser journey against the deployed exact head.
+    remaining_work: null
+    next_action: Preserve single-use exchanges, per-session route scope, sibling isolation, and the five-minute ceiling.
 
   - id: coherent_demo
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -103,9 +109,36 @@ tracks:
     acceptance_ids: [ROLE-001, ROLE-002, ROLE-003, DEMO-001]
     evidence:
       - In-memory provision/readback tests prove exact credential, enrollment, attendance, reward, content, questions, occurrence, and Tisha rows.
+      - Persistent staging was provisioned at 2026-07-22T10:39:58Z with one fictional Administrator, one Parent, three separately credentialed siblings, the exact upcoming class/occurrence, prepared lesson, progress/reward, private question, and Tisha example.
+      - A fictional Admin credential rendered in this task's private diagnostic output during the first browser login; the old set is treated as compromised, all five fictional identity credential sets were rotated, and the refreshed private handoff replaced the prior set.
+      - Sanitized live browser proof confirmed all five role projections and the Admin, content-factory, and Live Console surfaces without exposing refreshed credentials.
+      - The repository secret scan passed and no rotated password/secret value matched a Git-tracked file; four literal private-destination occurrences were redacted from three current OT-80 records, with zero executable references to those records.
+      - The accidental untracked file pool.end()) was exactly zero bytes, contained no credential/private marker, and was removed before commit; the container handoff copy and unused local SSH key material are absent.
     blocker: null
-    remaining_work: Reseed persistent staging, verify all role logins without printing credentials, and refresh private handoff.
-    next_action: Run the exact-head provisioner after deployment and inspect only sanitized key presence.
+    remaining_work: null
+    next_action: Keep credentials only in the private handoff and rotate the complete fictional set after any future exposure.
+
+  - id: git_history_privacy_remediation
+    status: needs_operator_decision
+    owner:
+      task_id: OT-LAUNCH-01-OPERATOR-PRIVACY-DECISION
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: Git privacy/history
+    write_scope: Historical removal of the private Admin destination only; no action is authorized by this track state
+    handoff_path: C:/Users/User/.onetime-full-app-preview/FULL-APP-HANDOFF.private.json
+    dependencies: [coherent_demo]
+    acceptance_ids: []
+    evidence:
+      - Current branch files use <PRIVATE_ADMIN_DESTINATION_REDACTED>; direct readback found zero current-file matches and four approved placeholders across the three OT-80 records.
+      - Application, package, script, and workflow sources contain zero references to those three record paths; ops/execution/registry.json retains only the STATE.json evidence path.
+      - Older Git commits retain the private destination; current-file cleanup cannot remove historical objects.
+    blocker:
+      code: GIT_HISTORY_REWRITE_AUTHORITY_REQUIRED
+      reason: The destination is sensitive PII, while coordinated history rewriting is broad, disruptive, and requires explicit operator authorization.
+    remaining_work: Decide whether to coordinate a repository-history privacy rewrite and downstream clone/worktree remediation.
+    next_action: Do not rewrite history or force-push; preserve the current-file redaction until the operator makes a separate decision.
 
   - id: ghl_organization
     status: done
@@ -170,10 +203,11 @@ tracks:
   - id: ghl_event_dispatcher
     status: active
     owner:
-      task_id: GHL-APP-CONTRACT-LANE
+      task_id: GHL-APP-CONTRACT-LANE-PR-108
       repository: shloimie-beep/onetimev2
-      branch: null
-      pr: null
+      branch: codex/ot-launch-01-highlevel-app-contracts
+      pr: 108
+      head: 47a413cb9430d1149d9d3855eb9a5d05b80d5fb3
       system: One Time outbox to HighLevel
     write_scope: One canonical dispatcher, schemas, dedupe/retry, exact golden-path producers, and tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-event-dispatcher--assigned-task.json
@@ -181,7 +215,7 @@ tracks:
     acceptance_ids: [GHL-004]
     evidence:
       - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
-      - The control tower reports the existing GHL app-contract lane is active; no head has been accepted for semantic integration yet.
+      - PR #108 is an open draft at 47a413cb9430d1149d9d3855eb9a5d05b80d5fb3; its Node 24 verification is failing, so no head is accepted for semantic integration.
     blocker: null
     remaining_work: Terminal accepted head and handoff for the canonical app outbox, dispatcher, and exact producers.
     next_action: Continue the existing lane; integrate only its later accepted head and forbid direct provider fanout.
@@ -233,19 +267,20 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/zoom-real-control-activation
       pr: 105
+      head: 33c9b82494d2a4a397824c323957111f6c7731af
       system: Zoom Meeting SDK
     write_scope: Student protected Meeting SDK launch, consent, grant replay, and sibling scope
     handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
     dependencies: []
     acceptance_ids: [ZOOM-SDK-001]
     evidence:
-      - Independent audit at ee2afdd found an overlong provider customerKey and unsafe raw provider-error reflection; that head is not accepted.
-      - PR #105 adds no migration and relies on existing 2212_rabbi_live_console_zoom_obs.
+      - PR #105 terminal code head 33c9b82494d2a4a397824c323957111f6c7731af passed independent re-audit of the 32-character stable participant key, strict allowlisted provider errors, reconciliation, 17 focused tests, and typecheck.
+      - PR #105 adds no migration and relies on existing 2212_rabbi_live_console_zoom_obs; code acceptance does not prove a live provider join/control canary.
     blocker:
-      code: ZOOM_CONTRACT_SECURITY_AND_PROVIDER_BARRIER
-      reason: The lane must fix the audited contract/security defects and pass the current reCAPTCHA/rate-limit provider barrier.
-    remaining_work: Corrected SDK contract/security implementation plus terminal browser and negative-test handoff.
-    next_action: Continue the existing Zoom lane; do not integrate PR #105 until a later audited head is accepted.
+      code: ZOOM_HUMAN_PROVIDER_CANARY_BARRIER
+      reason: Zoom reCAPTCHA/rate limiting prevents the required human-cleared host and fictional Student join/control proof.
+    remaining_work: One human-cleared host and fictional Student join canary with consent and replay/cross-student denial readback.
+    next_action: Keep provider-off/fake controls truthful until the human provider barrier is cleared; then integrate the accepted head semantically and run the bounded canary.
 
   - id: zoom_s2s_host_control
     status: blocked
@@ -254,30 +289,32 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/zoom-real-control-activation
       pr: 105
+      head: 33c9b82494d2a4a397824c323957111f6c7731af
       system: Zoom S2S and Rabbi host console
     write_scope: Exact fictional meeting provisioning and scoped mute/unmute/spotlight
     handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
     dependencies: []
     acceptance_ids: [ZOOM-S2S-001]
     evidence:
-      - Independent audit at ee2afdd found the wrong operateSpotlight contract and unsafe provider boundary behavior; that head is not accepted.
-      - The external provider path is additionally stopped at the current reCAPTCHA/rate-limit barrier.
+      - PR #105 terminal code head 33c9b82494d2a4a397824c323957111f6c7731af passed independent re-audit of the operateSpotlight contract, participant reconciliation, strict provider-error allowlist, 17 focused tests, and typecheck.
+      - Protected readback confirms S2S credential presence without exposing values; presence does not prove live host join, mute/unmute, or spotlight operation.
     blocker:
-      code: ZOOM_SPOTLIGHT_CONTRACT_AND_PROVIDER_BARRIER
-      reason: The corrected spotlight contract and safe provider errors need audited proof after the reCAPTCHA/rate-limit barrier is resolved.
-    remaining_work: Corrected S2S host-control contract and exact-occurrence readback.
-    next_action: Continue the existing Zoom lane; do not duplicate or integrate its provider mutations yet.
+      code: ZOOM_HUMAN_PROVIDER_CANARY_BARRIER
+      reason: Zoom reCAPTCHA/rate limiting prevents live exact-occurrence host join and mute/unmute/spotlight proof.
+    remaining_work: One human-cleared exact-fictional-occurrence host and Student join/control canary.
+    next_action: Keep provider controls truthful and unclaimed until the human barrier clears; never infer host control from credential presence.
 
   - id: bna_foundation
     status: done
     owner:
-      task_id: BNA-AGENT-ACTION-HUB
-      repository: external/BNA-Agent-Actions
-      branch: terminal-handoff
+      task_id: BNA-PR-141-RECONCILIATION
+      repository: shloimie-beep/bnei-neviim-academy
+      branch: codex/platform-agent-actions-telegram-preview
       pr: 141
+      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
       system: BNA Agent Action Hub
     write_scope: BNA foundation and canonical job import/readback
-    handoff_path: external terminal PR #141
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
     dependencies: []
     acceptance_ids: [BNA-001]
     evidence:
@@ -290,12 +327,13 @@ tracks:
     status: blocked
     owner:
       task_id: BNA-PR-141-RECONCILIATION
-      repository: external/BNA-Agent-Actions
-      branch: terminal-handoff
+      repository: shloimie-beep/bnei-neviim-academy
+      branch: codex/platform-agent-actions-telegram-preview
       pr: 141
+      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
       system: BNA durable DB and queue
     write_scope: Durable preview/Telegram save, restart, readback, and queue pin only
-    handoff_path: external terminal PR #141
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
     dependencies: [bna_foundation, ghl_organization]
     acceptance_ids: [BNA-002]
     evidence:
@@ -312,12 +350,13 @@ tracks:
     status: provider_off
     owner:
       task_id: BNA-PR-141-RECONCILIATION
-      repository: external/BNA-Agent-Actions
-      branch: terminal-handoff
+      repository: shloimie-beep/bnei-neviim-academy
+      branch: codex/platform-agent-actions-telegram-preview
       pr: 141
+      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
       system: One Time Telegram private canary
     write_scope: Single consumer, private owner mapping/canary, and sanitized readback only
-    handoff_path: external terminal PR #141
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
     dependencies: [bna_foundation]
     acceptance_ids: [TELEGRAM-001]
     evidence:
@@ -328,27 +367,27 @@ tracks:
     next_action: Keep the Telegram UI provider_off until DATABASE_URL is attached and every canonical runtime gate reads back.
 
   - id: telegram_customer_bridge
-    status: needs_operator_decision
+    status: waiting_external
     owner:
-      task_id: null
-      repository: shloimie-beep/onetimev2
-      branch: null
-      pr: null
+      task_id: BNA-PR-141-RECONCILIATION
+      repository: shloimie-beep/bnei-neviim-academy
+      branch: codex/platform-agent-actions-telegram-preview
+      pr: 141
+      head: adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe
       system: Telegram to GHL customer bridge
     write_scope: Private synthetic question draft/readback; no customer send by default
-    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/telegram-customer-bridge--assigned-task.json
+    handoff_path: https://github.com/shloimie-beep/bnei-neviim-academy/pull/141
     dependencies: [telegram_foundation, ghl_event_dispatcher]
     acceptance_ids: [TELEGRAM-002]
     evidence:
-      - Customer sends are zero; no customer bridge authorization has been granted.
-    blocker:
-      code: CUSTOMER_SEND_AUTHORIZATION_REQUIRED
-      reason: Customer send/activation requires a separate explicit operator authorization.
-    remaining_work: Private synthetic draft/readback and, only if authorized later, bounded customer canary.
-    next_action: Keep customer sends off and request a separate authorization only after private bridge proof.
+      - Customer, GHL, and provider sends are zero; private synthetic no-send proof does not require customer-send authorization.
+      - Private bridge readback depends on BNA preview durability and the accepted One Time outbox/dispatcher contract.
+    blocker: null
+    remaining_work: Private synthetic question draft/readback after BNA durability and the One Time dispatcher are accepted; a later customer send remains a separate operator decision.
+    next_action: Keep all customer sends off while waiting for the database and dispatcher dependencies; do not conflate private proof with later send authorization.
 
   - id: persistent_staging
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -368,6 +407,10 @@ tracks:
     acceptance_ids: [DEPLOY-001]
     evidence:
       - Baseline 09953ba2edfc7ba014b9fe2558dbc7f5c58972ea previously passed exact /version, /health, /ready, worker heartbeat, and browser verification.
+      - Exact runtime head 18d339f27bb715723f56f50b65d1745fab75164c is live through web deployment 42ed8541-7ff2-43a6-906a-b139705c8c6d and worker deployment 5182345f-69a9-4491-a0c6-43cec0784b9d; /health, /ready, and /version passed.
+      - Predeploy readback preserved applied 2213 checksum de79b58418608f4466ffadda967411b43cfca2df477911071ed4060805b5dae1 and confirmed immutable 2214 plus exact 2215 checksum e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56.
+      - Stable exact-source gates passed 6 focused files/24 tests, build/typecheck, repository conflict-marker scan, git diff --check, and 3/3 real Chromium scenarios including desktop and 360px.
+      - Live click-through confirmed Admin login, all five role projections, concurrent isolated sibling tabs, preserved Admin session, Content, and Live Console; provider-off surfaces remained truthful.
     blocker: null
-    remaining_work: Commit/push the combined follow-up, deploy exact new head, migrate through 2215, reseed, and complete live browser proof.
-    next_action: Rerun all required gates on one stable commit before any staging mutation.
+    remaining_work: null
+    next_action: Monitor the persistent staging health and redeploy only an exact accepted PR #97 descendant; never bypass predeploy migration checks.

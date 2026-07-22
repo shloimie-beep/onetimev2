@@ -23,7 +23,7 @@ resolved from Git, the repository, this pack, and provider-safe test state.
 
 The manifest explicitly authorizes GitHub branch/PR writes and an isolated One
 Time **staging** provision/deploy/migration/synthetic seed. It authorizes at most
-one staging-admin activation email to `sdratler@gmail.com`, after recipient,
+one staging-admin activation email to `<PRIVATE_ADMIN_DESTINATION_REDACTED>`, after recipient,
 environment, sender, and test/sink safeguards are verified. It does not authorize
 production, root DNS, live billing, bulk/audience sends, real lead/family/school
 messages, or real legacy-data mutation.
@@ -459,7 +459,7 @@ staging data/service. This phase is authorized by `INPUT-MANIFEST.json`.
    administrator identity for Shloimie Dratler. Do not import legacy sheets or
    real contacts.
 6. Create Shloimie's administrator with exact allowed staging recipient
-   `sdratler@gmail.com`. If the verified test email provider can safely deliver
+   `<PRIVATE_ADMIN_DESTINATION_REDACTED>`. If the verified test email provider can safely deliver
    only to that recipient, send exactly one activation. Otherwise create a
    pending activation and return a secure operator action; do not expose or
    commit the activation token and do not block the rest of staging.

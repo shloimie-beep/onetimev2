@@ -23,7 +23,7 @@
   "production_authorized": false,
   "isolated_staging_authorized_after_gates": true,
   "single_staging_admin_activation_email_authorized_after_gates": true,
-  "single_staging_admin_activation_recipient": "sdratler@gmail.com",
+  "single_staging_admin_activation_recipient": "<PRIVATE_ADMIN_DESTINATION_REDACTED>",
   "external_mutations_so_far": {
     "branch_created": true,
     "commit_created": true,
