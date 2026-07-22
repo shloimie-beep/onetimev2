@@ -122,7 +122,6 @@ const databaseEvidence = await pool.query<{
      AND provider = 'highlevel'`,
   [email, registrationKey],
 );
-await pool.end();
 
 const highLevelHeaders = {
   authorization: `Bearer ${highLevelToken}`,
@@ -175,12 +174,57 @@ const workflowsPayload = (await workflowsResponse.json()) as {
 const workflowMatches = (workflowsPayload.workflows ?? []).filter(
   (workflow) => workflow.id === workflowId,
 );
-const row = databaseEvidence.rows[0];
+let row = databaseEvidence.rows[0];
+const finalizeVerifiedDelivery = process.env.OPERATOR_SMOKE_FINALIZE_VERIFIED_DELIVERY === '1';
+let finalizationApplied = false;
+if (finalizeVerifiedDelivery) {
+  const verified =
+    readOnly &&
+    row?.delivery_count === 1 &&
+    exactContacts.length === 1 &&
+    tags.has("OT | Event | Tisha B'Av 2026 | Registered") &&
+    tags.has("OT | Source | Tisha B'Av 2026") &&
+    !tags.has('OT | Weekly Newsletter') &&
+    workflowMatches.length === 1 &&
+    workflowMatches[0]?.status === 'published';
+  if (!verified) {
+    throw new Error('The protected provider evidence is not sufficient to finalize delivery.');
+  }
+  const finalized = await pool.query(
+    `UPDATE onetime.event_delivery_events
+        SET status = 'succeeded',
+            completed_at = COALESCE(completed_at, now()),
+            public_metadata =
+              (public_metadata - 'failed_stage' - 'provider_http_status') ||
+              '{"workflow_configured":true,"tags_verified":true,"operator_reconciliation_finalized":true}'::jsonb,
+            updated_at = now()
+      WHERE account_key = 'rabbi_sheller_provider'
+        AND product_key = 'one_time_mishnah_class'
+        AND event_code = 'tisha-bav-2026'
+        AND registration_key = $1
+        AND provider = 'highlevel'
+        AND status = 'failed'`,
+    [registrationKey],
+  );
+  finalizationApplied = finalized.rowCount === 1;
+  if (finalizationApplied && row) {
+    row = {
+      ...row,
+      delivery_status: 'succeeded',
+      workflow_configured: true,
+      failed_stage: null,
+      provider_http_status: null,
+    };
+  }
+}
+await pool.end();
 process.stdout.write(
   `${JSON.stringify({
     contact_fingerprint: sha256(email).slice(0, 16),
     read_only: readOnly,
     false_positive_repair_requested: repairFalsePositive,
+    verified_delivery_finalization_requested: finalizeVerifiedDelivery,
+    verified_delivery_finalization_applied: finalizationApplied,
     first_success: first?.success ?? null,
     first_duplicate: first?.duplicate_submission ?? null,
     first_confirmation_queued: first?.confirmation_queued ?? null,

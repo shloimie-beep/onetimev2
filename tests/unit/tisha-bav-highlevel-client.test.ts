@@ -35,7 +35,9 @@ describe('Tisha BAv HighLevel client', () => {
     const fetchImpl = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ contact: { id: 'contact_operator' } }))
-      .mockResolvedValueOnce(Response.json({ tags: ['event-tag'] }, { status: 201 }));
+      .mockResolvedValueOnce(
+        Response.json({ tags: [], tagsAdded: ['event-tag'] }, { status: 201 }),
+      );
     const client = new HttpHighLevelEventClient({
       baseUrl: 'https://provider.example.test',
       token: 'private-test-token',
