@@ -233,14 +233,46 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
   }
 });
 
-async function interceptRegistration(page: Page) {
+test('Tisha BAv success panel reports an unconfirmed email handoff truthfully', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await interceptRegistration(page, {
+    success: true,
+    confirmation_queued: false,
+    message: {
+      body: 'Your spot is reserved, but event email delivery is not confirmed yet.',
+    },
+  });
+  await page.goto('/tisha-bav?delivery=unconfirmed', { waitUntil: 'load' });
+  await page.getByRole('button', { name: 'Reserve My Spot' }).click();
+  await page.locator('input[name="email"]').fill('delivery-unconfirmed@example.test');
+  await page.locator('form.event-form button[type="submit"]').click();
+
+  const successMessage = page.locator('[data-event-success-message]');
+  await expect(successMessage).toHaveText(
+    'Your spot is reserved, but event email delivery is not confirmed yet.',
+  );
+  await expect(successMessage).not.toHaveText(
+    "We'll email the private Zoom link and event details.",
+  );
+});
+
+async function interceptRegistration(
+  page: Page,
+  responseBody: Record<string, unknown> = {
+    success: true,
+    confirmation_queued: true,
+    message: { body: "We'll email the private Zoom link and event details." },
+  },
+) {
   const requests: RegistrationPayload[] = [];
   await page.route('**/api/v1/events/tisha-bav-2026/register', async (route) => {
     requests.push(route.request().postDataJSON() as RegistrationPayload);
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ success: true }),
+      body: JSON.stringify(responseBody),
     });
   });
   return requests;

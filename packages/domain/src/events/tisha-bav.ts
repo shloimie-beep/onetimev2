@@ -194,7 +194,7 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       await this.request(`/locations/${encodeURIComponent(input.locationId)}/tags`, {
         method: 'POST',
         body: { name: tag },
-        allowConflict: true,
+        allowConflict: 'resource_exists',
       });
     }
   }
@@ -228,25 +228,32 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
 
   async addTags(input: { locationId: string; contactId: string; tags: readonly string[] }) {
     void input.locationId;
-    const response = await this.request(`/contacts/${encodeURIComponent(input.contactId)}/tags`, {
+    await this.request(`/contacts/${encodeURIComponent(input.contactId)}/tags`, {
       method: 'POST',
       body: { tags: input.tags },
       apiVersion: '2023-02-21',
     });
-    let currentTags = new Set([
-      ...(Array.isArray(response.tags) ? response.tags.map(String) : []),
-      ...(Array.isArray(response.tagsAdded) ? response.tagsAdded.map(String) : []),
-    ]);
-    if (input.tags.some((tag) => !currentTags.has(tag))) {
-      const readback = await this.request(`/contacts/${encodeURIComponent(input.contactId)}`, {
-        method: 'GET',
-      });
-      const contact = (readback.contact ?? readback) as Record<string, unknown>;
-      currentTags = new Set(Array.isArray(contact.tags) ? contact.tags.map(String) : []);
+    const expectedTags = input.tags.map(normalizeTagName);
+    let readbackFailure: unknown;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const readback = await this.request(`/contacts/${encodeURIComponent(input.contactId)}`, {
+          method: 'GET',
+        });
+        const contact = (readback.contact ?? readback) as Record<string, unknown>;
+        const currentTags = new Set(
+          (Array.isArray(contact.tags) ? contact.tags : []).map((tag) =>
+            normalizeTagName(String(tag)),
+          ),
+        );
+        if (expectedTags.every((tag) => currentTags.has(tag))) return;
+        readbackFailure = new Error('Required tags were not visible on contact readback.');
+      } catch (error) {
+        readbackFailure = error;
+      }
+      if (attempt < 2) await boundedProviderReadbackDelay(attempt);
     }
-    if (input.tags.some((tag) => !currentTags.has(tag))) {
-      throw new Error('HighLevel contact tag verification failed.');
-    }
+    throw new Error('HighLevel contact tag verification failed.', { cause: readbackFailure });
   }
 
   async addToWorkflow(input: { contactId: string; workflowId: string; idempotencyKey: string }) {
@@ -258,6 +265,7 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
       {
         method: 'POST',
         body: {},
+        allowConflict: 'workflow_enrollment',
       },
     );
   }
@@ -267,7 +275,7 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
     options: {
       method: 'GET' | 'POST';
       body?: Record<string, unknown>;
-      allowConflict?: boolean;
+      allowConflict?: 'resource_exists' | 'workflow_enrollment';
       apiVersion?: string;
     },
   ): Promise<Record<string, unknown>> {
@@ -289,7 +297,7 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
     if (
       options.allowConflict &&
       (response.status === 409 || response.status === 422) &&
-      exactProviderConflict(responseBody)
+      exactProviderConflict(responseBody, options.allowConflict)
     ) {
       return responseBody;
     }
@@ -302,11 +310,25 @@ export class HttpHighLevelEventClient implements HighLevelEventClient {
   }
 }
 
-function exactProviderConflict(response: Record<string, unknown>) {
+function exactProviderConflict(
+  response: Record<string, unknown>,
+  kind: 'resource_exists' | 'workflow_enrollment',
+) {
   const message = Array.isArray(response.message)
     ? response.message.map(String).join(' ')
     : String(response.message ?? response.error ?? '');
-  return /already (?:exists|enrolled|in (?:the )?workflow)|duplicate/i.test(message);
+  if (kind === 'workflow_enrollment') {
+    return /already (?:enrolled|in (?:the )?workflow|part of (?:the )?workflow)/i.test(message);
+  }
+  return /already exists|duplicate/i.test(message);
+}
+
+function normalizeTagName(value: string) {
+  return value.trim().toLocaleLowerCase();
+}
+
+async function boundedProviderReadbackDelay(attempt: number) {
+  await new Promise((resolve) => setTimeout(resolve, 150 * 2 ** attempt));
 }
 
 function providerErrorCode(response: Record<string, unknown>) {
@@ -383,8 +405,12 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
   highLevelClient?: HighLevelEventClient | null;
 }) {
   const now = input.now ?? new Date();
-  const delivery = await input.pool.query<{ delivery_key: string; status: string }>(
-    `SELECT delivery_key, status
+  const delivery = await input.pool.query<{
+    delivery_key: string;
+    status: string;
+    public_metadata: Record<string, unknown>;
+  }>(
+    `SELECT delivery_key, status, public_metadata
        FROM onetime.event_delivery_events
       WHERE account_key = $1
         AND product_key = $2
@@ -397,8 +423,25 @@ export async function reprocessTishaBavRegistrationDelivery(input: {
   const row = delivery.rows[0];
   if (!row) return { status: 'missing' as const, fallback_queued: false };
   await materializeLegacyEventEmailPermission(input.pool, input.config, input.registrationKey);
-  if (row.status === 'succeeded') {
+  if (row.status === 'succeeded' && highLevelDeliveryVerified(row.public_metadata)) {
     return { status: 'succeeded' as const, fallback_queued: false };
+  }
+  if (row.status === 'succeeded') {
+    const reopened = await input.pool.query(
+      `UPDATE onetime.event_delivery_events
+          SET status = 'pending',
+              completed_at = NULL,
+              updated_at = $3
+        WHERE delivery_key = $1
+          AND status = 'succeeded'
+          AND public_metadata = $2::jsonb
+        RETURNING delivery_key`,
+      [row.delivery_key, JSON.stringify(normalizeJsonRecord(row.public_metadata)), now],
+    );
+    if (!reopened.rowCount) {
+      return { status: 'blocked' as const, fallback_queued: false };
+    }
+    row.status = 'pending';
   }
   if (!['provider_off', 'failed', 'pending', 'skipped'].includes(row.status)) {
     return { status: 'blocked' as const, fallback_queued: false };
@@ -1181,10 +1224,17 @@ async function upsertHighLevelDelivery(
      ON CONFLICT (account_key, product_key, event_code, idempotency_key)
      DO UPDATE SET
        protected_payload = EXCLUDED.protected_payload,
-       public_metadata = EXCLUDED.public_metadata,
+       public_metadata = CASE
+         WHEN onetime.event_delivery_events.status = 'succeeded'
+          AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
+         THEN onetime.event_delivery_events.public_metadata
+         ELSE EXCLUDED.public_metadata
+       END,
        payload_digest = EXCLUDED.payload_digest,
        status = CASE
-         WHEN onetime.event_delivery_events.status = 'succeeded' THEN 'succeeded'
+         WHEN onetime.event_delivery_events.status = 'succeeded'
+          AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
+         THEN 'succeeded'
          ELSE EXCLUDED.status
        END,
        updated_at = now()
@@ -1360,7 +1410,7 @@ async function maybeSyncHighLevel(input: {
     input.registrationKey,
   );
   if (!eligibility.allowed) {
-    await markHighLevelDelivery(
+    const marked = await markHighLevelDelivery(
       input.pool,
       input.deliveryKey,
       'skipped',
@@ -1370,6 +1420,7 @@ async function maybeSyncHighLevel(input: {
       },
       input.reprocessLeaseOwnerHash,
     );
+    if (!marked) return 'in_flight';
     return 'skipped';
   }
   if (input.config.highLevelEventSyncMode === 'disabled') return 'provider_off';
@@ -1408,6 +1459,7 @@ async function maybeSyncHighLevel(input: {
   const rows = await input.pool.query<{
     status: string;
     lease_owner_hash: string | null;
+    public_metadata: Record<string, unknown>;
     protected_payload: {
       location_id: string;
       email_normalized: string;
@@ -1418,7 +1470,7 @@ async function maybeSyncHighLevel(input: {
       workflow_request_key: string;
     };
   }>(
-    `SELECT status, lease_owner_hash, protected_payload
+    `SELECT status, lease_owner_hash, public_metadata, protected_payload
        FROM onetime.event_delivery_events
       WHERE delivery_key = $1
         AND registration_key = $2
@@ -1431,12 +1483,36 @@ async function maybeSyncHighLevel(input: {
   ) {
     return 'skipped';
   }
-  if (rows.rows[0]?.status === 'succeeded') return 'succeeded';
-  const payload = normalizeHighLevelPayload(rows.rows[0]?.protected_payload);
+  const deliveryRow = rows.rows[0];
+  if (
+    deliveryRow?.status === 'succeeded' &&
+    highLevelDeliveryVerified(deliveryRow.public_metadata)
+  ) {
+    return 'succeeded';
+  }
+  if (deliveryRow?.status === 'succeeded') {
+    const reopened = await input.pool.query(
+      `UPDATE onetime.event_delivery_events
+          SET status = 'pending',
+              completed_at = NULL,
+              updated_at = $3
+        WHERE delivery_key = $1
+          AND status = 'succeeded'
+          AND public_metadata = $2::jsonb
+        RETURNING delivery_key`,
+      [
+        input.deliveryKey,
+        JSON.stringify(normalizeJsonRecord(deliveryRow.public_metadata)),
+        input.now ?? new Date(),
+      ],
+    );
+    if (!reopened.rowCount) return 'in_flight';
+  }
+  const payload = normalizeHighLevelPayload(deliveryRow?.protected_payload);
   if (!payload) return null;
   const workflowId = payload.workflow_id ?? input.config.highLevelTishaBavWorkflowId;
   if (!workflowId) {
-    await markHighLevelDelivery(
+    const marked = await markHighLevelDelivery(
       input.pool,
       input.deliveryKey,
       'provider_off',
@@ -1445,6 +1521,7 @@ async function maybeSyncHighLevel(input: {
       },
       input.reprocessLeaseOwnerHash,
     );
+    if (!marked) return 'in_flight';
     return 'provider_off';
   }
   const leaseOwnerHash =
@@ -1483,7 +1560,7 @@ async function maybeSyncHighLevel(input: {
       workflowId,
       idempotencyKey: payload.workflow_request_key,
     });
-    await markHighLevelDelivery(
+    const marked = await markHighLevelDelivery(
       input.pool,
       input.deliveryKey,
       'succeeded',
@@ -1491,9 +1568,11 @@ async function maybeSyncHighLevel(input: {
         workflow_configured: true,
         contact_reference_hash: sha256(contact.contactId),
         tags_verified: true,
+        workflow_enrollment_verified: true,
       },
       leaseOwnerHash,
     );
+    if (!marked) return 'in_flight';
     await cancelUnsentFallback(
       input.pool,
       input.config,
@@ -1503,7 +1582,7 @@ async function maybeSyncHighLevel(input: {
     );
     return 'succeeded';
   } catch (error) {
-    await markHighLevelDelivery(
+    const marked = await markHighLevelDelivery(
       input.pool,
       input.deliveryKey,
       'failed',
@@ -1514,6 +1593,7 @@ async function maybeSyncHighLevel(input: {
       },
       leaseOwnerHash,
     );
+    if (!marked) return 'in_flight';
     return 'pending';
   } finally {
     await releaseHighLevelSyncReservation(
@@ -1612,15 +1692,16 @@ async function markHighLevelDelivery(
             updated_at = now()
       WHERE delivery_key = $1`;
   if (leaseOwnerHash) {
-    await pool.query(`${baseSql} AND lease_owner_hash = $4`, [
+    const updated = await pool.query(`${baseSql} AND lease_owner_hash = $4`, [
       deliveryKey,
       status,
       JSON.stringify(publicMetadata),
       leaseOwnerHash,
     ]);
-    return;
+    return Boolean(updated.rowCount);
   }
   await pool.query(baseSql, [deliveryKey, status, JSON.stringify(publicMetadata)]);
+  return true;
 }
 
 async function cancelUnsentFallback(
@@ -1745,6 +1826,14 @@ function normalizeJsonRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : {};
+}
+
+function highLevelDeliveryVerified(value: unknown) {
+  const metadata = normalizeJsonRecord(value);
+  return (
+    metadata.tags_verified === true &&
+    (metadata.workflow_enrollment_verified === true || metadata.workflow_configured === true)
+  );
 }
 
 function registrationMessage(

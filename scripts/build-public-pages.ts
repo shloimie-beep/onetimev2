@@ -373,7 +373,7 @@ function tishaBavLandingPage() {
           <p class="event-success-eyebrow">Registration complete</p>
           <h2 lang="he" dir="rtl">שֶׁנִּזְכֶּה לִרְאוֹת אֶת יְרוּשָׁלַיִם בְּבִנְיָנָהּ</h2>
           <p>May we merit to see Jerusalem rebuilt.</p>
-          <p>We'll email the private Zoom link and event details.</p>
+          <p data-event-success-message>We'll email the private Zoom link and event details.</p>
         </div>
         <div class="event-share-actions" aria-label="Share this event">
           <a class="button button-primary event-share-button" href="${escapeHtml(whatsappShareUrl)}" data-event-share-link target="_blank" rel="noopener">WhatsApp share</a>
