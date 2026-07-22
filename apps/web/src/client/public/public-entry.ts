@@ -384,7 +384,6 @@ if (eventRegistrationForm) {
       const response = await postJson('/api/v1/events/tisha-bav-2026/register', {
         email: String(data.get('email') ?? ''),
         first_name: String(data.get('first_name') ?? ''),
-        newsletter_opt_in: data.get('newsletter_opt_in') === 'yes',
         source: 'tisha_bav_2026_landing',
         idempotency_key: idempotencyKey,
         homepage: String(data.get('homepage') ?? ''),
@@ -442,7 +441,7 @@ if (eventNativeShare && typeof navigator.share === 'function') {
     await navigator
       .share({
         title: "Tisha B'Av VIP Zoom Class",
-        text: "Reserve your spot for the Tisha B'Av VIP Zoom class with Rabbi Elly Scheller.",
+        text: "Reserve your spot for the Tisha B'Av VIP Zoom class with Rabbi Eli Scheller.",
         url: eventShareUrl,
       })
       .catch(() => undefined);

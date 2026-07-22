@@ -10,6 +10,7 @@ import {
   runLifecycleDeliveryOutboxBatch,
   runOt109PublisherWorkerOnce,
   runSupportDeliveryBatch,
+  runTishaBavEventEmailFallbackBatch,
 } from '../../../../packages/domain/src/index.ts';
 import {
   markOpsWorkerDraining,
@@ -103,7 +104,21 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       source,
       logger,
     });
-    return { ...delivery, support, lifecycle, authEmail, highLevel, learningDelivery };
+    const eventEmailFallback = await runTishaBavEventEmailFallbackBatch({
+      pool,
+      config: config.appConfig,
+      limit: config.batchSize,
+      leaseMs: config.claimLeaseMs,
+    });
+    return {
+      ...delivery,
+      support,
+      lifecycle,
+      authEmail,
+      highLevel,
+      learningDelivery,
+      eventEmailFallback,
+    };
   } finally {
     await safeHeartbeat(
       () => markOpsWorkerStopped({ pool, workerType: WORKER_TYPE, workerInstanceKey }),
@@ -215,6 +230,12 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             limit: config.batchSize,
           });
           await runLearningDeliveryWorkerOnce({ pool, source, logger });
+          await runTishaBavEventEmailFallbackBatch({
+            pool,
+            config: config.appConfig,
+            limit: config.batchSize,
+            leaseMs: config.claimLeaseMs,
+          });
         } catch (error) {
           void error;
           logger.error('delivery_batch_failed', {
@@ -329,6 +350,8 @@ if (process.argv.includes('--once')) {
       `auth_email_expired=${summary.authEmail.expired}`,
       `highlevel_adapter_calls=${summary.highLevel.adapterCalls}`,
       `learning_delivery_enabled=${summary.learningDelivery.enabled}`,
+      `event_fallback_delivered=${summary.eventEmailFallback.delivered}`,
+      `event_fallback_skipped=${summary.eventEmailFallback.skipped}`,
     ].join('\n') + '\n',
   );
 } else {

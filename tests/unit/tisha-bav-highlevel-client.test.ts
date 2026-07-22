@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { loadConfig } from '../../packages/config/src/index.ts';
 import { HttpHighLevelEventClient } from '../../packages/domain/src/index.ts';
 
 describe('Tisha BAv HighLevel client', () => {
@@ -73,5 +74,74 @@ describe('Tisha BAv HighLevel client', () => {
       body: JSON.stringify({ tags: ['event-tag'] }),
       headers: expect.objectContaining({ version: '2023-02-21' }),
     });
+  });
+
+  it('fails when contact tag readback does not prove the event tags', async () => {
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({}, { status: 201 }))
+      .mockResolvedValueOnce(Response.json({ contact: { id: 'contact_operator', tags: [] } }));
+    const client = new HttpHighLevelEventClient({
+      baseUrl: 'https://provider.example.test',
+      token: 'private-test-token',
+      apiVersion: '2021-07-28',
+      fetchImpl,
+    });
+
+    await expect(
+      client.addTags({
+        locationId: 'location_one_time',
+        contactId: 'contact_operator',
+        tags: ['event-tag'],
+      }),
+    ).rejects.toThrow('HighLevel contact tag verification failed.');
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([409, 422])('does not treat workflow %s as enrollment success', async (status) => {
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ message: 'workflow enrollment rejected' }, { status }));
+    const client = new HttpHighLevelEventClient({
+      baseUrl: 'https://provider.example.test',
+      token: 'private-test-token',
+      apiVersion: '2021-07-28',
+      fetchImpl,
+    });
+
+    await expect(
+      client.addToWorkflow({
+        contactId: 'contact_operator',
+        workflowId: 'workflow_tisha',
+        idempotencyKey: 'workflow-request-key',
+      }),
+    ).rejects.toThrow(`status ${status}`);
+  });
+
+  it('rejects provider mode without the exact workflow and location contract', () => {
+    const base = {
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+      HIGHLEVEL_EVENT_SYNC_MODE: 'provider',
+      HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: 'test-only-private-token',
+    };
+    expect(() => loadConfig(base)).toThrow('HIGHLEVEL_TISHA_BAV_WORKFLOW_ID');
+    expect(() =>
+      loadConfig({
+        ...base,
+        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'workflow_tisha',
+        HIGHLEVEL_LOCATION_ID: 'wrong_location',
+      }),
+    ).toThrow('canonical One Time location');
+  });
+
+  it('rejects a partially enabled Resend fallback', () => {
+    expect(() =>
+      loadConfig({
+        NODE_ENV: 'test',
+        PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
+        ONE_TIME_EVENT_EMAIL_FALLBACK: 'resend',
+      }),
+    ).toThrow("Tisha B'Av Resend fallback config missing");
   });
 });
