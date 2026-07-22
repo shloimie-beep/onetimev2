@@ -606,7 +606,9 @@ export async function performContentFactoryAction(input: {
       }
       validateApprovalRow(row);
       nextState = 'published';
-      await client.query(
+      await publicationQuery(
+        client,
+        'mark_published',
         `UPDATE onetime.learning_delivery_content_factory_items
             SET factory_state = 'published', published_by_user_key = $4,
                 published_at = now(), unpublished_by_user_key = NULL,
@@ -644,15 +646,35 @@ export async function performContentFactoryAction(input: {
         [input.config.accountKey, input.config.productKey, input.sourceKey],
       );
     }
-    await recordEvent(client, input.config, {
-      sourceKey: input.sourceKey,
-      actorUserKey: input.actorUserKey,
-      action: input.action,
-      previousState,
-      nextState,
-      metadata: { raw_provider_url_present: false },
-    });
-    return mustGet(client, input.config, input.sourceKey);
+    try {
+      await recordEvent(client, input.config, {
+        sourceKey: input.sourceKey,
+        actorUserKey: input.actorUserKey,
+        action: input.action,
+        previousState,
+        nextState,
+        metadata: { raw_provider_url_present: false },
+      });
+    } catch (error) {
+      if (input.action === 'publish') {
+        throw new ContentFactoryPublicationError(
+          'record_publication_event',
+          contentFactorySafePostgresCode(error),
+        );
+      }
+      throw error;
+    }
+    try {
+      return await mustGet(client, input.config, input.sourceKey);
+    } catch (error) {
+      if (input.action === 'publish') {
+        throw new ContentFactoryPublicationError(
+          'serialize_published_item',
+          contentFactorySafePostgresCode(error),
+        );
+      }
+      throw error;
+    }
   });
 }
 
