@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-22T06:04:48.4074574Z",
+  "source": {
+    "kind": "operator_execution_packet",
+    "path": "C:\\Users\\User\\.codex\\attachments\\80a94f87-16b0-400a-b1ea-1ddb76d07f95\\pasted-text.txt",
+    "sha256": "08d341bb4f6d9a51ad14824d5e9640feeb65de5db8f774eccf62740297309c53",
+    "bytes": 16175
+  },
+  "repository": "shloimie-beep/onetimev2",
+  "excluded_repository": "webcraft-media/onetimev2",
+  "active_lane": {
+    "branch": "codex/full-app-staging-live",
+    "head_sha": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+    "worktree": "C:\\Users\\User\\.onetime-worktrees\\FULL-APP-STAGING-LIVE",
+    "dirty": false
+  },
+  "runtime": {
+    "production": {
+      "url": "https://join.onetimeonetime.com",
+      "version": "rabbi-day-one-crm-ed77a04",
+      "source_sha": "ed77a04dd24391d5b79be7f839d7f5752a57e0f9",
+      "deployment_id": "a3a9328c-3fb5-41c6-b8d4-cf402f400ca7",
+      "latest_migration": "2204_w12_100_real_source_crm_apply",
+      "health": "pass",
+      "ready": "pass",
+      "tisha_bav": "not_deployed"
+    },
+    "persistent_staging": {
+      "url": "https://ot99-web-staging.up.railway.app",
+      "version": "full-app-staging-live-944f46b",
+      "source_sha": "944f46b5435d648e6e175c69746ca7a4895ffec4",
+      "deployment_id": "99363478-0645-4b44-8f44-8bd3b9d63b1b",
+      "latest_migration": "2209_class_series_scope_unique",
+      "health": "pass",
+      "ready": "pass",
+      "tisha_bav": "not_integrated"
+    },
+    "tisha_preview": {
+      "url": "https://ot99-web-onetimev2-pr-102.up.railway.app",
+      "reported_version": "full-app-staging-live-944f46b",
+      "reported_source_sha": "944f46b5435d648e6e175c69746ca7a4895ffec4",
+      "deployment_id": "8ef2a163-6529-43fd-b571-a60b5e6a3e08",
+      "latest_migration": "2211_tisha_bav_provider_event_scope",
+      "health": "pass",
+      "ready": "pass",
+      "tisha_bav": "live",
+      "tisha_bav_live": "live"
+    }
+  },
+  "lanes": [
+    {
+      "lane": "persistent_full_app_staging",
+      "repository": "shloimie-beep/onetimev2",
+      "branch": "codex/full-app-staging-live",
+      "pr": 97,
+      "head_sha": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "base": "codex/one-time-finish-now-20260719",
+      "status": "open_draft",
+      "preview_url": "https://ot99-web-staging.up.railway.app",
+      "integration_status": "in_progress",
+      "production_status": "staging_only",
+      "supersession": null,
+      "blocker": "accepted PR 100, 101, 102, and 103 deltas are not yet integrated"
+    },
+    {
+      "lane": "rabbi_live_console_zoom_obs",
+      "repository": "shloimie-beep/onetimev2",
+      "branch": "codex/rabbi-live-console-zoom-obs",
+      "pr": 100,
+      "head_sha": "9dfabade8b9cff9dfa3edd6d0677deb4d07b8e18",
+      "base": "codex/full-app-staging-live",
+      "status": "open_draft",
+      "preview_url": "https://ot99-web-onetimev2-pr-100.up.railway.app",
+      "integration_status": "pending_migration_renumber",
+      "production_status": "not_authorized",
+      "supersession": "codex/full-app-staging-live after semantic integration",
+      "blocker": "migration prefix 2210 collides with the accepted Tisha B'Av funnel"
+    },
+    {
+      "lane": "vimeo_autotrim_transcription",
+      "repository": "shloimie-beep/onetimev2",
+      "branch": "codex/vimeo-autotrim-transcription-repair",
+      "pr": 101,
+      "head_sha": "0e8b903385d0f1717f8f6e051f4a322739e175d7",
+      "base": "codex/learning-delivery-vimeo-zoom",
+      "status": "open_draft",
+      "preview_url": null,
+      "integration_status": "pending_unique_patch",
+      "production_status": "not_authorized",
+      "supersession": "codex/full-app-staging-live after semantic integration",
+      "blocker": "unique changes must be applied without replaying the older media foundation"
+    },
+    {
+      "lane": "tisha_bav_2026_funnel",
+      "repository": "shloimie-beep/onetimev2",
+      "branch": "codex/tisha-bav-2026-funnel",
+      "pr": 102,
+      "head_sha": "79844e30905a52a304a4c494263c834d02d19dea",
+      "base": "codex/full-app-staging-live",
+      "status": "open_draft",
+      "preview_url": "https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav",
+      "integration_status": "preview_live_provider_sync_pending",
+      "production_status": "authorized_after_gates",
+      "supersession": "narrow production release plus codex/full-app-staging-live",
+      "blocker": "actual OT-E01 workflow ID and publication state have not yet been read back"
+    },
+    {
+      "lane": "highlevel_sender_registry_v1_1",
+      "repository": "shloimie-beep/onetimev2",
+      "branch": "codex/highlevel-sender-registry-v1-1",
+      "pr": 103,
+      "head_sha": "9679160e75e044d14ac988c788290cc323d1914d",
+      "base": "codex/highlevel-api-finalize-agent-queue",
+      "status": "open_draft",
+      "preview_url": null,
+      "integration_status": "provider_readback_pending",
+      "production_status": "registry_only",
+      "supersession": "codex/full-app-staging-live after semantic integration",
+      "blocker": "Agent Mode outcome and exact workflow IDs require official API readback"
+    }
+  ],
+  "guardrails": {
+    "ot_c01_warm_campaign": "draft_not_sent",
+    "full_app_production": "not_authorized",
+    "student_data_in_highlevel": false,
+    "broad_messages_authorized": false,
+    "operator_owned_event_test_authorized": true,
+    "narrow_tisha_production_release_authorized": true
+  }
+}

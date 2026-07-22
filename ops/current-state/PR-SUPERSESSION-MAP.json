@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-22T06:04:48.4074574Z",
+  "repository": "shloimie-beep/onetimev2",
+  "integration_branch": "codex/full-app-staging-live",
+  "integration_head": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+  "staging_version": "full-app-staging-live-944f46b",
+  "pull_requests": [
+    {
+      "pr": 93,
+      "status": "pending_semantic_verification",
+      "superseded_by": [99, 103, 97],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "HighLevel foundation and registry deltas are not yet recorded in the integration manifest"
+    },
+    {
+      "pr": 94,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 95,
+      "status": "pending_pr_101_integration",
+      "superseded_by": [101, 97],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "PR #101 unique patch is not yet integrated"
+    },
+    {
+      "pr": 96,
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 97,
+      "status": "integration_target",
+      "superseded_by": [],
+      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "close_allowed": false,
+      "blocker": "accepted input lanes and final staging proof remain pending"
+    },
+    {
+      "pr": 98,
+      "status": "obsolete",
+      "superseded_by": [97],
+      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 99,
+      "status": "pending_pr_103_integration",
+      "superseded_by": [103, 97],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "HighLevel foundation and current registry deltas are not yet integrated"
+    },
+    {
+      "pr": 100,
+      "status": "pending_integration",
+      "superseded_by": [97],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "migration 2210 must be renumbered before integration"
+    },
+    {
+      "pr": 101,
+      "status": "pending_integration",
+      "superseded_by": [97],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "unique patch beyond the existing media foundation is not yet integrated"
+    },
+    {
+      "pr": 102,
+      "status": "pending_provider_and_release_gates",
+      "superseded_by": [97],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "OT-E01 readback, provider sync proof, narrow production release, and staging integration are pending"
+    },
+    {
+      "pr": 103,
+      "status": "pending_provider_readback_and_integration",
+      "superseded_by": [97],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "actual HighLevel workflow state and semantic staging integration are pending"
+    }
+  ]
+}
