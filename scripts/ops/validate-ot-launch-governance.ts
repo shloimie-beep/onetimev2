@@ -85,7 +85,7 @@ const tracks = arrayAt<Record<string, unknown>>(board, 'tracks');
 const trackIds = tracks.map((track) => String(track.id));
 record('unique tracks', new Set(trackIds).size === trackIds.length, `${trackIds.length} tracks`);
 const criticalParsedSubstrings = [
-  'PR #97 exact head 312097c0d8707b48b68cf282169b04d62b71ba6d semantically integrates accepted PR #105 successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885',
+  'PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard',
   'PR #104 prefix 2214',
   'PR #105 exact successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885',
   'PR #106 exact production head acddcc8cd012c5cdc5bfc08cbc80550bef8719ba',

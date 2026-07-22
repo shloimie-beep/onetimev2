@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T19:00:44Z
+updated_at: 2026-07-22T19:37:05Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,12 +23,12 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'PR #97 exact head 312097c0d8707b48b68cf282169b04d62b71ba6d semantically integrates accepted PR #105 successor head e81de91a7372114c6b0a67a7cbb0abc9cb548885 on top of the already integrated 50989b3 provider-off baseline. It is live in persistent staging through web deployment 763375f7-2bcd-40d8-94af-a9342fa3892c and worker deployment 926fee2f-fb2d-496b-aae7-8dc468f880d6; /version reports full-app-staging-live-312097c with exact commit_sha and Railway git_commit_sha, /health and /ready return 200 with blockers empty and schema 2220_tisha_bav_event_email_permission. PR #108 remains ACCEPTED/INTEGRATED, PR #104 remains already integrated/superseded, HighLevel event/actions modes remain disabled with budget zero, and real Zoom controls remain provider-off. Admin Dashboard discovery and all five visible role labels were re-read at the exact head, but the dedicated Student new-tab proof is pending after a browser binding failure and required fictional Admin credential rotation/session revocation. No GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
-  external_action_count: 5
+  current_summary: 'PR #97 exact product head 7dcb137c4d1e3b908dce8230e3089ec58bf57261 adds a fail-closed opener-detachment guard to the dedicated fictional Student shell on top of accepted PR #105 successor e81de91a7372114c6b0a67a7cbb0abc9cb548885 and the already integrated PR #108/PR #104 work. It is live in persistent staging through web deployment fb693d23-d100-42b1-aafc-3adc7afab16c and worker deployment ae860b1e-793f-49f2-a529-cacacf9afb1d; /version reports full-app-staging-live-7dcb137 with exact commit_sha and Railway git_commit_sha, /health and /ready return 200 with blockers empty and schema 2220_tisha_bav_event_email_permission. All five GitHub suites and both Railway checks pass. Normal Admin Dashboard discovery, all five role choices, Parent/Rabbi projections, all three sibling-scoped Student shells, and the unchanged Admin session were re-read without exposing protected values. HighLevel event/actions remain disabled with budget zero, real Zoom remains provider-off, and no GHL/Zoom/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred.'
+  external_action_count: 6
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
-      count: 4
-      scope: Four bounded operator-owned staging login-code emails only, including the newest exact-head discovery check that exposed the then-current fictional Admin input in authorized diagnostic output; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation.
+      count: 5
+      scope: Five bounded operator-owned staging login-code emails only. The latest challenge authenticated the already-rotated fictional Admin for exact-head role-preview proof without rendering its credential, destination, or code; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
     - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
       scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
@@ -40,8 +40,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 312097c0d8707b48b68cf282169b04d62b71ba6d
-    resolution: 'Live /version records version full-app-staging-live-312097c, commit_sha and Railway git_commit_sha 312097c0d8707b48b68cf282169b04d62b71ba6d, and exact web deployment 763375f7-2bcd-40d8-94af-a9342fa3892c. Worker deployment 926fee2f-fb2d-496b-aae7-8dc468f880d6 is exact-source SUCCESS/RUNNING. /health and /ready return 200 with blockers empty and latest schema 2220_tisha_bav_event_email_permission.'
+    last_verified_commit: 7dcb137c4d1e3b908dce8230e3089ec58bf57261
+    resolution: 'Live /version records version full-app-staging-live-7dcb137, commit_sha and Railway git_commit_sha 7dcb137c4d1e3b908dce8230e3089ec58bf57261, and exact web deployment fb693d23-d100-42b1-aafc-3adc7afab16c. Worker deployment ae860b1e-793f-49f2-a529-cacacf9afb1d is exact-source SUCCESS/RUNNING. /health and /ready return 200 with blockers empty and latest schema 2220_tisha_bav_event_email_permission. A later Board/pointer commit is evidence-only and does not replace this accepted deployed source.'
   system: One Time persistent staging
 
 tracks:
@@ -69,7 +69,7 @@ tracks:
     next_action: Keep workflow-registry.yaml and BOARD.yaml as the only editable desired/current sources; do not infer empty archived/hidden scope or silently quarantine/delete either visible unknown asset.
 
   - id: admin_experience_preview
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -96,12 +96,14 @@ tracks:
       - 'Exact-head fc122074 live proof followed Dashboard -> Open portal preview, selected Parent, all three fictional Students, and Rabbi/Classroom, prepared three sibling-scoped Student sessions, rendered the actual read-only Student portal shell with no Admin nav/logout, and re-read the unchanged Administrator session. Full Chromium 56/56 supplies the null-opener and 360px browser proof.'
       - 'At exact deployed head 312097c, normal Admin Dashboard discovery was re-read before incident remediation: the Preview Parent & Student portals card and Open portal preview CTA were visible, and the destination listed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom. Parent selection and Student 1 preparation succeeded.'
       - 'The in-app browser lost the target-blank tab binding before the dedicated Student shell could be re-read. A diagnostic call then exposed the fictional Admin input value, so browser work stopped; the exact Admin-only credential was rotated, all Admin sessions were revoked, and the replacement was never rendered. Current-head separate-tab and preserved-session proof remains pending with the fresh protected credential.'
+      - 'Exact product head 7dcb137c adds a synchronous fail-closed opener-detachment guard before the dedicated Student React shell renders. Focused Experience Preview/security tests pass 18/18; scoped lint/Prettier, full build/typecheck, secret scan, diff check, and the real Chromium Experience Preview scenario pass. That scenario directly proves null opener, two sibling tabs, unchanged Admin session, production 404/nav gating, and 360px layout.'
+      - 'Live deployment fb693d23 followed normal Admin Dashboard -> Preview Parent & Student portals -> Open portal preview and displayed Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom. Parent and Rabbi/Classroom selected their exact fictional projections; Ari, Dovid, and Noam each rendered only their own actual read-only Student portal with no Admin navigation/logout, and the original Admin Experience Preview remained usable. The in-app automation layer did not surface the target-blank popup as a bindable new tab, so null-opener is cited from exact-source Chromium rather than overstated as an in-app popup readback.'
     blocker: null
-    remaining_work: 'With the fresh protected Admin credential, repeat the exact normal Dashboard -> Preview Parent & Student portals -> Parent/Student 1/Student 2/Student 3/Rabbi-Classroom path without diagnostic DOM snapshots and prove each dedicated role session leaves the original Admin session intact.'
-    next_action: 'Complete only the bounded current-head click-through; keep production gating, no-store/audit, sibling scope, inert read-only rendering, and provider-off truth unchanged.'
+    remaining_work: null
+    next_action: null
 
   - id: fictional_student_session
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -117,9 +119,10 @@ tracks:
       - Build-backed Playwright proves opener null, GET-only dedicated shells with no Admin controls, two sibling tabs, and unchanged originating Owner session.
       - Live persistent-staging proof at fc122074 prepared and opened Ari, Dovid, and Noam in dedicated fictional Student shells with no Admin controls; Ari retained his own route scope after both sibling tabs opened, and the original Admin tab remained authenticated. Null-opener behavior is proven by the same-snapshot real-Chromium suite because the in-app browser did not surface the target-blank popup.
       - 'Exact-head 312097c browser work prepared Student 1 from the visible Dashboard-discovered preview, then stopped after the browser lost the new-tab binding and a diagnostic exposed the fictional Admin credential. The credential was rotated and all Admin sessions revoked before any further browser action.'
+      - 'Exact product head 7dcb137c live proof rendered Ari, Dovid, and Noam in three distinct route-scoped, read-only actual Student portal shells. Each shell omitted Admin navigation/logout and every sibling identity, while the originating Admin role selector remained usable. Exact-source real Chromium directly passed the target-blank null-opener assertion after the client-side fail-closed detachment guard was added.'
     blocker: null
-    remaining_work: 'Re-prove all three current-head dedicated Student tabs and original Admin-session preservation using the fresh protected handoff without DOM snapshots.'
-    next_action: Preserve single-use exchanges, per-session route scope, sibling isolation, and the five-minute ceiling while completing only the pending bounded browser proof.
+    remaining_work: null
+    next_action: null
 
   - id: coherent_demo
     status: done
@@ -566,7 +569,7 @@ tracks:
     next_action: 'Keep unclaimed in this conductor pass; the conductor may assign it only after PR #108 integration acceptance.'
 
   - id: persistent_staging
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -606,9 +609,12 @@ tracks:
       - 'Staging-only APP_VERSION and COMMIT_SHA were corrected from the stale fc12207 label to 312097c and redeployed; production was untouched. Both web and worker retain Zoom provider mode sink, real-provider false, canary false, HighLevel event/actions disabled, and zero HighLevel canary budget.'
       - 'The exact normal Admin Dashboard showed Preview Parent & Student portals -> Open portal preview and visible Parent, Student 1, Student 2, Student 3, and Rabbi/Classroom choices. Parent selection and Student 1 preparation succeeded, but current-head dedicated-tab/session-preservation readback remains pending after the browser binding failed and the fictional Admin credential was rotated/revoked.'
       - 'Incident remediation used only the exact Admin-only staging CLI inside authenticated disposable Railway private-network sandboxes. Final rotation at 2026-07-22T18:58:54.309Z atomically replaced the protected handoff, rejected the exposed credential, left zero Admin sessions, removed every sandbox/transfer/helper file, and changed no Parent, Student, production, customer, provider, or database-service configuration.'
+      - 'Exact source 7dcb137c4d1e3b908dce8230e3089ec58bf57261 is live through web deployment fb693d23-d100-42b1-aafc-3adc7afab16c and worker deployment ae860b1e-793f-49f2-a529-cacacf9afb1d. /version reports full-app-staging-live-7dcb137 with exact commit_sha and Railway git_commit_sha; /health and /ready are 200 with blockers empty and latest=2220_tisha_bav_event_email_permission.'
+      - 'Only the stale staging APP_VERSION label was corrected after the exact automatic deployment; no source, Git SHA, provider, database, or production variable changed. All five GitHub suites and both exact staging Railway checks pass.'
+      - 'The bounded fresh-credential live proof completed Dashboard discovery, Parent and Rabbi/Classroom projections, all three sibling-scoped actual Student shells, and preserved Admin usability without DOM snapshots, screenshots, protected destinations, challenge codes, or credentials.'
     blocker: null
-    remaining_work: 'Finish the bounded fresh-credential Admin Dashboard -> Experience Preview -> Parent/Student 1/Student 2/Student 3/Rabbi-Classroom separate-session proof without diagnostic DOM snapshots; no product redeploy is needed unless the visible entry is missing or unclear.'
-    next_action: 'Preserve exact-head deployment evidence, HighLevel disabled/disabled/zero controls, Zoom provider-off truth, and the private credential handoff while completing only the pending safe browser proof; do not enable a provider or promote the full app to production.'
+    remaining_work: null
+    next_action: null
 
   - id: tisha_landing_polish
     status: blocked
