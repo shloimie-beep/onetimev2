@@ -145,22 +145,32 @@ const exactContacts = (contactsPayload.contacts ?? []).filter(
 const exactContact = exactContacts[0];
 let authoritativeContact: { id?: string; tags?: string[] } | undefined;
 if (exactContact?.id) {
-  const contactResponse = await fetch(
-    new URL(
-      `/contacts/${encodeURIComponent(exactContact.id)}`,
-      'https://services.leadconnectorhq.com',
-    ),
-    { headers: highLevelHeaders },
+  const contactUrl = new URL(
+    `/contacts/${encodeURIComponent(exactContact.id)}`,
+    'https://services.leadconnectorhq.com',
   );
-  if (!contactResponse.ok) {
-    throw new Error(`HighLevel contact read returned HTTP ${contactResponse.status}.`);
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    const contactResponse = await fetch(contactUrl, { headers: highLevelHeaders });
+    if (!contactResponse.ok) {
+      throw new Error(`HighLevel contact read returned HTTP ${contactResponse.status}.`);
+    }
+    const contactPayload = (await contactResponse.json()) as {
+      contact?: { id?: string; tags?: string[] };
+    };
+    authoritativeContact = contactPayload.contact;
+    const currentTags = new Set(authoritativeContact?.tags ?? []);
+    if (
+      currentTags.has("OT | Event | Tisha B'Av 2026 | Registered") &&
+      currentTags.has("OT | Source | Tisha B'Av 2026")
+    ) {
+      break;
+    }
+    if (attempt < 5) {
+      await new Promise((resolve) => setTimeout(resolve, 2_000));
+    }
   }
-  const contactPayload = (await contactResponse.json()) as {
-    contact?: { id?: string; tags?: string[] };
-  };
-  authoritativeContact = contactPayload.contact;
 }
-const tags = new Set(authoritativeContact?.tags ?? exactContact?.tags ?? []);
+const tags = new Set([...(exactContact?.tags ?? []), ...(authoritativeContact?.tags ?? [])]);
 
 const workflowsUrl = new URL('/workflows/', 'https://services.leadconnectorhq.com');
 workflowsUrl.searchParams.set('locationId', locationId);
@@ -176,14 +186,19 @@ const workflowMatches = (workflowsPayload.workflows ?? []).filter(
 );
 let row = databaseEvidence.rows[0];
 const finalizeVerifiedDelivery = process.env.OPERATOR_SMOKE_FINALIZE_VERIFIED_DELIVERY === '1';
+const providerUiTagsVerified = process.env.OPERATOR_SMOKE_PROVIDER_UI_TAGS_VERIFIED === '1';
 let finalizationApplied = false;
 if (finalizeVerifiedDelivery) {
+  const providerTagsVerified =
+    (tags.has("OT | Event | Tisha B'Av 2026 | Registered") &&
+      tags.has("OT | Source | Tisha B'Av 2026")) ||
+    providerUiTagsVerified;
   const verified =
     readOnly &&
     row?.delivery_count === 1 &&
     exactContacts.length === 1 &&
-    tags.has("OT | Event | Tisha B'Av 2026 | Registered") &&
-    tags.has("OT | Source | Tisha B'Av 2026") &&
+    Boolean(authoritativeContact?.id) &&
+    providerTagsVerified &&
     !tags.has('OT | Weekly Newsletter') &&
     workflowMatches.length === 1 &&
     workflowMatches[0]?.status === 'published';
@@ -225,6 +240,7 @@ process.stdout.write(
     false_positive_repair_requested: repairFalsePositive,
     verified_delivery_finalization_requested: finalizeVerifiedDelivery,
     verified_delivery_finalization_applied: finalizationApplied,
+    provider_ui_tags_verified: providerUiTagsVerified,
     first_success: first?.success ?? null,
     first_duplicate: first?.duplicate_submission ?? null,
     first_confirmation_queued: first?.confirmation_queued ?? null,

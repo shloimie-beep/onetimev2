@@ -1,6 +1,6 @@
 {
   "run_id": "TISHA-BAV-FUNNEL",
-  "status": "ready_for_operator_review",
+  "status": "preview_sync_passed",
   "raw_prompt_sha256": "9EB1D52CC26C3C858E19502DA3FBABEB44E13A2EE9DB12B5B4C2742FD8C8BC94",
   "repo": "shloimie-beep/onetimev2",
   "base_branch": "codex/full-app-staging-live",
@@ -34,7 +34,7 @@
     "external_send_authorized": false
   },
   "production_changed": false,
-  "external_provider_mutations_performed": false,
+  "external_provider_mutations_performed": true,
   "validation": {
     "build": "passed",
     "lint": "passed",
@@ -46,10 +46,14 @@
     "intent_preservation": "passed_22_of_22_hard_signals",
     "email_copy_contract": "passed_2_tests",
     "pqc_validators_and_evals": "passed_with_pre_existing_watchdog_findings",
-    "railway_preview_deploy": "passed_b986237c42ddb44a80c7917cbb96d62875494632_with_provider_registration_fix",
+    "railway_preview_deploy": "passed_549098b28adfeca923564efd179ff980732b1654_with_highlevel_first_write_reconciliation",
     "railway_preview_provider_migration": "passed_2211_tisha_bav_provider_event_scope_applied",
-    "railway_preview_registration_domain_smoke": "passed_success_confirmation_queued_provider_off",
-    "railway_preview_http_registration": "passed_success_confirmation_queued_provider_off",
+    "railway_preview_registration_domain_smoke": "passed_one_operator_registration_one_delivery",
+    "railway_preview_http_registration": "passed_idempotent_operator_registration",
+    "highlevel_workflow": "passed_published_a34ea513_4612_4f53_8bd8_49e89e6610f9",
+    "highlevel_operator_confirmation": "passed_once_active_wait_at_one_hour_reminder",
+    "highlevel_event_tags": "passed_provider_ui_exact_two_no_newsletter",
+    "highlevel_warm_campaign": "draft_zero_recipients_zero_messages",
     "railway_preview_smoke": "passed_http_200_no_raw_zoom_url",
     "final_landing_copy_and_hero": "passed_desktop_mobile_title_overlay_full_page_modal_form_thank_you",
     "preview_zoom_runtime": "configured_without_committing_raw_url",
@@ -67,7 +71,8 @@
     "Operator-provided Zoom join URL was stored only in the protected Railway PR runtime and is not present in repo files.",
     "Exact event email copy is preserved and implemented through EMAIL-COPY-MANIFEST.json and the versioned communication catalog.",
     "Warm invitation audience selection and any external send remain unapproved; no email was sent.",
-    "The current base branch lacks the divergent HighLevel integration branch; this run keeps GHL work scoped to event registration intents and provider-off safe defaults.",
+    "The preview runtime uses provider mode with the protected token, location, and published Tisha workflow ID.",
+    "One bounded operator-owned confirmation was executed; no broad message or warm campaign send occurred.",
     "No raw Zoom URL or secret is stored in repo files."
   ]
 }
