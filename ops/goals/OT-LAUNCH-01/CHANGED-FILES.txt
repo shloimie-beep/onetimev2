@@ -16,6 +16,8 @@ apps/web/src/client/features/portals/PortalFeatures.tsx
 apps/web/src/server/app.ts
 apps/web/src/server/features/experience-preview/router.ts
 apps/web/vite.app.config.ts
+integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json
+integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
 ops/codex-runs/OT-LAUNCH-01/VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md
 ops/goals/CURRENT.yaml
 ops/goals/OT-LAUNCH-01/ACCEPTANCE.yaml
