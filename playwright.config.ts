@@ -18,7 +18,8 @@ export default defineConfig({
         webServer: {
           command: 'node --import tsx tests/support/test-server.ts',
           url: `${baseURL}/health`,
-          reuseExistingServer: !process.env.CI,
+          reuseExistingServer: false,
+          gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
           timeout: 30_000,
           env: {
             NODE_ENV: 'test',

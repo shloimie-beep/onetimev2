@@ -97,9 +97,9 @@ const testClock = process.env.OT_TEST_CLOCK
 const app = createApp({ config, pool, ...(testClock ? { clock: testClock } : {}) });
 const server = app.listen(config.port);
 
-process.on('SIGTERM', async () => {
+process.once('SIGTERM', () => {
   server.close();
-  await pool.end();
+  void pool.end().finally(() => process.exit(0));
 });
 
 async function seedDayOneBrowserRecords() {

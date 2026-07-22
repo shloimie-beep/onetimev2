@@ -1,10 +1,9 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
-import { createPgPool, type DbPool } from '../../packages/db/src/index.ts';
+import type { AppConfig } from '../../packages/config/src/index.ts';
+import type { DbPool } from '../../packages/db/src/index.ts';
 import { createClassroomRepository } from '../../packages/db/src/classroom/repository.ts';
 import { createGamificationRepository } from '../../packages/db/src/gamification/repository.ts';
 import { createPortalRepository } from '../../packages/db/src/portals/repository.ts';
@@ -324,7 +323,6 @@ export async function runFullAppProvision(
 
   return result;
 }
-
 function portalDeps(
   pool: DbPool,
   config: AppConfig,
@@ -1451,7 +1449,7 @@ function digest(value: string) {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function publicSummary(result: FullAppPreviewResult) {
+export function fullAppProvisionPublicSummary(result: FullAppPreviewResult) {
   return {
     generated_at: result.generated_at,
     staging_url: result.staging_url,
@@ -1476,29 +1474,4 @@ function publicSummary(result: FullAppPreviewResult) {
     raw_links_printed: false,
     credentials_printed: false,
   };
-}
-
-async function main() {
-  const config = loadConfig(process.env);
-  const pool = createPgPool(config);
-  try {
-    const result = await runFullAppProvision({
-      pool,
-      config,
-      publicBaseUrl: process.env.FULL_APP_STAGING_URL ?? config.publicBaseUrl,
-      writePrivateHandoff: true,
-      requirePrivateDestinations: true,
-    });
-    process.stdout.write(`${JSON.stringify(publicSummary(result), null, 2)}\n`);
-  } finally {
-    await pool.end();
-  }
-}
-
-const invokedPath = process.argv[1] ? path.resolve(process.argv[1]) : '';
-if (invokedPath && fileURLToPath(import.meta.url) === invokedPath) {
-  main().catch((error: unknown) => {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 1;
-  });
 }

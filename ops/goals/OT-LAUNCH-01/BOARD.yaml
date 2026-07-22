@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T09:42:00Z
+updated_at: 2026-07-22T10:12:00Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -15,8 +15,8 @@ status_definitions:
 outcome:
   status: active
   target: Production-believable persistent staging with complete operator preview and coherent fictional scenario.
-  production_impact: none_authorized
-  current_summary: Experience Preview and goal control are under local verification; no follow-up head is deployed yet.
+  production_impact: BNA production was transiently changed in error, restored, and independently evidenced at canonical master cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c; One Time production remains untouched.
+  current_summary: Experience Preview, the synthetic content factory, and goal control pass combined local gates; no follow-up head is deployed yet.
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -62,13 +62,13 @@ tracks:
     dependencies: [media_staging_integration, zoom_meeting_sdk, zoom_s2s_host_control]
     acceptance_ids: [EXP-001, EXP-002, MIG-001]
     evidence:
-      - Focused integration/UI contract suite passed 17/17 on 2026-07-22.
-      - Build-backed Playwright passed all five role cards, production nav/route rejection, and desktop/360px layout.
+      - Combined focused Experience Preview/content-factory suite passed 22/22 on 2026-07-22.
+      - Fresh-server Playwright passed 3/3 across all five role cards, two isolated sibling tabs, production nav/route rejection, protected Student playback, and desktop/360px layout.
       - Migration prefix proof reserves 2215 and preserves PR #104 prefix 2214.
       - Migration audit preserves historical live 2209/2210 duplicate-prefix rows, reserves 2216 only for new schema, and requires exact 2215 checksum/ledger readback.
     blocker: null
-    remaining_work: Real Playwright proof, full gates, persistent staging seed/deploy/readback.
-    next_action: Add real desktop/360px browser integration and run build-backed proof.
+    remaining_work: Commit/readback, persistent staging seed/deploy, 2215 ledger readback, and live browser proof.
+    next_action: Commit the stable combined snapshot, rerun exact-commit gates, then deploy only persistent staging.
 
   - id: fictional_student_session
     status: active
@@ -86,8 +86,8 @@ tracks:
       - Focused tests prove single-use, expiry, Admin-session binding, cross-account denial, and two sibling route scopes.
       - Build-backed Playwright proves opener null, GET-only dedicated shells with no Admin controls, two sibling tabs, and unchanged originating Owner session.
     blocker: null
-    remaining_work: Real Playwright opener/null, two-tab isolation, no-Admin-shell, and original-session proof.
-    next_action: Run browser-backed build proof at desktop and 360px.
+    remaining_work: Exact-head persistent-staging browser readback.
+    next_action: Repeat the proven browser journey against the deployed exact head.
 
   - id: coherent_demo
     status: active
@@ -186,7 +186,7 @@ tracks:
     next_action: Assign one implementation track; reuse the canonical app outbox and forbid direct provider fanout.
 
   - id: media_staging_integration
-    status: ready_for_convergence
+    status: done
     owner:
       task_id: VIDEO-TO-STUDENT-CONTENT-FACTORY
       repository: shloimie-beep/onetimev2
@@ -198,13 +198,15 @@ tracks:
     dependencies: []
     acceptance_ids: [CONTENT-001, MIG-001]
     evidence:
-      - PR #104 head 7c349e997147f466e80d49670b5fe9ba6d3279c5 owns 2214_learning_delivery_content_factory and is deployed in its isolated preview.
+      - PR #104 terminal head 5c0a5ef81ce10df4e40f135be1e2c648f643996a owns immutable 2214_learning_delivery_content_factory.
+      - Exact-head Railway /version and /ready were verified in its isolated preview; Admin and Student browser acceptance passed without mobile overflow.
+      - Synthetic VIDEO_TO_STUDENT_CLASSROOM acceptance is complete and its commits are semantically integrated into the PR #97 descendant under combined 22/22 focused, build/typecheck, and 3/3 browser proof.
     blocker: null
-    remaining_work: Semantic integration into PR #97, exact persistent-staging deploy, seed, and browser readback.
-    next_action: Integrate without rewriting applied migration 2214; keep Experience Preview at 2215.
+    remaining_work: null
+    next_action: Preserve immutable 2214 and keep persistent-staging deployment evidence in the persistent_staging track.
 
   - id: media_external_canary
-    status: waiting_external
+    status: needs_operator_decision
     owner:
       task_id: VIDEO-TO-STUDENT-CONTENT-FACTORY
       repository: shloimie-beep/onetimev2
@@ -217,9 +219,11 @@ tracks:
     acceptance_ids: [CONTENT-002]
     evidence:
       - Staging content-factory work is ready independently of external approval.
-    blocker: null
+    blocker:
+      code: OPERATOR_OWNED_MEDIA_CANARY_AUTHORIZATION_REQUIRED
+      reason: One operator-owned OpenAI/private-Vimeo canary requires a separate explicit operator decision.
     remaining_work: External canary authorization/readback.
-    next_action: Continue provider-off truth until an authorized terminal canary arrives.
+    next_action: Preserve truthful provider-off UI until the operator separately authorizes the canary.
 
   - id: zoom_meeting_sdk
     status: active
@@ -277,11 +281,11 @@ tracks:
     next_action: Preserve the canonical registry and do not create a second job model.
 
   - id: bna_durability
-    status: active
+    status: blocked
     owner:
       task_id: BNA-PR-141-RECONCILIATION
       repository: external/BNA-Agent-Actions
-      branch: terminal-handoff-pending
+      branch: terminal-handoff
       pr: 141
       system: BNA durable DB and queue
     write_scope: Durable preview/Telegram save, restart, readback, and queue pin only
@@ -289,18 +293,21 @@ tracks:
     dependencies: [bna_foundation, ghl_organization]
     acceptance_ids: [BNA-002]
     evidence:
-      - PR #141 pins One Time PR #107 and currently reconciles 9 completed, 2 superseded, and 20 blocked records.
-      - Final durable preview/Telegram re-verification remains in progress.
-    blocker: null
-    remaining_work: Terminal restart/readback/current-queue pin evidence.
-    next_action: Ingest terminal sanitized PR #141 evidence without inventing completion.
+      - PR #141 terminal head adf0189ddbb3f279683d58ec44edb5ca0e9f1fbe pins One Time PR #107.
+      - Isolated preview deployment 79e7235c-03fc-44ed-a9e9-ba2cfb6c1e57 passed 46/46 focused tests and fail-closed UI/browser smoke.
+      - Queue readback contains 31 unique jobs: 9 verified, 2 superseded, and 20 blocked; customer, GHL, and provider sends are zero.
+    blocker:
+      code: BNA_PREVIEW_DATABASE_URL_MISSING
+      reason: The existing bna-agent-actions-preview environment has no DATABASE_URL, so durable save/restart/readback cannot run.
+    remaining_work: Durable DB save, restart, readback, and current queue pin after the disposable database is attached.
+    next_action: Operator attaches one disposable Postgres service to the existing bna-agent-actions-preview environment.
 
   - id: telegram_foundation
-    status: ready_for_convergence
+    status: provider_off
     owner:
       task_id: BNA-PR-141-RECONCILIATION
       repository: external/BNA-Agent-Actions
-      branch: terminal-handoff-pending
+      branch: terminal-handoff
       pr: 141
       system: One Time Telegram private canary
     write_scope: Single consumer, private owner mapping/canary, and sanitized readback only
@@ -308,10 +315,11 @@ tracks:
     dependencies: [bna_foundation]
     acceptance_ids: [TELEGRAM-001]
     evidence:
-      - Prior verified baseline says Telegram private canary ready and customer sends zero; PR #141 is re-verifying durability.
+      - Prior verified baseline says the Telegram private canary was ready; PR #141 terminal proof keeps customer/GHL/provider sends at zero.
+      - Without preview DATABASE_URL, the Telegram consumer, GHL synthetic-question draft, and persistence contract cannot be truthfully reverified.
     blocker: null
-    remaining_work: Terminal single-consumer/durability readback for convergence.
-    next_action: Keep UI provider_off unless every canonical runtime gate is configured.
+    remaining_work: Single-consumer, private canary, synthetic-question draft, and persistence readback after BNA durability is unblocked.
+    next_action: Keep the Telegram UI provider_off until DATABASE_URL is attached and every canonical runtime gate reads back.
 
   - id: telegram_customer_bridge
     status: needs_operator_decision
@@ -355,5 +363,5 @@ tracks:
     evidence:
       - Baseline 09953ba2edfc7ba014b9fe2558dbc7f5c58972ea previously passed exact /version, /health, /ready, worker heartbeat, and browser verification.
     blocker: null
-    remaining_work: Commit/push follow-up, integrate ready media work, deploy exact new head, migrate through 2215, reseed, and complete browser proof.
-    next_action: Finish local gates before any staging mutation.
+    remaining_work: Commit/push the combined follow-up, deploy exact new head, migrate through 2215, reseed, and complete live browser proof.
+    next_action: Rerun all required gates on one stable commit before any staging mutation.
