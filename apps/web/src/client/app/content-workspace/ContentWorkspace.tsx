@@ -68,7 +68,7 @@ type FilterState = {
 const navItems: Array<{ href: string; label: string; kind: RouteKind }> = [
   { href: '/app/content', label: 'Overview', kind: 'overview' },
   { href: '/app/content/processing', label: 'Processing', kind: 'processing' },
-  { href: '/app/content/factory', label: 'Video factory', kind: 'factory' },
+  { href: '/app/content/factory', label: 'Content Factory', kind: 'factory' },
   { href: '/app/content/create', label: 'Create', kind: 'create' },
   { href: '/app/content/social', label: 'Social', kind: 'social' },
   { href: '/app/content/knowledge', label: 'Knowledge', kind: 'knowledge' },
@@ -452,6 +452,12 @@ function FactoryView({
   onChanged: (message: string) => Promise<void>;
 }) {
   const [selectedKey, setSelectedKey] = useState(data.items[0]?.source_key ?? '');
+  const [showIntake, setShowIntake] = useState(false);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadClass, setUploadClass] = useState('');
+  const [uploadDate, setUploadDate] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const selected =
     data.items.find((item) => item.source_key === selectedKey) ?? data.items[0] ?? null;
 
@@ -460,43 +466,127 @@ function FactoryView({
     setSelectedKey(data.items[0]?.source_key ?? '');
   }, [data.items, selectedKey]);
 
+  async function upload(event: React.FormEvent) {
+    event.preventDefault();
+    if (!uploadFile) return;
+    setUploading(true);
+    setUploadError('');
+    try {
+      await apiUpload(
+        '/api/v1/admin/content/factory/intake',
+        uploadFile,
+        { classLabel: uploadClass, classDate: uploadDate },
+        csrfToken,
+        onProtectedStateCleared,
+      );
+      setUploadFile(null);
+      setUploadClass('');
+      setUploadDate('');
+      setShowIntake(false);
+      await onChanged('Video received in protected staging. No external provider was contacted.');
+    } catch (error) {
+      setUploadError(errorMessage(error));
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <>
-      <section className="provider-ports" aria-label="Factory input adapters">
-        <Card className="provider-port-card">
-          <strong>Active input</strong>
-          <Badge>{data.input_adapter}</Badge>
-          <span>Source files stay private.</span>
+      <Card className="content-factory-hero">
+        <div>
+          <p className="content-factory-kicker">Class video workflow</p>
+          <h1>Content Factory</h1>
+          <p>
+            Add a class video, review its transcript and lesson drafts, then publish approved
+            material to students.
+          </p>
+        </div>
+        <Button type="button" variant="primary" onClick={() => setShowIntake(!showIntake)}>
+          {showIntake ? 'Cancel' : 'Add class video'}
+        </Button>
+      </Card>
+      {showIntake && (
+        <Card className="content-panel content-factory-intake-panel">
+          <h2>Add class video</h2>
+          <p>
+            The original is copied to protected local staging. Processing and external providers do
+            not start from this action.
+          </p>
+          {uploadError && (
+            <p className="notice-banner" role="alert">
+              {uploadError}
+            </p>
+          )}
+          <form className="content-editor-form" onSubmit={(event) => void upload(event)}>
+            <label>
+              <span>Video file</span>
+              <input
+                required
+                type="file"
+                accept="video/mp4,video/quicktime,video/webm,video/x-msvideo,video/x-matroska,.m4v"
+                disabled={uploading}
+                onChange={(event) => setUploadFile(event.currentTarget.files?.[0] ?? null)}
+              />
+            </label>
+            <div className="content-factory-fields">
+              <label>
+                <span>Class assignment</span>
+                <Input
+                  maxLength={180}
+                  disabled={uploading}
+                  value={uploadClass}
+                  onChange={(event) => setUploadClass(event.currentTarget.value)}
+                />
+              </label>
+              <label>
+                <span>Class date</span>
+                <Input
+                  type="date"
+                  disabled={uploading}
+                  value={uploadDate}
+                  onChange={(event) => setUploadDate(event.currentTarget.value)}
+                />
+              </label>
+            </div>
+            <Button type="submit" variant="primary" disabled={!uploadFile || uploading}>
+              {uploading ? 'Copying privately…' : 'Add to protected staging'}
+            </Button>
+          </form>
         </Card>
+      )}
+      <section className="provider-ports" aria-label="Private intake status">
         <Card className="provider-port-card">
-          <strong>Google Drive</strong>
-          <Badge>{data.adapters.drive.ready ? 'Ready' : 'Configuration needed'}</Badge>
+          <strong>Private intake</strong>
+          <Badge>{data.input_adapter === 'DRIVE' ? 'Drive ready' : 'Local drop ready'}</Badge>
           <span>
-            {data.adapters.drive.ready
-              ? 'Protected incoming folder connected.'
-              : `Missing: ${data.adapters.drive.missing.join(', ')}`}
+            {data.input_adapter === 'DRIVE'
+              ? 'Incoming Drive files remain protected.'
+              : 'Uploads remain in protected local staging.'}
           </span>
         </Card>
-        <Card className="provider-port-card">
-          <strong>Local drop</strong>
-          <Badge>Ready</Badge>
-          <span>Private copy required before processing.</span>
-        </Card>
       </section>
-      <section className="content-counts" aria-label="Factory states">
-        {Object.entries(data.counts).map(([state, count]) => (
-          <Card className="content-stat-card" key={state}>
-            <span>{readable(state)}</span>
-            <strong>{count}</strong>
-          </Card>
-        ))}
-      </section>
-      {data.items.length === 0 ? (
+      {data.intakes.length > 0 && (
+        <section className="content-stack" aria-labelledby="received-videos-title">
+          <h2 id="received-videos-title">Received videos</h2>
+          {data.intakes.map((intake) => (
+            <Card className="content-row-card content-factory-intake" key={intake.intake_key}>
+              <div>
+                <strong>{intake.display_name}</strong>
+                <span>{intake.class_label ?? 'Class assignment pending'}</span>
+              </div>
+              <Badge>{readable(intake.state)}</Badge>
+              <span>{formatBytes(intake.byte_length)}</span>
+            </Card>
+          ))}
+        </section>
+      )}
+      {data.items.length === 0 && data.intakes.length === 0 ? (
         <EmptyState
           title="No incoming videos"
-          body="A protected Drive or local-drop import will appear here as it moves through the factory."
+          body="Use Add class video to place a private source in the content factory."
         />
-      ) : (
+      ) : data.items.length > 0 ? (
         <div className="content-factory-layout">
           <section className="content-stack" aria-label="Content factory queue">
             {data.items.map((item) => (
@@ -509,7 +599,7 @@ function FactoryView({
               >
                 <span>
                   <strong>{item.draft.title}</strong>
-                  <small>{item.display_name}</small>
+                  <small>{item.is_demo ? 'Synthetic demo lesson' : item.display_name}</small>
                 </span>
                 <Badge>{readable(item.state)}</Badge>
               </button>
@@ -525,9 +615,64 @@ function FactoryView({
             />
           )}
         </div>
-      )}
+      ) : null}
     </>
   );
+}
+
+const factoryTimeline = [
+  'received',
+  'inspecting',
+  'trimming',
+  'transcribing',
+  'drafting',
+  'uploading',
+  'review',
+  'approved',
+  'published',
+] as const;
+
+function FactoryTimeline({ state }: { state: (typeof factoryTimeline)[number] | 'failed' }) {
+  const currentIndex = state === 'failed' ? -1 : factoryTimeline.indexOf(state);
+  return (
+    <section className="content-factory-timeline" aria-label="Video processing status">
+      <ol>
+        {factoryTimeline.map((step, index) => (
+          <li
+            key={step}
+            data-state={
+              state === 'failed'
+                ? 'stopped'
+                : index < currentIndex
+                  ? 'complete'
+                  : index === currentIndex
+                    ? 'current'
+                    : 'upcoming'
+            }
+            aria-current={step === state ? 'step' : undefined}
+          >
+            <span aria-hidden="true">{index + 1}</span>
+            <strong>{readable(step)}</strong>
+          </li>
+        ))}
+        {state === 'failed' && (
+          <li data-state="failed" aria-current="step">
+            <span aria-hidden="true">!</span>
+            <strong>Failed</strong>
+          </li>
+        )}
+      </ol>
+    </section>
+  );
+}
+
+function factoryTimelineState(state: ContentFactorySafeItem['state']) {
+  if (state === 'incoming') return 'received' as const;
+  if (state === 'processing') return 'inspecting' as const;
+  if (state === 'transcribed') return 'drafting' as const;
+  if (state === 'rendered') return 'uploading' as const;
+  if (state === 'uploaded' || state === 'needs_review') return 'review' as const;
+  return state;
 }
 
 function FactoryEditor({
@@ -609,10 +754,15 @@ function FactoryEditor({
       <header className="content-panel-heading">
         <div>
           <h2>{item.draft.title}</h2>
-          <p>AI-assisted drafts are never authoritative Torah interpretation.</p>
+          <p>
+            {item.is_demo
+              ? 'Demo — approved synthetic lesson data; no external provider media was used.'
+              : 'AI-assisted drafts are never authoritative Torah interpretation.'}
+          </p>
         </div>
         <Badge>{readable(item.state)}</Badge>
       </header>
+      <FactoryTimeline state={factoryTimelineState(item.state)} />
       <dl className="content-factory-metadata">
         <div>
           <dt>Prepared duration</dt>
@@ -1504,6 +1654,32 @@ async function apiPatch<T = unknown>(
   );
 }
 
+async function apiUpload<T = unknown>(
+  path: string,
+  file: File,
+  metadata: { classLabel: string; classDate: string },
+  csrfToken: string,
+  onProtectedStateCleared: () => void,
+): Promise<T> {
+  return apiRequest<T>(
+    path,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': file.type || 'application/octet-stream',
+        'x-csrf-token': csrfToken,
+        'x-file-name': encodeURIComponent(file.name),
+        ...(metadata.classLabel
+          ? { 'x-class-label': encodeURIComponent(metadata.classLabel) }
+          : {}),
+        ...(metadata.classDate ? { 'x-class-date': metadata.classDate } : {}),
+      },
+      body: file,
+    },
+    onProtectedStateCleared,
+  );
+}
+
 async function apiRequest<T>(
   path: string,
   init: RequestInit,
@@ -1541,6 +1717,11 @@ function activeVersion(template: ContentAdminPromptTemplate | undefined) {
     template.versions[0] ??
     null
   );
+}
+
+function formatBytes(value: number) {
+  if (value < 1024 * 1024) return `${Math.max(1, Math.round(value / 1024))} KB`;
+  return `${(value / (1024 * 1024)).toFixed(value >= 100 * 1024 * 1024 ? 0 : 1)} MB`;
 }
 
 function readable(value: string) {

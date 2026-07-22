@@ -290,12 +290,12 @@ async function seedActiveSupportEntitlement(userKey: string) {
 
 async function seedContentFactoryBrowserSample() {
   const segments = [
-    'The Mishnah introduces the first case for the browser smoke.',
-    'Rabbi Scheller reads the wording used in the source.',
-    'The class compares the first example with the second example.',
-    'A student repeats the key words from the Mishnah.',
-    'The Masechta language is reviewed directly from the transcript.',
-    'The lesson closes by reviewing the examples from class.',
+    'The fictional Mishnah review introduces returning a lost object.',
+    'Students identify a unique mark as a sign the owner can describe.',
+    'The class asks why an ordinary color may not identify the owner.',
+    'A bundle with a sign is compared with loose identical objects.',
+    'An announcement invites the owner to provide the identifying sign.',
+    'The lesson closes by stating that this is classroom review, not a ruling.',
   ].map((text, index) => ({
     segment_id: `browser_segment_${index + 1}`,
     start_ms: index * 10_000,
@@ -304,8 +304,8 @@ async function seedContentFactoryBrowserSample() {
   }));
   const transcript = segments.map((segment) => segment.text).join(' ');
   const webvtt =
-    'WEBVTT\n\n00:00:00.000 --> 00:00:09.000\nThe Mishnah introduces the first case for the browser smoke.\n';
-  const sourceKey = 'factory_browser_sample_2026_07_22';
+    'WEBVTT\n\n00:00:00.000 --> 00:00:09.000\nThe fictional Mishnah review introduces returning a lost object.\n';
+  const sourceKey = 'ot_launch_01_demo_hashavas_aveidah';
   await ingestContentFactoryItem({
     pool,
     config,
@@ -314,7 +314,7 @@ async function seedContentFactoryBrowserSample() {
       sourceKind: 'local_drop',
       sourceRefDigest: sha256('factory-browser-source-ref'),
       sourceSha256: sha256('factory-browser-source'),
-      displayName: 'operator-owned-browser-sample.mov',
+      displayName: 'ot-launch-01-approved-synthetic-demo.mp4',
       mimeType: 'video/quicktime',
       byteLength: 4_200_000,
       originalDurationMs: 72_000,
@@ -329,22 +329,22 @@ async function seedContentFactoryBrowserSample() {
       transcriptSha256: sha256(transcript),
       webvtt,
       webvttSha256: sha256(webvtt),
-      transcriptionModel: 'gpt-4o-mini-transcribe',
+      transcriptionModel: 'synthetic-demo-no-provider',
       transcriptionLanguage: 'en',
       draft: {
         ...generateContentFactoryDraftFromTranscript({
-          displayName: 'operator-owned-browser-sample.mov',
+          displayName: 'ot-launch-01-approved-synthetic-demo.mp4',
           segments,
-          classLabel: 'Browser Smoke Mishnayos',
+          classLabel: 'OT-LAUNCH-01 Mishnayos',
           classDate: '2026-07-22',
         }),
-        title: 'Browser Smoke Mishnah Class',
+        title: '[Demo] Hashavas Aveidah: Signs and Announcements',
         short_description:
-          'Approved browser-smoke summary grounded in the timestamped class transcript.',
+          'An approved synthetic review lesson about identifying a lost object and the purpose of an announcement.',
       },
-      providerVideoId: 'factory_browser_private_video',
-      providerEmbedUrl: 'https://player.vimeo.com/video/factory_browser_private_video',
-      providerTextTrackId: 'factory_browser_private_track',
+      providerVideoId: 'synthetic_demo_no_provider_resource',
+      providerEmbedUrl: 'https://player.vimeo.com/video/synthetic_demo_no_provider_resource',
+      providerTextTrackId: 'synthetic_demo_caption_track',
       vimeoPrivacy: 'private',
       captionsActive: true,
     },

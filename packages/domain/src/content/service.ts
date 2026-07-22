@@ -541,6 +541,7 @@ async function portalItemsForLearner(input: {
               'not_started' | 'in_progress' | 'completed',
             playback_route: `/app/learning/items/${encodeURIComponent(itemKey)}`,
             raw_provider_url_present: false as const,
+            is_demo: itemKey.startsWith('ot_launch_01_demo_'),
           }
         : undefined,
       lesson: lessonKey

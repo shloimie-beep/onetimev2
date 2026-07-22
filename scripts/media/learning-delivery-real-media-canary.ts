@@ -18,11 +18,7 @@ import {
   generateContentFactoryDraftFromTranscript,
   stageLearningDeliveryLocalDrop,
 } from '../../packages/domain/src/index.ts';
-import type {
-  LearningDeliveryProbeSummary,
-  LearningDeliveryTranscriptSegment,
-  LearningDeliveryTrimDecision,
-} from '../../packages/contracts/src/content/index.ts';
+import type { LearningDeliveryProbeSummary } from '../../packages/contracts/src/content/index.ts';
 
 const RUN_DIR = 'ops/codex-runs/VIMEO-AUTOTRIM-TRANSCRIPTION-REPAIR';
 const SAFE_JSON_PATH = path.join(RUN_DIR, 'REAL-MEDIA-CANARY.json');
@@ -860,12 +856,6 @@ function assertNoRawLeak(value: string) {
 
 function safeMarkdown(report: {
   generated_at: string;
-  source: {
-    original_duration_ms: number;
-    prepared_duration_ms: number;
-    source_sha256: string;
-    prepared_sha256: string;
-  };
   trim: {
     auto_cut_performed: boolean;
     start_ms: number;
@@ -884,6 +874,12 @@ function safeMarkdown(report: {
     text_track_active: boolean;
     provider_video_ref_digest: string | null;
     provider_text_track_ref_digest: string | null;
+  };
+  source: {
+    original_duration_ms: number;
+    prepared_duration_ms: number;
+    source_sha256: string;
+    prepared_sha256: string;
   };
   preview: { route: string };
   contact_notifications: number;

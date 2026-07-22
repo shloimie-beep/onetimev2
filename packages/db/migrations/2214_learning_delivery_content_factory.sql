@@ -1,4 +1,4 @@
-CREATE TABLE onetime.learning_delivery_content_factory_items (
+CREATE TABLE IF NOT EXISTS onetime.learning_delivery_content_factory_items (
   source_key text PRIMARY KEY,
   account_key text NOT NULL,
   product_key text NOT NULL,
@@ -61,12 +61,12 @@ CREATE TABLE onetime.learning_delivery_content_factory_items (
   ))
 );
 
-CREATE INDEX learning_delivery_content_factory_queue_idx
+CREATE INDEX IF NOT EXISTS learning_delivery_content_factory_queue_idx
   ON onetime.learning_delivery_content_factory_items(
     account_key, product_key, factory_state, updated_at DESC
   );
 
-CREATE TABLE onetime.learning_delivery_content_factory_events (
+CREATE TABLE IF NOT EXISTS onetime.learning_delivery_content_factory_events (
   event_key text PRIMARY KEY,
   account_key text NOT NULL,
   product_key text NOT NULL,
@@ -79,7 +79,35 @@ CREATE TABLE onetime.learning_delivery_content_factory_events (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX learning_delivery_content_factory_events_source_idx
+CREATE INDEX IF NOT EXISTS learning_delivery_content_factory_events_source_idx
   ON onetime.learning_delivery_content_factory_events(
     account_key, product_key, source_key, created_at DESC
+  );
+
+CREATE TABLE IF NOT EXISTS onetime.learning_delivery_content_factory_intakes (
+  intake_key text PRIMARY KEY,
+  account_key text NOT NULL,
+  product_key text NOT NULL,
+  source_kind text NOT NULL CHECK (source_kind IN ('drive', 'local_drop')),
+  display_name text NOT NULL,
+  mime_type text NOT NULL,
+  byte_length bigint NOT NULL CHECK (byte_length > 0),
+  source_sha256 text NOT NULL,
+  private_ref_digest text NOT NULL,
+  intake_state text NOT NULL DEFAULT 'received' CHECK (intake_state IN (
+    'received', 'inspecting', 'trimming', 'transcribing', 'drafting',
+    'uploading', 'review', 'approved', 'published', 'failed'
+  )),
+  class_label text,
+  class_date date,
+  last_safe_error_code text,
+  created_by_user_key text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (account_key, product_key, source_sha256)
+);
+
+CREATE INDEX IF NOT EXISTS learning_delivery_content_factory_intakes_queue_idx
+  ON onetime.learning_delivery_content_factory_intakes(
+    account_key, product_key, intake_state, updated_at DESC
   );

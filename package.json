@@ -57,7 +57,8 @@
     "highlevel:registry:check": "tsx scripts/highlevel/validate-registry.ts",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
-    "content-factory:import": "tsx scripts/media/content-factory-import.ts"
+    "content-factory:import": "tsx scripts/media/content-factory-import.ts",
+    "content-factory:seed-demo": "tsx scripts/media/content-factory-demo-seed.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",

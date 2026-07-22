@@ -3,11 +3,13 @@ import type { AppConfig } from '../../../config/src/index.ts';
 import {
   contentFactoryDraftSchema,
   contentFactoryEditPayloadSchema,
+  contentFactoryIntakeSafeSchema,
   contentFactorySafeItemSchema,
   contentFactoryStateSchema,
   type ContentFactoryAction,
   type ContentFactoryDraft,
   type ContentFactoryEditPayload,
+  type ContentFactoryIntakeSafe,
   type ContentFactorySafeItem,
   type ContentFactoryState,
 } from '../../../contracts/src/content/content-factory.ts';
@@ -210,19 +212,96 @@ export async function ingestContentFactoryItem(input: {
 }
 
 export async function getContentFactoryWorkspace(input: { pool: DbPool; config: AppConfig }) {
-  const result = await input.pool.query(
-    `SELECT * FROM onetime.learning_delivery_content_factory_items
+  const [result, intakeResult] = await Promise.all([
+    input.pool.query(
+      `SELECT * FROM onetime.learning_delivery_content_factory_items
       WHERE account_key = $1 AND product_key = $2
       ORDER BY updated_at DESC, source_key ASC LIMIT 100`,
-    [input.config.accountKey, input.config.productKey],
-  );
+      [input.config.accountKey, input.config.productKey],
+    ),
+    input.pool.query(
+      `SELECT * FROM onetime.learning_delivery_content_factory_intakes
+        WHERE account_key = $1 AND product_key = $2
+        ORDER BY updated_at DESC, intake_key ASC LIMIT 100`,
+      [input.config.accountKey, input.config.productKey],
+    ),
+  ]);
   const items = result.rows.map(safeItemFromRow);
+  const intakes = intakeResult.rows.map(safeIntakeFromRow);
   const counts = Object.fromEntries(FACTORY_STATES.map((state) => [state, 0])) as Record<
     ContentFactoryState,
     number
   >;
   for (const item of items) counts[item.state] += 1;
-  return { items, counts };
+  return { items, intakes, counts };
+}
+
+export async function createContentFactoryIntake(input: {
+  pool: DbPool;
+  config: AppConfig;
+  actorUserKey: string;
+  actorRole: string;
+  displayName: string;
+  mimeType: string;
+  byteLength: number;
+  sourceSha256: string;
+  privateRefDigest: string;
+  classLabel?: string | null;
+  classDate?: string | null;
+}) {
+  assertAdmin(input.actorRole);
+  if (
+    !/^[a-f0-9]{64}$/.test(input.sourceSha256) ||
+    !/^[a-f0-9]{64}$/.test(input.privateRefDigest)
+  ) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Safe intake digests are required.');
+  }
+  if (!input.mimeType.startsWith('video/') || input.byteLength < 1) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'A non-empty video upload is required.');
+  }
+  if (!input.displayName.trim() || input.displayName.length > 240) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'A safe video filename is required.');
+  }
+  if (input.classLabel && input.classLabel.length > 180) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Class assignment is too long.');
+  }
+  if (input.classDate && !/^\d{4}-\d{2}-\d{2}$/.test(input.classDate)) {
+    throw new ContentFactoryError('VALIDATION_ERROR', 'Class date must use YYYY-MM-DD.');
+  }
+  const intakeKey = stableOt86Key('factory_intake', [input.sourceSha256]);
+  await input.pool.query(
+    `INSERT INTO onetime.learning_delivery_content_factory_intakes
+       (intake_key, account_key, product_key, source_kind, display_name, mime_type,
+        byte_length, source_sha256, private_ref_digest, intake_state, class_label,
+        class_date, created_by_user_key, updated_at)
+     VALUES ($1,$2,$3,'local_drop',$4,$5,$6,$7,$8,'received',$9,$10,$11,now())
+     ON CONFLICT (account_key, product_key, source_sha256)
+     DO UPDATE SET display_name = EXCLUDED.display_name, mime_type = EXCLUDED.mime_type,
+       byte_length = EXCLUDED.byte_length, private_ref_digest = EXCLUDED.private_ref_digest,
+       class_label = COALESCE(EXCLUDED.class_label, onetime.learning_delivery_content_factory_intakes.class_label),
+       class_date = COALESCE(EXCLUDED.class_date, onetime.learning_delivery_content_factory_intakes.class_date),
+       last_safe_error_code = NULL, updated_at = now()`,
+    [
+      intakeKey,
+      input.config.accountKey,
+      input.config.productKey,
+      input.displayName,
+      input.mimeType,
+      input.byteLength,
+      input.sourceSha256,
+      input.privateRefDigest,
+      input.classLabel ?? null,
+      input.classDate ?? null,
+      input.actorUserKey,
+    ],
+  );
+  const result = await input.pool.query(
+    `SELECT * FROM onetime.learning_delivery_content_factory_intakes
+      WHERE account_key = $1 AND product_key = $2 AND source_sha256 = $3 LIMIT 1`,
+    [input.config.accountKey, input.config.productKey, input.sourceSha256],
+  );
+  if (!result.rows[0]) throw new Error('content_factory_intake_not_persisted');
+  return safeIntakeFromRow(result.rows[0]);
 }
 
 export async function getContentFactoryItem(input: {
@@ -393,6 +472,7 @@ export async function getContentFactoryPlayback(input: {
     throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Approved playback is unavailable.');
   }
   const draft = contentFactoryDraftSchema.parse(row.draft_json);
+  const isDemo = isContentFactoryDemoSource(String(row.source_key));
   return {
     sourceKey: String(row.source_key),
     title: draft.title,
@@ -401,7 +481,8 @@ export async function getContentFactoryPlayback(input: {
     captionsActive: true as const,
     progressState: String(row.progress_state) as 'not_started' | 'in_progress' | 'completed',
     playbackRoute: `/api/v1/content/factory/${encodeURIComponent(String(row.source_key))}/embed`,
-    privateProviderEmbedUrl: String(row.provider_embed_url),
+    privateProviderEmbedUrl: isDemo ? null : String(row.provider_embed_url),
+    isDemo,
     rawProviderUrlPresent: false as const,
   };
 }
@@ -472,6 +553,7 @@ function safeItemFromRow(row: Record<string, unknown>): ContentFactorySafeItem {
     source_kind: row.source_kind,
     display_name: String(row.display_name),
     state,
+    is_demo: isContentFactoryDemoSource(sourceKey),
     draft,
     normalized_transcript: String(row.normalized_transcript),
     transcript_review_state: row.transcript_review_state,
@@ -514,6 +596,30 @@ function safeItemFromRow(row: Record<string, unknown>): ContentFactorySafeItem {
     published_at: nullableIso(row.published_at),
     updated_at: asDate(row.updated_at).toISOString(),
   });
+}
+
+function safeIntakeFromRow(row: Record<string, unknown>): ContentFactoryIntakeSafe {
+  return contentFactoryIntakeSafeSchema.parse({
+    intake_key: String(row.intake_key),
+    source_kind: row.source_kind,
+    display_name: String(row.display_name),
+    mime_type: String(row.mime_type),
+    byte_length: Number(row.byte_length),
+    state: row.intake_state,
+    class_label: nullableString(row.class_label),
+    class_date: row.class_date ? asDate(row.class_date).toISOString().slice(0, 10) : null,
+    source_sha256: String(row.source_sha256),
+    private_ref_digest: String(row.private_ref_digest),
+    raw_source_path_present: false,
+    raw_provider_url_present: false,
+    last_safe_error_code: nullableString(row.last_safe_error_code),
+    created_at: asDate(row.created_at).toISOString(),
+    updated_at: asDate(row.updated_at).toISOString(),
+  });
+}
+
+function isContentFactoryDemoSource(sourceKey: string) {
+  return sourceKey.startsWith('ot_launch_01_demo_');
 }
 
 async function lockedRow(client: Queryable, config: AppConfig, sourceKey: string) {
@@ -733,7 +839,8 @@ function assertAdmin(role: string) {
 }
 
 function draftPatch(payload: ContentFactoryEditPayload) {
-  const { normalized_transcript: _transcript, ...patch } = payload;
+  const patch = { ...payload };
+  delete patch.normalized_transcript;
   return patch;
 }
 
