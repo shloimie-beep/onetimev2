@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Base: `codex/full-app-staging-live` at `6fcf0435cca744dba0e4a3337beac860d9315180`
+- Base: `codex/full-app-staging-live` at `03a79ce9955ade72d7c100c9969454d60616385d`
 - GHL evidence: PR #107 at `deda8f9b04dbafcc36363628a14b6fecc94fd854`
 - Location: `pBSnOK2nkdxp6gf9Rg3o`
 - Provider mode: default-off
@@ -57,12 +57,18 @@ Primary sources:
 - Canonical `2205_highlevel_business_projection.sql` was inspected from commit `c5f3d33432a57b72346496c44bcf652edc9d7db8`, Git blob `cf65084399fe8f84986f62451a34c9e606403107`, SHA-256 `3135ccd5942c649dd1133f1709806bdb77de016cfd3e78f55f04ec86cb7001fd`.
 - `2205` was not restored because this accepted design requires none of its parent/entitlement projections and restoring its dedicated `highlevel_outbox_events` table would violate the no-parallel-queue boundary.
 - Historical media migrations `2209` and `2210` were not replayed or modified.
+- Canonical `2213_learning_delivery_autotrim_transcripts.sql` remains byte-for-byte unchanged at Git blob `fe21dd9002f18c7d50a3736861f4089d3da96d4f`, SHA-256 `de79b58418608f4466ffadda967411b43cfca2df477911071ed4060805b5dae1`.
+- The isolated PR-108 database that had recorded an obsolete `2213` variant was retired instead of changing `2213` or its ledger. A fresh disposable PostgreSQL 16 service and volume now back only the PR-108 web and worker services.
+
+## Railway Containment
+
+During fresh-database setup, Railway CLI echoed the generated credential for an initial unmounted disposable service. That service was deleted before use, had no volume, and its service/variable endpoint now rejects lookup. The replacement credential was generated independently and supplied only through standard input. No credential value is present in Git, the PR, or this report.
 
 ## Concurrency And Replay
 
 Real PostgreSQL uses one atomic CTE claim with exact account, product, channel, transport mode, canary run, allowlist hash, persisted allowlist membership, budget and authorization-state predicates plus `FOR UPDATE OF outbox SKIP LOCKED`. Every claimed row receives a unique fencing token and independent 120-second lease; both provider-operation completion and terminal row completion require that token. A two-dispatcher assertion proves one claim, a slow-row assertion proves no reclaim after the former 60-second boundary, and crash-after-upsert/add-tag assertions prove uncertain operations are never repeated. The exact PostgreSQL SQL contract is asserted, and `scripts/highlevel/postgres-claim-assurance.ts` runs a disposable real-PostgreSQL race that holds the first authorized row lock while a second claimant proves it can claim only the other authorized row and never the held backlog.
 
-This machine had no `DATABASE_URL`, Docker, or `psql`, so the real-PostgreSQL race is required in the isolated PR's PostgreSQL 16 assurance job. No production or persistent-staging database is used by that disposable proof.
+The disposable real-PostgreSQL race passed in the PR PostgreSQL 16 assurance job: two authorized rows were claimed with unique fencing tokens while the unauthorized backlog remained unclaimed. Harness cleanup now closes all pool clients before forced database removal. No production or persistent-staging database was used by that proof.
 
 ## Verification
 
@@ -72,7 +78,7 @@ This machine had no `DATABASE_URL`, Docker, or `psql`, so the real-PostgreSQL ra
 - Focused lead capture and class fulfillment regressions: passed
 - Focused account lifecycle, content library, delivery repository and web/worker independence regressions: passed
 - Focused total: 51 tests passed
-- Disposable real-PostgreSQL HighLevel claim race: required in the PR PostgreSQL 16 assurance job
+- Disposable real-PostgreSQL HighLevel claim race: passed in the PR PostgreSQL 16 assurance job
 - Typecheck and build: passed before final publication
 - All tests used fake/sink adapters; external calls and sends remained zero
 

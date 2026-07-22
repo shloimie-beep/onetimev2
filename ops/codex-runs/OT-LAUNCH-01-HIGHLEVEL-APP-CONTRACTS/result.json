@@ -1,7 +1,7 @@
 {
   "task": "OT-LAUNCH-01-HIGHLEVEL-APP-CONTRACTS",
   "base_branch": "codex/full-app-staging-live",
-  "base_head": "6fcf0435cca744dba0e4a3337beac860d9315180",
+  "base_head": "03a79ce9955ade72d7c100c9969454d60616385d",
   "evidence_pr": 107,
   "evidence_head": "deda8f9b04dbafcc36363628a14b6fecc94fd854",
   "location_id": "pBSnOK2nkdxp6gf9Rg3o",
@@ -14,6 +14,10 @@
     "sha256": "b95b46a573606eaa00fe9339ffb68d705ee20d0393f06c0d7c7b9cb33c3c0e0c",
     "canonical_2205_restored": false,
     "canonical_2205_sha256": "3135ccd5942c649dd1133f1709806bdb77de016cfd3e78f55f04ec86cb7001fd",
+    "canonical_2213_git_blob": "fe21dd9002f18c7d50a3736861f4089d3da96d4f",
+    "canonical_2213_sha256": "de79b58418608f4466ffadda967411b43cfca2df477911071ed4060805b5dae1",
+    "canonical_2213_modified": false,
+    "migration_ledger_rewritten": false,
     "historical_media_migrations_replayed": false
   },
   "provider_mode_default": "disabled",
@@ -29,11 +33,22 @@
   "broad_messages_sent": 0,
   "student_contacts_created": 0,
   "persistent_staging_changed": false,
+  "railway_pr_environment": {
+    "environment_id": "571685d6-3926-41f0-9dd8-80671e7f6eb7",
+    "postgres_version": 16,
+    "fresh_service_id": "63c52624-cddc-47ee-9276-26a2437919ff",
+    "fresh_volume": true,
+    "old_unmounted_service_removed": true,
+    "old_credential_endpoint_rejected": true,
+    "credential_values_recorded": false,
+    "provider_modes_disabled": true,
+    "canary_authorization_present": false
+  },
   "postgres_concurrency": {
     "sql_contract_asserted": true,
     "memory_two_worker_assertion": "passed",
     "memory_slow_row_fence_assertion": "passed",
-    "real_postgres_execution": "required_disposable_pr_ci_assertion",
+    "real_postgres_execution": "passed_disposable_pr_ci_assertion",
     "real_postgres_assertion": "scripts/highlevel/postgres-claim-assurance.ts"
   },
   "focused_tests_passed": 51,
