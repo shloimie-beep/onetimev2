@@ -7,11 +7,11 @@ The canonical repository is `shloimie-beep/onetimev2`; the former
 
 ## Runtime Readback
 
-| Surface | Source SHA | Latest migration | Health | Tisha B'Av |
-| --- | --- | --- | --- | --- |
-| Production | `ed77a04dd24391d5b79be7f839d7f5752a57e0f9` | `2204_w12_100_real_source_crm_apply` | Pass | Not deployed |
-| Persistent staging | `944f46b5435d648e6e175c69746ca7a4895ffec4` | `2209_class_series_scope_unique` | Pass | Not integrated |
-| PR #102 preview | reported `944f46b5435d648e6e175c69746ca7a4895ffec4` | `2211_tisha_bav_provider_event_scope` | Pass | `/tisha-bav` and `/tisha-bav/live` return 200 |
+| Surface            | Source SHA                                          | Latest migration                      | Health | Tisha B'Av                                    |
+| ------------------ | --------------------------------------------------- | ------------------------------------- | ------ | --------------------------------------------- |
+| Production         | `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`          | `2204_w12_100_real_source_crm_apply`  | Pass   | Not deployed                                  |
+| Persistent staging | `944f46b5435d648e6e175c69746ca7a4895ffec4`          | `2209_class_series_scope_unique`      | Pass   | Not integrated                                |
+| PR #102 preview    | reported `944f46b5435d648e6e175c69746ca7a4895ffec4` | `2211_tisha_bav_provider_event_scope` | Pass   | `/tisha-bav` and `/tisha-bav/live` return 200 |
 
 The clean integration worktree is
 `C:\Users\User\.onetime-worktrees\FULL-APP-STAGING-LIVE` on
