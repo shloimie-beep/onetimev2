@@ -4,11 +4,11 @@ import path from 'node:path';
 
 const shareUrl = 'https://join.onetimeonetime.com/tisha-bav';
 const eventTitle = 'Live Zoom class with Rabbi Eli Scheller for boys';
-const eventPasuk = 'Ki Mala Haaretz Deas Hashem';
+const eventPasuk = 'כי מלאה הארץ דעה את השם';
 const eventDisclosure = 'By reserving, you’ll receive emails about this event.';
 const successHebrew = 'שֶׁנִּזְכֶּה לִרְאוֹת אֶת יְרוּשָׁלַיִם בְּבִנְיָנָהּ';
 const successDesktopBackground =
-  '/assets/events/tisha-bav-2026/tisha-bav-success-bg-desktop-v20260722.png';
+  '/assets/events/tisha-bav-2026/tisha-bav-success-bg-desktop-v20260722b.png';
 const successMobileBackground =
   '/assets/events/tisha-bav-2026/tisha-bav-success-bg-mobile-v20260722.png';
 const screenshotDir = path.resolve(
@@ -79,10 +79,19 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     await waitForHeroImage(page);
     await assertFullyVisible(page, headline, `${label} headline`);
     await assertFullyVisible(page, pasuk, `${label} pasuk line`);
+    await expect(page.locator('.event-pasuk'), `${label} Hebrew pasuk lang`).toHaveAttribute(
+      'lang',
+      'he',
+    );
+    await expect(page.locator('.event-pasuk'), `${label} Hebrew pasuk direction`).toHaveAttribute(
+      'dir',
+      'rtl',
+    );
     await assertFullyVisible(page, image, `${label} portrait art`);
     await assertFullyVisible(page, time, `${label} time`);
     await assertFullyVisible(page, noCharge, `${label} no charge`);
     await assertFullyVisible(page, cta, `${label} CTA`);
+    await assertDisplayTitle(page, `${label} display title`);
     await assertTitleOnTopOfArtwork(page, headline, pasuk, image, `${label} title overlay`);
 
     await expect(cta).toHaveCount(1);
@@ -96,6 +105,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     );
     await expect(page.locator('body')).not.toContainText('10:00 PM Israel');
     await expect(page.locator('body')).not.toContainText("Special Tisha B'Av VIP Zoom Class");
+    await expect(page.locator('body')).not.toContainText('Ki Mala Haaretz Deas Hashem');
 
     await assertHeroImage(page, {
       expectedName: 'tishea beav mobile(1).png',
@@ -148,6 +158,14 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
 
     await expect(page.getByRole('heading', { name: eventTitle })).toBeVisible();
     await expect(page.getByText(eventPasuk, { exact: true })).toBeVisible();
+    await expect(page.locator('.event-pasuk'), `${label} Hebrew pasuk lang`).toHaveAttribute(
+      'lang',
+      'he',
+    );
+    await expect(page.locator('.event-pasuk'), `${label} Hebrew pasuk direction`).toHaveAttribute(
+      'dir',
+      'rtl',
+    );
     await expect(page.getByText('3 p.m. Eastern Time', { exact: true })).toBeVisible();
     await expect(page.getByText('No charge', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Reserve My Spot' })).toHaveCount(1);
@@ -157,6 +175,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
       'Bringing Knowledge of Hashem into the World',
     );
     await expect(page.locator('body')).not.toContainText('10:00 PM Israel');
+    await expect(page.locator('body')).not.toContainText('Ki Mala Haaretz Deas Hashem');
 
     await assertHeroImage(page, {
       expectedName: 'tisha beav(1).png',
@@ -172,6 +191,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
       page.locator('[data-event-hero-image]'),
       `${label} title overlay`,
     );
+    await assertDisplayTitle(page, `${label} display title`);
     await assertDesktopComposition(page, label);
     await assertSocialMetadata(page, label);
     await assertNoRawZoom(page);
@@ -419,6 +439,52 @@ async function assertTitleOnTopOfArtwork(
   );
 }
 
+async function assertDisplayTitle(page: Page, label: string) {
+  const liveZoom = page.locator('.tisha-title-live');
+  const titleClass = page.locator('.tisha-title-class');
+  const rabbi = page.locator('.tisha-title-rabbi');
+  const audience = page.locator('.tisha-title-audience');
+  await expect(liveZoom, label).toHaveText('Live Zoom');
+  await expect(titleClass, label).toHaveText('Class');
+  await expect(rabbi, label).toHaveText('with Rabbi Eli Scheller');
+  await expect(audience, label).toHaveText('for boys');
+
+  const sizes = await page.evaluate(() => {
+    const read = (selector: string) => {
+      const node = document.querySelector<HTMLElement>(selector);
+      if (!node) throw new Error(`missing ${selector}`);
+      const rect = node.getBoundingClientRect();
+      return {
+        fontSize: Number.parseFloat(getComputedStyle(node).fontSize),
+        top: rect.top,
+        bottom: rect.bottom,
+      };
+    };
+    return {
+      liveZoom: read('.tisha-title-live'),
+      titleClass: read('.tisha-title-class'),
+      rabbi: read('.tisha-title-rabbi'),
+      audience: read('.tisha-title-audience'),
+    };
+  });
+
+  expect(sizes.liveZoom.fontSize, `${label} live zoom emphasis`).toBeGreaterThan(
+    sizes.rabbi.fontSize * 1.8,
+  );
+  expect(sizes.titleClass.fontSize, `${label} class emphasis`).toBeGreaterThan(
+    sizes.rabbi.fontSize * 2.2,
+  );
+  expect(sizes.liveZoom.bottom, `${label} first line above class`).toBeLessThan(
+    sizes.titleClass.bottom,
+  );
+  expect(sizes.titleClass.bottom, `${label} class above rabbi line`).toBeLessThan(
+    sizes.rabbi.bottom,
+  );
+  expect(sizes.rabbi.bottom, `${label} rabbi above audience line`).toBeLessThan(
+    sizes.audience.bottom,
+  );
+}
+
 async function assertDesktopComposition(page: Page, label: string) {
   const viewport = page.viewportSize();
   expect(viewport, `${label} viewport`).not.toBeNull();
@@ -438,6 +504,8 @@ async function assertDesktopComposition(page: Page, label: string) {
   const rightEdge = Math.max(detailsBox.x + detailsBox.width, imageBox.x + imageBox.width);
   const leftGutter = leftEdge;
   const rightGutter = viewport.width - rightEdge;
+  expect(leftGutter, `${label} desktop left gutter`).toBeGreaterThanOrEqual(24);
+  expect(rightGutter, `${label} desktop right gutter`).toBeGreaterThanOrEqual(24);
   expect(
     Math.abs(leftGutter - rightGutter),
     `${label} centered desktop composition gutters`,

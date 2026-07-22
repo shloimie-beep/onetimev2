@@ -328,14 +328,19 @@ function tishaBavLandingPage() {
     "Live Zoom class with Rabbi Eli Scheller for boys | Tisha B'Av VIP Zoom Class",
     `<main class="event-page tisha-bav-page">
   <section class="tisha-page" aria-labelledby="tisha-bav-title">
-    <p class="event-pasuk">Ki Mala Haaretz Deas Hashem</p>
+    <p class="event-pasuk" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
     <div class="tisha-artwork" data-event-artwork>
       <picture class="tisha-picture">
         <source media="(max-width: 767px)" srcset="${tishaBavMobileImage}">
         <img src="${tishaBavDesktopImage}" alt=""${mediaSizeAttributes(tishaBavDesktopImage)} decoding="async" fetchpriority="high" data-event-hero-image>
       </picture>
       <div class="tisha-copy">
-        <h1 id="tisha-bav-title">Live Zoom class with Rabbi Eli Scheller for boys</h1>
+        <h1 id="tisha-bav-title" aria-label="Live Zoom class with Rabbi Eli Scheller for boys">
+          <span class="tisha-title-line tisha-title-live">Live Zoom</span>
+          <span class="tisha-title-line tisha-title-class">Class</span>
+          <span class="tisha-title-line tisha-title-rabbi">with Rabbi Eli Scheller</span>
+          <span class="tisha-title-line tisha-title-audience">for boys</span>
+        </h1>
       </div>
     </div>
     <div class="tisha-details" aria-label="Event details">

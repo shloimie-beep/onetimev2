@@ -1537,20 +1537,21 @@ small {
 
 .tisha-page {
   box-sizing: border-box;
-  width: min(1400px, calc(100vw - 32px));
+  width: min(1440px, calc(100vw - clamp(48px, 4vw, 64px)));
   min-height: 100svh;
   display: grid;
-  grid-template-columns: minmax(230px, 300px) minmax(0, 1080px);
+  grid-template-columns: minmax(250px, 300px) minmax(0, 1120px);
   grid-template-areas:
-    '. artwork-pasuk'
+    'details artwork-pasuk'
     'details artwork';
   align-content: center;
   align-items: center;
   justify-items: stretch;
   justify-content: center;
-  gap: clamp(18px, 2.3vw, 34px);
+  column-gap: clamp(20px, 2vw, 28px);
+  row-gap: clamp(8px, 1.35svh, 14px);
   margin: 0 auto;
-  padding: clamp(18px, 2.6vw, 34px) 0;
+  padding: clamp(18px, 2.8svh, 32px) 0;
   text-align: left;
 }
 
@@ -1570,25 +1571,59 @@ small {
 .tisha-copy {
   position: absolute;
   z-index: 1;
-  top: clamp(10px, 1.6vw, 22px);
-  left: 50%;
-  width: min(92%, 820px);
+  top: clamp(4px, 1vw, 14px);
+  left: clamp(18px, 5.2%, 56px);
+  width: min(43%, 430px);
   display: grid;
-  justify-items: center;
-  transform: translateX(-50%);
-  text-align: center;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.44);
+  justify-items: start;
+  transform: none;
+  text-align: left;
+  text-shadow: 0 3px 14px rgba(0, 0, 0, 0.54);
 }
 
 .tisha-copy h1 {
-  max-width: min(92%, 940px);
+  max-width: min(94%, 820px);
   margin: 0;
   color: #ffffff;
   font-family: var(--font-display);
-  font-size: clamp(1.65rem, 2.45vw, 2.7rem);
   font-weight: 400;
-  line-height: 0.94;
+  line-height: 0.86;
   text-wrap: balance;
+}
+
+.tisha-title-line {
+  display: block;
+  letter-spacing: 0;
+}
+
+.tisha-title-live,
+.tisha-title-class {
+  text-transform: uppercase;
+}
+
+.tisha-title-live {
+  font-size: clamp(2.1rem, 4.25vw, 4.6rem);
+}
+
+.tisha-title-class {
+  font-size: clamp(3.25rem, 5.9vw, 6.4rem);
+  line-height: 0.75;
+}
+
+.tisha-title-rabbi,
+.tisha-title-audience {
+  font-family: var(--font-sans);
+  font-weight: 950;
+  line-height: 1.05;
+}
+
+.tisha-title-rabbi {
+  margin-top: clamp(5px, 0.6vw, 8px);
+  font-size: clamp(1.05rem, 1.65vw, 1.7rem);
+}
+
+.tisha-title-audience {
+  font-size: clamp(0.92rem, 1.25vw, 1.28rem);
 }
 
 .event-hebrew {
@@ -1616,9 +1651,9 @@ small {
 
 .tisha-picture img {
   width: 100%;
-  max-width: min(1080px, 100%);
+  max-width: min(1120px, 100%);
   height: auto;
-  max-height: min(72svh, 650px);
+  max-height: min(76svh, 680px);
   object-fit: contain;
   object-position: center;
   border: 1px solid rgba(255, 210, 31, 0.2);
@@ -1628,9 +1663,10 @@ small {
 
 .tisha-details {
   grid-area: details;
+  width: min(100%, 300px);
   display: grid;
-  gap: clamp(8px, 1.35svh, 12px);
-  align-self: start;
+  gap: clamp(10px, 1.5svh, 14px);
+  align-self: center;
   justify-items: start;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.34);
 }
@@ -1673,7 +1709,7 @@ small {
 .event-charge {
   margin: 0;
   color: var(--color-yellow-soft);
-  font-size: clamp(2rem, 3.4vw, 3.2rem);
+  font-size: clamp(2.25rem, 3.8vw, 3.4rem);
   font-weight: 950;
   line-height: 1;
 }
@@ -1708,7 +1744,7 @@ small {
 .tisha-bav-page .event-register-shell:has([data-event-success-panel]:not([hidden])) {
   background:
     linear-gradient(90deg, rgba(5, 5, 5, 0.8), rgba(5, 5, 5, 0.5)),
-    url('/assets/events/tisha-bav-2026/tisha-bav-success-bg-desktop-v20260722.png') center / cover
+    url('/assets/events/tisha-bav-2026/tisha-bav-success-bg-desktop-v20260722b.png') center / cover
       no-repeat;
 }
 
@@ -1896,7 +1932,7 @@ html[data-event-modal-open] body {
     max-height: 100svh;
     overflow: hidden;
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
     grid-template-areas:
       'pasuk'
       'artwork'
@@ -1915,15 +1951,36 @@ html[data-event-modal-open] body {
   }
 
   .tisha-copy {
-    top: clamp(8px, 1.45svh, 13px);
-    width: min(91%, 390px);
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.46);
+    top: clamp(7px, 1.25svh, 12px);
+    left: 50%;
+    width: min(90%, 390px);
+    justify-items: center;
+    transform: translateX(-50%);
+    text-align: center;
+    text-shadow: 0 2px 11px rgba(0, 0, 0, 0.54);
   }
 
   .tisha-copy h1 {
     max-width: 100%;
-    font-size: clamp(1.02rem, 4.7vw, 1.5rem);
-    line-height: 0.98;
+    line-height: 0.86;
+  }
+
+  .tisha-title-live {
+    font-size: clamp(1.28rem, 6.2vw, 1.7rem);
+  }
+
+  .tisha-title-class {
+    font-size: clamp(1.9rem, 9.1vw, 2.48rem);
+    line-height: 0.76;
+  }
+
+  .tisha-title-rabbi {
+    margin-top: clamp(4px, 0.7svh, 6px);
+    font-size: clamp(0.74rem, 3.4vw, 0.94rem);
+  }
+
+  .tisha-title-audience {
+    font-size: clamp(0.7rem, 3vw, 0.86rem);
   }
 
   .tisha-artwork {
@@ -1931,7 +1988,7 @@ html[data-event-modal-open] body {
     height: auto;
     min-height: 0;
     max-height: none;
-    align-self: end;
+    align-self: center;
     justify-items: center;
   }
 
