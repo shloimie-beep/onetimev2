@@ -296,7 +296,7 @@ function tishaBavLandingPage() {
   const emailShareUrl = `mailto:?subject=${encodeURIComponent("Tisha B'Av VIP Zoom Class")}&body=${encodeURIComponent(shareText)}`;
 
   return pageShell(
-    "Filling the World with Knowledge of Hashem | Tisha B'Av VIP Zoom Class",
+    "Bringing Knowledge of Hashem into the World | Tisha B'Av VIP Zoom Class",
     `<main class="event-page tisha-bav-page">
   <section class="tisha-page" aria-labelledby="tisha-bav-title">
     <div class="tisha-artwork" data-event-artwork>
@@ -306,7 +306,7 @@ function tishaBavLandingPage() {
       </picture>
       <div class="tisha-copy">
         <p class="event-hebrew" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
-        <h1 id="tisha-bav-title">Filling the World with Knowledge of Hashem</h1>
+        <h1 id="tisha-bav-title">Bringing Knowledge of Hashem into the World</h1>
       </div>
     </div>
     <div class="tisha-details" aria-label="Event details">
@@ -314,7 +314,10 @@ function tishaBavLandingPage() {
       <p class="event-date">Thursday, July 23, 2026</p>
       <p class="event-time"><strong>3:00 PM Eastern / 10:00 PM Israel</strong></p>
     </div>
-    <button class="button button-primary tisha-primary-cta" type="button" data-event-open-modal aria-haspopup="dialog" aria-controls="event-register-modal" aria-expanded="false">Reserve My Spot</button>
+    <div class="tisha-cta-block">
+      <p class="event-charge">No charge</p>
+      <button class="button button-primary tisha-primary-cta" type="button" data-event-open-modal aria-haspopup="dialog" aria-controls="event-register-modal" aria-expanded="false">Reserve My Spot</button>
+    </div>
   </section>
   <div class="event-modal-backdrop" data-event-modal-backdrop hidden></div>
   <section class="event-modal" id="event-register-modal" role="dialog" aria-modal="true" aria-label="Tisha B'Av registration" data-event-modal data-event-share-url="${escapeHtml(shareUrl)}" hidden tabindex="-1">
