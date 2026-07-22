@@ -1,0 +1,288 @@
+{
+  "schemaVersion": "one-time-highlevel-tisha-bav-activation@1.0.0",
+  "generatedAt": "2026-07-22T16:33:29.8399873+03:00",
+  "location": {
+    "id": "pBSnOK2nkdxp6gf9Rg3o",
+    "fingerprint": "sha256:018d4f8e5cb779b0",
+    "matchVerified": true
+  },
+  "permissionCorrection": {
+    "effective": true,
+    "otC01SendAuthority": "withdrawn",
+    "otC01CustomerEmailsAuthorized": false,
+    "otE01PermissionClass": "event_registration_only",
+    "eventPermissionDoesNotCreateNewsletterConsent": true,
+    "whatsAppAuthorized": false,
+    "customerEmailsSentAfterCorrection": 0
+  },
+  "assets": [
+    {
+      "key": "OT-C01",
+      "name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "kind": "campaign",
+      "registryId": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "uiContentId": "6a5f750b557817806a14b19e",
+      "canonicalFolderAncestry": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "currentUiBreadcrumbObserved": "Home",
+      "folderReadbackConflict": true,
+      "purpose": "One email invitation for independently permissioned adult contacts only.",
+      "messageClass": "rabbi_event_invitation",
+      "triggerOrEnrollment": "Exact independently permissioned invitation audience; source/provenance and provider email eligibility never substitute for consent.",
+      "orderedActions": [
+        {
+          "order": 1,
+          "kind": "email",
+          "copyIdentitySha256": "55517d8f236dec6dc069756e3c681350cdc385c44a4c112f1dec582e9a5d57f2",
+          "publicCta": "https://join.onetimeonetime.com/tisha-bav",
+          "directClassLinkPresent": false
+        }
+      ],
+      "waits": [],
+      "branches": [],
+      "sender": {
+        "senderKey": "rabbi_campaign",
+        "registeredPickerValuesPresent": true,
+        "activePhase": "active_phase_1",
+        "fromAddress": "sanitized_present_registered",
+        "replyToAddress": "sanitized_present_registered",
+        "inactivePreferredSenderUsed": false
+      },
+      "desiredStatus": "draft_no_send",
+      "observedStatus": "draft",
+      "saved": true,
+      "reopenedVerified": true,
+      "exactNameMatchesObserved": 1,
+      "test": {
+        "status": "not_run",
+        "reason": "binding newest permission correction forbids OT-C01 proof/customer email"
+      },
+      "liveCounts": {
+        "selectedRecipients": 0,
+        "proofEmailsSent": 0,
+        "campaignSends": 0,
+        "delivered": 0,
+        "bounced": 0,
+        "unsubscribed": 0
+      },
+      "remainingBlocker": "No nonzero independently permissioned invitation audience is proven; the exact saved all-AND selector count is zero and send authority is withdrawn."
+    },
+    {
+      "key": "OT-E01",
+      "name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+      "kind": "workflow",
+      "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+      "folderAncestry": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "purpose": "Event-only registration confirmation and time-bounded registered-contact reminders.",
+      "messageClass": "event_registration_confirmation",
+      "triggerOrEnrollment": "Exact Tisha B'Av 2026 registered-event tag; re-entry disabled; event permission does not create newsletter consent.",
+      "orderedActions": [
+        {
+          "order": 1,
+          "kind": "email",
+          "name": "Email A - Immediate Confirmation",
+          "directClassLink": "sanitized_present_valid_operator_authorized"
+        },
+        {
+          "order": 2,
+          "kind": "fixed_wait",
+          "name": "Wait until 1 hour before event",
+          "at": "2026-07-23T21:00:00+03:00",
+          "lateBehavior": "skip_expired_outbound_until_next_wait_or_event_start"
+        },
+        {
+          "order": 3,
+          "kind": "email",
+          "name": "Email C - One Hour",
+          "directClassLink": "sanitized_present_valid_operator_authorized"
+        },
+        {
+          "order": 4,
+          "kind": "fixed_wait",
+          "name": "Wait until 10 minutes before event",
+          "at": "2026-07-23T21:50:00+03:00",
+          "lateBehavior": "skip_expired_outbound_until_next_wait_or_event_start"
+        },
+        {
+          "order": 5,
+          "kind": "email",
+          "name": "Email D - Join Now",
+          "directClassLink": "sanitized_present_valid_operator_authorized"
+        }
+      ],
+      "legacy24HourActionPresent": false,
+      "sender": {
+        "senderKey": "brand",
+        "fromPickerKey": "one_time_brand_from",
+        "senderNamePickerKey": "one_time_brand_sender_name",
+        "replyToKey": "one_time_default_reply_to",
+        "addresses": "sanitized_present_registered"
+      },
+      "deliveryEligibility": {
+        "permission": "exact_event_registration",
+        "globalNewsletterConsentRequired": false,
+        "emailDndMustBeFalse": true,
+        "suppressionMustBeActive": true,
+        "unsubscribeComplaintHardBounceAlwaysWin": true,
+        "studentContactsAllowed": false,
+        "idempotentEnrollment": true
+      },
+      "desiredStatus": "published",
+      "observedStatus": "published",
+      "briefDraftIntervalObserved": true,
+      "saved": true,
+      "reopenedVerified": true,
+      "inFlightEnrollmentRetainedAcrossRepublish": true,
+      "reEnrollmentOrDuplicateCreated": false,
+      "test": {
+        "status": "not_rerun",
+        "reason": "existing bounded operator proof retained; no new customer email authorized"
+      },
+      "liveCounts": {
+        "activeEnrollments": 1,
+        "historicalEnrollments": 2,
+        "messagesSentDuringThisRun": 0,
+        "customerEmailsSentAfterPermissionCorrection": 0
+      },
+      "remainingBlocker": null
+    }
+  ],
+  "audienceSelector": {
+    "name": "45 - Events / 2026 / Tisha B'Av 2026 / OT-C01 Eligible Adult Email Opt-In",
+    "id": "gjuLL8C3YwYpvgxqMYms",
+    "createdBeforeNewestNoMutationCorrection": true,
+    "selectedInCampaign": false,
+    "usedForSend": false,
+    "logic": "ALL",
+    "filterCount": 9,
+    "filters": [
+      {
+        "fieldId": "olSxPkya7mkkB61vSXHx",
+        "field": "one_time_email_consent",
+        "operator": "is",
+        "value": "opted_in"
+      },
+      {
+        "fieldId": "rdWsApvquRfHwkzvp5mS",
+        "field": "one_time_suppression_state",
+        "operator": "is",
+        "value": "active"
+      },
+      { "field": "built_in_email_dnd", "operator": "is", "value": "disabled" },
+      { "field": "email", "operator": "is_not_empty" },
+      { "field": "email_status", "operator": "is", "value": "valid" },
+      { "tagId": "beGT917lbxgGc99QQ7jO", "tag": "ot_email_opt_in", "operator": "is_present" },
+      { "tagId": "7j9yCOCNunGFfhmm0TaX", "tag": "ot_consent_unknown", "operator": "is_absent" },
+      {
+        "tagId": "uYfDohCdnW4nYiqFbVi6",
+        "tag": "ot_marketing_suppressed",
+        "operator": "is_absent"
+      },
+      { "tag": "ot_event_tisha_bav_2026_registered", "operator": "is_absent" }
+    ],
+    "adultBoundary": "location_governance_invariant_adult_parent_contacts_only",
+    "operatorTestExclusion": "satisfied_by_registered-event exclusion for the governed operator contact",
+    "studentExclusion": "location_governance_invariant_no_student_contacts_fields_or_tags",
+    "dedupe": "zero-result set; no duplicate delivery possible",
+    "saved": true,
+    "reopenedVerified": true,
+    "uniqueEligibleCount": 0,
+    "sourceTagsUsedAsConsent": false
+  },
+  "providerEligibilityReclassification": {
+    "priorProviderEmailEligibleCount": 207,
+    "classification": "address/provider eligible only",
+    "marketingConsentInferred": false,
+    "tishaRegistrationInferredAsMarketingConsent": false
+  },
+  "landingGate": {
+    "publicUrl": "https://join.onetimeonetime.com/tisha-bav",
+    "productionDeploymentId": "81317abe-f3ef-42cd-b5db-5814b014b6a3",
+    "verified": true,
+    "rawProviderUrlPresentPublicly": false
+  },
+  "inventoryReadback": {
+    "status": "partial_current_run",
+    "literalOneTimeRoot": "One Time",
+    "literalRootId": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+    "currentRunVerifiedScopes": {
+      "otC01ExactAsset": true,
+      "otE01ExactAsset": true,
+      "savedAudienceExactAsset": true,
+      "locationRootAllAssets": false,
+      "allNestedCanonicalFolders": false,
+      "archivedView": false,
+      "deprecated99": false
+    },
+    "unverifiedScopesAreNotAssertedEmpty": true,
+    "priorSameDayExhaustiveEvidence": "integrations/highlevel/agent-mode/results/GHL-FINAL-ORGANIZATION-20260722.result.json",
+    "canonicalSevenCurrentLiveConfiguration": [
+      {
+        "key": "OT-02A",
+        "id": "368d47ca-c6d2-4545-acb0-664f98bac8f2",
+        "kind": "workflow",
+        "path": "One Time / 10 - Enrollment & Nurture",
+        "priorObservedStatus": "draft",
+        "currentOrderedConfiguration": "unavailable_not_reopened_in_current_pass"
+      },
+      {
+        "key": "OT-02B",
+        "id": "a7038e32-79d2-4d2d-b103-5722ab0abcfc",
+        "kind": "workflow",
+        "path": "One Time / 10 - Enrollment & Nurture",
+        "priorObservedStatus": "draft",
+        "currentOrderedConfiguration": "unavailable_not_reopened_in_current_pass"
+      },
+      {
+        "key": "OT-03",
+        "id": "b5c3e702-a7e6-415d-9ffc-fa2b0027a27f",
+        "kind": "workflow",
+        "path": "One Time / 20 - Billing & Access",
+        "priorObservedStatus": "draft",
+        "currentOrderedConfiguration": "unavailable_not_reopened_in_current_pass"
+      },
+      {
+        "key": "OT-04",
+        "id": "dd1e90ea-f9bd-4c3b-97de-2230f119f38b",
+        "kind": "workflow",
+        "path": "One Time / 20 - Billing & Access",
+        "priorObservedStatus": "draft",
+        "currentOrderedConfiguration": "unavailable_not_reopened_in_current_pass"
+      },
+      {
+        "key": "OT-05",
+        "id": "8c7a0a37-6747-492f-99f6-1a1fb90518de",
+        "kind": "workflow",
+        "path": "One Time / 20 - Billing & Access",
+        "priorObservedStatus": "draft",
+        "currentOrderedConfiguration": "unavailable_not_reopened_in_current_pass"
+      },
+      {
+        "key": "OT-06",
+        "id": "7421cd97-a61b-4434-b7f3-163b8cc7237c",
+        "kind": "workflow",
+        "path": "One Time / 20 - Billing & Access",
+        "priorObservedStatus": "draft",
+        "currentOrderedConfiguration": "unavailable_not_reopened_in_current_pass"
+      },
+      {
+        "key": "OT-13",
+        "id": "9459a4a1-c5fa-4912-920e-e30c86f1fbe9",
+        "kind": "workflow",
+        "path": "One Time / 20 - Billing & Access",
+        "priorObservedStatus": "draft",
+        "currentOrderedConfiguration": "unavailable_not_reopened_in_current_pass"
+      }
+    ],
+    "unknownOrDuplicateCandidates": "unverified_outside_current_exact_asset_scope"
+  },
+  "safety": {
+    "otC01RemainsDraft": true,
+    "proofEmailsSent": 0,
+    "broadInvitationEmailsSent": 0,
+    "customerEmailsSentAfterNewestCorrection": 0,
+    "whatsAppActionsPresent": false,
+    "studentContactsTargeted": 0,
+    "rawDirectClassLinkRecorded": false,
+    "productionLandingChanged": false
+  }
+}
