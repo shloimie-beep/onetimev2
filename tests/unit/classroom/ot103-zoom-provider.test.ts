@@ -6,6 +6,7 @@ import {
 } from '../../../packages/domain/src/classroom/service.ts';
 import {
   ZoomApiError,
+  createHostZoomSdkSignature,
   createLearnerZoomSdkSignature,
   createZoomRestClient,
   registrantTokenFromJoinUrl,
@@ -147,6 +148,72 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
     expect(JSON.stringify(registrant)).not.toMatch(/https?:\/\/|zoom\.us|pwd=secret/i);
   });
 
+  it('creates one isolated meeting and one-time fictional registrants without returning provider URLs', async () => {
+    const calls: string[] = [];
+    const client = createZoomRestClient({
+      enabled: true,
+      environment: 'staging',
+      credentials: {
+        accountId: 'acct_zoom_test',
+        clientId: 'client_test',
+        clientSecret: 'client_secret_test',
+      },
+      fetchImpl: async (input, init) => {
+        const url = String(input);
+        calls.push(url);
+        if (url.startsWith('https://zoom.us/oauth/token')) {
+          return jsonResponse({ access_token: 'access_token_test', expires_in: 3600 });
+        }
+        if (url.endsWith('/users/host_test/meetings')) {
+          expect(JSON.parse(String(init?.body))).toMatchObject({
+            type: 2,
+            settings: {
+              registrants_confirmation_email: false,
+              registrants_email_notification: false,
+              participant_video: false,
+              mute_upon_entry: true,
+              waiting_room: true,
+            },
+          });
+          return jsonResponse({
+            id: '987654321',
+            type: 2,
+            password: 'private-test-passcode',
+            start_url: 'https://zoom.us/private-start',
+            join_url: 'https://zoom.us/private-join',
+          });
+        }
+        expect(url).toBe('https://api.zoom.us/v2/meetings/987654321/registrants');
+        return jsonResponse({
+          registrant_id: 'fictional_1',
+          join_url: 'https://example.zoom.us/w/987654321?tk=FICTIONAL_TOKEN',
+        });
+      },
+    });
+    const privateMeeting = await client.createIsolatedTestMeeting({
+      hostUserId: 'host_test',
+      startsAt: new Date('2027-07-21T16:30:00Z'),
+      topic: 'One Time isolated control canary',
+      durationMinutes: 60,
+    });
+    const registrant = await client.addLearnerRegistrant({
+      meetingId: privateMeeting.meeting.meeting_id,
+      learnerKey: 'fictional_student_1',
+      displayName: 'Student 1',
+      email: 'fictional-1@example.test',
+    });
+    expect(privateMeeting.meeting).toMatchObject({
+      type: 2,
+      raw_start_url_present: false,
+      raw_join_url_present: false,
+    });
+    expect(registrant.occurrence_id).toBe('single');
+    expect(JSON.stringify({ meeting: privateMeeting.meeting, registrant })).not.toMatch(
+      /https?:\/\/|private-test-passcode/i,
+    );
+    expect(calls).toHaveLength(3);
+  });
+
   it('fails closed when disabled, sanitizes provider errors, and marks retryable statuses', async () => {
     const disabled = createZoomRestClient({
       enabled: false,
@@ -190,6 +257,20 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
       mn: '987654321',
       role: 0,
     });
+    expect(signature).not.toContain('sdk_secret_do_not_leak');
+  });
+
+  it('creates a short-lived role-1 host signature without exposing the SDK secret', () => {
+    const issuedAt = new Date('2027-07-21T16:00:00Z');
+    const signature = createHostZoomSdkSignature({
+      credentials: { sdkKey: 'sdk_key_test', sdkSecret: 'sdk_secret_do_not_leak' },
+      meetingNumber: '987654321',
+      issuedAt,
+      ttlSeconds: 30 * 60,
+    });
+    const payload = JSON.parse(Buffer.from(signature.split('.')[1] ?? '', 'base64url').toString());
+    expect(payload).toMatchObject({ role: 1, mn: '987654321' });
+    expect(payload.exp - payload.iat).toBe(30 * 60);
     expect(signature).not.toContain('sdk_secret_do_not_leak');
   });
 

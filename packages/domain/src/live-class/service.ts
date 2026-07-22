@@ -14,6 +14,8 @@ import type {
   LiveClassQuestionSubmitPayload,
   LiveClassStageState,
   LiveClassZoomControlPayload,
+  LiveClassZoomHostBootstrapResponse,
+  LiveClassZoomParticipantSyncPayload,
 } from '../../../contracts/src/live-class/index.ts';
 import type { PortalActorContext } from '../../../contracts/src/portals/index.ts';
 import type {
@@ -61,6 +63,13 @@ export type LiveClassCommandInsert = {
   signature: string;
   expires_at: Date;
   created_by_user_ref: string;
+};
+
+export type ZoomHostLaunchPort = {
+  resolveHostLaunch(input: {
+    occurrenceKey: string;
+    now: Date;
+  }): Promise<LiveClassZoomHostBootstrapResponse['data']>;
 };
 
 export type LiveClassRepository = {
@@ -112,6 +121,11 @@ export type LiveClassRepository = {
     occurrence_key: string;
     customer_key: string;
   }): Promise<LiveClassParticipant | null>;
+  getParticipantByKey(args: {
+    actor: Pick<PortalActorContext, 'account_key' | 'product_key'>;
+    occurrence_key: string;
+    participant_key: string;
+  }): Promise<LiveClassParticipant | null>;
   listParticipants(args: {
     actor: Pick<PortalActorContext, 'account_key' | 'product_key'>;
     occurrence_key: string;
@@ -128,6 +142,7 @@ export type LiveClassRepository = {
     video_state: LiveClassParticipant['video_state'];
     active_speaker: boolean;
     spotlighted: boolean;
+    participant_id_digest?: string | null | undefined;
   }): Promise<LiveClassParticipant>;
   selectQuestion(args: {
     actor: PortalActorContext;
@@ -173,11 +188,16 @@ export type LiveClassRepository = {
     occurrence_key: string;
     now: Date;
   }): Promise<LiveClassControlCommand[]>;
+  listPendingZoomCommands(args: {
+    actor: Pick<PortalActorContext, 'account_key' | 'product_key'>;
+    occurrence_key: string;
+    now: Date;
+  }): Promise<LiveClassControlCommand[]>;
   reportCommand(args: {
     actor: Pick<PortalActorContext, 'account_key' | 'product_key'>;
     payload: LiveClassObsCommandReportPayload;
     now: Date;
-  }): Promise<boolean>;
+  }): Promise<LiveClassControlCommand | null>;
   recordAudit(args: {
     actor: Pick<
       PortalActorContext,
@@ -195,6 +215,7 @@ export type LiveClassServiceDeps = {
   config: AppConfig;
   repository: LiveClassRepository;
   questionCodec?: SensitivePayloadCodec;
+  zoomHostLaunchPort?: ZoomHostLaunchPort;
   clock?: () => Date;
 };
 
@@ -208,6 +229,68 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       requireRabbi(actor);
       const session = await ensureSession(deps, actor, clock(), occurrenceKey, true);
       return snapshot(deps, actor, session.occurrence_key, clock());
+    },
+
+    async zoomHostBootstrap(actor: PortalActorContext, occurrenceKey?: string | undefined) {
+      requireRabbi(actor);
+      if (!zoomHostControlConfigured(deps.config) || !deps.zoomHostLaunchPort) {
+        throw new PortalServiceError(
+          'ADAPTER_UNAVAILABLE',
+          'Meeting SDK host control is not configured for this preview.',
+        );
+      }
+      const now = clock();
+      const session = await ensureSession(deps, actor, now, occurrenceKey);
+      return deps.zoomHostLaunchPort.resolveHostLaunch({
+        occurrenceKey: session.occurrence_key,
+        now,
+      });
+    },
+
+    async syncZoomParticipants(
+      actor: PortalActorContext,
+      payload: LiveClassZoomParticipantSyncPayload,
+    ) {
+      requireRabbi(actor);
+      if (!zoomHostControlConfigured(deps.config)) {
+        throw new PortalServiceError(
+          'ADAPTER_UNAVAILABLE',
+          'Meeting SDK participant sync is not configured.',
+        );
+      }
+      const mappings: Array<{ participant_key: string; customer_key: string }> = [];
+      for (const item of payload.participants) {
+        const existing = await deps.repository.getParticipantByCustomerKey({
+          actor,
+          occurrence_key: payload.occurrence_key,
+          customer_key: item.customer_key,
+        });
+        if (!existing) {
+          throw new PortalServiceError(
+            'FORBIDDEN',
+            'The Zoom participant is not mapped to this class occurrence.',
+          );
+        }
+        const participant = await deps.repository.upsertParticipant({
+          actor,
+          occurrence_key: payload.occurrence_key,
+          participant_key: existing.participant_key,
+          learner_key: existing.learner_key,
+          customer_key: existing.customer_key,
+          approved_display_name: existing.approved_display_name,
+          join_state: item.join_state,
+          audio_state: item.audio_state,
+          video_state: item.video_state,
+          active_speaker: item.active_speaker,
+          spotlighted: item.spotlighted,
+          participant_id_digest: sha256(item.provider_user_id),
+        });
+        mappings.push({
+          participant_key: participant.participant_key,
+          customer_key: participant.customer_key,
+        });
+      }
+      return { mappings };
     },
 
     async stageSnapshot(stageSession: string) {
@@ -377,19 +460,20 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         video_ready: payload.ready ? (payload.video_ready ?? true) : false,
         now: clock(),
       });
-      await deps.repository.upsertParticipant({
+      await ensureQuestionParticipant(
+        deps,
         actor,
-        occurrence_key: ready.occurrence_key,
-        participant_key: stableKey('zoom_participant', [ready.occurrence_key, ready.customer_key]),
-        learner_key: ready.learner_key,
-        customer_key: ready.customer_key,
-        approved_display_name: ready.approved_display_name,
-        join_state: payload.ready ? 'joined' : 'waiting',
-        audio_state: payload.ready && ready.mic_ready ? 'muted' : 'unknown',
-        video_state: payload.ready && ready.video_ready ? 'on' : 'off',
-        active_speaker: false,
-        spotlighted: false,
-      });
+        ready,
+        zoomAdapterMode(deps.config) === 'fake'
+          ? {
+              join_state: payload.ready ? 'joined' : 'waiting',
+              audio_state: payload.ready && ready.mic_ready ? 'muted' : 'unknown',
+              video_state: payload.ready && ready.video_ready ? 'on' : 'off',
+              active_speaker: false,
+              spotlighted: false,
+            }
+          : {},
+      );
       await deps.repository.recordAudit({
         actor,
         occurrence_key: ready.occurrence_key,
@@ -414,6 +498,8 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
           'The student must tap ready before the stage can feature them.',
         );
       }
+      const participantBefore = await ensureQuestionParticipant(deps, actor, existing);
+      requireParticipantReadyForSpotlight(participantBefore);
       const question = await deps.repository.markQuestionLive({
         actor,
         question_key: questionKey,
@@ -426,10 +512,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         scene: 'OT - Featured Student',
         state: 'student_featured',
       });
-      const participant = await ensureQuestionParticipant(deps, actor, question, {
-        video_state: 'on',
-        spotlighted: true,
-      });
+      const participant = await ensureQuestionParticipant(deps, actor, question);
       const commands = await Promise.all([
         enqueueSignedCommand(deps, actor, {
           occurrence_key: question.occurrence_key,
@@ -467,6 +550,13 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         event_type: 'live_question_featured',
         metadata: { command_keys: commands.map(({ command }) => command.command_key) },
       });
+      await executeFakeZoomCommands(
+        deps,
+        actor,
+        question,
+        commands.map(({ command }) => command),
+        now,
+      );
       return commandResponse(
         deps,
         actor,
@@ -496,9 +586,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         scene: 'OT - Slides',
         state: 'slides',
       });
-      const participant = await ensureQuestionParticipant(deps, actor, question, {
-        spotlighted: false,
-      });
+      const participant = await ensureQuestionParticipant(deps, actor, question);
       const commands = await Promise.all([
         enqueueSignedCommand(deps, actor, {
           occurrence_key: question.occurrence_key,
@@ -527,6 +615,13 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
         event_type: `live_question_${payload.resolution}`,
         metadata: { command_keys: commands.map(({ command }) => command.command_key) },
       });
+      await executeFakeZoomCommands(
+        deps,
+        actor,
+        question,
+        commands.map(({ command }) => command),
+        now,
+      );
       return commandResponse(
         deps,
         actor,
@@ -539,29 +634,36 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
     async zoomControl(actor: PortalActorContext, payload: LiveClassZoomControlPayload) {
       requireRabbi(actor);
       const now = clock();
-      const question =
-        payload.question_key !== undefined
-          ? await deps.repository.getQuestion({ actor, question_key: payload.question_key })
-          : null;
-      if (payload.question_key && !question) {
+      if (!payload.question_key) {
+        throw new PortalServiceError(
+          'VALIDATION_ERROR',
+          'A selected student question is required for Zoom control.',
+        );
+      }
+      const question = await deps.repository.getQuestion({
+        actor,
+        question_key: payload.question_key,
+      });
+      if (!question) {
         throw new PortalServiceError('NOT_FOUND', 'The selected question was not found.');
       }
-      const participant = question
-        ? await ensureQuestionParticipant(deps, actor, question, fakeZoomPatch(payload.operation))
-        : null;
+      const participant = await ensureQuestionParticipant(deps, actor, question);
       if (payload.participant_key && participant?.participant_key !== payload.participant_key) {
         throw new PortalServiceError('FORBIDDEN', 'The participant target does not match.');
       }
+      validateZoomOperation(payload.operation, question, participant);
       const command = await enqueueSignedCommand(deps, actor, {
-        occurrence_key:
-          question?.occurrence_key ?? (await ensureSession(deps, actor, now)).occurrence_key,
+        occurrence_key: question.occurrence_key,
         command_type: payload.operation,
-        target_question_key: question?.question_key ?? null,
-        target_participant_key: participant?.participant_key ?? payload.participant_key ?? null,
+        target_question_key: question.question_key,
+        target_participant_key: participant.participant_key,
         obs_scene: null,
         idempotency_key: payload.idempotency_key,
         now,
       });
+      if (command.replay) {
+        throw new PortalServiceError('IDEMPOTENCY_CONFLICT', 'The Zoom command was replayed.');
+      }
       await deps.repository.recordAudit({
         actor,
         occurrence_key: question?.occurrence_key ?? command.command.occurrence_key,
@@ -574,6 +676,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
           video_start_model: 'PARTICIPANT_CONSENT',
         },
       });
+      await executeFakeZoomCommands(deps, actor, question, [command.command], now);
       return commandResponse(deps, actor, question, [command.command], now);
     },
 
@@ -626,6 +729,30 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       });
     },
 
+    async pollZoomCommands(actor: PortalActorContext, occurrenceKey: string) {
+      requireRabbi(actor);
+      if (!zoomHostControlConfigured(deps.config)) {
+        throw new PortalServiceError(
+          'ADAPTER_UNAVAILABLE',
+          'Meeting SDK host control is not configured.',
+        );
+      }
+      return deps.repository.listPendingZoomCommands({
+        actor,
+        occurrence_key: occurrenceKey,
+        now: clock(),
+      });
+    },
+
+    async reportZoomCommand(actor: PortalActorContext, payload: LiveClassObsCommandReportPayload) {
+      requireRabbi(actor);
+      const command = await deps.repository.reportCommand({ actor, payload, now: clock() });
+      if (!command) {
+        throw new PortalServiceError('FORBIDDEN', 'The live command was stale or replayed.');
+      }
+      return { accepted: true };
+    },
+
     async reportObsCommand(
       actor: Pick<PortalActorContext, 'account_key' | 'product_key'>,
       payload: LiveClassObsCommandReportPayload,
@@ -638,7 +765,7 @@ export function createLiveClassService(deps: LiveClassServiceDeps) {
       if (!accepted) {
         throw new PortalServiceError('FORBIDDEN', 'The live command was stale or replayed.');
       }
-      return { accepted };
+      return { accepted: true };
     },
   };
 }
@@ -718,13 +845,14 @@ async function snapshot(
         provider: 'meeting_sdk',
         adapter: mode,
         sdk_credentials_configured: zoomSdkConfigured(deps.config),
+        host_control_configured: zoomHostControlConfigured(deps.config),
         live_control_uses_rest_api: false,
         can_force_camera_on: false,
         video_start_model: 'PARTICIPANT_CONSENT',
-        setup_job: zoomSdkConfigured(deps.config) ? null : zoomSetupJob(),
+        setup_job: zoomHostControlConfigured(deps.config) ? null : zoomSetupJob(),
       },
       obs: {
-        bridge_required: true,
+        bridge_required: false,
         connected: false,
         current_scene: stage.current_scene,
         allowed_scenes: [...CANONICAL_OBS_SCENES],
@@ -859,7 +987,66 @@ async function ensureQuestionParticipant(
   });
 }
 
-function fakeZoomPatch(operation: LiveClassZoomControlPayload['operation']) {
+async function executeFakeZoomCommands(
+  deps: LiveClassServiceDeps,
+  actor: Pick<PortalActorContext, 'account_key' | 'product_key'>,
+  question: LiveClassQuestion,
+  commands: LiveClassControlCommand[],
+  now: Date,
+) {
+  if (zoomAdapterMode(deps.config) !== 'fake') return;
+  for (const command of commands) {
+    if (command.command_type === 'obs_switch_scene') continue;
+    const accepted = await deps.repository.reportCommand({
+      actor,
+      payload: {
+        command_key: command.command_key,
+        nonce: command.nonce,
+        signature: command.signature,
+        status: 'executed',
+        result: 'fake adapter executed',
+      },
+      now,
+    });
+    if (!accepted) {
+      throw new PortalServiceError('FORBIDDEN', 'The fake Zoom command was stale or replayed.');
+    }
+    await ensureQuestionParticipant(deps, actor, question, fakeZoomPatch(command.command_type));
+  }
+}
+
+function validateZoomOperation(
+  operation: LiveClassZoomControlPayload['operation'],
+  question: LiveClassQuestion,
+  participant: LiveClassParticipant,
+) {
+  if (participant.join_state !== 'joined') {
+    throw new PortalServiceError('VALIDATION_ERROR', 'The selected participant is not joined.');
+  }
+  if (operation === 'spotlight_replace') {
+    if (question.status !== 'student_ready' && question.status !== 'live') {
+      throw new PortalServiceError(
+        'VALIDATION_ERROR',
+        'The student must tap ready before spotlight is allowed.',
+      );
+    }
+    requireParticipantReadyForSpotlight(participant);
+  }
+  if (operation === 'stop_video' && participant.video_state !== 'on') {
+    throw new PortalServiceError('VALIDATION_ERROR', 'The participant video is not on.');
+  }
+}
+
+function requireParticipantReadyForSpotlight(participant: LiveClassParticipant) {
+  if (participant.join_state !== 'joined' || participant.video_state !== 'on') {
+    throw new PortalServiceError(
+      'VALIDATION_ERROR',
+      'Spotlight requires a joined participant who has started video.',
+    );
+  }
+}
+
+function fakeZoomPatch(operation: LiveClassControlCommand['command_type']) {
   if (operation === 'mute') return { audio_state: 'muted' } as const;
   if (operation === 'spotlight_replace') return { spotlighted: true } as const;
   if (operation === 'spotlight_remove') return { spotlighted: false } as const;
@@ -901,8 +1088,20 @@ function zoomSdkConfigured(config: AppConfig) {
   );
 }
 
+function zoomHostControlConfigured(config: AppConfig) {
+  return Boolean(
+    zoomSdkConfigured(config) &&
+    config.zoomAccountId &&
+    config.zoomServerToServerClientId &&
+    config.zoomServerToServerClientSecret &&
+    config.zoomHostUserId &&
+    config.zoomRealControlMeetingId &&
+    config.zoomRealControlMeetingPasscode,
+  );
+}
+
 function zoomAdapterMode(config: AppConfig): 'fake' | 'meeting_sdk_host' {
-  return zoomSdkConfigured(config) ? 'meeting_sdk_host' : 'fake';
+  return zoomHostControlConfigured(config) ? 'meeting_sdk_host' : 'fake';
 }
 
 function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['setup_job']> {
@@ -911,7 +1110,8 @@ function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['s
     title: 'Create One Time Meeting SDK App',
     status: 'operator_action_required',
     scopes: [
-      'Meeting SDK app credentials',
+      'General app with Meeting SDK enabled',
+      'Development Client ID and Client Secret',
       'Host/co-host in-meeting control from Meeting SDK session',
       'Participant roster, audio/video state, active speaker, and spotlight events',
     ],
@@ -919,9 +1119,10 @@ function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['s
       'Save Meeting SDK client ID, client secret, and web version only as protected Railway PR environment variables or local secret storage.',
     steps: [
       'Open Zoom Marketplace, choose Develop, then Build App.',
-      'Create a Meeting SDK app named One Time Zoom Stage Host.',
-      'Set the app type to Meeting SDK and add the PR preview origin to allowlisted domains.',
-      'Copy the SDK key and SDK secret into protected local or Railway PR environment variables.',
+      'Create an admin-managed General app named One Time Zoom Stage Host.',
+      'On Features > Embed, enable Meeting SDK for Other Devices.',
+      'Set the exact PR callback as the OAuth redirect and allow-list entry with strict mode enabled.',
+      'Store the development Client ID and Client Secret in the protected Railway PR environment.',
       'Confirm the classroom account can start or join the class meeting as host or co-host.',
     ],
   };

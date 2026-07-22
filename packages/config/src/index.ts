@@ -176,13 +176,19 @@ const envSchema = z.object({
   ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES: numberFromString.default(15),
   ZOOM_MEETING_SDK_CLIENT_ID: z.string().optional(),
   ZOOM_MEETING_SDK_CLIENT_SECRET: z.string().optional(),
-  ZOOM_MEETING_SDK_WEB_VERSION: z.string().optional(),
+  ZOOM_MEETING_SDK_WEB_VERSION: z
+    .string()
+    .regex(/^\d+\.\d+\.\d+$/)
+    .default('6.2.0'),
   ZOOM_MEETING_SDK_KEY: z.string().optional(),
   ZOOM_MEETING_SDK_SECRET: z.string().optional(),
   ZOOM_S2S_ACCOUNT_ID: z.string().optional(),
   ZOOM_S2S_CLIENT_ID: z.string().optional(),
   ZOOM_S2S_CLIENT_SECRET: z.string().optional(),
   ZOOM_ACCOUNT_ID: z.string().optional(),
+  ZOOM_HOST_USER_ID: z.string().optional(),
+  ZOOM_REAL_CONTROL_MEETING_ID: z.string().optional(),
+  ZOOM_REAL_CONTROL_MEETING_PASSCODE: z.string().optional(),
   ONE_TIME_EVENT_EMAIL_FALLBACK: z.enum(['disabled', 'resend']).default('disabled'),
   ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: z.url().optional(),
   ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF: optionalTrimmedString(4, 240),
@@ -526,6 +532,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomClassroomClassDurationMinutes: parsed.ZOOM_CLASSROOM_CLASS_DURATION_MINUTES,
     zoomClassroomJoinOpenOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_OPEN_OFFSET_MINUTES,
     zoomClassroomJoinCloseOffsetMinutes: parsed.ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES,
+    zoomMeetingSdkClientId:
+      parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
+    zoomMeetingSdkClientSecret:
+      parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
+    zoomMeetingSdkWebVersion: parsed.ZOOM_MEETING_SDK_WEB_VERSION,
     zoomMeetingSdkClientIdConfigured: Boolean(
       parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
     ),
@@ -537,6 +548,19 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
       (!parsed.ZOOM_MEETING_SDK_CLIENT_ID && parsed.ZOOM_MEETING_SDK_KEY) ||
       (!parsed.ZOOM_MEETING_SDK_CLIENT_SECRET && parsed.ZOOM_MEETING_SDK_SECRET),
     ),
+    zoomMeetingSdkKeyConfigured: Boolean(
+      parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
+    ),
+    zoomMeetingSdkSecretConfigured: Boolean(
+      parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
+    ),
+    zoomAccountId: parsed.ZOOM_ACCOUNT_ID ?? parsed.ZOOM_S2S_ACCOUNT_ID,
+    zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID ?? parsed.ZOOM_S2S_ACCOUNT_ID),
+    zoomServerToServerClientId: parsed.ZOOM_S2S_CLIENT_ID,
+    zoomServerToServerClientSecret: parsed.ZOOM_S2S_CLIENT_SECRET,
+    zoomHostUserId: parsed.ZOOM_HOST_USER_ID,
+    zoomRealControlMeetingId: parsed.ZOOM_REAL_CONTROL_MEETING_ID,
+    zoomRealControlMeetingPasscode: parsed.ZOOM_REAL_CONTROL_MEETING_PASSCODE,
     zoomS2sAccountIdConfigured: Boolean(parsed.ZOOM_S2S_ACCOUNT_ID ?? parsed.ZOOM_ACCOUNT_ID),
     zoomS2sClientIdConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_ID),
     zoomS2sClientSecretConfigured: Boolean(parsed.ZOOM_S2S_CLIENT_SECRET),

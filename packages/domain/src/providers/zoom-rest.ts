@@ -48,6 +48,22 @@ export type ZoomDailyMeetingRecord = {
   raw_join_url_present: false;
 };
 
+export type ZoomIsolatedMeetingRecord = {
+  provider: 'zoom';
+  meeting_id: string;
+  provider_meeting_ref_digest: string;
+  type: 2;
+  starts_at: string;
+  duration_minutes: number;
+  raw_start_url_present: false;
+  raw_join_url_present: false;
+};
+
+export type ZoomIsolatedMeetingPrivateMaterial = {
+  meeting: ZoomIsolatedMeetingRecord;
+  password: string;
+};
+
 export type ZoomOccurrenceReference = {
   occurrence_id: string;
   starts_at: string;
@@ -57,7 +73,7 @@ export type ZoomOccurrenceReference = {
 
 export type ZoomRegistrantInput = {
   meetingId: string;
-  occurrenceId: string;
+  occurrenceId?: string | undefined;
   learnerKey: string;
   displayName: string;
   email: string;
@@ -110,7 +126,10 @@ const meetingResponseSchema = z.object({
     .default([]),
   start_url: z.string().optional(),
   join_url: z.string().optional(),
+  password: z.string().optional().default(''),
 });
+
+const zakResponseSchema = z.object({ token: z.string().min(16) });
 
 const registrantResponseSchema = z.object({
   id: z.union([z.string(), z.number()]).optional(),
@@ -178,6 +197,49 @@ export function createZoomRestClient(options: ZoomRestClientOptions) {
   }
 
   return {
+    async createIsolatedTestMeeting(input: {
+      hostUserId: string;
+      startsAt: Date;
+      topic: string;
+      durationMinutes: number;
+    }): Promise<ZoomIsolatedMeetingPrivateMaterial> {
+      const json = await zoomJson(`/users/${encodeURIComponent(input.hostUserId)}/meetings`, {
+        method: 'POST',
+        body: JSON.stringify({
+          topic: input.topic,
+          type: 2,
+          start_time: input.startsAt.toISOString(),
+          timezone: 'Asia/Jerusalem',
+          duration: input.durationMinutes,
+          agenda: 'Isolated fictional-student control verification. No customer invitations.',
+          settings: {
+            approval_type: 0,
+            registrants_confirmation_email: false,
+            registrants_email_notification: false,
+            join_before_host: false,
+            mute_upon_entry: true,
+            participant_video: false,
+            host_video: true,
+            waiting_room: true,
+          },
+        }),
+      });
+      const parsed = meetingResponseSchema.parse(json);
+      return {
+        meeting: {
+          provider: 'zoom',
+          meeting_id: parsed.id,
+          provider_meeting_ref_digest: redactedRefHash(parsed.id),
+          type: 2,
+          starts_at: input.startsAt.toISOString(),
+          duration_minutes: input.durationMinutes,
+          raw_start_url_present: false,
+          raw_join_url_present: false,
+        },
+        password: parsed.password,
+      };
+    },
+
     async createDailyRecurringMeeting(
       input: ZoomDailyMeetingInput,
     ): Promise<ZoomDailyMeetingRecord> {
@@ -223,7 +285,9 @@ export function createZoomRestClient(options: ZoomRestClientOptions) {
 
     async addLearnerRegistrant(input: ZoomRegistrantInput): Promise<ZoomRegistrantRecord> {
       const display = splitDisplayName(input.displayName);
-      const path = `/meetings/${encodeURIComponent(input.meetingId)}/registrants?occurrence_ids=${encodeURIComponent(input.occurrenceId)}`;
+      const path = input.occurrenceId
+        ? `/meetings/${encodeURIComponent(input.meetingId)}/registrants?occurrence_ids=${encodeURIComponent(input.occurrenceId)}`
+        : `/meetings/${encodeURIComponent(input.meetingId)}/registrants`;
       const json = await zoomJson(path, {
         method: 'POST',
         body: JSON.stringify({
@@ -239,19 +303,40 @@ export function createZoomRestClient(options: ZoomRestClientOptions) {
       return {
         provider: 'zoom',
         meeting_id_digest: redactedRefHash(input.meetingId),
-        occurrence_id: input.occurrenceId,
+        occurrence_id: input.occurrenceId ?? 'single',
         learner_key: input.learnerKey,
         registrant_id_digest: redactedRefHash(String(registrantId)),
         registrant_token: token,
         registrant_token_ref: stableProviderKey('zoom_registrant_token', [
           input.meetingId,
-          input.occurrenceId,
+          input.occurrenceId ?? 'single',
           input.learnerKey,
           String(registrantId),
         ]),
         join_url_digest: redactedRefHash(parsed.join_url),
         raw_join_url_present: false,
       };
+    },
+
+    async enableMeetingRegistration(meetingId: string) {
+      await zoomJson(`/meetings/${encodeURIComponent(meetingId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          settings: {
+            approval_type: 1,
+            registration_type: 1,
+            registrants_confirmation_email: false,
+            registrants_email_notification: false,
+          },
+        }),
+      });
+    },
+
+    async getHostZakToken(hostUserId: string) {
+      const json = await zoomJson(`/users/${encodeURIComponent(hostUserId)}/token?type=zak`, {
+        method: 'GET',
+      });
+      return zakResponseSchema.parse(json).token;
     },
   };
 }
@@ -262,6 +347,25 @@ export function createLearnerZoomSdkSignature(input: {
   issuedAt?: Date | undefined;
   ttlSeconds?: number | undefined;
 }) {
+  return createZoomMeetingSdkSignature({ ...input, role: 0 });
+}
+
+export function createHostZoomSdkSignature(input: {
+  credentials: ZoomMeetingSdkCredentials;
+  meetingNumber: string;
+  issuedAt?: Date | undefined;
+  ttlSeconds?: number | undefined;
+}) {
+  return createZoomMeetingSdkSignature({ ...input, role: 1 });
+}
+
+export function createZoomMeetingSdkSignature(input: {
+  credentials: ZoomMeetingSdkCredentials;
+  meetingNumber: string;
+  role: 0 | 1;
+  issuedAt?: Date | undefined;
+  ttlSeconds?: number | undefined;
+}) {
   const issuedAtSeconds = Math.floor((input.issuedAt ?? new Date()).getTime() / 1000);
   const ttlSeconds = Math.min(Math.max(input.ttlSeconds ?? 2 * 60 * 60, 30 * 60), 2 * 60 * 60);
   return signJwt(
@@ -269,7 +373,7 @@ export function createLearnerZoomSdkSignature(input: {
       appKey: input.credentials.sdkKey,
       sdkKey: input.credentials.sdkKey,
       mn: input.meetingNumber,
-      role: 0,
+      role: input.role,
       iat: issuedAtSeconds,
       exp: issuedAtSeconds + ttlSeconds,
       tokenExp: issuedAtSeconds + ttlSeconds,

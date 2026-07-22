@@ -104,7 +104,7 @@ function LiveConsole() {
           </div>
           <div className="live-console__status">
             <StatusPill label="Zoom" value={data?.zoom.adapter ?? 'fake'} />
-            <StatusPill label="OBS" value={data?.obs.connected ? 'connected' : 'bridge needed'} />
+            <StatusPill label="OBS" value={data?.obs.connected ? 'connected' : 'optional off'} />
             <StatusPill label="Telegram" value="optional off" />
           </div>
         </header>
@@ -416,6 +416,21 @@ function ZoomHealth({ data }: { data: ConsoleData | null }) {
       <p>Mode: {data?.zoom.adapter ?? 'fake'}</p>
       <p>REST live control: no</p>
       <p>Video start model: participant consent</p>
+      {data?.zoom.host_control_configured ? (
+        <a
+          className="ot-button"
+          href="/app/live-console/zoom-host"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Open Protected Zoom Host
+        </a>
+      ) : (
+        <p>
+          Provider off: Meeting SDK General-app credentials are absent. Controlled fake execution
+          remains active in this preview.
+        </p>
+      )}
       {job && (
         <details>
           <summary>

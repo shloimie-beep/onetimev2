@@ -16,10 +16,11 @@ let config: AppConfig;
 let repository: LiveClassRepository;
 let service: LiveClassService;
 
-let now: Date;
+const now = new Date('2027-07-21T16:05:00.000Z');
+let clockNow = now;
 
 beforeEach(async () => {
-  now = new Date();
+  clockNow = now;
   config = loadConfig({
     NODE_ENV: 'test',
     PUBLIC_BASE_URL: 'https://join.onetimeonetime.com',
@@ -32,7 +33,7 @@ beforeEach(async () => {
   pool = createMemoryPool();
   await runMigrations(pool);
   repository = createLiveClassRepository(pool);
-  service = createLiveClassService({ config, repository, clock: () => now });
+  service = createLiveClassService({ config, repository, clock: () => clockNow });
   await seedLearner('household_alpha', 'learner_alpha', 'Alpha Student');
   await seedLearner('household_beta', 'learner_beta', 'Beta Student');
 });
@@ -189,6 +190,11 @@ describe('live class question lifecycle', () => {
       },
     );
     await service.selectQuestion(rabbiActor(), submitted.question.question_key, 'live-select-3');
+    await service.markReady(
+      studentActor('learner_alpha', 'household_alpha'),
+      submitted.question.question_key,
+      { idempotency_key: 'live-alpha-ready-3', ready: true, video_ready: true },
+    );
     await service.zoomControl(rabbiActor(), {
       operation: 'spotlight_replace',
       question_key: submitted.question.question_key,
@@ -205,6 +211,149 @@ describe('live class question lifecycle', () => {
       (item) => item.customer_key === submitted.question.customer_key,
     );
     expect(participant?.spotlighted).toBe(true);
+  });
+
+  it('denies a cross-student target and rejects an expired Zoom command report', async () => {
+    const session = await repository.ensureLiveSession({
+      actor: rabbiActor(),
+      now,
+      expires_at: new Date(now.getTime() + 60 * 60_000),
+    });
+    const alpha = await service.submitQuestion(studentActor('learner_alpha', 'household_alpha'), {
+      occurrence_key: session.occurrence_key,
+      body: 'Alpha controlled command',
+      idempotency_key: 'live-alpha-cross-target',
+    });
+    const beta = await service.submitQuestion(studentActor('learner_beta', 'household_beta'), {
+      occurrence_key: session.occurrence_key,
+      body: 'Beta controlled command',
+      idempotency_key: 'live-beta-cross-target',
+    });
+    await service.selectQuestion(rabbiActor(), alpha.question.question_key, 'live-select-cross');
+    await service.markReady(
+      studentActor('learner_alpha', 'household_alpha'),
+      alpha.question.question_key,
+      { idempotency_key: 'live-alpha-ready-cross', ready: true, video_ready: true },
+    );
+    const participants = (await service.consoleSnapshot(rabbiActor(), session.occurrence_key)).data
+      .participants;
+    const betaParticipant = participants.find(
+      (participant) => participant.customer_key === beta.question.customer_key,
+    );
+    await expect(
+      service.zoomControl(rabbiActor(), {
+        operation: 'mute',
+        question_key: alpha.question.question_key,
+        participant_key: betaParticipant!.participant_key,
+        idempotency_key: 'live-cross-student-denied',
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+
+    const inserted = await repository.enqueueCommand({
+      actor: rabbiActor(),
+      command: {
+        command_key: 'live_expiring_zoom_command',
+        command_type: 'mute',
+        occurrence_key: session.occurrence_key,
+        target_question_key: alpha.question.question_key,
+        target_participant_key: participants.find(
+          (participant) => participant.customer_key === alpha.question.customer_key,
+        )!.participant_key,
+        obs_scene: null,
+        idempotency_key: 'live-expiry-command',
+        request_hash: 'request_hash_expiry',
+        nonce: 'nonce_expiry_command',
+        signature: 'signature_expiry_command',
+        expires_at: new Date(now.getTime() + 45_000),
+        created_by_user_ref: rabbiActor().actor_user_ref,
+      },
+    });
+    const command = inserted.command;
+    clockNow = new Date(now.getTime() + 46_000);
+    await expect(
+      service.reportObsCommand(
+        { account_key: config.accountKey, product_key: config.productKey },
+        {
+          command_key: command.command_key,
+          nonce: command.nonce,
+          signature: command.signature,
+          status: 'executed',
+          result: 'late report',
+        },
+      ),
+    ).rejects.toBeInstanceOf(PortalServiceError);
+  });
+
+  it('maps Meeting SDK participants only by the stable per-join customer key', async () => {
+    const session = await repository.ensureLiveSession({
+      actor: rabbiActor(),
+      now,
+      expires_at: new Date(now.getTime() + 60 * 60_000),
+    });
+    const submitted = await service.submitQuestion(
+      studentActor('learner_alpha', 'household_alpha'),
+      {
+        occurrence_key: session.occurrence_key,
+        body: 'Stable mapping question',
+        idempotency_key: 'live-stable-mapping-question',
+      },
+    );
+    const realConfig = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk_client_test',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
+      ZOOM_ACCOUNT_ID: 'zoom_account_test',
+      ZOOM_S2S_CLIENT_ID: 's2s_client_test',
+      ZOOM_S2S_CLIENT_SECRET: 's2s_secret_test',
+      ZOOM_HOST_USER_ID: 'host_user_test',
+      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
+    });
+    const realService = createLiveClassService({
+      config: realConfig,
+      repository,
+      clock: () => clockNow,
+    });
+    const mapped = await realService.syncZoomParticipants(rabbiActor(), {
+      occurrence_key: session.occurrence_key,
+      participants: [
+        {
+          customer_key: submitted.question.customer_key,
+          provider_user_id: '12345',
+          join_state: 'joined',
+          audio_state: 'muted',
+          video_state: 'on',
+          active_speaker: false,
+          spotlighted: false,
+        },
+      ],
+    });
+    expect(mapped.mappings).toEqual([
+      expect.objectContaining({ customer_key: submitted.question.customer_key }),
+    ]);
+    const snapshot = await realService.consoleSnapshot(rabbiActor(), session.occurrence_key);
+    expect(
+      snapshot.data.participants.find(
+        (participant) => participant.customer_key === submitted.question.customer_key,
+      ),
+    ).toMatchObject({ join_state: 'joined', video_state: 'on' });
+    await expect(
+      realService.syncZoomParticipants(rabbiActor(), {
+        occurrence_key: session.occurrence_key,
+        participants: [
+          {
+            customer_key: 'zoom_customer_key_for_other_occurrence',
+            provider_user_id: '67890',
+            join_state: 'joined',
+            audio_state: 'muted',
+            video_state: 'off',
+            active_speaker: false,
+            spotlighted: false,
+          },
+        ],
+      }),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
   });
 });
 
