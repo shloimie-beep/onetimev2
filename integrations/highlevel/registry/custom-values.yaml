@@ -22,8 +22,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '8ca59ebfb4f7adab'
 -
   canonicalName: 'One Time Rabbi Name'
@@ -49,8 +49,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '38b8d5e95e97ce17'
 -
   canonicalName: 'One Time Sender Name'
@@ -77,8 +77,8 @@
     - 'migrate_to_registered_sender_key'
   deprecationState: 'deprecated_existing'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '8ca59ebfb4f7adab'
 -
   canonicalName: 'One Time Sender Email'
@@ -105,8 +105,8 @@
     - 'migrate_to_registered_sender_key'
   deprecationState: 'deprecated_existing'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a64728a6a2bb16c6'
 -
   canonicalName: 'One Time Reply-To Email'
@@ -133,8 +133,8 @@
     - 'migrate_to_registered_sender_key'
   deprecationState: 'deprecated_existing'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a64728a6a2bb16c6'
 -
   canonicalName: 'One Time Rabbi Campaign Sender Name'
@@ -160,8 +160,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '6cd9a86d282f59c5'
 -
   canonicalName: 'One Time Rabbi Campaign Phase 1 From'
@@ -187,8 +187,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a64728a6a2bb16c6'
 -
   canonicalName: 'One Time Rabbi Campaign Phase 2 From'
@@ -214,8 +214,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a987678811c253d3'
 -
   canonicalName: 'One Time Rabbi Personal Sender Name'
@@ -241,8 +241,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '38b8d5e95e97ce17'
 -
   canonicalName: 'One Time Rabbi Personal From'
@@ -268,8 +268,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a987678811c253d3'
 -
   canonicalName: 'One Time Office Sender Name'
@@ -295,8 +295,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '4cae599b7c5cf5e2'
 -
   canonicalName: 'One Time Office From'
@@ -322,8 +322,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a64728a6a2bb16c6'
 -
   canonicalName: 'One Time Brand Sender Name'
@@ -349,8 +349,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '8ca59ebfb4f7adab'
 -
   canonicalName: 'One Time Brand From'
@@ -376,8 +376,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a64728a6a2bb16c6'
 -
   canonicalName: 'One Time Account Sender Name'
@@ -403,8 +403,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '94f515243398e9ae'
 -
   canonicalName: 'One Time Account Preferred From'
@@ -430,8 +430,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '88b79ed1deacb1df'
 -
   canonicalName: 'One Time Default Reply-To'
@@ -457,8 +457,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a64728a6a2bb16c6'
 -
   canonicalName: 'One Time Program Short Description'
@@ -484,8 +484,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '58d65b2517c8f2af'
 -
   canonicalName: 'One Time Home URL'
@@ -511,8 +511,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '93435e57639e9bc1'
 -
   canonicalName: 'One Time Signup URL'
@@ -538,8 +538,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '974171385908288a'
 -
   canonicalName: 'One Time Member Login URL'
@@ -565,8 +565,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '23c3c4da660ca0ec'
 -
   canonicalName: 'One Time Password Help URL'
@@ -592,8 +592,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '09dc9d051f2713af'
 -
   canonicalName: 'One Time Parent Portal URL'
@@ -619,8 +619,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'fa626ad68d3005e3'
 -
   canonicalName: 'One Time Student Portal URL'
@@ -646,8 +646,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '7daca07c4c2739e0'
 -
   canonicalName: 'One Time Early Access URL'
@@ -781,8 +781,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '6151d1f5b0eb1966'
 -
   canonicalName: 'One Time Promotion Status'
@@ -809,8 +809,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'd1022618b99a974b'
 -
   canonicalName: 'One Time Promotion End Date Label'
@@ -864,8 +864,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'e564b4081d7a9ea4'
 -
   canonicalName: 'One Time Published Price Label'
@@ -918,8 +918,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '767f41f547937e73'
 -
   canonicalName: 'One Time Class Time Israel'
@@ -945,8 +945,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '9f8c31c8247070f3'
 -
   canonicalName: 'One Time Schedule Notice'
@@ -999,8 +999,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: 'a64728a6a2bb16c6'
 -
   canonicalName: 'One Time Public Bot Name'
@@ -1026,8 +1026,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '9278e33c632e4fbd'
 -
   canonicalName: 'One Time Public Bot Version'
@@ -1053,8 +1053,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '92521fc3cbd964bd'
 -
   canonicalName: 'One Time Knowledge Base Version'
@@ -1080,6 +1080,6 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
   liveValueFingerprint: '92521fc3cbd964bd'

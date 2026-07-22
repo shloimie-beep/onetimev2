@@ -3,7 +3,7 @@
   "schema_version": "1.1.0",
   "status": "active",
   "location_id": "pBSnOK2nkdxp6gf9Rg3o",
-  "generated_at": "2026-07-21T13:45:27.865Z",
+  "generated_at": "2026-07-22T06:16:21.012Z",
   "counts": {
     "standard_contact_fields": 8,
     "contact_custom_fields": 34,
@@ -212,8 +212,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Parent ID",
@@ -235,8 +235,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Household ID",
@@ -258,8 +258,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Customer Status",
@@ -300,8 +300,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Current Period End",
@@ -324,8 +324,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Subscription ID",
@@ -349,8 +349,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Grace Until",
@@ -372,8 +372,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Complimentary Until",
@@ -395,8 +395,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Early Access Status",
@@ -425,8 +425,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Migration Status",
@@ -454,8 +454,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Migration Sequence Version",
@@ -477,8 +477,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Portal Status",
@@ -507,8 +507,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Access Status",
@@ -539,8 +539,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Email Consent",
@@ -572,8 +572,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time WhatsApp Consent",
@@ -604,8 +604,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Reminder Preference",
@@ -633,8 +633,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Consent Policy Version",
@@ -657,8 +657,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Consent Captured At",
@@ -681,8 +681,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Suppression State",
@@ -712,8 +712,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Suppression Reason",
@@ -738,8 +738,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Newsletter Status",
@@ -768,8 +768,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Signup Source",
@@ -792,8 +792,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Source Channel",
@@ -823,8 +823,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Source Classification",
@@ -848,8 +848,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Import Batch",
@@ -871,8 +871,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Audience Type",
@@ -897,8 +897,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Family or School Name",
@@ -920,8 +920,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Last Sync",
@@ -949,8 +949,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Bot Request Type",
@@ -985,8 +985,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Preferred Delivery",
@@ -1011,8 +1011,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Signup Status",
@@ -1040,8 +1040,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Next Class At",
@@ -1064,8 +1064,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Class Time Zone",
@@ -1088,8 +1088,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "One Time Support Status",
@@ -1134,8 +1134,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Prelaunch",
@@ -1155,8 +1155,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Existing Subscriber",
@@ -1176,8 +1176,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Migration 2026",
@@ -1197,8 +1197,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Early Access Invited",
@@ -1218,8 +1218,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Early Access Activated",
@@ -1239,8 +1239,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Checkout Started",
@@ -1260,8 +1260,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Active",
@@ -1281,8 +1281,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Grace",
@@ -1302,8 +1302,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Canceled",
@@ -1323,8 +1323,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Former",
@@ -1344,8 +1344,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Complimentary",
@@ -1365,8 +1365,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Migration Email 1 Sent",
@@ -1386,8 +1386,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Migration Email 2 Sent",
@@ -1407,8 +1407,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Migration Email 3 Sent",
@@ -1428,8 +1428,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Migration Sequence Complete",
@@ -1449,8 +1449,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Portal Invited",
@@ -1470,8 +1470,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Portal Active",
@@ -1491,8 +1491,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Email Opt-In",
@@ -1512,8 +1512,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | WhatsApp Opt-In",
@@ -1533,8 +1533,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Consent Unknown",
@@ -1554,8 +1554,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Marketing Suppressed",
@@ -1575,8 +1575,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Weekly Newsletter",
@@ -1596,8 +1596,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Signup Website",
@@ -1617,8 +1617,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Signup WhatsApp",
@@ -1638,8 +1638,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Source | Rabbi Followers",
@@ -1659,8 +1659,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Source | Subscribed Audience",
@@ -1680,8 +1680,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Source | Cleaned Audience",
@@ -1701,8 +1701,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Source | Legacy Subscriber",
@@ -1722,8 +1722,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Source | Existing One Time CRM",
@@ -1743,8 +1743,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Payment Failed",
@@ -1764,8 +1764,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Refunded",
@@ -1785,8 +1785,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Chargeback",
@@ -1806,8 +1806,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Class Reminder Pending",
@@ -1827,8 +1827,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Recording Available",
@@ -1848,8 +1848,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Duplicate Merged",
@@ -1869,8 +1869,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Identity Conflict",
@@ -1890,8 +1890,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21"
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22"
     },
     {
       "canonicalName": "OT | Support Requested",
@@ -1936,8 +1936,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "8ca59ebfb4f7adab"
     },
     {
@@ -1960,8 +1960,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "38b8d5e95e97ce17"
     },
     {
@@ -1987,8 +1987,8 @@
       ],
       "deprecationState": "deprecated_existing",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "8ca59ebfb4f7adab"
     },
     {
@@ -2014,8 +2014,8 @@
       ],
       "deprecationState": "deprecated_existing",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a64728a6a2bb16c6"
     },
     {
@@ -2041,8 +2041,8 @@
       ],
       "deprecationState": "deprecated_existing",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a64728a6a2bb16c6"
     },
     {
@@ -2065,8 +2065,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "6cd9a86d282f59c5"
     },
     {
@@ -2089,8 +2089,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a64728a6a2bb16c6"
     },
     {
@@ -2113,8 +2113,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a987678811c253d3"
     },
     {
@@ -2137,8 +2137,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "38b8d5e95e97ce17"
     },
     {
@@ -2161,8 +2161,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a987678811c253d3"
     },
     {
@@ -2185,8 +2185,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "4cae599b7c5cf5e2"
     },
     {
@@ -2209,8 +2209,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a64728a6a2bb16c6"
     },
     {
@@ -2233,8 +2233,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "8ca59ebfb4f7adab"
     },
     {
@@ -2257,8 +2257,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a64728a6a2bb16c6"
     },
     {
@@ -2281,8 +2281,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "94f515243398e9ae"
     },
     {
@@ -2305,8 +2305,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "88b79ed1deacb1df"
     },
     {
@@ -2329,8 +2329,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a64728a6a2bb16c6"
     },
     {
@@ -2353,8 +2353,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "58d65b2517c8f2af"
     },
     {
@@ -2377,8 +2377,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "93435e57639e9bc1"
     },
     {
@@ -2401,8 +2401,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "974171385908288a"
     },
     {
@@ -2425,8 +2425,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "23c3c4da660ca0ec"
     },
     {
@@ -2449,8 +2449,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "09dc9d051f2713af"
     },
     {
@@ -2473,8 +2473,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "fa626ad68d3005e3"
     },
     {
@@ -2497,8 +2497,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "7daca07c4c2739e0"
     },
     {
@@ -2617,8 +2617,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "6151d1f5b0eb1966"
     },
     {
@@ -2644,8 +2644,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "d1022618b99a974b"
     },
     {
@@ -2695,8 +2695,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "e564b4081d7a9ea4"
     },
     {
@@ -2745,8 +2745,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "767f41f547937e73"
     },
     {
@@ -2769,8 +2769,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "9f8c31c8247070f3"
     },
     {
@@ -2817,8 +2817,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "a64728a6a2bb16c6"
     },
     {
@@ -2841,8 +2841,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "9278e33c632e4fbd"
     },
     {
@@ -2865,8 +2865,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "92521fc3cbd964bd"
     },
     {
@@ -2889,8 +2889,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "liveValueFingerprint": "92521fc3cbd964bd"
     }
   ],
@@ -3995,7 +3995,7 @@
       "key": "OT-C01",
       "canonicalName": "OT-C01 Tisha B'Av 2026 Warm Invitation",
       "normalizedName": "ot_c01_tisha_b_av_2026_warm_invitation",
-      "ghlId": "",
+      "ghlId": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
       "ghlKey": "ot_c01_tisha_b_av_2026_warm_invitation",
       "objectType": "business_workflow",
       "dataType": "workflow",
@@ -4009,10 +4009,10 @@
       "humansMayEdit": true,
       "dependencies": [],
       "aliases": [],
-      "deprecationState": "pending_creation",
+      "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "",
-      "lastTestedDate": "",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md",
       "messageClass": "rabbi_event_invitation",
@@ -4041,8 +4041,8 @@
       "aliases": [],
       "deprecationState": "active",
       "createdDate": "2026-07-21",
-      "lastVerifiedDate": "2026-07-21",
-      "lastTestedDate": "2026-07-21",
+      "lastVerifiedDate": "2026-07-22",
+      "lastTestedDate": "2026-07-22",
       "promptPath": "integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
       "checklistPath": "integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
       "messageClass": "event_registration_confirmation",
@@ -5255,7 +5255,7 @@
       "source": "Corrected public knowledge base from incoming bot pack direction",
       "created_date": "2026-07-21",
       "approved_date": "2026-07-21",
-      "ghl_asset_id": "",
+      "ghl_asset_id": "ps6jttZ8WUGycLeQX6uF",
       "required_fields": [
         "One Time Email Consent",
         "One Time WhatsApp Consent",
@@ -5288,7 +5288,7 @@
       ],
       "required_message_classes": [],
       "test_contact_reference": "protected_operator_owned_test_contact",
-      "last_tested_date": "",
+      "last_tested_date": "2026-07-22",
       "supersedes": [],
       "superseded_by": ""
     }
@@ -5348,5 +5348,243 @@
     "voice_ai_launch_active": false,
     "human_handoff_workflow_active": false,
     "human_task_creation_active": false
+  },
+  "workflow_readback": [
+    {
+      "canonicalName": "OT-01 New Lead Intake",
+      "id": null,
+      "canonicalFolder": "00 - Intake & Data",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-02A Existing Subscriber Migration 2026 v1",
+      "id": null,
+      "canonicalFolder": "10 - Nurture & Sales",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-02B New Lead Nurture v1",
+      "id": null,
+      "canonicalFolder": "10 - Nurture & Sales",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-03 Checkout Started / Abandoned",
+      "id": null,
+      "canonicalFolder": "20 - Billing & Access",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-04 Payment Active",
+      "id": null,
+      "canonicalFolder": "20 - Billing & Access",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-05 Payment Failed / Grace",
+      "id": null,
+      "canonicalFolder": "20 - Billing & Access",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-06 Subscription Canceled",
+      "id": null,
+      "canonicalFolder": "20 - Billing & Access",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-07 Parent Portal Invitation",
+      "id": null,
+      "canonicalFolder": "30 - Portal Lifecycle",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-08 Parent Portal Activated",
+      "id": null,
+      "canonicalFolder": "30 - Portal Lifecycle",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-09 Parent Class Reminder",
+      "id": null,
+      "canonicalFolder": "40 - Classes & Content",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-10 New Recording Available",
+      "id": null,
+      "canonicalFolder": "40 - Classes & Content",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-13 Refund / Chargeback",
+      "id": null,
+      "canonicalFolder": "20 - Billing & Access",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "canonicalFolder": "10 - Nurture & Sales",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "draft",
+      "createdAt": "2026-07-21T16:10:32.426Z",
+      "updatedAt": "2026-07-21T16:16:32.330Z",
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+      "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+      "canonicalFolder": "45 - Events",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "published",
+      "createdAt": "2026-07-21T13:10:47.185Z",
+      "updatedAt": "2026-07-22T05:33:12.698Z",
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-B01 Complete Signup",
+      "id": null,
+      "canonicalFolder": "00 - Intake & Data",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-B02 Send Next Confirmed Class Info",
+      "id": null,
+      "canonicalFolder": "40 - Classes & Content",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-B03 Send Member Login",
+      "id": null,
+      "canonicalFolder": "30 - Portal Lifecycle",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-B04 Send Password Help",
+      "id": null,
+      "canonicalFolder": "30 - Portal Lifecycle",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    },
+    {
+      "canonicalName": "OT-B05 Apply Opt-Out",
+      "id": null,
+      "canonicalFolder": "00 - Intake & Data",
+      "liveFolder": null,
+      "liveFolderSource": "api_not_exposed",
+      "status": "missing",
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    }
+  ],
+  "provider_asset_readback": {
+    "conversation_ai": {
+      "status": "verified",
+      "liveTotal": 0,
+      "canonical": {
+        "canonicalName": "OT-A1 One Time Enrollment Assistant",
+        "id": null,
+        "mode": "missing",
+        "channels": [],
+        "knowledgeBaseIds": [],
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      }
+    },
+    "knowledge_bases": {
+      "status": "verified",
+      "liveTotal": 2,
+      "canonical": {
+        "canonicalName": "One Time Mishnayos - Public Program and Support",
+        "id": "ps6jttZ8WUGycLeQX6uF",
+        "createdAt": "2026-07-21T16:38:38.158Z",
+        "updatedAt": "2026-07-21T16:43:24.922Z",
+        "duplicateCandidates": []
+      }
+    }
   }
 }

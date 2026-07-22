@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-07-21T13:45:27.865Z",
-  "mode": "apply",
+  "generatedAt": "2026-07-22T06:16:21.012Z",
+  "mode": "dry_run",
   "location": {
     "status": "verified",
     "locationId": "pBSnOK2nkdxp6gf9Rg3o",
@@ -222,9 +222,246 @@
   },
   "workflows": {
     "status": "ui_required",
-    "present": 1,
-    "missing": 18,
-    "deprecatedPresent": 0
+    "present": 2,
+    "missing": 17,
+    "deprecatedPresent": 0,
+    "liveTotal": 2,
+    "canonical": [
+      {
+        "canonicalName": "OT-01 New Lead Intake",
+        "id": null,
+        "canonicalFolder": "00 - Intake & Data",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-02A Existing Subscriber Migration 2026 v1",
+        "id": null,
+        "canonicalFolder": "10 - Nurture & Sales",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-02B New Lead Nurture v1",
+        "id": null,
+        "canonicalFolder": "10 - Nurture & Sales",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-03 Checkout Started / Abandoned",
+        "id": null,
+        "canonicalFolder": "20 - Billing & Access",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-04 Payment Active",
+        "id": null,
+        "canonicalFolder": "20 - Billing & Access",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-05 Payment Failed / Grace",
+        "id": null,
+        "canonicalFolder": "20 - Billing & Access",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-06 Subscription Canceled",
+        "id": null,
+        "canonicalFolder": "20 - Billing & Access",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-07 Parent Portal Invitation",
+        "id": null,
+        "canonicalFolder": "30 - Portal Lifecycle",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-08 Parent Portal Activated",
+        "id": null,
+        "canonicalFolder": "30 - Portal Lifecycle",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-09 Parent Class Reminder",
+        "id": null,
+        "canonicalFolder": "40 - Classes & Content",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-10 New Recording Available",
+        "id": null,
+        "canonicalFolder": "40 - Classes & Content",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-13 Refund / Chargeback",
+        "id": null,
+        "canonicalFolder": "20 - Billing & Access",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+        "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+        "canonicalFolder": "10 - Nurture & Sales",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "draft",
+        "createdAt": "2026-07-21T16:10:32.426Z",
+        "updatedAt": "2026-07-21T16:16:32.330Z",
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+        "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+        "canonicalFolder": "45 - Events",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "published",
+        "createdAt": "2026-07-21T13:10:47.185Z",
+        "updatedAt": "2026-07-22T05:33:12.698Z",
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-B01 Complete Signup",
+        "id": null,
+        "canonicalFolder": "00 - Intake & Data",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-B02 Send Next Confirmed Class Info",
+        "id": null,
+        "canonicalFolder": "40 - Classes & Content",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-B03 Send Member Login",
+        "id": null,
+        "canonicalFolder": "30 - Portal Lifecycle",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-B04 Send Password Help",
+        "id": null,
+        "canonicalFolder": "30 - Portal Lifecycle",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      },
+      {
+        "canonicalName": "OT-B05 Apply Opt-Out",
+        "id": null,
+        "canonicalFolder": "00 - Intake & Data",
+        "liveFolder": null,
+        "liveFolderSource": "api_not_exposed",
+        "status": "missing",
+        "createdAt": null,
+        "updatedAt": null,
+        "duplicateCandidates": []
+      }
+    ]
+  },
+  "conversationAi": {
+    "status": "verified",
+    "liveTotal": 0,
+    "canonical": {
+      "canonicalName": "OT-A1 One Time Enrollment Assistant",
+      "id": null,
+      "mode": "missing",
+      "channels": [],
+      "knowledgeBaseIds": [],
+      "createdAt": null,
+      "updatedAt": null,
+      "duplicateCandidates": []
+    }
+  },
+  "knowledgeBases": {
+    "status": "verified",
+    "liveTotal": 2,
+    "canonical": {
+      "canonicalName": "One Time Mishnayos - Public Program and Support",
+      "id": "ps6jttZ8WUGycLeQX6uF",
+      "createdAt": "2026-07-21T16:38:38.158Z",
+      "updatedAt": "2026-07-21T16:43:24.922Z",
+      "duplicateCandidates": []
+    }
   },
   "testContact": {
     "emailConfigured": false,
@@ -253,7 +490,7 @@
     "workflow_ui_setup_required"
   ],
   "protectedOutputs": {
-    "privateReport": "C:/Users/User/.onetime-highlevel-private/sender-registry-v1-1-final-readback.private.json",
+    "privateReport": "C:/Users/User/.onetime-highlevel-private/current-state-20260722.private.json",
     "importDirectory": "C:/Users/User/.onetime-highlevel-private/imports",
     "manifest": "C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-import-manifest.private.json",
     "contactMap": "C:/Users/User/.onetime-highlevel-private/imports/one-time-ghl-contact-map.private.json",

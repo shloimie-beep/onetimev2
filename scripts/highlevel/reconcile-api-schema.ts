@@ -81,6 +81,44 @@ type GhlWorkflow = {
   id?: string;
   name?: string;
   status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  folderId?: string;
+  folderName?: string;
+};
+
+type GhlConversationAiAgent = {
+  id?: string;
+  name?: string;
+  mode?: string;
+  channels?: string[];
+  knowledgeBaseIds?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type GhlKnowledgeBase = {
+  id?: string;
+  name?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type WorkflowReadbackEntry = {
+  canonicalName: string;
+  id: string | null;
+  canonicalFolder: string;
+  liveFolder: string | null;
+  liveFolderSource: 'api' | 'api_not_exposed';
+  status: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+  duplicateCandidates: Array<{
+    id: string | null;
+    name: string | null;
+    status: string | null;
+    updatedAt: string | null;
+  }>;
 };
 
 type PromptRecord = {
@@ -128,6 +166,11 @@ type CurrentRegistry = {
   deprecations: unknown;
   protected_import_paths: typeof protectedImportPaths;
   safety: Record<string, boolean | number>;
+  workflow_readback?: WorkflowReadbackEntry[];
+  provider_asset_readback?: {
+    conversation_ai: ReconciliationReport['conversationAi'];
+    knowledge_bases: ReconciliationReport['knowledgeBases'];
+  };
 };
 
 type RegistryCustomValueRecord = RegistryCustomValue & {
@@ -175,6 +218,8 @@ type WorkflowReport = {
   present: Array<{ name: string; id: string | null; status: string | null }>;
   missing: string[];
   deprecated_present: Array<{ name: string; id: string | null; status: string | null }>;
+  records: WorkflowReadbackEntry[];
+  liveTotal: number | null;
   blocker?: string;
 };
 
@@ -200,6 +245,42 @@ type ReconciliationReport = {
     blocker?: string;
   };
   workflows: WorkflowReport;
+  conversationAi: {
+    status: 'verified' | 'blocked';
+    liveTotal: number | null;
+    canonical: {
+      canonicalName: string;
+      id: string | null;
+      mode: string;
+      channels: string[];
+      knowledgeBaseIds: string[];
+      createdAt: string | null;
+      updatedAt: string | null;
+      duplicateCandidates: Array<{
+        id: string | null;
+        name: string | null;
+        mode: string | null;
+        updatedAt: string | null;
+      }>;
+    };
+    blocker?: string;
+  };
+  knowledgeBases: {
+    status: 'verified' | 'blocked';
+    liveTotal: number | null;
+    canonical: {
+      canonicalName: string;
+      id: string | null;
+      createdAt: string | null;
+      updatedAt: string | null;
+      duplicateCandidates: Array<{
+        id: string | null;
+        name: string | null;
+        updatedAt: string | null;
+      }>;
+    };
+    blocker?: string;
+  };
   testContact: ReturnType<HighLevelApiClient['testContactState']>;
   externalEffects: {
     highLevelCustomFieldsCreated: number;
@@ -247,7 +328,12 @@ async function main() {
 class HighLevelApiClient {
   constructor(private readonly credentials: Credentials) {}
 
-  async request<T>(method: string, apiPath: string, body?: unknown): Promise<GhlResult<T>> {
+  async request<T>(
+    method: string,
+    apiPath: string,
+    body?: unknown,
+    version = '2021-07-28',
+  ): Promise<GhlResult<T>> {
     let lastStatus = 0;
     let lastCode = 'retry_exhausted';
     let lastMessage = 'retry_exhausted';
@@ -255,7 +341,7 @@ class HighLevelApiClient {
       const headers: Record<string, string> = {
         accept: 'application/json',
         authorization: `Bearer ${this.credentials.pit}`,
-        version: '2021-07-28',
+        version,
       };
       const init: RequestInit = { method, headers };
       if (body !== undefined) {
@@ -323,8 +409,17 @@ async function reconcileHighLevel(
   client: HighLevelApiClient,
   input: Pick<Args, 'apply' | 'createPipeline' | 'updatePipelineStages'>,
 ): Promise<ReconciliationReport> {
-  const [location, customFields, tags, customValuesReport, pipelines, contacts, workflows] =
-    await sequentialReconciliation(client, input);
+  const [
+    location,
+    customFields,
+    tags,
+    customValuesReport,
+    pipelines,
+    contacts,
+    workflows,
+    conversationAi,
+    knowledgeBases,
+  ] = await sequentialReconciliation(client, input);
   const blockers = [
     ...(location.status === 'blocked' ? [location.blocker] : []),
     ...customFields.filter(hasBlocker).map((entry) => entry.blocker),
@@ -333,6 +428,10 @@ async function reconcileHighLevel(
     ...pipelines.filter(hasBlocker).map((pipeline) => pipeline.blocker),
     ...(contacts.status === 'blocked' ? [contacts.blocker] : []),
     ...(workflows.status === 'blocked' ? [workflows.blocker] : []),
+    ...(conversationAi.status === 'blocked' ? [conversationAi.blocker] : []),
+    ...(knowledgeBases.status === 'blocked' ? [knowledgeBases.blocker] : []),
+    ...(conversationAi.canonical.mode === 'auto-pilot' ? ['ot_a1_unsafe_mode'] : []),
+    ...(!knowledgeBases.canonical.id ? ['public_knowledge_base_missing'] : []),
     ...(workflows.missing.length ? ['workflow_ui_setup_required'] : []),
   ].filter((blocker): blocker is string => Boolean(blocker));
 
@@ -347,6 +446,8 @@ async function reconcileHighLevel(
     pipelines,
     contacts,
     workflows,
+    conversationAi,
+    knowledgeBases,
     testContact: client.testContactState(),
     externalEffects: {
       highLevelCustomFieldsCreated: customFields.filter((entry) => entry.status === 'created')
@@ -390,6 +491,10 @@ async function sequentialReconciliation(
   const contacts = await probeContacts(client);
   await delay(250);
   const workflows = await verifyWorkflows(client);
+  await delay(250);
+  const conversationAi = await verifyConversationAi(client);
+  await delay(250);
+  const knowledgeBases = await verifyKnowledgeBases(client);
   return [
     location,
     customFields,
@@ -398,6 +503,8 @@ async function sequentialReconciliation(
     pipelines,
     contacts,
     workflows,
+    conversationAi,
+    knowledgeBases,
   ] as const;
 }
 
@@ -853,6 +960,7 @@ async function probeContacts(
 }
 
 async function verifyWorkflows(client: HighLevelApiClient): Promise<WorkflowReport> {
+  const activeWorkflows = [...businessWorkflows, ...botActionWorkflows];
   const result = await client.request<{ workflows?: GhlWorkflow[] }>(
     'GET',
     `/workflows/?locationId=${encodeURIComponent(client.locationId())}`,
@@ -865,24 +973,27 @@ async function verifyWorkflows(client: HighLevelApiClient): Promise<WorkflowRepo
         (workflow) => workflow.canonicalName,
       ),
       deprecated_present: [],
+      records: activeWorkflows.map((workflow) => workflowReadbackEntry(workflow, [])),
+      liveTotal: null,
       blocker: `workflow_read_failed:${result.status}:${result.code}`,
     };
   }
   const liveWorkflows = Array.isArray(result.body.workflows) ? result.body.workflows : [];
-  const activeWorkflows = [...businessWorkflows, ...botActionWorkflows];
-  const present = activeWorkflows
-    .map((workflow) => {
-      const match = findWorkflow(liveWorkflows, workflow);
-      return match
+  const records = activeWorkflows.map((workflow) =>
+    workflowReadbackEntry(workflow, findWorkflows(liveWorkflows, workflow)),
+  );
+  const present = records
+    .map((record) =>
+      record.id
         ? {
-            name: workflow.canonicalName,
-            id: match.id ?? null,
-            status: match.status ?? null,
+            name: record.canonicalName,
+            id: record.id,
+            status: record.status,
           }
-        : null;
-    })
-    .filter((workflow): workflow is { name: string; id: string | null; status: string | null } =>
-      Boolean(workflow),
+        : null,
+    )
+    .filter(
+      (workflow): workflow is { name: string; id: string; status: string } => workflow !== null,
     );
   const deprecatedPresent = deprecatedWorkflows
     .map((workflow) => {
@@ -901,10 +1012,111 @@ async function verifyWorkflows(client: HighLevelApiClient): Promise<WorkflowRepo
   return {
     status: present.length === activeWorkflows.length ? 'verified' : 'ui_required',
     present,
-    missing: activeWorkflows
-      .filter((workflow) => !present.some((entry) => entry.name === workflow.canonicalName))
-      .map((workflow) => workflow.canonicalName),
+    missing: records
+      .filter((record) => record.status === 'missing')
+      .map((record) => record.canonicalName),
     deprecated_present: deprecatedPresent,
+    records,
+    liveTotal: liveWorkflows.length,
+  };
+}
+
+async function verifyConversationAi(
+  client: HighLevelApiClient,
+): Promise<ReconciliationReport['conversationAi']> {
+  const result = await client.request<{
+    agents?: GhlConversationAiAgent[];
+    totalCount?: number;
+  }>('GET', '/conversation-ai/agents/search?limit=50', undefined, '2023-02-21');
+  const canonicalName = 'OT-A1 One Time Enrollment Assistant';
+  if (!result.ok) {
+    return {
+      status: 'blocked',
+      liveTotal: null,
+      canonical: {
+        canonicalName,
+        id: null,
+        mode: 'unknown',
+        channels: [],
+        knowledgeBaseIds: [],
+        createdAt: null,
+        updatedAt: null,
+        duplicateCandidates: [],
+      },
+      blocker: `conversation_ai_read_failed:${result.status}:${result.code}`,
+    };
+  }
+  const agents = Array.isArray(result.body.agents) ? result.body.agents : [];
+  const matches = agents.filter((agent) =>
+    candidateMatches(agent.name, [canonicalName, 'One Time Enrollment Assistant']),
+  );
+  const [primary, ...duplicates] = matches;
+  return {
+    status: 'verified',
+    liveTotal: result.body.totalCount ?? agents.length,
+    canonical: {
+      canonicalName,
+      id: primary?.id ?? null,
+      mode: primary?.mode ?? 'missing',
+      channels: primary?.channels ?? [],
+      knowledgeBaseIds: primary?.knowledgeBaseIds ?? [],
+      createdAt: primary?.createdAt ?? null,
+      updatedAt: primary?.updatedAt ?? null,
+      duplicateCandidates: duplicates.map((candidate) => ({
+        id: candidate.id ?? null,
+        name: candidate.name ?? null,
+        mode: candidate.mode ?? null,
+        updatedAt: candidate.updatedAt ?? null,
+      })),
+    },
+  };
+}
+
+async function verifyKnowledgeBases(
+  client: HighLevelApiClient,
+): Promise<ReconciliationReport['knowledgeBases']> {
+  const result = await client.request<{
+    data?: {
+      knowledgeBases?: GhlKnowledgeBase[];
+      activeCount?: number;
+    };
+  }>('GET', `/knowledge-bases/?locationId=${encodeURIComponent(client.locationId())}&limit=50`);
+  const canonicalName = 'One Time Mishnayos - Public Program and Support';
+  if (!result.ok) {
+    return {
+      status: 'blocked',
+      liveTotal: null,
+      canonical: {
+        canonicalName,
+        id: null,
+        createdAt: null,
+        updatedAt: null,
+        duplicateCandidates: [],
+      },
+      blocker: `knowledge_base_read_failed:${result.status}:${result.code}`,
+    };
+  }
+  const knowledgeBases = Array.isArray(result.body.data?.knowledgeBases)
+    ? result.body.data.knowledgeBases
+    : [];
+  const matches = knowledgeBases.filter((knowledgeBase) =>
+    candidateMatches(knowledgeBase.name, [canonicalName]),
+  );
+  const [primary, ...duplicates] = matches;
+  return {
+    status: 'verified',
+    liveTotal: result.body.data?.activeCount ?? knowledgeBases.length,
+    canonical: {
+      canonicalName,
+      id: primary?.id ?? null,
+      createdAt: primary?.createdAt ?? null,
+      updatedAt: primary?.updatedAt ?? null,
+      duplicateCandidates: duplicates.map((candidate) => ({
+        id: candidate.id ?? null,
+        name: candidate.name ?? null,
+        updatedAt: candidate.updatedAt ?? null,
+      })),
+    },
   };
 }
 
@@ -1046,6 +1258,17 @@ function buildUpdatedRegistry(
   const deprecated = deprecatedWorkflows.map((workflow) =>
     workflowWithLiveId(workflow, reportWorkflowIds),
   );
+  const knowledgeBaseRecords = current.knowledge_bases.map((knowledgeBase) =>
+    knowledgeBase.title === report.knowledgeBases.canonical.canonicalName
+      ? {
+          ...knowledgeBase,
+          ghl_asset_id: report.knowledgeBases.canonical.id ?? knowledgeBase.ghl_asset_id,
+          last_tested_date: report.knowledgeBases.canonical.id
+            ? today
+            : knowledgeBase.last_tested_date,
+        }
+      : knowledgeBase,
+  );
 
   return {
     ...current,
@@ -1059,6 +1282,12 @@ function buildUpdatedRegistry(
     business_workflows: business,
     bot_action_workflows: botActions,
     deprecated_workflows: deprecated,
+    knowledge_bases: knowledgeBaseRecords,
+    workflow_readback: report.workflows.records,
+    provider_asset_readback: {
+      conversation_ai: report.conversationAi,
+      knowledge_bases: report.knowledgeBases,
+    },
     deprecations: lowercaseTagDeprecations,
     protected_import_paths: protectedImportPaths,
     safety: {
@@ -1121,7 +1350,15 @@ async function writeRegistryFiles(current: CurrentRegistry, report: Reconciliati
       duplicate_workflows_disabled_in_this_run: 0,
       human_task_workflows_active: 0,
       read_only_workflow_api_status: report.workflows.status,
+      live_workflow_count: report.workflows.liveTotal,
       workflow_ui_missing: report.workflows.missing,
+      current_state_readback: report.workflows.records,
+      duplicate_workflow_candidates: report.workflows.records.flatMap((record) =>
+        record.duplicateCandidates.map((candidate) => ({
+          canonicalName: record.canonicalName,
+          ...candidate,
+        })),
+      ),
     }),
   );
   await writeRepoFile(
@@ -1166,8 +1403,12 @@ function publicReport(report: ReconciliationReport) {
       present: report.workflows.present.length,
       missing: report.workflows.missing.length,
       deprecatedPresent: report.workflows.deprecated_present.length,
+      liveTotal: report.workflows.liveTotal,
+      canonical: report.workflows.records,
       ...(report.workflows.blocker ? { blocker: report.workflows.blocker } : {}),
     },
+    conversationAi: report.conversationAi,
+    knowledgeBases: report.knowledgeBases,
     testContact: report.testContact,
     externalEffects: report.externalEffects,
     blockers: report.blockers,
@@ -1291,8 +1532,11 @@ function buildWorkflowsYaml(current: CurrentRegistry, report: ReconciliationRepo
       voice_ai: 'deferred',
       human_handoff_action: false,
       task_creation_action: false,
+      readback: report.conversationAi,
     },
+    knowledge_base_readback: report.knowledgeBases,
     workflows: [...current.business_workflows, ...current.bot_action_workflows],
+    workflow_readback: report.workflows.records,
     deprecated_workflows: current.deprecated_workflows,
     contact_import: protectedImportPaths,
   });
@@ -1421,9 +1665,37 @@ function findCustomValue(items: GhlCustomValue[], value: RegistryCustomValue) {
 }
 
 function findWorkflow(items: GhlWorkflow[], workflow: RegistryWorkflow) {
-  return items.find((item) =>
+  return findWorkflows(items, workflow)[0];
+}
+
+function findWorkflows(items: GhlWorkflow[], workflow: RegistryWorkflow) {
+  return items.filter((item) =>
     candidateMatches(item.name, [workflow.canonicalName, workflow.ghlKey, ...workflow.aliases]),
   );
+}
+
+function workflowReadbackEntry(
+  workflow: RegistryWorkflow,
+  matches: GhlWorkflow[],
+): WorkflowReadbackEntry {
+  const [primary, ...duplicates] = matches;
+  const liveFolder = primary?.folderName ?? primary?.folderId ?? null;
+  return {
+    canonicalName: workflow.canonicalName,
+    id: primary?.id ?? null,
+    canonicalFolder: workflow.folder,
+    liveFolder,
+    liveFolderSource: liveFolder ? 'api' : 'api_not_exposed',
+    status: primary?.status ?? 'missing',
+    createdAt: primary?.createdAt ?? null,
+    updatedAt: primary?.updatedAt ?? null,
+    duplicateCandidates: duplicates.map((candidate) => ({
+      id: candidate.id ?? null,
+      name: candidate.name ?? null,
+      status: candidate.status ?? null,
+      updatedAt: candidate.updatedAt ?? null,
+    })),
+  };
 }
 
 function findByCanonicalName<T extends { name?: string }>(items: T[], name: string) {

@@ -8,7 +8,7 @@
   source: 'Corrected public knowledge base from incoming bot pack direction'
   created_date: '2026-07-21'
   approved_date: '2026-07-21'
-  ghl_asset_id: ''
+  ghl_asset_id: 'ps6jttZ8WUGycLeQX6uF'
   required_fields:
     - 'One Time Email Consent'
     - 'One Time WhatsApp Consent'
@@ -37,7 +37,7 @@
   required_message_classes:
     []
   test_contact_reference: 'protected_operator_owned_test_contact'
-  last_tested_date: ''
+  last_tested_date: '2026-07-22'
   supersedes:
     []
   superseded_by: ''

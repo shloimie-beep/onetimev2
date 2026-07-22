@@ -20,8 +20,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Prelaunch'
   normalizedName: 'ot_prelaunch'
@@ -44,8 +44,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Existing Subscriber'
   normalizedName: 'ot_existing_subscriber'
@@ -68,8 +68,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Migration 2026'
   normalizedName: 'ot_migration_2026'
@@ -92,8 +92,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Early Access Invited'
   normalizedName: 'ot_early_access_invited'
@@ -116,8 +116,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Early Access Activated'
   normalizedName: 'ot_early_access_activated'
@@ -140,8 +140,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Checkout Started'
   normalizedName: 'ot_checkout_started'
@@ -164,8 +164,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Active'
   normalizedName: 'ot_active'
@@ -188,8 +188,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Grace'
   normalizedName: 'ot_grace'
@@ -212,8 +212,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Canceled'
   normalizedName: 'ot_canceled'
@@ -236,8 +236,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Former'
   normalizedName: 'ot_former'
@@ -260,8 +260,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Complimentary'
   normalizedName: 'ot_complimentary'
@@ -284,8 +284,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Migration Email 1 Sent'
   normalizedName: 'ot_migration_email_1_sent'
@@ -308,8 +308,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Migration Email 2 Sent'
   normalizedName: 'ot_migration_email_2_sent'
@@ -332,8 +332,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Migration Email 3 Sent'
   normalizedName: 'ot_migration_email_3_sent'
@@ -356,8 +356,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Migration Sequence Complete'
   normalizedName: 'ot_migration_sequence_complete'
@@ -380,8 +380,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Portal Invited'
   normalizedName: 'ot_portal_invited'
@@ -404,8 +404,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Portal Active'
   normalizedName: 'ot_portal_active'
@@ -428,8 +428,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Email Opt-In'
   normalizedName: 'ot_email_opt_in'
@@ -452,8 +452,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | WhatsApp Opt-In'
   normalizedName: 'ot_whatsapp_opt_in'
@@ -476,8 +476,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Consent Unknown'
   normalizedName: 'ot_consent_unknown'
@@ -500,8 +500,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Marketing Suppressed'
   normalizedName: 'ot_marketing_suppressed'
@@ -524,8 +524,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Weekly Newsletter'
   normalizedName: 'ot_weekly_newsletter'
@@ -548,8 +548,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Signup Website'
   normalizedName: 'ot_signup_website'
@@ -572,8 +572,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Signup WhatsApp'
   normalizedName: 'ot_signup_whatsapp'
@@ -596,8 +596,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Source | Rabbi Followers'
   normalizedName: 'ot_source_rabbi_followers'
@@ -620,8 +620,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Source | Subscribed Audience'
   normalizedName: 'ot_source_subscribed_audience'
@@ -644,8 +644,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Source | Cleaned Audience'
   normalizedName: 'ot_source_cleaned_audience'
@@ -668,8 +668,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Source | Legacy Subscriber'
   normalizedName: 'ot_source_legacy_subscriber'
@@ -692,8 +692,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Source | Existing One Time CRM'
   normalizedName: 'ot_source_existing_one_time_crm'
@@ -716,8 +716,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Payment Failed'
   normalizedName: 'ot_payment_failed'
@@ -740,8 +740,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Refunded'
   normalizedName: 'ot_refunded'
@@ -764,8 +764,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Chargeback'
   normalizedName: 'ot_chargeback'
@@ -788,8 +788,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Class Reminder Pending'
   normalizedName: 'ot_class_reminder_pending'
@@ -812,8 +812,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Recording Available'
   normalizedName: 'ot_recording_available'
@@ -836,8 +836,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Duplicate Merged'
   normalizedName: 'ot_duplicate_merged'
@@ -860,8 +860,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Identity Conflict'
   normalizedName: 'ot_identity_conflict'
@@ -884,8 +884,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'OT | Support Requested'
   normalizedName: 'ot_support_requested'

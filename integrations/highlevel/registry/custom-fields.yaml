@@ -20,8 +20,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Parent ID'
   normalizedName: 'one_time_parent_id'
@@ -44,8 +44,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Household ID'
   normalizedName: 'one_time_household_id'
@@ -68,8 +68,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Customer Status'
   normalizedName: 'one_time_customer_status'
@@ -109,8 +109,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Current Period End'
   normalizedName: 'one_time_current_period_end'
@@ -134,8 +134,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Subscription ID'
   normalizedName: 'one_time_subscription_id'
@@ -160,8 +160,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Grace Until'
   normalizedName: 'one_time_grace_until'
@@ -184,8 +184,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Complimentary Until'
   normalizedName: 'one_time_complimentary_until'
@@ -208,8 +208,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Early Access Status'
   normalizedName: 'one_time_early_access_status'
@@ -237,8 +237,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Migration Status'
   normalizedName: 'one_time_migration_status'
@@ -265,8 +265,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Migration Sequence Version'
   normalizedName: 'one_time_migration_sequence_version'
@@ -289,8 +289,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Portal Status'
   normalizedName: 'one_time_portal_status'
@@ -318,8 +318,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Access Status'
   normalizedName: 'one_time_access_status'
@@ -349,8 +349,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Email Consent'
   normalizedName: 'one_time_email_consent'
@@ -381,8 +381,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time WhatsApp Consent'
   normalizedName: 'one_time_whatsapp_consent'
@@ -412,8 +412,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Reminder Preference'
   normalizedName: 'one_time_reminder_preference'
@@ -440,8 +440,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Consent Policy Version'
   normalizedName: 'one_time_consent_policy_version'
@@ -465,8 +465,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Consent Captured At'
   normalizedName: 'one_time_consent_captured_at'
@@ -490,8 +490,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Suppression State'
   normalizedName: 'one_time_suppression_state'
@@ -520,8 +520,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Suppression Reason'
   normalizedName: 'one_time_suppression_reason'
@@ -547,8 +547,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Newsletter Status'
   normalizedName: 'one_time_newsletter_status'
@@ -576,8 +576,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Signup Source'
   normalizedName: 'one_time_signup_source'
@@ -601,8 +601,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Source Channel'
   normalizedName: 'one_time_source_channel'
@@ -631,8 +631,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Source Classification'
   normalizedName: 'one_time_source_classification'
@@ -657,8 +657,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Import Batch'
   normalizedName: 'one_time_import_batch'
@@ -681,8 +681,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Audience Type'
   normalizedName: 'one_time_audience_type'
@@ -706,8 +706,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Family or School Name'
   normalizedName: 'one_time_family_or_school_name'
@@ -730,8 +730,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Last Sync'
   normalizedName: 'one_time_last_sync'
@@ -760,8 +760,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Bot Request Type'
   normalizedName: 'one_time_bot_request_type'
@@ -795,8 +795,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Preferred Delivery'
   normalizedName: 'one_time_preferred_delivery'
@@ -820,8 +820,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Signup Status'
   normalizedName: 'one_time_signup_status'
@@ -848,8 +848,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Next Class At'
   normalizedName: 'one_time_next_class_at'
@@ -873,8 +873,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Class Time Zone'
   normalizedName: 'one_time_class_time_zone'
@@ -898,8 +898,8 @@
     []
   deprecationState: 'active'
   createdDate: '2026-07-21'
-  lastVerifiedDate: '2026-07-21'
-  lastTestedDate: '2026-07-21'
+  lastVerifiedDate: '2026-07-22'
+  lastTestedDate: '2026-07-22'
 -
   canonicalName: 'One Time Support Status'
   normalizedName: 'one_time_support_status'

@@ -12,3 +12,8 @@
 - `npm run lint`: passed.
 - `npm run secret:scan`: passed across 1,902 tracked repository text files after the intended superseded job-file deletions were staged.
 - `git diff --check`: passed.
+- 2026-07-22 fresh official API readback: passed with bounded exponential backoff and `Retry-After` support.
+- Workflow state: OT-E01 `published`, OT-C01 `draft`, 17 canonical workflows missing, 0 duplicate candidates.
+- Provider assets: OT-A1 API read passed with 0 agents; canonical public knowledge base API read passed with 1 exact match and 0 duplicates.
+- Protected operator contact pre-test lookup: 1 exact match by fingerprint; no address printed.
+- 2026-07-22 `npm run highlevel:registry:check`, `npm run typecheck`, `npm run lint`, `npm run secret:scan`, and `git diff --check`: passed.

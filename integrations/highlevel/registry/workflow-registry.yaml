@@ -399,7 +399,7 @@ business_workflows:
     key: 'OT-C01'
     canonicalName: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
     normalizedName: 'ot_c01_tisha_b_av_2026_warm_invitation'
-    ghlId: ''
+    ghlId: 'f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae'
     ghlKey: 'ot_c01_tisha_b_av_2026_warm_invitation'
     objectType: 'business_workflow'
     dataType: 'workflow'
@@ -417,10 +417,10 @@ business_workflows:
       []
     aliases:
       []
-    deprecationState: 'pending_creation'
+    deprecationState: 'active'
     createdDate: '2026-07-21'
-    lastVerifiedDate: ''
-    lastTestedDate: ''
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md'
     messageClass: 'rabbi_event_invitation'
@@ -452,8 +452,8 @@ business_workflows:
       []
     deprecationState: 'active'
     createdDate: '2026-07-21'
-    lastVerifiedDate: '2026-07-21'
-    lastTestedDate: '2026-07-21'
+    lastVerifiedDate: '2026-07-22'
+    lastTestedDate: '2026-07-22'
     promptPath: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
     checklistPath: 'integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
     messageClass: 'event_registration_confirmation'
@@ -732,6 +732,7 @@ production_enrollment_authorized: false
 duplicate_workflows_disabled_in_this_run: 0
 human_task_workflows_active: 0
 read_only_workflow_api_status: 'ui_required'
+live_workflow_count: 2
 workflow_ui_missing:
   - 'OT-01 New Lead Intake'
   - 'OT-02A Existing Subscriber Migration 2026 v1'
@@ -745,9 +746,220 @@ workflow_ui_missing:
   - 'OT-09 Parent Class Reminder'
   - 'OT-10 New Recording Available'
   - 'OT-13 Refund / Chargeback'
-  - 'OT-C01 Tisha B''Av 2026 Warm Invitation'
   - 'OT-B01 Complete Signup'
   - 'OT-B02 Send Next Confirmed Class Info'
   - 'OT-B03 Send Member Login'
   - 'OT-B04 Send Password Help'
   - 'OT-B05 Apply Opt-Out'
+current_state_readback:
+  -
+    canonicalName: 'OT-01 New Lead Intake'
+    id: ''
+    canonicalFolder: '00 - Intake & Data'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-02A Existing Subscriber Migration 2026 v1'
+    id: ''
+    canonicalFolder: '10 - Nurture & Sales'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-02B New Lead Nurture v1'
+    id: ''
+    canonicalFolder: '10 - Nurture & Sales'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-03 Checkout Started / Abandoned'
+    id: ''
+    canonicalFolder: '20 - Billing & Access'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-04 Payment Active'
+    id: ''
+    canonicalFolder: '20 - Billing & Access'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-05 Payment Failed / Grace'
+    id: ''
+    canonicalFolder: '20 - Billing & Access'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-06 Subscription Canceled'
+    id: ''
+    canonicalFolder: '20 - Billing & Access'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-07 Parent Portal Invitation'
+    id: ''
+    canonicalFolder: '30 - Portal Lifecycle'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-08 Parent Portal Activated'
+    id: ''
+    canonicalFolder: '30 - Portal Lifecycle'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-09 Parent Class Reminder'
+    id: ''
+    canonicalFolder: '40 - Classes & Content'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-10 New Recording Available'
+    id: ''
+    canonicalFolder: '40 - Classes & Content'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-13 Refund / Chargeback'
+    id: ''
+    canonicalFolder: '20 - Billing & Access'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-C01 Tisha B''Av 2026 Warm Invitation'
+    id: 'f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae'
+    canonicalFolder: '10 - Nurture & Sales'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'draft'
+    createdAt: '2026-07-21T16:10:32.426Z'
+    updatedAt: '2026-07-21T16:16:32.330Z'
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
+    id: 'a34ea513-4612-4f53-8bd8-49e89e6610f9'
+    canonicalFolder: '45 - Events'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'published'
+    createdAt: '2026-07-21T13:10:47.185Z'
+    updatedAt: '2026-07-22T05:33:12.698Z'
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-B01 Complete Signup'
+    id: ''
+    canonicalFolder: '00 - Intake & Data'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-B02 Send Next Confirmed Class Info'
+    id: ''
+    canonicalFolder: '40 - Classes & Content'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-B03 Send Member Login'
+    id: ''
+    canonicalFolder: '30 - Portal Lifecycle'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-B04 Send Password Help'
+    id: ''
+    canonicalFolder: '30 - Portal Lifecycle'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+  -
+    canonicalName: 'OT-B05 Apply Opt-Out'
+    id: ''
+    canonicalFolder: '00 - Intake & Data'
+    liveFolder: ''
+    liveFolderSource: 'api_not_exposed'
+    status: 'missing'
+    createdAt: ''
+    updatedAt: ''
+    duplicateCandidates:
+      []
+duplicate_workflow_candidates:
+  []
