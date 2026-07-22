@@ -104,10 +104,11 @@ record(
       track.id === 'tisha_landing_polish' &&
       track.status === 'blocked' &&
       owner.pr === 110 &&
-      owner.head === 'bcfae3f57f23169de0de8d34b45f4a8b7ae256b1' &&
-      track.preview_review_state === 'BLOCKED_CI_PREVIEW_AND_PERMISSION' &&
+      owner.head === 'c3d0817e37f0d7225554e21c7096a1284e048893' &&
+      track.preview_review_state === 'PREVIEW_VERIFIED_PRODUCTION_BLOCKED' &&
       boardText.includes('acddcc8cd012c5cdc5bfc08cbc80550bef8719ba') &&
-      boardText.includes('81317abe-f3ef-42cd-b5db-5814b014b6a3')
+      boardText.includes('81317abe-f3ef-42cd-b5db-5814b014b6a3') &&
+      boardText.includes('PR #110 is not integrated into PR #97')
     );
   }),
   'PR #106 acddcc8 remains accepted production while PR #110 is isolated',

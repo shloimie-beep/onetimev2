@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T14:50:00Z
+updated_at: 2026-07-22T15:17:00Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,12 +23,12 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: Exact PR #97 head b44077fad3890e3e6b02120b5cc33096c29e43c9 is live on persistent staging through web deployment 2e937030-a1ea-4411-b50d-5c78b5da3485 with healthy /health and /ready plus migration 2215. The fictional staging Administrator credential was rotated and every prior Admin session revoked. The governed worktree adds an obvious Admin Dashboard preview CTA plus the actual sibling-scoped StudentPortalFeature inside the existing inert GET-only preview shell; focused tests, build, and real Chromium are green before the checkpoint push. PR #107 terminal head 1e247c70004dffb6247fc1ee407f1153d753bd7d proves the exact One Time Tisha ancestry/tag trigger and the approved Email A copy saved/reopened Published on the same OT-E01 ID with zero messages this run, while the newest production signup added no registered tag, created no enrollment, and received no event confirmation. OT-TISHA-HANDOFF-01 is queued on release/tisha-bav-2026-live for that P0 application handoff repair and affected-operator reprocessing after proof. The same-name OT-C01 wrapper, one legacy KB, archived workflows, and hidden/backend Conversation AI rows remain fail-closed control findings. PR #108 head 891293f remains provider-disabled and isolated-green but awaits this governed target descendant. Accepted narrow Tisha production remains acddcc8; PR #110 stays visual-only and blocked on CSS budget, exact-head preview, and the event-permission/handoff boundary.
-  external_action_count: 3
+  current_summary: Exact PR #97 checkpoint 06f66568a587c333fbab416e9eb17e323e2b885a is live on persistent staging through web deployment 10db6e83-2677-4c52-965d-6e6e1309614e and worker deployment 410e9030-489f-48b8-831f-588801cc1048; /health and /ready are healthy and migration 2215 remains exact. Live Admin verification proves Dashboard discovery, all explicit fictional roles, the actual sibling-scoped StudentPortalFeature in the inert preview shell, and preserved Admin session; real Chromium supplies the separate-tab opener-null and 360px/hamburger proof. PR #107 terminal head 1e247c70004dffb6247fc1ee407f1153d753bd7d proves the exact One Time Tisha ancestry/tag trigger and approved Email A saved/reopened Published on the same OT-E01 ID with zero messages this run, while the newest production signup added no registered tag, created no enrollment, and received no event confirmation. OT-TISHA-HANDOFF-01 remains the P0 application-handoff owner. The same-name OT-C01 wrapper, one legacy KB, archived workflows, and hidden/backend Conversation AI rows remain fail-closed findings. PR #108 has been notified to rebase onto 06f66568 and remains unaccepted. Accepted narrow Tisha production remains acddcc8; PR #110 c3d0817 is isolated-preview verified but production-blocked on the registration-to-GHL hotfix.
+  external_action_count: 4
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
-      count: 2
-      scope: Two bounded operator-owned staging login-code emails only (one before and one after Admin rotation); no customer/broad send, workflow enrollment, provider workflow execution, or production mutation.
+      count: 3
+      scope: Three bounded operator-owned staging login-code emails only (one before rotation and two after rotation, including exact-head verification); no customer/broad send, workflow enrollment, provider workflow execution, or production mutation.
     - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
       scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
@@ -40,13 +40,13 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: b44077fad3890e3e6b02120b5cc33096c29e43c9
-    resolution: Live /version readback on 2026-07-22 returned exact commit b44077fad3890e3e6b02120b5cc33096c29e43c9 and web deployment 2e937030-a1ea-4411-b50d-5c78b5da3485; /health and /ready returned 200 with latest migration 2215_experience_preview_sessions.
+    last_verified_commit: 06f66568a587c333fbab416e9eb17e323e2b885a
+    resolution: Live /version readback on 2026-07-22 returned exact commit 06f66568a587c333fbab416e9eb17e323e2b885a and web deployment 10db6e83-2677-4c52-965d-6e6e1309614e; worker deployment 410e9030-489f-48b8-831f-588801cc1048 succeeded, and /health plus /ready returned 200 with latest migration 2215_experience_preview_sessions.
   system: One Time persistent staging
 
 tracks:
   - id: goal_system
-    status: blocked
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -64,14 +64,12 @@ tracks:
       - Fresh conductor review reconciled structured owners, accepted external heads, dependency-only states, production impact, and board-derived preview metadata.
       - Goal execution and RAMBLE now turn visual intent into route/breakpoint acceptance, current-page/screenshot inspection, obvious in-scope repair, retest, and deployed-URL proof; only real product decisions return to the operator.
       - Both modified skill packages pass repository-native frontmatter/name/UI-metadata/control-clause validation and Prettier YAML/Markdown parsing. The bundled official quick_validate.py was attempted for each but could not inspect either skill because bundled Python lacks yaml; no package was installed or vendored and no false validator pass is claimed.
-    blocker:
-      code: GHL_ARCHIVED_AND_HIDDEN_AI_SCOPE_UNVERIFIED
-      reason: PR #107 closeout c9f7794 exhaustively records every visible workflow, the Deleted view, exact nested folders, 99 Deprecated, campaigns, and knowledge bases, but the live UI exposes no separate archived-workflow view and does not prove hidden/backend Conversation AI rows; the control report therefore cannot declare an exhaustive zero-unknown result.
-    remaining_work: Preserve the visible unknown OT-C01 workflow wrapper and legacy KB as drift, keep archived/hidden AI scope unverified, regenerate the Board-derived pointer, and push the governed checkpoint; exact-head staging deployment proof remains in admin_experience_preview.
+    blocker: null
+    remaining_work: null
     next_action: Keep workflow-registry.yaml and BOARD.yaml as the only editable desired/current sources; do not infer empty archived/hidden scope or silently quarantine/delete either visible unknown asset.
 
   - id: admin_experience_preview
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -94,9 +92,10 @@ tracks:
       - The dedicated Student preview now obtains the exact sibling-scoped dashboard through the existing GET-only route-bound preview session and renders the actual StudentPortalFeature inside an inert Read-only preview container. No Student cookie, real-user impersonation, mutation callback, Admin AppShell/nav/logout, or opener is introduced.
       - Focused Experience Preview tests pass 19/19 after this repair, including exact learner/class/library/progress projection, single-use exchange, expiry/replay, CSRF, Admin-session binding, cross-account denial, sibling-tab isolation, no-store/audit, provider truth, and UI contract coverage. Scoped Prettier and typecheck pass.
       - Build-backed real Chromium proof passed 5/5 on the stable combined worktree: Dashboard -> Preview Parent & Student portals card -> all explicit role choices -> Student 1 prepare/open, null opener, actual sibling-scoped Student portal inside the dedicated GET-only shell, two isolated sibling tabs, unchanged Admin session, production 404/nav gating, mobile hamburger at 360px, and the existing Parent/Student portal regression journeys.
+      - Exact-head live browser proof on 06f66568 logged in through the bounded operator email-code challenge, followed Dashboard -> Preview Parent & Student portals -> Student 1 -> prepare/open, rendered Ari Cohen's actual Student portal with no Admin navigation/logout/forms, and returned to an unchanged authenticated Admin Dashboard. The in-app browser suppressed the target-blank popup, so opener-null and separate-tab behavior are claimed only from the green real-Chromium proof, not from the same-tab live fallback.
     blocker: null
-    remaining_work: Deploy the exact governed checkpoint and repeat the Dashboard -> card -> separate actual Student portal journey on persistent staging.
-    next_action: Keep production gating, no-store/audit, sibling scope, inert read-only rendering, and provider-off truth unchanged; do not claim READY before exact-head browser proof.
+    remaining_work: null
+    next_action: Keep production gating, no-store/audit, sibling scope, inert read-only rendering, and provider-off truth unchanged.
 
   - id: fictional_student_session
     status: done
@@ -294,9 +293,9 @@ tracks:
       - Independent clean-detached-worktree audit with core.autocrlf=false found 38 PR-owned paths, 36 Prettier-supported paths, and all 36 green under repo-pinned Prettier 3.9.5. The earlier 32-warning Windows normalization result is invalid and is not branch-owned evidence.
       - PR #108 exact rebased head 891293f2bd269f4918394c6078096f81d7ed8695 has terminal-green isolated Railway diagnostics: web deployment ee68c6a3-93b3-4fbe-ab7c-bb9262c7bb10 and worker c7bc3bb8-34cc-475e-aab5-0e022b59e371 succeeded; /version is exact, /health and /ready are 200, and isolated schema latest is 2216.
       - HIGHLEVEL_EVENT_SYNC_MODE and HIGHLEVEL_ACTIONS_MODE are disabled, canary budget is zero, run/allowlist are unset, and isolated external calls/sends are zero.
-      - Its only current blocker is inherited target-owned Student fixture projection coverage on b44077f; PR #97 owns the repair. PR #108 remains unaccepted and must rebase onto the repaired governed target before independent audit.
+      - Governed target 06f66568a587c333fbab416e9eb17e323e2b885a contains the target-owned Student fixture repair and was pushed with local gates plus exact-head staging deployment green. The PR #108 task was notified; 891293f remains unaccepted until rebased and independently audited.
     blocker: null
-    remaining_work: Rebase onto the next governed PR #97 descendant after the inherited Student fixture repair, rerun every check, and obtain fresh independent exact-head acceptance.
+    remaining_work: Rebase onto exact governed target 06f66568a587c333fbab416e9eb17e323e2b885a, rerun every check, and obtain fresh independent exact-head acceptance.
     next_action: Keep PR #108 out of persistent staging until that exact rebased head is independently accepted with provider modes still disabled.
 
   - id: event_service_email_permission
@@ -369,7 +368,7 @@ tracks:
     next_action: Preserve truthful provider-off UI until the operator separately authorizes the canary.
 
   - id: zoom_meeting_sdk
-    status: blocked
+    status: provider_off
     owner:
       task_id: ZOOM-REAL-CONTROL-ACTIVATION
       repository: shloimie-beep/onetimev2
@@ -385,14 +384,15 @@ tracks:
       - PR #105 terminal code head 33c9b82494d2a4a397824c323957111f6c7731af passed independent re-audit of the 32-character stable participant key, strict allowlisted provider errors, reconciliation, 17 focused tests, and typecheck.
       - PR #105 adds no migration and relies on existing 2212_rabbi_live_console_zoom_obs; code acceptance does not prove a live provider join/control canary.
       - Canonical Meeting SDK config is ZOOM_MEETING_SDK_CLIENT_ID/CLIENT_SECRET/WEB_VERSION; KEY/SECRET are temporary aliases only. ZOOM_UI_PREVIEW remains distinct from unproven ZOOM_REAL_CONTROL.
+      - Independent isolated-Railway audit confirms the canonical Meeting SDK names are correct; real host control remains unavailable because ZOOM_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE are all absent.
     blocker:
-      code: ZOOM_HUMAN_PROVIDER_CANARY_BARRIER
-      reason: Zoom reCAPTCHA/rate limiting prevents the required human-cleared host and fictional Student join/control proof.
-    remaining_work: One human-cleared host and fictional Student join canary with consent and replay/cross-student denial readback.
-    next_action: Keep provider-off/fake controls truthful until the human provider barrier is cleared; then integrate the accepted head semantically and run the bounded canary.
+      code: ZOOM_PROVIDER_CONFIG_AND_HUMAN_CANARY_BARRIER
+      reason: The six S2S/host/meeting variables are absent, the staging origin is not yet proven in the General app allowlist, and Zoom reCAPTCHA/rate limiting still prevents the required human-cleared host and fictional Student join/control proof.
+    remaining_work: In the next integration phase only, integrate PR #105 provider-off, repair readiness/control-center gates to require isolated_staging plus every canonical flag/credential, add missing-gate tests, then perform one separately authorized human-cleared canary.
+    next_action: Do not install credentials or activate real Zoom; preserve ZOOM_UI_PREVIEW separately from ZOOM_REAL_CONTROL.
 
   - id: zoom_s2s_host_control
-    status: blocked
+    status: provider_off
     owner:
       task_id: ZOOM-REAL-CONTROL-ACTIVATION
       repository: shloimie-beep/onetimev2
@@ -406,13 +406,12 @@ tracks:
     acceptance_ids: [ZOOM-S2S-001]
     evidence:
       - PR #105 terminal code head 33c9b82494d2a4a397824c323957111f6c7731af passed independent re-audit of the operateSpotlight contract, participant reconciliation, strict provider-error allowlist, 17 focused tests, and typecheck.
-      - Protected readback confirms S2S credential presence without exposing values; presence does not prove live host join, mute/unmute, or spotlight operation.
-      - Canonical S2S OAuth config is ZOOM_S2S_ACCOUNT_ID/CLIENT_ID/CLIENT_SECRET and remains separate from Meeting SDK; ZOOM_ACCOUNT_ID is a temporary account-ID alias only.
+      - Independent isolated-Railway readback finds all six canonical host-control prerequisites absent: ZOOM_ACCOUNT_ID, ZOOM_S2S_CLIENT_ID, ZOOM_S2S_CLIENT_SECRET, ZOOM_HOST_USER_ID, ZOOM_REAL_CONTROL_MEETING_ID, and ZOOM_REAL_CONTROL_MEETING_PASSCODE. Meeting SDK credentials remain separate from S2S OAuth and host/meeting identity.
     blocker:
-      code: ZOOM_HUMAN_PROVIDER_CANARY_BARRIER
-      reason: Zoom reCAPTCHA/rate limiting prevents live exact-occurrence host join and mute/unmute/spotlight proof.
-    remaining_work: One human-cleared exact-fictional-occurrence host and Student join/control canary.
-    next_action: Keep provider controls truthful and unclaimed until the human barrier clears; never infer host control from credential presence.
+      code: ZOOM_PROVIDER_CONFIG_AND_HUMAN_CANARY_BARRIER
+      reason: Host-control prerequisites and staging-origin allowlisting are unproven, and Zoom reCAPTCHA/rate limiting prevents live exact-occurrence host join and mute/unmute/spotlight proof.
+    remaining_work: Add the narrow fail-closed launch/readiness/control-center gate repair and missing-gate tests after PR #105 provider-off integration, then run one human-cleared exact-occurrence canary only after separate credential/activation authority.
+    next_action: Keep provider controls unavailable and never infer host control from partial SDK configuration.
 
   - id: bna_foundation
     status: done
@@ -519,7 +518,7 @@ tracks:
     next_action: Keep unclaimed in this conductor pass; the conductor may assign it only after PR #108 integration acceptance.
 
   - id: persistent_staging
-    status: active
+    status: done
     owner:
       task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
       repository: shloimie-beep/onetimev2
@@ -545,9 +544,12 @@ tracks:
       - Live click-through confirmed Admin login, all five role projections, concurrent isolated sibling tabs, preserved Admin session, Content, and Live Console; provider-off surfaces remained truthful.
       - Exact-head Tisha browser proof at 375x667, 390x844, 430x932, 1366x768, and 1440x900 found viewport-equal scroll dimensions, visible CTA, exact no-period title and No charge copy, correct 1080x1350 mobile and 1366x768 desktop assets, and a full-viewport scroll-locked modal with visible Close; no live registration was submitted.
       - Live readback on 2026-07-22 returned exact commit b44077fad3890e3e6b02120b5cc33096c29e43c9 and deployment 2e937030-a1ea-4411-b50d-5c78b5da3485; /health returned 200 and /ready returned 200 with database ok, no blockers, and latest migration 2215_experience_preview_sessions.
+      - Exact checkpoint 06f66568a587c333fbab416e9eb17e323e2b885a deployed through web 10db6e83-2677-4c52-965d-6e6e1309614e and worker 410e9030-489f-48b8-831f-588801cc1048; /version matched the full SHA, /health and /ready returned 200, and /ready retained latest=2215_experience_preview_sessions.
+      - Node 24, OPS-06, PostgreSQL 18, PostgreSQL 16 assurance, learner-seat concurrency, Railway web, and Railway worker all completed successfully for checkpoint 06f66568.
+      - Live desktop browser proof completed bounded Admin email-code login, Dashboard discovery, explicit role selection, actual fictional Student portal rendering in the dedicated shell, and restored authenticated Admin Dashboard. Real Chromium 5/5 supplies the exact separate-tab opener-null, sibling-tab, production-gating, and 360px hamburger proof; the in-app viewport override did not change its 1280px surface and is not cited as mobile evidence.
     blocker: null
-    remaining_work: Commit, push, deploy, and read back the next accepted PR #97 descendant after combined focused tests/build/marker/diff/Playwright gates and Admin credential rotation pass.
-    next_action: Deploy only the exact accepted head; verify /version, /health, /ready, migration 2215, and the Admin/Student browser journey without bypassing predeploy checks.
+    remaining_work: null
+    next_action: Preserve exact-head deployment/readback discipline for later semantic integrations; do not treat docs-only Board updates as provider activation.
 
   - id: tisha_landing_polish
     status: blocked
@@ -556,13 +558,13 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/tisha-bav-visual-repair
       pr: 110
-      head: bcfae3f57f23169de0de8d34b45f4a8b7ae256b1
+      head: c3d0817e37f0d7225554e21c7096a1284e048893
       system: One Time Tisha landing
     write_scope: Staging-first Tisha landing layout and copy correction, exact responsive evidence, and the explicitly authorized narrow production promotion only
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/tisha-landing-polish--019f84b4-9937-74f1-8dca-0dcd0fe8bf2d.json
     dependencies: [goal_system, persistent_staging]
     acceptance_ids: [TISHA-001]
-    preview_review_state: BLOCKED_CI_PREVIEW_AND_PERMISSION
+    preview_review_state: PREVIEW_VERIFIED_PRODUCTION_BLOCKED
     evidence:
       - Initial live production audit found a large empty middle gap on mobile, missing exact phrase No charge, and the old title Filling the World with Knowledge of Hashem; production remains unverified until the authorized narrow promotion completes.
       - PR #102 is closed and superseded by PR #97 staging plus PR #106 narrow production; its stale preview assets return 404 and are not evidence or source truth.
@@ -576,16 +578,13 @@ tracks:
       - PR #106 exact production head acddcc8cd012c5cdc5bfc08cbc80550bef8719ba is live through deployment 81317abe-f3ef-42cd-b5db-5814b014b6a3; /version is tisha-bav-2026-acddcc8 and /health plus /ready return 200.
       - All five workflow suites are green. Live mobile proof at 375x667, 390x844, and 430x932 passed with the exact no-period title, No charge, correct responsive layout/assets, CTA, and no GHL/provider mutation.
       - The accepted production head remains acddcc8cd012c5cdc5bfc08cbc80550bef8719ba through deployment 81317abe-f3ef-42cd-b5db-5814b014b6a3; PR #110 does not supersede or change that live evidence.
-      - New isolated draft PR #110 on codex/tisha-bav-visual-repair is exact head bcfae3f57f23169de0de8d34b45f4a8b7ae256b1 from production-release base acddcc8. Its scope is 12 Tisha visual/metadata/test assets only; local five-viewport no-scroll, modal/success/share, accessibility, build, lint, brand, secret, and diff checks pass. Exact event disclosure is present and newsletter form/payload are removed.
-      - PR #110 caused no live registration, GHL/Zoom/provider mutation, or production deployment and is not integrated into PR #97.
-      - Independent audit result is PASS_FOR_ISOLATED_PREVIEW_ONLY for bcfae3f: exact 12-file visual/test scope, disclosure, no newsletter field in browser payload, five viewport assertions, and no provider/config/domain/migration change. It is not production or PR #97 acceptance.
-      - Exact CI blocker is seo-bundle-performance.spec.ts:119; built public CSS is 36,220 bytes versus the unchanged 35,000-byte gate, over by 1,220 bytes. The same visual lane owns a narrow Tisha CSS consolidation and native Share Eli/Elly spelling correction; the budget will not be weakened.
-      - No working exact-head Railway preview exists for bcfae3f: the conventional preview URL returns 404 and the local screenshot path is absent from the immutable head. Provider-off /version plus deployed five-viewport proof are mandatory.
+      - PR #110 exact head c3d0817e37f0d7225554e21c7096a1284e048893 is isolated-preview verified at https://ot99-web-onetimev2-pr-110.up.railway.app/tisha-bav through deployment 0cb2d8b5-09e0-4f78-8b46-5d56ae3ed8b5; /version is exact and /health plus /ready return 200.
+      - Deployed proof ops/evidence/tisha-bav-pr110-preview-c3d0817 passes initial/modal/success at 375x667, 390x844, 430x932, 1366x768, and 1440x900 with intercepted POST and fresh assets 200. No live registration, GHL/Zoom/provider mutation, or production deployment occurred; PR #110 is not integrated into PR #97.
       - Fresh production-source audit confirms event consent is separate and newsletter_opt_in defaults false, but the durable application-to-GHL event-permission projection/readback remains unaccepted. OT-E01 enrollment is not sufficient promotion evidence.
       - P0 production acceptance failed on the operator's newest live signup: an account/login-code email arrived instead of the OT-E01 event confirmation. No duplicate signup, manual/substitute/fallback email, GHL customer test, or provider send is allowed while the exact registered-tag handoff is diagnosed.
       - OT-TISHA-HANDOFF-01 is queued on release/tisha-bav-2026-live as client-new-thread:ff3e8ce6-36a6-42c9-b8b6-d9c485ecf2ef and owns only the server handoff/fallback repair plus narrow production hotfix. It is not part of PR #110, PR #108, or the GHL UI executor lane.
     blocker:
-      code: TISHA_PR110_CI_PREVIEW_AND_PERMISSION_BLOCK
-      reason: PR #110 exceeds the CSS budget, still needs the Eli spelling correction and a working exact-head provider-off Railway preview, and the newest real production signup failed to produce OT-E01; live-registration promotion remains gated by exact handoff diagnosis plus the separate durable event-permission/GHL-projection acceptance.
-    remaining_work: Same visual lane must return a superseding exact head with green CSS budget and spelling, terminal GitHub checks, exact /version preview, and five deployed viewport proofs; separately diagnose the failed live registered-tag/enrollment path and accept the durable event-permission contract before any live-registration promotion.
-    next_action: Keep PR #110 isolated and production on acddcc8; do not integrate into PR #97 or promote until every listed gate is independently green.
+      code: TISHA_REGISTRATION_TO_GHL_HANDOFF_BLOCK
+      reason: PR #110 visual preview is verified, but the newest real production signup still failed to produce the exact registered tag, OT-E01 enrollment, or event confirmation; production promotion remains gated by the separate durable server registration-to-GHL hotfix and event-permission acceptance.
+    remaining_work: OT-TISHA-HANDOFF-01 must prove the server registration/tag/enrollment path, safely reprocess the one affected operator contact exactly once, and return terminal production-hotfix evidence before PR #110 can join the same narrow release.
+    next_action: Keep PR #110 isolated and production on acddcc8; promote the visual patch only together with an independently accepted registration-to-GHL hotfix.
