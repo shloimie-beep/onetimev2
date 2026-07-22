@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Base: `codex/full-app-staging-live` at `018cc72e5fe036fe64704db3b507e043505a9bc9`
+- Base: `codex/full-app-staging-live` at `b44077fad3890e3e6b02120b5cc33096c29e43c9`
 - GHL evidence: PR #107 at `deda8f9b04dbafcc36363628a14b6fecc94fd854`
 - Location: `pBSnOK2nkdxp6gf9Rg3o`
 - Provider mode: default-off
@@ -78,7 +78,9 @@ The disposable real-PostgreSQL race passed in the PR PostgreSQL 16 assurance job
 - Focused lead capture and class fulfillment regressions: passed
 - Focused account lifecycle, content library, delivery repository and web/worker independence regressions: passed
 - Focused total: 51 tests passed
-- Final full integration reconciliation: 260 tests passed across 55 files
+- Final full integration reconciliation: 261 tests passed across 55 files
+- Final full unit reconciliation: 290 tests passed across 62 files
+- Final Chromium reconciliation: 56 tests passed, including both governed portal recording journeys
 - Disposable real-PostgreSQL HighLevel claim race: passed in the PR PostgreSQL 16 assurance job
 - Typecheck and build: passed before final publication
 - All tests used fake/sink adapters; external calls and sends remained zero
