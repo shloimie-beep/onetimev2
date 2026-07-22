@@ -250,24 +250,37 @@ async function seedOtLaunchHousehold(studentUserKey: string) {
     [config.accountKey, config.productKey],
   );
   await pool.query(
-    `INSERT INTO onetime.class_series
+    `WITH updated AS (
+       UPDATE onetime.class_series
+          SET title = 'OT-LAUNCH-01 Mishnayos', status = 'active', updated_at = now()
+        WHERE account_key = $1 AND product_key = $2
+          AND class_series_key = 'ot_launch_01_class'
+       RETURNING 1
+     )
+     INSERT INTO onetime.class_series
        (class_series_key, account_key, product_key, title, timezone, local_start_time,
         reminder_local_time)
-     VALUES ('ot_launch_01_class', $1, $2, 'OT-LAUNCH-01 Mishnayos', 'Asia/Jerusalem',
-       '19:00', '18:30')
-     ON CONFLICT (class_series_key) DO UPDATE SET title = EXCLUDED.title, status = 'active',
-       updated_at = now()`,
+     SELECT 'ot_launch_01_class', $1, $2, 'OT-LAUNCH-01 Mishnayos', 'Asia/Jerusalem',
+       '19:00', '18:30'
+      WHERE NOT EXISTS (SELECT 1 FROM updated)`,
     [config.accountKey, config.productKey],
   );
   await pool.query(
-    `INSERT INTO onetime.class_occurrences
+    `WITH updated AS (
+       UPDATE onetime.class_occurrences
+          SET occurrence_state = 'scheduled', access_state = 'provider_unavailable',
+              updated_at = now()
+        WHERE account_key = $1 AND product_key = $2
+          AND occurrence_key = 'ot_launch_01_class_2026_07_22'
+       RETURNING 1
+     )
+     INSERT INTO onetime.class_occurrences
        (occurrence_key, account_key, product_key, class_series_key, local_class_date, starts_at,
         reminder_due_at, joinable_until, occurrence_state, access_state)
-     VALUES ('ot_launch_01_class_2026_07_22', $1, $2, 'ot_launch_01_class', '2026-07-22',
+     SELECT 'ot_launch_01_class_2026_07_22', $1, $2, 'ot_launch_01_class', '2026-07-22',
        '2026-07-22T16:00:00.000Z', '2026-07-22T15:30:00.000Z',
-       '2026-07-22T17:30:00.000Z', 'scheduled', 'provider_unavailable')
-     ON CONFLICT (occurrence_key) DO UPDATE SET occurrence_state = 'scheduled',
-       access_state = 'provider_unavailable', updated_at = now()`,
+       '2026-07-22T17:30:00.000Z', 'scheduled', 'provider_unavailable'
+      WHERE NOT EXISTS (SELECT 1 FROM updated)`,
     [config.accountKey, config.productKey],
   );
 }
