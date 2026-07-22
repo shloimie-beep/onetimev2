@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T17:14:10Z
+updated_at: 2026-07-22T17:53:19Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -23,7 +23,7 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'PR #97 has semantically integrated accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad, PR #105 unique range 9dfabade8b9cff9dfa3edd6d0677deb4d07b8e18..50989b336838d2029a0e0abc075bfd209b9c65ef, and accepted Tisha delta acddcc8cd012c5cdc5bfc08cbc80550bef8719ba..100b4cf3371f4b2da88a16cf95e25960e35f0fc8. Exact head fc1220741dfe0dd00757a4e5013a9cef4438baa8 is live in persistent staging through web deployment 0ca84355-7886-43ad-bcaa-13e1d6da8f52 and worker deployment 204211cb-5a1e-42a3-8d28-304ceab7cbb7; /health and /ready return 200 with schema 2220_tisha_bav_event_email_permission. All GitHub suites, the same-snapshot local unit/integration/build/lint/Chromium gates, live role journeys, and the intercepted five-viewport Tisha proof pass. PR #104 remains already integrated/superseded and was not merged again. HighLevel event/actions modes are disabled with budget zero, Tisha email fallback is disabled by default, and real Zoom controls remain provider-off. No GHL/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred in this integration.'
+  current_summary: 'PR #97 has semantically integrated accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad, PR #105 unique range 9dfabade8b9cff9dfa3edd6d0677deb4d07b8e18..50989b336838d2029a0e0abc075bfd209b9c65ef, and accepted Tisha delta acddcc8cd012c5cdc5bfc08cbc80550bef8719ba..100b4cf3371f4b2da88a16cf95e25960e35f0fc8. PR #108 is now merged/closed at that exact head/merge commit against merge base ca89b900a6faf8e4915b1b4fa72f3eb107cdb896; its HighLevel application-contract foundation is ACCEPTED/INTEGRATED. Exact head fc1220741dfe0dd00757a4e5013a9cef4438baa8 is live in persistent staging through web deployment 0ca84355-7886-43ad-bcaa-13e1d6da8f52 and worker deployment 204211cb-5a1e-42a3-8d28-304ceab7cbb7; /health and /ready return 200 with schema 2220_tisha_bav_event_email_permission. All GitHub suites, the same-snapshot local unit/integration/build/lint/Chromium gates, live role journeys, and the intercepted five-viewport Tisha proof pass. PR #104 remains already integrated/superseded and was not merged again. HighLevel event/actions modes are disabled with budget zero, Tisha email fallback is disabled by default, and real Zoom controls remain provider-off. No GHL/provider/customer mutation, customer email/WhatsApp, reprocess, public DB proxy, or production change occurred in this integration.'
   external_action_count: 4
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
@@ -270,11 +270,11 @@ tracks:
       - Terminal closeout proves OT-01, OT-02A, OT-02B, OT-03, OT-04, OT-05, OT-06, OT-07, OT-08, OT-09, OT-10, OT-13, and OT-B01 through OT-B05 are empty Draft canvases with zero trigger, zero actions, and zero enrollments.
       - Their desired future contracts remain DRAFT_WAITING_EXTERNAL in Git, but observed live state is DRAFT_SHELL. Organized folders and stable IDs do not imply configured or operational workflows.
       - OT-B05 has no acknowledgement action. Its canonical future contract also forbids acknowledgement unless a separately reviewed delivery contract authorizes one.
-      - "The deployed app does not yet emit every required canonical HighLevel event/tag or bot-adapter invocation. PR #108's reviewed GHL-UI-14..23 jobs are the future execution path only after the dispatcher and event-permission lane converge."
+      - "PR #108's accepted dispatcher/application-contract foundation is integrated. The reviewed GHL-UI-14..23 jobs remain the future execution path only after the event-permission lane converges; this track does not infer that empty Draft shells are configured or operational."
       - Closeout sends, enrollments, contact changes, and provider mutations are zero.
       - 'Accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad is semantically integrated and deployed in PR #97 exact head fc1220741dfe0dd00757a4e5013a9cef4438baa8 with GHL-UI-14..23 still review-only and every provider/publication/enrollment gate closed.'
     blocker: null
-    remaining_work: Independently accept and integrate the canonical outbox dispatcher plus durable event-permission contract, then run one reviewed GHL UI job at a time with save/reopen/readback and bounded canary evidence.
+    remaining_work: Independently accept the durable event-permission contract, then run one reviewed GHL UI job at a time with save/reopen/readback and bounded canary evidence.
     next_action: 'Keep every shell Draft and empty; do not create a duplicate delivery path or publish/configure them from PR #97.'
 
   - id: ghl_event_dispatcher
@@ -293,8 +293,12 @@ tracks:
     evidence:
       - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
       - 'Terminal accepted PR #108 head 4540861a7f7ad950041e4ae58202537055fe59ad has exact merge base ca89b900a6faf8e4915b1b4fa72f3eb107cdb896, 39 owned paths, and all five GitHub suites green.'
-      - 'Its isolated web deployment 725536de-368a-4596-b7c4-0e98af2e18d7 is exact-version healthy at schema 2216; worker deployment dfc5bb6b-d1df-4916-92a1-a560f97841b7 is exact-source SUCCESS/RUNNING. Direct heartbeat-table readback is unavailable only because the PR database is private-network-only; no proxy was opened.'
-      - HIGHLEVEL_EVENT_SYNC_MODE and HIGHLEVEL_ACTIONS_MODE are disabled, canary budget is zero, run ID and allowlist are absent, and external calls, messages, and actions are zero. Optional inherited email/WhatsApp readiness flags are not HighLevel provider modes.
+      - 'GitHub now records PR #108 merged/closed at exact head/merge commit 4540861a7f7ad950041e4ae58202537055fe59ad with no review threads. Final-phase worktree/remote readback was clean and exact with no Git mutation; the preliminary metadata-less upload is removed/superseded, and the existing report/result was intentionally not edited to avoid an unverified successor head.'
+      - 'All five terminal suites pass: Node 24, OPS-06, PostgreSQL 16 assurance, PostgreSQL 16 learner-seat proof, and PostgreSQL 18 assurance/restore.'
+      - 'Its isolated web deployment 725536de-368a-4596-b7c4-0e98af2e18d7 is exact-version healthy with /health 200, /ready 200, blockers=[], and schema 2216_highlevel_application_contracts; worker deployment dfc5bb6b-d1df-4916-92a1-a560f97841b7 is exact-source SUCCESS/RUNNING.'
+      - 'Direct worker heartbeat-table readback remains blocked because the private diagnostic route is unavailable; indirect logs/flows are corroborating evidence only. Across 77 exact-deployment logs and 60 private PostgreSQL service-flow records in five minutes, heartbeat_failed=0 and delivery_batch_failed=0.'
+      - HIGHLEVEL_EVENT_SYNC_MODE and HIGHLEVEL_ACTIONS_MODE are disabled on web and worker, canary budget is zero, and run ID/allowlist are absent. Inherited optional email_transport and whatsapp_transport readiness flags are enabled and are not HighLevel provider modes; the Board does not claim every provider globally disabled.
+      - 'Exact isolated-deployment observation found zero HighLevel action HTTP requests, zero worker internet-egress records in the 30-minute window, zero GHL mutations/messages/actions, and zero persistent-staging or production mutations from this terminal verification.'
       - 'The exact PR #108 range is fast-forward integrated once into PR #97 exact head fc1220741dfe0dd00757a4e5013a9cef4438baa8. Web deployment 0ca84355-7886-43ad-bcaa-13e1d6da8f52 is healthy at schema 2220; worker deployment 204211cb-5a1e-42a3-8d28-304ceab7cbb7 is SUCCESS/RUNNING.'
       - 'The worker initially rejected startup because its staging service lacked the three fail-closed HighLevel controls. The conductor applied only HIGHLEVEL_EVENT_SYNC_MODE=disabled, HIGHLEVEL_ACTIONS_MODE=disabled, and HIGHLEVEL_CANARY_BUDGET=0 to that staging worker and redeployed the same exact source. Continuous sink batches report claimed=0, delivered=0, retried=0, and suppressed=0.'
     blocker: null
