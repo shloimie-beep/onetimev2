@@ -1,9 +1,18 @@
-import { expect, test } from '@playwright/test';
-import { loginAs, useW12AdminSession } from './w12-100/launch-readiness-helpers.ts';
+import { expect, test, type Page } from '@playwright/test';
+import {
+  assertNoHorizontalOverflow,
+  loginAs,
+  useW12AdminSession,
+} from './w12-100/launch-readiness-helpers.ts';
 
 test.describe.configure({ mode: 'serial' });
 
-test('Admin content factory browser smoke', async ({ page }) => {
+let publishedPlaybackPath = '';
+
+test('Admin uploads, processes, reviews, and publishes one occurrence-scoped video', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await useW12AdminSession(page);
   await page.goto('/app/content/factory');
   await expect(page.getByRole('heading', { name: 'Content Workspace' })).toBeVisible();
@@ -11,48 +20,130 @@ test('Admin content factory browser smoke', async ({ page }) => {
     'aria-current',
     'page',
   );
-  await expect(page.getByRole('button', { name: 'Add class video' })).toBeVisible();
   await expect(
-    page.getByText('[Demo] Hashavas Aveidah: Signs and Announcements').first(),
+    page.getByRole('heading', { name: 'Approved occurrence-scoped synthetic Mishnah review' }),
   ).toBeVisible();
-  await expect(page.getByText('Local drop ready')).toBeVisible();
-  await expect(page.getByText('Published').first()).toBeVisible();
-  await expect(page.getByLabel('Video processing status')).toContainText('Transcribing');
-  await expect(page.getByRole('link', { name: 'Preview approved playback' })).toBeVisible();
+  await page.getByRole('button', { name: 'Add class video' }).click();
+  const intakePanel = page.locator('.content-factory-intake-panel');
+  await intakePanel.getByRole('combobox').selectOption('e2e_class_occurrence');
+  await intakePanel.getByLabel('Video file').setInputFiles({
+    name: 'browser-uploaded-occurrence.mp4',
+    mimeType: 'video/mp4',
+    buffer: syntheticMp4(),
+  });
+  await intakePanel.getByRole('button', { name: 'Add to private storage' }).click();
+  await expect(page.getByText('browser-uploaded-occurrence.mp4').first()).toBeVisible();
 
+  await page.waitForTimeout(900);
+  await page.reload();
+  const uploadedItem = page.locator('.content-factory-item', {
+    hasText: 'browser-uploaded-occurrence.mp4',
+  });
+  await expect(uploadedItem).toBeVisible();
+  await uploadedItem.click();
+  await expect(page.getByRole('button', { name: 'Approve transcript and drafts' })).toBeVisible();
+  await page.getByLabel('Title').fill('Browser-published occurrence lesson');
+  await page
+    .getByLabel('Short description')
+    .fill('Approved provider-off acceptance content for the selected class occurrence.');
+  await page.getByRole('button', { name: 'Save draft' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'Browser-published occurrence lesson' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Approve transcript and drafts' }).click();
+  await expect(page.getByRole('button', { name: 'Publish', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Publish', exact: true }).click();
+  const preview = page.getByRole('link', { name: 'Preview approved playback' });
+  await expect(preview).toBeVisible();
+  publishedPlaybackPath = (await preview.getAttribute('href')) ?? '';
+  expect(publishedPlaybackPath).toMatch(/^\/app\/learning\/items\//);
+  await assertNoHorizontalOverflow(page);
   const body = await page.locator('body').innerText();
-  expect(body).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_demo_no_provider_resource/i);
+  expect(body).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_video_|volume:v1:/i);
 });
 
-test('Student approved playback browser smoke', async ({ page }) => {
-  await page.route('https://player.vimeo.com/**', async (route) => {
-    await route.abort('blockedbyclient');
-  });
+test('entitled Student sees approved content with protected captions and progress', async ({
+  page,
+}) => {
+  expect(publishedPlaybackPath).toBeTruthy();
   await loginAs(page, 'student', '/app/student');
   const contentCard = page
     .getByRole('article')
-    .filter({ hasText: '[Demo] Hashavas Aveidah: Signs and Announcements' });
+    .filter({ hasText: 'Browser-published occurrence lesson' });
   await expect(contentCard).toBeVisible();
-  await expect(contentCard.getByText(/approved synthetic review lesson/i)).toBeVisible();
-  await expect(contentCard.getByText(/approved synthetic lesson data/i)).toBeVisible();
+  await expect(contentCard.getByText(/provider-off acceptance content/i)).toBeVisible();
   await contentCard.getByText('Approved review questions').click();
   await expect(contentCard.getByRole('listitem').first()).toBeVisible();
-  const embedRequest = page.waitForRequest(
-    '**/api/v1/content/factory/ot_launch_01_demo_hashavas_aveidah/embed',
-  );
   await contentCard.getByRole('button', { name: 'Open' }).click();
-  await embedRequest;
-
-  await expect(page).toHaveURL(/\/app\/learning\/items\/ot_launch_01_demo_hashavas_aveidah$/);
+  await expect(page).toHaveURL(new RegExp(`${escapeRegex(publishedPlaybackPath)}$`));
   await expect(
-    page.getByRole('heading', { name: '[Demo] Hashavas Aveidah: Signs and Announcements' }),
+    page.getByRole('heading', { name: 'Browser-published occurrence lesson' }),
   ).toBeVisible();
+  await expect(page.getByText('E2E Daily Mishnah')).toBeVisible();
   await expect(page.getByText('Active')).toBeVisible();
+  await expect(page.getByText('not started')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Review questions' })).toBeVisible();
-  await expect(page.locator('iframe')).toHaveAttribute(
-    'src',
-    '/api/v1/content/factory/ot_launch_01_demo_hashavas_aveidah/embed',
-  );
+  await expect(page.locator('iframe')).toHaveAttribute('src', /\/api\/v1\/content\/factory\//);
   const body = await page.locator('body').innerText();
-  expect(body).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_demo_no_provider_resource/i);
+  expect(body).not.toMatch(/https?:\/\/player\.vimeo\.com|synthetic_video_|volume:v1:/i);
 });
+
+test('a non-entitled learner receives a metadata-safe denial', async ({ page }) => {
+  expect(publishedPlaybackPath).toBeTruthy();
+  await loginWithCredentials(
+    page,
+    'ot-zoom-student@example.test',
+    'ZoomStudentPassword!234',
+    '/app/student',
+  );
+  const response = await page.goto(publishedPlaybackPath);
+  expect(response?.status()).toBe(404);
+  await expect(page.getByText('Approved lesson playback is unavailable.')).toBeVisible();
+  expect(await page.locator('body').innerText()).not.toContain(
+    'Browser-published occurrence lesson',
+  );
+});
+
+test('Admin unpublish immediately revokes the entitled Student route', async ({ page }) => {
+  await useW12AdminSession(page);
+  await page.goto('/app/content/factory');
+  const item = page.locator('.content-factory-item', {
+    hasText: 'Browser-published occurrence lesson',
+  });
+  await expect(item).toBeVisible();
+  await item.click();
+  await page.getByRole('button', { name: 'Unpublish' }).click();
+  await expect(page.getByRole('button', { name: 'Publish', exact: true })).toBeVisible();
+
+  await page.context().clearCookies();
+  await loginAs(page, 'student', '/app/student');
+  await expect(
+    page.getByRole('article').filter({ hasText: 'Browser-published occurrence lesson' }),
+  ).toHaveCount(0);
+  const response = await page.goto(publishedPlaybackPath);
+  expect(response?.status()).toBe(404);
+  expect(await page.locator('body').innerText()).not.toContain(
+    'Browser-published occurrence lesson',
+  );
+});
+
+async function loginWithCredentials(page: Page, email: string, password: string, returnTo: string) {
+  await page.goto(`/login?return_to=${encodeURIComponent(returnTo)}`);
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Password').fill(password);
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.waitForURL(`**${returnTo}`);
+}
+
+function syntheticMp4() {
+  const bytes = Buffer.alloc(4_096, 0);
+  bytes.writeUInt32BE(24, 0);
+  bytes.write('ftyp', 4, 'ascii');
+  bytes.write('isom', 8, 'ascii');
+  bytes.write('browser-e2e', 32, 'ascii');
+  return bytes;
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

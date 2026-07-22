@@ -4,13 +4,15 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('content factory migration allocation', () => {
-  it('keeps immutable 2214, exact 2215, and a unique source prefix ledger', async () => {
+  it('keeps immutable 2214 and allocates the durable path at unique prefix 2221', async () => {
     const directory = path.resolve(process.cwd(), 'packages/db/migrations');
     const names = await readdir(directory);
     const migrationName = '2214_learning_delivery_content_factory.sql';
     const previewMigrationName = '2215_experience_preview_sessions.sql';
+    const durableMigrationName = '2221_video_to_classroom_e2e.sql';
     expect(names).toContain(migrationName);
     expect(names).toContain(previewMigrationName);
+    expect(names).toContain(durableMigrationName);
     expect(names).not.toContain('2210_learning_delivery_content_factory.sql');
     expect(names).not.toContain('2214_experience_preview_sessions.sql');
 
@@ -29,6 +31,14 @@ describe('content factory migration allocation', () => {
     const previewSql = await readFile(path.join(directory, previewMigrationName), 'utf8');
     expect(createHash('sha256').update(previewSql.replace(/\r\n/g, '\n')).digest('hex')).toBe(
       'e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56',
+    );
+
+    const durableSql = await readFile(path.join(directory, durableMigrationName), 'utf8');
+    expect(durableSql).toContain('classroom_occurrence_learner_entitlements');
+    expect(durableSql).toContain('learning_delivery_content_factory_jobs');
+    expect(durableSql).toContain('learning_delivery_content_factory_stage_results');
+    expect(createHash('sha256').update(durableSql.replace(/\r\n/g, '\n')).digest('hex')).toBe(
+      '25559ae6b514864c02e2e9ef2139a4906733cdeb9fe2208ca2db1b0a42f40536',
     );
   });
 });

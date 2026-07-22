@@ -211,6 +211,8 @@ export {
 } from './content/learning-delivery.ts';
 export * from './content/learning-delivery-inputs.ts';
 export * from './content/content-factory.ts';
+export * from './content/content-factory-storage.ts';
+export * from './content/content-factory-worker.ts';
 export {
   OT86B_ALLOWED_TRANSITIONS,
   Ot86bSocialPublishingError,

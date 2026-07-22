@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { chmod, mkdir, open, readFile, rename, unlink } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
@@ -136,6 +136,7 @@ import {
   createZoomHostLaunchPort,
   createContentPortalAccessAdapter,
   createContentFactoryIntake,
+  contentFactoryStorageFromEnv,
   createGamificationService,
   createLoginCsrf,
   createOt110aGeneratedArtifact,
@@ -174,6 +175,7 @@ import {
   ownerAdminVisibleActions,
   performOt110aContentAction,
   performContentFactoryAction,
+  retryContentFactoryIntake,
   previewOt110aPromptPatch,
   inspectOt86bBufferReadinessFromEnv,
   listCrmTags,
@@ -258,6 +260,7 @@ type AppDeps = {
   distDir?: string;
   learningDeliveryDemoReportPath?: string;
   clock?: () => Date;
+  contentFactoryJobNotifier?: (intakeKey: string) => Promise<void> | void;
 };
 
 const SESSION_COOKIE = 'otcrm_session';
@@ -338,6 +341,7 @@ export function createApp({
   distDir = path.resolve(process.cwd(), 'dist/apps/web/public'),
   learningDeliveryDemoReportPath,
   clock,
+  contentFactoryJobNotifier,
 }: AppDeps) {
   const app = express();
   app.set('trust proxy', config.trustedProxyHops);
@@ -2326,26 +2330,32 @@ export function createApp({
     }
     try {
       const staged = await stageProtectedContentFactoryUpload(req);
-      const classDateHeader = req.header('x-class-date')?.trim() || null;
-      const classDate =
-        classDateHeader && z.string().date().safeParse(classDateHeader).success
-          ? classDateHeader
-          : null;
-      const intake = await withTiming(req, 'db', () =>
-        createContentFactoryIntake({
-          pool,
-          config,
-          actorUserKey: session.user.user_key,
-          actorRole: session.user.role,
-          displayName: staged.displayName,
-          mimeType: staged.mimeType,
-          byteLength: staged.byteLength,
-          sourceSha256: staged.sourceSha256,
-          privateRefDigest: staged.privateRefDigest,
-          classLabel: safeDecodedHeader(req.header('x-class-label')),
-          classDate,
-        }),
-      );
+      let intake;
+      try {
+        intake = await withTiming(req, 'db', () =>
+          createContentFactoryIntake({
+            pool,
+            config,
+            actorUserKey: session.user.user_key,
+            actorRole: session.user.role,
+            displayName: staged.displayName,
+            mimeType: staged.mimeType,
+            byteLength: staged.byteLength,
+            sourceSha256: staged.sourceSha256,
+            privateRefDigest: staged.privateRefDigest,
+            storageLocator: staged.storageLocator,
+            occurrenceKey: safeDecodedHeader(req.header('x-occurrence-key')) ?? '',
+            idempotencyKey: safeDecodedHeader(req.header('x-idempotency-key')) ?? '',
+          }),
+        );
+        if (intake.private_ref_digest !== staged.privateRefDigest) {
+          await contentFactoryStorageFromEnv().remove(staged.storageLocator);
+        }
+      } catch (error) {
+        await contentFactoryStorageFromEnv().remove(staged.storageLocator);
+        throw error;
+      }
+      await contentFactoryJobNotifier?.(intake.intake_key);
       res.status(201).json(contentFactoryIntakeResponseSchema.parse({ success: true, intake }));
     } catch (error) {
       handleApiError(error, req, res);
@@ -2401,6 +2411,28 @@ export function createApp({
     },
   );
 
+  app.post(
+    '/api/v1/admin/content/factory/intakes/:intakeKey/retry',
+    async (req: RequestWithTrace, res) => {
+      setPrivateNoStore(res);
+      const session = await requireApiSession(req, res, pool, config);
+      if (!session) return;
+      if (!(await requireSessionCsrf(req, res, pool, session))) return;
+      try {
+        await retryContentFactoryIntake({
+          pool,
+          config,
+          intakeKey: String(req.params.intakeKey),
+          actorUserKey: session.user.user_key,
+          actorRole: session.user.role,
+        });
+        res.json({ success: true });
+      } catch (error) {
+        handleApiError(error, req, res);
+      }
+    },
+  );
+
   app.get('/app/learning/items/:sourceKey', async (req: RequestWithTrace, res) => {
     setPrivateNoStore(res);
     const session = await sessionFromRequest(req, pool, config);
@@ -2413,10 +2445,13 @@ export function createApp({
       return;
     }
     try {
+      const actor = await resolvePortalActor(req);
+      if (!actor) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
       const playback = await getContentFactoryPlayback({
         pool,
         config,
         sourceKey: String(req.params.sourceKey),
+        actor,
       });
       res.status(200).type('html').send(contentFactoryPlayerHtml(playback));
     } catch (error) {
@@ -2436,12 +2471,15 @@ export function createApp({
       return;
     }
     try {
+      const actor = await resolvePortalActor(req);
+      if (!actor) throw new ContentFactoryError('NOT_FOUND', 'Content was not found.');
       const playback = await getContentFactoryPlayback({
         pool,
         config,
         sourceKey: String(req.params.sourceKey),
+        actor,
       });
-      if (playback.isDemo) {
+      if (playback.processingMode === 'synthetic') {
         res.setHeader(
           'Content-Security-Policy',
           "default-src 'self'; style-src 'self'; frame-ancestors 'self'; base-uri 'self'",
@@ -2449,10 +2487,13 @@ export function createApp({
         res.status(200).type('html').send(contentFactoryDemoEmbedHtml(playback));
         return;
       }
-      if (!playback.privateProviderEmbedUrl) {
+      if (!playback.privateProviderAssetId) {
         throw new ContentFactoryError('PLAYBACK_UNAVAILABLE', 'Protected playback is unavailable.');
       }
-      res.redirect(302, playback.privateProviderEmbedUrl);
+      res.redirect(
+        302,
+        `https://player.vimeo.com/video/${encodeURIComponent(playback.privateProviderAssetId)}`,
+      );
     } catch (error) {
       handleApiError(error, req, res);
     }
@@ -4700,6 +4741,7 @@ function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContent
     <section class="state-panel learning-player-shell" aria-labelledby="learning-player-title">
       <p class="eyebrow">${playback.isDemo ? 'Protected synthetic demo lesson' : 'Protected One Time lesson'}</p>
       <h1 id="learning-player-title">${escapeHtml(playback.title)}</h1>
+      <p><strong>${escapeHtml(playback.classTitle)}</strong> · ${escapeHtml(playback.classDate)}</p>
       <p>${escapeHtml(playback.summary)}</p>
       <div class="protected-player-frame">
         <iframe
@@ -4815,90 +4857,13 @@ function zoomParticipantHtml(student: number) {
 }
 
 async function stageProtectedContentFactoryUpload(req: Request) {
-  const displayName = safeVideoUploadName(req.header('x-file-name'));
-  const extension = path.extname(displayName).toLowerCase();
-  const declaredMimeType = String(req.header('content-type') ?? '')
-    .split(';')[0]!
-    .trim();
-  const mimeType = declaredMimeType.startsWith('video/')
-    ? declaredMimeType
-    : extension === '.mov'
-      ? 'video/quicktime'
-      : extension === '.webm'
-        ? 'video/webm'
-        : 'video/mp4';
-  const configuredMax = Number(process.env.CONTENT_FACTORY_MAX_UPLOAD_BYTES ?? 2_147_483_648);
-  const maxBytes =
-    Number.isSafeInteger(configuredMax) && configuredMax > 0 ? configuredMax : 2_147_483_648;
   const declaredLength = Number(req.header('content-length') ?? 0);
-  if (declaredLength > maxBytes) {
-    throw new ContentFactoryError('VALIDATION_ERROR', 'Video exceeds the protected upload limit.');
-  }
-  const privateDirectory = path.resolve(
-    process.env.CONTENT_FACTORY_LOCAL_DROP_DIR ??
-      path.join(process.cwd(), 'tmp', 'content-factory-local-drop'),
-  );
-  await mkdir(privateDirectory, { recursive: true });
-  const temporaryPath = path.join(privateDirectory, `.upload-${randomUUID()}.partial`);
-  const file = await open(temporaryPath, 'wx', 0o600);
-  const digest = createHash('sha256');
-  let byteLength = 0;
-  try {
-    for await (const value of req) {
-      const chunk = Buffer.isBuffer(value) ? value : Buffer.from(value);
-      byteLength += chunk.length;
-      if (byteLength > maxBytes) {
-        throw new ContentFactoryError(
-          'VALIDATION_ERROR',
-          'Video exceeds the protected upload limit.',
-        );
-      }
-      digest.update(chunk);
-      await file.write(chunk);
-    }
-    if (byteLength < 1) {
-      throw new ContentFactoryError('VALIDATION_ERROR', 'Choose a non-empty video file.');
-    }
-    await file.sync();
-    await file.close();
-    const sourceSha256 = digest.digest('hex');
-    const finalPath = path.join(
-      privateDirectory,
-      `${sourceSha256.slice(0, 20)}-${randomUUID()}${extension}`,
-    );
-    if (!path.resolve(finalPath).startsWith(`${privateDirectory}${path.sep}`)) {
-      throw new ContentFactoryError('VALIDATION_ERROR', 'Protected intake path is invalid.');
-    }
-    await rename(temporaryPath, finalPath);
-    try {
-      await chmod(finalPath, 0o600);
-    } catch {
-      // Windows and managed volumes retain their protected inherited ACL.
-    }
-    return {
-      displayName,
-      mimeType,
-      byteLength,
-      sourceSha256,
-      privateRefDigest: createHash('sha256').update(`local_drop\0${sourceSha256}`).digest('hex'),
-    };
-  } catch (error) {
-    await file.close().catch(() => undefined);
-    await unlink(temporaryPath).catch(() => undefined);
-    throw error;
-  }
-}
-
-function safeVideoUploadName(value: string | undefined) {
-  const decoded = safeDecodedHeader(value);
-  if (!decoded || decoded.length > 240 || path.basename(decoded) !== decoded) {
-    throw new ContentFactoryError('VALIDATION_ERROR', 'A safe video filename is required.');
-  }
-  const extension = path.extname(decoded).toLowerCase();
-  if (!['.mp4', '.mov', '.m4v', '.webm', '.avi', '.mkv'].includes(extension)) {
-    throw new ContentFactoryError('VALIDATION_ERROR', 'Choose a supported video file.');
-  }
-  return decoded;
+  return contentFactoryStorageFromEnv().stage({
+    stream: req,
+    displayName: safeDecodedHeader(req.header('x-file-name')) ?? '',
+    declaredMimeType: String(req.header('content-type') ?? ''),
+    ...(declaredLength > 0 ? { declaredLength } : {}),
+  });
 }
 
 function safeDecodedHeader(value: string | undefined) {
