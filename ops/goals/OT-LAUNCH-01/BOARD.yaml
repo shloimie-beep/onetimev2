@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-22T11:33:42Z
+updated_at: 2026-07-22T11:53:29Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -17,7 +17,7 @@ outcome:
   target: Production-believable persistent staging with complete operator preview and coherent fictional scenario.
   production_changed: YES_TRANSIENT_RESTORED
   production_impact: BNA production was transiently changed in error, restored, and independently evidenced at canonical master cebbfc5781b92fcd9a5014df67f8ae4ba0b3a61c; One Time production remains untouched.
-  current_summary: PR #97 deployed version 6fcf043 is live on persistent staging as a documentation-only descendant of verified runtime code 18d339f, with migration 2215, a rotated coherent fictional household, and the Admin-to-role browser journey verified; external GHL dispatcher, Zoom provider, BNA durability, Telegram bridge, media-canary, and Tisha landing-polish tracks remain independently truthful.
+  current_summary: PR #97 deployed version 018cc72 is live on persistent staging with migration 2215, a rotated coherent fictional household, the Admin-to-role browser journey, canonical Git/HighLevel governance, and the accepted Tisha landing polish verified at five exact viewports; the authorized narrow Tisha production promotion and external GHL dispatcher, Zoom provider, BNA durability, Telegram bridge, and media-canary tracks remain independently truthful.
 
 conductor:
   task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
@@ -26,8 +26,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: 6fcf0435cca744dba0e4a3337beac860d9315180
-    resolution: Exact /version readback from web deployment 6b3b2bfb-41d5-4c0b-996d-1855a717ae0c; runtime code remains the verified 18d339f ancestor because 6fcf043 changed only ops/control records.
+    last_verified_commit: 018cc72e5fe036fe64704db3b507e043505a9bc9
+    resolution: Exact /version readback from web deployment 97b1cd17-6f92-4868-8bc4-a732750dd95c plus successful worker deployment f10135dd-010c-4b67-9e20-7264819d6b34; /health and /ready returned 200 and the deployed Tisha route passed five-viewport browser proof.
   system: One Time persistent staging
 
 tracks:
@@ -206,13 +206,13 @@ tracks:
     next_action: Wait for the canonical dispatcher and exact producer acceptance, then authorize one controlled workflow job at a time.
 
   - id: ghl_event_dispatcher
-    status: blocked
+    status: waiting_external
     owner:
       task_id: GHL-APP-CONTRACT-LANE-PR-108
       repository: shloimie-beep/onetimev2
       branch: codex/ot-launch-01-highlevel-app-contracts
       pr: 108
-      head: 482ce93cf192e9de645e70665a35e8b1e153e6f9
+      head: 98b2473c1782e6344a8415f614ef8235e59120d7
       system: One Time outbox to HighLevel
     write_scope: One canonical dispatcher, schemas, dedupe/retry, exact golden-path producers, and tests
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-event-dispatcher--assigned-task.json
@@ -222,13 +222,11 @@ tracks:
       - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
       - PR #108 head 482ce93cf192e9de645e70665a35e8b1e153e6f9 passed the fresh PostgreSQL 16 claim-race/disposable-DB proof, secret scan, full lint, typecheck, runtime/product safety, and Railway worker checks.
       - Independent clean-detached-worktree audit with core.autocrlf=false found 38 PR-owned paths, 36 Prettier-supported paths, and all 36 green under repo-pinned Prettier 3.9.5. The earlier 32-warning Windows normalization result is invalid and is not branch-owned evidence.
-      - Node 24 remains red only on the inherited 67-file target/base formatting baseline; its intersection with all 38 PR-owned paths is zero. Accepted PR #97 commit 5615705 formats that baseline, after which PR #108 must rebase and rerun.
-      - Railway web check/deployment e145b3de-4e9a-4fae-ad67-b38e33ed7847 failed; the exact cause has not yet been read back. No PR #108 head is accepted for integration or staging deployment.
-    blocker:
-      code: PR108_RAILWAY_WEB_CAUSE_UNRESOLVED
-      reason: Railway web failed and its terminal cause/readback is not yet available; branch-owned formatting is clean.
-    remaining_work: Push the accepted PR #97 formatting baseline and governance, then the existing PR #108 lane must rebase, diagnose/fix isolated Railway web, rerun Node 24 and Railway checks, and obtain a fresh independent exact-head acceptance.
-    next_action: Keep PR #108 out of staging; publish this target baseline safely, then let the existing lane rebase and return only an independently accepted green head without direct provider fanout.
+      - Accepted PR #97 formatting/governance and lint-fix target 018cc72e5fe036fe64704db3b507e043505a9bc9 is pushed; the existing PR #108 lane rebased to exact head 98b2473c1782e6344a8415f614ef8235e59120d7.
+      - The prior Railway web check/deployment e145b3de-4e9a-4fae-ad67-b38e33ed7847 failed; the rebased head's Node 24, Railway web/worker, PostgreSQL, and independent acceptance gates are running. No PR #108 head is accepted for integration or staging deployment.
+    blocker: null
+    remaining_work: The existing PR #108 lane must finish Node 24 and Railway checks on rebased head 98b2473c1782e6344a8415f614ef8235e59120d7 and obtain fresh independent exact-head acceptance.
+    next_action: Keep PR #108 out of staging until the existing lane returns an independently accepted green head without direct provider fanout.
 
   - id: media_staging_integration
     status: done
@@ -417,10 +415,11 @@ tracks:
     acceptance_ids: [DEPLOY-001]
     evidence:
       - Baseline 09953ba2edfc7ba014b9fe2558dbc7f5c58972ea previously passed exact /version, /health, /ready, worker heartbeat, and browser verification.
-      - Exact deployed version 6fcf0435cca744dba0e4a3337beac860d9315180 is live through web deployment 6b3b2bfb-41d5-4c0b-996d-1855a717ae0c and successful staging worker deployment 5f3b05d3-e633-4460-a596-2d2ccc72fa66; /health, /ready, and /version passed, with runtime code unchanged from verified ancestor 18d339f.
+      - Exact deployed version 018cc72e5fe036fe64704db3b507e043505a9bc9 is live through web deployment 97b1cd17-6f92-4868-8bc4-a732750dd95c and successful staging worker deployment f10135dd-010c-4b67-9e20-7264819d6b34; /health and /ready returned 200.
       - Predeploy readback preserved applied 2213 checksum de79b58418608f4466ffadda967411b43cfca2df477911071ed4060805b5dae1 and confirmed immutable 2214 plus exact 2215 checksum e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56.
       - Stable exact-source gates passed 6 focused files/24 tests, build/typecheck, repository conflict-marker scan, git diff --check, and 3/3 real Chromium scenarios including desktop and 360px.
       - Live click-through confirmed Admin login, all five role projections, concurrent isolated sibling tabs, preserved Admin session, Content, and Live Console; provider-off surfaces remained truthful.
+      - Exact-head Tisha browser proof at 375x667, 390x844, 430x932, 1366x768, and 1440x900 found viewport-equal scroll dimensions, visible CTA, exact no-period title and No charge copy, correct 1080x1350 mobile and 1366x768 desktop assets, and a full-viewport scroll-locked modal with visible Close; no live registration was submitted.
     blocker: null
     remaining_work: null
     next_action: Monitor the persistent staging health and redeploy only an exact accepted PR #97 descendant; never bypass predeploy migration checks.
@@ -432,20 +431,21 @@ tracks:
       repository: shloimie-beep/onetimev2
       branch: codex/tisha-bav-one-screen-staging-patch-20260722
       pr: 109
-      head: 25483a62d44bb2d8d5216ea2a8b638f514b0fd1d
+      head: 1779254768dacebb84aeac5d71b56b5abfba2534
       system: One Time Tisha landing
     write_scope: Staging-first Tisha landing layout and copy correction, exact responsive evidence, and the explicitly authorized narrow production promotion only
     handoff_path: ops/goals/OT-LAUNCH-01/handoffs/tisha-landing-polish--019f84b4-9937-74f1-8dca-0dcd0fe8bf2d.json
     dependencies: [goal_system, persistent_staging]
     acceptance_ids: [TISHA-001]
     evidence:
-      - Live production audit says assets load, the CTA is visible, and 375x667 has no horizontal overflow.
-      - Current defects are a large empty middle gap on mobile, missing exact phrase No charge, and the title Filling the World with Knowledge of Hashem must become Bringing Knowledge of Hashem into the World.
+      - Initial live production audit found a large empty middle gap on mobile, missing exact phrase No charge, and the old title Filling the World with Knowledge of Hashem; production remains unverified until the authorized narrow promotion completes.
       - PR #102 is closed and superseded by PR #97 staging plus PR #106 narrow production; its stale preview assets return 404 and are not evidence or source truth.
       - Existing task 019f84b4-9937-74f1-8dca-0dcd0fe8bf2d owns staging-first proof at 375x667, 390x844, 430x932, 1366x768, and 1440x900, followed by the explicitly authorized narrow production promotion.
       - This track authorizes no GHL send and no Zoom or other provider mutation.
-      - PR #109 candidate 25483a62d44bb2d8d5216ea2a8b638f514b0fd1d is exactly the reported three-file patch on base 6fcf0435cca744dba0e4a3337beac860d9315180, but it is held and not accepted because the visible H1 has an unauthorized trailing period.
-      - The existing owner task is correcting the same three-file patch and will return a superseding immutable head; do not integrate 25483a62 or duplicate its implementation.
+      - Superseded PR #109 head 25483a62d44bb2d8d5216ea2a8b638f514b0fd1d remains rejected because its H1 had an unauthorized trailing period.
+      - Root and subagent independent audits accepted superseding PR #109 head 1779254768dacebb84aeac5d71b56b5abfba2534, exactly three files on base 6fcf0435cca744dba0e4a3337beac860d9315180; exact copy, diff check, source checks, screenshots, five breakpoints, asset 200/dimensions, modal close/success/share, and zero provider mutation passed.
+      - The accepted patch is integrated in PR #97 commit 75c675abf6c11d1492d19e870d2ab990aa9b6eab; the target-owned lint repair is exact deployed descendant 018cc72e5fe036fe64704db3b507e043505a9bc9.
+      - Persistent-staging browser proof at all five required viewports confirms exact no-period title, No charge, viewport-equal scroll metrics, visible CTA, correct responsive assets, no dead mobile gap, and a full-page modal with visible Close; no live registration or provider send occurred.
     blocker: null
-    remaining_work: Receive and independently accept the superseding exact PR #109 head, integrate it without overwriting governance, deploy/verify persistent staging at all five viewports, then coordinate the already-authorized narrow PR #106 production promotion and verify the live URL.
-    next_action: Hold rejected 25483a62; continue only the existing owner task, integrate its superseding independently accepted three-file head, and do not stop at the PR #109 preview.
+    remaining_work: Coordinate the already-authorized same-three-file PR #106 production promotion and verify https://join.onetimeonetime.com/tisha-bav at all five viewports plus exact deployed version/source evidence.
+    next_action: Hand exact accepted staging descendant 018cc72e5fe036fe64704db3b507e043505a9bc9 and source head 1779254768dacebb84aeac5d71b56b5abfba2534 to the existing production owner; do not broaden scope to GHL, Zoom, or any provider send.
