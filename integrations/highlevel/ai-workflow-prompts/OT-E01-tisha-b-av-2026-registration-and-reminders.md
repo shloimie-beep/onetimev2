@@ -6,7 +6,7 @@ Do not publish a new workflow or any unrelated workflow. Republish only the same
 
 Canonical registry: one-time-highlevel@1.1.0
 Exact workflow: OT-E01 Tisha B'Av 2026 Registration and Reminders
-Folder: 45 - Events / 2026 / Tisha B'Av 2026
+Folder: One Time / 45 - Events / 2026 / Tisha B'Av 2026
 Exact trigger: Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered
 message_class: event_registration_confirmation
 sender_key: brand

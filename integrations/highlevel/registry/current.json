@@ -203,7 +203,9 @@
       "purpose": "Stable One Time CRM-side contact key.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-B01"],
+      "workflowsAllowedToWrite": [
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -224,7 +226,9 @@
       "purpose": "Opaque One Time parent reference.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-B01"],
+      "workflowsAllowedToWrite": [
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -245,7 +249,9 @@
       "purpose": "Opaque One Time household reference.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-B01"],
+      "workflowsAllowedToWrite": [
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -308,7 +314,10 @@
       "purpose": "Billing current period end.",
       "sourceOfTruth": "HighLevel",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-04", "OT-06"],
+      "workflowsAllowedToWrite": [
+        "OT-04",
+        "OT-06"
+      ],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": false,
       "dependencies": [],
@@ -329,7 +338,11 @@
       "purpose": "Billing subscription reference.",
       "sourceOfTruth": "HighLevel",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-03", "OT-04", "OT-05"],
+      "workflowsAllowedToWrite": [
+        "OT-03",
+        "OT-04",
+        "OT-05"
+      ],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": false,
       "dependencies": [],
@@ -350,7 +363,9 @@
       "purpose": "Grace-period end timestamp.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-05"],
+      "workflowsAllowedToWrite": [
+        "OT-05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -371,7 +386,9 @@
       "purpose": "Complimentary access end timestamp.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-04"],
+      "workflowsAllowedToWrite": [
+        "OT-04"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -391,8 +408,17 @@
       "category": "lifecycle_billing",
       "purpose": "Early-access invitation state.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["Not Invited", "Invited", "Activated", "Declined", "Expired"],
-      "workflowsAllowedToWrite": ["OT-02A", "OT-02B"],
+      "allowedValues": [
+        "Not Invited",
+        "Invited",
+        "Activated",
+        "Declined",
+        "Expired"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-02A",
+        "OT-02B"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -419,7 +445,9 @@
         "Activated",
         "Opted Out"
       ],
-      "workflowsAllowedToWrite": ["OT-02A"],
+      "workflowsAllowedToWrite": [
+        "OT-02A"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -440,7 +468,9 @@
       "purpose": "Migration sequence version marker.",
       "sourceOfTruth": "HighLevel",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-02A"],
+      "workflowsAllowedToWrite": [
+        "OT-02A"
+      ],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": false,
       "dependencies": [],
@@ -460,8 +490,17 @@
       "category": "portal_access",
       "purpose": "Parent portal state, not authorization.",
       "sourceOfTruth": "One Time",
-      "allowedValues": ["Not Invited", "Invited", "Active", "Suspended", "Disabled"],
-      "workflowsAllowedToWrite": ["OT-07", "OT-08"],
+      "allowedValues": [
+        "Not Invited",
+        "Invited",
+        "Active",
+        "Suspended",
+        "Disabled"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-07",
+        "OT-08"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -481,8 +520,19 @@
       "category": "portal_access",
       "purpose": "One Time access projection, not set by tag alone.",
       "sourceOfTruth": "One Time",
-      "allowedValues": ["Inactive", "Active", "Grace", "Complimentary", "Suspended"],
-      "workflowsAllowedToWrite": ["OT-04", "OT-05", "OT-06", "OT-13"],
+      "allowedValues": [
+        "Inactive",
+        "Active",
+        "Grace",
+        "Complimentary",
+        "Suspended"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-04",
+        "OT-05",
+        "OT-06",
+        "OT-13"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -509,7 +559,13 @@
         "opted_out",
         "suppressed"
       ],
-      "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B", "OT-B01", "OT-B05"],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-02A",
+        "OT-02B",
+        "OT-B01",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -529,8 +585,19 @@
       "category": "consent_communication",
       "purpose": "WhatsApp consent state.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["opted_in", "unknown", "opted_out", "suppressed"],
-      "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B", "OT-B01", "OT-B05"],
+      "allowedValues": [
+        "opted_in",
+        "unknown",
+        "opted_out",
+        "suppressed"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-02A",
+        "OT-02B",
+        "OT-B01",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -550,8 +617,16 @@
       "category": "consent_communication",
       "purpose": "Selected reminder channel.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["Email", "WhatsApp", "Both", "None"],
-      "workflowsAllowedToWrite": ["OT-B01", "OT-B05"],
+      "allowedValues": [
+        "Email",
+        "WhatsApp",
+        "Both",
+        "None"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-B01",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -572,7 +647,10 @@
       "purpose": "Consent policy version captured.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-B01", "OT-B05"],
+      "workflowsAllowedToWrite": [
+        "OT-B01",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -593,7 +671,10 @@
       "purpose": "Consent capture timestamp.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-B01", "OT-B05"],
+      "workflowsAllowedToWrite": [
+        "OT-B01",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -619,7 +700,12 @@
         "whatsapp_suppressed",
         "all_marketing_suppressed"
       ],
-      "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B", "OT-B05"],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-02A",
+        "OT-02B",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -640,7 +726,12 @@
       "purpose": "Suppression reason.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B", "OT-B05"],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-02A",
+        "OT-02B",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -660,8 +751,17 @@
       "category": "consent_communication",
       "purpose": "Newsletter eligibility/subscription state.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["Not Eligible", "Eligible", "Subscribed", "Unsubscribed", "Suppressed"],
-      "workflowsAllowedToWrite": ["OT-02B", "OT-B05"],
+      "allowedValues": [
+        "Not Eligible",
+        "Eligible",
+        "Subscribed",
+        "Unsubscribed",
+        "Suppressed"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-02B",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -682,7 +782,10 @@
       "purpose": "Lead source label.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-01", "OT-B01"],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -710,7 +813,10 @@
         "One Time CRM",
         "Voice"
       ],
-      "workflowsAllowedToWrite": ["OT-01", "OT-B01"],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -731,7 +837,11 @@
       "purpose": "Import or lead-source classification.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-01", "OT-02A", "OT-02B"],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-02A",
+        "OT-02B"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -752,7 +862,9 @@
       "purpose": "Protected import batch marker.",
       "sourceOfTruth": "HighLevel",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-01"],
+      "workflowsAllowedToWrite": [
+        "OT-01"
+      ],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": false,
       "dependencies": [],
@@ -772,8 +884,13 @@
       "category": "attribution_import",
       "purpose": "Family or School.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["Family", "School"],
-      "workflowsAllowedToWrite": ["OT-B01"],
+      "allowedValues": [
+        "Family",
+        "School"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -794,7 +911,9 @@
       "purpose": "Adult-supplied family or school label.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-B01"],
+      "workflowsAllowedToWrite": [
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -815,7 +934,15 @@
       "purpose": "Last sync timestamp.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-01", "OT-04", "OT-05", "OT-06", "OT-07", "OT-08", "OT-13"],
+      "workflowsAllowedToWrite": [
+        "OT-01",
+        "OT-04",
+        "OT-05",
+        "OT-06",
+        "OT-07",
+        "OT-08",
+        "OT-13"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -845,7 +972,13 @@
         "Billing Question",
         "Unresolved"
       ],
-      "workflowsAllowedToWrite": ["OT-B01", "OT-B02", "OT-B03", "OT-B04", "OT-B05"],
+      "workflowsAllowedToWrite": [
+        "OT-B01",
+        "OT-B02",
+        "OT-B03",
+        "OT-B04",
+        "OT-B05"
+      ],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": false,
       "dependencies": [],
@@ -865,8 +998,13 @@
       "category": "bot_operation",
       "purpose": "Preferred bot delivery channel.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["Email", "WhatsApp"],
-      "workflowsAllowedToWrite": ["OT-B01"],
+      "allowedValues": [
+        "Email",
+        "WhatsApp"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -886,8 +1024,16 @@
       "category": "bot_operation",
       "purpose": "Bot signup collection/submission state.",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["Collecting", "Submitted", "Confirmed", "Link Sent", "Failed"],
-      "workflowsAllowedToWrite": ["OT-B01"],
+      "allowedValues": [
+        "Collecting",
+        "Submitted",
+        "Confirmed",
+        "Link Sent",
+        "Failed"
+      ],
+      "workflowsAllowedToWrite": [
+        "OT-B01"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -908,7 +1054,10 @@
       "purpose": "Next class timestamp supplied by One Time.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-09", "OT-B02"],
+      "workflowsAllowedToWrite": [
+        "OT-09",
+        "OT-B02"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -929,7 +1078,10 @@
       "purpose": "Class time zone.",
       "sourceOfTruth": "One Time",
       "allowedValues": [],
-      "workflowsAllowedToWrite": ["OT-09", "OT-B02"],
+      "workflowsAllowedToWrite": [
+        "OT-09",
+        "OT-B02"
+      ],
       "oneTimeAllowedToWrite": true,
       "humansMayEdit": false,
       "dependencies": [],
@@ -954,7 +1106,9 @@
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": false,
       "dependencies": [],
-      "aliases": ["support_requested"],
+      "aliases": [
+        "support_requested"
+      ],
       "deprecationState": "deprecated_existing",
       "createdDate": "2026-07-21",
       "lastVerifiedDate": "2026-07-21",
@@ -1827,7 +1981,10 @@
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": true,
       "dependencies": [],
-      "aliases": ["compatibility_alias", "migrate_to_registered_sender_key"],
+      "aliases": [
+        "compatibility_alias",
+        "migrate_to_registered_sender_key"
+      ],
       "deprecationState": "deprecated_existing",
       "createdDate": "2026-07-21",
       "lastVerifiedDate": "2026-07-22",
@@ -1851,7 +2008,10 @@
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": true,
       "dependencies": [],
-      "aliases": ["compatibility_alias", "migrate_to_registered_sender_key"],
+      "aliases": [
+        "compatibility_alias",
+        "migrate_to_registered_sender_key"
+      ],
       "deprecationState": "deprecated_existing",
       "createdDate": "2026-07-21",
       "lastVerifiedDate": "2026-07-22",
@@ -1875,7 +2035,10 @@
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": true,
       "dependencies": [],
-      "aliases": ["compatibility_alias", "migrate_to_registered_sender_key"],
+      "aliases": [
+        "compatibility_alias",
+        "migrate_to_registered_sender_key"
+      ],
       "deprecationState": "deprecated_existing",
       "createdDate": "2026-07-21",
       "lastVerifiedDate": "2026-07-22",
@@ -2470,7 +2633,10 @@
       "purpose": "Promotion status.",
       "value": "inactive",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["active", "inactive"],
+      "allowedValues": [
+        "active",
+        "inactive"
+      ],
       "workflowsAllowedToWrite": [],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": true,
@@ -2518,7 +2684,10 @@
       "purpose": "Price display gate.",
       "value": "hidden",
       "sourceOfTruth": "Shared",
-      "allowedValues": ["hidden", "published"],
+      "allowedValues": [
+        "hidden",
+        "published"
+      ],
       "workflowsAllowedToWrite": [],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": true,
@@ -2546,7 +2715,9 @@
       "workflowsAllowedToWrite": [],
       "oneTimeAllowedToWrite": false,
       "humansMayEdit": true,
-      "dependencies": ["One Time Pricing Display Status"],
+      "dependencies": [
+        "One Time Pricing Display Status"
+      ],
       "aliases": [],
       "deprecationState": "blocked_ui_or_business_value",
       "createdDate": "2026-07-21",
@@ -2770,7 +2941,9 @@
     },
     {
       "key": "rabbi_personal",
-      "purpose": ["Rabbi-authored Torah answers and follow-up"],
+      "purpose": [
+        "Rabbi-authored Torah answers and follow-up"
+      ],
       "provider": "GHL",
       "owner": "Rabbi authors through Telegram; Shloimie retains visibility",
       "displayName": "Rabbi Eli Scheller",
@@ -2781,7 +2954,10 @@
       "status": "pending_mailbox_and_reply_acceptance",
       "phase1": null,
       "phase2": null,
-      "messageClasses": ["torah_answer", "torah_follow_up"]
+      "messageClasses": [
+        "torah_answer",
+        "torah_follow_up"
+      ]
     },
     {
       "key": "office",
@@ -2814,7 +2990,9 @@
     },
     {
       "key": "brand",
-      "purpose": ["neutral One Time program, portal, event, class, content, and receipt notices"],
+      "purpose": [
+        "neutral One Time program, portal, event, class, content, and receipt notices"
+      ],
       "provider": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "displayName": "One Time Mishnayos",
@@ -2877,7 +3055,9 @@
       "transport": "GHL",
       "owner": "Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-03"],
+      "allowedWorkflows": [
+        "OT-03"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2886,7 +3066,9 @@
       "transport": "GHL",
       "owner": "Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-02A"],
+      "allowedWorkflows": [
+        "OT-02A"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2895,7 +3077,9 @@
       "transport": "GHL",
       "owner": "Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-02B"],
+      "allowedWorkflows": [
+        "OT-02B"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2922,7 +3106,9 @@
       "transport": "GHL",
       "owner": "Rabbi Eli Scheller authors; Shloimie operates HighLevel and retains visibility",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-C01"],
+      "allowedWorkflows": [
+        "OT-C01"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2949,7 +3135,9 @@
       "transport": "GHL",
       "owner": "Shloimie",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-12"],
+      "allowedWorkflows": [
+        "OT-12"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2958,7 +3146,9 @@
       "transport": "GHL",
       "owner": "Shloimie",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-B03"],
+      "allowedWorkflows": [
+        "OT-B03"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2976,7 +3166,9 @@
       "transport": "GHL",
       "owner": "Shloimie",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-05"],
+      "allowedWorkflows": [
+        "OT-05"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2985,7 +3177,9 @@
       "transport": "GHL",
       "owner": "Shloimie",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-06"],
+      "allowedWorkflows": [
+        "OT-06"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -2994,7 +3188,9 @@
       "transport": "GHL",
       "owner": "Shloimie",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-13"],
+      "allowedWorkflows": [
+        "OT-13"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3021,7 +3217,11 @@
       "transport": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-01", "OT-04", "OT-B01"],
+      "allowedWorkflows": [
+        "OT-01",
+        "OT-04",
+        "OT-B01"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3030,7 +3230,9 @@
       "transport": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-E01"],
+      "allowedWorkflows": [
+        "OT-E01"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3048,7 +3250,10 @@
       "transport": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-09", "OT-B02"],
+      "allowedWorkflows": [
+        "OT-09",
+        "OT-B02"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3066,7 +3271,9 @@
       "transport": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-10"],
+      "allowedWorkflows": [
+        "OT-10"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3093,7 +3300,9 @@
       "transport": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-07"],
+      "allowedWorkflows": [
+        "OT-07"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3102,7 +3311,9 @@
       "transport": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-08"],
+      "allowedWorkflows": [
+        "OT-08"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3129,7 +3340,11 @@
       "transport": "GHL",
       "owner": "Shloimie operates; One Time Mishnayos owns the neutral brand identity",
       "sourceOfTruth": "HighLevel",
-      "allowedWorkflows": ["OT-B05", "OT-11", "OT-HUMAN-HANDOFF"],
+      "allowedWorkflows": [
+        "OT-B05",
+        "OT-11",
+        "OT-HUMAN-HANDOFF"
+      ],
       "securityTokensAllowed": false
     },
     {
@@ -3156,7 +3371,9 @@
       "transport": "Resend",
       "owner": "One Time authentication and security runtime",
       "sourceOfTruth": "One Time",
-      "allowedWorkflows": ["OT-B04"],
+      "allowedWorkflows": [
+        "OT-B04"
+      ],
       "securityTokensAllowed": true
     },
     {
@@ -3228,7 +3445,9 @@
           "position": 7
         }
       ],
-      "aliases": ["One Time Business"],
+      "aliases": [
+        "One Time Business"
+      ],
       "deleteOrMigrateExistingOpportunities": false
     },
     {
@@ -3267,7 +3486,9 @@
           "position": 6
         }
       ],
-      "aliases": ["One Time Business"],
+      "aliases": [
+        "One Time Business"
+      ],
       "deleteOrMigrateExistingOpportunities": false
     },
     {
@@ -3306,7 +3527,9 @@
           "position": 6
         }
       ],
-      "aliases": ["One Time Business"],
+      "aliases": [
+        "One Time Business"
+      ],
       "deleteOrMigrateExistingOpportunities": false
     },
     {
@@ -3330,7 +3553,10 @@
       "canonicalWorkflow": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "canonicalCampaign": "OT-C01 Tisha B'Av 2026 Warm Invitation",
       "invitationSenderKey": "rabbi_campaign",
-      "registrationReminderSenderKeys": ["brand", "rabbi_campaign"],
+      "registrationReminderSenderKeys": [
+        "brand",
+        "rabbi_campaign"
+      ],
       "existingTagsAndValuesPolicy": "Preserve existing Tisha B'Av lane tags and values; never duplicate them.",
       "sendAuthorized": false
     }
@@ -3804,7 +4030,7 @@
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "45 - Events / 2026 / Tisha B'Av 2026",
+      "folder": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
       "purpose": "Registered Tisha B'Av 2026 registration and reminder workflow.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -4088,7 +4314,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4096,7 +4325,13 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B01", "OT-B02", "OT-B03", "OT-B04", "OT-B05"],
+      "required_workflows": [
+        "OT-B01",
+        "OT-B02",
+        "OT-B03",
+        "OT-B04",
+        "OT-B05"
+      ],
       "required_sender_keys": [
         "rabbi_campaign",
         "rabbi_personal",
@@ -4127,7 +4362,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4135,7 +4373,13 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B01", "OT-B02", "OT-B03", "OT-B04", "OT-B05"],
+      "required_workflows": [
+        "OT-B01",
+        "OT-B02",
+        "OT-B03",
+        "OT-B04",
+        "OT-B05"
+      ],
       "required_sender_keys": [
         "rabbi_campaign",
         "rabbi_personal",
@@ -4146,7 +4390,9 @@
       "required_message_classes": [],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
-      "supersedes": ["incoming-ghl-one-time-rabbi-scheller-bot-paste-pack"],
+      "supersedes": [
+        "incoming-ghl-one-time-rabbi-scheller-bot-paste-pack"
+      ],
       "superseded_by": ""
     },
     {
@@ -4166,7 +4412,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4174,7 +4423,13 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B01", "OT-B02", "OT-B03", "OT-B04", "OT-B05"],
+      "required_workflows": [
+        "OT-B01",
+        "OT-B02",
+        "OT-B03",
+        "OT-B04",
+        "OT-B05"
+      ],
       "required_sender_keys": [
         "rabbi_campaign",
         "rabbi_personal",
@@ -4185,7 +4440,9 @@
       "required_message_classes": [],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
-      "supersedes": ["incoming-ghl-one-time-rabbi-scheller-bot-paste-pack"],
+      "supersedes": [
+        "incoming-ghl-one-time-rabbi-scheller-bot-paste-pack"
+      ],
       "superseded_by": ""
     },
     {
@@ -4205,7 +4462,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4213,9 +4473,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-01"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["signup_confirmation"],
+      "required_workflows": [
+        "OT-01"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "signup_confirmation"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4238,7 +4504,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4246,9 +4515,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-02A"],
-      "required_sender_keys": ["rabbi_campaign"],
-      "required_message_classes": ["existing_subscriber_migration"],
+      "required_workflows": [
+        "OT-02A"
+      ],
+      "required_sender_keys": [
+        "rabbi_campaign"
+      ],
+      "required_message_classes": [
+        "existing_subscriber_migration"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4271,7 +4546,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4279,9 +4557,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-02B"],
-      "required_sender_keys": ["rabbi_campaign"],
-      "required_message_classes": ["prelaunch_nurture"],
+      "required_workflows": [
+        "OT-02B"
+      ],
+      "required_sender_keys": [
+        "rabbi_campaign"
+      ],
+      "required_message_classes": [
+        "prelaunch_nurture"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4304,7 +4588,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4312,9 +4599,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-03"],
-      "required_sender_keys": ["rabbi_campaign"],
-      "required_message_classes": ["warm_enrollment_campaign"],
+      "required_workflows": [
+        "OT-03"
+      ],
+      "required_sender_keys": [
+        "rabbi_campaign"
+      ],
+      "required_message_classes": [
+        "warm_enrollment_campaign"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4337,7 +4630,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4345,9 +4641,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-04"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["signup_confirmation"],
+      "required_workflows": [
+        "OT-04"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "signup_confirmation"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4370,7 +4672,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4378,9 +4683,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-05"],
-      "required_sender_keys": ["office"],
-      "required_message_classes": ["payment_failed_support"],
+      "required_workflows": [
+        "OT-05"
+      ],
+      "required_sender_keys": [
+        "office"
+      ],
+      "required_message_classes": [
+        "payment_failed_support"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4403,7 +4714,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4411,9 +4725,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-06"],
-      "required_sender_keys": ["office"],
-      "required_message_classes": ["cancellation_help"],
+      "required_workflows": [
+        "OT-06"
+      ],
+      "required_sender_keys": [
+        "office"
+      ],
+      "required_message_classes": [
+        "cancellation_help"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4436,7 +4756,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4444,9 +4767,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-07"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["portal_welcome"],
+      "required_workflows": [
+        "OT-07"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "portal_welcome"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4469,7 +4798,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4477,9 +4809,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-08"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["portal_activated"],
+      "required_workflows": [
+        "OT-08"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "portal_activated"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4502,7 +4840,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4510,9 +4851,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-09"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["class_reminder"],
+      "required_workflows": [
+        "OT-09"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "class_reminder"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4535,7 +4882,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4543,9 +4893,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-10"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["recording_available"],
+      "required_workflows": [
+        "OT-10"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "recording_available"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4568,7 +4924,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4576,9 +4935,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-13"],
-      "required_sender_keys": ["office"],
-      "required_message_classes": ["refund_help"],
+      "required_workflows": [
+        "OT-13"
+      ],
+      "required_sender_keys": [
+        "office"
+      ],
+      "required_message_classes": [
+        "refund_help"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4601,7 +4966,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4609,9 +4977,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-C01"],
-      "required_sender_keys": ["rabbi_campaign"],
-      "required_message_classes": ["rabbi_event_invitation"],
+      "required_workflows": [
+        "OT-C01"
+      ],
+      "required_sender_keys": [
+        "rabbi_campaign"
+      ],
+      "required_message_classes": [
+        "rabbi_event_invitation"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4623,7 +4997,7 @@
       "status": "active",
       "title": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
-      "sha256": "778e8c9b7306a2da81caad4be2daeec96b6d64a3725baba50e1114d26e5f410b",
+      "sha256": "28f517ccbbc6db4137d058a7fee09fa00fd8c4dbdfe7ac901a66331b4d48e26b",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -4634,7 +5008,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4642,9 +5019,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-E01"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["event_registration_confirmation"],
+      "required_workflows": [
+        "OT-E01"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "event_registration_confirmation"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4667,7 +5050,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4675,9 +5061,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B01"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["signup_confirmation"],
+      "required_workflows": [
+        "OT-B01"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "signup_confirmation"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4700,7 +5092,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4708,9 +5103,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B02"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["class_reminder"],
+      "required_workflows": [
+        "OT-B02"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "class_reminder"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4733,7 +5134,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4741,9 +5145,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B03"],
-      "required_sender_keys": ["office"],
-      "required_message_classes": ["access_help"],
+      "required_workflows": [
+        "OT-B03"
+      ],
+      "required_sender_keys": [
+        "office"
+      ],
+      "required_message_classes": [
+        "access_help"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4766,7 +5176,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4774,9 +5187,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B04"],
-      "required_sender_keys": ["account_security"],
-      "required_message_classes": ["password_reset"],
+      "required_workflows": [
+        "OT-B04"
+      ],
+      "required_sender_keys": [
+        "account_security"
+      ],
+      "required_message_classes": [
+        "password_reset"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4799,7 +5218,10 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Support Email",
         "One Time Member Login URL",
@@ -4807,9 +5229,15 @@
         "One Time Pricing Display Status",
         "One Time Published Price Label"
       ],
-      "required_workflows": ["OT-B05"],
-      "required_sender_keys": ["brand"],
-      "required_message_classes": ["support_acknowledgement"],
+      "required_workflows": [
+        "OT-B05"
+      ],
+      "required_sender_keys": [
+        "brand"
+      ],
+      "required_message_classes": [
+        "support_acknowledgement"
+      ],
       "test_contact_reference": "protected_operator_owned_test_contact",
       "last_tested_date": "",
       "supersedes": [],
@@ -4834,14 +5262,23 @@
         "One Time Suppression State",
         "One Time Signup Status"
       ],
-      "required_tags": ["OT | Lead", "OT | Marketing Suppressed"],
+      "required_tags": [
+        "OT | Lead",
+        "OT | Marketing Suppressed"
+      ],
       "required_custom_values": [
         "One Time Class Time Israel",
         "One Time Pricing Display Status",
         "One Time Published Price Label",
         "One Time Support Email"
       ],
-      "required_workflows": ["OT-B01", "OT-B02", "OT-B03", "OT-B04", "OT-B05"],
+      "required_workflows": [
+        "OT-B01",
+        "OT-B02",
+        "OT-B03",
+        "OT-B04",
+        "OT-B05"
+      ],
       "required_sender_keys": [
         "rabbi_campaign",
         "rabbi_personal",
@@ -5059,7 +5496,7 @@
     {
       "canonicalName": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
-      "canonicalFolder": "45 - Events / 2026 / Tisha B'Av 2026",
+      "canonicalFolder": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
       "status": "published",

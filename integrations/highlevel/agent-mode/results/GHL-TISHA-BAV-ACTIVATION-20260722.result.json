@@ -71,7 +71,7 @@
       "name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "kind": "workflow",
       "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
-      "folderAncestry": "45 - Events / 2026 / Tisha B'Av 2026",
+      "folderAncestry": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
       "purpose": "Event-only registration confirmation and time-bounded registered-contact reminders.",
       "messageClass": "event_registration_confirmation",
       "triggerOrEnrollment": "Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered; re-entry disabled; event permission does not create newsletter consent.",

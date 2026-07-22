@@ -3496,7 +3496,7 @@ workflows:
     objectType: 'business_workflow'
     dataType: 'workflow'
     category: 'business_workflow'
-    folder: "45 - Events / 2026 / Tisha B'Av 2026"
+    folder: "One Time / 45 - Events / 2026 / Tisha B'Av 2026"
     purpose: "Registered Tisha B'Av 2026 registration and reminder workflow."
     sourceOfTruth: 'Shared'
     allowedValues: []
@@ -3776,7 +3776,7 @@ workflow_readback:
     duplicateCandidates: []
   - canonicalName: "OT-E01 Tisha B'Av 2026 Registration and Reminders"
     id: 'a34ea513-4612-4f53-8bd8-49e89e6610f9'
-    canonicalFolder: "45 - Events / 2026 / Tisha B'Av 2026"
+    canonicalFolder: "One Time / 45 - Events / 2026 / Tisha B'Av 2026"
     liveFolder: ''
     liveFolderSource: 'api_not_exposed'
     status: 'published'
