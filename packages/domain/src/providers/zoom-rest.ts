@@ -384,6 +384,7 @@ export function createZoomMeetingSdkSignature(input: {
       iat: issuedAtSeconds,
       exp: issuedAtSeconds + ttlSeconds,
       tokenExp: issuedAtSeconds + ttlSeconds,
+      video_webrtc_mode: 1,
     },
     input.credentials.sdkSecret,
   );
