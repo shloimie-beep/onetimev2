@@ -31,6 +31,7 @@ export function createLiveClassRepository(pool: DbPool): LiveClassRepository {
     listOwnQuestions: (args) => listOwnQuestions(pool, args),
     getQuestion: (args) => getQuestion(pool, args),
     getParticipantByCustomerKey: (args) => getParticipantByCustomerKey(pool, args),
+    getParticipantByKey: (args) => getParticipantByKey(pool, args),
     listParticipants: (args) => listParticipants(pool, args),
     upsertParticipant: (args) => upsertParticipant(pool, args),
     selectQuestion: (args) => selectQuestion(pool, args),
@@ -41,6 +42,7 @@ export function createLiveClassRepository(pool: DbPool): LiveClassRepository {
     getStage: (args) => getStage(pool, args),
     enqueueCommand: (args) => enqueueCommand(pool, args),
     listPendingCommands: (args) => listPendingCommands(pool, args),
+    listPendingZoomCommands: (args) => listPendingZoomCommands(pool, args),
     reportCommand: (args) => reportCommand(pool, args),
     recordAudit: (args) => recordAudit(pool, args),
   };
@@ -172,8 +174,9 @@ async function ensureFakeDemo(
         `INSERT INTO onetime.live_class_questions
            (question_key, account_key, product_key, household_key, learner_key, occurrence_key,
             approved_display_name, question_body_digest, question_preview, status, readiness,
-            customer_key, class_label, selected_at, idempotency_key, request_hash)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'pending',$11,$12,$13,$14,$15)
+            mic_ready, video_ready, customer_key, class_label, selected_at, student_ready_at,
+            idempotency_key, request_hash)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
          ON CONFLICT (account_key, product_key, learner_key, occurrence_key, idempotency_key)
          DO NOTHING`,
         [
@@ -187,9 +190,13 @@ async function ensureFakeDemo(
           item.question_body_digest,
           item.question_preview,
           item.status,
+          item.readiness,
+          item.status === 'student_ready',
+          item.status === 'student_ready',
           item.customer_key,
           item.class_label,
-          item.status === 'selected' ? args.now : null,
+          item.status === 'student_ready' ? args.now : null,
+          item.status === 'student_ready' ? args.now : null,
           item.idempotency_key,
           item.request_hash,
         ],
@@ -201,15 +208,15 @@ async function ensureFakeDemo(
         learner_key: item.learner_key,
         customer_key: item.customer_key,
         approved_display_name: item.approved_display_name,
-        join_state: item.status === 'selected' ? 'waiting' : 'unknown',
-        audio_state: item.status === 'selected' ? 'muted' : 'unknown',
-        video_state: item.status === 'selected' ? 'off' : 'unknown',
+        join_state: item.join_state,
+        audio_state: item.audio_state,
+        video_state: item.video_state,
         active_speaker: false,
         spotlighted: false,
       });
     }
     const selectedDemo = demoQuestions(args.occurrence_key, args.class_label).find(
-      (item) => item.status === 'selected',
+      (item) => item.status === 'student_ready',
     );
     if (selectedDemo) {
       await client.query(
@@ -391,6 +398,24 @@ async function getParticipantByCustomerKey(
   return row ? mapParticipant(row) : null;
 }
 
+async function getParticipantByKey(
+  target: DbPool | Queryable,
+  args: Parameters<LiveClassRepository['getParticipantByKey']>[0],
+) {
+  const result = await target.query(
+    `SELECT *
+       FROM onetime.live_class_participants
+      WHERE account_key = $1
+        AND product_key = $2
+        AND occurrence_key = $3
+        AND participant_key = $4
+      LIMIT 1`,
+    [args.actor.account_key, args.actor.product_key, args.occurrence_key, args.participant_key],
+  );
+  const row = result.rows[0] as Record<string, unknown> | undefined;
+  return row ? mapParticipant(row) : null;
+}
+
 async function listParticipants(
   target: DbPool | Queryable,
   args: Parameters<LiveClassRepository['listParticipants']>[0],
@@ -414,11 +439,14 @@ async function upsertParticipant(
   const result = await target.query(
     `INSERT INTO onetime.live_class_participants
        (participant_key, account_key, product_key, occurrence_key, learner_key, customer_key,
-        approved_display_name, join_state, audio_state, video_state, active_speaker, spotlighted)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+        participant_id_digest, approved_display_name, join_state, audio_state, video_state,
+        active_speaker, spotlighted)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
      ON CONFLICT (account_key, product_key, occurrence_key, customer_key)
      DO UPDATE SET
        learner_key = EXCLUDED.learner_key,
+       participant_id_digest = COALESCE(EXCLUDED.participant_id_digest,
+         onetime.live_class_participants.participant_id_digest),
        approved_display_name = EXCLUDED.approved_display_name,
        join_state = EXCLUDED.join_state,
        audio_state = EXCLUDED.audio_state,
@@ -435,6 +463,7 @@ async function upsertParticipant(
       args.occurrence_key,
       args.learner_key,
       args.customer_key,
+      args.participant_id_digest ?? null,
       args.approved_display_name,
       args.join_state,
       args.audio_state,
@@ -727,6 +756,26 @@ async function listPendingCommands(
   return result.rows.map((row) => mapCommand(row as Record<string, unknown>));
 }
 
+async function listPendingZoomCommands(
+  target: DbPool | Queryable,
+  args: Parameters<LiveClassRepository['listPendingZoomCommands']>[0],
+) {
+  const result = await target.query(
+    `SELECT *
+       FROM onetime.live_class_control_commands
+      WHERE account_key = $1
+        AND product_key = $2
+        AND occurrence_key = $3
+        AND command_status = 'queued'
+        AND command_type IN ('ask_unmute','mute','spotlight_replace','spotlight_remove','stop_video')
+        AND expires_at > $4
+      ORDER BY created_at ASC
+      LIMIT 20`,
+    [args.actor.account_key, args.actor.product_key, args.occurrence_key, args.now],
+  );
+  return result.rows.map((row) => mapCommand(row as Record<string, unknown>));
+}
+
 async function reportCommand(
   pool: DbPool,
   args: Parameters<LiveClassRepository['reportCommand']>[0],
@@ -750,7 +799,7 @@ async function reportCommand(
       ],
     );
     const row = result.rows[0] as Record<string, unknown> | undefined;
-    if (!row || String(row.command_status) !== 'queued') return false;
+    if (!row || String(row.command_status) !== 'queued') return null;
     if (new Date(String(row.expires_at)).getTime() <= args.now.getTime()) {
       await client.query(
         `UPDATE onetime.live_class_control_commands
@@ -758,15 +807,16 @@ async function reportCommand(
           WHERE command_key = $1`,
         [args.payload.command_key],
       );
-      return false;
+      return null;
     }
-    await client.query(
+    const updated = await client.query(
       `UPDATE onetime.live_class_control_commands
           SET command_status = $2,
               executed_at = CASE WHEN $2 = 'executed' THEN $3 ELSE executed_at END,
               result_json = $4::jsonb,
               updated_at = now()
-        WHERE command_key = $1`,
+        WHERE command_key = $1
+      RETURNING *`,
       [
         args.payload.command_key,
         args.payload.status,
@@ -774,7 +824,7 @@ async function reportCommand(
         JSON.stringify({ result: args.payload.result ?? '' }),
       ],
     );
-    return true;
+    return mapCommand(updated.rows[0] as Record<string, unknown>);
   });
 }
 
@@ -858,7 +908,11 @@ function demoQuestions(occurrenceKey: string, classLabel: string) {
       learner_key: 'live_demo_learner_1',
       approved_display_name: 'Student 1',
       question_preview: 'Can the Rabbi explain why this Mishnah uses that example?',
-      status: 'selected',
+      status: 'student_ready',
+      readiness: 'ready',
+      join_state: 'joined' as const,
+      audio_state: 'muted' as const,
+      video_state: 'on' as const,
       idempotency_key: 'live-demo-question-1',
     },
     {
@@ -868,6 +922,10 @@ function demoQuestions(occurrenceKey: string, classLabel: string) {
       approved_display_name: 'Student 2',
       question_preview: 'What is the practical difference between the two opinions?',
       status: 'submitted',
+      readiness: 'pending',
+      join_state: 'joined' as const,
+      audio_state: 'muted' as const,
+      video_state: 'off' as const,
       idempotency_key: 'live-demo-question-2',
     },
     {
@@ -877,6 +935,10 @@ function demoQuestions(occurrenceKey: string, classLabel: string) {
       approved_display_name: 'Student 3',
       question_preview: 'Where do we see this idea again later in the perek?',
       status: 'submitted',
+      readiness: 'pending',
+      join_state: 'left' as const,
+      audio_state: 'muted' as const,
+      video_state: 'off' as const,
       idempotency_key: 'live-demo-question-3',
     },
   ].map((item) => ({

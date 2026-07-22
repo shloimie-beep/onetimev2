@@ -55,11 +55,14 @@ export {
   type LiveClassService,
   type LiveClassSessionRecord,
 } from './live-class/service.ts';
+export { createZoomHostLaunchPort } from './live-class/zoom-host.ts';
 export { createClassroomReminderJob } from './classroom/reminders.ts';
 export {
   ZoomApiError,
   assertNoZoomSecretLeak,
   createLearnerZoomSdkSignature,
+  createHostZoomSdkSignature,
+  createZoomMeetingSdkSignature,
   createZoomRestClient,
   registrantTokenFromJoinUrl,
   resolveZoomOccurrenceForLocalDate,

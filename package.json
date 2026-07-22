@@ -38,6 +38,7 @@
     "db:verify": "tsx scripts/migrate.ts --verify",
     "full-app:provision-staging": "tsx scripts/full-app-staging-live/provision-preview.ts",
     "zoom:demo-students": "node --import tsx scripts/smoke-zoom-demo-students.mjs",
+    "zoom:real-control:provision": "tsx scripts/zoom-real-control-provision.ts",
     "stripe:test:resources:validate": "tsx scripts/ot87-stripe-test-resources.ts validate",
     "stripe:test:resources:setup": "tsx scripts/ot87-stripe-test-resources.ts setup",
     "stripe:test:canary": "tsx scripts/ot105-stripe-test-canary.ts",
