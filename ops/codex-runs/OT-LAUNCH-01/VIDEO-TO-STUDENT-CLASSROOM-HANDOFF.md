@@ -18,6 +18,8 @@
 | `89907a90e81a3829c87d622c16f1c5610000d0c0`   | Private Drive/local intake, transcript-grounded drafts, Admin review, protected playback |
 | `a8633b83cf58e929d4cc2c6692f168100b5963ca`   | Restart-safe PR #101 autotrim migration constraint                                       |
 | `d19743b0611f3df70e4844fe781cd6dc7a20eed8`   | Admin and Student content-factory browser smokes                                         |
+| `a79332ea8339f1409981e889a8f10455de2e2def`   | Operator intake UI, synthetic demo contract, `2214` collision repair, and handoff        |
+| `7c349e997147f466e80d49670b5fe9ba6d3279c5`   | Railway runtime proof reports the deployed source commit                                 |
 | PR exact head reported in the final response | OT-LAUNCH-01 operator intake, demo seed, `2214` collision repair, and handoff            |
 
 The authoritative changed-path set is `git diff --name-only 0e8b903385d0f1717f8f6e051f4a322739e175d7...HEAD`. The shared hotspots in this lane are:
@@ -37,6 +39,13 @@ The authoritative changed-path set is `git diff --name-only 0e8b903385d0f1717f8f
 - `packages/db/migrations/2214_learning_delivery_content_factory.sql`
 - `tests/support/test-server.ts`
 
+## Semantic patch boundary
+
+- Before: PR #101 base `0e8b903385d0f1717f8f6e051f4a322739e175d7`.
+- After: the exact PR #104 head reported in the final response and independently exposed by the isolated preview's `/version` response.
+- Included: protected Drive/local-drop intake, edge-only conservative trim orchestration, timestamped transcription and WebVTT persistence, editable draft metadata/questions, private Vimeo projection, Admin review controls, published-only Student playback, isolated synthetic preview seed, focused tests, and this conductor handoff.
+- Excluded: changes to persistent staging or production, provider resources created before explicit operator approval, and changes to the accepted PR #101 media semantics outside the retry-safe migration guard.
+
 ## Migration ledger
 
 - Read-only persistent-staging readiness check on 2026-07-22: `latest=2213_learning_delivery_autotrim_transcripts`.
@@ -45,6 +54,7 @@ The authoritative changed-path set is `git diff --name-only 0e8b903385d0f1717f8f
 - Canonical-LF SHA-256 at handoff authoring: `7c5a8ad21cc4610dc32c2378b72e2024eafc45445a9658a1ae1e9783fcf8068c`.
 - The prior colliding `2210_learning_delivery_content_factory.sql` path is absent from this branch.
 - `2214` uses restart-safe table/index creation so the existing isolated PR environment can converge without rewriting any applied persistent-staging migration.
+- Control-tower reservation: `2214_learning_delivery_content_factory` is already applied in the PR #104 preview and must not be renamed during convergence. Any uncommitted downstream collision must move to the next free prefix.
 
 ## Configuration contract
 
@@ -57,6 +67,7 @@ Names only; values stay in protected configuration:
 - `ONE_TIME_PRODUCT_KEY`
 - `CONTENT_FACTORY_LOCAL_DROP_DIR`
 - `CONTENT_FACTORY_MAX_UPLOAD_BYTES`
+- `CONTENT_FACTORY_DEMO_PASSWORD` (isolated synthetic-preview seed only)
 - `GOOGLE_DRIVE_FOLDER_ID`
 - `GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON`
 - `OPENAI_API_KEY`
@@ -83,10 +94,15 @@ Normal browser payloads expose no raw Drive path, Vimeo URL, provider ID, upload
 - Account/product scope: configured One Time account and Mishnayos product.
 - Class label: `OT-LAUNCH-01 Mishnayos`.
 - Class date: `2026-07-22`.
+- Household key: `ot_launch_01_household`.
+- Learner key: `ot_launch_01_student`.
+- Class series key: `ot_launch_01_class`.
+- Class occurrence key: `ot_launch_01_class_2026_07_22`.
 - Demo source key: `ot_launch_01_demo_hashavas_aveidah`.
 - Demo title: `[Demo] Hashavas Aveidah: Signs and Announcements`.
 - Content basis: approved synthetic transcript, captions, five review questions, and three takeaways; no provider call and no authoritative Torah interpretation.
-- Audience: the existing OT-LAUNCH-01 active household/student fixture through the `all_active_learners` entitlement created at publish.
+- Audience: the idempotently seeded OT-LAUNCH-01 active household/student identity through the `all_active_learners` entitlement created at publish.
+- Preview identities: the seed creates one synthetic owner and one synthetic Student under reserved `example.test` addresses; the password is supplied only at runtime through `CONTENT_FACTORY_DEMO_PASSWORD` and is never committed.
 - Demo command: `npm run content-factory:seed-demo`.
 - Safety: the command exits when `DELIVERY_ENVIRONMENT=production`; run it only against the existing isolated PR database.
 - Student projection: only `status=published` content-factory lessons are rendered; unapproved and unrelated dead fixtures are filtered from the Student library.
