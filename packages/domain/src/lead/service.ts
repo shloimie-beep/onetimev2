@@ -10,6 +10,7 @@ import type { DbPool, Queryable } from '../../../db/src/index.ts';
 import { inTransaction } from '../../../db/src/index.ts';
 import { COMMUNICATION_CONSENT_POLICY_VERSION } from '../legal/policies.ts';
 import { scheduleClassFulfillmentForLead } from '../classes/service.ts';
+import { enqueueHighLevelEvent } from '../highlevel/producer.ts';
 import {
   normalizeEmail,
   normalizePhone,
@@ -87,6 +88,15 @@ export async function captureLead({
     await upsertSignup(client, config, parsed, contactKey, signupKey, capturedAt);
     await insertAudit(client, config, parsed, contactKey, signupKey, capturedAt);
     await insertOutboxIntents(client, config, parsed, contactKey, signupKey, email, phone);
+    await enqueueHighLevelEvent(client, config, {
+      eventName: 'adult.signup.submitted',
+      contactKey,
+      idempotencyKey: stableKey('adult_signup_submitted', [signupKey]),
+      actor: { kind: 'system', reference: 'public_signup' },
+      occurredAt: new Date(capturedAt),
+      protectedPath: '/signup',
+      data: { signup_key: signupKey, classification: parsed.audience_type },
+    });
     await client.query(
       `INSERT INTO onetime.idempotency_records
        (account_key, product_key, idempotency_key, request_hash, response_json)

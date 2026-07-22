@@ -60,7 +60,7 @@ describe('OT-71 class fulfillment for signup leads', () => {
     await expectCount('class_series', 1);
     await expectCount('class_occurrences', 1);
     await expectCount('class_fulfillment_intents', 1);
-    await expectCount('outbox_events', 3);
+    await expectCount('outbox_events', 4);
 
     const reminder = await pool.query(
       `SELECT event_type, channel, next_attempt_at, payload
@@ -138,7 +138,9 @@ describe('OT-71 class fulfillment for signup leads', () => {
     expect(school.outbox_intents).toHaveLength(1);
     await expectCount('class_occurrences', 0);
     await expectCount('class_fulfillment_intents', 0);
-    const outbox = await pool.query('SELECT payload FROM onetime.outbox_events');
+    const outbox = await pool.query(
+      "SELECT payload FROM onetime.outbox_events WHERE channel <> 'highlevel'",
+    );
     expect(outbox.rows.every((row) => row.payload.occurrence_id === null)).toBe(true);
     expect(JSON.stringify(outbox.rows)).not.toMatch(/class_series|provider_state|starts_at/i);
   });
@@ -152,7 +154,7 @@ describe('OT-71 class fulfillment for signup leads', () => {
     expect(replay.outbox_intents).toHaveLength(3);
     await expectCount('class_occurrences', 1);
     await expectCount('class_fulfillment_intents', 1);
-    await expectCount('outbox_events', 3);
+    await expectCount('outbox_events', 4);
   });
 
   it('queues both email and WhatsApp reminders when family preference is both', async () => {

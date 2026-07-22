@@ -4,7 +4,9 @@ import {
   applyNextOt86Publication,
   createDisabledOt109TranscriptionPort,
   createDisabledOt109VimeoPort,
+  DeterministicFakeHighLevelAdapter,
   runAuthEmailChallengeDeliveryOutboxBatch,
+  runHighLevelProjectionBatch,
   runLifecycleDeliveryOutboxBatch,
   runOt109PublisherWorkerOnce,
   runSupportDeliveryBatch,
@@ -22,6 +24,7 @@ import { OneTimeProviderDeliveryRouter } from '../delivery/provider-router.ts';
 import { PostgresDeliveryRepository } from '../delivery/repository.ts';
 import { SinkDeliveryRouter } from '../delivery/sink-router.ts';
 import { runDeliveryBatch } from '../delivery/worker.ts';
+import { HighLevelHttpAdapter } from '../highlevel/adapter.ts';
 
 const WORKER_TYPE = 'delivery_outbox';
 
@@ -89,12 +92,18 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       limit: config.batchSize,
       leaseMs: config.claimLeaseMs,
     });
+    const highLevel = await runHighLevelProjectionBatch({
+      pool,
+      config: config.appConfig,
+      ...highLevelAdapter(config.appConfig),
+      limit: config.batchSize,
+    });
     const learningDelivery = await runLearningDeliveryWorkerOnce({
       pool,
       source,
       logger,
     });
-    return { ...delivery, support, lifecycle, authEmail, learningDelivery };
+    return { ...delivery, support, lifecycle, authEmail, highLevel, learningDelivery };
   } finally {
     await safeHeartbeat(
       () => markOpsWorkerStopped({ pool, workerType: WORKER_TYPE, workerInstanceKey }),
@@ -199,6 +208,12 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             limit: config.batchSize,
             leaseMs: config.claimLeaseMs,
           });
+          await runHighLevelProjectionBatch({
+            pool,
+            config: config.appConfig,
+            ...highLevelAdapter(config.appConfig),
+            limit: config.batchSize,
+          });
           await runLearningDeliveryWorkerOnce({ pool, source, logger });
         } catch (error) {
           void error;
@@ -240,6 +255,16 @@ async function safeHeartbeat(
 function createOutboxRouter(config: ReturnType<typeof loadDeliveryWorkerConfig>) {
   if (config.transportMode === 'sink') return new SinkDeliveryRouter();
   return new OneTimeProviderDeliveryRouter(config.provider, {});
+}
+
+function highLevelAdapter(config: ReturnType<typeof loadDeliveryWorkerConfig>['appConfig']) {
+  if (config.highLevelEventSyncMode === 'mock') {
+    return { adapter: new DeterministicFakeHighLevelAdapter() };
+  }
+  if (config.highLevelEventSyncMode === 'provider') {
+    return { adapter: new HighLevelHttpAdapter(config) };
+  }
+  return {};
 }
 
 async function runLearningDeliveryWorkerOnce(input: {
@@ -302,6 +327,7 @@ if (process.argv.includes('--once')) {
       `lifecycle_expired=${summary.lifecycle.expired}`,
       `auth_email_sink_delivered=${summary.authEmail.sink_delivered}`,
       `auth_email_expired=${summary.authEmail.expired}`,
+      `highlevel_adapter_calls=${summary.highLevel.adapterCalls}`,
       `learning_delivery_enabled=${summary.learningDelivery.enabled}`,
     ].join('\n') + '\n',
   );

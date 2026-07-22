@@ -40,7 +40,7 @@ afterEach(async () => {
 });
 
 describe('lead capture transaction', () => {
-  it('writes one Family lead, contact, audit event, and deterministic outbox intents', async () => {
+  it('writes one Family lead, contact, audit evidence, and deterministic outbox intents', async () => {
     const result = await captureLead({ pool, config, payload, now: beforeReminder });
     expect(result.success).toBe(true);
     expect(result.duplicate_submission).toBe(false);
@@ -52,8 +52,8 @@ describe('lead capture transaction', () => {
 
     await expectCount('contacts', 1);
     await expectCount('signup_leads', 1);
-    await expectCount('audit_events', 1);
-    await expectCount('outbox_events', 3);
+    await expectCount('audit_events', 2);
+    await expectCount('outbox_events', 4);
   });
 
   it('replays the same idempotency key without duplicating persistence', async () => {
@@ -63,7 +63,7 @@ describe('lead capture transaction', () => {
     expect(second.contact_key).toBe(first.contact_key);
     expect(second.signup_key).toBe(first.signup_key);
     const count = await pool.query('SELECT count(*)::int AS outbox FROM onetime.outbox_events');
-    expect(count.rows[0].outbox).toBe(3);
+    expect(count.rows[0].outbox).toBe(4);
   });
 
   it('handles School classification without private class-link exposure', async () => {
@@ -87,6 +87,7 @@ describe('lead capture transaction', () => {
       'SELECT event_type, channel, payload FROM onetime.outbox_events ORDER BY event_type, channel',
     );
     expect(outbox.rows.map((outboxRow) => `${outboxRow.event_type}:${outboxRow.channel}`)).toEqual([
+      'highlevel.adult.signup.submitted.v1:highlevel',
       `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
     ]);
     expect(JSON.stringify(outbox.rows)).not.toMatch(/class_link|class target|https?:\/\//i);
@@ -136,6 +137,7 @@ describe('lead capture transaction', () => {
       [school.contact_key],
     );
     expect(rows.rows.map((row) => `${row.event_type}:${row.channel}`)).toEqual([
+      'highlevel.adult.signup.submitted.v1:highlevel',
       `${DELIVERY_EVENT_TYPES.internalLeadAlert}:internal_email`,
     ]);
     expect(JSON.stringify(rows.rows)).not.toMatch(/class_link|class target|https?:\/\//i);

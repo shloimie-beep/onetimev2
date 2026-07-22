@@ -1,0 +1,18 @@
+{
+  "job_id": "GHL-UI-22",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-B04",
+    "id": "9f96c105-a298-4b5d-a5e5-8c573624d242",
+    "name": "OT-B04 Send Password Help",
+    "full_folder_path": "One Time / 60 - Bot Actions"
+  },
+  "deployed_contract": "bot.password_help@1.0.0",
+  "expected": {
+    "trigger": "OT-A1 sets contact.one_time_bot_request_type to Password Help",
+    "action": "Authenticated Custom Webhook POST /internal/highlevel/v1/actions with bot.password_help; One Time/Resend performs security delivery",
+    "sender_key": "account_security via Resend",
+    "suppression": "Adult-only and non-enumerating; no token or credential enters GHL."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-B04 by exact ID 9f96c105-a298-4b5d-a5e5-8c573624d242 and full path One Time / 60 - Bot Actions across every state; no duplicates. Verify bot.password_help@1.0.0 is deployed or remain DRAFT_WAITING_EXTERNAL(bot.password_help@1.0.0 deployment). Trigger only from OT-A1 adult request type Password Help. Configure official Custom Webhook POST /internal/highlevel/v1/actions with protected configured headers and exact scope, actor, adult contact and idempotency fields. Do not configure a GHL security-token send. One Time/Resend alone creates and sends reset tokens through sender_key account_security; GHL may use only the returned protected /forgot-password reference for a non-token companion when separately authorized. The response must be non-enumerating and must not expose account existence. Save action and outer workflow separately, navigate away, reload, reopen exact ID and verify no token mapping before publish. Test one operator-owned adult request, inspect execution history for no token/destination/body, replay with no duplicate security delivery, and record ACTIVE_CONFIGURED or ACTIVE_TESTED. Zero broad sends and zero Student contacts."
+}

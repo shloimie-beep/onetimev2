@@ -20,6 +20,7 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { stableKey } from '../lead/normalize.ts';
 import type { LearnerContentAccessAdapter } from '../portals/services.ts';
 import { householdHasLearningAccess } from '../billing/portal-access.ts';
+import { enqueueRecordingAvailableForEntitledAdults } from '../highlevel/producer.ts';
 
 export class ContentIdempotencyConflictError extends Error {
   constructor() {
@@ -361,6 +362,11 @@ async function admitNewContentOutcome(input: {
     input.payload.entitlement_scope === 'all_active_learners'
   ) {
     await grantAllActiveLearnersEntitlement(input.client, input.config, itemKey, input.now);
+    await enqueueRecordingAvailableForEntitledAdults(input.client, input.config, {
+      contentItemKey: itemKey,
+      occurredAt: input.now,
+      approved: true,
+    });
   }
 
   await recordContentAudit(input.client, {

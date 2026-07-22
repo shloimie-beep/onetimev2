@@ -1,0 +1,31 @@
+{
+  "task": "OT-LAUNCH-01-HIGHLEVEL-APP-CONTRACTS",
+  "base_branch": "codex/full-app-staging-live",
+  "base_head": "a09a38c4323c328ce038592fc328e323e22b2d45",
+  "evidence_pr": 107,
+  "evidence_head": "deda8f9b04dbafcc36363628a14b6fecc94fd854",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "contract_version": "1.0.0",
+  "outbound_events": 5,
+  "inbound_actions": 5,
+  "agent_mode_jobs": 10,
+  "migration": {
+    "id": "2216_highlevel_application_contracts.sql",
+    "sha256": "d93ddefa8045b1a8021df3da678528b41e631c9c2ef65f93dbd8370fa03687f7",
+    "canonical_2205_restored": false,
+    "canonical_2205_sha256": "3135ccd5942c649dd1133f1709806bdb77de016cfd3e78f55f04ec86cb7001fd",
+    "historical_media_migrations_replayed": false
+  },
+  "provider_mode_default": "disabled",
+  "external_highlevel_calls": 0,
+  "messages_sent": 0,
+  "broad_messages_sent": 0,
+  "student_contacts_created": 0,
+  "persistent_staging_changed": false,
+  "postgres_concurrency": {
+    "sql_contract_asserted": true,
+    "memory_two_worker_assertion": "passed",
+    "real_postgres_execution": "pending_isolated_pr_environment"
+  },
+  "remaining_dependency": "Deploy to an isolated PR Environment with protected HighLevel configuration, run the real-PostgreSQL claim assertion, then execute GHL-UI-14 through GHL-UI-23 with one operator-owned destination and zero broad sends."
+}

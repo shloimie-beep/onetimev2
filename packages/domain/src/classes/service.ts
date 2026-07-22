@@ -18,6 +18,7 @@ import { inTransaction } from '../../../db/src/index.ts';
 import type { LearnerClassAccessAdapter } from '../portals/services.ts';
 import { householdHasLearningAccess } from '../billing/portal-access.ts';
 import { stableKey } from '../lead/normalize.ts';
+import { enqueueHighLevelEvent } from '../highlevel/producer.ts';
 import {
   ONE_TIME_CLASS_TIME_ZONE,
   resolveDailyClassWindow,
@@ -77,8 +78,69 @@ export async function scheduleClassFulfillmentForLead(input: {
       );
     }
 
+    const householdKey = await entitledHouseholdForAdultContact(
+      client,
+      input.config,
+      row.contact_key,
+    );
+    if (householdKey && channels.length > 0) {
+      const highLevel = await enqueueHighLevelEvent(client, input.config, {
+        eventName: 'class.reminder.requested',
+        contactKey: row.contact_key,
+        idempotencyKey: stableKey('class_reminder_requested', [occurrenceKey, row.contact_key]),
+        actor: { kind: 'system', reference: 'class_fulfillment' },
+        occurredAt: input.now ?? new Date(),
+        protectedPath: '/app/parent',
+        data: {
+          household_key: householdKey,
+          occurrence_key: occurrenceKey,
+          starts_at: window.startsAt.toISOString(),
+          timezone: ONE_TIME_CLASS_TIME_ZONE,
+        },
+        confirmed: true,
+        entitled: true,
+      });
+      if (highLevel.state !== 'blocked') deliveryKeys.push(highLevel.deliveryKey);
+    }
+
     return { occurrenceKey, deliveryKeys, dispatchMode: window.dispatchMode };
   });
+}
+
+async function entitledHouseholdForAdultContact(
+  client: Queryable,
+  config: AppConfig,
+  contactKey: string,
+) {
+  const result = await client.query(
+    `SELECT guardians.household_key
+       FROM onetime.contacts AS contacts
+       JOIN onetime.account_users AS users
+         ON users.account_key = contacts.account_key
+        AND users.product_key = contacts.product_key
+        AND users.email_normalized = contacts.email_normalized
+        AND users.role IN ('owner', 'admin', 'parent')
+        AND users.status = 'active'
+       JOIN onetime.portal_guardian_relationships AS guardians
+         ON guardians.account_key = users.account_key
+        AND guardians.product_key = users.product_key
+        AND guardians.guardian_user_ref = users.user_key
+        AND guardians.status = 'active'
+       JOIN onetime.billing_entitlement_projections AS entitlements
+         ON entitlements.account_key = guardians.account_key
+        AND entitlements.product_key = guardians.product_key
+        AND entitlements.principal_key = guardians.household_key
+        AND entitlements.status IN ('active', 'scheduled_end')
+        AND entitlements.grants_access = true
+      WHERE contacts.account_key = $1
+        AND contacts.product_key = $2
+        AND contacts.contact_key = $3
+      ORDER BY guardians.updated_at DESC
+      LIMIT 1`,
+    [config.accountKey, config.productKey, contactKey],
+  );
+  const householdKey = result.rows[0]?.household_key;
+  return typeof householdKey === 'string' ? householdKey : null;
 }
 
 export async function listClassOccurrences(input: {

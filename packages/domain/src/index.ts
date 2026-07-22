@@ -17,6 +17,7 @@ export {
   successCopy,
 } from './lead/normalize.ts';
 export { processOutboxSink } from './outbox/sink.ts';
+export * from './highlevel/index.ts';
 export {
   communicationHistorySourceTruthMatrix,
   dryRunCommunicationHistoryBackfill,

@@ -1,0 +1,18 @@
+{
+  "job_id": "GHL-UI-23",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-B05",
+    "id": "badd7521-913c-43b8-9b7a-1c1ccedac63c",
+    "name": "OT-B05 Apply Opt-Out",
+    "full_folder_path": "One Time / 60 - Bot Actions"
+  },
+  "deployed_contract": "bot.apply_opt_out@1.0.0",
+  "expected": {
+    "trigger": "OT-A1 sets contact.one_time_bot_request_type to Opt-Out or receives an equivalent explicit stop request",
+    "action": "Apply channel DND and OT | Marketing Suppressed, then authenticated Custom Webhook bot.apply_opt_out",
+    "sender_key": "brand",
+    "suppression": "Suppression is applied before any later send; acknowledgement is not authorized until the registry conflict is resolved."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-B05 by exact ID badd7521-913c-43b8-9b7a-1c1ccedac63c and full path One Time / 60 - Bot Actions across all states; fail closed on duplicates. Verify bot.apply_opt_out@1.0.0 is deployed or remain DRAFT_WAITING_EXTERNAL(bot.apply_opt_out@1.0.0 deployment). Trigger only from OT-A1 adult Opt-Out classification or equivalent explicit stop intent. First apply the relevant HighLevel channel DND, set registered consent/suppression fields, add OT | Marketing Suppressed, remove only registered opt-in tags, and stop bot follow-up. Then call official Custom Webhook POST /internal/highlevel/v1/actions with bot.apply_opt_out, exact scope, adult contact, channel and idempotency fields using protected configured headers. Configure no acknowledgement send because the registry lane conflicts and this job fails closed to no acknowledgement. Save each action and the outer workflow, navigate away, reload, reopen exact ID and read back action order, DND, tags, fields and webhook before publish. Test one operator-owned adult only: prove suppression first, no acknowledgement, no later eligible send, and replay no duplicate mutation. Record ACTIVE_CONFIGURED or ACTIVE_TESTED, zero broad sends and zero Student contacts."
+}

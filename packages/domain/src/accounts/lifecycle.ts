@@ -23,6 +23,7 @@ import { inTransaction } from '../../../db/src/index.ts';
 import { hashPassword } from '../auth/service.ts';
 import { normalizeEmail, stableKey } from '../lead/normalize.ts';
 import { consumeRateLimitBudgets } from '../security/rate-limit.ts';
+import { enqueueHighLevelEventForAdultEmail } from '../highlevel/producer.ts';
 import { createLifecycleDeliveryOutbox } from './lifecycle-delivery.ts';
 
 export class AccountLifecycleError extends Error {
@@ -170,7 +171,7 @@ export async function createParentActivation(
     issue: async (client, now) => {
       await ensureHousehold(client, input.config, payload.household_key);
       await ensurePendingGuardianRelationship(client, input.config, payload);
-      return issueAccountToken(client, input.config, {
+      const issued = await issueAccountToken(client, input.config, {
         tokenType: 'parent_activation',
         targetRole: 'parent',
         emailNormalized: normalizeEmail(payload.email),
@@ -183,6 +184,16 @@ export async function createParentActivation(
         now,
         includeLocalProofToken: input.includeLocalProofToken,
       });
+      await enqueueHighLevelEventForAdultEmail(client, input.config, {
+        eventName: 'parent.portal.invitation_requested',
+        emailNormalized: normalizeEmail(payload.email),
+        idempotencyKey: stableKey('parent_portal_invitation', [payload.idempotency_key]),
+        actor: { kind: 'admin', reference: input.actor.userKey },
+        occurredAt: now,
+        protectedPath: '/app/parent',
+        data: { household_key: payload.household_key, portal_status: 'invited' },
+      });
+      return issued;
     },
   });
 }
@@ -230,6 +241,18 @@ export async function acceptParentActivation(input: {
         subjectUserKey: userKey,
         tokenKey: token.token_key,
         metadata: { household_key: token.household_key, relationship_key: token.relationship_key },
+      });
+      await enqueueHighLevelEventForAdultEmail(client, input.config, {
+        eventName: 'parent.portal.activated',
+        emailNormalized: requiredString(token.email_normalized),
+        idempotencyKey: stableKey('parent_portal_activated', [requiredString(token.token_key)]),
+        actor: { kind: 'parent', reference: userKey },
+        occurredAt: now,
+        protectedPath: '/app/parent',
+        data: {
+          household_key: requiredString(token.household_key),
+          portal_status: 'active',
+        },
       });
       return completion(userKey, 'parent', 'active', false, 0);
     },

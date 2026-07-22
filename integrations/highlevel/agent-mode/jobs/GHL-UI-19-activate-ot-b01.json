@@ -1,0 +1,18 @@
+{
+  "job_id": "GHL-UI-19",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-B01",
+    "id": "1c1c0bcd-6185-492e-819f-3b7c749d4c23",
+    "name": "OT-B01 Complete Signup",
+    "full_folder_path": "One Time / 60 - Bot Actions"
+  },
+  "deployed_contract": "bot.complete_signup@1.0.0",
+  "expected": {
+    "trigger": "OT-A1 sets contact.one_time_bot_request_type to Signup for an adult",
+    "action": "Authenticated Custom Webhook POST /internal/highlevel/v1/actions with bot.complete_signup and details_complete=true",
+    "sender_key": "brand",
+    "suppression": "Adult-only, completed registered fields, consent known, suppression active, applicable DND off."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-B01 by exact ID 1c1c0bcd-6185-492e-819f-3b7c749d4c23 and full path One Time / 60 - Bot Actions across all states; no duplicates. Verify bot.complete_signup@1.0.0 and the protected endpoint /internal/highlevel/v1/actions are deployed or remain DRAFT_WAITING_EXTERNAL(bot.complete_signup@1.0.0 deployment). Trigger only when OT-A1 classifies an adult request as Signup and registered adult details are complete. Add the official HighLevel Custom Webhook action using POST, application/json, configured secret headers x-one-time-key-id and x-one-time-action-secret from protected configuration, and the exact versioned action envelope. Do not place secret values, private destinations, Student fields or message bodies in evidence. Require matching account, product, location, adult contact key, consent, suppression and DND. Select sender_key brand only if a bounded non-security companion is configured. Save action and outer workflow separately, navigate away, reload, reopen exact ID and read back trigger, webhook mapping, sender and gates before publish. Test one operator-owned adult request and replay the same idempotency key; prove one application mutation and at most one bounded delivery. Record ACTIVE_CONFIGURED or ACTIVE_TESTED, zero broad sends and zero Student contacts."
+}

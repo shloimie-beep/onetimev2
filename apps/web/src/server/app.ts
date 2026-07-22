@@ -241,6 +241,7 @@ import {
 import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
+import { createHighLevelActionsRouter } from './features/highlevel/actions-router.ts';
 import { registerSupportRoutes } from './features/support/router.ts';
 import { eventRateLimit, leadRateLimit } from './rate-limit.ts';
 import { registerOpsRoutes } from './ops-routes.ts';
@@ -529,6 +530,7 @@ export function createApp({
 
   app.use(express.json({ limit: '32kb' }));
   app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+  app.use('/internal/highlevel/v1/actions', createHighLevelActionsRouter({ config, pool }));
 
   registerOpsRoutes({
     app,

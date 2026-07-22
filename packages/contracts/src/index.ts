@@ -16,6 +16,7 @@ export * from './whatsapp/index.ts';
 export * from './ops/index.ts';
 export * from './events/index.ts';
 export * from './experience-preview/index.ts';
+export * from './highlevel/index.ts';
 
 export const reminderPreferenceSchema = z.enum(['email', 'whatsapp', 'both', 'none']);
 export type ReminderPreference = z.infer<typeof reminderPreferenceSchema>;

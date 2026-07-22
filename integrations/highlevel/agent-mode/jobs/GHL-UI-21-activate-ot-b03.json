@@ -1,0 +1,18 @@
+{
+  "job_id": "GHL-UI-21",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-B03",
+    "id": "8ff00774-82fd-42d7-992b-4e9aca0a5091",
+    "name": "OT-B03 Send Member Login",
+    "full_folder_path": "One Time / 60 - Bot Actions"
+  },
+  "deployed_contract": "bot.member_login@1.0.0",
+  "expected": {
+    "trigger": "OT-A1 sets contact.one_time_bot_request_type to Member Login",
+    "action": "Authenticated Custom Webhook POST /internal/highlevel/v1/actions with bot.member_login",
+    "sender_key": "office",
+    "suppression": "Adult-only, consent granted, suppression active, applicable DND off; never claim account active."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-B03 by exact ID 8ff00774-82fd-42d7-992b-4e9aca0a5091 and full path One Time / 60 - Bot Actions across all states; do not duplicate. Verify bot.member_login@1.0.0 is deployed or remain DRAFT_WAITING_EXTERNAL(bot.member_login@1.0.0 deployment). Trigger only from OT-A1 adult request type Member Login. Configure official Custom Webhook POST /internal/highlevel/v1/actions with protected configured headers and exact scope, actor, adult contact and idempotency fields. Require consent, suppression and DND gates. Select sender_key office through registered pickers. Use only the returned protected /login reference and never claim the account is active. Save action and outer layers separately, navigate away, reload, reopen exact ID and read back before publish. Test one operator-owned adult destination and replay the same idempotency key; prove one action and at most one bounded companion. Record ACTIVE_CONFIGURED or ACTIVE_TESTED, zero broad sends and zero Student contacts."
+}

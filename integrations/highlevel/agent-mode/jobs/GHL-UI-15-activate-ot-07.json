@@ -1,0 +1,23 @@
+{
+  "job_id": "GHL-UI-15",
+  "location_id": "pBSnOK2nkdxp6gf9Rg3o",
+  "workflow": {
+    "key": "OT-07",
+    "id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
+    "name": "OT-07 Parent Portal Invitation",
+    "full_folder_path": "One Time / 30 - Portal Lifecycle"
+  },
+  "deployed_contract": "parent.portal.invitation_requested@1.0.0",
+  "expected": {
+    "trigger": "Contact Tag added: OT | Portal Invited",
+    "fields": [
+      "contact.one_time_crm_contact_id",
+      "contact.one_time_portal_status",
+      "contact.one_time_email_consent",
+      "contact.one_time_suppression_state"
+    ],
+    "sender_key": "brand",
+    "suppression": "Adult-only, email consent granted, suppression active, email DND off; GHL companion contains no activation token."
+  },
+  "exact_copy_paste_prompt": "Use only location pBSnOK2nkdxp6gf9Rg3o. Reconcile OT-07 by exact ID fb48c3bf-7154-44c9-825e-88afb5bb7942 and full path One Time / 30 - Portal Lifecycle across every asset state; never duplicate. Verify parent.portal.invitation_requested@1.0.0 is deployed or remain DRAFT_WAITING_EXTERNAL(parent.portal.invitation_requested@1.0.0 deployment). Configure Contact Tag added OT | Portal Invited, require portal status invited, email consent granted, suppression active and email DND off. Select sender_key brand only through registered pickers. The GHL action is a non-token companion only; One Time/Resend alone creates and sends the activation token. Never map a token, credential or Student field. Wait at least two minutes after the bounded action, then remove only the trigger tag. Save action layer and outer workflow separately, navigate away, reload, reopen exact ID, and read back trigger, fields, sender and suppression before publish. Test at most one operator-owned adult plus one isolated synthetic Parent lifecycle; prove one companion, replay no duplicate, and no token in workflow history. Record ACTIVE_CONFIGURED or ACTIVE_TESTED truthfully; zero broad sends and zero Student contacts."
+}

@@ -180,6 +180,11 @@ const envSchema = z.object({
   HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
   HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
   HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: optionalTrimmedString(1, 160),
+  HIGHLEVEL_ACTIONS_MODE: z.enum(['disabled', 'enabled']).default('disabled'),
+  HIGHLEVEL_ACTION_KEY_ID: optionalTrimmedString(1, 120),
+  HIGHLEVEL_ACTION_SECRET: optionalTrimmedString(24, 400),
+  HIGHLEVEL_ACTION_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
+  HIGHLEVEL_ACTION_RATE_LIMIT_MAX: numberFromString.default(8),
   LIVE_CLASS_FAKE_ADAPTER_ENABLED: optionalBooleanFromString,
   LIVE_CLASS_OBS_BRIDGE_TOKEN: optionalTrimmedString(12, 160),
   LIVE_CLASS_TELEGRAM_ENABLED: booleanFromString,
@@ -244,6 +249,13 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
   ) {
     throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
+  }
+
+  if (
+    parsed.HIGHLEVEL_ACTIONS_MODE === 'enabled' &&
+    (!parsed.HIGHLEVEL_ACTION_KEY_ID || !parsed.HIGHLEVEL_ACTION_SECRET)
+  ) {
+    throw new Error('HighLevel action key ID and secret are required when actions are enabled.');
   }
 
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
@@ -499,6 +511,11 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
     highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
     highLevelTishaBavWorkflowId: parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID,
+    highLevelActionsMode: parsed.HIGHLEVEL_ACTIONS_MODE,
+    highLevelActionKeyId: parsed.HIGHLEVEL_ACTION_KEY_ID,
+    highLevelActionSecret: parsed.HIGHLEVEL_ACTION_SECRET,
+    highLevelActionRateLimitWindowMs: parsed.HIGHLEVEL_ACTION_RATE_LIMIT_WINDOW_MS,
+    highLevelActionRateLimitMax: parsed.HIGHLEVEL_ACTION_RATE_LIMIT_MAX,
     liveClassFakeAdapterEnabled:
       parsed.LIVE_CLASS_FAKE_ADAPTER_ENABLED ?? oneTimeRuntimeEnvironment !== 'production',
     liveClassObsBridgeToken:
