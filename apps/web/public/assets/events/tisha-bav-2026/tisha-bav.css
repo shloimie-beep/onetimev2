@@ -35,7 +35,7 @@
 }
 
 .tisha-bav-page .tisha-details {
-  grid-template-columns: minmax(0, 1.8fr) minmax(120px, 0.65fr) minmax(220px, 1fr);
+  grid-template-columns: minmax(0, 2.2fr) minmax(150px, 0.62fr) minmax(220px, 0.9fr);
 }
 
 .tisha-bav-page .event-register-shell:has([data-event-success-panel]:not([hidden])) {
