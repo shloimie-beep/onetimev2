@@ -373,7 +373,7 @@ export function createZoomMeetingSdkSignature(input: {
   issuedAt?: Date | undefined;
   ttlSeconds?: number | undefined;
 }) {
-  const issuedAtSeconds = Math.floor((input.issuedAt ?? new Date()).getTime() / 1000);
+  const issuedAtSeconds = Math.floor((input.issuedAt ?? new Date()).getTime() / 1000) - 30;
   const ttlSeconds = Math.min(Math.max(input.ttlSeconds ?? 2 * 60 * 60, 30 * 60), 2 * 60 * 60);
   return signJwt(
     {

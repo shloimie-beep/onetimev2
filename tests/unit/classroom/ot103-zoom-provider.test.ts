@@ -275,6 +275,7 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
       mn: '987654321',
       role: 0,
     });
+    expect(payload.iat).toBe(Math.floor(new Date('2026-07-16T16:00:00Z').getTime() / 1000) - 30);
     expect(signature).not.toContain('sdk_secret_do_not_leak');
   });
 
@@ -288,6 +289,7 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
     });
     const payload = JSON.parse(Buffer.from(signature.split('.')[1] ?? '', 'base64url').toString());
     expect(payload).toMatchObject({ role: 1, mn: '987654321' });
+    expect(payload.iat).toBe(Math.floor(issuedAt.getTime() / 1000) - 30);
     expect(payload.exp - payload.iat).toBe(30 * 60);
     expect(signature).not.toContain('sdk_secret_do_not_leak');
   });
