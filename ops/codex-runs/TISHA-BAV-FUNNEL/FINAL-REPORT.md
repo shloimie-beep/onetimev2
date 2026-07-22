@@ -1,6 +1,6 @@
 # Tisha B'Av Funnel Final Report
 
-Status: ready for operator review with provider/runtime blockers.
+Status: preview synchronization passed; narrow production promotion pending.
 
 Implemented:
 
@@ -22,11 +22,11 @@ Implemented:
 Validation:
 
 - `npm run build`: passed.
-- `npm run lint`: passed after unrelated CI baseline cleanup in the preview provisioning scripts.
+- Scoped lint for all Tisha implementation and audit files: passed.
 - `npm run typecheck`: passed after the email catalog update.
 - `npx vitest run --config vitest.unit.config.ts tests/unit/tisha-bav-email-copy.test.ts`: passed, 2 tests.
 - `npx vitest run --config vitest.unit.config.ts tests/unit/day-one/visible-action-registry.test.ts tests/unit/brand-system/brand-system.test.ts`: passed.
-- `npx vitest run --config vitest.integration.config.ts tests/integration/tisha-bav-event-funnel.test.ts`: passed, 9 tests, including the provider-scoped event definition and exact bounded fallback confirmation payload.
+- `npx vitest run --config vitest.integration.config.ts tests/integration/tisha-bav-event-funnel.test.ts`: passed, 10 tests, including provider idempotency, provider-scoped event definition, and the exact bounded fallback confirmation payload.
 - `npx playwright test tests/e2e/tisha-bav-funnel.spec.ts --project=chromium`: passed, including seven one-screen mobile viewports, desktop landscape art, mobile portrait art, title overlay order, closed initial form, full-page modal, no visible checkbox/consent message, form submit, and final thank-you/share state.
 - `npm run secret:scan`: passed.
 - `npm run brand:check`: passed.
@@ -34,19 +34,20 @@ Validation:
 - Scoped Prettier check for touched files: passed.
 - Intent preservation validation: passed, 22/22 hard signals and 5/5 actionable spans covered.
 - BNA PQC validation fixtures and 8/8 evals: passed; watchdog retains 17 pre-existing findings outside this packet.
-- Railway PR environment: deployed commit `b986237c42ddb44a80c7917cbb96d62875494632` successfully with the provider-scoped preview registration fix.
+- Railway PR environment: deployed commit `549098b28adfeca923564efd179ff980732b1654` successfully with the HighLevel first-write tag reconciliation fix.
 - Railway preview database migration: `2211_tisha_bav_provider_event_scope.sql` applied through the existing PR environment database service using `DATABASE_PUBLIC_URL`.
-- Railway preview registration domain smoke: passed with `success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`, and `duplicate_submission=false`.
-- Railway preview HTTP registration smoke: passed at `POST /api/v1/events/tisha-bav-2026/register` with `success=true`, `confirmation_queued=true`, `ghl_sync_status=provider_off`, and the branded thank-you copy.
+- Protected operator reconciliation: passed with one registration, one HighLevel delivery row, published workflow readback, exact event tags in the provider UI, no newsletter tag, and a succeeded final delivery state.
+- HighLevel execution readback: the immediate confirmation executed once; duplicate add requests were skipped; one active operator enrollment is waiting for the one-hour reminder.
+- OT-C01 remains draft with zero recipients and zero messages sent.
 - Live preview smoke: `https://ot99-web-onetimev2-pr-102.up.railway.app/tisha-bav` returned HTTP 200 with the event title and registration CTA, and exposed no raw Zoom URL.
 - Visual evidence captured locally for the final desktop and mobile hero layouts, one-screen mobile viewports, full-page registration modal, and success/share state; committed evidence files are under `ops/codex-runs/TISHA-BAV-FUNNEL/screenshots/one-screen-local/`.
 - Full local `npm run format`: still shows the existing broad Windows-worktree formatting backlog outside this funnel change; CI's named format blockers were formatted.
 
-Known blockers:
+Remaining release work:
 
-- Preview Zoom join URL is configured in protected Railway PR runtime from the operator-provided URL; production runtime remains unchanged.
-- HighLevel provider sync is off unless `HIGHLEVEL_EVENT_SYNC_MODE=provider`, token, and workflow ID are configured.
+- Preview Zoom join URL is configured in protected Railway PR runtime; production mapping remains pending for the narrow release.
+- Preview HighLevel provider mode, token, location, and published workflow ID are configured and verified.
 - Warm invitation audience selection and the external send are not authorized; the copy is prepared only.
-- Production promotion still requires operator approval after preview review.
+- Production promotion remains to be completed by the authorized narrow release lane.
 
 Production changed: no.

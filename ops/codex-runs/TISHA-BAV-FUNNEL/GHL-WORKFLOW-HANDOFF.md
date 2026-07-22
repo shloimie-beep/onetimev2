@@ -1,6 +1,20 @@
 # GHL Event Workflow Handoff
 
-Status: exact copy and schedule are ready for Agent Mode configuration. No audience send or provider mutation has been authorized by this packet.
+Status: live workflow verified for the single operator-owned confirmation. No broad audience send is authorized.
+
+Workflow:
+
+- ID: `a34ea513-4612-4f53-8bd8-49e89e6610f9`
+- Name: `OT-E01 | Event | Tisha B'Av 2026 Confirmation + Reminders`
+- Provider status: `published`
+- Active operator enrollments: `1`
+- Current action: wait until the one-hour reminder at `2026-07-23T18:00:00.000Z`
+- Confirmation executions for the operator: `1`
+- Duplicate enrollment requests: skipped by HighLevel
+- Recovery enrollment: confirmation skipped; contact resumed at the one-hour wait
+- Provider contact tags: exact registered and event-source tags verified; weekly-newsletter tag absent
+
+The former 24-hour wait and email were removed. Re-entry was enabled only for the bounded recovery enrollment and was restored to off. The immediate confirmation action was re-enabled before the workflow was saved and published.
 
 Location:
 
@@ -49,7 +63,7 @@ Canonical event start:
 - 10:00 PM Israel
 - `2026-07-23T19:00:00.000Z`
 
-Workflow order for registered contacts:
+Live workflow order for registered contacts:
 
 1. Send the registration confirmation immediately after successful registration.
 2. Wait until `2026-07-23T18:00:00.000Z` (2:00 PM Eastern / 9:00 PM Israel), then send the one-hour reminder.
@@ -77,6 +91,8 @@ Use the deployed One Time origin for these relative paths. Do not place a raw Zo
 ## Warm invitation
 
 Delivery status: prepared only. Do not attach it to the registration workflow and do not send until an exact adult recipient segment is approved.
+
+HighLevel campaign record: `OT-C01` (`f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae`) remains draft with zero recipients and zero messages sent.
 
 Subject:
 
