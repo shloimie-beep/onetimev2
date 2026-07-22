@@ -47,6 +47,21 @@ export class ContentFactoryError extends Error {
   }
 }
 
+export class ContentFactoryPublicationError extends Error {
+  constructor(
+    public readonly stage: string,
+    public readonly safeErrorCode: string,
+  ) {
+    super('Content publication could not be completed.');
+  }
+}
+
+export function contentFactorySafePostgresCode(error: unknown) {
+  const code =
+    error && typeof error === 'object' && 'code' in error ? String(error.code).toUpperCase() : '';
+  return /^[0-9A-Z]{5}$/.test(code) ? `pg_${code}` : 'publication_unexpected';
+}
+
 export type ContentFactoryIngest = {
   sourceKey: string;
   sourceKind: 'drive' | 'local_drop';
@@ -934,7 +949,9 @@ async function publishToLearnerLibrary(
   const sourceKey = String(row.source_key);
   const occurrenceKey = String(row.occurrence_key);
   const draft = contentFactoryDraftSchema.parse(row.draft_json);
-  const roster = await client.query(
+  const roster = await publicationQuery(
+    client,
+    'occurrence_roster',
     `SELECT learner_key, household_key FROM (
        SELECT learner_key, household_key
          FROM onetime.classroom_occurrence_learner_entitlements
@@ -955,7 +972,9 @@ async function publishToLearnerLibrary(
       'The selected occurrence has no entitled learners.',
     );
   }
-  const current = await client.query(
+  const current = await publicationQuery(
+    client,
+    'load_content_item',
     `SELECT latest_revision_number, latest_revision_key FROM onetime.content_items
       WHERE account_key = $1 AND product_key = $2 AND content_item_key = $3 LIMIT 1`,
     [config.accountKey, config.productKey, sourceKey],
@@ -964,7 +983,9 @@ async function publishToLearnerLibrary(
   const previousRevisionKey = nullableString(current.rows[0]?.latest_revision_key);
   const revisionKey = stableOt86Key('factory_revision', [sourceKey, String(revisionNumber)]);
   const outcomeEventKey = stableOt86Key('factory_publish', [sourceKey, String(revisionNumber)]);
-  await client.query(
+  await publicationQuery(
+    client,
+    'upsert_content_item',
     `INSERT INTO onetime.content_items
        (content_item_key, account_key, product_key, occurrence_key, title, item_type, lifecycle_state,
         latest_revision_number, latest_revision_key, published_revision_key, metadata,
@@ -989,7 +1010,9 @@ async function publishToLearnerLibrary(
     ],
   );
   if (previousRevisionKey) {
-    await client.query(
+    await publicationQuery(
+      client,
+      'supersede_revision',
       `UPDATE onetime.content_revisions
           SET lifecycle_state = 'superseded', superseded_at = COALESCE(superseded_at, now())
         WHERE account_key = $1 AND product_key = $2 AND content_item_key = $3
@@ -997,7 +1020,9 @@ async function publishToLearnerLibrary(
       [config.accountKey, config.productKey, sourceKey],
     );
   }
-  await client.query(
+  await publicationQuery(
+    client,
+    'insert_revision',
     `INSERT INTO onetime.content_revisions
        (revision_key, account_key, product_key, content_item_key, outcome_event_key,
         revision_number, lifecycle_state, transcript_metadata, source_metadata,
@@ -1045,14 +1070,18 @@ async function publishToLearnerLibrary(
       previousRevisionKey,
     ],
   );
-  await client.query(
+  await publicationQuery(
+    client,
+    'revoke_entitlements',
     `UPDATE onetime.content_item_entitlements
         SET entitlement_state = 'revoked', revoked_at = now()
       WHERE account_key = $1 AND product_key = $2 AND content_item_key = $3`,
     [config.accountKey, config.productKey, sourceKey],
   );
   for (const learner of roster.rows) {
-    await client.query(
+    await publicationQuery(
+      client,
+      'upsert_occurrence_entitlement',
       `INSERT INTO onetime.classroom_occurrence_learner_entitlements
          (occurrence_entitlement_key, account_key, product_key, occurrence_key,
           household_key, learner_key, entitlement_state, source, updated_at)
@@ -1069,7 +1098,9 @@ async function publishToLearnerLibrary(
         learner.learner_key,
       ],
     );
-    await client.query(
+    await publicationQuery(
+      client,
+      'upsert_content_entitlement',
       `INSERT INTO onetime.content_item_entitlements
          (entitlement_key, account_key, product_key, content_item_key, audience,
           household_key, learner_key, entitlement_state, created_at)
@@ -1091,7 +1122,9 @@ async function publishToLearnerLibrary(
       ],
     );
   }
-  await client.query(
+  await publicationQuery(
+    client,
+    'insert_publication_audit',
     `INSERT INTO onetime.content_audit_events
        (audit_key, account_key, product_key, content_item_key, revision_key, actor_user_key,
         action_type, metadata)
@@ -1111,6 +1144,14 @@ async function publishToLearnerLibrary(
       }),
     ],
   );
+}
+
+async function publicationQuery(client: Queryable, stage: string, text: string, values: unknown[]) {
+  try {
+    return await client.query(text, values);
+  } catch (error) {
+    throw new ContentFactoryPublicationError(stage, contentFactorySafePostgresCode(error));
+  }
 }
 
 async function unpublishFromLearnerLibrary(
