@@ -14,6 +14,10 @@ export default defineConfig({
         crm: path.resolve(process.cwd(), 'apps/web/src/client/app/crm-entry.tsx'),
         live: path.resolve(process.cwd(), 'apps/web/src/client/app/live-entry.tsx'),
         'zoom-host': path.resolve(process.cwd(), 'apps/web/src/client/app/zoom-host-entry.ts'),
+        'zoom-participant': path.resolve(
+          process.cwd(),
+          'apps/web/src/client/app/zoom-participant-entry.ts',
+        ),
         portal: path.resolve(process.cwd(), 'apps/web/src/client/app/portal-entry.tsx'),
         'experience-preview-student': path.resolve(
           process.cwd(),

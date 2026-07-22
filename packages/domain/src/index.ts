@@ -55,6 +55,7 @@ export {
   type LiveClassRepository,
   type LiveClassService,
   type LiveClassSessionRecord,
+  type ZoomHostLaunchPort,
 } from './live-class/service.ts';
 export { createZoomHostLaunchPort } from './live-class/zoom-host.ts';
 export { createClassroomReminderJob } from './classroom/reminders.ts';

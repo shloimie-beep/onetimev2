@@ -150,6 +150,7 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
 
   it('creates one isolated meeting and one-time fictional registrants without returning provider URLs', async () => {
     const calls: string[] = [];
+    const meetingSettings: unknown[] = [];
     const client = createZoomRestClient({
       enabled: true,
       environment: 'staging',
@@ -183,6 +184,10 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
             join_url: 'https://zoom.us/private-join',
           });
         }
+        if (init?.method === 'PATCH') {
+          meetingSettings.push(JSON.parse(String(init.body)));
+          return jsonResponse({});
+        }
         expect(url).toBe('https://api.zoom.us/v2/meetings/987654321/registrants');
         return jsonResponse({
           registrant_id: 'fictional_1',
@@ -196,12 +201,14 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
       topic: 'One Time isolated control canary',
       durationMinutes: 60,
     });
+    await client.enableMeetingRegistration(privateMeeting.meeting.meeting_id);
     const registrant = await client.addLearnerRegistrant({
       meetingId: privateMeeting.meeting.meeting_id,
       learnerKey: 'fictional_student_1',
       displayName: 'Student 1',
       email: 'fictional-1@example.test',
     });
+    await client.disableMeetingRegistration(privateMeeting.meeting.meeting_id);
     expect(privateMeeting.meeting).toMatchObject({
       type: 2,
       raw_start_url_present: false,
@@ -211,7 +218,18 @@ describe('OT-103 Zoom provider fulfillment contracts', () => {
     expect(JSON.stringify({ meeting: privateMeeting.meeting, registrant })).not.toMatch(
       /https?:\/\/|private-test-passcode/i,
     );
-    expect(calls).toHaveLength(3);
+    expect(meetingSettings).toEqual([
+      {
+        settings: {
+          approval_type: 1,
+          registration_type: 1,
+          registrants_confirmation_email: false,
+          registrants_email_notification: false,
+        },
+      },
+      { settings: { approval_type: 2 } },
+    ]);
+    expect(calls).toHaveLength(5);
   });
 
   it('fails closed when disabled, sanitizes provider errors, and marks retryable statuses', async () => {

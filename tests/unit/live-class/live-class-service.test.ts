@@ -5,6 +5,7 @@ import { createMemoryPool, runMigrations, type DbPool } from '../../../packages/
 import { createLiveClassRepository } from '../../../packages/db/src/live-class/repository.ts';
 import {
   createLiveClassService,
+  createZoomHostLaunchPort,
   verifySignedLiveClassCommand,
   type LiveClassRepository,
   type LiveClassService,
@@ -354,6 +355,67 @@ describe('live class question lifecycle', () => {
         ],
       }),
     ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    await expect(
+      realService.syncZoomParticipants(
+        { ...rabbiActor(), account_key: 'another_account' },
+        {
+          occurrence_key: session.occurrence_key,
+          participants: [
+            {
+              customer_key: submitted.question.customer_key,
+              provider_user_id: '98765',
+              join_state: 'joined',
+              audio_state: 'muted',
+              video_state: 'off',
+              active_speaker: false,
+              spotlighted: false,
+            },
+          ],
+        },
+      ),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+  });
+
+  it('issues a role-zero protected join for only the three isolated fictional learners', async () => {
+    const realConfig = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk_client_test',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
+      ZOOM_ACCOUNT_ID: 'zoom_account_test',
+      ZOOM_S2S_CLIENT_ID: 's2s_client_test',
+      ZOOM_S2S_CLIENT_SECRET: 's2s_secret_test',
+      ZOOM_HOST_USER_ID: 'host_user_test',
+      ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
+      ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
+    });
+    const launchPort = createZoomHostLaunchPort(realConfig);
+    expect(launchPort).toBeTruthy();
+    const realService = createLiveClassService({
+      config: realConfig,
+      repository,
+      zoomHostLaunchPort: launchPort!,
+      clock: () => clockNow,
+    });
+
+    const launch = await realService.zoomTestParticipantBootstrap(rabbiActor(), 1);
+    expect(launch).toMatchObject({
+      user_name: 'Student 1',
+      video_start_model: 'PARTICIPANT_CONSENT',
+    });
+    expect(launch.customer_key).not.toContain('Student 1');
+    const payload = JSON.parse(
+      Buffer.from(launch.signature.split('.')[1]!, 'base64url').toString('utf8'),
+    ) as { role: number; mn: string };
+    expect(payload).toMatchObject({ role: 0, mn: '987654321' });
+
+    await expect(
+      realService.zoomTestParticipantBootstrap(studentActor('learner_alpha', 'household_alpha'), 1),
+    ).rejects.toMatchObject({ code: 'FORBIDDEN' });
+    await expect(realService.zoomTestParticipantBootstrap(rabbiActor(), 4)).rejects.toMatchObject({
+      code: 'FORBIDDEN',
+    });
   });
 });
 

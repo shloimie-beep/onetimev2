@@ -417,14 +417,29 @@ function ZoomHealth({ data }: { data: ConsoleData | null }) {
       <p>REST live control: no</p>
       <p>Video start model: participant consent</p>
       {data?.zoom.host_control_configured ? (
-        <a
-          className="ot-button"
-          href="/app/live-console/zoom-host"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Open Protected Zoom Host
-        </a>
+        <>
+          <a
+            className="ot-button"
+            href="/app/live-console/zoom-host"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Open Protected Zoom Host
+          </a>
+          <div className="live-action-grid" aria-label="Isolated fictional student joins">
+            {[1, 2, 3].map((student) => (
+              <a
+                key={student}
+                className="ot-button secondary"
+                href={`/app/live-console/zoom-participant/${student}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Join Class — Student {student}
+              </a>
+            ))}
+          </div>
+        </>
       ) : (
         <p>
           Provider off: Meeting SDK General-app credentials are absent. Controlled fake execution
