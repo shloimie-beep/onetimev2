@@ -78,17 +78,14 @@ export async function runNarrowContentFactoryWorker(source: NodeJS.ProcessEnv = 
           mode: 'synthetic',
         });
         if (result.claimed || result.safeErrorCode) {
-          logger.info(
-            {
-              worker: WORKER_TYPE,
-              claimed: result.claimed,
-              stage: result.stage ?? 'none',
-              completed: result.completed,
-              provider_calls_performed: result.providerCallsPerformed,
-              safe_error_code: result.safeErrorCode ?? 'none',
-            },
-            'content_factory_worker_iteration',
-          );
+          logger.info('content_factory_worker_iteration', {
+            worker: WORKER_TYPE,
+            claimed: result.claimed,
+            stage: result.stage ?? 'none',
+            completed: result.completed,
+            provider_calls_performed: result.providerCallsPerformed,
+            safe_error_code: result.safeErrorCode ?? 'none',
+          });
         }
       },
     });

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { loadNarrowContentFactoryRuntime } from '../../../apps/worker/src/content-factory/runtime.ts';
 import { contentFactoryWorkerSafeErrorCode } from '../../../packages/domain/src/content/content-factory-worker.ts';
+import { safeLogFields } from '../../../packages/domain/src/delivery/redaction.ts';
 
 const valid = {
   DATABASE_URL: 'postgres://isolated.invalid/onetime',
@@ -59,5 +60,23 @@ describe('narrow content-factory worker runtime', () => {
     expect(contentFactoryWorkerSafeErrorCode(new Error('private database message'))).toBe(
       'content_factory_processing_failed',
     );
+  });
+
+  it('retains only the narrow worker safe proof fields', () => {
+    expect(
+      safeLogFields({
+        stage: 'review',
+        completed: false,
+        provider_calls_performed: false,
+        safe_error_code: 'content_factory_database_23514',
+        transcript: 'private transcript body',
+        storage_locator: 'private volume locator',
+      }),
+    ).toEqual({
+      stage: 'review',
+      completed: false,
+      provider_calls_performed: false,
+      safe_error_code: 'content_factory_database_23514',
+    });
   });
 });
