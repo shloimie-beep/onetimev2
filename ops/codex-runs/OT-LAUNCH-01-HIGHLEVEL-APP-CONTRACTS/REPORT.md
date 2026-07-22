@@ -2,8 +2,8 @@
 
 ## Scope
 
-- Base: `codex/full-app-staging-live` at `b44077fad3890e3e6b02120b5cc33096c29e43c9`
-- GHL evidence: PR #107 at `deda8f9b04dbafcc36363628a14b6fecc94fd854`
+- Base: `codex/full-app-staging-live` at `ca89b900a6faf8e4915b1b4fa72f3eb107cdb896`
+- GHL evidence: PR #107 at `c9f779495ea40a61684c5f01c02ce3f68e450227`
 - Location: `pBSnOK2nkdxp6gf9Rg3o`
 - Provider mode: default-off
 - External HighLevel calls: 0
@@ -68,7 +68,7 @@ During fresh-database setup, Railway CLI echoed the generated credential for an 
 
 Real PostgreSQL uses one atomic CTE claim with exact account, product, channel, transport mode, canary run, allowlist hash, persisted allowlist membership, budget and authorization-state predicates plus `FOR UPDATE OF outbox SKIP LOCKED`. Every claimed row receives a unique fencing token and independent 120-second lease; both provider-operation completion and terminal row completion require that token. A two-dispatcher assertion proves one claim, a slow-row assertion proves no reclaim after the former 60-second boundary, and crash-after-upsert/add-tag assertions prove uncertain operations are never repeated. The exact PostgreSQL SQL contract is asserted, and `scripts/highlevel/postgres-claim-assurance.ts` runs a disposable real-PostgreSQL race that holds the first authorized row lock while a second claimant proves it can claim only the other authorized row and never the held backlog.
 
-The disposable real-PostgreSQL race passed in the PR PostgreSQL 16 assurance job: two authorized rows were claimed with unique fencing tokens while the unauthorized backlog remained unclaimed. Harness cleanup now closes all pool clients before forced database removal. No production or persistent-staging database was used by that proof.
+The disposable real-PostgreSQL race passed against the isolated PR-108 PostgreSQL 16 service: two authorized rows were claimed with unique fencing tokens while the unauthorized backlog remained unclaimed. A temporary credential-protected TCP proxy was created only for the proof and deleted immediately afterward; the service again has no public proxy. Harness cleanup closes all pool clients before database removal. No production or persistent-staging database was used by that proof.
 
 ## Verification
 
@@ -77,12 +77,15 @@ The disposable real-PostgreSQL race passed in the PR PostgreSQL 16 assurance job
 - HighLevel integration, canary-backlog isolation, crash quarantine, slow-row fencing, HMAC mutation/freshness/replay/scope and two-worker claim tests: passed
 - Focused lead capture and class fulfillment regressions: passed
 - Focused account lifecycle, content library, delivery repository and web/worker independence regressions: passed
-- Focused total: 51 tests passed
+- Focused total: 53 tests passed
 - Final full integration reconciliation: 261 tests passed across 55 files
-- Final full unit reconciliation: 290 tests passed across 62 files
+- Final full unit reconciliation: 291 tests passed across 63 files
 - Final Chromium reconciliation: 56 tests passed, including both governed portal recording journeys
-- Disposable real-PostgreSQL HighLevel claim race: passed in the PR PostgreSQL 16 assurance job
-- Typecheck and build: passed before final publication
+- Disposable real-PostgreSQL HighLevel claim race: passed against the isolated PR-108 PostgreSQL 16 service
+- Goal governance validation: 18 checks passed, including 470 parsed strings with zero hash-comment truncations
+- Registry and workflow projection validation: passed; canonical projection matches the registry
+- Workflow control remains intentionally fail-closed only for unverified archived/AI inventory and explicit unknown/cross-kind assets; `drifted=[]` and `reportMatches=true`
+- Scoped Prettier, lint, typecheck, build, migration safety, secret scan and `git diff --check`: passed before publication
 - All tests used fake/sink adapters; external calls and sends remained zero
 
 ## Convergence
