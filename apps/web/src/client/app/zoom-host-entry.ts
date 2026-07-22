@@ -190,6 +190,17 @@ function sdkKeyFromSignature(signature: string) {
   return payload.sdkKey;
 }
 
+function sdkErrorCode(error: unknown) {
+  if (!error || typeof error !== 'object') return 'unknown';
+  const value =
+    (error as { errorCode?: unknown; error_code?: unknown }).errorCode ??
+    (error as { error_code?: unknown }).error_code;
+  const normalized = String(value ?? '')
+    .replace(/[^a-z0-9_-]/gi, '')
+    .slice(0, 32);
+  return normalized || 'unknown';
+}
+
 async function report(
   command: ZoomCommand,
   status: 'executed' | 'failed' | 'rejected',
@@ -302,10 +313,16 @@ async function start() {
             userName: bootstrap.data.user_name,
             zak: bootstrap.data.zak,
             success: () => resolve(),
-            error: () => reject(new Error('Meeting SDK host join was rejected.')),
+            error: (error: unknown) =>
+              reject(
+                new Error(`Meeting SDK host join was rejected (code ${sdkErrorCode(error)}).`),
+              ),
           });
         },
-        error: () => reject(new Error('Meeting SDK host initialization failed.')),
+        error: (error: unknown) =>
+          reject(
+            new Error(`Meeting SDK host initialization failed (code ${sdkErrorCode(error)}).`),
+          ),
       });
     });
     setStatus('Protected host joined. Participant consent remains required for camera and unmute.');
