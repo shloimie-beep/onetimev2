@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { loadConfig } from '../../packages/config/src/index.ts';
 import { createPgPool } from '../../packages/db/src/index.ts';
+import { createAccountUser } from '../../packages/domain/src/auth/service.ts';
 import {
   ingestContentFactoryItem,
   performContentFactoryAction,
@@ -10,6 +11,10 @@ import { learningDeliverySha256Hex } from '../../packages/domain/src/content/lea
 const config = loadConfig(process.env);
 if (config.deliveryEnvironment === 'production') {
   throw new Error('content_factory_demo_seed_forbidden_in_production');
+}
+const demoPassword = process.env.CONTENT_FACTORY_DEMO_PASSWORD?.trim();
+if (!demoPassword) {
+  throw new Error('content_factory_demo_password_required');
 }
 
 const pool = createPgPool(config);
@@ -69,15 +74,23 @@ The lesson closes by repeating that this is a classroom review, not a ruling.
 `;
 
 try {
-  const actor = await pool.query(
-    `SELECT user_key FROM onetime.account_users
-      WHERE account_key = $1 AND product_key = $2 AND role IN ('owner', 'admin')
-        AND status = 'active'
-      ORDER BY CASE role WHEN 'owner' THEN 0 ELSE 1 END, created_at ASC LIMIT 1`,
-    [config.accountKey, config.productKey],
-  );
-  const actorUserKey = String(actor.rows[0]?.user_key ?? '');
-  if (!actorUserKey) throw new Error('content_factory_demo_seed_admin_required');
+  const actorUserKey = await createAccountUser({
+    pool,
+    config,
+    email: 'ot-launch-01-admin@example.test',
+    password: demoPassword,
+    displayName: 'OT-LAUNCH-01 Demo Admin',
+    role: 'owner',
+  });
+  const studentUserKey = await createAccountUser({
+    pool,
+    config,
+    email: 'ot-launch-01-student@example.test',
+    password: demoPassword,
+    displayName: 'OT-LAUNCH-01 Demo Student',
+    role: 'student',
+  });
+  await seedOtLaunchHousehold(studentUserKey);
 
   await ingestContentFactoryItem({
     pool,
@@ -175,4 +188,86 @@ try {
   );
 } finally {
   await pool.end();
+}
+
+async function seedOtLaunchHousehold(studentUserKey: string) {
+  await pool.query(
+    `INSERT INTO onetime.portal_households
+       (household_key, account_key, product_key, display_name, status)
+     VALUES ('ot_launch_01_household', $1, $2, 'OT-LAUNCH-01 Demo Household', 'active')
+     ON CONFLICT (household_key) DO UPDATE SET display_name = EXCLUDED.display_name,
+       status = 'active', updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_learners
+       (learner_key, account_key, product_key, household_key, display_name, grade_label,
+        learner_status)
+     VALUES ('ot_launch_01_student', $1, $2, 'ot_launch_01_household',
+       'Ari — Demo Student', '6', 'active')
+     ON CONFLICT (learner_key) DO UPDATE SET display_name = EXCLUDED.display_name,
+       grade_label = EXCLUDED.grade_label, learner_status = 'active', updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.portal_student_access_state
+       (access_state_key, account_key, product_key, household_key, learner_key,
+        student_user_ref, status)
+     VALUES ('ot_launch_01_student_access', $1, $2, 'ot_launch_01_household',
+       'ot_launch_01_student', $3, 'active')
+     ON CONFLICT (access_state_key) DO UPDATE SET student_user_ref = EXCLUDED.student_user_ref,
+       status = 'active', updated_at = now()`,
+    [config.accountKey, config.productKey, studentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.account_learner_identity_links
+       (link_key, account_key, product_key, household_key, learner_key, user_key, link_state)
+     VALUES ('ot_launch_01_student_link', $1, $2, 'ot_launch_01_household',
+       'ot_launch_01_student', $3, 'active')
+     ON CONFLICT (link_key) DO UPDATE SET user_key = EXCLUDED.user_key, link_state = 'active',
+       suspended_at = NULL, disabled_at = NULL`,
+    [config.accountKey, config.productKey, studentUserKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.classroom_household_entitlements
+       (entitlement_key, account_key, product_key, household_key, entitlement_state, source,
+        policy_version)
+     VALUES ('ot_launch_01_classroom_entitlement', $1, $2, 'ot_launch_01_household',
+       'active', 'isolated_demo_seed', 'ot-launch-01-demo-v1')
+     ON CONFLICT (entitlement_key) DO UPDATE SET entitlement_state = 'active',
+       source = EXCLUDED.source, policy_version = EXCLUDED.policy_version, updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.billing_entitlement_projections
+       (entitlement_key, account_key, product_key, principal_key, principal_type, status,
+        policy_version, source, reason, effective_at, evaluated_at, grants_access)
+     VALUES ('ot_launch_01_billing_entitlement', $1, $2, 'ot_launch_01_household', 'opaque',
+       'active', 'ot-launch-01-demo-v1', 'isolated_demo_seed', 'synthetic_preview', now(),
+       now(), true)
+     ON CONFLICT (entitlement_key) DO UPDATE SET status = 'active', grants_access = true,
+       evaluated_at = now(), updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.class_series
+       (class_series_key, account_key, product_key, title, timezone, local_start_time,
+        reminder_local_time)
+     VALUES ('ot_launch_01_class', $1, $2, 'OT-LAUNCH-01 Mishnayos', 'Asia/Jerusalem',
+       '19:00', '18:30')
+     ON CONFLICT (class_series_key) DO UPDATE SET title = EXCLUDED.title, status = 'active',
+       updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
+  await pool.query(
+    `INSERT INTO onetime.class_occurrences
+       (occurrence_key, account_key, product_key, class_series_key, local_class_date, starts_at,
+        reminder_due_at, joinable_until, occurrence_state, access_state)
+     VALUES ('ot_launch_01_class_2026_07_22', $1, $2, 'ot_launch_01_class', '2026-07-22',
+       '2026-07-22T16:00:00.000Z', '2026-07-22T15:30:00.000Z',
+       '2026-07-22T17:30:00.000Z', 'scheduled', 'provider_unavailable')
+     ON CONFLICT (occurrence_key) DO UPDATE SET occurrence_state = 'scheduled',
+       access_state = 'provider_unavailable', updated_at = now()`,
+    [config.accountKey, config.productKey],
+  );
 }
