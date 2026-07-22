@@ -883,6 +883,14 @@ async function contentOpenForLearner(
   if (!item?.open_action) {
     throw new PortalServiceError('NOT_FOUND', 'The requested portal record was not found.');
   }
+  if (item.content_factory) {
+    return {
+      ...item.open_action,
+      label: 'Open approved class video',
+      href: item.content_factory.playback_route,
+      launch_token_ref: null,
+    };
+  }
   return protectedContentUnavailableAction(learner, item);
 }
 

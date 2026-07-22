@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { gamificationSummarySchema } from '../gamification/index.ts';
+import { contentFactoryPortalProjectionSchema } from '../content/content-factory.ts';
 
 export const portalActorRoleSchema = z.enum([
   'parent',
@@ -249,6 +250,7 @@ export const libraryItemSchema = z.object({
   status: z.enum(['published', 'unavailable']),
   open_action: protectedActionDescriptorSchema.nullable(),
   lesson: lessonPublicationSummarySchema.nullable().optional(),
+  content_factory: contentFactoryPortalProjectionSchema.optional(),
   featured: z.boolean().optional(),
   published_at: z.string().nullable().optional(),
 });

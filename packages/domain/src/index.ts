@@ -180,6 +180,8 @@ export {
   suggestLearningDeliveryAutomaticTrim,
   suggestLearningDeliveryTrim,
 } from './content/learning-delivery.ts';
+export * from './content/learning-delivery-inputs.ts';
+export * from './content/content-factory.ts';
 export {
   OT86B_ALLOWED_TRANSITIONS,
   Ot86bSocialPublishingError,

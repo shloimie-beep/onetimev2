@@ -728,6 +728,20 @@ function ContentList({
                   {item.lesson.resource_count} resources
                 </span>
               )}
+              {item.content_factory && (
+                <div className="ot-stack">
+                  <p>{item.content_factory.approved_summary}</p>
+                  <span>Captions active · {label(item.content_factory.progress_state)}</span>
+                  <details>
+                    <summary>Approved review questions</summary>
+                    <ol>
+                      {item.content_factory.approved_review_questions.map((question) => (
+                        <li key={question}>{question}</li>
+                      ))}
+                    </ol>
+                  </details>
+                </div>
+              )}
             </div>
             {action && onOpen && (
               <button
