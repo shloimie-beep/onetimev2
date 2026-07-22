@@ -123,8 +123,7 @@ export async function runContentFactoryWorkerOnce(input: {
       safeErrorCode: null,
     };
   } catch (error) {
-    const safeErrorCode =
-      error instanceof SafeWorkerError ? error.code : 'content_factory_processing_failed';
+    const safeErrorCode = contentFactoryWorkerSafeErrorCode(error);
     await failStage({ pool: input.pool, config: input.config, job, safeErrorCode, now });
     return {
       claimed: true,
@@ -134,6 +133,20 @@ export async function runContentFactoryWorkerOnce(input: {
       safeErrorCode,
     };
   }
+}
+
+export function contentFactoryWorkerSafeErrorCode(error: unknown) {
+  if (error instanceof SafeWorkerError) return error.code;
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    typeof error.code === 'string' &&
+    /^[0-9A-Z]{5}$/.test(error.code)
+  ) {
+    return `content_factory_database_${error.code.toLowerCase()}`;
+  }
+  return 'content_factory_processing_failed';
 }
 
 export async function claimContentFactoryJob(input: {

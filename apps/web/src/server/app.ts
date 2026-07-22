@@ -626,7 +626,7 @@ export function createApp({
   app.get('/version', (_req, res) => {
     res.json({
       version: config.appVersion,
-      commit_sha: config.railwayGitCommitSha ?? config.commitSha,
+      commit_sha: config.commitSha,
       target_app: 'one-time',
       deployment: {
         provider: 'railway',
