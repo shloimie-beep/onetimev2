@@ -80,6 +80,25 @@
           "order": 1,
           "kind": "email",
           "name": "Email A - Immediate Confirmation",
+          "approvedChangeRecordedBeforeUiSave": true,
+          "messageSemantics": "event_only_registered_attendee_confirmation_not_account_verification_or_marketing",
+          "senderKey": "rabbi_campaign",
+          "senderPhase": "active_phase_1_registered_picker_values",
+          "subject": "You're registered — let's strengthen ourselves together",
+          "preheader": "Join Rabbi Eli Scheller live from the Holy Land this Tisha B'Av.",
+          "bodyParagraphs": [
+            "Hi {{default contact.first_name \"there\"}},",
+            "Thank you for signing up for Rabbi Eli Scheller's live Tisha B'Av class.",
+            "Together, we'll strengthen ourselves and help fill the world with knowledge of Hashem through digital Torah learning.",
+            "Join us for a special class, live from the Holy Land.",
+            "Thursday, July 23, 2026 / 3:00 PM Eastern / 10:00 PM Israel",
+            "We'll email the private class access before the program begins.",
+            "View the One Time Mishnah Class Page",
+            "Can't wait to see you,",
+            "Rabbi Eli Scheller / One Time Mishnah Learning"
+          ],
+          "linkCustomValueKey": "one_time_tisha_bav_landing_url",
+          "rawProviderUrlRecorded": false,
           "directClassLink": "sanitized_present_valid_operator_authorized"
         },
         {
@@ -111,11 +130,20 @@
       ],
       "legacy24HourActionPresent": false,
       "sender": {
-        "senderKey": "brand",
+        "defaultSenderKey": "brand",
         "fromPickerKey": "one_time_brand_from",
         "senderNamePickerKey": "one_time_brand_sender_name",
         "replyToKey": "one_time_default_reply_to",
-        "addresses": "sanitized_present_registered"
+        "addresses": "sanitized_present_registered",
+        "stepOverrides": [
+          {
+            "action": "Email A - Immediate Confirmation",
+            "senderKey": "rabbi_campaign",
+            "senderNamePickerKey": "one_time_rabbi_campaign_sender_name",
+            "fromPickerKey": "one_time_rabbi_campaign_phase_1_from",
+            "replyToKey": "one_time_default_reply_to"
+          }
+        ]
       },
       "deliveryEligibility": {
         "permission": "exact_event_registration",

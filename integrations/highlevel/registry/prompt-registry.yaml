@@ -604,7 +604,7 @@
   status: 'active'
   title: 'OT-E01 Tisha B''Av 2026 Registration and Reminders'
   file_path: 'integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md'
-  sha256: 'd6038b45c1fc0ed66228edccd8f918f1f804eaafe4fe8fbb4737cf7104206734'
+  sha256: '0a4d870bf7ad82a5bdcfae4bad18aa8517efc1c30ecf2fa0ea05ae7184eefb7a'
   source: 'Canonical workflow prompt generated from registry'
   created_date: '2026-07-21'
   approved_date: ''
