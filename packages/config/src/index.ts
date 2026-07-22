@@ -176,6 +176,7 @@ const envSchema = z.object({
   ZOOM_CLASSROOM_JOIN_CLOSE_OFFSET_MINUTES: numberFromString.default(15),
   ZOOM_MEETING_SDK_CLIENT_ID: z.string().optional(),
   ZOOM_MEETING_SDK_CLIENT_SECRET: z.string().optional(),
+  ZOOM_MEETING_SDK_ALLOWED_ORIGIN: z.url().optional(),
   ZOOM_MEETING_SDK_WEB_VERSION: z
     .string()
     .regex(/^\d+\.\d+\.\d+$/)
@@ -264,8 +265,12 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     throw new Error('Delivery provider mode is limited to test or isolated_staging.');
   }
 
-  if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && parsed.NODE_ENV !== 'test') {
-    throw new Error('Zoom canary execution is outside this local task and must remain disabled.');
+  if (
+    parsed.ZOOM_CLASSROOM_CANARY_ENABLED &&
+    parsed.NODE_ENV !== 'test' &&
+    oneTimeRuntimeEnvironment !== 'isolated_staging'
+  ) {
+    throw new Error('Zoom canary execution is limited to test or isolated_staging.');
   }
 
   if (
@@ -557,6 +562,7 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkClientId: parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,
     zoomMeetingSdkClientSecret:
       parsed.ZOOM_MEETING_SDK_CLIENT_SECRET ?? parsed.ZOOM_MEETING_SDK_SECRET,
+    zoomMeetingSdkAllowedOrigin: parsed.ZOOM_MEETING_SDK_ALLOWED_ORIGIN,
     zoomMeetingSdkWebVersion: parsed.ZOOM_MEETING_SDK_WEB_VERSION,
     zoomMeetingSdkClientIdConfigured: Boolean(
       parsed.ZOOM_MEETING_SDK_CLIENT_ID ?? parsed.ZOOM_MEETING_SDK_KEY,

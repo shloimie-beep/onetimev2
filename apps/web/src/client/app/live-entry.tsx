@@ -8,6 +8,7 @@ import type {
   SessionUser,
 } from '@onetime/contracts';
 import { AppShell, type ShellNavItem, type ShellUser } from './shell/AppShell.js';
+import { zoomProviderOffSummary } from './zoom-sdk-safety.js';
 import './crm.css';
 
 type ConsoleData = LiveClassConsoleSnapshot['data'];
@@ -441,10 +442,7 @@ function ZoomHealth({ data }: { data: ConsoleData | null }) {
           </div>
         </>
       ) : (
-        <p>
-          Provider off: required Zoom provider prerequisites are incomplete. Controlled fake
-          execution remains active in this preview.
-        </p>
+        <p>{zoomProviderOffSummary(data?.zoom.readiness)}</p>
       )}
       {job && (
         <details>

@@ -871,6 +871,7 @@ async function snapshot(
     private_portal_visible: false,
   };
   const mode = zoomAdapterMode(deps.config);
+  const zoomReadiness = inspectZoomHostControlReadiness(deps.config);
   const firstQuestion =
     questions.find((question) => question.status === 'submitted') ?? selectedQuestion;
   return {
@@ -886,12 +887,13 @@ async function snapshot(
         host_surface_label: LIVE_CLASS_STAGE_SURFACE_LABEL,
         provider: 'meeting_sdk',
         adapter: mode,
-        sdk_credentials_configured: zoomSdkConfigured(deps.config),
-        host_control_configured: zoomHostControlConfigured(deps.config),
+        sdk_credentials_configured: zoomReadiness.phases.sdk_app.ready,
+        host_control_configured: zoomReadiness.ready,
+        readiness: zoomReadiness,
         live_control_uses_rest_api: false,
         can_force_camera_on: false,
         video_start_model: 'PARTICIPANT_CONSENT',
-        setup_job: zoomHostControlConfigured(deps.config) ? null : zoomSetupJob(),
+        setup_job: zoomReadiness.ready ? null : zoomSetupJob(),
       },
       obs: {
         bridge_required: false,
@@ -1122,14 +1124,6 @@ function liveClassFakeAdapterEnabled(config: AppConfig) {
   );
 }
 
-function zoomSdkConfigured(config: AppConfig) {
-  return (
-    config.zoomMeetingSdkClientIdConfigured &&
-    config.zoomMeetingSdkClientSecretConfigured &&
-    config.zoomMeetingSdkWebVersionConfigured
-  );
-}
-
 function zoomHostControlConfigured(config: AppConfig) {
   return inspectZoomHostControlReadiness(config).ready;
 }
@@ -1152,7 +1146,7 @@ function requireZoomHostControl(config: AppConfig) {
 function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['setup_job']> {
   return {
     job_key: 'ZOOM-UI-01',
-    title: 'Create One Time Meeting SDK App',
+    title: 'Complete Zoom real-control readiness',
     status: 'operator_action_required',
     scopes: [
       'General app with Meeting SDK enabled',
@@ -1161,15 +1155,14 @@ function zoomSetupJob(): NonNullable<LiveClassConsoleSnapshot['data']['zoom']['s
       'Participant roster, audio/video state, active speaker, and spotlight events',
     ],
     storage_instruction:
-      'Store canonical Meeting SDK, S2S, host, meeting, and passcode values only in protected governed environment configuration.',
+      'Store canonical SDK, exact origin, S2S, host, meeting, and passcode values only in protected governed configuration.',
     steps: [
-      'Open Zoom Marketplace, choose Develop, then Build App.',
-      'Create an admin-managed General app named One Time Zoom Stage Host.',
-      'On Features > Embed, enable Meeting SDK for Other Devices.',
-      'After governed staging integration, allowlist exactly https://ot99-web-staging.up.railway.app with strict mode enabled.',
-      'Set ZOOM_MEETING_SDK_CLIENT_ID, ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION in protected configuration.',
-      'Set the protected S2S account/client credentials plus host, isolated meeting, and passcode prerequisites.',
-      'Confirm the classroom account can start or join the class meeting as host or co-host.',
+      'Keep the existing admin-managed General app; do not create another Zoom app.',
+      'Bind PUBLIC_BASE_URL and ZOOM_MEETING_SDK_ALLOWED_ORIGIN to the same exact HTTPS origin already allowlisted in the General app.',
+      'Use only ZOOM_MEETING_SDK_CLIENT_ID, ZOOM_MEETING_SDK_CLIENT_SECRET, and ZOOM_MEETING_SDK_WEB_VERSION as the canonical SDK contract.',
+      'After rotating the exposed protected class target, configure the protected S2S account/client, host, isolated meeting, and passcode prerequisites.',
+      'Confirm the protected host is authorized for the isolated meeting without using the Rabbi recurring meeting.',
+      'Set ZOOM_CLASSROOM_CANARY_ENABLED=true only for an explicitly authorized isolated-staging canary, then disable it after proof.',
     ],
   };
 }

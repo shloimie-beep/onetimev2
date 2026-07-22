@@ -21,6 +21,15 @@ chat, log, commit, or build output:
 - Development **Client Secret** → `ZOOM_MEETING_SDK_CLIENT_SECRET`
 - Meeting SDK web version → `ZOOM_MEETING_SDK_WEB_VERSION=6.2.0`
 
+Bind the runtime to the exact HTTPS origin configured as the General app's Meeting SDK Web
+Domain. This value is not a credential, but it must still be governed configuration:
+
+- Exact SDK Web Domain origin → `ZOOM_MEETING_SDK_ALLOWED_ORIGIN`
+- Runtime public URL → `PUBLIC_BASE_URL`
+
+Both variables must resolve to the same origin. Paths, wildcards, localhost, HTTP, and a
+production origin are rejected by the host-control readiness gate.
+
 The existing Server-to-Server OAuth app remains separate and supplies REST meeting/registrant
 provisioning plus the host ZAK:
 
@@ -39,7 +48,13 @@ Copy the isolated canary's protected meeting material into only this PR environm
 - `ZOOM_REAL_CONTROL_MEETING_ID`
 - `ZOOM_REAL_CONTROL_MEETING_PASSCODE`
 
-Do not set any of these on persistent staging or production.
+Do not set any of these on persistent staging until governed staging integration is explicitly
+authorized. Never set this canary configuration on production.
+
+`ZOOM_CLASSROOM_CANARY_ENABLED=true` is the final, separate real-control authorization. Keep it
+false until the protected class target is rotated, all readiness phases pass, and the operator
+has explicitly authorized one governed isolated-staging canary. Disable it immediately after
+the proof or on any unexpected provider response.
 
 ## Exact redirect and origin allow-list
 
@@ -55,23 +70,32 @@ implementation does not use a Zoom in-client app surface or General-app OAuth ca
 redirect entry satisfies Marketplace configuration only. Host ZAK retrieval continues through
 the separately authorized Server-to-Server OAuth app.
 
+For a later governed staging canary, add exactly
+`https://ot99-web-staging.up.railway.app` to the **existing** General app's Meeting SDK Web
+Domain allowlist and set both runtime origin variables to that exact origin. Do not create a new
+app and do not add production.
+
 ## Controlled verification sequence
 
-1. Confirm the target Railway environment is the isolated draft-PR environment and its base is
-   the PR #100 branch; do not change persistent staging.
-2. Add only the variables above and redeploy the PR environment.
-3. Open the protected Rabbi Live Console, confirm `meeting_sdk_host`, and open **Protected Zoom
+1. Rotate/revoke the exposed protected staging class target according to
+   `../codex-runs/OT-LAUNCH-01/ZOOM-STAGING-CLASS-LINK-ROTATION-CANARY-RUNBOOK.md` before any
+   provider canary.
+2. Confirm the target is an explicitly governed isolated-staging environment; do not change
+   production.
+3. Add only the variables above, verify the exact origin binding, and redeploy that governed
+   environment.
+4. Open the protected Rabbi Live Console, confirm `meeting_sdk_host`, and open **Protected Zoom
    Host**. Confirm the short-lived role-1 signature starts the one isolated canary meeting.
-4. Join only the three fictional registrants. Confirm participant mapping succeeds by stable
+5. Join only the three fictional registrants. Confirm participant mapping succeeds by stable
    `customer_key` and not by display name.
-5. Select Student 1, have Student 1 click **I'm Ready**, accept Zoom's unmute prompt if desired,
+6. Select Student 1, have Student 1 click **I'm Ready**, accept Zoom's unmute prompt if desired,
    and start video from the participant client if spotlight is to be tested.
-6. From the Rabbi console run: **Ask Unmute**, **Spotlight**, **Remove Spotlight**, **Mute**, then
+7. From the Rabbi console run: **Ask Unmute**, **Spotlight**, **Remove Spotlight**, **Mute**, then
    **Done**. Confirm the roster state follows Zoom events and Done resets the stage.
-7. Replay one executed command, submit one expired command, and target Student 2 with Student 1's
+8. Replay one executed command, submit one expired command, and target Student 2 with Student 1's
    command context. Confirm all three are rejected.
-8. Stop after this canary. Do not invite customers, use the Rabbi's regular meeting, or change
-   production/persistent staging.
+9. Set `ZOOM_CLASSROOM_CANARY_ENABLED=false` and stop after this canary. Do not invite customers,
+   use the Rabbi's regular meeting, or change production.
 
 The REST Meetings API is used only for meeting creation, registrants, and ZAK acquisition. It is
 not used or described as an in-meeting mute/spotlight control surface.

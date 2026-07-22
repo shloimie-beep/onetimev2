@@ -28,6 +28,7 @@ const realZoomHostEnv = {
   ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
   ZOOM_MEETING_SDK_CLIENT_ID: 'sdk_client_test',
   ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
+  ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
   ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
   ZOOM_ACCOUNT_ID: 'zoom_account_test',
   ZOOM_S2S_CLIENT_ID: 's2s_client_test',
@@ -35,6 +36,7 @@ const realZoomHostEnv = {
   ZOOM_HOST_USER_ID: 'host_user_test',
   ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'passcode_test',
+  ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
 } as const;
 
 beforeEach(async () => {
@@ -115,6 +117,7 @@ describe('live class question lifecycle', () => {
     expect(live.commands.map((command) => command.command_type)).toEqual(
       expect.arrayContaining(['spotlight_replace', 'ask_unmute', 'obs_switch_scene']),
     );
+    expect(live.commands.map((command) => command.command_type)).not.toContain('start_video');
     expect(live.stage.current_scene).toBe('OT - Featured Student');
 
     const done = await service.completeQuestion(rabbiActor(), submitted.question.question_key, {
@@ -122,6 +125,7 @@ describe('live class question lifecycle', () => {
       resolution: 'answered',
     });
     expect(done.question?.status).toBe('answered');
+    expect(done.commands.map((command) => command.command_type)).toContain('spotlight_remove');
     expect(done.stage.current_scene).toBe('OT - Slides');
     expect(done.stage.selected_question).toBeNull();
   });
@@ -218,6 +222,18 @@ describe('live class question lifecycle', () => {
       question_key: submitted.question.question_key,
       idempotency_key: 'live-zoom-spotlight-3',
     });
+    await service.zoomControl(rabbiActor(), {
+      operation: 'ask_unmute',
+      question_key: submitted.question.question_key,
+      idempotency_key: 'live-zoom-ask-unmute-3',
+    });
+    await expect(
+      service.zoomControl(rabbiActor(), {
+        operation: 'spotlight_replace',
+        question_key: submitted.question.question_key,
+        idempotency_key: 'live-zoom-spotlight-3',
+      }),
+    ).rejects.toMatchObject({ code: 'IDEMPOTENCY_CONFLICT' });
     const snapshot = await service.consoleSnapshot(rabbiActor(), session.occurrence_key);
     expect(snapshot.data.zoom).toMatchObject({
       adapter: 'fake',
@@ -229,6 +245,53 @@ describe('live class question lifecycle', () => {
       (item) => item.customer_key === submitted.question.customer_key,
     );
     expect(participant?.spotlighted).toBe(true);
+    expect(participant?.audio_state).toBe('muted');
+  });
+
+  it('shows SDK-ready but S2S-not-ready provider-off truth without values', async () => {
+    const session = await repository.ensureLiveSession({
+      actor: rabbiActor(),
+      now,
+      expires_at: new Date(now.getTime() + 60 * 60_000),
+    });
+    const providerOffConfig = loadConfig({
+      NODE_ENV: 'test',
+      PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
+      ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+      ZOOM_CLASSROOM_ENABLED: 'true',
+      ZOOM_CLASSROOM_PROVIDER_MODE: 'real',
+      ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
+      ZOOM_MEETING_SDK_CLIENT_ID: 'sdk_client_test',
+      ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk_secret_test',
+      ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
+      ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
+      LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
+    });
+    const providerOffService = createLiveClassService({
+      config: providerOffConfig,
+      repository,
+      clock: () => clockNow,
+    });
+
+    const snapshot = await providerOffService.consoleSnapshot(rabbiActor(), session.occurrence_key);
+    expect(snapshot.data.zoom).toMatchObject({
+      adapter: 'fake',
+      sdk_credentials_configured: true,
+      host_control_configured: false,
+      readiness: {
+        ready: false,
+        code: 'PROVIDER_NOT_READY',
+        phases: {
+          sdk_app: { ready: true },
+          s2s_meeting_provisioning: { ready: false },
+          host_authorization: { ready: false },
+          real_control_canary_authorization: { ready: false },
+        },
+        secret_values_included: false,
+      },
+    });
+    expect(snapshot.data.zoom.setup_job?.title).toBe('Complete Zoom real-control readiness');
+    expect(JSON.stringify(snapshot.data.zoom.readiness)).not.toContain('sdk_secret_test');
   });
 
   it('denies a cross-student target and rejects an expired Zoom command report', async () => {

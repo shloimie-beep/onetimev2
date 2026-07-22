@@ -1,4 +1,4 @@
-# OT-LAUNCH-01 — Zoom classroom handoff
+# OT-LAUNCH-01 — Zoom classroom readiness handoff
 
 > Historical isolated-preview evidence only. Current status and acceptance live exclusively in
 > `ops/goals/OT-LAUNCH-01/BOARD.yaml`. The accepted provider-off integration source is PR #105 head
@@ -11,44 +11,60 @@
 - Pull request: `#105`
 - Base: `codex/rabbi-live-console-zoom-obs`
 - Isolated preview: `https://ot99-web-onetimev2-pr-105.up.railway.app`
-- Provider-reachability attempt commit: `405d38e` (`fix: enable Zoom WebRTC control token`)
 - Production changed: **NO**
 - Persistent staging changed: **NO**
 
-## Provider and meeting state
+## Current provider truth
 
-- The admin-managed Zoom General app is restricted to the PR preview, Meeting SDK is enabled, the app has the minimal admin meeting-read scope required for local authorization, and local authorization completed in the operator account.
-- The exposed Development secret was rotated before testing resumed. Only the isolated PR web-service secret was replaced. See [ZOOM-SDK-CREDENTIAL-INCIDENT.md](./ZOOM-SDK-CREDENTIAL-INCIDENT.md).
-- Existing server-to-server OAuth authentication succeeds.
-- Exactly one isolated type-2 meeting exists. The provider reports it in `waiting` state, owned by the configured test host, with registration disabled. No customer was invited and no Rabbi recurring meeting was touched.
-- The application generates short-lived role-0 and role-1 Meeting SDK JWTs server-side. Current web signatures explicitly set `video_webrtc_mode=1`; host joins include the host's ZAK token.
-- Learners map to Zoom participants through deterministic 32-character per-join `customerKey` values, never display names alone. Existing isolated demo rows are reconciled to the bounded format without a schema migration. Camera and unmute remain participant-consent actions.
+- The existing admin-managed Zoom General app has Meeting SDK enabled and remains restricted to
+  the isolated PR origin. Do not create another app.
+- The isolated Railway environment has protected `ZOOM_MEETING_SDK_CLIENT_ID`,
+  `ZOOM_MEETING_SDK_CLIENT_SECRET`, and `ZOOM_MEETING_SDK_WEB_VERSION`.
+- `ZOOM_MEETING_SDK_KEY` and `ZOOM_MEETING_SDK_SECRET` are compatibility aliases only and never
+  satisfy real-control readiness.
+- The existing Server-to-Server OAuth app was not modified by this continuation.
+- The current isolated runtime lacks `ZOOM_ACCOUNT_ID`, `ZOOM_S2S_CLIENT_ID`,
+  `ZOOM_S2S_CLIENT_SECRET`, `ZOOM_HOST_USER_ID`, `ZOOM_REAL_CONTROL_MEETING_ID`, and
+  `ZOOM_REAL_CONTROL_MEETING_PASSCODE`.
+- A protected staging class target was exposed in private diagnostic output. The protected
+  resource bound to `ONE_TIME_PROTECTED_CLASS_TARGET_URL` must be rotated/revoked before any real
+  canary. No value or fragment is recorded here.
+
+## Fail-closed readiness
+
+Real host control stays unavailable until all four independently reported phases are ready:
+
+1. **SDK app** — canonical SDK client ID, client secret, explicit web version, and exact
+   `ZOOM_MEETING_SDK_ALLOWED_ORIGIN` / `PUBLIC_BASE_URL` HTTPS-origin binding.
+2. **S2S meeting provisioning** — account ID, S2S client ID/secret, isolated meeting ID, and
+   meeting passcode.
+3. **Host authorization** — protected host user ID.
+4. **Real-control canary authorization** — `ZOOM_CLASSROOM_CANARY_ENABLED=true` in an explicitly
+   authorized `isolated_staging` runtime only.
+
+The broader runtime/classroom/real-provider gates must also be active. Missing setup or
+authorization returns typed provider-off/not-ready responses before Zoom client construction or
+provider invocation. Readiness output contains variable names only.
 
 ## Verification state
 
-- Three fictional learner states are seeded.
-- The protected Join Class and Rabbi Live Console surfaces are deployed.
-- Student Ready, authorization/replay/expiry denial, cross-student denial, cross-account mapping denial, and Done/reset pass focused tests.
-- Real mute/unmute and spotlight controls are implemented through the Meeting SDK host surface, not the REST Meetings API. Spotlight uses Zoom's current `operate: 'replace' | 'remove'` contract.
-- SDK failures shown in the product contain only an allowlisted code/category pair; raw provider reason and message strings never reach the DOM.
-- Focused tests: 4 files, 22 tests passed.
-- Typecheck: passed.
-- Build: passed.
-- Secret scan: passed across 1,788 text files.
-- Prettier and `git diff --check`: passed.
+- Admin, Student, and Rabbi fake-adapter journeys remain accepted in persistent staging.
+- Safe tests cover role-0/role-1 signatures, bounded customer-key participant mapping,
+  participant-consent unmute/video behavior, spotlight replace/remove, Done/reset, replay,
+  expiry, cross-student/cross-account denial, exact-origin blocking, and provider-off UI truth.
+- No real provider call, host join, participant join, meeting mutation, link rotation, credential
+  write, deployment, or human challenge was performed in this continuation.
 
-## Single remaining blocker
+## Remaining governed action
 
-At `2026-07-22T10:10:04Z`, the single post-deployment host join was rejected by Zoom with code 1. The redacted SDK diagnostic explicitly reports that Zoom rate-limited the join and requires reCAPTCHA verification. No retry loop was run.
+Follow `ZOOM-STAGING-CLASS-LINK-ROTATION-CANARY-RUNBOOK.md`. First rotate/revoke the protected
+class target. Only then add the exact staging origin to the existing General app, install the
+protected S2S/host/meeting values in governed staging, explicitly authorize one canary, and
+disable it after proof.
 
-That attempt proved provider reachability and the reCAPTCHA boundary only. It did **not** prove a completed Meeting SDK join, participant events, mute/unmute, spotlight, or active-speaker control.
-
-Exact operator action: in the current signed-in Zoom browser session, complete Zoom's reCAPTCHA/rate-limit verification, then run one host join and one Student 1 join from PR #105. Do not create another app or meeting, change any credential, or touch production/persistent staging.
-
-Until that human provider challenge is completed, live participant events, ask-to-unmute/mute, spotlight/remove-spotlight, and active-speaker verification remain blocked at the provider join boundary.
-
-The temporary preview-operator session used for isolated browser verification was revoked, and its isolated account role was returned to `viewer`.
+Do not use the Rabbi recurring meeting, invite a customer, or modify production.
 
 ## Migration convergence
 
-PR #105 adds no migration. The base branch's historical Zoom migration is byte-identical to persistent staging's applied `2212_rabbi_live_console_zoom_obs` ledger entry. Integrate application changes only; do not reintroduce or rename the historical `2210` Zoom migration.
+PR #105 adds no migration. Integrate application changes only; do not reintroduce or rename the
+historical Zoom migration.
