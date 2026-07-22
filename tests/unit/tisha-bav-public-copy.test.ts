@@ -34,6 +34,7 @@ describe('Tisha BAv public generated copy', () => {
     expect(generatedHtml).toContain(disclosure);
     expect(generatedHtml).toContain('Live class with Rabbi Eli Scheller');
     expect(generatedHtml).toContain('Rabbi Eli Scheller');
+    expect(generatedHtml).toContain('data-event-success-message');
     expect(generatedHtml).not.toContain('Rabbi Elly');
     expect(generatedHtml).not.toContain('newsletter');
     expect(generatedHtml).not.toContain('marketing');

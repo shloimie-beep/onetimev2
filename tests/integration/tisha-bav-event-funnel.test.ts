@@ -253,6 +253,72 @@ describe('Tisha BAv event registration', () => {
     await expectCount('event_email_permission_events', 1);
   });
 
+  it('repairs one legacy succeeded delivery when authoritative tag proof is missing', async () => {
+    const initial = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('legacy-false-success@example.test', {
+        idempotency_key: 'legacy-false-success-1',
+      }),
+      now: openWindow,
+    });
+    await pool.query(
+      `UPDATE onetime.event_delivery_events
+          SET status = 'succeeded',
+              public_metadata = '{"workflow_configured":true}'::jsonb,
+              completed_at = $2
+        WHERE registration_key = $1
+          AND provider = 'highlevel'`,
+      [initial.registration_key, openWindow],
+    );
+    const highLevel = new MockHighLevelEventClient();
+    const reprocessInput = {
+      pool,
+      config: fallbackConfig({
+        HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
+      }),
+      registrationKey: initial.registration_key ?? '',
+      now: openWindow,
+      highLevelClient: highLevel,
+    };
+
+    await expect(reprocessTishaBavRegistrationDelivery(reprocessInput)).resolves.toEqual({
+      status: 'succeeded',
+      fallback_queued: false,
+    });
+    expect([...highLevel.contacts.values()][0]?.tags).toEqual(
+      expect.arrayContaining([
+        "OT | Event | Tisha B'Av 2026 | Registered",
+        "OT | Source | Tisha B'Av 2026",
+      ]),
+    );
+    expect(highLevel.workflowRequests).toHaveLength(1);
+    const repaired = await pool.query(
+      `SELECT status, public_metadata, completed_at
+         FROM onetime.event_delivery_events
+        WHERE registration_key = $1
+          AND provider = 'highlevel'`,
+      [initial.registration_key],
+    );
+    expect(repaired.rows).toEqual([
+      expect.objectContaining({
+        status: 'succeeded',
+        completed_at: expect.anything(),
+        public_metadata: expect.objectContaining({
+          tags_verified: true,
+          workflow_enrollment_verified: true,
+        }),
+      }),
+    ]);
+
+    await expect(reprocessTishaBavRegistrationDelivery(reprocessInput)).resolves.toEqual({
+      status: 'succeeded',
+      fallback_queued: false,
+    });
+    expect(highLevel.workflowRequests).toHaveLength(1);
+  });
+
   it('denies legacy materialization when the exact registration lacks stored event-consent proof', async () => {
     const initial = await captureTishaBavRegistration({
       pool,
@@ -353,6 +419,57 @@ describe('Tisha BAv event registration', () => {
     releaseWorkflow();
     await expect(first).resolves.toEqual({ status: 'succeeded', fallback_queued: false });
     expect(highLevel.workflowRequests).toHaveLength(1);
+  });
+
+  it('does not report success or cancel recovery after losing the delivery lease', async () => {
+    const initial = await captureTishaBavRegistration({
+      pool,
+      config: testConfig(),
+      payload: registrationPayload('reprocess-lease-loss@example.test', {
+        idempotency_key: 'provider-off-reprocess-lease-loss-1',
+      }),
+      now: openWindow,
+    });
+    const highLevel = new MockHighLevelEventClient();
+    const originalAddToWorkflow = highLevel.addToWorkflow.bind(highLevel);
+    highLevel.addToWorkflow = async (request) => {
+      await pool.query(
+        `UPDATE onetime.event_delivery_events
+            SET lease_owner_hash = 'foreign-lease-owner'
+          WHERE registration_key = $1
+            AND provider = 'highlevel'`,
+        [initial.registration_key],
+      );
+      await originalAddToWorkflow(request);
+    };
+
+    const result = await reprocessTishaBavRegistrationDelivery({
+      pool,
+      config: fallbackConfig({
+        HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
+      }),
+      registrationKey: initial.registration_key ?? '',
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+
+    expect(result).toEqual({ status: 'blocked', fallback_queued: false });
+    expect(highLevel.workflowRequests).toHaveLength(1);
+    const delivery = await pool.query(
+      `SELECT status, lease_owner_hash, public_metadata
+         FROM onetime.event_delivery_events
+        WHERE registration_key = $1
+          AND provider = 'highlevel'`,
+      [initial.registration_key],
+    );
+    expect(delivery.rows).toEqual([
+      expect.objectContaining({
+        status: 'provider_off',
+        lease_owner_hash: 'foreign-lease-owner',
+        public_metadata: expect.not.objectContaining({ tags_verified: true }),
+      }),
+    ]);
   });
 
   it('prevents the fallback worker from claiming while a HighLevel reprocess owns the row', async () => {

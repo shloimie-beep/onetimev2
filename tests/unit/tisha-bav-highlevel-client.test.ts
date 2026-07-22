@@ -36,8 +36,9 @@ describe('Tisha BAv HighLevel client', () => {
     const fetchImpl = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({ contact: { id: 'contact_operator' } }))
+      .mockResolvedValueOnce(Response.json({ tags: [], tagsAdded: ['event-tag'] }, { status: 201 }))
       .mockResolvedValueOnce(
-        Response.json({ tags: [], tagsAdded: ['event-tag'] }, { status: 201 }),
+        Response.json({ contact: { id: 'contact_operator', tags: ['event-tag'] } }),
       );
     const client = new HttpHighLevelEventClient({
       baseUrl: 'https://provider.example.test',
@@ -74,13 +75,17 @@ describe('Tisha BAv HighLevel client', () => {
       body: JSON.stringify({ tags: ['event-tag'] }),
       headers: expect.objectContaining({ version: '2023-02-21' }),
     });
+    expect(fetchImpl.mock.calls[2]?.[0]).toBe(
+      'https://provider.example.test/contacts/contact_operator',
+    );
+    expect(fetchImpl.mock.calls[2]?.[1]?.method).toBe('GET');
   });
 
   it('fails when contact tag readback does not prove the event tags', async () => {
     const fetchImpl = vi
       .fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json({}, { status: 201 }))
-      .mockResolvedValueOnce(Response.json({ contact: { id: 'contact_operator', tags: [] } }));
+      .mockResolvedValue(Response.json({ contact: { id: 'contact_operator', tags: [] } }));
     const client = new HttpHighLevelEventClient({
       baseUrl: 'https://provider.example.test',
       token: 'private-test-token',
@@ -95,8 +100,57 @@ describe('Tisha BAv HighLevel client', () => {
         tags: ['event-tag'],
       }),
     ).rejects.toThrow('HighLevel contact tag verification failed.');
-    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
   });
+
+  it('retries transient and eventually consistent contact tag readback', async () => {
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json({}, { status: 201 }))
+      .mockResolvedValueOnce(Response.json({ message: 'temporarily unavailable' }, { status: 503 }))
+      .mockResolvedValueOnce(Response.json({ contact: { id: 'contact_operator', tags: [] } }))
+      .mockResolvedValueOnce(
+        Response.json({ contact: { id: 'contact_operator', tags: ['event-tag'] } }),
+      );
+    const client = new HttpHighLevelEventClient({
+      baseUrl: 'https://provider.example.test',
+      token: 'private-test-token',
+      apiVersion: '2021-07-28',
+      fetchImpl,
+    });
+
+    await expect(
+      client.addTags({
+        locationId: 'location_one_time',
+        contactId: 'contact_operator',
+        tags: ['event-tag'],
+      }),
+    ).resolves.toBeUndefined();
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
+  });
+
+  it.each([409, 422])(
+    'treats an exact workflow already-enrolled %s response as idempotent success',
+    async (status) => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(Response.json({ message: 'Contact is already enrolled' }, { status }));
+      const client = new HttpHighLevelEventClient({
+        baseUrl: 'https://provider.example.test',
+        token: 'private-test-token',
+        apiVersion: '2021-07-28',
+        fetchImpl,
+      });
+
+      await expect(
+        client.addToWorkflow({
+          contactId: 'contact_operator',
+          workflowId: 'workflow_tisha',
+          idempotencyKey: 'workflow-request-key',
+        }),
+      ).resolves.toBeUndefined();
+    },
+  );
 
   it.each([409, 422])('does not treat workflow %s as enrollment success', async (status) => {
     const fetchImpl = vi
@@ -117,6 +171,29 @@ describe('Tisha BAv HighLevel client', () => {
       }),
     ).rejects.toThrow(`status ${status}`);
   });
+
+  it.each(['duplicate', 'already exists'])(
+    'does not treat a generic workflow %s conflict as enrollment proof',
+    async (message) => {
+      const fetchImpl = vi
+        .fn<typeof fetch>()
+        .mockResolvedValue(Response.json({ message }, { status: 409 }));
+      const client = new HttpHighLevelEventClient({
+        baseUrl: 'https://provider.example.test',
+        token: 'private-test-token',
+        apiVersion: '2021-07-28',
+        fetchImpl,
+      });
+
+      await expect(
+        client.addToWorkflow({
+          contactId: 'contact_operator',
+          workflowId: 'workflow_tisha',
+          idempotencyKey: 'workflow-request-key',
+        }),
+      ).rejects.toThrow('status 409');
+    },
+  );
 
   it('rejects provider mode without the exact workflow and location contract', () => {
     const base = {
