@@ -1,0 +1,103 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+evidence_types:
+  api: status, headers, sanitized response shape, and audit/readback query
+  browser_desktop: Playwright trace or screenshot at 1280px or wider
+  browser_mobile: Playwright trace or screenshot at 360px
+  provider_readback: sanitized ID, full path, state, reload/reopen proof, and execution reference
+  migration_proof: prefix inventory, SHA-256, applied-ledger readback, and clean duplicate-prefix check
+
+criteria:
+  - id: GOAL-001
+    track: goal_system
+    observable: CURRENT, GOAL, SPEC, ACCEPTANCE, BOARD, DECISIONS, RAMBLE-PROTOCOL, stable inputs/handoffs, and pointer-only ops/previews/current.json validate from disk.
+    proof: [repository_diff, yaml_json_parse, official_skill_validator]
+  - id: GHL-001
+    track: ghl_organization
+    observable: All 19 canonical workflows and all bot/KB/folder/field/tag/value assets have IDs, full ancestry, terminal states, and zero unexplained duplicate/deprecated assets.
+    proof: [provider_readback, PR_107_result_artifact]
+  - id: GHL-002
+    track: ghl_ot_e01
+    observable: OT-E01 is PUBLISHED/ACTIVE_TESTED; protected event URL survives reload, raw Zoom URL is absent, scheduling and replay/idempotency pass, and broad sends remain zero.
+    proof: [provider_readback, sanitized_execution_reference]
+  - id: GHL-003
+    track: ghl_app_contract_shells
+    observable: OT-01/07/08/09/10/B01-B05 are labeled DRAFT_WAITING_EXTERNAL with exact app/adapter contract references, no claimed trigger/action readiness, and no publication.
+    proof: [provider_readback, board_state]
+  - id: GHL-004
+    track: ghl_event_dispatcher
+    observable: One outbox-backed dispatcher emits canonical exact-key events/tags/bot invocations for controlled golden-path producers with dedupe, retry, replay, and readback proof before any waiting workflow is eligible for activation.
+    proof: [integration_test, database_readback, controlled_GHL_test]
+  - id: CONTENT-001
+    track: media_staging_integration
+    observable: /app/content proves private intake -> conservative trim -> transcript/VTT -> editable metadata/questions draft -> private Vimeo -> Admin approval -> protected Student playback for one operator-owned asset.
+    proof: [api, browser_desktop, browser_mobile, migration_proof]
+  - id: CONTENT-002
+    track: media_external_canary
+    observable: Exact external Vimeo canary readback proves private provider state and protected Student playback without a raw provider URL.
+    proof: [provider_readback, browser_desktop]
+  - id: ZOOM-SDK-001
+    track: zoom_meeting_sdk
+    observable: Exact fictional Student shows Ready, grants consent, joins by protected Meeting SDK grant, and replay/cross-student attempts are denied.
+    proof: [api, browser_desktop, authorization_negative_tests]
+  - id: ZOOM-S2S-001
+    track: zoom_s2s_host_control
+    observable: /app/live-console performs scoped mute, unmute, and spotlight on the exact fictional meeting with provider and audit readback.
+    proof: [browser_desktop, provider_readback, audit_readback]
+  - id: BNA-001
+    track: bna_foundation
+    observable: Agent Action Hub is ready and 14 canonical jobs import and read back without a second job registry.
+    proof: [BNA_terminal_handoff]
+  - id: BNA-002
+    track: bna_durability
+    observable: A durable job/queue write survives process restart, reads back identically, and remains pinned in the current queue.
+    proof: [BNA_terminal_handoff, database_readback, restart_readback]
+  - id: TELEGRAM-001
+    track: telegram_foundation
+    observable: Token/webhook/owner mapping/single-consumer lease and private canary are all proven; polling conflicts and partial flag-only states report provider_off.
+    proof: [provider_readback, integration_test, private_canary]
+  - id: TELEGRAM-002
+    track: telegram_customer_bridge
+    observable: Private synthetic question reaches a GHL draft/readback through the canonical bridge; customer sends are still zero unless separately authorized.
+    proof: [provider_readback, audit_readback, send_count]
+  - id: EXP-001
+    track: admin_experience_preview
+    observable: Owner/Admin sees the exact nav label Experience Preview and, only when ready, Live Console; non-admin and production see neither capability/dead link and /app/experience-preview fails closed in production.
+    proof: [api, browser_desktop, production_negative_test]
+  - id: EXP-002
+    track: admin_experience_preview
+    observable: /app/experience-preview shows five exact role cards and renders only exact seeded credential, enrollment, attendance, progress/reward, lesson, review-question, occurrence/Zoom, private-question, and Tisha rows; missing rows become unavailable/provider_off.
+    proof: [api, browser_desktop, exact_row_negative_tests]
+  - id: EXP-003
+    track: fictional_student_session
+    observable: One explicit user-click opens a dedicated no-opener GET-only shell with no Admin nav/logout/mutation controls; opaque exchange is one-use, session-bound, account-bound, route-scoped, <=5 minutes, no-store, and audited.
+    proof: [api, browser_desktop, security_negative_tests]
+  - id: EXP-004
+    track: fictional_student_session
+    observable: Student 1 and Student 2 stay isolated in simultaneous tabs, cross-route/cross-account access is denied, and the original Admin tab/session remains usable.
+    proof: [browser_desktop, api, sibling_isolation_test]
+  - id: ROLE-001
+    track: coherent_demo
+    observable: Ordinary Admin landing has no engineering/diagnostic/dead test panels and provides functional Experience Preview and Live Console nav according to server capabilities.
+    proof: [browser_desktop, browser_mobile]
+  - id: ROLE-002
+    track: coherent_demo
+    observable: Parent landing shows only the fictional Cohen household and all three siblings with exact scoped progress; no engineering/test cards appear.
+    proof: [browser_desktop, browser_mobile]
+  - id: ROLE-003
+    track: coherent_demo
+    observable: Each Student landing shows only that sibling, protected class/content/progress/question state, and no sibling or engineering/test cards.
+    proof: [browser_desktop, browser_mobile, sibling_isolation_test]
+  - id: DEMO-001
+    track: coherent_demo
+    observable: Exact fictional seed/readback includes one Admin, one Parent, three separate Student credentials, one upcoming class/occurrence, approved prepared lesson, three progress projections, three approved review questions, one exact private question, and one Tisha registration.
+    proof: [sanitized_seed_readback, api]
+  - id: MIG-001
+    track: admin_experience_preview
+    observable: PR #104 retains 2214_learning_delivery_content_factory; Experience Preview is unique source prefix 2215 with exact SHA-256 e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56 and post-deploy ledger readback, while historical live 2209/2210 rows remain untouched.
+    proof: [migration_proof]
+  - id: DEPLOY-001
+    track: persistent_staging
+    observable: PR #97 head equals /version commit, /health and /ready pass at latest migration, worker heartbeat is fresh, and the complete desktop/360px journey passes without production mutation.
+    proof: [version_health_ready, worker_heartbeat, browser_desktop, browser_mobile]

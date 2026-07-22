@@ -54,6 +54,12 @@ const ContentWorkspace = React.lazy(() =>
   })),
 );
 
+const ExperiencePreview = React.lazy(() =>
+  import('./experience-preview/ExperiencePreview.js').then((module) => ({
+    default: module.ExperiencePreview,
+  })),
+);
+
 type ContactFormState = {
   display_name: string;
   family_school_classification: 'family' | 'school';
@@ -73,7 +79,15 @@ type Notice = {
 };
 
 type CommunicationsMode = { kind: 'global' } | { kind: 'contact'; contactId: string };
-type OwnerSurface = 'dashboard' | 'crm' | 'classes' | 'content' | 'billing' | 'rewards' | 'support';
+type OwnerSurface =
+  | 'dashboard'
+  | 'crm'
+  | 'classes'
+  | 'content'
+  | 'billing'
+  | 'rewards'
+  | 'support'
+  | 'experience-preview';
 type AsyncPanelState = {
   loading: boolean;
   error: string;
@@ -655,6 +669,26 @@ function CrmApp() {
             href: '/app/rewards',
             current: surface === 'rewards',
           },
+          ...(session?.capabilities?.operator_experience?.experience_preview
+            ? [
+                {
+                  id: 'experience-preview',
+                  label: 'Experience Preview',
+                  href: '/app/experience-preview',
+                  current: surface === 'experience-preview',
+                },
+              ]
+            : []),
+          ...(session?.capabilities?.operator_experience?.live_console
+            ? [
+                {
+                  id: 'live-console',
+                  label: 'Live Console',
+                  href: '/app/live-console',
+                  current: false,
+                },
+              ]
+            : []),
         ]
       : []),
     ...(canReadCommunications
@@ -734,7 +768,8 @@ function CrmApp() {
         loading={gamificationState.loading}
         onRefresh={() => void loadGamificationDashboard()}
       />
-    ) : surface === 'support' ? null : communicationsMode?.kind === 'contact' ? (
+    ) : surface === 'support' ||
+      surface === 'experience-preview' ? null : communicationsMode?.kind === 'contact' ? (
       <ContactCommunicationsToolbar
         onBack={() => {
           history.pushState(
@@ -781,6 +816,10 @@ function CrmApp() {
       toolbar={toolbar}
       notice={notice ? <NoticeBanner notice={notice} /> : undefined}
       onNavigate={(href) => {
+        if (href === '/app/live-console') {
+          window.location.assign(href);
+          return;
+        }
         const ownerSurface = ownerSurfaceFromPath(href);
         if (ownerSurface && ownerSurface !== 'crm') openOwnerSurface(ownerSurface, href);
         if (href === '/app/crm') void backToList();
@@ -849,6 +888,20 @@ function CrmApp() {
           error={gamificationState.error}
           onRetry={() => void loadGamificationDashboard()}
         />
+      )}
+      {surface === 'experience-preview' && (
+        <Suspense
+          fallback={
+            <p className="state-panel" role="status">
+              Loading Experience Preview...
+            </p>
+          }
+        >
+          <ExperiencePreview
+            csrfToken={session?.csrf_token ?? ''}
+            onProtectedStateCleared={clearProtectedState}
+          />
+        </Suspense>
       )}
       {surface === 'support' && (
         <SupportFeature
@@ -1003,10 +1056,18 @@ function DashboardPanel({
     );
   }
   const actionIds = new Set(dashboard.actions.map((action) => action.action_id));
+  const visibleSections = dashboard.dashboard.sections.filter(
+    (section) =>
+      !(
+        section.id === 'support' &&
+        section.state === 'no_data_yet' &&
+        /not mounted|not available/i.test(section.detail)
+      ),
+  );
   return (
     <section className="dashboard-surface" data-usable="owner-dashboard" aria-busy={loading}>
       <div className="dashboard-grid">
-        {dashboard.dashboard.sections.map((section) => {
+        {visibleSections.map((section) => {
           const href = section.href;
           const actionId = dashboardOpenActionId(href);
           return (
@@ -1034,7 +1095,6 @@ function DashboardPanel({
           );
         })}
       </div>
-      <DiagnosticsDisclosure dashboard={dashboard} />
     </section>
   );
 }
@@ -1341,71 +1401,6 @@ function BillingPanel({
       </article>
     </section>
   );
-}
-
-function DiagnosticsDisclosure({ dashboard }: { dashboard: OwnerDashboardResponse }) {
-  const visible = dashboard.actions.filter((action) => action.roles.includes('owner'));
-  return (
-    <details className="diagnostics-disclosure action-registry">
-      <summary>Diagnostics</summary>
-      <div className="action-registry-grid">
-        {dashboard.dashboard.sections.map((section) => (
-          <article key={section.id}>
-            <h3>{section.label}</h3>
-            <dl>
-              <div>
-                <dt>Source</dt>
-                <dd>{formatRegistryLabel(section.diagnostics.source)}</dd>
-              </div>
-              <div>
-                <dt>State code</dt>
-                <dd>{formatRegistryLabel(section.diagnostics.state_code)}</dd>
-              </div>
-              <div>
-                <dt>Checked</dt>
-                <dd>
-                  {section.diagnostics.checked_at
-                    ? formatDate(section.diagnostics.checked_at)
-                    : 'Not checked yet'}
-                </dd>
-              </div>
-            </dl>
-          </article>
-        ))}
-        {visible.map((action) => (
-          <article key={action.action_id}>
-            <h3>{action.label}</h3>
-            <dl>
-              <div>
-                <dt>Area</dt>
-                <dd>{formatRegistryLabel(action.capability)}</dd>
-              </div>
-              <div>
-                <dt>Control</dt>
-                <dd>{action.handler.method === 'GET' ? 'View' : 'Protected update'}</dd>
-              </div>
-              <div>
-                <dt>Activity record</dt>
-                <dd>Recorded for admin review.</dd>
-              </div>
-              <div>
-                <dt>Duplicate protection</dt>
-                <dd>{action.idempotency.required ? 'Enabled' : 'Not required'}</dd>
-              </div>
-            </dl>
-          </article>
-        ))}
-      </div>
-    </details>
-  );
-}
-
-function formatRegistryLabel(value: string) {
-  return value
-    .replace(/[_:/.-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function ReadOnlySkeleton({ label }: { label: string }) {
@@ -2432,6 +2427,9 @@ function ownerSurfaceFromPath(pathname: string): OwnerSurface | null {
   if (pathname === '/app/content' || pathname.startsWith('/app/content/')) return 'content';
   if (pathname === '/app/billing') return 'billing';
   if (pathname === '/app/rewards') return 'rewards';
+  if (pathname === '/app/experience-preview' || pathname.startsWith('/app/experience-preview/')) {
+    return 'experience-preview';
+  }
   if (pathname === '/app/support' || pathname.startsWith('/app/support/receipts/')) {
     return 'support';
   }
@@ -2450,6 +2448,7 @@ function ownerSurfaceTitle(surface: OwnerSurface) {
   if (surface === 'content') return 'Content Workspace';
   if (surface === 'billing') return 'Products/Billing status';
   if (surface === 'rewards') return 'Learning Rewards';
+  if (surface === 'experience-preview') return 'Experience Preview';
   if (surface === 'support') return 'Support';
   return 'CRM';
 }
@@ -2466,6 +2465,9 @@ function ownerSurfaceDescription(surface: OwnerSurface) {
   if (surface === 'billing') return 'Billing setup and access projection status.';
   if (surface === 'rewards') {
     return 'Private learner progress, rewards, guardrails, and correction audit.';
+  }
+  if (surface === 'experience-preview') {
+    return 'Read-only fictional Parent, Student, and Rabbi journeys for the isolated staging runtime.';
   }
   if (surface === 'support') return 'Subscriber-only technical support inside the One Time shell.';
   return 'One Time signup and contact review.';

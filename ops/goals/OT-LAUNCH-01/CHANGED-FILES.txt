@@ -1,0 +1,3 @@
+# Generated from the final PR #97 diff before commit. Do not use this file as a status map.
+# Pending final refresh after all implementation and evidence files are complete.
+packages/db/migrations/2215_experience_preview_sessions.sql

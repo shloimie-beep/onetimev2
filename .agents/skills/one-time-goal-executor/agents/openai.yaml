@@ -1,0 +1,4 @@
+interface:
+  display_name: 'One Time Goal Executor'
+  short_description: 'Execute one canonical goal track with evidence'
+  default_prompt: 'Use $one-time-goal-executor to verify and execute one conductor-assigned track from the current One Time goal, then return a sanitized handoff.'

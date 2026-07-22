@@ -1,0 +1,359 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+updated_at: 2026-07-22T09:42:00Z
+status_definitions:
+  unclaimed: Conductor has not assigned executable work.
+  active: Assigned work is progressing without an impasse.
+  waiting_external: Safe independent work is complete and terminal external evidence is pending.
+  ready_for_convergence: Terminal handoff exists and semantic integration/readback remains.
+  done: Acceptance is proven and no remaining work exists for this track.
+  blocked: A genuine authority, dependency, or technical impasse prevents meaningful progress.
+  provider_off: Provider activation gates are intentionally off and the UI must say so.
+  needs_operator_decision: Work cannot proceed without an explicit product or send authorization.
+  superseded: Another canonical track or handoff replaced this work.
+
+outcome:
+  status: active
+  target: Production-believable persistent staging with complete operator preview and coherent fictional scenario.
+  production_impact: none_authorized
+  current_summary: Experience Preview and goal control are under local verification; no follow-up head is deployed yet.
+
+conductor:
+  task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+  repository: shloimie-beep/onetimev2
+  branch: codex/full-app-staging-live
+  pr: 97
+  head:
+    ref: refs/heads/codex/full-app-staging-live
+    last_verified_commit: bf858634f0a275222eb9a09687216b9272868aa2
+    resolution: Update from PR readback and /version after the next commit/deploy; do not copy this value into reports.
+  system: One Time persistent staging
+
+tracks:
+  - id: goal_system
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: Git goal control
+    write_scope: ops/goals, ops/previews, and the two repository-local skills
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/goal-system--persistent-staging-conductor.json
+    dependencies: []
+    acceptance_ids: [GOAL-001]
+    evidence:
+      - Current goal files and skills are present in the conductor worktree.
+      - Both repository skills passed the official bundled Codex skill validator; five goal YAML files and the preview pointer parsed successfully.
+    blocker: null
+    remaining_work: Official skill validation, YAML/JSON parse, review, commit, and PR readback.
+    next_action: Run the official bundled-environment validator and fresh on-disk review.
+
+  - id: admin_experience_preview
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: One Time web
+    write_scope: Experience Preview config, server catalog/routes, Admin UI, contracts, migration, and focused tests
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/experience-preview--persistent-staging-conductor.json
+    dependencies: [media_staging_integration, zoom_meeting_sdk, zoom_s2s_host_control]
+    acceptance_ids: [EXP-001, EXP-002, MIG-001]
+    evidence:
+      - Focused integration/UI contract suite passed 17/17 on 2026-07-22.
+      - Build-backed Playwright passed all five role cards, production nav/route rejection, and desktop/360px layout.
+      - Migration prefix proof reserves 2215 and preserves PR #104 prefix 2214.
+      - Migration audit preserves historical live 2209/2210 duplicate-prefix rows, reserves 2216 only for new schema, and requires exact 2215 checksum/ledger readback.
+    blocker: null
+    remaining_work: Real Playwright proof, full gates, persistent staging seed/deploy/readback.
+    next_action: Add real desktop/360px browser integration and run build-backed proof.
+
+  - id: fictional_student_session
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: One Time web
+    write_scope: Preview-only exchange/session and dedicated GET-only client shell
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/fictional-student-session--persistent-staging-conductor.json
+    dependencies: [admin_experience_preview, coherent_demo]
+    acceptance_ids: [EXP-003, EXP-004]
+    evidence:
+      - Focused tests prove single-use, expiry, Admin-session binding, cross-account denial, and two sibling route scopes.
+      - Build-backed Playwright proves opener null, GET-only dedicated shells with no Admin controls, two sibling tabs, and unchanged originating Owner session.
+    blocker: null
+    remaining_work: Real Playwright opener/null, two-tab isolation, no-Admin-shell, and original-session proof.
+    next_action: Run browser-backed build proof at desktop and 360px.
+
+  - id: coherent_demo
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: One Time staging provisioner
+    write_scope: Exact fictional Cohen seed, ordinary role projections, and private handoff metadata
+    handoff_path: C:/Users/User/.onetime-full-app-preview/FULL-APP-HANDOFF.private.json
+    dependencies: [admin_experience_preview]
+    acceptance_ids: [ROLE-001, ROLE-002, ROLE-003, DEMO-001]
+    evidence:
+      - In-memory provision/readback tests prove exact credential, enrollment, attendance, reward, content, questions, occurrence, and Tisha rows.
+    blocker: null
+    remaining_work: Reseed persistent staging, verify all role logins without printing credentials, and refresh private handoff.
+    next_action: Run the exact-head provisioner after deployment and inspect only sanitized key presence.
+
+  - id: ghl_organization
+    status: done
+    owner:
+      task_id: GHL-PHASE-2-20260722
+      repository: shloimie-beep/onetimev2
+      branch: codex/highlevel-final-results-20260722
+      pr: 107
+      system: HighLevel Agent Mode
+    write_scope: Sanitized result artifact only; GHL mutation belonged to the authorized Agent Mode job
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+    dependencies: []
+    acceptance_ids: [GHL-001]
+    evidence:
+      - PR #107 head deda8f9b04dbafcc36363628a14b6fecc94fd854 and GHL-PHASE-2-20260722.result.json are authoritative.
+      - Folder tree is fully corrected; OT-01 and OT-02A were moved and reopened with no duplicates or content changes.
+      - 19/19 canonical workflows are correctly nested; OT-A1 0Z5YvlziuXqZmBntYFU0 is Off with Live Chat and WhatsApp only; KB ps6jttZ8WUGycLeQX6uF.
+      - No duplicate/deprecated assets; 241 contacts, one One Time tag, and zero broad sends.
+    blocker: null
+    remaining_work: null
+    next_action: Preserve the result artifact during semantic convergence; do not re-run or mutate GHL.
+
+  - id: ghl_ot_e01
+    status: done
+    owner:
+      task_id: GHL-PHASE-2-20260722
+      repository: shloimie-beep/onetimev2
+      branch: codex/highlevel-final-results-20260722
+      pr: 107
+      system: HighLevel Agent Mode
+    write_scope: OT-E01 authorized controlled test only
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+    dependencies: [ghl_organization]
+    acceptance_ids: [GHL-002]
+    evidence:
+      - OT-E01 a34ea513-4612-4f53-8bd8-49e89e6610f9 is PUBLISHED/ACTIVE_TESTED; raw Zoom URL removed, protected event URL survived reload, scheduling and idempotency passed.
+    blocker: null
+    remaining_work: null
+    next_action: Keep ACTIVE_TESTED evidence immutable unless a new authorized job supersedes it.
+
+  - id: ghl_app_contract_shells
+    status: waiting_external
+    owner:
+      task_id: GHL-PHASE-2-VERIFICATION
+      repository: shloimie-beep/onetimev2
+      branch: codex/highlevel-final-results-20260722
+      pr: 107
+      system: HighLevel plus One Time application contract
+    write_scope: Readback only until the One Time dispatcher track lands
+    handoff_path: integrations/highlevel/agent-mode/results/GHL-PHASE-2-20260722.result.json
+    dependencies: [ghl_event_dispatcher]
+    acceptance_ids: [GHL-003]
+    evidence:
+      - OT-01/07/08/09/10/B01-B05 are DRAFT_WAITING_EXTERNAL with exact app/adapter contract references in the Phase 2 artifact; no target crossed the publication threshold.
+      - The deployed app does not emit their canonical HighLevel tags/events or bot-adapter invocations; Agent Mode refused false readiness.
+      - OT-C01 f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae remains DRAFT_NOT_SENT; the other non-E01 workflows remain explicit draft/dependency states.
+      - Phase 2 sends, broad sends, and Student contacts are all zero; production app is unchanged.
+    blocker: null
+    remaining_work: Real canonical app-side outbox events/tags and bot adapter calls; do not publish shells or create a second delivery path.
+    next_action: Wait for the canonical dispatcher and exact producer acceptance, then authorize one controlled workflow job at a time.
+
+  - id: ghl_event_dispatcher
+    status: unclaimed
+    owner:
+      task_id: null
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: One Time outbox to HighLevel
+    write_scope: One canonical dispatcher, schemas, dedupe/retry, exact golden-path producers, and tests
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/ghl-event-dispatcher--assigned-task.json
+    dependencies: [admin_experience_preview, goal_system]
+    acceptance_ids: [GHL-004]
+    evidence:
+      - Authoritative Phase 2 readback identifies the missing app contract, keeps targets DRAFT_WAITING_EXTERNAL, and forbids false shell activation.
+    blocker: null
+    remaining_work: Conductor assignment after Experience Preview and goal files are green.
+    next_action: Assign one implementation track; reuse the canonical app outbox and forbid direct provider fanout.
+
+  - id: media_staging_integration
+    status: ready_for_convergence
+    owner:
+      task_id: VIDEO-TO-STUDENT-CONTENT-FACTORY
+      repository: shloimie-beep/onetimev2
+      branch: codex/vimeo-drive-content-factory
+      pr: 104
+      system: One Time content factory
+    write_scope: Content factory and persistent-staging semantic integration
+    handoff_path: ops/codex-runs/OT-LAUNCH-01/VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md
+    dependencies: []
+    acceptance_ids: [CONTENT-001, MIG-001]
+    evidence:
+      - PR #104 head 7c349e997147f466e80d49670b5fe9ba6d3279c5 owns 2214_learning_delivery_content_factory and is deployed in its isolated preview.
+    blocker: null
+    remaining_work: Semantic integration into PR #97, exact persistent-staging deploy, seed, and browser readback.
+    next_action: Integrate without rewriting applied migration 2214; keep Experience Preview at 2215.
+
+  - id: media_external_canary
+    status: waiting_external
+    owner:
+      task_id: VIDEO-TO-STUDENT-CONTENT-FACTORY
+      repository: shloimie-beep/onetimev2
+      branch: codex/vimeo-drive-content-factory
+      pr: 104
+      system: Vimeo external provider
+    write_scope: One authorized private Vimeo canary and protected playback readback
+    handoff_path: ops/codex-runs/OT-LAUNCH-01/VIDEO-TO-STUDENT-CLASSROOM-HANDOFF.md
+    dependencies: [media_staging_integration]
+    acceptance_ids: [CONTENT-002]
+    evidence:
+      - Staging content-factory work is ready independently of external approval.
+    blocker: null
+    remaining_work: External canary authorization/readback.
+    next_action: Continue provider-off truth until an authorized terminal canary arrives.
+
+  - id: zoom_meeting_sdk
+    status: active
+    owner:
+      task_id: ZOOM-REAL-CONTROL-ACTIVATION
+      repository: shloimie-beep/onetimev2
+      branch: codex/zoom-real-control-activation
+      pr: 105
+      system: Zoom Meeting SDK
+    write_scope: Student protected Meeting SDK launch, consent, grant replay, and sibling scope
+    handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
+    dependencies: []
+    acceptance_ids: [ZOOM-SDK-001]
+    evidence:
+      - PR #105 head f93a3e05f1c4da927be24fe6abce589e8e9835a1 is active; no terminal handoff has been claimed.
+      - PR #105 adds no migration and relies on existing 2212_rabbi_live_console_zoom_obs.
+    blocker: null
+    remaining_work: Terminal SDK activation/browser/negative-test handoff.
+    next_action: Continue the existing Zoom task and ingest its terminal sanitized proof.
+
+  - id: zoom_s2s_host_control
+    status: active
+    owner:
+      task_id: ZOOM-REAL-CONTROL-ACTIVATION
+      repository: shloimie-beep/onetimev2
+      branch: codex/zoom-real-control-activation
+      pr: 105
+      system: Zoom S2S and Rabbi host console
+    write_scope: Exact fictional meeting provisioning and scoped mute/unmute/spotlight
+    handoff_path: ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md
+    dependencies: []
+    acceptance_ids: [ZOOM-S2S-001]
+    evidence:
+      - PR #105 is active; provider_off is not used as a substitute for terminal evidence.
+    blocker: null
+    remaining_work: Terminal S2S host-control readback for the exact occurrence.
+    next_action: Continue the existing Zoom task; do not duplicate its provider mutations.
+
+  - id: bna_foundation
+    status: done
+    owner:
+      task_id: BNA-AGENT-ACTION-HUB
+      repository: external/BNA-Agent-Actions
+      branch: terminal-handoff
+      pr: 141
+      system: BNA Agent Action Hub
+    write_scope: BNA foundation and canonical job import/readback
+    handoff_path: external terminal PR #141
+    dependencies: []
+    acceptance_ids: [BNA-001]
+    evidence:
+      - Agent Action Hub ready; 14 jobs imported and readback passed.
+    blocker: null
+    remaining_work: null
+    next_action: Preserve the canonical registry and do not create a second job model.
+
+  - id: bna_durability
+    status: active
+    owner:
+      task_id: BNA-PR-141-RECONCILIATION
+      repository: external/BNA-Agent-Actions
+      branch: terminal-handoff-pending
+      pr: 141
+      system: BNA durable DB and queue
+    write_scope: Durable preview/Telegram save, restart, readback, and queue pin only
+    handoff_path: external terminal PR #141
+    dependencies: [bna_foundation, ghl_organization]
+    acceptance_ids: [BNA-002]
+    evidence:
+      - PR #141 pins One Time PR #107 and currently reconciles 9 completed, 2 superseded, and 20 blocked records.
+      - Final durable preview/Telegram re-verification remains in progress.
+    blocker: null
+    remaining_work: Terminal restart/readback/current-queue pin evidence.
+    next_action: Ingest terminal sanitized PR #141 evidence without inventing completion.
+
+  - id: telegram_foundation
+    status: ready_for_convergence
+    owner:
+      task_id: BNA-PR-141-RECONCILIATION
+      repository: external/BNA-Agent-Actions
+      branch: terminal-handoff-pending
+      pr: 141
+      system: One Time Telegram private canary
+    write_scope: Single consumer, private owner mapping/canary, and sanitized readback only
+    handoff_path: external terminal PR #141
+    dependencies: [bna_foundation]
+    acceptance_ids: [TELEGRAM-001]
+    evidence:
+      - Prior verified baseline says Telegram private canary ready and customer sends zero; PR #141 is re-verifying durability.
+    blocker: null
+    remaining_work: Terminal single-consumer/durability readback for convergence.
+    next_action: Keep UI provider_off unless every canonical runtime gate is configured.
+
+  - id: telegram_customer_bridge
+    status: needs_operator_decision
+    owner:
+      task_id: null
+      repository: shloimie-beep/onetimev2
+      branch: null
+      pr: null
+      system: Telegram to GHL customer bridge
+    write_scope: Private synthetic question draft/readback; no customer send by default
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/telegram-customer-bridge--assigned-task.json
+    dependencies: [telegram_foundation, ghl_event_dispatcher]
+    acceptance_ids: [TELEGRAM-002]
+    evidence:
+      - Customer sends are zero; no customer bridge authorization has been granted.
+    blocker:
+      code: CUSTOMER_SEND_AUTHORIZATION_REQUIRED
+      reason: Customer send/activation requires a separate explicit operator authorization.
+    remaining_work: Private synthetic draft/readback and, only if authorized later, bounded customer canary.
+    next_action: Keep customer sends off and request a separate authorization only after private bridge proof.
+
+  - id: persistent_staging
+    status: active
+    owner:
+      task_id: OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR
+      repository: shloimie-beep/onetimev2
+      branch: codex/full-app-staging-live
+      pr: 97
+      system: Railway isolated persistent staging
+    write_scope: PR #97 exact-head commit, staging-only variables, web/worker deploy, seed, and read-only production comparison
+    handoff_path: ops/goals/OT-LAUNCH-01/handoffs/persistent-staging--persistent-staging-conductor.json
+    dependencies:
+      [
+        goal_system,
+        admin_experience_preview,
+        fictional_student_session,
+        coherent_demo,
+        media_staging_integration,
+      ]
+    acceptance_ids: [DEPLOY-001]
+    evidence:
+      - Baseline 09953ba2edfc7ba014b9fe2558dbc7f5c58972ea previously passed exact /version, /health, /ready, worker heartbeat, and browser verification.
+    blocker: null
+    remaining_work: Commit/push follow-up, integrate ready media work, deploy exact new head, migrate through 2215, reseed, and complete browser proof.
+    next_action: Finish local gates before any staging mutation.

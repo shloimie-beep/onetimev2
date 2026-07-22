@@ -41,6 +41,9 @@ const LESSON_KEY = 'full_app_demo_mishnayos_lesson';
 const VIMEO_SOURCE_KEY = 'full_app_private_vimeo_demo_source';
 const CLASS_BOARD_KEY = 'full_app_demo_class_board';
 const RABBI_LIVE_CONSOLE_ROUTE = '/app/live-console';
+const EXPERIENCE_PREVIEW_ROUTE = '/app/experience-preview';
+const CONTENT_FACTORY_ROUTE = '/app/content';
+const CLASSES_ROUTE = '/app/classes';
 const VIMEO_DEMO_ROUTE = '/app/learning-delivery/demo/vimeo-autotrim';
 const TISHA_BAV_ROUTE = '/tisha-bav';
 const HANDOFF_PATH =
@@ -80,9 +83,12 @@ type FullAppPreviewResult = {
   class_key: string;
   lesson_key: string;
   rabbi_live_console_route: typeof RABBI_LIVE_CONSOLE_ROUTE;
+  experience_preview_route: typeof EXPERIENCE_PREVIEW_ROUTE;
+  content_factory_route: typeof CONTENT_FACTORY_ROUTE;
+  class_route: string;
   vimeo_demo_route: typeof VIMEO_DEMO_ROUTE;
   tisha_bav_route: typeof TISHA_BAV_ROUTE;
-  latest_required_migration: '2213_learning_delivery_autotrim_transcripts';
+  latest_required_migration: '2215_experience_preview_sessions';
   students: PreviewStudent[];
 };
 
@@ -100,25 +106,25 @@ const previewLearners = [
     label: 'Student 1',
     learnerKey: 'full_app_preview_student_1',
     accessStateKey: 'full_app_preview_student_1_access',
-    displayName: 'Preview Student One',
+    displayName: 'Ari Cohen',
     username: 'otdemo1',
-    gradeLabel: 'Demo',
+    gradeLabel: 'Grade 6',
   },
   {
     label: 'Student 2',
     learnerKey: 'full_app_preview_student_2',
     accessStateKey: 'full_app_preview_student_2_access',
-    displayName: 'Preview Student Two',
+    displayName: 'Dovid Cohen',
     username: 'otdemo2',
-    gradeLabel: 'Demo',
+    gradeLabel: 'Grade 4',
   },
   {
     label: 'Student 3',
     learnerKey: 'full_app_preview_student_3',
     accessStateKey: 'full_app_preview_student_3_access',
-    displayName: 'Preview Student Three',
+    displayName: 'Noam Cohen',
     username: 'otdemo3',
-    gradeLabel: 'Demo',
+    gradeLabel: 'Grade 2',
   },
 ] as const;
 
@@ -141,7 +147,7 @@ export async function runFullAppProvision(
     config: input.config,
     email: destinations.adminDestination,
     password: adminPassword,
-    displayName: 'Full App Preview Admin',
+    displayName: 'One Time Administrator',
     role: 'admin',
     mfaCapable: false,
   });
@@ -150,7 +156,7 @@ export async function runFullAppProvision(
     config: input.config,
     email: destinations.parentDestination,
     password: parentPassword,
-    displayName: 'Full App Preview Parent',
+    displayName: 'Miriam Cohen',
     role: 'parent',
     mfaCapable: false,
   });
@@ -186,7 +192,10 @@ export async function runFullAppProvision(
     now,
   );
   await seedLearningContent(input.pool, input.config, classKey, now);
+  await seedExperiencePreviewScenario(input.pool, input.config, classKey, accessStates, now);
   await seedProgressAndRewards(input.pool, input.config, parentUserKey, classKey, learners, now);
+  await seedPrivateLiveQuestion(input.pool, input.config, classKey, firstLearner, now);
+  await seedTishaRegistrationExample(input.pool, input.config, now);
 
   const deps = portalDeps(input.pool, input.config, now, { withRealAdapters: true });
   const liveParentService = createParentPortalService(deps);
@@ -293,9 +302,12 @@ export async function runFullAppProvision(
     class_key: classKey,
     lesson_key: LESSON_KEY,
     rabbi_live_console_route: RABBI_LIVE_CONSOLE_ROUTE,
+    experience_preview_route: EXPERIENCE_PREVIEW_ROUTE,
+    content_factory_route: CONTENT_FACTORY_ROUTE,
+    class_route: `${CLASSES_ROUTE}/${encodeURIComponent(classKey)}`,
     vimeo_demo_route: VIMEO_DEMO_ROUTE,
     tisha_bav_route: TISHA_BAV_ROUTE,
-    latest_required_migration: '2213_learning_delivery_autotrim_transcripts',
+    latest_required_migration: '2215_experience_preview_sessions',
     students,
   };
 
@@ -404,7 +416,7 @@ async function seedPreviewHousehold(
   await pool.query(
     `INSERT INTO onetime.portal_households
        (household_key, account_key, product_key, display_name, status, updated_at)
-     VALUES ($1,$2,$3,'Full App Preview Household','active',$4)
+     VALUES ($1,$2,$3,'The Cohen Family','active',$4)
      ON CONFLICT (account_key, product_key, household_key)
      DO UPDATE SET display_name = EXCLUDED.display_name, status = 'active', updated_at = $4`,
     [HOUSEHOLD_KEY, config.accountKey, config.productKey, now],
@@ -413,7 +425,7 @@ async function seedPreviewHousehold(
     `INSERT INTO onetime.portal_guardian_relationships
        (relationship_key, account_key, product_key, household_key, guardian_user_ref,
         relationship_label, authority, status, updated_at)
-     VALUES ($1,$2,$3,$4,$5,'Preview parent','primary_guardian','active',$6)
+     VALUES ($1,$2,$3,$4,$5,'Miriam Cohen','primary_guardian','active',$6)
      ON CONFLICT (account_key, product_key, household_key, relationship_key)
      DO UPDATE SET guardian_user_ref = EXCLUDED.guardian_user_ref,
                    relationship_label = EXCLUDED.relationship_label,
@@ -544,8 +556,8 @@ async function verifyFourthStudentCap(
   try {
     await service.createLearner(actor, HOUSEHOLD_KEY, {
       idempotency_key: `full-app-fourth-${runId}`,
-      display_name: 'Preview Student Four',
-      grade_label: 'Demo',
+      display_name: 'Fictional Student Four',
+      grade_label: 'Preview limit check',
     });
     return false;
   } catch (error) {
@@ -642,7 +654,21 @@ async function ensureOpenDemoClass(
     questionCodec: new AesGcmPayloadCodec(`${config.mfaSecretEncryptionKey}:classroom-question-v1`),
     clock: () => now,
   });
+  await pool.query(
+    `UPDATE onetime.class_series
+        SET title = 'Daily Mishnayos: Berachos 2:1',
+            updated_at = $4
+      WHERE account_key = $1 AND product_key = $2 AND class_series_key = $3`,
+    [config.accountKey, config.productKey, ONE_TIME_CLASS_SERIES_KEY, now],
+  );
   const occurrence = await classroom.upcomingForLearner({ actor, learner });
+  await pool.query(
+    `UPDATE onetime.class_series
+        SET title = 'Daily Mishnayos: Berachos 2:1',
+            updated_at = $4
+      WHERE account_key = $1 AND product_key = $2 AND class_series_key = $3`,
+    [config.accountKey, config.productKey, ONE_TIME_CLASS_SERIES_KEY, now],
+  );
   const startsAt = new Date(now.getTime() - 60_000);
   const reminderDueAt = new Date(startsAt.getTime() - 30 * 60_000);
   const joinOpensAt = new Date(now.getTime() - 10 * 60_000);
@@ -731,7 +757,7 @@ async function seedLearningContent(
       config.productKey,
       vimeoDigest,
       digest('full-app-preview-private-vimeo-asset'),
-      'One Time Demo Mishnayos Class',
+      'Berachos 2:1 — Finding the Right Time for Shema',
       VIMEO_SOURCE_KEY,
       JSON.stringify({
         raw_url_present: false,
@@ -763,7 +789,7 @@ async function seedLearningContent(
       config.accountKey,
       config.productKey,
       occurrenceKey,
-      'One Time Demo Mishnayos Class',
+      'Berachos 2:1 — Finding the Right Time for Shema',
       CONTENT_REVISION_KEY,
       JSON.stringify({
         provider: 'vimeo',
@@ -797,7 +823,14 @@ async function seedLearningContent(
       'full_app_demo_vimeo_outcome',
       JSON.stringify({ state: 'available', raw_transcript_present: false }),
       JSON.stringify({ source_kind: 'private_vimeo_reference', source_key: VIMEO_SOURCE_KEY }),
-      JSON.stringify({ review_available: true }),
+      JSON.stringify({
+        review_available: true,
+        questions: [
+          'When does the evening Shema period begin?',
+          'Which signs help define the Mishnah’s time window?',
+          'How do the opinions differ at the end of the time window?',
+        ],
+      }),
       JSON.stringify({ provider: 'vimeo', protected_runtime: true, raw_url_present: false }),
       digest('full-app-preview-vimeo-provider-event'),
       vimeoDigest,
@@ -851,20 +884,136 @@ async function seedLearningContent(
       ONE_TIME_CLASS_SERIES_KEY,
       occurrenceKey,
       CONTENT_ITEM_KEY,
-      'One Time Demo Mishnayos Class',
-      'Staging-only protected Vimeo demo lesson for the full app preview.',
+      'Berachos 2:1 — Finding the Right Time for Shema',
+      'A fictional Cohen family lesson prepared through the protected One Time media workflow.',
       now,
       VIMEO_SOURCE_KEY,
       vimeoDigest,
       JSON.stringify([
         {
-          label: 'Demo review sheet',
+          label: 'Berachos 2:1 review questions',
           kind: 'review_sheet',
           raw_private_url_present: false,
         },
       ]),
     ],
   );
+}
+
+async function seedExperiencePreviewScenario(
+  pool: DbPool,
+  config: AppConfig,
+  occurrenceKey: string,
+  accessStates: StudentAccessState[],
+  now: Date,
+) {
+  const scenarioKey = 'full_app_preview_scenario';
+  const provisionerMarker = 'full_app_staging_provisioner_v1';
+  await pool.query(
+    `INSERT INTO onetime.experience_preview_scenarios
+       (scenario_key, account_key, product_key, household_key, class_series_key,
+        occurrence_key, content_item_key, content_revision_key, lesson_key,
+        provisioner_marker, eligibility_state, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'active',$11,$11)
+     ON CONFLICT (scenario_key)
+     DO UPDATE SET account_key = EXCLUDED.account_key,
+                   product_key = EXCLUDED.product_key,
+                   household_key = EXCLUDED.household_key,
+                   class_series_key = EXCLUDED.class_series_key,
+                   occurrence_key = EXCLUDED.occurrence_key,
+                   content_item_key = EXCLUDED.content_item_key,
+                   content_revision_key = EXCLUDED.content_revision_key,
+                   lesson_key = EXCLUDED.lesson_key,
+                   provisioner_marker = EXCLUDED.provisioner_marker,
+                   eligibility_state = 'active',
+                   updated_at = $11`,
+    [
+      scenarioKey,
+      config.accountKey,
+      config.productKey,
+      HOUSEHOLD_KEY,
+      ONE_TIME_CLASS_SERIES_KEY,
+      occurrenceKey,
+      CONTENT_ITEM_KEY,
+      CONTENT_REVISION_KEY,
+      LESSON_KEY,
+      provisionerMarker,
+      now,
+    ],
+  );
+
+  for (const [index, fixture] of previewLearners.entries()) {
+    const access = accessStates[index];
+    if (!access || access.access_state_key !== fixture.accessStateKey) {
+      throw new Error(`Preview identity marker is missing for ${fixture.learnerKey}.`);
+    }
+    await pool.query(
+      `INSERT INTO onetime.experience_preview_fictional_identities
+         (identity_key, account_key, product_key, scenario_key, role_id, household_key,
+          learner_key, access_state_key, expected_normalized_username, provisioner_marker,
+          eligibility_state, created_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'active',$11,$11)
+       ON CONFLICT (identity_key)
+       DO UPDATE SET account_key = EXCLUDED.account_key,
+                     product_key = EXCLUDED.product_key,
+                     scenario_key = EXCLUDED.scenario_key,
+                     role_id = EXCLUDED.role_id,
+                     household_key = EXCLUDED.household_key,
+                     learner_key = EXCLUDED.learner_key,
+                     access_state_key = EXCLUDED.access_state_key,
+                     expected_normalized_username = EXCLUDED.expected_normalized_username,
+                     provisioner_marker = EXCLUDED.provisioner_marker,
+                     eligibility_state = 'active',
+                     updated_at = $11`,
+      [
+        `full_app_preview_identity_${index + 1}`,
+        config.accountKey,
+        config.productKey,
+        scenarioKey,
+        `student_${index + 1}`,
+        HOUSEHOLD_KEY,
+        fixture.learnerKey,
+        fixture.accessStateKey,
+        fixture.username,
+        provisionerMarker,
+        now,
+      ],
+    );
+  }
+
+  const questions = [
+    'When does the evening Shema period begin?',
+    'Which signs help define the Mishnah’s time window?',
+    'How do the opinions differ at the end of the time window?',
+  ];
+  for (const [index, prompt] of questions.entries()) {
+    await pool.query(
+      `INSERT INTO onetime.experience_preview_review_questions
+         (question_key, account_key, product_key, scenario_key, content_revision_key,
+          position, prompt, approval_state, approved_by_actor_ref, approved_at,
+          created_at, updated_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,'approved','full_app_preview',$8,$8,$8)
+       ON CONFLICT (question_key)
+       DO UPDATE SET scenario_key = EXCLUDED.scenario_key,
+                     content_revision_key = EXCLUDED.content_revision_key,
+                     position = EXCLUDED.position,
+                     prompt = EXCLUDED.prompt,
+                     approval_state = 'approved',
+                     approved_by_actor_ref = 'full_app_preview',
+                     approved_at = $8,
+                     updated_at = $8`,
+      [
+        `full_app_preview_review_question_${index + 1}`,
+        config.accountKey,
+        config.productKey,
+        scenarioKey,
+        CONTENT_REVISION_KEY,
+        index + 1,
+        prompt,
+        now,
+      ],
+    );
+  }
 }
 
 async function seedProgressAndRewards(
@@ -890,7 +1039,7 @@ async function seedProgressAndRewards(
       config.accountKey,
       config.productKey,
       ONE_TIME_CLASS_SERIES_KEY,
-      'One Time Demo Class Leaderboard',
+      'Cohen Siblings Learning Board',
       actorUserKey,
       now,
     ],
@@ -968,6 +1117,108 @@ async function seedProgressAndRewards(
         JSON.stringify({ staging_preview: true }),
       ],
     );
+  }
+}
+
+async function seedPrivateLiveQuestion(
+  pool: DbPool,
+  config: AppConfig,
+  occurrenceKey: string,
+  learner: LearnerProfile,
+  now: Date,
+) {
+  const questionKey = 'full_app_preview_private_question';
+  const preview = 'Could the Rabbi explain why the Mishnah begins with the evening Shema?';
+  await pool.query(
+    `INSERT INTO onetime.live_class_questions
+       (question_key, account_key, product_key, household_key, learner_key, occurrence_key,
+        source_question_key, approved_display_name, question_body_ciphertext,
+        question_body_digest, question_preview, status, readiness, mic_ready, video_ready,
+        customer_key, class_label, idempotency_key, request_hash, created_at, updated_at)
+     VALUES ($1,$2,$3,$4,$5,$6,NULL,$7,NULL,$8,$9,'submitted','pending',false,false,
+             'full_app_preview_customer_1',$10,$1,$8,$11,$11)
+     ON CONFLICT (question_key)
+     DO UPDATE SET account_key = EXCLUDED.account_key,
+                   product_key = EXCLUDED.product_key,
+                   household_key = EXCLUDED.household_key,
+                   learner_key = EXCLUDED.learner_key,
+                   occurrence_key = EXCLUDED.occurrence_key,
+                   approved_display_name = EXCLUDED.approved_display_name,
+                   question_body_ciphertext = NULL,
+                   question_body_digest = EXCLUDED.question_body_digest,
+                   question_preview = EXCLUDED.question_preview,
+                   status = 'submitted',
+                   readiness = 'pending',
+                   mic_ready = false,
+                   video_ready = false,
+                   class_label = EXCLUDED.class_label,
+                   selected_at = NULL,
+                   selected_by_user_ref = NULL,
+                   student_ready_at = NULL,
+                   live_at = NULL,
+                   completed_at = NULL,
+                   completed_by_user_ref = NULL,
+                   request_hash = EXCLUDED.request_hash,
+                   revision = onetime.live_class_questions.revision + 1,
+                   updated_at = $11`,
+    [
+      questionKey,
+      config.accountKey,
+      config.productKey,
+      HOUSEHOLD_KEY,
+      learner.learner_key,
+      occurrenceKey,
+      learner.display_name,
+      digest(preview),
+      preview,
+      'Daily Mishnayos: Berachos 2:1',
+      now,
+    ],
+  );
+}
+
+async function seedTishaRegistrationExample(pool: DbPool, config: AppConfig, now: Date) {
+  const eventCode = 'tisha-bav-2026';
+  const registrationKey = 'full_app_preview_tisha_registration';
+  const email = 'miriam.cohen@example.invalid';
+  const source = 'full_app_staging_preview';
+  const inserted = await pool.query(
+    `INSERT INTO onetime.event_registrations
+       (registration_key, event_definition_key, account_key, product_key, event_code,
+        email_normalized, first_name, newsletter_opt_in, event_service_consent_policy_version,
+        marketing_consent_policy_version, marketing_consent_recorded_at, initial_source,
+        latest_source, first_seen_at, last_seen_at, registered_at, last_registered_at,
+        metadata, created_at, updated_at)
+     SELECT $1, event_definition_key, $2, $3, $4, $5, 'Miriam', false,
+            'tisha-bav-2026-service-v1', NULL, NULL, $6, $6,
+            $7::timestamptz, $7::timestamptz, $7::timestamptz, $7::timestamptz,
+            $8::jsonb, $7::timestamptz, $7::timestamptz
+       FROM onetime.event_definitions
+      WHERE account_key = $2
+        AND product_key = $3
+        AND event_code = $4
+     ON CONFLICT (account_key, product_key, event_code, email_normalized)
+     DO UPDATE SET first_name = EXCLUDED.first_name,
+                   newsletter_opt_in = false,
+                   latest_source = EXCLUDED.latest_source,
+                   last_seen_at = EXCLUDED.last_seen_at,
+                   last_registered_at = EXCLUDED.last_registered_at,
+                   metadata = EXCLUDED.metadata,
+                   updated_at = EXCLUDED.updated_at
+     RETURNING registration_key`,
+    [
+      registrationKey,
+      config.accountKey,
+      config.productKey,
+      eventCode,
+      email,
+      source,
+      now,
+      JSON.stringify({ fictional_preview: true, household_key: HOUSEHOLD_KEY }),
+    ],
+  );
+  if (inserted.rowCount !== 1) {
+    throw new Error("The scoped Tisha B'Av event definition is unavailable for preview seeding.");
   }
 }
 
@@ -1102,21 +1353,24 @@ async function writePrivateHandoff(input: {
     generated_at: input.result.generated_at,
     staging_url: input.result.staging_url,
     login_url: input.result.login_url,
-    administrator_login_label: 'Full App Preview Admin',
-    parent_login_label: 'Full App Preview Parent',
+    administrator_login_label: 'One Time Administrator',
+    parent_login_label: 'Miriam Cohen',
+    experience_preview_route: input.result.experience_preview_route,
     rabbi_live_console_route: input.result.rabbi_live_console_route,
+    content_factory_route: input.result.content_factory_route,
+    class_route: input.result.class_route,
     vimeo_demo_route: input.result.vimeo_demo_route,
     tisha_bav_route: input.result.tisha_bav_route,
     account_key: input.result.account_key,
     product_key: input.result.product_key,
     admin: {
-      label: 'Full App Preview Admin',
+      label: 'One Time Administrator',
       destination: input.adminDestination,
       password: input.adminPassword,
       login_expectation: 'password_then_email_challenge',
     },
     parent: {
-      label: 'Full App Preview Parent',
+      label: 'Miriam Cohen',
       destination: input.parentDestination,
       password: input.parentPassword,
       portal_url: `${input.result.staging_url}/app/parent`,
@@ -1132,7 +1386,7 @@ async function writePrivateHandoff(input: {
       household_key: input.result.household_key,
       class_key: input.result.class_key,
       lesson_key: input.result.lesson_key,
-      lesson_title: 'One Time Demo Mishnayos Class',
+      lesson_title: 'Berachos 2:1 — Finding the Right Time for Shema',
       fourth_student_cap_rejection: input.result.fourth_student_cap_rejection,
       zoom_provider_mode: input.result.zoom_provider_mode,
       protected_zoom_launch_only: true,
@@ -1211,7 +1465,10 @@ function publicSummary(result: FullAppPreviewResult) {
     vimeo_demo_lesson_ready: result.vimeo_demo_lesson_ready,
     zoom_demo_class_ready: result.zoom_demo_class_ready,
     zoom_provider_mode: result.zoom_provider_mode,
+    experience_preview_route: result.experience_preview_route,
     rabbi_live_console_route: result.rabbi_live_console_route,
+    content_factory_route: result.content_factory_route,
+    class_route: result.class_route,
     vimeo_demo_route: result.vimeo_demo_route,
     tisha_bav_route: result.tisha_bav_route,
     handoff_path: result.handoff_path,

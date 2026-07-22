@@ -1,0 +1,111 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+source_of_status: ops/goals/OT-LAUNCH-01/BOARD.yaml
+runtime:
+  persistent_staging: https://ot99-web-staging.up.railway.app
+  production_mutation_allowed: false
+  classification:
+    allowed_preview_values: [isolated_staging, test]
+    enable_flag: ONE_TIME_EXPERIENCE_PREVIEW_ENABLED
+    production_behavior: fail_closed_404
+
+golden_paths:
+  goal_control:
+    requirements:
+      - CURRENT.yaml points to one goal directory and one BOARD.yaml.
+      - BOARD.yaml is the only mutable status map; reports and preview pointers derive from it.
+      - The persistent-staging conductor alone assigns tracks and edits BOARD.yaml.
+  ghl:
+    requirements:
+      - Inventory canonical folders, workflows, bot, knowledge base, fields, tags, values,
+        pipelines, senders, and campaigns across active, draft, archived, and deprecated states.
+      - Account for every canonical asset by ID, key, type, and full folder ancestry with no
+        unexplained duplicate.
+      - Publish only an exactly authorized workflow after controlled trigger/execution,
+        branch/wait, bounded-delivery, and replay/idempotency proof.
+      - Keep every other workflow explicitly draft or dependency-blocked.
+      - Use one canonical outbox-backed One Time to GHL event dispatcher and exact producers;
+        never add parallel direct delivery paths.
+      - OT-01, OT-07, OT-08, OT-09, OT-10, and OT-B01 through OT-B05 remain
+        DRAFT_WAITING_EXTERNAL until canonical app events/tags and bot-adapter invocations exist;
+        their exact waiting dependency is the app/adapter contract, not provider readiness.
+  content_factory:
+    requirements:
+      - Operator-owned video moves through private intake, conservative trim, transcript and VTT,
+        editable metadata and review-question draft, private Vimeo, Admin approval, and protected
+        Student playback.
+      - No raw private provider target or Zoom/Vimeo URL appears in a Student projection.
+      - Media staging integration and external Vimeo canary remain separate tracks.
+  zoom_meeting_sdk:
+    requirements:
+      - The exact fictional occurrence has a protected Meeting SDK projection and Student Ready state.
+      - Student consent precedes join; protected grants deny replay and cross-student use.
+  zoom_s2s_host_control:
+    requirements:
+      - The Rabbi console controls the exact fictional meeting through S2S-backed mute, unmute,
+        and spotlight operations with scoped audit/readback.
+  bna:
+    requirements:
+      - Agent Action Hub foundation imports and reads back the canonical job set.
+      - Durability proves DB save, process restart, readback, and current-queue pin.
+      - Reconciliation statuses remain exact; blocked records are not described as complete.
+  telegram:
+    requirements:
+      - Exactly one consumer owns the bot; token, webhook, owner mapping, lease/gate, and private
+        canary contract all pass before readiness.
+      - A private canary may create/read back a synthetic GHL question draft through the canonical bridge.
+      - Customer sends stay off until a separate, explicit authorization.
+  operator_experience:
+    requirements:
+      - Admin navigation exposes Experience Preview only when its server capability is true.
+      - Admin navigation exposes Live Console only when its route capability is ready.
+      - /app/experience-preview renders Parent, Student 1, Student 2, Student 3, and
+        Rabbi/Classroom projections from exact fictional rows.
+      - Student preview sessions use an opaque single-use exchange, a route-scoped Secure HttpOnly
+        SameSite=Strict cookie, a five-minute maximum lifetime, and a dedicated GET-only shell.
+      - Separate Student tabs remain sibling-isolated and the originating Admin session remains usable.
+  coherent_demo:
+    requirements:
+      - One fictional Cohen household supplies one Administrator, one Parent, three separately
+        credentialed siblings, one upcoming class, one protected occurrence, one approved lesson,
+        exact progress/reward and review questions, one private Rabbi question, and one Tisha example.
+      - Parent and Student golden paths show only their scoped exact data.
+      - Ordinary Admin, Parent, and Student landing views hide engineering, diagnostic, and dead test panels.
+      - Provider-dependent surfaces show provider_off or unavailable when exact gates/evidence are absent.
+
+security_invariants:
+  - No real Parent or Student impersonation.
+  - No learner/account identifiers or bearer material in a preview URL.
+  - Preview issuance proves exact account, product, household, active learner, credential/access marker,
+    provisioner marker, and preview eligibility.
+  - An exchange is bound to the originating Admin session key, consumed once, and cannot cross accounts.
+  - Preview responses are no-store, no-referrer, audited, and read-only.
+  - Credentials, customer/student data, private destinations, raw email copy, and provider secrets never enter Git.
+
+migrations:
+  preserved_external_prefix:
+    prefix: 2214
+    owner: PR #104 learning_delivery_content_factory
+    sha256_evidence: 7c5a8ad2…f8068c
+  experience_preview:
+    prefix: 2215
+    path: packages/db/migrations/2215_experience_preview_sessions.sql
+    sha256: e2a9f039e66b659ee630f232ad88fbbfbd4d9dc06d1437256ca07f2655483d56
+    rule: forward_only_and_unique
+  next_prefix:
+    prefix: 2216
+    rule: reserve_only_for_genuinely_new_schema
+  historical_live_ledger:
+    immutable_duplicate_prefixes: [2209, 2210]
+    rule: Never delete, rename, or rewrite applied historical rows.
+  conditional_highlevel_projection:
+    path: packages/db/migrations/2205_highlevel_business_projection.sql
+    current_state: absent_from_PR_97_and_live_ledger
+    rule: If the app-contract lane proves it required, integrate the exact existing migration unchanged; do not renumber it.
+
+safe_routes:
+  experience_preview: /app/experience-preview
+  live_console: /app/live-console
+  content_factory: /app/content
+  classes: /app/classes
+  prepared_vimeo_demo: /app/learning-delivery/demo/vimeo-autotrim

@@ -193,6 +193,7 @@ const envSchema = z.object({
   LIVE_STRIPE_CHARGES_AUTHORIZED: z.string().optional(),
   PORTAL_TEST_LAB_ENABLED: booleanFromString,
   LEARNING_DELIVERY_DEMO_ENABLED: booleanFromString,
+  ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: booleanFromString,
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -273,6 +274,16 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     parsed.LEARNING_DELIVERY_DEMO_ENABLED
   ) {
     throw new Error('Learning Delivery demo is forbidden in production.');
+  }
+
+  if (
+    parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED &&
+    (deliveryEnvironment === 'production' ||
+      !['isolated_staging', 'test'].includes(oneTimeRuntimeEnvironment))
+  ) {
+    throw new Error(
+      'Experience Preview requires explicit test or isolated_staging runtime classification.',
+    );
   }
 
   if (
@@ -509,5 +520,6 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     portalTestLabEnabled: parsed.NODE_ENV === 'test' || parsed.PORTAL_TEST_LAB_ENABLED,
     learningDeliveryDemoEnabled:
       parsed.NODE_ENV === 'test' || parsed.LEARNING_DELIVERY_DEMO_ENABLED,
+    experiencePreviewEnabled: parsed.ONE_TIME_EXPERIENCE_PREVIEW_ENABLED,
   };
 }

@@ -26,6 +26,10 @@ export type ApiSession = {
         search?: boolean;
       };
     };
+    operator_experience?: {
+      experience_preview?: boolean;
+      live_console?: boolean;
+    };
   };
 };
 

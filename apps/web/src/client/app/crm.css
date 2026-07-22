@@ -126,6 +126,185 @@
   gap: var(--ot-space-2);
 }
 
+.experience-preview,
+.experience-role-preview,
+.experience-section,
+.experience-session-action {
+  display: grid;
+  gap: var(--ot-space-4);
+}
+
+.experience-preview-intro,
+.experience-role-preview > header,
+.experience-preview-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ot-space-4);
+}
+
+.experience-preview-intro,
+.experience-role-preview,
+.experience-preview-banner {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-4);
+}
+
+.experience-preview-intro h2,
+.experience-role-preview h2,
+.experience-section h3,
+.experience-preview-intro p,
+.experience-role-preview p {
+  margin: 0;
+}
+
+.experience-preview-intro > div,
+.experience-role-preview > header > div {
+  display: grid;
+  gap: var(--ot-space-2);
+}
+
+.preview-readonly-badge {
+  flex: 0 0 auto;
+  border: 1px solid var(--ot-color-action-auth);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-1) var(--ot-space-2);
+  background: var(--ot-color-surface-muted);
+  font-weight: 700;
+}
+
+.experience-role-grid,
+.experience-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--ot-space-3);
+}
+
+.experience-role-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.experience-role-grid > li,
+.experience-role-grid > li > .experience-role-card {
+  width: 100%;
+  min-width: 0;
+}
+
+.experience-role-card {
+  min-width: 0;
+  display: grid;
+  gap: var(--ot-space-2);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  background: var(--ot-color-surface-raised);
+  color: var(--ot-color-text);
+  padding: var(--ot-space-3);
+  text-align: left;
+  cursor: pointer;
+}
+
+.experience-role-card[aria-pressed='true'] {
+  border-color: var(--ot-color-action-auth);
+  background: var(--ot-color-surface-muted);
+}
+
+.experience-role-card span,
+.experience-role-card small,
+.experience-section dt,
+.experience-session-action small,
+.experience-preview-banner span {
+  color: var(--ot-color-text-muted);
+}
+
+.experience-role-card small[data-state='ready'],
+.experience-section small[data-state='ready'] {
+  color: var(--ot-color-success);
+}
+
+.experience-role-card small[data-state='provider_off'],
+.experience-section small[data-state='provider_off'] {
+  color: var(--ot-color-text-muted);
+}
+
+.experience-section {
+  align-content: start;
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-3);
+  background: var(--ot-color-surface);
+}
+
+.experience-section dl,
+.experience-section dl > div {
+  display: grid;
+  gap: var(--ot-space-1);
+}
+
+.experience-section dl {
+  margin: 0;
+  gap: var(--ot-space-3);
+}
+
+.experience-section dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.experience-session-action {
+  justify-items: start;
+  border-top: 1px solid var(--ot-color-border);
+  padding-top: var(--ot-space-3);
+}
+
+.experience-safe-routes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ot-space-2);
+}
+
+.experience-safe-routes a {
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-control);
+  padding: var(--ot-space-2) var(--ot-space-3);
+}
+
+.fictional-student-shell {
+  width: min(100% - 2 * var(--ot-space-4), 72rem);
+  min-height: 100vh;
+  display: grid;
+  align-content: start;
+  gap: var(--ot-space-4);
+  margin: 0 auto;
+  padding: var(--ot-space-5) 0;
+}
+
+.fictional-student-shell__banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ot-space-4);
+  border: 1px solid var(--ot-color-border);
+  border-radius: var(--ot-radius-panel);
+  background: var(--ot-color-surface-raised);
+  padding: var(--ot-space-4);
+}
+
+.fictional-student-shell__banner h1,
+.fictional-student-shell__banner p,
+.fictional-student-shell__notice,
+.fictional-student-shell__expiry {
+  margin: 0;
+}
+
+.fictional-student-shell__notice,
+.fictional-student-shell__expiry {
+  color: var(--ot-color-text-muted);
+}
+
 .ot-live-ready {
   display: grid;
   gap: var(--ot-space-2);
@@ -196,5 +375,24 @@
 
   .live-question-item {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .experience-preview-intro,
+  .experience-role-preview > header,
+  .experience-preview-banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fictional-student-shell__banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .preview-readonly-badge,
+  .experience-session-action .button-primary {
+    width: 100%;
   }
 }

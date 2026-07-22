@@ -1,0 +1,5 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+goal_path: ops/goals/OT-LAUNCH-01
+board: ops/goals/OT-LAUNCH-01/BOARD.yaml
+updated_at: 2026-07-22T09:54:59Z

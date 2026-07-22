@@ -221,6 +221,11 @@ import {
 } from './communications/register.ts';
 import { createParentPortalRouter, createStudentPortalRouter } from './features/portals/routers.ts';
 import { registerLearningDeliveryDemoRoutes } from './features/learning-delivery-demo/router.ts';
+import {
+  isExperiencePreviewEnabled,
+  isLiveConsoleNavigationEnabled,
+  registerExperiencePreviewRoutes,
+} from './features/experience-preview/router.ts';
 import { registerPortalTestLabRoutes } from './features/portal-test-lab/router.ts';
 import { createResendWebhookRouter } from './features/delivery/resend-webhook-router.ts';
 import { createBillingRouter } from './features/billing/router.ts';
@@ -534,6 +539,19 @@ export function createApp({
     },
   });
 
+  registerExperiencePreviewRoutes({
+    app,
+    config,
+    pool,
+    distDir,
+    session: {
+      sessionFromRequest: (req) => sessionFromRequest(req, pool, config),
+      requireSessionCsrf: (req, res, session) => requireSessionCsrf(req, res, pool, session),
+      setPrivateNoStore,
+    },
+    ...(clock ? { clock } : {}),
+  });
+
   registerLearningDeliveryDemoRoutes({
     app,
     config,
@@ -778,6 +796,32 @@ export function createApp({
     }
     await ensureSessionCsrfCookie(req, res, pool, config, session);
     setPrivateNoStore(res);
+    await sendAppHtml(res, distDir, 'crm');
+  });
+
+  app.get('/app/experience-preview', async (req: RequestWithTrace, res) => {
+    setPrivateNoStore(res);
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    res.setHeader('Referrer-Policy', 'no-referrer');
+    if (!isExperiencePreviewEnabled(config)) {
+      res.status(404).type('text').send('Experience Preview is unavailable.');
+      return;
+    }
+    const session = await sessionFromRequest(req, pool, config);
+    if (!session) {
+      res.redirect(
+        302,
+        `/login?return_to=${encodeURIComponent(
+          safeReturnPath(req.originalUrl, config) ?? '/app/experience-preview',
+        )}`,
+      );
+      return;
+    }
+    if (!canUseOwnerDashboard(session.user.role)) {
+      res.status(403).type('html').send(forbiddenOwnerAdminHtml(req.path));
+      return;
+    }
+    await ensureSessionCsrfCookie(req, res, pool, config, session);
     await sendAppHtml(res, distDir, 'crm');
   });
 
@@ -1236,6 +1280,12 @@ export function createApp({
       user: session.user,
       csrf_token: csrfToken,
       expires_at: session.expires_at,
+      capabilities: {
+        operator_experience: {
+          experience_preview: isExperiencePreviewEnabled(config),
+          live_console: isLiveConsoleNavigationEnabled(config),
+        },
+      },
     });
   });
 

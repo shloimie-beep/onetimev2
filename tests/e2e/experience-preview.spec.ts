@@ -1,0 +1,246 @@
+import path from 'node:path';
+import { expect, test, type BrowserContext, type Page } from '@playwright/test';
+import { createApp } from '../../apps/web/src/server/app.ts';
+import { loadConfig, type AppConfig } from '../../packages/config/src/index.ts';
+import { createMemoryPool, runMigrations, type DbPool } from '../../packages/db/src/index.ts';
+import {
+  createAccountUser,
+  createSession,
+  getSessionUserByKey,
+} from '../../packages/domain/src/index.ts';
+import { runFullAppProvision } from '../../scripts/full-app-staging-live/provision-preview.ts';
+
+type TestRuntime = {
+  baseUrl: string;
+  sessionToken: string;
+  close(): Promise<void>;
+};
+
+let staging: TestRuntime;
+let production: TestRuntime;
+
+test.beforeAll(async () => {
+  staging = await startRuntime(previewConfig(), true);
+  production = await startRuntime(productionConfig(), false);
+});
+
+test.afterAll(async () => {
+  await Promise.all([staging.close(), production.close()]);
+});
+
+test('Admin Experience Preview is isolated, responsive, sibling-scoped, and production-gated', async ({
+  browser,
+}) => {
+  test.setTimeout(90_000);
+  const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+  await useAdminSession(context, staging);
+  const page = await context.newPage();
+  const previewRequests: Array<{ method: string; url: string }> = [];
+  context.on('request', (request) => {
+    if (request.url().includes('/app/experience-preview/student/')) {
+      previewRequests.push({ method: request.method(), url: request.url() });
+    }
+  });
+
+  await page.goto(`${staging.baseUrl}/app/experience-preview`);
+  await expect(
+    page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
+  ).toBeVisible();
+  const appNavigation = page.getByLabel('One Time app');
+  await expect(appNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
+  await expect(appNavigation.getByRole('link', { name: 'Live Console' })).toBeVisible();
+
+  for (const label of ['Parent', 'Student 1', 'Student 2', 'Student 3', 'Rabbi/Classroom']) {
+    const role = page.getByRole('button', { name: new RegExp(`^${escapeRegex(label)}`) });
+    await role.click();
+    await expect(role).toHaveAttribute('aria-pressed', 'true');
+  }
+
+  const studentOne = await openStudentPreview(page, context, 'Student 1');
+  await assertDedicatedStudentShell(studentOne, 'Ari Cohen');
+  expect(await studentOne.evaluate(() => window.opener === null)).toBe(true);
+
+  const studentTwo = await openStudentPreview(page, context, 'Student 2');
+  await assertDedicatedStudentShell(studentTwo, 'Dovid Cohen');
+  expect(await studentTwo.evaluate(() => window.opener === null)).toBe(true);
+  expect(studentOne.url()).not.toBe(studentTwo.url());
+
+  await studentOne.reload();
+  await expect(studentOne.getByRole('heading', { name: "Ari Cohen's learning day" })).toBeVisible();
+  await expect(studentOne.getByText('Dovid Cohen')).toHaveCount(0);
+  await studentTwo.reload();
+  await expect(
+    studentTwo.getByRole('heading', { name: "Dovid Cohen's learning day" }),
+  ).toBeVisible();
+  await expect(studentTwo.getByText('Ari Cohen')).toHaveCount(0);
+
+  const adminSession = await page.evaluate(async () => {
+    const response = await fetch('/api/v1/auth/session', {
+      headers: { accept: 'application/json' },
+    });
+    return { status: response.status, json: await response.json() };
+  });
+  expect(adminSession.status).toBe(200);
+  expect(adminSession.json.user.role).toBe('owner');
+  await expect(appNavigation.getByRole('link', { name: 'Experience Preview' })).toBeVisible();
+
+  await page.setViewportSize({ width: 360, height: 800 });
+  await expect(
+    page.getByRole('heading', { name: 'The Cohen Family — One Time launch walkthrough' }),
+  ).toBeVisible();
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+  await studentOne.setViewportSize({ width: 360, height: 800 });
+  expect(await horizontalOverflow(studentOne)).toBeLessThanOrEqual(1);
+
+  expect(previewRequests.length).toBeGreaterThan(0);
+  expect(previewRequests.every((request) => request.method === 'GET')).toBe(true);
+
+  await context.close();
+
+  const productionContext = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  await useAdminSession(productionContext, production);
+  const productionPage = await productionContext.newPage();
+  await productionPage.goto(`${production.baseUrl}/app/crm`);
+  await expect(productionPage.getByRole('link', { name: 'Experience Preview' })).toHaveCount(0);
+  await expect(productionPage.getByRole('link', { name: 'Live Console' })).toHaveCount(0);
+  const rejected = await productionPage.goto(`${production.baseUrl}/app/experience-preview`);
+  expect(rejected?.status()).toBe(404);
+  await productionContext.close();
+});
+
+async function openStudentPreview(
+  page: Page,
+  context: BrowserContext,
+  roleLabel: 'Student 1' | 'Student 2',
+) {
+  await page.getByRole('button', { name: new RegExp(`^${escapeRegex(roleLabel)}`) }).click();
+  await page.getByRole('button', { name: 'Prepare fictional Student session' }).click();
+  const link = page.getByRole('link', { name: 'Open fictional Student session' });
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  const [studentPage] = await Promise.all([context.waitForEvent('page'), link.click()]);
+  await expect(
+    studentPage.getByRole('heading', { name: 'Fictional Student session' }),
+  ).toBeVisible();
+  return studentPage;
+}
+
+async function assertDedicatedStudentShell(page: Page, learnerName: string) {
+  await expect(page.getByRole('heading', { name: `${learnerName}'s learning day` })).toBeVisible();
+  await expect(page.locator('nav')).toHaveCount(0);
+  await expect(page.locator('form')).toHaveCount(0);
+  await expect(page.locator('button')).toHaveCount(0);
+  await expect(page.locator('#crm-root')).toHaveCount(0);
+  await expect(page.locator('.crm-shell')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /logout/i })).toHaveCount(0);
+}
+
+async function horizontalOverflow(page: Page) {
+  return page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+}
+
+async function useAdminSession(context: BrowserContext, runtime: TestRuntime) {
+  const hostname = new URL(runtime.baseUrl).hostname;
+  await context.addCookies([
+    {
+      name: 'otcrm_session',
+      value: runtime.sessionToken,
+      domain: hostname,
+      path: '/',
+      httpOnly: true,
+      sameSite: 'Lax',
+    },
+  ]);
+}
+
+async function startRuntime(config: AppConfig, seedScenario: boolean): Promise<TestRuntime> {
+  const pool = createMemoryPool();
+  await runMigrations(pool);
+  const userKey = await createAccountUser({
+    pool,
+    config,
+    email: seedScenario
+      ? 'preview-browser-owner@example.test'
+      : 'production-browser-owner@example.test',
+    password: 'BrowserPreviewTest!234',
+    displayName: 'Browser Preview Owner',
+    role: 'owner',
+  });
+  const user = await getSessionUserByKey({ pool, config, userKey });
+  if (!user) throw new Error('Missing browser test owner.');
+  const session = await createSession({ pool, config, user });
+  if (seedScenario) {
+    await runFullAppProvision({
+      pool,
+      config,
+      publicBaseUrl: config.publicBaseUrl,
+      writePrivateHandoff: false,
+      requirePrivateDestinations: false,
+      now: new Date('2026-07-22T12:00:00.000Z'),
+    });
+  }
+  const app = createApp({
+    config,
+    pool,
+    distDir: path.resolve('dist/apps/web/public'),
+    clock: () => new Date('2026-07-22T12:00:00.000Z'),
+  });
+  const server = await new Promise<ReturnType<typeof app.listen>>((resolve, reject) => {
+    const instance = app.listen(0, 'localhost', (error?: Error) => {
+      if (error) reject(error);
+      else resolve(instance);
+    });
+  });
+  const address = server.address();
+  if (typeof address !== 'object' || !address) throw new Error('Missing browser test address.');
+  return {
+    baseUrl: `http://localhost:${address.port}`,
+    sessionToken: session.session_token,
+    close: () => closeRuntime(server, pool),
+  };
+}
+
+async function closeRuntime(
+  server: ReturnType<ReturnType<typeof createApp>['listen']>,
+  pool: DbPool,
+) {
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+  await pool.end();
+}
+
+function previewConfig() {
+  return loadConfig({
+    ...baseEnvironment(),
+    DELIVERY_ENVIRONMENT: 'isolated_staging',
+    ONE_TIME_RUNTIME_ENVIRONMENT: 'isolated_staging',
+    ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: 'true',
+    LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'true',
+  });
+}
+
+function productionConfig() {
+  return loadConfig({
+    ...baseEnvironment(),
+    DELIVERY_ENVIRONMENT: 'production',
+    ONE_TIME_RUNTIME_ENVIRONMENT: 'production',
+    ONE_TIME_EXPERIENCE_PREVIEW_ENABLED: 'false',
+    LIVE_CLASS_FAKE_ADAPTER_ENABLED: 'false',
+  });
+}
+
+function baseEnvironment() {
+  return {
+    NODE_ENV: 'test',
+    PUBLIC_BASE_URL: 'https://preview-browser.example.test',
+    APP_VERSION: 'experience-preview-browser-test',
+    COMMIT_SHA: 'experience-preview-browser-test',
+    OUTBOX_TRANSPORT_MODE: 'sink',
+    ONE_TIME_ACCOUNT_KEY: 'rabbi_sheller_provider',
+    ONE_TIME_PRODUCT_KEY: 'one_time_mishnah_class',
+    ZOOM_CLASSROOM_ENABLED: 'true',
+  } satisfies NodeJS.ProcessEnv;
+}
+
+function escapeRegex(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

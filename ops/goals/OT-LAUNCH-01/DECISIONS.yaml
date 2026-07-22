@@ -1,0 +1,25 @@
+schema_version: 1
+goal_id: OT-LAUNCH-01
+decisions:
+  - id: canonical-status
+    decision: BOARD.yaml is the only current status map; reports link to it rather than copying mutable status or SHAs.
+  - id: preview-boundary
+    decision: Experience Preview is an explicit isolated_staging/test capability with an independent enable flag and production fail-closed checks.
+  - id: no-impersonation
+    decision: Role cards render server-produced read-only data; only the three fictional Students may open short-lived preview sessions in separate tabs.
+  - id: scenario
+    decision: The Cohen family and Berachos 2:1 learning unit replace random fixture narratives on persistent staging.
+  - id: provider-truth
+    decision: A provider remains off until exact terminal evidence proves activation; independent tracks continue meanwhile.
+  - id: ghl-authority
+    decision: Agent Mode mutates GHL and returns sanitized readback; Codex alone updates canonical Git state.
+  - id: assignment-authority
+    decision: The persistent-staging conductor assigns tracks before dispatch; non-conductors verify assignment and write only their handoff, never BOARD.yaml.
+  - id: ghl-dispatcher
+    decision: One canonical outbox-backed One Time to GHL dispatcher owns app events/tags/bot invocations; workflow shells stay DRAFT_WAITING_EXTERNAL on the exact app/adapter contract until producers pass.
+  - id: migration-prefix
+    decision: Preserve PR #104 migration 2214_learning_delivery_content_factory and use 2215_experience_preview_sessions for Experience Preview.
+  - id: migration-history
+    decision: Live 2209/2210 duplicate-prefix ledger rows are legitimate immutable history; 2216 is reserved for new schema, and a required HighLevel 2205 must be integrated exact and unchanged.
+  - id: status-semantics
+    decision: Pending tests, deployment, reseed, or convergence are remaining_work/pending verification; blocked is reserved for an actual impasse.
