@@ -1,18 +1,19 @@
 {
-  "schema_version": 1,
-  "generated_at": "2026-07-22T06:04:48.4074574Z",
+  "schema_version": 2,
+  "generated_at": "2026-07-22T08:16:20.0567273Z",
   "repository": "shloimie-beep/onetimev2",
   "integration_branch": "codex/full-app-staging-live",
-  "integration_head": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
-  "staging_version": "full-app-staging-live-944f46b",
+  "verified_application_head": "68b4d075c85f4023177b9363e04e23763f01d4f5",
+  "semantic_integration_commit": "7888306",
+  "staging_version": "full-app-staging-live-68b4d07",
   "pull_requests": [
     {
       "pr": 93,
-      "status": "pending_semantic_verification",
-      "superseded_by": [99, 103, 97],
-      "integration_commit": null,
-      "close_allowed": false,
-      "blocker": "HighLevel foundation and registry deltas are not yet recorded in the integration manifest"
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
     },
     {
       "pr": 94,
@@ -24,11 +25,11 @@
     },
     {
       "pr": 95,
-      "status": "pending_pr_101_integration",
-      "superseded_by": [101, 97],
-      "integration_commit": null,
-      "close_allowed": false,
-      "blocker": "PR #101 unique patch is not yet integrated"
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
     },
     {
       "pr": 96,
@@ -40,15 +41,15 @@
     },
     {
       "pr": 97,
-      "status": "integration_target",
+      "status": "integration_target_live_on_staging",
       "superseded_by": [],
-      "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
+      "integration_commit": "7888306",
       "close_allowed": false,
-      "blocker": "accepted input lanes and final staging proof remain pending"
+      "blocker": "Full application production promotion remains deliberately unapproved."
     },
     {
       "pr": 98,
-      "status": "obsolete",
+      "status": "superseded",
       "superseded_by": [97],
       "integration_commit": "2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38",
       "close_allowed": true,
@@ -56,43 +57,68 @@
     },
     {
       "pr": 99,
-      "status": "pending_pr_103_integration",
-      "superseded_by": [103, 97],
-      "integration_commit": null,
-      "close_allowed": false,
-      "blocker": "HighLevel foundation and current registry deltas are not yet integrated"
+      "status": "superseded",
+      "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
     },
     {
       "pr": 100,
-      "status": "pending_integration",
+      "status": "superseded",
       "superseded_by": [97],
-      "integration_commit": null,
-      "close_allowed": false,
-      "blocker": "migration 2210 must be renumbered before integration"
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
     },
     {
       "pr": 101,
-      "status": "pending_integration",
+      "status": "superseded",
       "superseded_by": [97],
-      "integration_commit": null,
-      "close_allowed": false,
-      "blocker": "unique patch beyond the existing media foundation is not yet integrated"
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
     },
     {
       "pr": 102,
-      "status": "pending_provider_and_release_gates",
-      "superseded_by": [97],
-      "integration_commit": null,
-      "close_allowed": false,
-      "blocker": "OT-E01 readback, provider sync proof, narrow production release, and staging integration are pending"
+      "status": "superseded",
+      "superseded_by": [97, 106],
+      "integration_commit": "7888306",
+      "production_release_commit": "0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d",
+      "close_allowed": true,
+      "blocker": null
     },
     {
       "pr": 103,
-      "status": "pending_provider_readback_and_integration",
+      "status": "superseded",
       "superseded_by": [97],
+      "integration_commit": "7888306",
+      "close_allowed": true,
+      "blocker": null
+    },
+    {
+      "pr": 104,
+      "status": "open_unique_work",
+      "superseded_by": [],
       "integration_commit": null,
       "close_allowed": false,
-      "blocker": "actual HighLevel workflow state and semantic staging integration are pending"
+      "blocker": "Operator-reviewed Vimeo content factory changes remain unique and are not in persistent staging."
+    },
+    {
+      "pr": 105,
+      "status": "open_unique_work",
+      "superseded_by": [],
+      "integration_commit": null,
+      "close_allowed": false,
+      "blocker": "Real Zoom host-control activation remains isolated and is not in persistent staging."
+    },
+    {
+      "pr": 106,
+      "status": "open_narrow_production_release",
+      "superseded_by": [],
+      "integration_commit": "0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d",
+      "close_allowed": false,
+      "blocker": "Draft release PR remains the audit lane for the live narrow production release."
     }
   ]
 }

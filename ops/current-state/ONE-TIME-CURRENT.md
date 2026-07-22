@@ -2,36 +2,48 @@
 
 Generated from the operator packet at SHA-256
 `08d341bb4f6d9a51ad14824d5e9640feeb65de5db8f774eccf62740297309c53`.
-The canonical repository is `shloimie-beep/onetimev2`; the former
-`webcraft-media/onetimev2` remote is explicitly excluded.
+The canonical repository is `shloimie-beep/onetimev2`;
+`webcraft-media/onetimev2` is explicitly excluded.
 
 ## Runtime Readback
 
-| Surface            | Source SHA                                          | Latest migration                      | Health | Tisha B'Av                                    |
-| ------------------ | --------------------------------------------------- | ------------------------------------- | ------ | --------------------------------------------- |
-| Production         | `ed77a04dd24391d5b79be7f839d7f5752a57e0f9`          | `2204_w12_100_real_source_crm_apply`  | Pass   | Not deployed                                  |
-| Persistent staging | `944f46b5435d648e6e175c69746ca7a4895ffec4`          | `2209_class_series_scope_unique`      | Pass   | Not integrated                                |
-| PR #102 preview    | reported `944f46b5435d648e6e175c69746ca7a4895ffec4` | `2211_tisha_bav_provider_event_scope` | Pass   | `/tisha-bav` and `/tisha-bav/live` return 200 |
+| Surface            | Verified source                            | Latest migration                              | Health | Tisha B'Av |
+| ------------------ | ------------------------------------------ | --------------------------------------------- | ------ | ---------- |
+| Production         | `0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d` | `2211_tisha_bav_provider_event_scope`         | Pass   | Live       |
+| Persistent staging | `68b4d075c85f4023177b9363e04e23763f01d4f5` | `2213_learning_delivery_autotrim_transcripts` | Pass   | Live       |
+| PR #102 preview    | `999eb7c86ddadaa19009cb9a232fa65deeec11a4` | `2211_tisha_bav_provider_event_scope`         | Pass   | Live       |
 
-The clean integration worktree is
-`C:\Users\User\.onetime-worktrees\FULL-APP-STAGING-LIVE` on
-`codex/full-app-staging-live` at
-`2f62a2af6c42e7f05ed43a82bd5c0a938fcceb38`.
+Production contains only the narrow Tisha B'Av release. The complete application
+remains undeployed in production. Persistent staging includes the Tisha funnel,
+HighLevel reconciliation assets, Vimeo autotrim/transcription, and the Rabbi Live
+Console.
 
-## Current Gate
+## HighLevel Readback
 
-HighLevel assets and OT-E01 must be read back through the official API before
-the single operator-owned event confirmation and the narrow production release.
-OT-C01 remains draft with no audience and no sends. The complete full
-application remains staging-only.
+| Asset                     | ID                                     | Actual status                      |
+| ------------------------- | -------------------------------------- | ---------------------------------- |
+| OT-E01                    | `a34ea513-4612-4f53-8bd8-49e89e6610f9` | Published; one operator enrollment |
+| OT-C01                    | `f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae` | Draft; zero recipients; zero sends |
+| Other canonical workflows | n/a                                    | 17 missing                         |
+| OT-A1 Conversation AI     | n/a                                    | Missing                            |
 
-## Integration Order
+The protected operator contact is represented only by fingerprint
+`fab156df2719852d`. No private destination is committed.
 
-1. PR #97 current staging base.
-2. PR #101 unique Vimeo autotrim/transcription patch.
-3. PR #100 Rabbi Live Console after migration renumbering.
-4. PR #102 Tisha B'Av funnel.
-5. PR #99/#103 HighLevel foundation and registry deltas not already present.
+## Staging Access
 
-The authoritative machine-readable record is `ONE-TIME-CURRENT.json`. PR
-supersession is tracked separately in `PR-SUPERSESSION-MAP.json`.
+The protected handoff is outside Git at
+`C:\Users\User\.onetime-full-app-preview\FULL-APP-HANDOFF.private.json`.
+It contains the fictional Admin, Parent, and three Student credentials. The
+Admin path requires the expected email challenge. Parent and all three Students
+passed live portal and role-specific dashboard checks.
+
+## Release State
+
+The narrow production branch is `release/tisha-bav-2026-live` at
+`0a85f4f8e8683bc19ac26fbdf1f6b8e91211429d`, tracked by draft PR #106.
+The persistent staging integration branch is `codex/full-app-staging-live`;
+semantic integration was recorded in `7888306`, with the verified application
+head at `68b4d075c85f4023177b9363e04e23763f01d4f5` before this evidence-only update.
+
+OT-C01 remains draft. Broad messages sent: zero. Charges created: zero.

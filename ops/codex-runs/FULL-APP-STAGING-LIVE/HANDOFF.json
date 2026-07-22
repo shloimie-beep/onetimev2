@@ -13,7 +13,7 @@
     "cleanup_instructions": "private_only"
   },
   "safe_public_summary": {
-    "admin_login": "email_challenge_required",
+    "admin_login": "password_then_email_challenge_ready",
     "parent_login": "ready",
     "student_count": 3,
     "fourth_student_cap_rejection": true,

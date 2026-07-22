@@ -4,21 +4,17 @@
   "production_changed": false,
   "repository": "shloimie-beep/onetimev2",
   "branch": "codex/full-app-staging-live",
-  "base_branch": "codex/one-time-finish-now-20260719",
-  "head_commit": "944f46b5435d648e6e175c69746ca7a4895ffec4",
+  "verified_application_head": "68b4d075c85f4023177b9363e04e23763f01d4f5",
   "staging": {
     "url": "https://ot99-web-staging.up.railway.app",
     "login_url": "https://ot99-web-staging.up.railway.app/login",
-    "version": "full-app-staging-live-944f46b",
-    "commit_sha": "944f46b5435d648e6e175c69746ca7a4895ffec4",
-    "web_deployment_id": "59112f43-29be-4a14-a2da-d932d798d78e",
-    "worker_deployment_id": "4f823e75-aee6-4524-bb36-8a7ced027355",
-    "latest_migration": "2209_class_series_scope_unique"
+    "version": "full-app-staging-live-68b4d07",
+    "web_deployment_id": "49b866b8-fd67-47e6-9e27-d4d43b71ae0a",
+    "worker_deployment_id": "93a90788-2eb7-4678-88cf-84829fb72b01",
+    "latest_migration": "2213_learning_delivery_autotrim_transcripts"
   },
   "provisioning": {
-    "account_key": "rabbi_sheller_provider",
-    "product_key": "one_time_mishnah_class",
-    "admin_login": "email_challenge_required",
+    "admin_login": "password_then_email_challenge_ready",
     "parent_login": "ready",
     "student_count": 3,
     "student_logins": "ready",
@@ -27,25 +23,18 @@
     "zoom_demo_class_ready": true,
     "zoom_provider_mode": "sink",
     "protected_zoom_launch_only": true,
-    "raw_zoom_url_committed": false,
-    "raw_vimeo_url_committed": false,
     "credentials_committed": false
   },
   "validation": {
-    "npm_ci": "passed",
-    "typecheck": "passed",
     "build": "passed",
+    "typecheck": "passed",
+    "lint": "passed",
     "secret_scan": "passed",
-    "git_diff_check": "passed",
-    "zoom_demo_students": "passed",
-    "focused_unit_tests": "18 passed",
-    "focused_integration_tests": "14 passed",
-    "live_browser_smoke": "passed"
+    "unit_tests": "279 passed",
+    "integration_tests": "230 passed",
+    "focused_vimeo_tests": "12 passed",
+    "live_parent_browser": "passed",
+    "live_student_browsers": "3 passed"
   },
-  "screenshots": [
-    "ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/admin-email-challenge.png",
-    "ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/parent-dashboard.png",
-    "ops/codex-runs/FULL-APP-STAGING-LIVE/screenshots/student-dashboard-mobile.png"
-  ],
   "blockers": []
 }
