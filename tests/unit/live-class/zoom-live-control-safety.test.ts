@@ -5,6 +5,7 @@ import {
 } from '../../../packages/contracts/src/live-class/index.ts';
 import {
   sdkErrorSummary,
+  zoomProviderOffSummary,
   zoomSpotlightOptions,
 } from '../../../apps/web/src/client/app/zoom-sdk-safety.ts';
 
@@ -19,6 +20,24 @@ describe('Zoom live-control client safety', () => {
       operate: 'remove',
     });
     expect(zoomSpotlightOptions(17, 'spotlight_replace')).not.toHaveProperty('action');
+  });
+
+  it('reports the exact provider-off readiness layer without exposing values', () => {
+    const summary = zoomProviderOffSummary({
+      ready: false,
+      provider_gate_blockers: [],
+      phases: {
+        sdk_app: { ready: true },
+        s2s_meeting_provisioning: { ready: false },
+        host_authorization: { ready: false },
+        real_control_canary_authorization: { ready: false },
+      },
+    });
+
+    expect(summary).toBe(
+      'Provider off: protected S2S meeting provisioning is not ready. Controlled fake execution remains active.',
+    );
+    expect(summary).not.toMatch(/client|secret|passcode|meeting\s+\d/i);
   });
 
   it('renders only allowlisted SDK code and category values', () => {

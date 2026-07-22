@@ -117,6 +117,13 @@ export const liveClassControlCommandSchema = z.object({
 });
 export type LiveClassControlCommand = z.infer<typeof liveClassControlCommandSchema>;
 
+const zoomHostControlReadinessPhaseSchema = z
+  .object({
+    ready: z.boolean(),
+    blocker_variable_names: z.array(z.string().trim().min(1)),
+  })
+  .strict();
+
 export const liveClassConsoleSnapshotSchema = z.object({
   success: z.literal(true),
   data: z.object({
@@ -132,13 +139,31 @@ export const liveClassConsoleSnapshotSchema = z.object({
       adapter: z.enum(['fake', 'meeting_sdk_host']),
       sdk_credentials_configured: z.boolean(),
       host_control_configured: z.boolean(),
+      readiness: z
+        .object({
+          ready: z.boolean(),
+          code: z.enum(['ZOOM_HOST_CONTROL_READY', 'PROVIDER_OFF', 'PROVIDER_NOT_READY']),
+          provider_gate_blockers: z.array(z.string().trim().min(1)),
+          readiness_blockers: z.array(z.string().trim().min(1)),
+          canary_authorization_blockers: z.array(z.string().trim().min(1)),
+          phases: z
+            .object({
+              sdk_app: zoomHostControlReadinessPhaseSchema,
+              s2s_meeting_provisioning: zoomHostControlReadinessPhaseSchema,
+              host_authorization: zoomHostControlReadinessPhaseSchema,
+              real_control_canary_authorization: zoomHostControlReadinessPhaseSchema,
+            })
+            .strict(),
+          secret_values_included: z.literal(false),
+        })
+        .strict(),
       live_control_uses_rest_api: z.literal(false),
       can_force_camera_on: z.literal(false),
       video_start_model: z.literal('PARTICIPANT_CONSENT'),
       setup_job: z
         .object({
           job_key: z.literal('ZOOM-UI-01'),
-          title: z.literal('Create One Time Meeting SDK App'),
+          title: z.literal('Complete Zoom real-control readiness'),
           status: z.enum(['not_required', 'operator_action_required']),
           scopes: z.array(z.string().trim().min(1)),
           storage_instruction: z.string().trim().min(1).max(240),

@@ -18,6 +18,7 @@ const fullyConfiguredEnv: NodeJS.ProcessEnv = {
   ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
   ZOOM_MEETING_SDK_CLIENT_ID: 'sdk-client-fixture',
   ZOOM_MEETING_SDK_CLIENT_SECRET: 'sdk-secret-fixture',
+  ZOOM_MEETING_SDK_ALLOWED_ORIGIN: 'https://isolated-pr.example.test',
   ZOOM_MEETING_SDK_WEB_VERSION: '6.2.0',
   ZOOM_ACCOUNT_ID: 'account-fixture',
   ZOOM_S2S_CLIENT_ID: 's2s-client-fixture',
@@ -25,6 +26,8 @@ const fullyConfiguredEnv: NodeJS.ProcessEnv = {
   ZOOM_HOST_USER_ID: 'host-fixture',
   ZOOM_REAL_CONTROL_MEETING_ID: '987654321',
   ZOOM_REAL_CONTROL_MEETING_PASSCODE: 'meeting-passcode-fixture',
+  ZOOM_CLASSROOM_CANARY_ENABLED: 'true',
+  PUBLIC_BASE_URL: 'https://isolated-pr.example.test',
 };
 
 describe('Zoom real host-control readiness', () => {
@@ -96,6 +99,92 @@ describe('Zoom real host-control readiness', () => {
     });
   });
 
+  it.each([
+    'https://another-origin.example.test',
+    'http://isolated-pr.example.test',
+    'https://isolated-pr.example.test/not-an-origin',
+  ])('rejects non-matching or non-exact SDK origin binding %s', (allowedOrigin) => {
+    const createRestClient = vi.fn() as unknown as NonNullable<
+      ZoomHostLaunchDependencies['createRestClient']
+    >;
+    const config = loadConfig({
+      ...fullyConfiguredEnv,
+      ZOOM_MEETING_SDK_ALLOWED_ORIGIN: allowedOrigin,
+    });
+    const readiness = inspectZoomHostControlReadiness(config);
+
+    expect(readiness).toMatchObject({
+      ready: false,
+      code: 'PROVIDER_NOT_READY',
+      phases: {
+        sdk_app: {
+          ready: false,
+          blocker_variable_names: ['ZOOM_MEETING_SDK_ALLOWED_ORIGIN'],
+        },
+      },
+    });
+    expect(createZoomHostLaunchPort(config, { createRestClient })).toBeUndefined();
+    expect(createRestClient).not.toHaveBeenCalled();
+  });
+
+  it('separates the known S2S meeting and host blockers from SDK readiness', () => {
+    const config = loadConfig(
+      without(
+        'ZOOM_ACCOUNT_ID',
+        'ZOOM_S2S_CLIENT_ID',
+        'ZOOM_S2S_CLIENT_SECRET',
+        'ZOOM_HOST_USER_ID',
+        'ZOOM_REAL_CONTROL_MEETING_ID',
+        'ZOOM_REAL_CONTROL_MEETING_PASSCODE',
+      ),
+    );
+
+    expect(inspectZoomHostControlReadiness(config)).toMatchObject({
+      ready: false,
+      code: 'PROVIDER_NOT_READY',
+      phases: {
+        sdk_app: { ready: true, blocker_variable_names: [] },
+        s2s_meeting_provisioning: {
+          ready: false,
+          blocker_variable_names: [
+            'ZOOM_ACCOUNT_ID',
+            'ZOOM_S2S_CLIENT_ID',
+            'ZOOM_S2S_CLIENT_SECRET',
+            'ZOOM_REAL_CONTROL_MEETING_ID',
+            'ZOOM_REAL_CONTROL_MEETING_PASSCODE',
+          ],
+        },
+        host_authorization: {
+          ready: false,
+          blocker_variable_names: ['ZOOM_HOST_USER_ID'],
+        },
+      },
+    });
+  });
+
+  it('keeps canary authorization separate and fail-closed', () => {
+    const createRestClient = vi.fn() as unknown as NonNullable<
+      ZoomHostLaunchDependencies['createRestClient']
+    >;
+    const config = loadConfig(without('ZOOM_CLASSROOM_CANARY_ENABLED'));
+    const readiness = inspectZoomHostControlReadiness(config);
+
+    expect(readiness).toMatchObject({
+      ready: false,
+      code: 'PROVIDER_OFF',
+      readiness_blockers: [],
+      canary_authorization_blockers: ['ZOOM_CLASSROOM_CANARY_ENABLED'],
+      phases: {
+        sdk_app: { ready: true },
+        s2s_meeting_provisioning: { ready: true },
+        host_authorization: { ready: true },
+        real_control_canary_authorization: { ready: false },
+      },
+    });
+    expect(createZoomHostLaunchPort(config, { createRestClient })).toBeUndefined();
+    expect(createRestClient).not.toHaveBeenCalled();
+  });
+
   it('returns typed provider-off and readiness errors before repository or provider work', async () => {
     const providerOffService = createLiveClassService({
       config: loadConfig(without('ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED')),
@@ -132,6 +221,13 @@ describe('Zoom real host-control readiness', () => {
       code: 'ZOOM_HOST_CONTROL_READY',
       provider_gate_blockers: [],
       readiness_blockers: [],
+      canary_authorization_blockers: [],
+      phases: {
+        sdk_app: { ready: true, blocker_variable_names: [] },
+        s2s_meeting_provisioning: { ready: true, blocker_variable_names: [] },
+        host_authorization: { ready: true, blocker_variable_names: [] },
+        real_control_canary_authorization: { ready: true, blocker_variable_names: [] },
+      },
       secret_values_included: false,
     });
     expect(JSON.stringify(readiness)).not.toContain('sdk-secret-fixture');

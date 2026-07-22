@@ -337,8 +337,10 @@ function buildProviderItems(
       label: 'Zoom classroom',
       required: [...ZOOM_HOST_CONTROL_REQUIRED_VARIABLES],
       configured: zoomHostReadiness.readiness_blockers.length === 0,
-      providerOn: zoomHostReadiness.provider_gate_blockers.length === 0,
-      canaryReady: zoomHostReadiness.ready && config.zoomClassroomCanaryEnabled,
+      providerOn:
+        zoomHostReadiness.provider_gate_blockers.length === 0 &&
+        zoomHostReadiness.canary_authorization_blockers.length === 0,
+      canaryReady: zoomHostReadiness.ready,
       endpoint: requiredEndpoint(endpointByProvider, 'zoom_classroom'),
       queueDependency: ['class_occurrences', 'classroom_join_grants'],
       env,

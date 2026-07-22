@@ -1,23 +1,28 @@
-# ZOOM-UI-01 Create One Time Meeting SDK App
+# ZOOM-UI-01 Complete Zoom real-control readiness
 
-Status: operator_action_required when `ZOOM_MEETING_SDK_KEY` or
-`ZOOM_MEETING_SDK_SECRET` is missing.
+Status: operator_action_required until the canonical SDK app, exact origin, S2S meeting,
+host authorization, and real-control canary phases are all ready.
 
 Purpose: authorize the dedicated classroom-computer host surface,
 `One Time Zoom Stage Host`, for Meeting SDK in-meeting control.
 
 Required Zoom Marketplace UI steps:
 
-1. Open Zoom Marketplace.
-2. Choose **Develop**, then **Build App**.
-3. Create a **Meeting SDK** app named `One Time Zoom Stage Host`.
-4. Add the Railway PR Environment origin to the SDK allowlist.
-5. Copy the SDK key into protected local or Railway PR variable
-   `ZOOM_MEETING_SDK_KEY`.
-6. Copy the SDK secret into protected local or Railway PR variable
-   `ZOOM_MEETING_SDK_SECRET`.
-7. Confirm the classroom Zoom account can start or join the class meeting as
+1. Keep the existing admin-managed General app named `One Time Zoom Stage Host`.
+2. Keep Meeting SDK enabled under **Features > Embed > Other Devices**.
+3. Set only canonical protected SDK variables: `ZOOM_MEETING_SDK_CLIENT_ID`,
+   `ZOOM_MEETING_SDK_CLIENT_SECRET`, and `ZOOM_MEETING_SDK_WEB_VERSION`.
+4. Bind `ZOOM_MEETING_SDK_ALLOWED_ORIGIN` exactly to the `PUBLIC_BASE_URL` origin and to the
+   existing General app Meeting SDK Web Domain allowlist.
+5. Configure the separate S2S account/client, isolated meeting/passcode, and host variables
+   listed in `ops/provider-actions/ZOOM-MEETING-SDK-APP-SETUP.md`.
+6. Confirm the protected host can start or join only the isolated meeting as
    host or co-host.
+7. Set `ZOOM_CLASSROOM_CANARY_ENABLED=true` only for one explicitly authorized governed
+   isolated-staging canary, then disable it after proof.
+
+Legacy `ZOOM_MEETING_SDK_KEY` and `ZOOM_MEETING_SDK_SECRET` remain compatibility aliases only.
+They never satisfy real-control readiness.
 
 Required control scope:
 
