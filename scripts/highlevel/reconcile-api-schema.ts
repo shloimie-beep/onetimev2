@@ -2002,10 +2002,6 @@ function spaces(count: number) {
   return ' '.repeat(count);
 }
 
-function unique(values: string[]) {
-  return Array.from(new Set(values)).sort();
-}
-
 function sha256(value: string) {
   return createHash('sha256').update(value).digest('hex');
 }

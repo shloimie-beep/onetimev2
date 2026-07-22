@@ -1305,10 +1305,6 @@ function sha256(value: string) {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function unique(values: string[]) {
-  return Array.from(new Set(values)).sort();
-}
-
 function writeStdoutJson(value: unknown) {
   process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
 }
