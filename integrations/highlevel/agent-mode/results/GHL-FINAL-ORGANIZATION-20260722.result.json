@@ -1,0 +1,421 @@
+{
+  "schemaVersion": "one-time-highlevel-final-organization@1.0.0",
+  "generatedAt": "2026-07-22T09:09:54.117Z",
+  "source": {
+    "repository": "shloimie-beep/onetimev2",
+    "canonicalPullRequest": 103,
+    "canonicalBranch": "codex/highlevel-sender-registry-v1-1",
+    "immutableRegistryCommit": "a87e06a6625edd0cff512eee533d204a169aa235",
+    "locationId": "pBSnOK2nkdxp6gf9Rg3o",
+    "locationMatchVerified": true
+  },
+  "summary": {
+    "organization": "complete",
+    "previousAgentModeExecution": "partial",
+    "canonicalWorkflowsFound": 19,
+    "canonicalWorkflowsExpected": 19,
+    "canonicalWorkflowsActiveTested": 1,
+    "canonicalWorkflowsDraftBlocked": 18,
+    "broadMessagesSent": 0,
+    "dropOffStatus": "unavailable_not_deployed"
+  },
+  "folderTree": {
+    "name": "One Time",
+    "id": "da1f8359-f399-477e-89b1-61a47d1b3db0",
+    "children": [
+      { "name": "00 - Intake & Data", "id": "35b75aaa-7b52-44a6-ada6-646f621b69b6" },
+      { "name": "10 - Enrollment & Nurture", "id": "a84014ad-9885-4468-9a79-6c65379d0062" },
+      { "name": "20 - Billing & Access", "id": "174690e2-831e-49ee-ac09-4650e9843526" },
+      { "name": "30 - Portal Lifecycle", "id": "250ff9f0-4985-46c0-a587-f7e3a0251bab" },
+      {
+        "name": "40 - Learning Operations",
+        "id": "37cce184-3c98-4229-a3ac-55e457f85d0c",
+        "children": [
+          { "name": "Classes", "id": "3fcc9185-8bb6-4158-9055-90d732db9bc5" },
+          { "name": "Content", "id": "196a6d36-f31c-40e6-88b3-aa5abdb267e3" }
+        ]
+      },
+      {
+        "name": "45 - Events",
+        "id": "fe96808a-038b-4c93-99d8-8dc1446ca546",
+        "children": [
+          {
+            "name": "2026",
+            "id": "8f27941f-dc16-41cf-8c2e-e6d206c4d997",
+            "children": [
+              { "name": "Tisha B'Av 2026", "id": "95b8b770-269e-427f-a872-7112dc7a5f22" }
+            ]
+          }
+        ]
+      },
+      { "name": "50 - Support", "id": "3d11b0e6-989b-4066-94e5-d646adc51cd7" },
+      { "name": "60 - Bot Actions", "id": "4213ea27-6bd8-444e-9fe2-b75cc2c2ed70" },
+      { "name": "90 - Internal Operations", "id": "03256645-423b-473a-a96f-b9e09aa5b4e8" },
+      { "name": "99 - Deprecated", "id": "6ad6cfa2-a2a4-41ff-85bc-8051a497efbe" }
+    ]
+  },
+  "workflows": [
+    {
+      "key": "OT-01",
+      "name": "OT-01 New Lead Intake",
+      "id": "95a6f461-1a04-4260-b379-246fdcc45af7",
+      "folderPath": "One Time / 00 - Intake & Data",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:38:49.224Z",
+      "updatedAt": "2026-07-22T08:40:59.203Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "adult public signup trigger/filter and operator-owned controlled test not verified"
+    },
+    {
+      "key": "OT-02A",
+      "name": "OT-02A Existing Subscriber Migration 2026 v1",
+      "id": "368d47ca-c6d2-4545-acb0-664f98bac8f2",
+      "folderPath": "One Time / 10 - Enrollment & Nurture",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:42:38.889Z",
+      "updatedAt": "2026-07-22T08:46:46.555Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "approved migration cadence and audience acceptance missing"
+    },
+    {
+      "key": "OT-02B",
+      "name": "OT-02B New Lead Nurture v1",
+      "id": "a7038e32-79d2-4d2d-b103-5722ab0abcfc",
+      "folderPath": "One Time / 10 - Enrollment & Nurture",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:47:39.880Z",
+      "updatedAt": "2026-07-22T08:48:15.077Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "approved nurture audience, cadence, and content acceptance missing"
+    },
+    {
+      "key": "OT-03",
+      "name": "OT-03 Checkout Started / Abandoned",
+      "id": "b5c3e702-a7e6-415d-9ffc-fa2b0027a27f",
+      "folderPath": "One Time / 20 - Billing & Access",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:49:10.534Z",
+      "updatedAt": "2026-07-22T08:49:13.624Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "checkout-started event and approved abandonment window mapping not configured"
+    },
+    {
+      "key": "OT-04",
+      "name": "OT-04 Payment Active",
+      "id": "dd1e90ea-f9bd-4c3b-97de-2230f119f38b",
+      "folderPath": "One Time / 20 - Billing & Access",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:50:05.873Z",
+      "updatedAt": "2026-07-22T08:50:09.097Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "payment-active projection trigger and provider acceptance not configured"
+    },
+    {
+      "key": "OT-05",
+      "name": "OT-05 Payment Failed / Grace",
+      "id": "8c7a0a37-6747-492f-99f6-1a1fb90518de",
+      "folderPath": "One Time / 20 - Billing & Access",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:51:02.196Z",
+      "updatedAt": "2026-07-22T08:51:05.280Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "payment-failed grace projection trigger and approved grace timing not configured"
+    },
+    {
+      "key": "OT-06",
+      "name": "OT-06 Subscription Canceled",
+      "id": "7421cd97-a61b-4434-b7f3-163b8cc7237c",
+      "folderPath": "One Time / 20 - Billing & Access",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:52:26.843Z",
+      "updatedAt": "2026-07-22T08:52:29.788Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "subscription-canceled projection trigger and provider acceptance not configured"
+    },
+    {
+      "key": "OT-13",
+      "name": "OT-13 Refund / Chargeback",
+      "id": "9459a4a1-c5fa-4912-920e-e30c86f1fbe9",
+      "folderPath": "One Time / 20 - Billing & Access",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:52:43.771Z",
+      "updatedAt": "2026-07-22T08:57:46.856Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "refund or chargeback projection trigger and provider acceptance not configured"
+    },
+    {
+      "key": "OT-07",
+      "name": "OT-07 Parent Portal Invitation",
+      "id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
+      "folderPath": "One Time / 30 - Portal Lifecycle",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:00.568Z",
+      "updatedAt": "2026-07-22T08:53:03.640Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "secure companion trigger and operator-owned controlled test not configured"
+    },
+    {
+      "key": "OT-08",
+      "name": "OT-08 Parent Portal Activated",
+      "id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
+      "folderPath": "One Time / 30 - Portal Lifecycle",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:18.116Z",
+      "updatedAt": "2026-07-22T08:57:14.032Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "portal-activated trigger and operator-owned controlled test not configured"
+    },
+    {
+      "key": "OT-09",
+      "name": "OT-09 Parent Class Reminder",
+      "id": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
+      "folderPath": "One Time / 40 - Learning Operations / Classes",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:42.188Z",
+      "updatedAt": "2026-07-22T08:53:45.211Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "confirmed-class trigger, approved timing, and operator-owned controlled test not configured"
+    },
+    {
+      "key": "OT-10",
+      "name": "OT-10 New Recording Available",
+      "id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
+      "folderPath": "One Time / 40 - Learning Operations / Content",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:53:59.571Z",
+      "updatedAt": "2026-07-22T08:57:30.605Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "recording-published trigger and protected recording URL mapping not configured"
+    },
+    {
+      "key": "OT-E01",
+      "name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+      "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+      "folderPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "status": "published",
+      "createdAt": "2026-07-21T13:10:47.185Z",
+      "updatedAt": "2026-07-22T09:09:23.044Z",
+      "disposition": "already_satisfied",
+      "saved": true,
+      "reopenedVerified": "ui_and_api_readback",
+      "testStatus": "active_tested",
+      "blocker": null
+    },
+    {
+      "key": "OT-C01",
+      "name": "OT-C01 Tisha B'Av 2026 Warm Invitation",
+      "id": "f28d8b8a-c26a-4a4f-a9f2-d2a8e94af1ae",
+      "folderPath": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+      "status": "draft",
+      "createdAt": "2026-07-21T16:10:32.426Z",
+      "updatedAt": "2026-07-22T08:35:12.874Z",
+      "disposition": "already_satisfied",
+      "saved": true,
+      "reopenedVerified": "ui_and_api_readback",
+      "testStatus": "draft_blocked",
+      "productionAudience": false,
+      "scheduled": false,
+      "sends": 0,
+      "blocker": "approved production audience and explicit campaign authorization missing"
+    },
+    {
+      "key": "OT-B01",
+      "name": "OT-B01 Complete Signup",
+      "id": "1c1c0bcd-6185-492e-819f-3b7c749d4c23",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:54:28.214Z",
+      "updatedAt": "2026-07-22T08:54:31.335Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "bot-action trigger and input contract plus operator-owned controlled test not configured"
+    },
+    {
+      "key": "OT-B02",
+      "name": "OT-B02 Send Next Confirmed Class Info",
+      "id": "cc766d32-0a47-47b5-818c-de45fefa83a7",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:54:45.868Z",
+      "updatedAt": "2026-07-22T08:54:49.135Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "next-confirmed-class lookup and operator-owned controlled test not configured"
+    },
+    {
+      "key": "OT-B03",
+      "name": "OT-B03 Send Member Login",
+      "id": "8ff00774-82fd-42d7-992b-4e9aca0a5091",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:55:03.793Z",
+      "updatedAt": "2026-07-22T08:55:07.049Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "member-login companion lookup and operator-owned controlled test not configured"
+    },
+    {
+      "key": "OT-B04",
+      "name": "OT-B04 Send Password Help",
+      "id": "9f96c105-a298-4b5d-a5e5-8c573624d242",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:55:20.966Z",
+      "updatedAt": "2026-07-22T08:55:24.020Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "secure password-reset handoff and operator-owned controlled test not configured"
+    },
+    {
+      "key": "OT-B05",
+      "name": "OT-B05 Apply Opt-Out",
+      "id": "badd7521-913c-43b8-9b7a-1c1ccedac63c",
+      "folderPath": "One Time / 60 - Bot Actions",
+      "status": "draft",
+      "createdAt": "2026-07-22T08:55:38.420Z",
+      "updatedAt": "2026-07-22T08:58:02.613Z",
+      "disposition": "created",
+      "saved": true,
+      "reopenedVerified": "api_readback",
+      "testStatus": "draft_blocked",
+      "blocker": "opt-out trigger and channel-suppression mapping plus controlled test not configured"
+    }
+  ],
+  "tishaBavControlledTest": {
+    "workflowId": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+    "operatorOwnedContactFingerprint": "fab156df2719852d",
+    "eventTagVerified": true,
+    "sourceTagVerified": true,
+    "newsletterTagPresent": false,
+    "immediateConfirmationAcceptedDelivered": true,
+    "activeEnrollments": 1,
+    "historicalEnrollments": 2,
+    "duplicateRegistrationCreatedSecondActiveRun": false,
+    "oneHourReminderScheduled": "2026-07-23T21:00:00+03:00",
+    "tenMinuteReminderScheduled": "2026-07-23T21:50:00+03:00",
+    "lateRegistrantPastOutboundActionsSkipped": true,
+    "rawZoomUrlPresent": false,
+    "protectedEventPage": "https://join.onetimeonetime.com/tisha-bav",
+    "protectedLivePage": "https://join.onetimeonetime.com/tisha-bav/live",
+    "authorizedTestMessagesSentBeforeThisFinalRun": 1,
+    "messagesSentDuringThisFinalOrganizationRun": 0
+  },
+  "conversationAi": {
+    "name": "OT-A1 One Time Enrollment Assistant",
+    "id": "0Z5YvlziuXqZmBntYFU0",
+    "mode": "off",
+    "channels": ["Website Live Chat", "WhatsApp"],
+    "voice": "off",
+    "humanHandoff": false,
+    "humanTasks": false,
+    "duplicateCandidates": []
+  },
+  "knowledgeBase": {
+    "name": "One Time Mishnayos - Public Program and Support",
+    "id": "ps6jttZ8WUGycLeQX6uF",
+    "attachedToConversationAi": true,
+    "duplicateCandidates": []
+  },
+  "senderRegistry": {
+    "rabbiCampaignPhase1": {
+      "senderName": "Rabbi Eli Scheller | One Time Mishnayos",
+      "from": "info@onetimeonetime.com",
+      "replyTo": "info@onetimeonetime.com",
+      "active": true
+    },
+    "rabbiCampaignPhase2": {
+      "from": "rabbi@onetimeonetime.com",
+      "active": false,
+      "status": "pending"
+    },
+    "office": {
+      "senderName": "Shloimie from One Time Mishnayos",
+      "from": "info@onetimeonetime.com",
+      "replyTo": "info@onetimeonetime.com"
+    },
+    "brand": {
+      "senderName": "One Time Mishnayos",
+      "from": "info@onetimeonetime.com",
+      "replyTo": "info@onetimeonetime.com"
+    }
+  },
+  "contacts": {
+    "total": 241,
+    "oneTimeTagged": 1,
+    "providerEmailEligible": 207,
+    "marketingSuppressed": 34,
+    "tishaBavRegistered": 1,
+    "identityConflicts": 0,
+    "explicitNewsletterConsent": 0,
+    "importPerformed": false,
+    "broadAudienceSent": false
+  },
+  "duplicatesAndDeprecated": {
+    "workflowDuplicateIds": [],
+    "conversationAiDuplicateIds": [],
+    "knowledgeBaseDuplicateIds": [],
+    "deprecatedAssetIds": [],
+    "deprecatedFolderEmpty": true
+  },
+  "agentActionHub": {
+    "status": "unavailable_not_deployed",
+    "checkedEndpoints": [
+      { "url": "https://ot99-web-staging.up.railway.app/operations/agent-actions", "status": 404 },
+      { "url": "https://join.onetimeonetime.com/operations/agent-actions", "status": 404 }
+    ],
+    "readbackClaimed": false
+  },
+  "safety": {
+    "broadMessagesSent": 0,
+    "warmListMessagesSent": 0,
+    "studentContactsCreated": 0,
+    "stripeChargesCreated": 0,
+    "dnsChanges": 0,
+    "productionAudienceEnrollments": 0,
+    "rabbiPhase2Activated": false
+  }
+}
