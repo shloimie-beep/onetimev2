@@ -451,7 +451,12 @@ export function StudentPortalFeature({
         <section className="ot-panel" aria-labelledby="student-library-heading">
           <h2 id="student-library-heading">Library</h2>
           {dashboard.featured_lesson && <FeaturedLesson lesson={dashboard.featured_lesson} />}
-          <ContentList items={dashboard.library_items} onOpen={onOpenContent} />
+          <ContentList
+            items={dashboard.library_items.filter(
+              (item) => item.status === 'published' && Boolean(item.content_factory),
+            )}
+            onOpen={onOpenContent}
+          />
         </section>
         <section className="ot-panel" aria-labelledby="student-helper-heading">
           <h2 id="student-helper-heading">Class Helper</h2>
@@ -730,6 +735,9 @@ function ContentList({
               )}
               {item.content_factory && (
                 <div className="ot-stack">
+                  {item.content_factory.is_demo && (
+                    <span className="ot-guardrail-note">Demo — approved synthetic lesson data</span>
+                  )}
                   <p>{item.content_factory.approved_summary}</p>
                   <span>Captions active · {label(item.content_factory.progress_state)}</span>
                   <details>

@@ -22,6 +22,20 @@ export const contentFactoryStateSchema = z.enum([
 ]);
 export type ContentFactoryState = z.infer<typeof contentFactoryStateSchema>;
 
+export const contentFactoryTimelineStateSchema = z.enum([
+  'received',
+  'inspecting',
+  'trimming',
+  'transcribing',
+  'drafting',
+  'uploading',
+  'review',
+  'approved',
+  'published',
+  'failed',
+]);
+export type ContentFactoryTimelineState = z.infer<typeof contentFactoryTimelineStateSchema>;
+
 export const contentFactorySourceKindSchema = z.enum(['drive', 'local_drop']);
 export type ContentFactorySourceKind = z.infer<typeof contentFactorySourceKindSchema>;
 
@@ -51,6 +65,7 @@ export const contentFactorySafeItemSchema = z.object({
   source_kind: contentFactorySourceKindSchema,
   display_name: z.string().trim().min(1).max(240),
   state: contentFactoryStateSchema,
+  is_demo: z.boolean(),
   draft: contentFactoryDraftSchema,
   normalized_transcript: safeTextSchema,
   transcript_review_state: z.enum(['draft', 'approved', 'rejected']),
@@ -94,6 +109,25 @@ export const contentFactorySafeItemSchema = z.object({
 });
 export type ContentFactorySafeItem = z.infer<typeof contentFactorySafeItemSchema>;
 
+export const contentFactoryIntakeSafeSchema = z.object({
+  intake_key: idSchema,
+  source_kind: contentFactorySourceKindSchema,
+  display_name: z.string().trim().min(1).max(240),
+  mime_type: z.string().trim().min(1).max(120),
+  byte_length: z.number().int().positive(),
+  state: contentFactoryTimelineStateSchema,
+  class_label: z.string().trim().max(180).nullable(),
+  class_date: z.string().date().nullable(),
+  source_sha256: sha256Schema,
+  private_ref_digest: sha256Schema,
+  raw_source_path_present: z.literal(false),
+  raw_provider_url_present: z.literal(false),
+  last_safe_error_code: z.string().trim().max(160).nullable(),
+  created_at: z.string().datetime({ offset: true }),
+  updated_at: z.string().datetime({ offset: true }),
+});
+export type ContentFactoryIntakeSafe = z.infer<typeof contentFactoryIntakeSafeSchema>;
+
 export const contentFactoryWorkspaceResponseSchema = z.object({
   success: z.literal(true),
   input_adapter: z.enum(['DRIVE', 'LOCAL_DROP']),
@@ -105,6 +139,7 @@ export const contentFactoryWorkspaceResponseSchema = z.object({
     local_drop: z.object({ ready: z.literal(true), private_copy_required: z.literal(true) }),
   }),
   counts: z.record(contentFactoryStateSchema, z.number().int().min(0)),
+  intakes: z.array(contentFactoryIntakeSafeSchema),
   items: z.array(contentFactorySafeItemSchema),
 });
 export type ContentFactoryWorkspaceResponse = z.infer<typeof contentFactoryWorkspaceResponseSchema>;
@@ -133,6 +168,11 @@ export const contentFactoryMutationResponseSchema = z.object({
   item: contentFactorySafeItemSchema,
 });
 
+export const contentFactoryIntakeResponseSchema = z.object({
+  success: z.literal(true),
+  intake: contentFactoryIntakeSafeSchema,
+});
+
 export const contentFactoryPortalProjectionSchema = z.object({
   approved_summary: z.string().trim().max(1_200),
   approved_review_questions: z.array(z.string().trim().min(3).max(600)).min(5).max(10),
@@ -143,5 +183,6 @@ export const contentFactoryPortalProjectionSchema = z.object({
     .trim()
     .regex(/^\/app\/learning\/items\/[A-Za-z0-9._:-]+$/),
   raw_provider_url_present: z.literal(false),
+  is_demo: z.boolean(),
 });
 export type ContentFactoryPortalProjection = z.infer<typeof contentFactoryPortalProjectionSchema>;

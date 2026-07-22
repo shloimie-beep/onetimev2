@@ -1,4 +1,7 @@
 import { createHash } from 'node:crypto';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../../../apps/web/src/server/app.ts';
 import { loadConfig, type AppConfig } from '../../../packages/config/src/index.ts';
@@ -13,6 +16,7 @@ import {
 
 let pool: DbPool;
 let config: AppConfig;
+let intakeDirectory: string;
 
 beforeEach(async () => {
   config = loadConfig({
@@ -24,10 +28,14 @@ beforeEach(async () => {
   });
   pool = createMemoryPool();
   await runMigrations(pool);
+  intakeDirectory = await mkdtemp(path.join(tmpdir(), 'onetime-content-factory-'));
+  process.env.CONTENT_FACTORY_LOCAL_DROP_DIR = intakeDirectory;
 });
 
 afterEach(async () => {
   await pool.end();
+  delete process.env.CONTENT_FACTORY_LOCAL_DROP_DIR;
+  await rm(intakeDirectory, { recursive: true, force: true });
 });
 
 describe('operator-reviewed content factory', () => {
@@ -46,12 +54,31 @@ describe('operator-reviewed content factory', () => {
       });
       expect(forbidden.status).toBe(403);
 
+      const intake = await fetch(`${server.baseUrl}/api/v1/admin/content/factory/intake`, {
+        method: 'POST',
+        headers: {
+          cookie: owner.cookie,
+          'content-type': 'video/mp4',
+          'x-csrf-token': owner.csrfToken,
+          'x-file-name': encodeURIComponent('protected-class-video.mp4'),
+          'x-class-label': encodeURIComponent('OT-LAUNCH-01 Mishnayos'),
+          'x-class-date': '2026-07-22',
+        },
+        body: 'synthetic protected video bytes',
+      });
+      const intakeText = await intake.text();
+      expect(intake.status, intakeText).toBe(201);
+      expect(intakeText).toContain('"state":"received"');
+      expect(intakeText).toContain('"raw_source_path_present":false');
+      expect(intakeText).not.toContain(intakeDirectory);
+
       const workspace = await fetch(`${server.baseUrl}/api/v1/admin/content/factory`, {
         headers: { cookie: owner.cookie },
       });
       const workspaceText = await workspace.text();
       expect(workspace.status, workspaceText).toBe(200);
       expect(workspaceText).toContain('"state":"needs_review"');
+      expect(workspaceText).toContain('protected-class-video.mp4');
       expect(workspaceText).toContain('"raw_provider_url_present":false');
       expect(workspaceText).not.toContain('player.vimeo.com');
       expect(workspaceText).not.toContain('private_video_123');

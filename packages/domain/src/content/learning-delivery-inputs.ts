@@ -30,7 +30,7 @@ export function inspectLearningDeliveryInputAdapters(input: {
 }) {
   const missing = [
     ...(input.driveFolderIdPresent ? [] : ['GOOGLE_DRIVE_FOLDER_ID']),
-    ...(input.driveServiceAccountPresent ? [] : ['GOOGLE_DRIVE_SERVICE_ACCOUNT']),
+    ...(input.driveServiceAccountPresent ? [] : ['GOOGLE_DRIVE_SERVICE_ACCOUNT_JSON']),
   ];
   return {
     inputAdapter: missing.length === 0 ? ('DRIVE' as const) : ('LOCAL_DROP' as const),
