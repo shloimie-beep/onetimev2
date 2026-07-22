@@ -4030,7 +4030,7 @@
       "objectType": "business_workflow",
       "dataType": "workflow",
       "category": "business_workflow",
-      "folder": "45 - Events",
+      "folder": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
       "purpose": "Registered Tisha B'Av 2026 registration and reminder workflow.",
       "sourceOfTruth": "Shared",
       "allowedValues": [],
@@ -4048,7 +4048,7 @@
       "messageClass": "event_registration_confirmation",
       "senderKey": "brand",
       "transport": "GHL",
-      "exactTrigger": "Tisha B'Av 2026 registration or approved reminder milestone is recorded",
+      "exactTrigger": "Contact Tag added — OT | Event | Tisha B'Av 2026 | Registered",
       "companionDelivery": ""
     }
   ],
@@ -4997,7 +4997,7 @@
       "status": "active",
       "title": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "file_path": "integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md",
-      "sha256": "d6038b45c1fc0ed66228edccd8f918f1f804eaafe4fe8fbb4737cf7104206734",
+      "sha256": "a675a56e56b220e275e83fff16e89d5dc1ecc6ec21d759020056fee21b3736b6",
       "source": "Canonical workflow prompt generated from registry",
       "created_date": "2026-07-21",
       "approved_date": "",
@@ -5496,7 +5496,7 @@
     {
       "canonicalName": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
       "id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
-      "canonicalFolder": "45 - Events",
+      "canonicalFolder": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
       "liveFolder": null,
       "liveFolderSource": "api_not_exposed",
       "status": "published",
