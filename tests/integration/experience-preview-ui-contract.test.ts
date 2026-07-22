@@ -39,6 +39,8 @@ describe('OT-LAUNCH-01 operator-visible UI contract', () => {
     expect(previewSource).toContain('Prepare fictional Student session');
     expect(previewSource).toContain('Open fictional Student session');
     expect(studentShellSource).toContain("method: 'GET'");
+    expect(studentShellSource).toContain('requireDetachedPreviewWindow();');
+    expect(studentShellSource).toContain('window.opener = null;');
     expect(studentShellSource).not.toContain('/api/v1/auth/logout');
     expect(studentShellSource).not.toContain('AppShell');
     expect(studentShellSource).toContain('StudentPortalFeature');

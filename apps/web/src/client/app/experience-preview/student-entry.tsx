@@ -14,6 +14,19 @@ type ProjectionState =
       expiresAt: string;
     };
 
+function requireDetachedPreviewWindow() {
+  try {
+    window.opener = null;
+  } catch {
+    throw new Error('Fictional Student preview requires an isolated browsing context.');
+  }
+  if (window.opener !== null) {
+    throw new Error('Fictional Student preview requires an isolated browsing context.');
+  }
+}
+
+requireDetachedPreviewWindow();
+
 function FictionalStudentShell() {
   const [state, setState] = useState<ProjectionState>({ kind: 'loading' });
 
