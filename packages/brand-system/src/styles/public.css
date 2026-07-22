@@ -1633,8 +1633,7 @@ small {
   font-size: 1rem;
 }
 
-.tisha-bav-page .event-register-shell,
-.tisha-bav-page .event-success-panel {
+.tisha-bav-page .event-register-shell {
   background: rgba(8, 8, 6, 0.92);
   backdrop-filter: blur(16px);
 }
@@ -1651,13 +1650,6 @@ small {
     max(18px, env(safe-area-inset-bottom));
   border: 0;
   border-radius: 0;
-}
-
-.tisha-bav-page .event-register-shell:has([data-event-success-panel]:not([hidden])) {
-  background:
-    linear-gradient(90deg, rgba(5, 5, 5, 0.8), rgba(5, 5, 5, 0.5)),
-    url('/assets/events/tisha-bav-2026/tisha-bav-success-bg-desktop-v20260722b.png') center / cover
-      no-repeat;
 }
 
 .tisha-bav-page .event-register-shell h2 {
@@ -1789,19 +1781,6 @@ html[data-event-modal-open] body {
   font-size: 0.9rem;
 }
 
-.tisha-bav-page .event-success-panel {
-  width: min(540px, calc(100vw - 28px));
-  align-self: center;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-  backdrop-filter: none;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.92);
-  text-align: center;
-}
-
 :focus-visible {
   outline: 3px solid var(--color-cyan);
   outline-offset: 3px;
@@ -1891,7 +1870,7 @@ html[data-event-modal-open] body {
   }
 
   .tisha-artwork {
-    width: 100%;
+    width: min(100%, calc((100svh - 192px) * 0.8));
     height: auto;
     min-height: 0;
     max-height: none;
@@ -1900,10 +1879,10 @@ html[data-event-modal-open] body {
   }
 
   .tisha-artwork img {
-    width: min(100%, calc((100svh - 272px) * 0.8));
+    width: 100%;
     max-width: 100%;
     height: auto;
-    max-height: calc(100svh - 272px);
+    max-height: calc(100svh - 192px);
     object-fit: contain;
     object-position: center;
     border-radius: 8px;
@@ -1918,8 +1897,11 @@ html[data-event-modal-open] body {
     text-align: center;
   }
 
-  .tisha-bav-page .event-date {
+  .tisha-bav-page .event-schedule {
     grid-column: 1 / -1;
+  }
+
+  .tisha-bav-page .event-date {
     font-size: clamp(0.8rem, 3.35vw, 0.96rem);
     line-height: 1.05;
   }
@@ -1959,13 +1941,6 @@ html[data-event-modal-open] body {
       max(10px, env(safe-area-inset-bottom));
     overflow: hidden;
     border-radius: 0;
-  }
-
-  .tisha-bav-page .event-register-shell:has([data-event-success-panel]:not([hidden])) {
-    background:
-      linear-gradient(180deg, rgba(5, 5, 5, 0.72), rgba(5, 5, 5, 0.48)),
-      url('/assets/events/tisha-bav-2026/tisha-bav-success-bg-mobile-v20260722b.png') center / cover
-        no-repeat;
   }
 
   .event-registration-content {

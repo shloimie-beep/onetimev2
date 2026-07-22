@@ -332,22 +332,24 @@ function tishaBavLandingPage() {
   <section class="tisha-page" aria-labelledby="tisha-bav-title">
     <header class="tisha-heading">
       <p class="event-pasuk" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
-      <div class="tisha-copy">
-        <h1 id="tisha-bav-title" aria-label="Live Tisha B'Av Event with Rabbi Eli Scheller">
-          <span class="tisha-title-line tisha-title-event">Live Tisha B'Av Event</span>
-          <span class="tisha-title-line tisha-title-rabbi">with Rabbi Eli Scheller</span>
-        </h1>
-      </div>
     </header>
     <div class="tisha-artwork" data-event-artwork>
       <picture class="tisha-picture">
         <source media="(max-width: 820px), (orientation: portrait) and (max-width: 900px)" srcset="${tishaBavMobileImage}">
         <img src="${tishaBavDesktopImage}" alt=""${mediaSizeAttributes(tishaBavDesktopImage)} decoding="async" fetchpriority="high" data-event-hero-image>
       </picture>
-      <p class="event-time event-time-overlay"><strong>3 p.m. Eastern Time</strong></p>
+      <div class="tisha-copy">
+        <h1 id="tisha-bav-title" aria-label="Live Tisha B'Av Event with Rabbi Eli Scheller">
+          <span class="tisha-title-line tisha-title-event">Live Tisha B'Av Event</span>
+          <span class="tisha-title-line tisha-title-rabbi">with Rabbi Eli Scheller</span>
+        </h1>
+      </div>
     </div>
     <div class="tisha-details" aria-label="Event details">
-      <p class="event-date">Thursday, July 23, 2026</p>
+      <div class="event-schedule">
+        <p class="event-date">Thursday, July 23, 2026</p>
+        <p class="event-time"><strong>3:00 p.m. Eastern Time</strong></p>
+      </div>
       <p class="event-charge">No charge</p>
       <button class="button button-primary tisha-primary-cta" type="button" data-event-open-modal aria-haspopup="dialog" aria-controls="event-register-modal" aria-expanded="false">Reserve My Spot</button>
     </div>
@@ -376,10 +378,10 @@ function tishaBavLandingPage() {
           <p data-event-success-message>We'll email the private Zoom link and event details.</p>
         </div>
         <div class="event-share-actions" aria-label="Share this event">
-          <a class="button button-primary event-share-button" href="${escapeHtml(whatsappShareUrl)}" data-event-share-link target="_blank" rel="noopener">WhatsApp share</a>
-          <a class="button event-share-button" href="${escapeHtml(emailShareUrl)}" data-event-share-link>Email a Friend</a>
-          <button class="button event-share-button" type="button" data-event-copy-link>Copy Link</button>
-          <button class="button event-share-button" type="button" data-event-native-share hidden>Share</button>
+          <a class="button event-share-button" href="${escapeHtml(whatsappShareUrl)}" data-event-share-link target="_blank" rel="noopener" aria-label="Share on WhatsApp"><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11.6a8 8 0 0 1-11.8 7l-4.2 1.1 1.1-4A8 8 0 1 1 20 11.6Z"/><path d="M8.5 8.2c.2 3 2.4 5.2 5.4 5.6"/></svg><span>WhatsApp</span></a>
+          <a class="button event-share-button" href="${escapeHtml(emailShareUrl)}" data-event-share-link aria-label="Email a friend"><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg><span>Email</span></a>
+          <button class="button event-share-button" type="button" data-event-copy-link aria-label="Copy link"><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/></svg><span>Copy</span></button>
+          <button class="button event-share-button" type="button" data-event-native-share hidden><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.2"/><circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="19" r="2.2"/><path d="m8 11 8-5M8 13l8 5"/></svg><span>Share</span></button>
         </div>
         <p class="form-status event-copy-status" role="status" data-event-copy-status></p>
       </div>

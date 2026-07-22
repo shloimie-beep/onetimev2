@@ -30,8 +30,8 @@ describe('Tisha BAv public generated copy', () => {
       path.resolve(process.cwd(), 'apps/web/src/client/public/public-entry.ts'),
       'utf8',
     );
-    const publicCssSource = await readFile(
-      path.resolve(process.cwd(), 'packages/brand-system/src/styles/public.css'),
+    const eventCssSource = await readFile(
+      path.resolve(process.cwd(), 'apps/web/public/assets/events/tisha-bav-2026/tisha-bav.css'),
       'utf8',
     );
 
@@ -40,7 +40,7 @@ describe('Tisha BAv public generated copy', () => {
     expect(generatedHtml).toContain('with Rabbi Eli Scheller');
     expect(generatedHtml).toContain('Rabbi Eli Scheller');
     expect(generatedHtml).toContain('data-event-success-message');
-    expect(publicCssSource).toContain('tisha-bav-success-bg-mobile-v20260722b.png');
+    expect(eventCssSource).toContain('tisha-bav-success-bg-mobile-v20260722b.png');
     expect(generatedHtml).toContain('/assets/events/tisha-bav-2026/tisha-bav.css');
     expect(generatedHtml).not.toContain('name="homepage"');
     expect(generatedHtml).not.toContain('class="event-intro"');
@@ -54,14 +54,14 @@ describe('Tisha BAv public generated copy', () => {
 
     const whatsAppHref = htmlAttribute(
       generatedHtml,
-      /<a class="button button-primary event-share-button" href="([^"]+)"[^>]*>WhatsApp share<\/a>/,
+      /<a class="button event-share-button" href="([^"]+)"[^>]*aria-label="Share on WhatsApp"/,
     );
     expect(decodeURIComponent(whatsAppHref)).toContain('Rabbi Eli Scheller');
     expect(decodeURIComponent(whatsAppHref)).not.toContain('Rabbi Elly');
 
     const emailHref = htmlAttribute(
       generatedHtml,
-      /<a class="button event-share-button" href="([^"]+)"[^>]*>Email a Friend<\/a>/,
+      /<a class="button event-share-button" href="([^"]+)"[^>]*aria-label="Email a friend"/,
     );
     expect(decodeURIComponent(emailHref)).toContain('Rabbi Eli Scheller');
     expect(decodeURIComponent(emailHref)).not.toContain('Rabbi Elly');
