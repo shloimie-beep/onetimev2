@@ -14,18 +14,47 @@ const adminConfig = poolConfigFromEnv();
 const databaseName = `ot_launch_highlevel_claim_${Date.now()}_${randomBytes(3).toString('hex')}`;
 const adminPool = new pg.Pool(adminConfig);
 let proofPool: (DbPool & pg.Pool) | null = null;
+let databaseCreated = false;
+let cleanupStarted = false;
+let unexpectedPoolError: unknown = null;
+let proofResult: Awaited<ReturnType<typeof proveConcurrentClaims>> | null = null;
 
 try {
   await adminPool.query(`CREATE DATABASE ${quoteIdentifier(databaseName)}`);
+  databaseCreated = true;
   proofPool = new pg.Pool({ ...adminConfig, database: databaseName, max: 8 }) as DbPool & pg.Pool;
+  proofPool.on('error', (error: unknown) => {
+    if (cleanupStarted && postgresErrorCode(error) === '57P01') return;
+    unexpectedPoolError ??= error;
+  });
   await runMigrations(proofPool);
-  const result = await proveConcurrentClaims(proofPool);
-  process.stdout.write(`${JSON.stringify(result)}\n`);
+  proofResult = await proveConcurrentClaims(proofPool);
 } finally {
-  await proofPool?.end();
-  await adminPool.query(`DROP DATABASE IF EXISTS ${quoteIdentifier(databaseName)} WITH (FORCE)`);
-  await adminPool.end();
+  cleanupStarted = true;
+  const poolToClose = proofPool;
+  proofPool = null;
+  if (poolToClose) {
+    await poolToClose.end().catch((error: unknown) => {
+      if (postgresErrorCode(error) !== '57P01') unexpectedPoolError ??= error;
+    });
+  }
+  try {
+    if (databaseCreated) {
+      await cleanupDatabase(adminPool, databaseName);
+      databaseCreated = false;
+    }
+  } finally {
+    await adminPool.end();
+  }
 }
+
+if (unexpectedPoolError) {
+  throw new Error(
+    `Unexpected PostgreSQL pool error during claim assurance (${postgresErrorCode(unexpectedPoolError) ?? 'unknown'}).`,
+  );
+}
+if (!proofResult) throw new Error('HighLevel PostgreSQL claim assurance produced no result.');
+process.stdout.write(`${JSON.stringify(proofResult)}\n`);
 
 async function proveConcurrentClaims(pool: DbPool) {
   const now = new Date();
@@ -201,4 +230,19 @@ function poolConfigFromEnv(): pg.PoolConfig {
 function quoteIdentifier(value: string) {
   if (!/^[a-z0-9_]+$/.test(value)) throw new Error('Unsafe PostgreSQL identifier.');
   return `"${value}"`;
+}
+
+async function cleanupDatabase(pool: pg.Pool, database: string) {
+  await pool.query(
+    `SELECT pg_terminate_backend(pid)
+       FROM pg_stat_activity
+      WHERE datname = $1 AND pid <> pg_backend_pid()`,
+    [database],
+  );
+  await pool.query(`DROP DATABASE IF EXISTS ${quoteIdentifier(database)}`);
+}
+
+function postgresErrorCode(error: unknown) {
+  if (typeof error !== 'object' || error === null || !('code' in error)) return null;
+  return typeof error.code === 'string' ? error.code : null;
 }
