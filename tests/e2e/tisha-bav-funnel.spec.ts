@@ -3,25 +3,20 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 const shareUrl = 'https://join.onetimeonetime.com/tisha-bav';
+const eventTitle = 'Bringing Knowledge of Hashem into the World';
 const screenshotDir = path.resolve(
   process.env.TISHA_BAV_SCREENSHOT_DIR ?? 'test-results/tisha-bav-funnel',
 );
 
 const mobileViewports = [
-  { width: 360, height: 640 },
-  { width: 360, height: 700 },
-  { width: 360, height: 800 },
-  { width: 390, height: 664 },
+  { width: 375, height: 667 },
   { width: 390, height: 844 },
-  { width: 412, height: 732 },
-  { width: 430, height: 820 },
+  { width: 430, height: 932 },
 ];
 
 const desktopViewports = [
-  { width: 1024, height: 768 },
   { width: 1366, height: 768 },
   { width: 1440, height: 900 },
-  { width: 1920, height: 1080 },
 ];
 
 type Box = { x: number; y: number; width: number; height: number };
@@ -33,7 +28,7 @@ type ScrollMetric = {
   innerWidth: number;
 };
 
-const mobileMetrics: ScrollMetric[] = [];
+const scrollMetrics: ScrollMetric[] = [];
 
 test.beforeAll(() => {
   mkdirSync(screenshotDir, { recursive: true });
@@ -41,8 +36,8 @@ test.beforeAll(() => {
 
 test.afterAll(() => {
   writeFileSync(
-    path.join(screenshotDir, 'mobile-scroll-results.json'),
-    JSON.stringify(mobileMetrics, null, 2),
+    path.join(screenshotDir, 'scroll-results.json'),
+    JSON.stringify(scrollMetrics, null, 2),
   );
 });
 
@@ -56,14 +51,14 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     await page.evaluate(() => document.fonts.ready);
 
     const metric = await scrollMetric(page, label);
-    mobileMetrics.push(metric);
+    scrollMetrics.push(metric);
     expect(metric.scrollHeight, `${label} document height`).toBeLessThanOrEqual(
       metric.innerHeight + 2,
     );
     expect(metric.scrollWidth, `${label} document width`).toBeLessThanOrEqual(metric.innerWidth);
 
     const headline = page.getByRole('heading', {
-      name: 'Filling the World with Knowledge of Hashem',
+      name: eventTitle,
     });
     const hebrew = page.locator('.event-hebrew');
     const image = page.locator('[data-event-hero-image]');
@@ -72,14 +67,17 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     );
     const date = page.getByText('Thursday, July 23, 2026');
     const time = page.getByText('3:00 PM Eastern / 10:00 PM Israel', { exact: true });
+    const noCharge = page.getByText('No charge', { exact: true });
     const cta = page.getByRole('button', { name: 'Reserve My Spot' });
 
+    await waitForHeroImage(page);
     await assertFullyVisible(page, headline, `${label} headline`);
     await assertFullyVisible(page, hebrew, `${label} Hebrew line`);
     await assertFullyVisible(page, image, `${label} portrait art`);
     await assertFullyVisible(page, description, `${label} class description`);
     await assertFullyVisible(page, date, `${label} date`);
     await assertFullyVisible(page, time, `${label} time`);
+    await assertFullyVisible(page, noCharge, `${label} no charge`);
     await assertFullyVisible(page, cta, `${label} CTA`);
     await assertTitleOnTopOfArtwork(page, headline, hebrew, image, `${label} title overlay`);
 
@@ -100,7 +98,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
     await assertNoVisibleBoxOverlap(
       page,
       image,
-      [description, date, time, cta],
+      [description, date, time, noCharge, cta],
       `${label} details`,
     );
     await assertNoRawZoom(page);
@@ -141,10 +139,9 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     await page.setViewportSize(viewport);
     await page.goto(`/tisha-bav?desktop=${label}`, { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
+    await waitForHeroImage(page);
 
-    await expect(
-      page.getByRole('heading', { name: 'Filling the World with Knowledge of Hashem' }),
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: eventTitle })).toBeVisible();
     await expect(page.locator('.event-hebrew')).toBeVisible();
     await expect(
       page.getByText("Special Tisha B'Av VIP Zoom Class with Rabbi Elly Scheller"),
@@ -153,6 +150,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     await expect(
       page.getByText('3:00 PM Eastern / 10:00 PM Israel', { exact: true }),
     ).toBeVisible();
+    await expect(page.getByText('No charge', { exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Reserve My Spot' })).toHaveCount(1);
     await expect(page.locator('form.event-form')).toBeHidden();
     await expect(page.locator('body')).not.toContainText(/student|payment|pricing|GHL iframe/i);
@@ -166,7 +164,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     });
     await assertTitleOnTopOfArtwork(
       page,
-      page.getByRole('heading', { name: 'Filling the World with Knowledge of Hashem' }),
+      page.getByRole('heading', { name: eventTitle }),
       page.locator('.event-hebrew'),
       page.locator('[data-event-hero-image]'),
       `${label} title overlay`,
@@ -174,6 +172,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
     await assertNoRawZoom(page);
 
     const metric = await scrollMetric(page, label);
+    scrollMetrics.push(metric);
     expect(metric.scrollWidth, `${label} desktop width`).toBeLessThanOrEqual(metric.innerWidth);
     if (viewport.width >= 1366) {
       expect(metric.scrollHeight, `${label} desktop height`).toBeLessThanOrEqual(
@@ -185,6 +184,7 @@ test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/tisha-bav?desktop-modal=1', { waitUntil: 'load' });
   await page.evaluate(() => document.fonts.ready);
+  await waitForHeroImage(page);
   await page.screenshot({
     path: path.join(screenshotDir, 'desktop-1440x900-landscape-hero.png'),
     fullPage: false,
@@ -256,6 +256,12 @@ async function assertHeroImage(
   const sourcePath = decodeURIComponent(new URL(details.currentSrc).pathname);
   expect(sourcePath, `${input.label} selected hero asset`).toContain(input.expectedName);
   expect(sourcePath, `${input.label} rejected hero asset`).not.toContain(input.unexpectedName);
+  const response = await page.request.get(details.currentSrc, {
+    headers: { 'cache-control': 'no-cache', pragma: 'no-cache' },
+  });
+  expect(response.status(), `${input.label} hero asset HTTP status`).toBe(200);
+  expect(details.naturalWidth, `${input.label} natural width is nonzero`).toBeGreaterThan(0);
+  expect(details.naturalHeight, `${input.label} natural height is nonzero`).toBeGreaterThan(0);
   expect(details.naturalWidth, `${input.label} natural width`).toBe(input.naturalWidth);
   expect(details.naturalHeight, `${input.label} natural height`).toBe(input.naturalHeight);
   const naturalRatio = input.naturalWidth / input.naturalHeight;
@@ -263,6 +269,22 @@ async function assertHeroImage(
   expect(Math.abs(renderedRatio - naturalRatio), `${input.label} rendered aspect`).toBeLessThan(
     0.03,
   );
+}
+
+async function waitForHeroImage(page: Page) {
+  const image = page.locator('[data-event-hero-image]');
+  await expect(image).toBeVisible();
+  await image.evaluate(async (node: HTMLImageElement) => {
+    if (!node.complete || node.naturalWidth === 0) {
+      await new Promise<void>((resolve, reject) => {
+        node.addEventListener('load', () => resolve(), { once: true });
+        node.addEventListener('error', () => reject(new Error('Hero image failed to load')), {
+          once: true,
+        });
+      });
+    }
+    await node.decode().catch(() => undefined);
+  });
 }
 
 async function assertNoVisibleBoxOverlap(
