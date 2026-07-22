@@ -4,11 +4,13 @@ import {
   applyNextOt86Publication,
   createDisabledOt109TranscriptionPort,
   createDisabledOt109VimeoPort,
+  contentFactoryStorageFromEnv,
   DeterministicFakeHighLevelAdapter,
   runAuthEmailChallengeDeliveryOutboxBatch,
   runHighLevelProjectionBatch,
   runLifecycleDeliveryOutboxBatch,
   runOt109PublisherWorkerOnce,
+  runContentFactoryWorkerOnce,
   runSupportDeliveryBatch,
   runTishaBavEventEmailFallbackBatch,
 } from '../../../../packages/domain/src/index.ts';
@@ -104,6 +106,13 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       source,
       logger,
     });
+    const contentFactory = await runDurableContentFactoryWorkerOnce({
+      pool,
+      config: config.appConfig,
+      source,
+      workerInstanceKey,
+      logger,
+    });
     const eventEmailFallback = await runTishaBavEventEmailFallbackBatch({
       pool,
       config: config.appConfig,
@@ -117,6 +126,7 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       authEmail,
       highLevel,
       learningDelivery,
+      contentFactory,
       eventEmailFallback,
     };
   } finally {
@@ -230,6 +240,13 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             limit: config.batchSize,
           });
           await runLearningDeliveryWorkerOnce({ pool, source, logger });
+          await runDurableContentFactoryWorkerOnce({
+            pool,
+            config: config.appConfig,
+            source,
+            workerInstanceKey,
+            logger,
+          });
           await runTishaBavEventEmailFallbackBatch({
             pool,
             config: config.appConfig,
@@ -320,6 +337,39 @@ async function runLearningDeliveryWorkerOnce(input: {
   };
 }
 
+async function runDurableContentFactoryWorkerOnce(input: {
+  pool: ReturnType<typeof createPgPool>;
+  config: ReturnType<typeof loadDeliveryWorkerConfig>['appConfig'];
+  source: NodeJS.ProcessEnv;
+  workerInstanceKey: string;
+  logger: ReturnType<typeof createDeliveryLogger>;
+}) {
+  if (input.source.CONTENT_FACTORY_WORKER_ENABLED !== 'true') {
+    return { enabled: false as const, provider_calls_performed: false as const };
+  }
+  try {
+    const result = await runContentFactoryWorkerOnce({
+      pool: input.pool,
+      config: input.config,
+      storage: contentFactoryStorageFromEnv(input.source),
+      workerIdentity: input.workerInstanceKey,
+      mode: input.source.CONTENT_FACTORY_PROCESSING_MODE === 'vimeo' ? 'vimeo' : 'synthetic',
+    });
+    return { enabled: true as const, provider_calls_performed: false as const, result };
+  } catch (error) {
+    void error;
+    input.logger.warn('content_factory_worker_step_failed', {
+      worker: 'content_factory',
+      failure_code: 'content_factory_worker_step_failed',
+    });
+    return {
+      enabled: true as const,
+      provider_calls_performed: false as const,
+      safe_error_code: 'content_factory_worker_step_failed',
+    };
+  }
+}
+
 async function safeLearningDeliveryStep<T>(
   run: () => Promise<T>,
   logger: ReturnType<typeof createDeliveryLogger>,
@@ -350,6 +400,7 @@ if (process.argv.includes('--once')) {
       `auth_email_expired=${summary.authEmail.expired}`,
       `highlevel_adapter_calls=${summary.highLevel.adapterCalls}`,
       `learning_delivery_enabled=${summary.learningDelivery.enabled}`,
+      `content_factory_enabled=${summary.contentFactory.enabled}`,
       `event_fallback_delivered=${summary.eventEmailFallback.delivered}`,
       `event_fallback_skipped=${summary.eventEmailFallback.skipped}`,
     ].join('\n') + '\n',

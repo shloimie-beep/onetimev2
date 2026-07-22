@@ -484,7 +484,10 @@ async function portalItemsForLearner(input: {
             lessons.resource_count AS lesson_resource_count,
             factory.draft_json AS factory_draft_json,
             factory.captions_active AS factory_captions_active,
-            factory.progress_state AS factory_progress_state
+            factory.progress_state AS factory_progress_state,
+            factory.processing_mode AS factory_processing_mode,
+            occurrence.local_class_date AS factory_class_date,
+            series.title AS factory_class_title
        FROM onetime.content_items AS items
        JOIN onetime.content_item_entitlements AS entitlements
          ON entitlements.account_key = items.account_key
@@ -500,6 +503,14 @@ async function portalItemsForLearner(input: {
         AND factory.product_key = items.product_key
         AND factory.source_key = items.content_item_key
         AND factory.factory_state = 'published'
+       LEFT JOIN onetime.class_occurrences AS occurrence
+         ON occurrence.account_key = items.account_key
+        AND occurrence.product_key = items.product_key
+        AND occurrence.occurrence_key = items.occurrence_key
+       LEFT JOIN onetime.class_series AS series
+         ON series.account_key = occurrence.account_key
+        AND series.product_key = occurrence.product_key
+        AND series.class_series_key = occurrence.class_series_key
       WHERE items.account_key = $1
         AND items.product_key = $2
         AND items.retention_state = 'active'
@@ -549,8 +560,9 @@ async function portalItemsForLearner(input: {
       : null;
     const itemKey = String(row.content_item_key);
     const isDemo = isContentFactoryDemoSource(itemKey);
+    const isSynthetic = isDemo || row.factory_processing_mode === 'synthetic';
     const exposedFactoryDraft =
-      factoryDraft && (!isDemo || isContentFactorySyntheticPlaybackEnabled(input.config))
+      factoryDraft && (!isSynthetic || isContentFactorySyntheticPlaybackEnabled(input.config))
         ? factoryDraft
         : null;
     return {
@@ -569,6 +581,9 @@ async function portalItemsForLearner(input: {
       published_at: nullableIso(row.published_at),
       content_factory: exposedFactoryDraft
         ? {
+            occurrence_key: String(row.occurrence_key),
+            class_title: String(row.factory_class_title),
+            class_date: asDate(row.factory_class_date).toISOString().slice(0, 10),
             approved_summary: String(exposedFactoryDraft.short_description ?? ''),
             approved_review_questions: Array.isArray(exposedFactoryDraft.review_questions)
               ? exposedFactoryDraft.review_questions.map(String)
@@ -578,7 +593,7 @@ async function portalItemsForLearner(input: {
               'not_started' | 'in_progress' | 'completed',
             playback_route: `/app/learning/items/${encodeURIComponent(itemKey)}`,
             raw_provider_url_present: false as const,
-            is_demo: isDemo,
+            is_demo: isSynthetic,
           }
         : undefined,
       lesson: lessonKey
