@@ -95,7 +95,7 @@ describe('OT-88 classroom contracts and policy', () => {
       ZOOM_CLASSROOM_REAL_PROVIDER_ENABLED: 'true',
       ZOOM_MEETING_SDK_CLIENT_ID: 'configured',
       ZOOM_MEETING_SDK_CLIENT_SECRET: 'configured',
-      ZOOM_MEETING_SDK_WEB_VERSION: 'configured',
+      ZOOM_MEETING_SDK_WEB_VERSION: '3.11.2',
       ZOOM_S2S_ACCOUNT_ID: 'configured',
       ZOOM_S2S_CLIENT_ID: 'configured',
       ZOOM_S2S_CLIENT_SECRET: 'configured',
