@@ -1,7 +1,7 @@
 {
   "task": "OT-LAUNCH-01-HIGHLEVEL-APP-CONTRACTS",
   "base_branch": "codex/full-app-staging-live",
-  "base_head": "03a79ce9955ade72d7c100c9969454d60616385d",
+  "base_head": "018cc72e5fe036fe64704db3b507e043505a9bc9",
   "evidence_pr": 107,
   "evidence_head": "deda8f9b04dbafcc36363628a14b6fecc94fd854",
   "location_id": "pBSnOK2nkdxp6gf9Rg3o",

@@ -2,7 +2,7 @@
 
 ## Scope
 
-- Base: `codex/full-app-staging-live` at `03a79ce9955ade72d7c100c9969454d60616385d`
+- Base: `codex/full-app-staging-live` at `018cc72e5fe036fe64704db3b507e043505a9bc9`
 - GHL evidence: PR #107 at `deda8f9b04dbafcc36363628a14b6fecc94fd854`
 - Location: `pBSnOK2nkdxp6gf9Rg3o`
 - Provider mode: default-off
