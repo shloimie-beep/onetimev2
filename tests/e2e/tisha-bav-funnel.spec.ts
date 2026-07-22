@@ -52,6 +52,7 @@ test.afterAll(() => {
 test('Tisha BAv initial mobile landing fits one screen and opens full-page registration', async ({
   page,
 }) => {
+  await installNativeShareCapture(page);
   const registrationRequests = await interceptRegistration(page);
   for (const [index, viewport] of mobileViewports.entries()) {
     const label = `${viewport.width}x${viewport.height}`;
@@ -147,6 +148,7 @@ test('Tisha BAv initial mobile landing fits one screen and opens full-page regis
 });
 
 test('Tisha BAv desktop uses landscape art and keeps the modal full-page', async ({ page }) => {
+  await installNativeShareCapture(page);
   const registrationRequests = await interceptRegistration(page);
   for (const [index, viewport] of desktopViewports.entries()) {
     const label = `${viewport.width}x${viewport.height}`;
@@ -413,6 +415,17 @@ async function waitForHeroImage(page: Page) {
   });
 }
 
+async function installNativeShareCapture(page: Page) {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: async (data: unknown) => {
+        (window as Window & { __eventShareData?: unknown }).__eventShareData = data;
+      },
+    });
+  });
+}
+
 async function assertTitleOnTopOfArtwork(
   page: Page,
   headline: Locator,
@@ -592,6 +605,12 @@ async function assertSuccessShareState(page: Page, label: string) {
   const nativeShare = dialog.getByRole('button', { name: 'Share' });
   if (nativeShareSupported) {
     await expect(nativeShare, label).toBeVisible();
+    await nativeShare.click();
+    const shareData = await page.evaluate(
+      () => (window as Window & { __eventShareData?: { text?: string } }).__eventShareData,
+    );
+    expect(shareData?.text, `${label} native share text`).toContain('Rabbi Eli Scheller');
+    expect(shareData?.text, `${label} native share text`).not.toContain('Rabbi Elly');
   } else {
     await expect(nativeShare, label).toBeHidden();
   }

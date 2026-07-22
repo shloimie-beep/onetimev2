@@ -441,7 +441,7 @@ if (eventNativeShare && typeof navigator.share === 'function') {
     await navigator
       .share({
         title: "Tisha B'Av VIP Zoom Class",
-        text: "Reserve your spot for the Tisha B'Av VIP Zoom class with Rabbi Elly Scheller.",
+        text: "Reserve your spot for the Tisha B'Av VIP Zoom class with Rabbi Eli Scheller.",
         url: eventShareUrl,
       })
       .catch(() => undefined);
