@@ -1,0 +1,443 @@
+{
+  "spec_version": "intent-preservation-v1",
+  "spec_id": "SPEC-20260721-010",
+  "raw": {
+    "raw_id": "RAW-20260721-010",
+    "path": "C:/Users/User/.onetime-worktrees/TISHA-BAV-2026-FUNNEL/ops/codex-runs/TISHA-BAV-FUNNEL/EMAIL-COPY-RAW.md",
+    "capture_mode": "verbatim",
+    "sha256": "c970d6cae8311ace88c20bb0702e4a1f022f36ef165ad554bffa7af5b10a050f",
+    "character_count": 2066
+  },
+  "scope": {
+    "workspace": "rabbi_sheller_provider",
+    "project": "one_time_mishnah_class",
+    "routes": ["/tisha-bav", "/tisha-bav/live"]
+  },
+  "global_invariants": [],
+  "changes": [
+    {
+      "change_id": "CHG-20260721-010",
+      "source_spans": [
+        {
+          "span_id": "CHG-20260721-010:S01",
+          "start": 0,
+          "end": 245,
+          "quote": "**# Tisha B'Av 2026 Email Copy**\n\n**## Event assumptions**\n\n```text\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n```\n\nThe event starts during Tisha B'Av.\n\nIf the final event time changes, update every email and workflow wait together."
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/tisha-bav",
+      "screen": "Tisha B'Av 2026 event communications",
+      "target": {
+        "section": "Canonical event schedule",
+        "component": "Email catalog and workflow schedule",
+        "selector": "",
+        "accessible_name": "",
+        "current_text_anchor": "2026-07-23T15:00:00-04:00"
+      },
+      "primary_operation": "behavior",
+      "current_state": "The event schedule exists, but exact email copy and reminder waits are not bound to one validated communication catalog.",
+      "required_state": "The event remains Thursday, July 23, 2026 at 3:00 PM Eastern / 10:00 PM Israel. Every dated email and the one-hour and ten-minute workflow waits must derive from the same canonical event start and fail validation when they diverge.",
+      "exact_payload": {
+        "event_start": "2026-07-23T15:00:00-04:00",
+        "event_start_israel": "2026-07-23T22:00:00+03:00",
+        "display_date": "Thursday, July 23, 2026",
+        "display_time_eastern": "3:00 PM Eastern",
+        "display_time_israel": "10:00 PM Israel",
+        "one_hour_reminder_offset_minutes": -60,
+        "ten_minute_reminder_offset_minutes": -10
+      },
+      "layout": { "parent": "", "sibling_before": "", "sibling_after": "", "order": [] },
+      "style_scope": { "allowed_targets": [], "forbidden_targets": [], "properties": [] },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "The event starts during Tisha B'Av.",
+        "A time change updates all dated copy and reminder waits together."
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20260721-010-POS-001",
+            "text": "**# Tisha B'Av 2026 Email Copy**\n\n**## Event assumptions**\n\n```text\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n```\n\nThe event starts during Tisha B'Av.\n\nIf the final event time changes, update every email and workflow wait together."
+          },
+          {
+            "assertion_id": "CHG-20260721-010-POS-002",
+            "text": "The reminder schedule resolves to 2026-07-23T18:00:00.000Z and 2026-07-23T18:50:00.000Z."
+          },
+          {
+            "assertion_id": "CHG-20260721-010-POS-003",
+            "text": "A contract test verifies every message date/time line and every workflow wait against the canonical start."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "CHG-20260721-010-NEG-001",
+            "text": "No message or reminder uses an independently maintained event timestamp."
+          }
+        ]
+      },
+      "dependencies": [],
+      "resolution_question": { "question": "", "choices": [] }
+    },
+    {
+      "change_id": "CHG-20260721-011",
+      "source_spans": [
+        {
+          "span_id": "CHG-20260721-011:S01",
+          "start": 247,
+          "end": 904,
+          "quote": "**## Warm invitation**\n\nFrom:\n\n```text\nRabbi Eli Scheller | One Time Mishnayos\n<info@onetimeonetime.com>\n```\n\nReply-To:\n\n```text\ninfo@onetimeonetime.com\n```\n\nSubject:\n\n```text\nJoin me live this Tisha B'Av\n```\n\nPreview:\n\n```text\nA live program from Eretz Yisrael on Thursday at 3:00 PM Eastern.\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nThis Tisha B'Av, I will be hosting a live online program from Eretz Yisrael.\n\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n\nRegister below and we'll email the private access before the program begins.\n\n[Reserve My Place]\n\nI hope you can join me.\n\nRabbi Eli Scheller\nOne Time Mishnayos\n```"
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/tisha-bav",
+      "screen": "Tisha B'Av 2026 warm invitation",
+      "target": {
+        "section": "Warm invitation",
+        "component": "HighLevel email template",
+        "selector": "",
+        "accessible_name": "Reserve My Place",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "add",
+      "current_state": "No exact warm-invitation template is encoded in the event configuration or provider handoff.",
+      "required_state": "Preserve the operator's From, Reply-To, subject, preview, body, merge token, line order, and CTA label exactly; map the CTA to /tisha-bav.",
+      "exact_payload": {
+        "from_name": "Rabbi Eli Scheller | One Time Mishnayos",
+        "from_email": "info@onetimeonetime.com",
+        "reply_to": "info@onetimeonetime.com",
+        "subject": "Join me live this Tisha B'Av",
+        "preview": "A live program from Eretz Yisrael on Thursday at 3:00 PM Eastern.",
+        "cta_label": "Reserve My Place",
+        "cta_path": "/tisha-bav"
+      },
+      "layout": {
+        "parent": "email",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": ["greeting", "invitation", "schedule", "access promise", "CTA", "signoff"]
+      },
+      "style_scope": { "allowed_targets": [], "forbidden_targets": [], "properties": [] },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "{{default contact.first_name \"there\"}}",
+        "No raw Zoom URL in the template."
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20260721-011-POS-001",
+            "text": "**## Warm invitation**\n\nFrom:\n\n```text\nRabbi Eli Scheller | One Time Mishnayos\n<info@onetimeonetime.com>\n```\n\nReply-To:\n\n```text\ninfo@onetimeonetime.com\n```\n\nSubject:\n\n```text\nJoin me live this Tisha B'Av\n```\n\nPreview:\n\n```text\nA live program from Eretz Yisrael on Thursday at 3:00 PM Eastern.\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nThis Tisha B'Av, I will be hosting a live online program from Eretz Yisrael.\n\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n\nRegister below and we'll email the private access before the program begins.\n\n[Reserve My Place]\n\nI hope you can join me.\n\nRabbi Eli Scheller\nOne Time Mishnayos\n```"
+          },
+          {
+            "assertion_id": "CHG-20260721-011-POS-002",
+            "text": "Reserve My Place resolves to /tisha-bav."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "CHG-20260721-011-NEG-001",
+            "text": "The invitation is prepared only; it is not sent and no recipient segment is inferred."
+          }
+        ]
+      },
+      "dependencies": ["CHG-20260721-010"],
+      "resolution_question": { "question": "", "choices": [] }
+    },
+    {
+      "change_id": "CHG-20260721-012",
+      "source_spans": [
+        {
+          "span_id": "CHG-20260721-012:S01",
+          "start": 906,
+          "end": 1371,
+          "quote": "**## Registration confirmation**\n\nSubject:\n\n```text\nYou're registered for Rabbi Eli Scheller's live Tisha B'Av program\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nYour place is saved for Rabbi Eli Scheller's live Tisha B'Av program from Eretz Yisrael.\n\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n\nWe'll email the private access details before the program begins.\n\n[View Event Details]\n\nOne Time Mishnayos\ninfo@onetimeonetime.com\n```"
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/tisha-bav",
+      "screen": "Tisha B'Av 2026 registration confirmation",
+      "target": {
+        "section": "Registration confirmation",
+        "component": "HighLevel email template and bounded fallback",
+        "selector": "",
+        "accessible_name": "View Event Details",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "add",
+      "current_state": "The registration flow queues a versioned confirmation intent without an exact provider-visible copy contract.",
+      "required_state": "Preserve the exact confirmation subject, body, merge token, line order, and CTA label; map the CTA to /tisha-bav and queue it immediately after registration.",
+      "exact_payload": {
+        "subject": "You're registered for Rabbi Eli Scheller's live Tisha B'Av program",
+        "cta_label": "View Event Details",
+        "cta_path": "/tisha-bav",
+        "workflow_offset_minutes": 0
+      },
+      "layout": {
+        "parent": "email",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": ["greeting", "confirmation", "schedule", "access promise", "CTA", "signoff"]
+      },
+      "style_scope": { "allowed_targets": [], "forbidden_targets": [], "properties": [] },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "{{default contact.first_name \"there\"}}",
+        "No raw Zoom URL in the template."
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20260721-012-POS-001",
+            "text": "**## Registration confirmation**\n\nSubject:\n\n```text\nYou're registered for Rabbi Eli Scheller's live Tisha B'Av program\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nYour place is saved for Rabbi Eli Scheller's live Tisha B'Av program from Eretz Yisrael.\n\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n\nWe'll email the private access details before the program begins.\n\n[View Event Details]\n\nOne Time Mishnayos\ninfo@onetimeonetime.com\n```"
+          },
+          {
+            "assertion_id": "CHG-20260721-012-POS-002",
+            "text": "View Event Details resolves to /tisha-bav."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "CHG-20260721-012-NEG-001",
+            "text": "The confirmation never claims that private access has already been delivered."
+          }
+        ]
+      },
+      "dependencies": ["CHG-20260721-010"],
+      "resolution_question": { "question": "", "choices": [] }
+    },
+    {
+      "change_id": "CHG-20260721-013",
+      "source_spans": [
+        {
+          "span_id": "CHG-20260721-013:S01",
+          "start": 1373,
+          "end": 1706,
+          "quote": "**## One-hour reminder**\n\nSubject:\n\n```text\nWe begin in one hour\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nRabbi Eli Scheller's live Tisha B'Av program begins in one hour.\n\nOpen the event page below. The Join button will become available when the event opens.\n\n[Open the Live Event Page]\n\nOne Time Mishnayos\n```"
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/tisha-bav/live",
+      "screen": "Tisha B'Av 2026 one-hour reminder",
+      "target": {
+        "section": "One-hour reminder",
+        "component": "HighLevel email template and workflow wait",
+        "selector": "",
+        "accessible_name": "Open the Live Event Page",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "add",
+      "current_state": "No exact one-hour reminder template or schedule contract is encoded.",
+      "required_state": "Preserve the exact subject, body, merge token, line order, and CTA label; map the CTA to /tisha-bav/live and schedule it exactly 60 minutes before the canonical event start.",
+      "exact_payload": {
+        "subject": "We begin in one hour",
+        "cta_label": "Open the Live Event Page",
+        "cta_path": "/tisha-bav/live",
+        "workflow_offset_minutes": -60
+      },
+      "layout": {
+        "parent": "email",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": ["greeting", "reminder", "join instruction", "CTA", "signoff"]
+      },
+      "style_scope": { "allowed_targets": [], "forbidden_targets": [], "properties": [] },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "{{default contact.first_name \"there\"}}",
+        "The Join button becomes available only when the protected event opens."
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20260721-013-POS-001",
+            "text": "**## One-hour reminder**\n\nSubject:\n\n```text\nWe begin in one hour\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nRabbi Eli Scheller's live Tisha B'Av program begins in one hour.\n\nOpen the event page below. The Join button will become available when the event opens.\n\n[Open the Live Event Page]\n\nOne Time Mishnayos\n```"
+          },
+          {
+            "assertion_id": "CHG-20260721-013-POS-002",
+            "text": "The wait resolves to 2026-07-23T18:00:00.000Z from the canonical event start."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "CHG-20260721-013-NEG-001",
+            "text": "The reminder contains no raw Zoom URL."
+          }
+        ]
+      },
+      "dependencies": ["CHG-20260721-010"],
+      "resolution_question": { "question": "", "choices": [] }
+    },
+    {
+      "change_id": "CHG-20260721-014",
+      "source_spans": [
+        {
+          "span_id": "CHG-20260721-014:S01",
+          "start": 1708,
+          "end": 2065,
+          "quote": "**## Ten-minute reminder**\n\nSubject:\n\n```text\nStarting soon: join Rabbi Eli Scheller live\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nWe're starting shortly.\n\nUse the private One Time event page to join Rabbi Eli Scheller's live Tisha B'Av program.\n\n[Join the Live Program]\n\nPlease do not forward the access page.\n\nOne Time Mishnayos\n```"
+        }
+      ],
+      "classification": "HARD_EXACT",
+      "provenance": "USER_STATED",
+      "confidence": 1,
+      "ambiguity_status": "none",
+      "route": "/tisha-bav/live",
+      "screen": "Tisha B'Av 2026 ten-minute reminder",
+      "target": {
+        "section": "Ten-minute reminder",
+        "component": "HighLevel email template and workflow wait",
+        "selector": "",
+        "accessible_name": "Join the Live Program",
+        "current_text_anchor": ""
+      },
+      "primary_operation": "add",
+      "current_state": "No exact ten-minute reminder template or schedule contract is encoded.",
+      "required_state": "Preserve the exact subject, body, merge token, line order, and CTA label; map the CTA to /tisha-bav/live and schedule it exactly 10 minutes before the canonical event start.",
+      "exact_payload": {
+        "subject": "Starting soon: join Rabbi Eli Scheller live",
+        "cta_label": "Join the Live Program",
+        "cta_path": "/tisha-bav/live",
+        "workflow_offset_minutes": -10
+      },
+      "layout": {
+        "parent": "email",
+        "sibling_before": "",
+        "sibling_after": "",
+        "order": [
+          "greeting",
+          "starting soon",
+          "private-page instruction",
+          "CTA",
+          "do-not-forward notice",
+          "signoff"
+        ]
+      },
+      "style_scope": { "allowed_targets": [], "forbidden_targets": [], "properties": [] },
+      "viewport_behavior": [],
+      "must_preserve": [
+        "{{default contact.first_name \"there\"}}",
+        "Please do not forward the access page.",
+        "No raw Zoom URL in the template."
+      ],
+      "must_remove": [],
+      "conflicts": [],
+      "supersedes_ids": [],
+      "acceptance_assertions": {
+        "positive": [
+          {
+            "assertion_id": "CHG-20260721-014-POS-001",
+            "text": "**## Ten-minute reminder**\n\nSubject:\n\n```text\nStarting soon: join Rabbi Eli Scheller live\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nWe're starting shortly.\n\nUse the private One Time event page to join Rabbi Eli Scheller's live Tisha B'Av program.\n\n[Join the Live Program]\n\nPlease do not forward the access page.\n\nOne Time Mishnayos\n```"
+          },
+          {
+            "assertion_id": "CHG-20260721-014-POS-002",
+            "text": "The wait resolves to 2026-07-23T18:50:00.000Z from the canonical event start."
+          }
+        ],
+        "negative": [
+          {
+            "assertion_id": "CHG-20260721-014-NEG-001",
+            "text": "The reminder contains no raw Zoom URL."
+          }
+        ]
+      },
+      "dependencies": ["CHG-20260721-010"],
+      "resolution_question": { "question": "", "choices": [] }
+    }
+  ],
+  "source_coverage": [
+    {
+      "coverage_id": "COV-20260721-010",
+      "span_id": "CHG-20260721-010:S01",
+      "start": 0,
+      "end": 245,
+      "quote": "**# Tisha B'Av 2026 Email Copy**\n\n**## Event assumptions**\n\n```text\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n```\n\nThe event starts during Tisha B'Av.\n\nIf the final event time changes, update every email and workflow wait together.",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-010",
+      "global_invariant_id": null,
+      "reason": "Maps the event schedule and atomic time-change invariant."
+    },
+    {
+      "coverage_id": "COV-20260721-011",
+      "span_id": "CHG-20260721-011:S01",
+      "start": 247,
+      "end": 904,
+      "quote": "**## Warm invitation**\n\nFrom:\n\n```text\nRabbi Eli Scheller | One Time Mishnayos\n<info@onetimeonetime.com>\n```\n\nReply-To:\n\n```text\ninfo@onetimeonetime.com\n```\n\nSubject:\n\n```text\nJoin me live this Tisha B'Av\n```\n\nPreview:\n\n```text\nA live program from Eretz Yisrael on Thursday at 3:00 PM Eastern.\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nThis Tisha B'Av, I will be hosting a live online program from Eretz Yisrael.\n\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n\nRegister below and we'll email the private access before the program begins.\n\n[Reserve My Place]\n\nI hope you can join me.\n\nRabbi Eli Scheller\nOne Time Mishnayos\n```",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-011",
+      "global_invariant_id": null,
+      "reason": "Maps the complete warm invitation copy and sender contract."
+    },
+    {
+      "coverage_id": "COV-20260721-012",
+      "span_id": "CHG-20260721-012:S01",
+      "start": 906,
+      "end": 1371,
+      "quote": "**## Registration confirmation**\n\nSubject:\n\n```text\nYou're registered for Rabbi Eli Scheller's live Tisha B'Av program\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nYour place is saved for Rabbi Eli Scheller's live Tisha B'Av program from Eretz Yisrael.\n\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n\nWe'll email the private access details before the program begins.\n\n[View Event Details]\n\nOne Time Mishnayos\ninfo@onetimeonetime.com\n```",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-012",
+      "global_invariant_id": null,
+      "reason": "Maps the complete registration confirmation copy."
+    },
+    {
+      "coverage_id": "COV-20260721-013",
+      "span_id": "CHG-20260721-013:S01",
+      "start": 1373,
+      "end": 1706,
+      "quote": "**## One-hour reminder**\n\nSubject:\n\n```text\nWe begin in one hour\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nRabbi Eli Scheller's live Tisha B'Av program begins in one hour.\n\nOpen the event page below. The Join button will become available when the event opens.\n\n[Open the Live Event Page]\n\nOne Time Mishnayos\n```",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-013",
+      "global_invariant_id": null,
+      "reason": "Maps the complete one-hour reminder copy and wait."
+    },
+    {
+      "coverage_id": "COV-20260721-014",
+      "span_id": "CHG-20260721-014:S01",
+      "start": 1708,
+      "end": 2065,
+      "quote": "**## Ten-minute reminder**\n\nSubject:\n\n```text\nStarting soon: join Rabbi Eli Scheller live\n```\n\nBody:\n\n```text\nHi {{default contact.first_name \"there\"}},\n\nWe're starting shortly.\n\nUse the private One Time event page to join Rabbi Eli Scheller's live Tisha B'Av program.\n\n[Join the Live Program]\n\nPlease do not forward the access page.\n\nOne Time Mishnayos\n```",
+      "classification": "HARD_EXACT",
+      "coverage_status": "covered",
+      "change_id": "CHG-20260721-014",
+      "global_invariant_id": null,
+      "reason": "Maps the complete ten-minute reminder copy and wait."
+    }
+  ],
+  "readiness": {
+    "status": "ready_for_implementation",
+    "blocking_change_ids": [],
+    "notes": [
+      "The exact copy is implementation-ready.",
+      "Audience selection and external send approval are intentionally outside this packet."
+    ]
+  },
+  "fingerprint": "df3cbccf409bfe09788297eec926817918c86fe3e326a98d915f02f308709f39"
+}

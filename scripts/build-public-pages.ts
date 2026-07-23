@@ -3,6 +3,7 @@ import path from 'node:path';
 import {
   escapeHtml,
   renderCampaignTicker,
+  renderLogo,
   renderPageShell,
   renderPublicFooter,
   renderPublicHeader,
@@ -25,6 +26,13 @@ import { publicCanonicalUrl } from './public-page-metadata.ts';
 
 const outDir = path.resolve(process.cwd(), 'dist/apps/web/public');
 
+const tishaBavDesktopImage = '/assets/events/tisha-bav-2026/tisha%20beav(1).png';
+const tishaBavMobileImage = '/assets/events/tisha-bav-2026/tishea%20beav%20mobile(1).png';
+const tishaBavSocialImage = '/assets/events/tisha-bav-2026/tisha-bav-whatsapp-card-v20260723.png';
+const tishaBavFavicon = '/assets/events/tisha-bav-2026/tisha-bav-favicon-v20260722.png';
+const tishaBavAppleTouchIcon =
+  '/assets/events/tisha-bav-2026/tisha-bav-apple-touch-icon-v20260722.png';
+
 const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/brand/onetimelogo.webp', [400, 400]],
   ['/assets/hero/hero-classroom-background.webp', [1680, 944]],
@@ -44,6 +52,11 @@ const imageDimensions = new Map<string, readonly [number, number]>([
   ['/assets/rabbi/teaching-locations/rabbi-scheller-miami-florida.webp', [1600, 1200]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-philadelphia.webp', [1600, 1200]],
   ['/assets/rabbi/teaching-locations/rabbi-scheller-silver-spring.webp', [1600, 1200]],
+  [tishaBavDesktopImage, [1366, 768]],
+  [tishaBavMobileImage, [1080, 1350]],
+  [tishaBavSocialImage, [1200, 630]],
+  [tishaBavFavicon, [64, 64]],
+  [tishaBavAppleTouchIcon, [180, 180]],
 ]);
 
 function mediaSizeAttributes(src: string) {
@@ -67,6 +80,18 @@ function pageShell(
   options: {
     description?: string;
     canonicalPath?: string;
+    ogTitle?: string;
+    ogDescription?: string;
+    ogImage?: string;
+    ogImageSecureUrl?: string;
+    ogImageType?: string;
+    ogImageWidth?: number;
+    ogImageHeight?: number;
+    ogImageAlt?: string;
+    twitterImage?: string;
+    icon?: string;
+    appleTouchIcon?: string;
+    extraStylesheet?: string;
     app?: boolean;
     appEntry?: 'crm' | 'portal';
   } = {},
@@ -77,8 +102,20 @@ function pageShell(
     body,
     description,
     canonical: publicCanonicalUrl(options.canonicalPath ?? '/'),
-    ogTitle: landingContent.seo.ogTitle,
-    ogDescription: landingContent.seo.ogDescription,
+    ogTitle: options.ogTitle ?? landingContent.seo.ogTitle,
+    ogDescription: options.ogDescription ?? landingContent.seo.ogDescription,
+    ...(options.ogImage === undefined ? {} : { ogImage: options.ogImage }),
+    ...(options.ogImageSecureUrl === undefined
+      ? {}
+      : { ogImageSecureUrl: options.ogImageSecureUrl }),
+    ...(options.ogImageType === undefined ? {} : { ogImageType: options.ogImageType }),
+    ...(options.ogImageWidth === undefined ? {} : { ogImageWidth: options.ogImageWidth }),
+    ...(options.ogImageHeight === undefined ? {} : { ogImageHeight: options.ogImageHeight }),
+    ...(options.ogImageAlt === undefined ? {} : { ogImageAlt: options.ogImageAlt }),
+    ...(options.twitterImage === undefined ? {} : { twitterImage: options.twitterImage }),
+    ...(options.icon === undefined ? {} : { icon: options.icon }),
+    ...(options.appleTouchIcon === undefined ? {} : { appleTouchIcon: options.appleTouchIcon }),
+    ...(options.extraStylesheet === undefined ? {} : { extraStylesheet: options.extraStylesheet }),
     ...(options.app === undefined ? {} : { app: options.app }),
     ...(options.appEntry === undefined ? {} : { appEntry: options.appEntry }),
   });
@@ -283,6 +320,128 @@ function signupPage() {
   );
 }
 
+function tishaBavLandingPage() {
+  const shareUrl = 'https://join.onetimeonetime.com/tisha-bav';
+  const shareText = `Reserve your spot for the live Tisha B'Av event with Rabbi Eli Scheller: ${shareUrl}`;
+  const whatsappShareUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+  const emailShareUrl = `mailto:?subject=${encodeURIComponent("Live Tisha B'Av Event")}&body=${encodeURIComponent(shareText)}`;
+
+  return pageShell(
+    "Live Tisha B'Av Event with Rabbi Eli Scheller | One Time Mishnayos",
+    `<main class="event-page tisha-bav-page">
+  <section class="tisha-page" aria-labelledby="tisha-bav-title">
+    <header class="tisha-heading">
+      <p class="event-pasuk" lang="he" dir="rtl">כי מלאה הארץ דעה את השם</p>
+    </header>
+    <div class="tisha-artwork" data-event-artwork>
+      <picture class="tisha-picture">
+        <source media="(max-width: 820px), (orientation: portrait) and (max-width: 900px)" srcset="${tishaBavMobileImage}">
+        <img src="${tishaBavDesktopImage}" alt=""${mediaSizeAttributes(tishaBavDesktopImage)} decoding="async" fetchpriority="high" data-event-hero-image>
+      </picture>
+      <div class="tisha-copy">
+        <h1 id="tisha-bav-title" aria-label="Live Tisha B'Av Event with Rabbi Eli Scheller">
+          <span class="tisha-title-line tisha-title-event">Live Tisha B'Av Event</span>
+          <span class="tisha-title-line tisha-title-rabbi">with Rabbi Eli Scheller</span>
+        </h1>
+      </div>
+    </div>
+    <div class="tisha-details" aria-label="Event details">
+      <div class="event-schedule">
+        <p class="event-date">Thursday, July 23, 2026</p>
+        <p class="event-time"><strong>3:00 p.m. Eastern Time</strong></p>
+      </div>
+      <p class="event-charge">No charge</p>
+      <button class="button button-primary tisha-primary-cta" type="button" data-event-open-modal aria-haspopup="dialog" aria-controls="event-register-modal" aria-expanded="false">Reserve My Spot</button>
+    </div>
+  </section>
+  <div class="event-modal-backdrop" data-event-modal-backdrop hidden></div>
+  <section class="event-modal" id="event-register-modal" role="dialog" aria-modal="true" aria-label="Tisha B'Av registration" data-event-modal data-event-share-url="${escapeHtml(shareUrl)}" hidden tabindex="-1">
+    <div class="event-register-shell">
+      <button class="event-modal-close" type="button" data-event-close-modal aria-label="Close registration modal"><span aria-hidden="true">&times;</span></button>
+      <div class="event-registration-content" data-event-registration-content>
+        <h2 id="event-register-title">Reserve My Spot</h2>
+        <p class="event-form-note">Join this live Tisha B'Av event and receive the private link by email.</p>
+        <div class="noscript-panel" role="status" data-event-noscript><strong>JavaScript is required for secure event registration.</strong><span>Please use a browser with JavaScript enabled.</span></div>
+        <form class="event-form" action="/api/v1/events/tisha-bav-2026/register" method="post" data-event-registration-form novalidate>
+          <div class="field"><label for="event_email">Email</label><input id="event_email" name="email" type="email" inputmode="email" autocomplete="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
+          <div class="field"><label for="event_first_name">First name <span>optional</span></label><input id="event_first_name" name="first_name" autocomplete="given-name"><p tabindex="-1" class="error" data-error-for="first_name"></p></div>
+          <button class="button button-primary" type="submit" data-event-submit hidden>Reserve My Spot</button>
+          <p class="event-submit-disclosure">By reserving, you’ll receive emails about this event.</p>
+          <p class="form-status" role="status" data-form-status></p>
+        </form>
+      </div>
+      <div class="event-success-panel" data-event-success-panel hidden tabindex="-1">
+        <div class="event-success-copy">
+          <p class="event-success-eyebrow">Registration complete</p>
+          <h2 lang="he" dir="rtl">שֶׁנִּזְכֶּה לִרְאוֹת אֶת יְרוּשָׁלַיִם בְּבִנְיָנָהּ</h2>
+          <p data-event-success-message>The link was sent to your email.</p>
+        </div>
+        <div class="event-share-actions" aria-label="Share this event">
+          <a class="button event-share-button" href="${escapeHtml(whatsappShareUrl)}" data-event-share-link target="_blank" rel="noopener" aria-label="Share on WhatsApp"><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 11.6a8 8 0 0 1-11.8 7l-4.2 1.1 1.1-4A8 8 0 1 1 20 11.6Z"/><path d="M8.5 8.2c.2 3 2.4 5.2 5.4 5.6"/></svg><span>WhatsApp</span></a>
+          <a class="button event-share-button" href="${escapeHtml(emailShareUrl)}" data-event-share-link aria-label="Email a friend"><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg><span>Email</span></a>
+          <button class="button event-share-button" type="button" data-event-copy-link aria-label="Copy link"><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/></svg><span>Copy</span></button>
+          <button class="button event-share-button" type="button" data-event-native-share hidden><svg class="event-share-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.2"/><circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="19" r="2.2"/><path d="m8 11 8-5M8 13l8 5"/></svg><span>Share</span></button>
+        </div>
+        <p class="form-status event-copy-status" role="status" data-event-copy-status></p>
+      </div>
+    </div>
+  </section>
+</main>`,
+    {
+      canonicalPath: '/tisha-bav',
+      description: "Reserve a spot for a live Tisha B'Av event with Rabbi Eli Scheller.",
+      ogTitle: "Live Interactive Tisha B'Av Zoom Class with Rabbi Eli Scheller",
+      ogDescription: '3:00 p.m. Eastern. No charge. Reserve your spot now.',
+      ogImage: publicCanonicalUrl(tishaBavSocialImage),
+      ogImageSecureUrl: publicCanonicalUrl(tishaBavSocialImage),
+      ogImageType: 'image/png',
+      ogImageWidth: 1200,
+      ogImageHeight: 630,
+      ogImageAlt:
+        "Live interactive Tisha B'Av Zoom class with Rabbi Eli Scheller at 3:00 p.m. Eastern, no charge",
+      twitterImage: publicCanonicalUrl(tishaBavSocialImage),
+      icon: tishaBavFavicon,
+      appleTouchIcon: tishaBavAppleTouchIcon,
+      extraStylesheet: '/assets/events/tisha-bav-2026/tisha-bav.css',
+    },
+  );
+}
+
+function tishaBavLivePage() {
+  return pageShell(
+    "Private Access | Tisha B'Av Program",
+    `<main class="event-page event-live-page">
+  <section class="event-live-shell" aria-labelledby="event-live-title">
+    ${renderLogo({
+      label: 'One Time Mishnayos home',
+      subtitle: 'Private event access',
+      href: '/',
+      size: 60,
+    })}
+    <p class="event-kicker">Private Zoom access</p>
+    <h1 id="event-live-title">A Live Tisha B'Av Program with Rabbi Eli Scheller</h1>
+    <p class="event-time"><span>Thursday, July 23, 2026</span><strong>3:00 PM Eastern / 10:00 PM Israel</strong></p>
+    <form class="event-form event-join-form" action="/api/v1/events/tisha-bav-2026/join" method="post" data-event-join-form novalidate>
+      <input type="hidden" name="idempotency_key" value="join-page-form">
+      <input type="text" name="homepage" autocomplete="off" tabindex="-1" aria-hidden="true" class="honeypot-field">
+      <div class="field"><label for="join_email">Registered email</label><input id="join_email" name="email" type="email" inputmode="email" autocomplete="email" required><p tabindex="-1" class="error" data-error-for="email"></p></div>
+      <button class="button button-primary" type="submit">Join the Live Program</button>
+      <p class="form-status" role="status" data-form-status>Access opens shortly before the program.</p>
+    </form>
+  </section>
+</main>`,
+    {
+      canonicalPath: '/tisha-bav/live',
+      description: "Private access page for the One Time Tisha B'Av live program.",
+    },
+  )
+    .replace('index, follow', 'noindex, nofollow')
+    .replace(
+      '<meta name="theme-color"',
+      '<meta name="referrer" content="no-referrer">\n  <meta name="theme-color"',
+    );
+}
+
 function simplePage(
   title: string,
   heading: string,
@@ -388,6 +547,8 @@ await mkdir(outDir, { recursive: true });
 await mkdir(path.join(outDir, 'app'), { recursive: true });
 await writeFile(path.join(outDir, 'index.html'), landingPage());
 await writeFile(path.join(outDir, 'signup.html'), signupPage());
+await writeFile(path.join(outDir, 'tisha-bav.html'), tishaBavLandingPage());
+await writeFile(path.join(outDir, 'tisha-bav-live.html'), tishaBavLivePage());
 await writeFile(
   path.join(outDir, 'login.html'),
   simplePage(

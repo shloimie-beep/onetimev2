@@ -4,6 +4,7 @@ import {
   runAuthEmailChallengeDeliveryOutboxBatch,
   runLifecycleDeliveryOutboxBatch,
   runSupportDeliveryBatch,
+  runTishaBavEventEmailFallbackBatch,
 } from '../../../../packages/domain/src/index.ts';
 import {
   markOpsWorkerDraining,
@@ -85,7 +86,13 @@ export async function runOutboxWorkerOnce(source: NodeJS.ProcessEnv = process.en
       limit: config.batchSize,
       leaseMs: config.claimLeaseMs,
     });
-    return { ...delivery, support, lifecycle, authEmail };
+    const eventEmailFallback = await runTishaBavEventEmailFallbackBatch({
+      pool,
+      config: config.appConfig,
+      limit: config.batchSize,
+      leaseMs: config.claimLeaseMs,
+    });
+    return { ...delivery, support, lifecycle, authEmail, eventEmailFallback };
   } finally {
     await safeHeartbeat(
       () => markOpsWorkerStopped({ pool, workerType: WORKER_TYPE, workerInstanceKey }),
@@ -190,6 +197,12 @@ async function runContinuously(source: NodeJS.ProcessEnv = process.env) {
             limit: config.batchSize,
             leaseMs: config.claimLeaseMs,
           });
+          await runTishaBavEventEmailFallbackBatch({
+            pool,
+            config: config.appConfig,
+            limit: config.batchSize,
+            leaseMs: config.claimLeaseMs,
+          });
         } catch (error) {
           void error;
           logger.error('delivery_batch_failed', {
@@ -242,6 +255,8 @@ if (process.argv.includes('--once')) {
       `lifecycle_expired=${summary.lifecycle.expired}`,
       `auth_email_sink_delivered=${summary.authEmail.sink_delivered}`,
       `auth_email_expired=${summary.authEmail.expired}`,
+      `event_fallback_delivered=${summary.eventEmailFallback.delivered}`,
+      `event_fallback_skipped=${summary.eventEmailFallback.skipped}`,
     ].join('\n') + '\n',
   );
 } else {

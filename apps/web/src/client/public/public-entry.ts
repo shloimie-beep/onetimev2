@@ -305,6 +305,200 @@ if (form) {
   });
 }
 
+const eventRegistrationForm = document.querySelector<HTMLFormElement>(
+  '[data-event-registration-form]',
+);
+const eventModal = document.querySelector<HTMLElement>('[data-event-modal]');
+const eventModalBackdrop = document.querySelector<HTMLElement>('[data-event-modal-backdrop]');
+const eventModalOpen = document.querySelector<HTMLButtonElement>('[data-event-open-modal]');
+const eventRegistrationContent = document.querySelector<HTMLElement>(
+  '[data-event-registration-content]',
+);
+let eventModalPreviousFocus: HTMLElement | null = null;
+
+function closeEventModal() {
+  if (!eventModal || !eventModalBackdrop) return;
+  eventModal.hidden = true;
+  eventModalBackdrop.hidden = true;
+  delete document.documentElement.dataset.eventModalOpen;
+  eventModalOpen?.setAttribute('aria-expanded', 'false');
+  (eventModalPreviousFocus ?? eventModalOpen)?.focus();
+}
+
+function openEventModal() {
+  if (!eventModal || !eventModalBackdrop) return;
+  eventModalPreviousFocus = document.activeElement as HTMLElement | null;
+  eventModal.hidden = false;
+  eventModalBackdrop.hidden = false;
+  document.documentElement.dataset.eventModalOpen = 'true';
+  eventModalOpen?.setAttribute('aria-expanded', 'true');
+  window.setTimeout(() => {
+    eventModal.querySelector<HTMLElement>('input[name="email"], button, a')?.focus();
+  }, 0);
+}
+
+eventModalOpen?.addEventListener('click', openEventModal);
+eventModalBackdrop?.addEventListener('click', closeEventModal);
+document
+  .querySelectorAll<HTMLButtonElement>('[data-event-close-modal]')
+  .forEach((button) => button.addEventListener('click', closeEventModal));
+eventModal?.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeEventModal();
+    return;
+  }
+  if (event.key !== 'Tab') return;
+  const focusables = [...eventModal.querySelectorAll<HTMLElement>(focusableSelector)].filter(
+    (node) => !node.hidden && node.offsetParent !== null,
+  );
+  const first = focusables[0];
+  const last = focusables.at(-1);
+  if (!first || !last) return;
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
+
+if (eventRegistrationForm) {
+  const status = eventRegistrationForm.querySelector<HTMLElement>('[data-form-status]');
+  const submit = eventRegistrationForm.querySelector<HTMLButtonElement>('[data-event-submit]');
+  const success = document.querySelector<HTMLElement>('[data-event-success-panel]');
+  const noScriptFallback = document.querySelector<HTMLElement>('[data-event-noscript]');
+  const idempotencyKey = `tisha-bav-${crypto.randomUUID()}`;
+  if (noScriptFallback) noScriptFallback.hidden = true;
+  if (submit) submit.hidden = false;
+
+  eventRegistrationForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(eventRegistrationForm);
+    if (!eventRegistrationForm.reportValidity()) return;
+    const data = new FormData(eventRegistrationForm);
+    if (submit) submit.disabled = true;
+    if (status) status.textContent = '';
+    try {
+      const response = await postJson('/api/v1/events/tisha-bav-2026/register', {
+        email: String(data.get('email') ?? ''),
+        first_name: String(data.get('first_name') ?? ''),
+        source: 'tisha_bav_2026_landing',
+        idempotency_key: idempotencyKey,
+      });
+      if (!response.ok || response.json.success !== true) {
+        applyApiErrors(eventRegistrationForm, response.json);
+        return;
+      }
+      const registrationKey = response.json.registration_key;
+      if (typeof registrationKey !== 'string' || !registrationKey.trim()) {
+        setFormStatus(
+          eventRegistrationForm,
+          'We could not confirm that registration. Please try again.',
+        );
+        return;
+      }
+      if (response.json.confirmation_queued !== true) {
+        setFormStatus(
+          eventRegistrationForm,
+          'We could not complete that registration. Please try again.',
+        );
+        return;
+      }
+      eventRegistrationForm.hidden = true;
+      if (eventRegistrationContent) eventRegistrationContent.hidden = true;
+      if (success) {
+        success.hidden = false;
+        success.focus();
+      }
+    } catch {
+      setFormStatus(eventRegistrationForm, 'We could not save that registration yet.');
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = 'Reserve My Spot';
+      }
+    }
+  });
+}
+
+const eventShareUrl =
+  eventModal?.dataset.eventShareUrl ?? 'https://join.onetimeonetime.com/tisha-bav';
+const eventCopyLink = document.querySelector<HTMLButtonElement>('[data-event-copy-link]');
+const eventCopyStatus = document.querySelector<HTMLElement>('[data-event-copy-status]');
+eventCopyLink?.addEventListener('click', async () => {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(eventShareUrl);
+    } else {
+      const textArea = document.createElement('textarea');
+      textArea.value = eventShareUrl;
+      textArea.setAttribute('readonly', '');
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      document.body.append(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      textArea.remove();
+    }
+    if (eventCopyStatus) eventCopyStatus.textContent = 'Link copied.';
+  } catch {
+    if (eventCopyStatus) eventCopyStatus.textContent = 'Copy was not available in this browser.';
+  }
+});
+
+const eventNativeShare = document.querySelector<HTMLButtonElement>('[data-event-native-share]');
+if (eventNativeShare && typeof navigator.share === 'function') {
+  eventNativeShare.hidden = false;
+  eventNativeShare.addEventListener('click', async () => {
+    await navigator
+      .share({
+        title: "Tisha B'Av VIP Zoom Class",
+        text: "Reserve your spot for the Tisha B'Av VIP Zoom class with Rabbi Eli Scheller.",
+        url: eventShareUrl,
+      })
+      .catch(() => undefined);
+  });
+}
+
+const eventJoinForm = document.querySelector<HTMLFormElement>('[data-event-join-form]');
+if (eventJoinForm) {
+  const submit = eventJoinForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const idempotencyKey = `tisha-bav-join-${crypto.randomUUID()}`;
+  eventJoinForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    clearFormErrors(eventJoinForm);
+    if (!eventJoinForm.reportValidity()) return;
+    const data = new FormData(eventJoinForm);
+    setSubmitBusy(eventJoinForm, true, 'Opening...');
+    try {
+      const response = await postJson('/api/v1/events/tisha-bav-2026/join', {
+        email: String(data.get('email') ?? ''),
+        idempotency_key: idempotencyKey,
+        homepage: String(data.get('homepage') ?? ''),
+      });
+      if (!response.ok || !response.json.success) {
+        applyApiErrors(eventJoinForm, response.json);
+        return;
+      }
+      const redirectPath = String(response.json.redirect_path ?? '');
+      if (redirectPath.startsWith('/api/v1/events/tisha-bav-2026/redirect')) {
+        window.location.assign(redirectPath);
+        return;
+      }
+      setFormStatus(eventJoinForm, 'Private access is not available yet.');
+    } catch {
+      setFormStatus(eventJoinForm, 'Private access is not available yet.');
+    } finally {
+      if (submit) {
+        submit.disabled = false;
+        submit.textContent = 'Join the Live Program';
+      }
+    }
+  });
+}
+
 const loginForm = document.querySelector<HTMLFormElement>('[data-login-form]');
 if (loginForm) {
   const status = loginForm.querySelector<HTMLElement>('[data-form-status]');

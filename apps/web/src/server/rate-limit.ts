@@ -53,6 +53,48 @@ export function leadRateLimit(config: AppConfig, pool: DbPool) {
   };
 }
 
+export function eventRateLimit(config: AppConfig, pool: DbPool) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const identifier = leadIdentifier(req.body);
+    const result = await consumeRateLimitBudgets({
+      pool,
+      config,
+      budgets: [
+        {
+          scope: 'event_ip',
+          subject: req.ip ?? 'unknown',
+          limit: config.leadRateLimitMax,
+          windowMs: config.leadRateLimitWindowMs,
+        },
+        {
+          scope: 'event_identifier',
+          subject: identifier,
+          limit: config.leadIdentifierRateLimitMax,
+          windowMs: config.leadRateLimitWindowMs,
+        },
+        {
+          scope: 'event_account_product',
+          subject: `${config.accountKey}:${config.productKey}`,
+          limit: config.leadAccountRateLimitMax,
+          windowMs: config.leadRateLimitWindowMs,
+        },
+        {
+          scope: 'event_global',
+          subject: 'all',
+          limit: config.leadGlobalRateLimitMax,
+          windowMs: config.leadRateLimitWindowMs,
+        },
+      ],
+    });
+    if (result.allowed) {
+      next();
+      return;
+    }
+    res.setHeader('Retry-After', String(result.retryAfterSeconds ?? 1));
+    res.status(429).json(publicError('RATE_LIMITED', 'Too many event attempts. Try again soon.'));
+  };
+}
+
 function leadIdentifier(body: unknown) {
   if (!body || typeof body !== 'object') return 'anonymous';
   const candidate = body as Record<string, unknown>;

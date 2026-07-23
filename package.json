@@ -49,6 +49,7 @@
     "ops06:verify": "npm run ops06:alerts && npm run ops06:migrations && npm run ops06:probes && npm run ops06:load && npm run ops06:backup-restore",
     "outbox:sink": "tsx apps/worker/src/main/index.ts --once",
     "version:print": "tsx scripts/print-version.ts",
+    "tisha:registration:reprocess": "tsx scripts/tisha-bav/reprocess-registration-delivery.ts",
     "director:truth": "node scripts/check-director-truth.mjs",
     "director:truth:live": "node scripts/check-director-truth.mjs --live"
   },

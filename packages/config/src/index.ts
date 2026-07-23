@@ -157,6 +157,16 @@ const envSchema = z.object({
   ZOOM_MEETING_SDK_KEY: z.string().optional(),
   ZOOM_MEETING_SDK_SECRET: z.string().optional(),
   ZOOM_ACCOUNT_ID: z.string().optional(),
+  ONE_TIME_EVENT_EMAIL_FALLBACK: z.enum(['disabled', 'resend']).default('disabled'),
+  ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT: z.enum(['disabled', 'resend']).default('disabled'),
+  ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL: z.url().optional(),
+  ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF: optionalTrimmedString(4, 240),
+  HIGHLEVEL_EVENT_SYNC_MODE: z.enum(['disabled', 'mock', 'provider']).default('disabled'),
+  HIGHLEVEL_API_BASE_URL: z.url().default('https://services.leadconnectorhq.com'),
+  HIGHLEVEL_API_VERSION: z.string().min(1).max(80).default('2021-07-28'),
+  HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN: optionalTrimmedString(8, 400),
+  HIGHLEVEL_LOCATION_ID: z.string().min(1).max(160).default('pBSnOK2nkdxp6gf9Rg3o'),
+  HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: optionalTrimmedString(1, 160),
   SUPPORT_RATE_LIMIT_WINDOW_MS: numberFromString.default(60_000),
   SUPPORT_RATE_LIMIT_MAX: numberFromString.default(6),
   SUPPORT_ACCOUNT_RATE_LIMIT_MAX: numberFromString.default(120),
@@ -209,6 +219,55 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
 
   if (parsed.ZOOM_CLASSROOM_CANARY_ENABLED && parsed.NODE_ENV !== 'test') {
     throw new Error('Zoom canary execution is outside this local task and must remain disabled.');
+  }
+
+  if (
+    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
+    !parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN
+  ) {
+    throw new Error('HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN is required for provider event sync.');
+  }
+
+  if (parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' && !parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID) {
+    throw new Error('HIGHLEVEL_TISHA_BAV_WORKFLOW_ID is required for provider event sync.');
+  }
+
+  if (
+    parsed.HIGHLEVEL_EVENT_SYNC_MODE === 'provider' &&
+    parsed.HIGHLEVEL_LOCATION_ID !== 'pBSnOK2nkdxp6gf9Rg3o'
+  ) {
+    throw new Error('Provider event sync is restricted to the canonical One Time location.');
+  }
+
+  if (parsed.ONE_TIME_EVENT_EMAIL_FALLBACK === 'resend') {
+    const missing = [
+      !parsed.RESEND_API_KEY && 'RESEND_API_KEY',
+      !parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED &&
+        'ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED',
+      !parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED && 'ONE_TIME_RESEND_TRANSPORT_ENABLED',
+      !parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID && 'DELIVERY_PROVIDER_AUTHORIZATION_ID',
+      parsed.DELIVERY_PROVIDER_PER_RUN_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_RUN_BUDGET',
+      parsed.DELIVERY_PROVIDER_PER_PROVIDER_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
+    ].filter(Boolean);
+    if (missing.length) {
+      throw new Error(`Tisha B'Av Resend fallback config missing: ${missing.join(', ')}`);
+    }
+  }
+
+  if (parsed.ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT === 'resend') {
+    const missing = [
+      !parsed.RESEND_API_KEY && 'RESEND_API_KEY',
+      !parsed.ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED &&
+        'ONE_TIME_DELIVERY_PROVIDER_TRANSPORT_ENABLED',
+      !parsed.ONE_TIME_RESEND_TRANSPORT_ENABLED && 'ONE_TIME_RESEND_TRANSPORT_ENABLED',
+      !parsed.DELIVERY_PROVIDER_AUTHORIZATION_ID && 'DELIVERY_PROVIDER_AUTHORIZATION_ID',
+      parsed.DELIVERY_PROVIDER_PER_RUN_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_RUN_BUDGET',
+      parsed.DELIVERY_PROVIDER_PER_PROVIDER_BUDGET <= 0 && 'DELIVERY_PROVIDER_PER_PROVIDER_BUDGET',
+      !parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL && 'ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL',
+    ].filter(Boolean);
+    if (missing.length) {
+      throw new Error(`Tisha B'Av Resend confirmation config missing: ${missing.join(', ')}`);
+    }
   }
 
   if (parsed.NODE_ENV === 'production' && parsed.RUN_MIGRATIONS_ON_STARTUP) {
@@ -419,6 +478,16 @@ export function loadConfig(source: NodeJS.ProcessEnv) {
     zoomMeetingSdkKeyConfigured: Boolean(parsed.ZOOM_MEETING_SDK_KEY),
     zoomMeetingSdkSecretConfigured: Boolean(parsed.ZOOM_MEETING_SDK_SECRET),
     zoomAccountIdConfigured: Boolean(parsed.ZOOM_ACCOUNT_ID),
+    oneTimeEventEmailFallback: parsed.ONE_TIME_EVENT_EMAIL_FALLBACK,
+    tishaBavConfirmationTransport: parsed.ONE_TIME_TISHA_BAV_CONFIRMATION_TRANSPORT,
+    tishaBavZoomJoinUrl: parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_JOIN_URL,
+    tishaBavZoomMeetingRefConfigured: Boolean(parsed.ONE_TIME_TISHA_BAV_2026_ZOOM_MEETING_REF),
+    highLevelEventSyncMode: parsed.HIGHLEVEL_EVENT_SYNC_MODE,
+    highLevelApiBaseUrl: parsed.HIGHLEVEL_API_BASE_URL,
+    highLevelApiVersion: parsed.HIGHLEVEL_API_VERSION,
+    highLevelPrivateIntegrationsToken: parsed.HIGHLEVEL_PRIVATE_INTEGRATIONS_TOKEN,
+    highLevelLocationId: parsed.HIGHLEVEL_LOCATION_ID,
+    highLevelTishaBavWorkflowId: parsed.HIGHLEVEL_TISHA_BAV_WORKFLOW_ID,
     supportRateLimitWindowMs: parsed.SUPPORT_RATE_LIMIT_WINDOW_MS,
     supportRateLimitMax: parsed.SUPPORT_RATE_LIMIT_MAX,
     supportAccountRateLimitMax: parsed.SUPPORT_ACCOUNT_RATE_LIMIT_MAX,
