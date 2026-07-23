@@ -29,6 +29,8 @@ test('Student approved playback browser smoke', async ({ page }) => {
     await route.abort('blockedbyclient');
   });
   await loginAs(page, 'student', '/app/student');
+  await page.getByRole('link', { name: 'Library', exact: true }).click();
+  await expect(page).toHaveURL('/app/student?section=library');
   const contentCard = page
     .getByRole('article')
     .filter({ hasText: '[Demo] Hashavas Aveidah: Signs and Announcements' });

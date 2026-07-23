@@ -24,7 +24,12 @@ export const evidenceRoot = path.resolve(process.cwd(), 'ops/evidence/w12-100');
 export const screenshotRoot = path.join(evidenceRoot, 'screenshots');
 
 export const publicRouteProbes: RouteProbe[] = [
-  { id: 'landing', path: '/', audience: 'public', expectedHeading: /love for learning Torah/i },
+  {
+    id: 'landing',
+    path: '/',
+    audience: 'public',
+    expectedHeading: 'Worldwide Mishnah Learning / Live from Eretz Yisrael',
+  },
   {
     id: 'signup',
     path: '/signup',
