@@ -68,6 +68,7 @@
     "goal:launch-status:sync": "tsx scripts/ops/generate-operator-launch-status.ts --write",
     "highlevel:assets:reconcile": "tsx scripts/highlevel/reconcile-api-schema.ts",
     "highlevel:agent-mode:queue": "tsx scripts/highlevel/generate-agent-mode-queue.ts",
+    "highlevel:agent-mode:check": "tsx scripts/highlevel/validate-agent-mode-executable-jobs.ts",
     "content-factory:import": "tsx scripts/media/content-factory-import.ts",
     "content-factory:seed-demo": "tsx scripts/media/content-factory-demo-seed.ts"
   },

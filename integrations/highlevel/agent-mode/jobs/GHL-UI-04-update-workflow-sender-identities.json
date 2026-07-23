@@ -53,7 +53,7 @@
     "integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md",
     "integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md"
   ],
-  "exact_copy_paste_prompt": "Job GHL-UI-04: update workflow sender identities\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Automation > Workflows > canonical One Time workflow folders\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md\n- integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md\n- integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md\n- integrations/highlevel/workflow-checklists/OT-04-payment-active.md\n- integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md\n- integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md\n- integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md\n- integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md\n- integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md\n- integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n- integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md\n- integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md\n- integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md\n- integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md\n- integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md\n- integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md\n- integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md\n- integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md\n- integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md\n- integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md\n- integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md\n- integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md\n- integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md\n- integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md\n\nAllowed assets:\n- OT-01 New Lead Intake\n- OT-02A Existing Subscriber Migration 2026 v1\n- OT-02B New Lead Nurture v1\n- OT-03 Checkout Started / Abandoned\n- OT-04 Payment Active\n- OT-05 Payment Failed / Grace\n- OT-06 Subscription Canceled\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n- OT-09 Parent Class Reminder\n- OT-10 New Recording Available\n- OT-13 Refund / Chargeback\n- OT-C01 Tisha B'Av 2026 Warm Invitation\n- OT-E01 Tisha B'Av 2026 Registration and Reminders\n- OT-B01 Complete Signup\n- OT-B02 Send Next Confirmed Class Info\n- OT-B03 Send Member Login\n- OT-B04 Send Password Help\n- OT-B05 Apply Opt-Out\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- unregistered sender text\n- guessing a From address\n- activation/reset tokens in GHL\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Update every canonical workflow sender identity from its registered sender_key and exact custom-value picker entries.\n- Keep every workflow Draft/unpublished and do not enroll contacts.\n- Verify OT-07 GHL companion/welcome and separate One Time/Resend activation-token boundary.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-04.result.json\nIdempotency key: one-time-ghl:GHL-UI-04:4e8a6d184ba84c14",
+  "exact_copy_paste_prompt": "Job GHL-UI-04: update workflow sender identities\n\nUse HighLevel location pBSnOK2nkdxp6gf9Rg3o. Verify the visible location before doing any work.\nUse only the immutable Commit A registry SHA embedded in integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md. Block if the executor is missing, the SHA is not immutable, or the checked-out registry differs.\nTarget UI path: HighLevel > Automation > Workflows > canonical One Time workflow folders\n\nRead these canonical source files first:\n- integrations/highlevel/registry/current.json\n- integrations/highlevel/registry/sender-registry.yaml\n- integrations/highlevel/registry/message-class-registry.yaml\n- integrations/highlevel/registry/communications-contract.json\n- integrations/highlevel/registry/workflow-registry.yaml\n- integrations/highlevel/ai-workflow-prompts/OT-01-new-lead-intake.md\n- integrations/highlevel/workflow-checklists/OT-01-new-lead-intake.md\n- integrations/highlevel/ai-workflow-prompts/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/workflow-checklists/OT-02A-existing-subscriber-migration-2026-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/workflow-checklists/OT-02B-new-lead-nurture-v1.md\n- integrations/highlevel/ai-workflow-prompts/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/workflow-checklists/OT-03-checkout-started-abandoned.md\n- integrations/highlevel/ai-workflow-prompts/OT-04-payment-active.md\n- integrations/highlevel/workflow-checklists/OT-04-payment-active.md\n- integrations/highlevel/ai-workflow-prompts/OT-05-payment-failed-grace.md\n- integrations/highlevel/workflow-checklists/OT-05-payment-failed-grace.md\n- integrations/highlevel/ai-workflow-prompts/OT-06-subscription-canceled.md\n- integrations/highlevel/workflow-checklists/OT-06-subscription-canceled.md\n- integrations/highlevel/ai-workflow-prompts/OT-07-parent-portal-invitation.md\n- integrations/highlevel/workflow-checklists/OT-07-parent-portal-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-08-parent-portal-activated.md\n- integrations/highlevel/workflow-checklists/OT-08-parent-portal-activated.md\n- integrations/highlevel/ai-workflow-prompts/OT-09-parent-class-reminder.md\n- integrations/highlevel/workflow-checklists/OT-09-parent-class-reminder.md\n- integrations/highlevel/ai-workflow-prompts/OT-10-new-recording-available.md\n- integrations/highlevel/workflow-checklists/OT-10-new-recording-available.md\n- integrations/highlevel/ai-workflow-prompts/OT-13-refund-chargeback.md\n- integrations/highlevel/workflow-checklists/OT-13-refund-chargeback.md\n- integrations/highlevel/ai-workflow-prompts/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/workflow-checklists/OT-C01-tisha-b-av-2026-warm-invitation.md\n- integrations/highlevel/ai-workflow-prompts/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/workflow-checklists/OT-E01-tisha-b-av-2026-registration-and-reminders.md\n- integrations/highlevel/ai-workflow-prompts/OT-B01-complete-signup.md\n- integrations/highlevel/workflow-checklists/OT-B01-complete-signup.md\n- integrations/highlevel/ai-workflow-prompts/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/workflow-checklists/OT-B02-send-next-confirmed-class-info.md\n- integrations/highlevel/ai-workflow-prompts/OT-B03-send-member-login.md\n- integrations/highlevel/workflow-checklists/OT-B03-send-member-login.md\n- integrations/highlevel/ai-workflow-prompts/OT-B04-send-password-help.md\n- integrations/highlevel/workflow-checklists/OT-B04-send-password-help.md\n- integrations/highlevel/ai-workflow-prompts/OT-B05-apply-opt-out.md\n- integrations/highlevel/workflow-checklists/OT-B05-apply-opt-out.md\n\nAllowed assets:\n- OT-01 New Lead Intake\n- OT-02A Existing Subscriber Migration 2026 v1\n- OT-02B New Lead Nurture v1\n- OT-03 Checkout Started / Abandoned\n- OT-04 Payment Active\n- OT-05 Payment Failed / Grace\n- OT-06 Subscription Canceled\n- OT-07 Parent Portal Invitation\n- OT-08 Parent Portal Activated\n- OT-09 Parent Class Reminder\n- OT-10 New Recording Available\n- OT-13 Refund / Chargeback\n- OT-C01 Tisha B'Av 2026 Warm Invitation\n- OT-E01 Tisha B'Av 2026 Registration and Reminders\n- OT-B01 Complete Signup\n- OT-B02 Send Next Confirmed Class Info\n- OT-B03 Send Member Login\n- OT-B04 Send Password Help\n- OT-B05 Apply Opt-Out\n\nForbidden assets and actions:\n- Student contacts\n- Student username fields\n- Student password fields\n- workflow publish actions\n- production workflow enrollment\n- message sends\n- Stripe or live payment mutations\n- duplicate tags, fields, values, workflows, bots, or knowledge bases\n- unregistered sender text\n- guessing a From address\n- activation/reset tokens in GHL\n\nPerform the UI work. Click Save for every edited workflow, bot, knowledge base, folder, or custom value screen. Verify the saved workflow, bot, knowledge base, folder, or custom value by reopening or reading the saved state. Capture the safe GHL asset ID and visible status. Return to the BNA Agent Action drop-off page. Save the result JSON to the drop-off lane and result path. Verify the readback result ID. Never finish with an unsaved chat-only claim.\n\nTask instructions:\n- Update every canonical workflow sender identity from its registered sender_key and exact custom-value picker entries.\n- Keep every workflow Draft/unpublished and do not enroll contacts.\n- Verify OT-07 GHL companion/welcome and separate One Time/Resend activation-token boundary.\n- Run the keyed OT-E01 Email A repair subjob only under its narrower controls; do not create a separate job or workflow.\n\nReviewed keyed subjobs:\n[\n  {\n    \"subjob_id\": \"GHL-UI-04/OT-E01-EMAIL-A-REPAIR\",\n    \"parent_job_id\": \"GHL-UI-04\",\n    \"workflow\": {\n      \"canonical_key\": \"OT-E01\",\n      \"canonical_name\": \"OT-E01 Tisha B'Av 2026 Registration and Reminders\",\n      \"ghl_id\": \"a34ea513-4612-4f53-8bd8-49e89e6610f9\",\n      \"full_folder_ancestry\": \"One Time / 45 - Events / 2026 / Tisha B'Av 2026\",\n      \"desired_state\": \"ACTIVE_TESTED\",\n      \"observed_state\": \"DRIFTED\",\n      \"workflow_published\": true,\n      \"action_name\": \"Email A - Immediate Confirmation\",\n      \"action_observed_state\": \"Disabled\"\n    },\n    \"accepted_action_identity\": {\n      \"message_class\": \"event_registration_confirmation\",\n      \"subject\": \"You're registered — let's strengthen ourselves together\",\n      \"preheader\": \"Join Rabbi Eli Scheller live from the Holy Land this Tisha B'Av.\",\n      \"body\": \"Hi {{default contact.first_name \\\"there\\\"}},\\n\\nThank you for signing up for Rabbi Eli Scheller's live Tisha B'Av class.\\n\\nTogether, we'll strengthen ourselves and help fill the world with knowledge of Hashem through digital Torah learning.\\n\\nJoin us for a special class, live from the Holy Land.\\n\\nThursday, July 23, 2026\\n3:00 PM Eastern\\n10:00 PM Israel\\n\\nWe'll email the private class access before the program begins.\\n\\nCan't wait to see you,\\n\\nRabbi Eli Scheller\\nOne Time Mishnah Learning\",\n      \"cta_label\": \"View the One Time Mishnah Class Page\",\n      \"cta_custom_value_key\": \"one_time_tisha_bav_landing_url\",\n      \"cta_rule\": \"The resolved value must equal the already-registered canonical One Time Tisha landing page and must not be a meeting-provider URL.\",\n      \"sender_key\": \"rabbi_campaign\",\n      \"sender_name_picker\": {\n        \"canonical_name\": \"One Time Rabbi Campaign Sender Name\",\n        \"ghl_id\": \"YTbMWivrsI10LnH26Xfv\",\n        \"key\": \"one_time_rabbi_campaign_sender_name\"\n      },\n      \"from_picker\": {\n        \"canonical_name\": \"One Time Rabbi Campaign Phase 1 From\",\n        \"ghl_id\": \"1ciJqvUIDDCxs1cBumdL\",\n        \"key\": \"one_time_rabbi_campaign_phase_1_from\"\n      },\n      \"reply_to_picker\": {\n        \"canonical_name\": \"One Time Default Reply-To\",\n        \"ghl_id\": \"u0msWwGUDL4Upjfe58Bm\",\n        \"key\": \"one_time_default_reply_to\"\n      }\n    },\n    \"permission_and_suppression\": [\n      \"Require the scoped Tisha B Av registered-event permission for this registration.\",\n      \"Do not require, create, or infer newsletter or general-marketing consent.\",\n      \"Require a valid email and email DND false.\",\n      \"Suppression, explicit opt-out, unsubscribe, complaint, and hard bounce always win.\",\n      \"Reject duplicate registration enrollment in the same event idempotency scope.\"\n    ],\n    \"configuration_authority\": {\n      \"contacts_created\": 0,\n      \"contacts_enrolled\": 0,\n      \"messages_sent\": 0,\n      \"reenable_only_when_all_identity_controls_render\": true,\n      \"fail_closed_rule\": \"If subject, preheader, sender, reply-to, body, CTA, or canonical link controls do not render, do not re-enable, save, or republish the action; return DRIFTED with ACTION_IDENTITY_UNVERIFIED.\"\n    },\n    \"save_reopen_readback\": [\n      \"Open only the existing workflow ID and existing Email A action.\",\n      \"Verify every accepted identity control renders before changing the Disabled state.\",\n      \"Re-enable and save Email A only when every value exactly matches this subjob.\",\n      \"Save the existing outer workflow without changing reminder timing or other actions.\",\n      \"Navigate away, reload, reopen the same workflow ID, and read back Email A enabled plus every identity field.\",\n      \"Record SAVED_REOPENED but keep observed state DRIFTED until the separate bounded test passes.\"\n    ],\n    \"controlled_test\": {\n      \"separate_explicit_authorization_required\": true,\n      \"operator_owned_synthetic_registrations_max\": 1,\n      \"messages_max\": 1,\n      \"broad_sends\": 0,\n      \"required_proof\": [\n        \"The synthetic registration has exact event-only permission and no newsletter consent requirement.\",\n        \"One enrollment and one immediate confirmation reach only the operator-owned destination.\",\n        \"The CTA resolves to the canonical One Time landing page.\",\n        \"Replay creates no second enrollment or confirmation.\",\n        \"Suppression, DND, unsubscribe, complaint, and hard-bounce variants send nothing.\"\n      ]\n    },\n    \"rollback_disable\": [\n      \"Disable only Email A and save the existing workflow when readback or bounded test fails.\",\n      \"Do not alter Email C, Email D, reminder timing, history, or unrelated enrollments.\",\n      \"Reopen the exact ID and record DRIFTED plus the precise mismatch.\"\n    ],\n    \"safe_evidence_fields\": [\n      \"subjob_id\",\n      \"workflow_id\",\n      \"action_name\",\n      \"controls_rendered\",\n      \"action_save_readback\",\n      \"outer_save_readback\",\n      \"sanitized_test_reference\",\n      \"messages_sent_count\",\n      \"replay_result\",\n      \"observed_state\",\n      \"remaining_dependency\"\n    ],\n    \"safe_evidence_schema\": {\n      \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n      \"type\": \"object\",\n      \"additionalProperties\": false,\n      \"required\": [\n        \"subjob_id\",\n        \"workflow_id\",\n        \"action_name\",\n        \"controls_rendered\",\n        \"action_save_readback\",\n        \"outer_save_readback\",\n        \"messages_sent\",\n        \"broad_sends\",\n        \"observed_state\",\n        \"remaining_dependency\"\n      ],\n      \"properties\": {\n        \"subjob_id\": {\n          \"const\": \"GHL-UI-04/OT-E01-EMAIL-A-REPAIR\"\n        },\n        \"workflow_id\": {\n          \"const\": \"a34ea513-4612-4f53-8bd8-49e89e6610f9\"\n        },\n        \"action_name\": {\n          \"const\": \"Email A - Immediate Confirmation\"\n        },\n        \"controls_rendered\": {\n          \"type\": \"boolean\"\n        },\n        \"action_save_readback\": {\n          \"type\": \"boolean\"\n        },\n        \"outer_save_readback\": {\n          \"type\": \"boolean\"\n        },\n        \"messages_sent\": {\n          \"type\": \"integer\",\n          \"minimum\": 0,\n          \"maximum\": 1\n        },\n        \"broad_sends\": {\n          \"const\": 0\n        },\n        \"observed_state\": {\n          \"enum\": [\n            \"DRIFTED\",\n            \"ACTIVE_TESTED\"\n          ]\n        },\n        \"remaining_dependency\": {\n          \"type\": \"string\"\n        }\n      }\n    },\n    \"forbidden_evidence_fields\": [\n      \"contact names, email addresses, phone numbers, or private destinations\",\n      \"message provider payloads or rendered recipient message bodies\",\n      \"security tokens, credentials, secrets, nonces, signatures, or raw headers\",\n      \"Student identity, credentials, learning records, or contact records\",\n      \"raw Zoom, Vimeo, meeting-provider, or storage-provider URLs\"\n    ]\n  }\n]\n\nA reviewed subjob overrides the generic no-send/no-publish default only where it states a narrower, separately authorized bounded action. All other parent-job safety rules remain in force.\n\nDefault safety is no-send and no-publish. Do not send messages, publish workflows, publish the bot, enroll production contacts, mutate live payment state, create Student contacts, or create Student credential fields.\n\nResult path: integrations/highlevel/agent-mode/results/GHL-UI-04.result.json\nIdempotency key: one-time-ghl:GHL-UI-04:e34ace7d51061f97",
   "allowed_assets": [
     "OT-01 New Lead Intake",
     "OT-02A Existing Subscriber Migration 2026 v1",
@@ -225,7 +225,160 @@
       }
     }
   },
-  "idempotency_key": "one-time-ghl:GHL-UI-04:4e8a6d184ba84c14",
+  "reviewed_subjobs": [
+    {
+      "subjob_id": "GHL-UI-04/OT-E01-EMAIL-A-REPAIR",
+      "parent_job_id": "GHL-UI-04",
+      "workflow": {
+        "canonical_key": "OT-E01",
+        "canonical_name": "OT-E01 Tisha B'Av 2026 Registration and Reminders",
+        "ghl_id": "a34ea513-4612-4f53-8bd8-49e89e6610f9",
+        "full_folder_ancestry": "One Time / 45 - Events / 2026 / Tisha B'Av 2026",
+        "desired_state": "ACTIVE_TESTED",
+        "observed_state": "DRIFTED",
+        "workflow_published": true,
+        "action_name": "Email A - Immediate Confirmation",
+        "action_observed_state": "Disabled"
+      },
+      "accepted_action_identity": {
+        "message_class": "event_registration_confirmation",
+        "subject": "You're registered — let's strengthen ourselves together",
+        "preheader": "Join Rabbi Eli Scheller live from the Holy Land this Tisha B'Av.",
+        "body": "Hi {{default contact.first_name \"there\"}},\n\nThank you for signing up for Rabbi Eli Scheller's live Tisha B'Av class.\n\nTogether, we'll strengthen ourselves and help fill the world with knowledge of Hashem through digital Torah learning.\n\nJoin us for a special class, live from the Holy Land.\n\nThursday, July 23, 2026\n3:00 PM Eastern\n10:00 PM Israel\n\nWe'll email the private class access before the program begins.\n\nCan't wait to see you,\n\nRabbi Eli Scheller\nOne Time Mishnah Learning",
+        "cta_label": "View the One Time Mishnah Class Page",
+        "cta_custom_value_key": "one_time_tisha_bav_landing_url",
+        "cta_rule": "The resolved value must equal the already-registered canonical One Time Tisha landing page and must not be a meeting-provider URL.",
+        "sender_key": "rabbi_campaign",
+        "sender_name_picker": {
+          "canonical_name": "One Time Rabbi Campaign Sender Name",
+          "ghl_id": "YTbMWivrsI10LnH26Xfv",
+          "key": "one_time_rabbi_campaign_sender_name"
+        },
+        "from_picker": {
+          "canonical_name": "One Time Rabbi Campaign Phase 1 From",
+          "ghl_id": "1ciJqvUIDDCxs1cBumdL",
+          "key": "one_time_rabbi_campaign_phase_1_from"
+        },
+        "reply_to_picker": {
+          "canonical_name": "One Time Default Reply-To",
+          "ghl_id": "u0msWwGUDL4Upjfe58Bm",
+          "key": "one_time_default_reply_to"
+        }
+      },
+      "permission_and_suppression": [
+        "Require the scoped Tisha B Av registered-event permission for this registration.",
+        "Do not require, create, or infer newsletter or general-marketing consent.",
+        "Require a valid email and email DND false.",
+        "Suppression, explicit opt-out, unsubscribe, complaint, and hard bounce always win.",
+        "Reject duplicate registration enrollment in the same event idempotency scope."
+      ],
+      "configuration_authority": {
+        "contacts_created": 0,
+        "contacts_enrolled": 0,
+        "messages_sent": 0,
+        "reenable_only_when_all_identity_controls_render": true,
+        "fail_closed_rule": "If subject, preheader, sender, reply-to, body, CTA, or canonical link controls do not render, do not re-enable, save, or republish the action; return DRIFTED with ACTION_IDENTITY_UNVERIFIED."
+      },
+      "save_reopen_readback": [
+        "Open only the existing workflow ID and existing Email A action.",
+        "Verify every accepted identity control renders before changing the Disabled state.",
+        "Re-enable and save Email A only when every value exactly matches this subjob.",
+        "Save the existing outer workflow without changing reminder timing or other actions.",
+        "Navigate away, reload, reopen the same workflow ID, and read back Email A enabled plus every identity field.",
+        "Record SAVED_REOPENED but keep observed state DRIFTED until the separate bounded test passes."
+      ],
+      "controlled_test": {
+        "separate_explicit_authorization_required": true,
+        "operator_owned_synthetic_registrations_max": 1,
+        "messages_max": 1,
+        "broad_sends": 0,
+        "required_proof": [
+          "The synthetic registration has exact event-only permission and no newsletter consent requirement.",
+          "One enrollment and one immediate confirmation reach only the operator-owned destination.",
+          "The CTA resolves to the canonical One Time landing page.",
+          "Replay creates no second enrollment or confirmation.",
+          "Suppression, DND, unsubscribe, complaint, and hard-bounce variants send nothing."
+        ]
+      },
+      "rollback_disable": [
+        "Disable only Email A and save the existing workflow when readback or bounded test fails.",
+        "Do not alter Email C, Email D, reminder timing, history, or unrelated enrollments.",
+        "Reopen the exact ID and record DRIFTED plus the precise mismatch."
+      ],
+      "safe_evidence_fields": [
+        "subjob_id",
+        "workflow_id",
+        "action_name",
+        "controls_rendered",
+        "action_save_readback",
+        "outer_save_readback",
+        "sanitized_test_reference",
+        "messages_sent_count",
+        "replay_result",
+        "observed_state",
+        "remaining_dependency"
+      ],
+      "safe_evidence_schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "subjob_id",
+          "workflow_id",
+          "action_name",
+          "controls_rendered",
+          "action_save_readback",
+          "outer_save_readback",
+          "messages_sent",
+          "broad_sends",
+          "observed_state",
+          "remaining_dependency"
+        ],
+        "properties": {
+          "subjob_id": {
+            "const": "GHL-UI-04/OT-E01-EMAIL-A-REPAIR"
+          },
+          "workflow_id": {
+            "const": "a34ea513-4612-4f53-8bd8-49e89e6610f9"
+          },
+          "action_name": {
+            "const": "Email A - Immediate Confirmation"
+          },
+          "controls_rendered": {
+            "type": "boolean"
+          },
+          "action_save_readback": {
+            "type": "boolean"
+          },
+          "outer_save_readback": {
+            "type": "boolean"
+          },
+          "messages_sent": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "broad_sends": {
+            "const": 0
+          },
+          "observed_state": {
+            "enum": ["DRIFTED", "ACTIVE_TESTED"]
+          },
+          "remaining_dependency": {
+            "type": "string"
+          }
+        }
+      },
+      "forbidden_evidence_fields": [
+        "contact names, email addresses, phone numbers, or private destinations",
+        "message provider payloads or rendered recipient message bodies",
+        "security tokens, credentials, secrets, nonces, signatures, or raw headers",
+        "Student identity, credentials, learning records, or contact records",
+        "raw Zoom, Vimeo, meeting-provider, or storage-provider URLs"
+      ]
+    }
+  ],
+  "idempotency_key": "one-time-ghl:GHL-UI-04:e34ace7d51061f97",
   "bna_agent_action_dropoff": {
     "lane": "highlevel_agent_mode",
     "return_surface": "BNA Agent Action drop-off page",

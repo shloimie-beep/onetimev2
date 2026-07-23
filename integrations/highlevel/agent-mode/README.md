@@ -1,9 +1,15 @@
 # HighLevel Agent Mode Queue
 
-Generated: 2026-07-21T13:45:16.180Z
+Generated: 2026-07-23T19:38:50.147Z
 Location: pBSnOK2nkdxp6gf9Rg3o
 
 Run these jobs in order. Every job defaults to no-send, no-publish, no production workflow enrollment, no live payment mutation, and no Student contacts.
+
+GHL-UI-14 through GHL-UI-18 contain reviewed executable contracts. Their configuration phase remains no-send/no-enrollment; a later controlled test requires separate explicit authorization, one operator-owned adult maximum, one email maximum, and zero broad sends.
+
+GHL-UI-04 contains the keyed OT-E01 Email A repair subjob. It is not a duplicate job or workflow and remains DRIFTED until exact readback plus a separately authorized bounded test pass.
+
+Deterministic executable report: integrations/highlevel/agent-mode/GHL-EXECUTABLE-WORKFLOW-REPORT.md
 
 Agent Mode must save UI work, verify the saved state, return to the BNA Agent Action drop-off page, save the result JSON, verify the readback result ID, and avoid unsaved chat-only completion claims.
 
@@ -22,3 +28,8 @@ Agent Mode must save UI work, verify the saved state, return to the BNA Agent Ac
 | 11    | GHL-UI-11 capture pipeline IDs              | integrations/highlevel/agent-mode/jobs/GHL-UI-11-capture-pipeline-ids.json              | integrations/highlevel/agent-mode/results/GHL-UI-11.result.json |
 | 12    | GHL-UI-12 save and readback verification    | integrations/highlevel/agent-mode/jobs/GHL-UI-12-save-and-readback-verification.json    | integrations/highlevel/agent-mode/results/GHL-UI-12.result.json |
 | 13    | GHL-UI-13 phase-2 rabbi acceptance          | integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json          | integrations/highlevel/agent-mode/results/GHL-UI-13.result.json |
+| 14    | GHL-UI-14 activate OT-01                    | integrations/highlevel/agent-mode/jobs/GHL-UI-14-activate-ot-01.json                    | integrations/highlevel/agent-mode/results/GHL-UI-14.result.json |
+| 15    | GHL-UI-15 activate OT-07                    | integrations/highlevel/agent-mode/jobs/GHL-UI-15-activate-ot-07.json                    | integrations/highlevel/agent-mode/results/GHL-UI-15.result.json |
+| 16    | GHL-UI-16 activate OT-08                    | integrations/highlevel/agent-mode/jobs/GHL-UI-16-activate-ot-08.json                    | integrations/highlevel/agent-mode/results/GHL-UI-16.result.json |
+| 17    | GHL-UI-17 activate OT-09                    | integrations/highlevel/agent-mode/jobs/GHL-UI-17-activate-ot-09.json                    | integrations/highlevel/agent-mode/results/GHL-UI-17.result.json |
+| 18    | GHL-UI-18 activate OT-10                    | integrations/highlevel/agent-mode/jobs/GHL-UI-18-activate-ot-10.json                    | integrations/highlevel/agent-mode/results/GHL-UI-18.result.json |

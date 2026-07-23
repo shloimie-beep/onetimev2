@@ -93,6 +93,10 @@ type AgentModeQueue = {
     order: number;
     title: string;
     job_file: string;
+    workflow_key?: string;
+    workflow_id?: string;
+    execution_mode?: string;
+    reviewed_subjob_ids?: string[];
   }>;
 };
 
@@ -121,6 +125,11 @@ async function main() {
     'duplicate normalized field-name check',
     duplicates(current.contact_fields.map((field) => field.normalizedName)).length === 0,
     duplicateDetail(current.contact_fields.map((field) => field.normalizedName)),
+  );
+  record(
+    'application contract field-value coverage',
+    applicationContractFieldValuesExist(current),
+    'granted/not_granted, invited/active, and suppressed projection values are registered alongside legacy values',
   );
   record(
     'duplicate tag check',
@@ -400,7 +409,12 @@ function workflowControlIsValid(current: CurrentRegistry) {
         Boolean(workflow.canary.result) &&
         workflow.evidence.length > 0,
     ) &&
-    canonical.find((workflow) => workflow.key === 'OT-E01')?.observedStatus === 'ACTIVE_TESTED' &&
+    canonical.find((workflow) => workflow.key === 'OT-E01')?.observedStatus === 'DRIFTED' &&
+    canonical
+      .find((workflow) => workflow.key === 'OT-E01')
+      ?.blocker.includes('ACTION_IDENTITY_UNVERIFIED') === true &&
+    canonical.find((workflow) => workflow.key === 'OT-E01')?.essentialValues
+      ?.immediate_email_action_enabled === false &&
     canonical.find((workflow) => workflow.key === 'OT-C01')?.asset_kind ===
       'email_marketing_campaign' &&
     canonical.find((workflow) => workflow.key === 'OT-C01')?.audienceReadback?.sends === 0 &&
@@ -482,9 +496,14 @@ async function agentModeQueueIsValid(queue: AgentModeQueue) {
     'capture pipeline IDs',
     'save and readback verification',
     'phase-2 rabbi acceptance',
+    'activate OT-01',
+    'activate OT-07',
+    'activate OT-08',
+    'activate OT-09',
+    'activate OT-10',
   ];
   if (
-    queue.schema_version !== '1.1.0' ||
+    queue.schema_version !== '1.2.0' ||
     queue.repository !== 'shloimie-beep/onetimev2' ||
     queue.registry_schema !== `${registryMetadata.schemaId}@${registryMetadata.schemaVersion}` ||
     queue.location_id !== registryMetadata.locationId ||
@@ -504,20 +523,53 @@ async function agentModeQueueIsValid(queue: AgentModeQueue) {
     const job = await readJson<Record<string, unknown>>(entry.job_file);
     const prompt = String(job.exact_copy_paste_prompt ?? '');
     const defaults = job.defaults as Record<string, unknown> | undefined;
-    if (
-      !prompt.includes('immutable Commit A registry SHA') ||
-      !prompt.includes('Click Save') ||
-      !prompt.includes('reopening or reading the saved state') ||
-      !prompt.includes('Return to the BNA Agent Action drop-off page') ||
-      !prompt.includes('Verify the readback result ID') ||
-      !prompt.includes('Never finish with an unsaved chat-only claim') ||
-      defaults?.no_send !== true ||
-      defaults?.no_publish !== true
+    if (defaults?.no_send !== true || defaults?.no_publish !== true) return false;
+    if (index < 13) {
+      if (
+        !prompt.includes('immutable Commit A registry SHA') ||
+        !prompt.includes('Click Save') ||
+        !prompt.includes('reopening or reading the saved state') ||
+        !prompt.includes('Return to the BNA Agent Action drop-off page') ||
+        !prompt.includes('Verify the readback result ID') ||
+        !prompt.includes('Never finish with an unsaved chat-only claim')
+      ) {
+        return false;
+      }
+      if (
+        entry.job_id === 'GHL-UI-04' &&
+        (!entry.reviewed_subjob_ids?.includes('GHL-UI-04/OT-E01-EMAIL-A-REPAIR') ||
+          !Array.isArray(job.reviewed_subjobs))
+      ) {
+        return false;
+      }
+    } else if (
+      entry.execution_mode !== 'reviewed_bounded_activation' ||
+      !entry.workflow_key ||
+      !entry.workflow_id ||
+      !job.execution_contract ||
+      !prompt.includes('Use this exact reviewed execution contract without invention') ||
+      !prompt.includes('Configuration phase authority is zero contacts') ||
+      !prompt.includes('A controlled test is a separate phase') ||
+      !prompt.includes('Record ACTIVE_TESTED only after')
     ) {
       return false;
     }
   }
   return true;
+}
+
+function applicationContractFieldValuesExist(current: CurrentRegistry) {
+  const values = (canonicalName: string) =>
+    current.contact_fields.find((field) => field.canonicalName === canonicalName)?.allowedValues ??
+    [];
+  return (
+    ['granted', 'not_granted'].every((value) => values('One Time Email Consent').includes(value)) &&
+    ['granted', 'not_granted'].every((value) =>
+      values('One Time WhatsApp Consent').includes(value),
+    ) &&
+    ['invited', 'active'].every((value) => values('One Time Portal Status').includes(value)) &&
+    values('One Time Suppression State').includes('suppressed')
+  );
 }
 
 function duplicatePipelineDetail(pipelines: RegistryPipeline[]) {

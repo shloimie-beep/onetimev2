@@ -1,7 +1,7 @@
 {
   "schema_id": "one-time-highlevel-agent-mode-queue",
-  "schema_version": "1.1.0",
-  "generated_at": "2026-07-21T13:45:16.180Z",
+  "schema_version": "1.2.0",
+  "generated_at": "2026-07-23T19:38:50.147Z",
   "repository": "shloimie-beep/onetimev2",
   "registry_schema": "one-time-highlevel@1.1.0",
   "pinned_registry_commit_source": "integrations/highlevel/agent-mode/GHL-SENDER-UI-EXECUTOR-PINNED.md",
@@ -10,21 +10,22 @@
   "registry_counts": {
     "standard_contact_fields": 8,
     "contact_custom_fields": 34,
-    "active_contact_custom_fields": 20,
-    "pending_contact_custom_fields": 13,
+    "active_contact_custom_fields": 33,
+    "pending_contact_custom_fields": 0,
     "deprecated_contact_custom_fields": 1,
     "tags": 38,
-    "active_tags": 28,
-    "pending_tags": 9,
+    "active_tags": 37,
+    "pending_tags": 0,
     "deprecated_tags": 1,
     "custom_values": 40,
-    "sender_profiles": 5,
-    "message_classes": 35,
-    "pipelines": 3,
-    "events": 1,
+    "active_custom_values": 30,
+    "blocked_custom_values": 7,
     "business_workflows": 14,
     "bot_action_workflows": 5,
-    "deprecated_workflows": 3
+    "deprecated_workflows": 3,
+    "workflow_assets": 18,
+    "campaign_assets": 1,
+    "non_workflow_assets": 2
   },
   "safety_defaults": {
     "messages_sent": 0,
@@ -67,7 +68,8 @@
       "title": "update workflow sender identities",
       "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-04-update-workflow-sender-identities.json",
       "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-04.result.json",
-      "idempotency_key": "one-time-ghl:GHL-UI-04:4e8a6d184ba84c14"
+      "idempotency_key": "one-time-ghl:GHL-UI-04:e34ace7d51061f97",
+      "reviewed_subjob_ids": ["GHL-UI-04/OT-E01-EMAIL-A-REPAIR"]
     },
     {
       "job_id": "GHL-UI-05",
@@ -140,6 +142,61 @@
       "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-13-phase-2-rabbi-acceptance.json",
       "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-13.result.json",
       "idempotency_key": "one-time-ghl:GHL-UI-13:88fd9a2607e04eb8"
+    },
+    {
+      "job_id": "GHL-UI-14",
+      "order": 14,
+      "title": "activate OT-01",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-14-activate-ot-01.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-14.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-14:5f914006b33e262f",
+      "workflow_key": "OT-01",
+      "workflow_id": "95a6f461-1a04-4260-b379-246fdcc45af7",
+      "execution_mode": "reviewed_bounded_activation"
+    },
+    {
+      "job_id": "GHL-UI-15",
+      "order": 15,
+      "title": "activate OT-07",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-15-activate-ot-07.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-15.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-15:3fc562f3b3418b20",
+      "workflow_key": "OT-07",
+      "workflow_id": "fb48c3bf-7154-44c9-825e-88afb5bb7942",
+      "execution_mode": "reviewed_bounded_activation"
+    },
+    {
+      "job_id": "GHL-UI-16",
+      "order": 16,
+      "title": "activate OT-08",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-16-activate-ot-08.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-16.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-16:80751341be903401",
+      "workflow_key": "OT-08",
+      "workflow_id": "eeca2efb-41be-40a7-bbc4-ee6fe8760dd9",
+      "execution_mode": "reviewed_bounded_activation"
+    },
+    {
+      "job_id": "GHL-UI-17",
+      "order": 17,
+      "title": "activate OT-09",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-17-activate-ot-09.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-17.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-17:472717c9ffc66f13",
+      "workflow_key": "OT-09",
+      "workflow_id": "bc8af9fc-22d5-4b4f-b71a-121eeff87f5b",
+      "execution_mode": "reviewed_bounded_activation"
+    },
+    {
+      "job_id": "GHL-UI-18",
+      "order": 18,
+      "title": "activate OT-10",
+      "job_file": "integrations/highlevel/agent-mode/jobs/GHL-UI-18-activate-ot-10.json",
+      "result_path": "integrations/highlevel/agent-mode/results/GHL-UI-18.result.json",
+      "idempotency_key": "one-time-ghl:GHL-UI-18:4559c70348c22930",
+      "workflow_key": "OT-10",
+      "workflow_id": "1bca5210-a3b9-496b-b3cd-48c60c0e33ca",
+      "execution_mode": "reviewed_bounded_activation"
     }
   ]
 }
