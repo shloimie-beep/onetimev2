@@ -706,11 +706,11 @@
     },
     {
       "action_id": "dashboard.open_billing.button",
-      "label": "Open Billing status",
+      "label": "Open household access",
       "surface": "button",
       "route": "/app/dashboard",
       "roles": ["owner", "admin"],
-      "capability": "billing:status:read",
+      "capability": "accounts:access:read",
       "handler": {
         "method": "GET",
         "path": "/api/v1/dashboard/owner"
@@ -721,7 +721,7 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "billing_status_read"
+        "event": "account_access_status_read"
       },
       "states": {
         "loading": "Loading bounded data.",
@@ -731,7 +731,7 @@
         "offline": "Network unavailable; no cached protected data is used."
       },
       "readiness_state": "ready",
-      "provider_mode": "test_or_projection_only",
+      "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
@@ -1174,11 +1174,11 @@
     },
     {
       "action_id": "billing.status.view.route",
-      "label": "Products/Billing status",
+      "label": "Household access",
       "surface": "route",
       "route": "/app/billing",
       "roles": ["owner", "admin"],
-      "capability": "billing:status:read",
+      "capability": "accounts:access:read",
       "handler": {
         "method": "GET",
         "path": "/api/v1/dashboard/owner"
@@ -1189,7 +1189,7 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "billing_status_read"
+        "event": "account_access_status_read"
       },
       "states": {
         "loading": "Loading bounded data.",
@@ -1199,17 +1199,17 @@
         "offline": "Network unavailable; no cached protected data is used."
       },
       "readiness_state": "ready",
-      "provider_mode": "test_or_projection_only",
+      "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
     {
-      "action_id": "billing.status.refresh.button",
-      "label": "Refresh billing status",
+      "action_id": "household.access.refresh.button",
+      "label": "Refresh household access",
       "surface": "button",
       "route": "/app/billing",
       "roles": ["owner", "admin"],
-      "capability": "billing:status:read",
+      "capability": "accounts:access:read",
       "handler": {
         "method": "GET",
         "path": "/api/v1/dashboard/owner"
@@ -1220,7 +1220,7 @@
       },
       "audit": {
         "mode": "local_read",
-        "event": "billing_status_read"
+        "event": "account_access_status_read"
       },
       "states": {
         "loading": "Loading bounded data.",
@@ -1230,7 +1230,7 @@
         "offline": "Network unavailable; no cached protected data is used."
       },
       "readiness_state": "ready",
-      "provider_mode": "test_or_projection_only",
+      "provider_mode": "not_provider_dependent",
       "external_mutation": false,
       "test_evidence": ["tests/integration/dashboard/owner-dashboard.test.ts"]
     },
@@ -1682,68 +1682,6 @@
         "tests/unit/w12-09-gamification.test.ts",
         "tests/w12-09/portal-gamification-browser-harness.ts"
       ]
-    },
-    {
-      "action_id": "portal.parent.billing.checkout.button",
-      "label": "Start checkout",
-      "surface": "button",
-      "route": "/app/parent",
-      "roles": ["parent"],
-      "capability": "billing:checkout",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/billing/checkout-sessions"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "billing_checkout_created"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A bounded provider-unavailable state is shown.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "stripe_test_only_guarded",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/ot87-billing-entitlements.test.ts"]
-    },
-    {
-      "action_id": "portal.parent.billing.portal.button",
-      "label": "Manage billing",
-      "surface": "button",
-      "route": "/app/parent",
-      "roles": ["parent"],
-      "capability": "billing:portal",
-      "handler": {
-        "method": "POST",
-        "path": "/api/v1/billing/customer-portal-sessions"
-      },
-      "idempotency": {
-        "required": true,
-        "key_source": "client-generated idempotency_key"
-      },
-      "audit": {
-        "mode": "domain_audit",
-        "event": "billing_customer_portal_created"
-      },
-      "states": {
-        "loading": "Loading bounded local data.",
-        "success": "Action completed or the route is visible.",
-        "error": "A bounded provider-unavailable state is shown.",
-        "permission": "Unauthorized roles are denied by server session scope.",
-        "offline": "No protected cached data is used while offline."
-      },
-      "readiness_state": "ready",
-      "provider_mode": "stripe_test_only_guarded",
-      "external_mutation": false,
-      "test_evidence": ["tests/integration/ot87-billing-entitlements.test.ts"]
     },
     {
       "action_id": "portal.parent.support.open.button",

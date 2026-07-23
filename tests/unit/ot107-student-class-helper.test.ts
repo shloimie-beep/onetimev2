@@ -194,8 +194,29 @@ function fakeHelperPool() {
   const pool = {
     auditParams,
     query: async (sql: string, params?: unknown[]) => {
-      if (sql.includes('billing_entitlement_projections')) {
-        return { rows: [{ grants_access: true }], rowCount: 1 };
+      if (sql.includes('onetime.account_access_projections AS access')) {
+        return {
+          rows: [
+            {
+              access_key: 'ot107_access_001',
+              account_key: 'one_time',
+              product_key: 'one_time_mishnah_class',
+              household_key: 'household_001',
+              state: 'active',
+              source_kind: 'free_pilot',
+              effective_at: new Date('2026-07-15T10:00:00.000Z'),
+              expires_at: new Date('2026-08-16T10:00:00.000Z'),
+              opaque_source_reference: 'ot107_test_access',
+              source_revision: 1,
+              source_updated_at: new Date('2026-07-15T10:00:00.000Z'),
+              policy_version: 'ot107-test-access-v1',
+              revocation_reason: null,
+              access_version: 1,
+              household_status: 'active',
+            },
+          ],
+          rowCount: 1,
+        };
       }
       if (sql.includes('content_items AS items')) {
         return { rows: [{ content_item_key: 'content_001' }], rowCount: 1 };
