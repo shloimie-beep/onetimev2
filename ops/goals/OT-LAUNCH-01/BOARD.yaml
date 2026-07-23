@@ -1,6 +1,6 @@
 schema_version: 1
 goal_id: OT-LAUNCH-01
-updated_at: 2026-07-23T11:04:17Z
+updated_at: 2026-07-23T12:10:24Z
 status_definitions:
   unclaimed: Conductor has not assigned executable work.
   active: Assigned work is progressing without an impasse.
@@ -108,12 +108,12 @@ outcome:
       head: acddcc8cd012c5cdc5bfc08cbc80550bef8719ba
       deployment: 81317abe-f3ef-42cd-b5db-5814b014b6a3
       route: https://join.onetimeonetime.com/tisha-bav
-  current_summary: 'The controlled live-pilot governance checkpoint is pushed and the first implementation slice is locally green. GHL remains the payment-history and payment-operations authority; One Time will project only current access state and may grant an explicit free-pilot entitlement. Main landing repair passed build, typecheck, brand, bundle, accessibility/performance, and responsive browser checks at commit ca191971a150aeecfb2ae81271c96f8668ab4ec3. The Board-derived Admin Launch Status route passed focused authorization, generation, source-hash, desktop, and 360px browser checks and is ready for the next scoped commit. A sanitized real-Zoom staging canary job is prepared but has not changed Zoom, Railway configuration, provider gates, or production. No customer message, payment change, production mutation, or protected-value disclosure is claimed by this update.'
-  external_action_count: 8
+  current_summary: 'Persistent staging product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is deployed through exact web and worker sources with healthy /health and /ready readback at schema 2220. It differs from browser-accepted checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed only by a native no-JavaScript signup fallback and corrected performance observer boundary; five live 390x844 reloads now measure CLS 0 with no overflow. The redesigned public landing and Board-derived Admin Launch Status are live; bounded browser proof covers the real fictional Student login, normal Admin Dashboard discovery, Parent, all three sibling-scoped Student previews, Rabbi/Classroom, preserved Admin session, and the fake/provider-off Live Console. GHL remains authoritative for payment history; One Time current-access and explicit free-pilot projection is the next unclaimed implementation track. The reviewed Zoom staging canary packet is ready, but every real/canary gate remains off and no Zoom, GHL, customer, payment, or production mutation is claimed.'
+  external_action_count: 9
   external_actions:
     - kind: fictional_staging_admin_login_code_challenge
-      count: 6
-      scope: Six bounded operator-owned staging login-code emails only. The latest challenge authenticated the freshly rotated fictional Admin for current-source role-preview proof without rendering the replacement credential or private destination in repository evidence; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
+      count: 7
+      scope: Seven bounded operator-owned staging login-code emails only. The latest challenge authenticated the freshly rotated fictional Admin for exact deployed role-preview and Launch Status proof without committing the replacement credential, private destination, or code; no customer/broad send, workflow enrollment, provider workflow execution, or production mutation occurred.
     - kind: operator_tisha_production_signup_account_login_code_email
       count: 1
       scope: One operator-owned live Tisha signup produced an account/login-code email but no registered-event tag, OT-E01 enrollment, or event confirmation; no manual/fallback message, duplicate signup, customer/broad send, or provider workflow mutation followed.
@@ -128,8 +128,8 @@ conductor:
   pr: 97
   head:
     ref: refs/heads/codex/full-app-staging-live
-    last_verified_commit: ca191971a150aeecfb2ae81271c96f8668ab4ec3
-    resolution: 'Main landing implementation commit ca191971a150aeecfb2ae81271c96f8668ab4ec3 is the latest locally verified product checkpoint. It descends from pushed governance head 069d18d6adf0b3bdf4516fe44338b33e2e303556; the launch-dashboard and Zoom-job changes remain uncommitted until their own scoped checks and commits complete.'
+    last_verified_commit: d236d398b46aa143607ad017cc873f05236f0268
+    resolution: 'Exact product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is the deployed source and contains only the accepted 9546235f7669194dbc9497c493d61ada2547e5ed app plus the signup first-paint stability repair. Authenticated role journeys remain accepted from unchanged source checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed; the d236d398 delta is independently performance- and live-browser-verified. Any later commit containing only this Board, its generated pointer/projection, and sanitized handoffs is an evidence descendant.'
   system: One Time persistent staging
 
 tracks:
@@ -160,7 +160,7 @@ tracks:
     next_action: null
 
   - id: operator_launch_dashboard
-    status: ready_for_convergence
+    status: done
     owner:
       task_id: OT-LAUNCH-01-OPERATOR-LAUNCH-DASHBOARD
       repository: shloimie-beep/onetimev2
@@ -175,12 +175,13 @@ tracks:
       - The operator explicitly requested one clickable summary of what just changed, how close the current milestone is, what works, and the next task.
       - The goal executor contract now forbids hand-maintained percentage/status and requires a source-hashed BOARD acceptance projection.
       - 'The Admin-only Launch Status route, navigation item, Dashboard card, generated projection, remaining-work list, safe links, exact blockers, and next-task readback pass 6/6 focused unit/UI tests, 1/1 owner authorization integration, scoped lint/Prettier/brand checks, typecheck, and a real Chromium Dashboard-to-Launch-Status journey at desktop and 360px.'
+      - 'Persistent-staging source 9546235f7669194dbc9497c493d61ada2547e5ed exposes the normal Admin Dashboard card and authenticated Launch Status navigation. Live readback showed the Board-derived percentage, what works, remaining tracks, exact Zoom blocker, safe role/content/console routes, and one next executable task while preserving the Admin session.'
     blocker: null
-    remaining_work: Commit the source-hashed projection and deploy the exact descendant to persistent staging, then re-read the normal Admin Dashboard card, navigation entry, percentage, remaining work, safe routes, and preserved Experience Preview flow.
-    next_action: Generate from final Board bytes, commit the scoped Admin surface, and verify the exact persistent-staging deployment.
+    remaining_work: null
+    next_action: null
 
   - id: main_landing_polish
-    status: ready_for_convergence
+    status: done
     owner:
       task_id: OT-LAUNCH-01-MAIN-LANDING-POLISH
       repository: shloimie-beep/onetimev2
@@ -196,9 +197,11 @@ tracks:
       - Built public CSS is 34,586 bytes against the unchanged 35,000-byte gate; removing the assistant and unused landing rules must fund the scoped repair.
       - 'Commit ca191971a150aeecfb2ae81271c96f8668ab4ec3 implements the exact two-line hero, smaller supporting copy, single CTA, in-flow Jerusalem countdown, no WhatsApp/offline helper, equal outcome media with tested Retention crop, reduced-motion-safe reveal, corrected section order, automatic pausable gallery, full-width equal white publication cards, square Rabbi media, and yellow/black/white landing accents.'
       - 'The stable shared snapshot passes build/typecheck, brand and bundle checks, 8/8 focused units, 15/15 landing browser checks, one focused performance run, 2/2 public-shell/reduced-motion checks across 360/390/768/1440, scoped lint/Prettier, secret scan, and diff check. Built public.css is 33,899 bytes and public.js is 18,904 bytes.'
+      - 'Live persistent-staging readback at exact product source 9546235f7669194dbc9497c493d61ada2547e5ed verified the governed H1, smaller supporting line, one CTA, in-flow Jerusalem countdown, correct desktop and 360x800 layout, no horizontal overflow, and no WhatsApp/offline assistant. No form was submitted.'
+      - 'Exact descendant d236d398b46aa143607ad017cc873f05236f0268 converts the signup warning to a native no-JavaScript fallback and installs the performance observer once per page. The complete 10/10 performance suite passed; five live 390x844 /signup reloads measured CLS 0, HTTP 200, no horizontal overflow, and no fallback visible with JavaScript enabled. The separate no-JavaScript browser check passed and no form was submitted.'
     blocker: null
-    remaining_work: Push the exact descendant, verify the live persistent-staging public page at the recorded breakpoints, and keep production unchanged until a separate reviewed production candidate is accepted.
-    next_action: 'Deploy the exact PR #97 descendant to persistent staging and run the bounded landing browser readback without submitting a form.'
+    remaining_work: null
+    next_action: null
 
   - id: ghl_access_entitlement_projection
     status: unclaimed
@@ -215,9 +218,10 @@ tracks:
     evidence:
       - The operator explicitly made GHL authoritative for payment history and limited One Time to deciding who currently has application access.
       - The accepted HighLevel application contracts provide the one canonical outbox-backed dispatcher and fail-closed provider modes needed by this projection.
+      - 'Read-only design handoff ops/goals/OT-LAUNCH-01/handoffs/ghl-access-entitlement-projection--queued.json defines one account/product/household current-access projection, explicit free_pilot state, monotonic revision/replay rules, revocation, sibling isolation, and forbidden payment-history fields. It performs zero payment, GHL, access, provider, or production mutation.'
     blocker: null
     remaining_work: Reconcile existing entitlement schema/contracts, implement only missing access projection and free-pilot semantics, and prove paid-state events cannot create a duplicate payment history.
-    next_action: Assign after the governance checkpoint; keep GHL payment-provider writes outside this application task.
+    next_action: Assign this as the next implementation lane; keep GHL payment-provider writes and payment history outside One Time.
 
   - id: public_lead_capture_bot
     status: unclaimed
@@ -280,6 +284,7 @@ tracks:
       - The operator explicitly authorized a controlled free live pilot and wants real Admin/Parent/Student use, approved playback on another device, and Zoom testing before broader launch.
       - Current production and full-app staging are divergent release lines, so an exact semantic convergence candidate is required; mechanical branch replacement is forbidden.
       - Repository safety keeps production promotion in its own reviewed narrow job after candidate, backup, rollback, and exact role acceptance are complete.
+      - 'Read-only convergence handoff ops/goals/OT-LAUNCH-01/handoffs/production-pilot--persistent-staging-conductor.json records the semantic candidate, immutable migration, protected restore, rollback, exact-source web/worker, and one-household pilot gates. It also records that current production CLI uploads are not independent Git-backed source attestation; no production action occurred.'
     blocker: null
     remaining_work: Build and verify the immutable release candidate, explicit free-pilot access contract, backup/restore and rollback evidence, real Administrator activation plan, separate-device role proof, and exact promotion job.
     next_action: Finish the governance, landing, launch-summary, and access-projection staging slices while continuously reconciling the production release diff.
@@ -705,6 +710,7 @@ tracks:
       - 'The operator explicitly authorized the bounded staging-only configuration and human canary on 2026-07-23; this removes the authority blocker but does not supply or validate protected prerequisites.'
       - 'Reviewed provider-action job OT-LAUNCH-01-ZOOM-STAGING-CANARY-01 now fixes the exact staging origin, canonical SDK/S2S variable contract, four readiness phases, final canary gate, protected-value handling, old-target rotation, separate-device host/Student proof, consent, mute/unmute, spotlight/reset, replay/expiry/sibling/idempotency denials, sanitized evidence, and mandatory post-canary return to sink/real-false/canary-false.'
       - 'Preparation validation passed 26/26 Zoom units, 7/7 classroom integration tests, scoped Prettier/diff check, JSON parse, and a 2,034-file secret scan. The preparation task executed zero Zoom/Railway/provider/deployment/credential/production mutation and records OBS as unnecessary for the Meeting SDK control proof.'
+      - 'The reviewed provider-action packet from commit 394dd3a is present in deployed product checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed. Live Rabbi Console readback remains fake/provider-off; no Zoom allowlist, credential, target, meeting, control, notification, or production change occurred.'
     blocker: null
     remaining_work: 'A separately scoped provider executor must rotate/revoke the exposed target, validate protected prerequisite sources without printing values, add only the exact staging origin, install staging-only values, run the human host/Student canary and negative cases, return all real/canary gates off, and commit one sanitized result.'
     next_action: 'Start the reviewed ZOOM-STAGING-CANARY packet in a separate provider-authorized Codex task. Its first external action is old-target rotation and denial proof; stop only at a missing protected source, Zoom login/reCAPTCHA, or required human host/Student participation.'
@@ -862,6 +868,11 @@ tracks:
       - 'Exact source 7dcb137c4d1e3b908dce8230e3089ec58bf57261 is live through web deployment fb693d23-d100-42b1-aafc-3adc7afab16c and worker deployment ae860b1e-793f-49f2-a529-cacacf9afb1d. /version reports full-app-staging-live-7dcb137 with exact commit_sha and Railway git_commit_sha; /health and /ready are 200 with blockers empty and latest=2220_tisha_bav_event_email_permission.'
       - 'Only the stale staging APP_VERSION label was corrected after the exact automatic deployment; no source, Git SHA, provider, database, or production variable changed. All five GitHub suites and both exact staging Railway checks pass.'
       - 'The bounded fresh-credential live proof completed Dashboard discovery, Parent and Rabbi/Classroom projections, all three sibling-scoped actual Student shells, and preserved Admin usability without DOM snapshots, screenshots, protected destinations, challenge codes, or credentials.'
+      - 'Exact product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is live through persistent-staging web deployment a5b5145d-ff73-4d1f-b6e4-9549434e88dd and worker deployment df6227e2-3c7c-47c3-8981-4f160b53d2ff. /version commit_sha and deployment.git_commit_sha are exact; /health and /ready return 200 with blockers empty, database query healthy, and latest=2220_tisha_bav_event_email_permission.'
+      - 'Browser-journey source 9546235f7669194dbc9497c493d61ada2547e5ed passed 337/337 unit tests, the three repaired browser boundaries 6/6, and the full local Chromium app journey 59/59. Generated screenshots and JSON artifacts were restored to HEAD after the run, leaving only the intended test contracts before the clean commit.'
+      - 'Live browser readback on browser-journey source 9546235f7669194dbc9497c493d61ada2547e5ed verified the redesigned public landing at 1440x900 and 360x800, direct fictional Student 1 login, normal Admin Dashboard discovery of Launch Status and Preview Parent & Student portals, Parent plus all three exact sibling previews, separate GET-only Student shells without Admin controls, preserved Admin session, Rabbi/Classroom projection, and the fake/provider-off Live Console. One bounded operator-owned Admin login-code email was the only external action.'
+      - 'The only later product delta at d236d398b46aa143607ad017cc873f05236f0268 passed full build/typecheck, 10/10 performance, five repeated live mobile /signup CLS checks at 0, explicit no-JavaScript fallback, lint, scoped Prettier, secret scan, and diff check without submitting a form.'
+      - 'All five exact-head GitHub workflow suites passed at d236d398b46aa143607ad017cc873f05236f0268: Node 24, OPS-06 deterministic checks, PostgreSQL 16 assurance, PostgreSQL 16 learner-seat proof, and PostgreSQL 18 assurance/restore. The persistent-staging Railway web and worker deployments are independently successful at the exact source; unrelated pull-request preview deployment checks are not treated as persistent-staging evidence.'
     blocker: null
     remaining_work: null
     next_action: null

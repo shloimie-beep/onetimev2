@@ -5,22 +5,34 @@ export const operatorLaunchStatusProjection = {
   schema_version: 'ot.operator-launch-status.v1',
   goal_id: 'OT-LAUNCH-01',
   generated_from_board: 'ops/goals/OT-LAUNCH-01/BOARD.yaml',
-  board_source_hash: 'sha256:826c1f8752a04bbbfc86bcd35766a7931451d50a02b5457e6c461c72db0fafac',
-  generated_at: '2026-07-23T11:04:17.000Z',
+  board_source_hash: 'sha256:0b6d74b8c00288ff4647210c5fd123269a11e736d99fe2daca0da836280fada1',
+  generated_at: '2026-07-23T12:10:24.000Z',
   current_milestone: {
     label: 'Controlled live pilot',
-    acceptance_complete: 13,
+    acceptance_complete: 16,
     acceptance_total: 21,
-    percentage: 62,
+    percentage: 76,
   },
   what_changed:
-    'The controlled live-pilot governance checkpoint is pushed and the first implementation slice is locally green. GHL remains the payment-history and payment-operations authority; One Time will project only current access state and may grant an explicit free-pilot entitlement. Main landing repair passed build, typecheck, brand, bundle, accessibility/performance, and responsive browser checks at commit ca191971a150aeecfb2ae81271c96f8668ab4ec3. The Board-derived Admin Launch Status route passed focused authorization, generation, source-hash, desktop, and 360px browser checks and is ready for the next scoped commit. A sanitized real-Zoom staging canary job is prepared but has not changed Zoom, Railway configuration, provider gates, or production. No customer message, payment change, production mutation, or protected-value disclosure is claimed by this update.',
+    'Persistent staging product checkpoint d236d398b46aa143607ad017cc873f05236f0268 is deployed through exact web and worker sources with healthy /health and /ready readback at schema 2220. It differs from browser-accepted checkpoint 9546235f7669194dbc9497c493d61ada2547e5ed only by a native no-JavaScript signup fallback and corrected performance observer boundary; five live 390x844 reloads now measure CLS 0 with no overflow. The redesigned public landing and Board-derived Admin Launch Status are live; bounded browser proof covers the real fictional Student login, normal Admin Dashboard discovery, Parent, all three sibling-scoped Student previews, Rabbi/Classroom, preserved Admin session, and the fake/provider-off Live Console. GHL remains authoritative for payment history; One Time current-access and explicit free-pilot projection is the next unclaimed implementation track. The reviewed Zoom staging canary packet is ready, but every real/canary gate remains off and no Zoom, GHL, customer, payment, or production mutation is claimed.',
   works_now: [
     {
       track_id: 'goal_system',
       label: 'Goal System',
       status: 'done',
       acceptance_ids: ['GOAL-001'],
+    },
+    {
+      track_id: 'operator_launch_dashboard',
+      label: 'Operator Launch Dashboard',
+      status: 'done',
+      acceptance_ids: ['OPS-LAUNCH-001'],
+    },
+    {
+      track_id: 'main_landing_polish',
+      label: 'Main Landing Polish',
+      status: 'done',
+      acceptance_ids: ['LANDING-001', 'LANDING-002'],
     },
     {
       track_id: 'admin_experience_preview',
@@ -61,25 +73,11 @@ export const operatorLaunchStatusProjection = {
   ],
   remaining: [
     {
-      track_id: 'operator_launch_dashboard',
-      label: 'Operator Launch Dashboard',
-      status: 'ready_for_convergence',
-      next_action:
-        'Generate from final Board bytes, commit the scoped Admin surface, and verify the exact persistent-staging deployment.',
-    },
-    {
-      track_id: 'main_landing_polish',
-      label: 'Main Landing Polish',
-      status: 'ready_for_convergence',
-      next_action:
-        'Deploy the exact PR #97 descendant to persistent staging and run the bounded landing browser readback without submitting a form.',
-    },
-    {
       track_id: 'ghl_access_entitlement_projection',
       label: 'Ghl Access Entitlement Projection',
       status: 'unclaimed',
       next_action:
-        'Assign after the governance checkpoint; keep GHL payment-provider writes outside this application task.',
+        'Assign this as the next implementation lane; keep GHL payment-provider writes and payment history outside One Time.',
     },
     {
       track_id: 'production_pilot',
@@ -150,9 +148,9 @@ export const operatorLaunchStatusProjection = {
     },
   ],
   next_executable_task: {
-    track_id: 'operator_launch_dashboard',
-    label: 'Operator Launch Dashboard',
+    track_id: 'ghl_access_entitlement_projection',
+    label: 'Ghl Access Entitlement Projection',
     action:
-      'Generate from final Board bytes, commit the scoped Admin surface, and verify the exact persistent-staging deployment.',
+      'Assign this as the next implementation lane; keep GHL payment-provider writes and payment history outside One Time.',
   },
 } as const satisfies OperatorLaunchStatusProjection;

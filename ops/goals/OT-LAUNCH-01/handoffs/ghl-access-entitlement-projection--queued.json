@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "ghl_access_entitlement_projection",
+  "task_id": null,
+  "source_of_status": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
+  "result": {
+    "status": "reviewed_design_queued_unclaimed",
+    "payment_history_authority": "GHL",
+    "one_time_scope": "Current account/product/household access state only",
+    "free_pilot_is_payment": false,
+    "payment_canary_required": false,
+    "external_effects": 0,
+    "production_changed": false
+  },
+  "canonical_projection": {
+    "states": [
+      "pending",
+      "active",
+      "grace",
+      "scheduled_end",
+      "suspended",
+      "revoked",
+      "manual_review"
+    ],
+    "source_kinds": ["free_pilot", "highlevel_payment_state", "admin_override", "legacy_preview"],
+    "scope_key": ["account_key", "product_key", "household_key"],
+    "required_metadata": [
+      "effective_at",
+      "expires_at",
+      "opaque_source_reference",
+      "source_revision",
+      "source_updated_at",
+      "policy_version",
+      "revocation_reason"
+    ],
+    "forbidden_payment_history": [
+      "invoice",
+      "charge",
+      "card",
+      "subscription",
+      "amount",
+      "payment_event_history"
+    ]
+  },
+  "highlevel_contract": {
+    "direction": "GHL signed current-state input to One Time; One Time outbox projects sanitized access status back to GHL",
+    "action": "access.apply_current_state",
+    "security": [
+      "HMAC authentication",
+      "account/product/location scope",
+      "nonce replay denial",
+      "idempotency receipt",
+      "monotonic source revision",
+      "ambiguous identity denial",
+      "audit event"
+    ],
+    "provider_modes_default": "disabled",
+    "customer_messages": 0
+  },
+  "free_pilot_acceptance": [
+    "Verified adult activation creates one explicit, time-bounded free_pilot access projection.",
+    "Parent creates up to three separate Student identities with separate credentials.",
+    "A Student signs in from another device and sees only approved content for that learner.",
+    "Revocation or expiry invalidates Student sessions and blocks learning access.",
+    "No public form submission, learner identity, GHL tag, or legacy billing row can grant access by itself."
+  ],
+  "migration": {
+    "expected_next_prefix_from_read_only_audit": 2223,
+    "must_recheck_before_creation": true,
+    "known_reserved_prefixes": [2221, 2222],
+    "historical_migrations_are_immutable": true
+  },
+  "validation_required": [
+    "State transition, expiry, precedence, replay, cross-account, and ambiguous-identity tests",
+    "Free Parent activation through another-device Student login and revocation",
+    "Sibling isolation and approved-only playback",
+    "No fallback authorization from legacy entitlement rows",
+    "No writes to payment-history or Stripe-shaped tables",
+    "PostgreSQL 16/18 migration and restore proof",
+    "Typecheck, build, lint, secret scan, exact-head staging deployment, and browser acceptance"
+  ],
+  "remaining_work": [
+    "The persistent-staging conductor must assign exactly one implementation task before code work.",
+    "The implementation must reconcile current entitlement call sites and cut authorization over to the new projection without creating a payment ledger.",
+    "GHL UI/payment-provider work remains in the separately controlled GHL lane."
+  ],
+  "sanitized_at": "2026-07-23T11:34:00Z"
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "goal_id": "OT-LAUNCH-01",
+  "track_id": "production_pilot",
+  "task_id": "OT-LAUNCH-01-PERSISTENT-STAGING-CONDUCTOR",
+  "source_of_status": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
+  "result": {
+    "status": "read_only_convergence_design_complete",
+    "production_mutation_performed": false,
+    "provider_action_performed": false,
+    "customer_message_sent": false
+  },
+  "read_only_source_audit": {
+    "production_release_branch": "release/tisha-bav-2026-live",
+    "production_release_head_observed": "5311c348eed15eec6790aeae3c423f63c33b83e4",
+    "staging_branch": "codex/full-app-staging-live",
+    "staging_product_checkpoint": "d236d398b46aa143607ad017cc873f05236f0268",
+    "merge_base_observed": "5ddd7b604c01744dd562050ae9b51124f7732594",
+    "production_source_attestation": "Current production web and worker were CLI-uploaded with source.repo absent; their human commit label is not independent Git-backed source attestation.",
+    "production_health_at_audit": {
+      "version_route": 200,
+      "health_route": 200,
+      "ready_route": 200,
+      "latest_migration": "2220_tisha_bav_event_email_permission"
+    }
+  },
+  "semantic_candidate_contract": [
+    "Start from the final accepted PR #97 descendant; do not replace it with the production branch.",
+    "Port the production-only Tisha fixes semantically without overwriting the main landing, authenticated app, HighLevel contracts, Zoom gates, media workflow, or canonical Board.",
+    "Preserve every historical migration byte and checksum; prove missing staging migrations against a protected production restore clone.",
+    "Build immutable Git-attested web and worker artifacts from one candidate.",
+    "Keep HighLevel actions, broad sends, real Zoom controls, and customer-provider effects off during the first controlled pilot.",
+    "Pilot only one real Administrator and one explicit free Parent/Student household before broader enrollment."
+  ],
+  "promotion_gate": [
+    "Accepted GHL/free-pilot current-access projection",
+    "Protected production backup and successful restore",
+    "Forward migration and rollback-compatible code proof",
+    "Exact candidate Node/PostgreSQL/browser suites",
+    "Exact web and worker source readback",
+    "Real Admin login and one separate-device Parent/Student approved-playback journey",
+    "Explicit narrow production-promotion review"
+  ],
+  "rollback": [
+    "Retain a prebuilt exact artifact for the current narrow Tisha production source.",
+    "Forward-only migrations remain; rollback code must be proven compatible with the upgraded schema.",
+    "Revoke the pilot access projection rather than deleting identity or payment history."
+  ],
+  "remaining_work": [
+    "Implement and accept the current-access/free-pilot track.",
+    "Create the semantic production candidate on a clean reviewed release lane.",
+    "Run protected restore-clone, rollback, and exact-source deployment proof.",
+    "Use a separate narrow production task for promotion; this conductor handoff performs no production mutation."
+  ],
+  "sanitized_at": "2026-07-23T12:04:13Z"
+}

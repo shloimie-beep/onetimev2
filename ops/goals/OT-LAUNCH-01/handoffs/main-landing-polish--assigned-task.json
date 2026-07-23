@@ -5,8 +5,11 @@
   "task_id": "OT-LAUNCH-01-MAIN-LANDING-POLISH",
   "source_of_status": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
   "result": {
-    "status": "local_green_pending_persistent_staging",
-    "commit": "ca191971a150aeecfb2ae81271c96f8668ab4ec3",
+    "status": "deployed_verified_persistent_staging",
+    "implementation_commit": "ca191971a150aeecfb2ae81271c96f8668ab4ec3",
+    "deployed_source": "d236d398b46aa143607ad017cc873f05236f0268",
+    "web_deployment": "a5b5145d-ff73-4d1f-b6e4-9549434e88dd",
+    "worker_deployment": "df6227e2-3c7c-47c3-8981-4f160b53d2ff",
     "route": "/",
     "production_changed": false,
     "form_submissions": 0,
@@ -34,11 +37,15 @@
     "secret_scan": "passed across 2037 text files",
     "scoped_eslint": "passed",
     "scoped_prettier": "passed",
-    "scoped_diff_check": "passed"
+    "scoped_diff_check": "passed",
+    "live_desktop": "1440x900 hero, title, countdown, single CTA, and no assistant verified",
+    "live_mobile": "360x800 title, countdown, CTA, and no horizontal overflow verified",
+    "full_chromium_suite": "59/59 passed after updating launch probes to the governed heading",
+    "signup_first_paint": "Native no-JavaScript fallback; complete performance 10/10; five live 390x844 reloads at CLS 0 and no overflow",
+    "github_exact_head": "5/5 workflow suites passed at d236d398b46aa143607ad017cc873f05236f0268"
   },
   "remaining_work": [
-    "Push the exact PR #97 descendant and verify the persistent-staging route at recorded breakpoints.",
     "Keep production unchanged until the separate production candidate and promotion job are accepted."
   ],
-  "sanitized_at": "2026-07-23T11:04:17Z"
+  "sanitized_at": "2026-07-23T12:04:13Z"
 }

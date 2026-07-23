@@ -5,7 +5,9 @@
   "task_id": "OT-LAUNCH-01-OPERATOR-LAUNCH-DASHBOARD",
   "source_of_status": "ops/goals/OT-LAUNCH-01/BOARD.yaml",
   "result": {
-    "status": "local_green_pending_persistent_staging",
+    "status": "deployed_verified_persistent_staging",
+    "deployed_source": "9546235f7669194dbc9497c493d61ada2547e5ed",
+    "web_deployment": "aa6e9c34-2edf-4c1c-ae49-fa36ad533dfb",
     "route": "/app/launch-status",
     "admin_only": true,
     "board_derived": true,
@@ -27,12 +29,11 @@
     "brand_check": "passed",
     "scoped_eslint": "passed",
     "scoped_prettier": "passed",
-    "scoped_diff_check": "passed"
+    "scoped_diff_check": "passed",
+    "live_admin_discovery": "Dashboard card and authenticated navigation verified",
+    "live_projection": "percentage, works-now, remaining work, exact blocker, safe routes, and next task verified",
+    "admin_session_preserved": true
   },
-  "remaining_work": [
-    "Regenerate the projection and pointer from final Board bytes.",
-    "Deploy the exact PR #97 descendant to persistent staging.",
-    "Read back the normal Admin Dashboard card, navigation entry, projection, safe links, and preserved Experience Preview journey."
-  ],
-  "sanitized_at": "2026-07-23T11:04:17Z"
+  "remaining_work": [],
+  "sanitized_at": "2026-07-23T11:34:00Z"
 }
