@@ -1,4 +1,4 @@
-import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -39,6 +39,36 @@ describe('runtime public metadata origin', () => {
     await expect(signup.text()).resolves.toContain(
       '<meta property="og:url" content="https://ot99-web-staging.up.railway.app/signup">',
     );
+  });
+
+  it('forces fixed-name built client assets to revalidate in production', async () => {
+    distDir = await mkdtemp(path.join(tmpdir(), 'ot-runtime-assets-'));
+    await mkdir(path.join(distDir, 'assets'), { recursive: true });
+    await writeFile(path.join(distDir, 'assets', 'app-PortalFeatures.js'), 'export const v = 2;');
+    await writeFile(path.join(distDir, 'assets', 'app-crm.css'), '.app { display: block; }');
+    await writeFile(path.join(distDir, 'assets', 'brand.webp'), 'stable-image');
+    await writeHtml(distDir, '404.html');
+    const config = loadConfig({
+      NODE_ENV: 'production',
+      PUBLIC_BASE_URL: 'https://ot99-web-staging.up.railway.app',
+      AUTH_CSRF_SECRET: 'test-only-auth-csrf-secret-for-static-cache-proof',
+      MFA_SECRET_ENCRYPTION_KEY: 'test-only-32-byte-mfa-key-static',
+    });
+    const pool = createMemoryPool();
+    server = await listenForTest(createApp({ config, pool, distDir }));
+    const baseUrl = serverBaseUrl(server);
+
+    for (const assetPath of ['/assets/app-PortalFeatures.js', '/assets/app-crm.css'] as const) {
+      const response = await fetch(`${baseUrl}${assetPath}`);
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('no-cache, max-age=0, must-revalidate');
+      expect(response.headers.get('pragma')).toBe('no-cache');
+      expect(response.headers.get('expires')).toBe('0');
+    }
+
+    const versionedImage = await fetch(`${baseUrl}/assets/brand.webp`);
+    expect(versionedImage.status).toBe(200);
+    expect(versionedImage.headers.get('cache-control')).toContain('max-age=3600');
   });
 });
 

@@ -3188,7 +3188,16 @@ export function createApp({
   });
 
   app.use(
-    express.static(distDir, { extensions: ['html'], maxAge: config.isProduction ? '1h' : 0 }),
+    express.static(distDir, {
+      extensions: ['html'],
+      maxAge: config.isProduction ? '1h' : 0,
+      setHeaders: (response, filePath) => {
+        if (!isMutableBuiltClientAsset(filePath)) return;
+        response.setHeader('Cache-Control', 'no-cache, max-age=0, must-revalidate');
+        response.setHeader('Pragma', 'no-cache');
+        response.setHeader('Expires', '0');
+      },
+    }),
   );
 
   app.use(async (_req, res) => {
@@ -3197,6 +3206,13 @@ export function createApp({
   });
 
   return app;
+}
+
+function isMutableBuiltClientAsset(filePath: string) {
+  return (
+    filePath.includes(`${path.sep}assets${path.sep}`) &&
+    ['.css', '.js', '.json'].includes(path.extname(filePath).toLowerCase())
+  );
 }
 
 function publicHtmlFileForPath(pathname: string) {
