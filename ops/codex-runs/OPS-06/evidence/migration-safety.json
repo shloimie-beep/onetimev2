@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22T16:32:47.840Z",
+  "generated_at": "2026-07-23T11:10:58.136Z",
   "status": "passed",
   "local_count": 52,
   "remote_sources_scanned": [
@@ -86,7 +86,10 @@
     "origin/codex/tisha-bav-2026-funnel",
     "origin/codex/tisha-bav-one-screen-staging-patch-20260722",
     "origin/codex/tisha-bav-visual-repair",
+    "origin/codex/tisha-live-signup-and-visual-hotfix-20260722",
     "origin/codex/tisha-registration-ghl-handoff-repair-20260722",
+    "origin/codex/tisha-title-on-art-20260722",
+    "origin/codex/video-to-classroom-e2e",
     "origin/codex/vimeo-autotrim-transcription-repair",
     "origin/codex/vimeo-drive-content-factory",
     "origin/codex/w12-00-canonical-director-handoff",
@@ -119,9 +122,7 @@
     "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z",
     "origin/integration/ops08-overnight-final-20260716T230543Z",
     "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z",
-    "origin/integration/w12-100-launch-readiness-convergence-20260717",
-    "origin/integration/w12-final-convergence-20260717T123715Z",
-    "origin/ops/OPS-03-canary-conductor-62ad1d39242f"
+    "origin/integration/w12-100-launch-readiness-convergence-20260717"
   ],
   "duplicates": [],
   "checksum_collisions": [
@@ -216,7 +217,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/0001_onetime_lead_slice.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/0001_onetime_lead_slice.sql",
@@ -249,9 +253,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0001_onetime_lead_slice.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0001_onetime_lead_slice.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0001_onetime_lead_slice.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/0001_onetime_lead_slice.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0001_onetime_lead_slice.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0001_onetime_lead_slice.sql"
       ]
     },
     {
@@ -339,7 +341,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/0002_crm_auth_core.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/0002_crm_auth_core.sql",
@@ -372,9 +377,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0002_crm_auth_core.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0002_crm_auth_core.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0002_crm_auth_core.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/0002_crm_auth_core.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0002_crm_auth_core.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0002_crm_auth_core.sql"
       ]
     },
     {
@@ -445,7 +448,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/0003_ot27_security_crm_repair.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/0003_ot27_security_crm_repair.sql",
@@ -478,9 +484,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0003_ot27_security_crm_repair.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0003_ot27_security_crm_repair.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0003_ot27_security_crm_repair.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/0003_ot27_security_crm_repair.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0003_ot27_security_crm_repair.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0003_ot27_security_crm_repair.sql"
       ]
     },
     {
@@ -555,7 +559,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/0004_delivery_worker_claim_index.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/0004_delivery_worker_claim_index.sql",
@@ -588,9 +595,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/0004_delivery_worker_claim_index.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/0004_delivery_worker_claim_index.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0004_delivery_worker_claim_index.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/0004_delivery_worker_claim_index.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/0004_delivery_worker_claim_index.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/0004_delivery_worker_claim_index.sql"
       ]
     },
     {
@@ -660,7 +665,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1000_ot42_crm_module_v1.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1000_ot42_crm_module_v1.sql",
@@ -693,9 +701,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1000_ot42_crm_module_v1.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1000_ot42_crm_module_v1.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1000_ot42_crm_module_v1.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1000_ot42_crm_module_v1.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1000_ot42_crm_module_v1.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1000_ot42_crm_module_v1.sql"
       ]
     },
     {
@@ -758,7 +764,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
@@ -791,8 +800,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1100_ot71_class_occurrence_fulfillment.sql"
       ]
     },
     {
@@ -855,7 +863,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
@@ -888,8 +899,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1201_ot74_legacy_audience_reconciliation.sql"
       ]
     },
     {
@@ -959,7 +969,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1300_ot46_billing_foundation.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1300_ot46_billing_foundation.sql",
@@ -992,9 +1005,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1300_ot46_billing_foundation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1300_ot46_billing_foundation.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1300_ot46_billing_foundation.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1300_ot46_billing_foundation.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1300_ot46_billing_foundation.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1300_ot46_billing_foundation.sql"
       ]
     },
     {
@@ -1057,7 +1068,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1400_ot71_content_library.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1400_ot71_content_library.sql",
@@ -1090,8 +1104,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1400_ot71_content_library.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1400_ot71_content_library.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1400_ot71_content_library.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1400_ot71_content_library.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1400_ot71_content_library.sql"
       ]
     },
     {
@@ -1161,7 +1174,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1500_ot52_portal_households_learners.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1500_ot52_portal_households_learners.sql",
@@ -1194,9 +1210,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1500_ot52_portal_households_learners.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1500_ot52_portal_households_learners.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1500_ot52_portal_households_learners.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1500_ot52_portal_households_learners.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1500_ot52_portal_households_learners.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1500_ot52_portal_households_learners.sql"
       ]
     },
     {
@@ -1266,7 +1280,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
@@ -1299,9 +1316,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql",
-        "origin/ops/OPS-03-canary-conductor-62ad1d39242f:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1600_ot51_telegram_bot_foundation.sql"
       ]
     },
     {
@@ -1364,7 +1379,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1700_ot71_account_lifecycle.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1700_ot71_account_lifecycle.sql",
@@ -1397,8 +1415,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1700_ot71_account_lifecycle.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1700_ot71_account_lifecycle.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1700_ot71_account_lifecycle.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1700_ot71_account_lifecycle.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1700_ot71_account_lifecycle.sql"
       ]
     },
     {
@@ -1460,7 +1477,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1800_ot72_provider_truth.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1800_ot72_provider_truth.sql",
@@ -1493,8 +1513,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1800_ot72_provider_truth.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1800_ot72_provider_truth.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1800_ot72_provider_truth.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1800_ot72_provider_truth.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1800_ot72_provider_truth.sql"
       ]
     },
     {
@@ -1552,7 +1571,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
@@ -1585,8 +1607,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1900_ot83_household_portal_foundation.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/1900_ot83_household_portal_foundation.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/1900_ot83_household_portal_foundation.sql"
       ]
     },
     {
@@ -1633,7 +1654,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2000_ot83r_student_question_seam.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2000_ot83r_student_question_seam.sql",
@@ -1666,8 +1690,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2000_ot83r_student_question_seam.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2000_ot83r_student_question_seam.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2000_ot83r_student_question_seam.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2000_ot83r_student_question_seam.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2000_ot83r_student_question_seam.sql"
       ]
     },
     {
@@ -1713,7 +1736,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
@@ -1746,8 +1772,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2001_ot84_telegram_action_gateway.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2001_ot84_telegram_action_gateway.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2001_ot84_telegram_action_gateway.sql"
       ]
     },
     {
@@ -1793,7 +1818,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
@@ -1826,8 +1854,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2002_ot88_zoom_learner_classroom.sql"
       ]
     },
     {
@@ -1873,7 +1900,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
@@ -1906,8 +1936,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2003_ot89a_subscriber_support_producer.sql"
       ]
     },
     {
@@ -1953,7 +1982,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
@@ -1986,8 +2018,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2004_ot85_whatsapp_assistant.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2004_ot85_whatsapp_assistant.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2004_ot85_whatsapp_assistant.sql"
       ]
     },
     {
@@ -2033,7 +2064,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2005_ot86_content_pipeline.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2005_ot86_content_pipeline.sql",
@@ -2066,8 +2100,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2005_ot86_content_pipeline.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2005_ot86_content_pipeline.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2005_ot86_content_pipeline.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2005_ot86_content_pipeline.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2005_ot86_content_pipeline.sql"
       ]
     },
     {
@@ -2113,7 +2146,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2006_ot86b_social_publishing.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2006_ot86b_social_publishing.sql",
@@ -2146,8 +2182,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2006_ot86b_social_publishing.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2006_ot86b_social_publishing.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2006_ot86b_social_publishing.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2006_ot86b_social_publishing.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2006_ot86b_social_publishing.sql"
       ]
     },
     {
@@ -2193,7 +2228,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
@@ -2226,8 +2264,7 @@
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
         "origin/integration/ot-99-final-semantic-convergence-20260716T122407Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2007_ot87_stripe_test_entitlements.sql"
       ]
     },
     {
@@ -2270,7 +2307,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
@@ -2302,8 +2342,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2008_ops03a_lifecycle_delivery_outbox.sql"
       ]
     },
     {
@@ -2346,7 +2385,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
@@ -2378,8 +2420,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2009_ops03a_activation_mfa_handoffs.sql"
       ]
     },
     {
@@ -2407,7 +2448,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
@@ -2439,8 +2483,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2010_ops03b_email_step_up_login.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2010_ops03b_email_step_up_login.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2010_ops03b_email_step_up_login.sql"
       ]
     },
     {
@@ -2467,7 +2510,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
@@ -2499,8 +2545,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2011_ot101r_telegram_admin_runtime.sql"
       ]
     },
     {
@@ -2527,7 +2572,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
@@ -2559,8 +2607,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2012_ot104r_vimeo_private_runtime.sql"
       ]
     },
     {
@@ -2587,7 +2634,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
@@ -2619,8 +2669,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2013_ot110a_admin_content_workspace.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2013_ot110a_admin_content_workspace.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2013_ot110a_admin_content_workspace.sql"
       ]
     },
     {
@@ -2647,7 +2696,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
@@ -2679,8 +2731,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2014_ot111_legacy_activation_campaign.sql"
       ]
     },
     {
@@ -2707,7 +2758,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2015_ops06_reliability_observability.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2015_ops06_reliability_observability.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2015_ops06_reliability_observability.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2015_ops06_reliability_observability.sql",
@@ -2738,8 +2792,7 @@
         "origin/codex/w13-10-complete-launch-foundations:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2015_ops06_reliability_observability.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2015_ops06_reliability_observability.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2015_ops06_reliability_observability.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2015_ops06_reliability_observability.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2015_ops06_reliability_observability.sql"
       ]
     },
     {
@@ -2766,7 +2819,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2016_ot114_crm_communications_support.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2016_ot114_crm_communications_support.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2016_ot114_crm_communications_support.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2016_ot114_crm_communications_support.sql",
@@ -2796,8 +2852,7 @@
         "origin/codex/w12-100-isolated-staging-deployment-20260717:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/w13-10-complete-launch-foundations:packages/db/migrations/2016_ot114_crm_communications_support.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2016_ot114_crm_communications_support.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2016_ot114_crm_communications_support.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2016_ot114_crm_communications_support.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2016_ot114_crm_communications_support.sql"
       ]
     },
     {
@@ -2825,7 +2880,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
@@ -2856,8 +2914,7 @@
         "origin/codex/w13-10-complete-launch-foundations:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2100_ot100_whatsapp_provider_activation.sql"
       ]
     },
     {
@@ -2885,7 +2942,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2130_ot103_zoom_provider.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2130_ot103_zoom_provider.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2130_ot103_zoom_provider.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2130_ot103_zoom_provider.sql",
@@ -2916,8 +2976,7 @@
         "origin/codex/w13-10-complete-launch-foundations:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2130_ot103_zoom_provider.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2130_ot103_zoom_provider.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2130_ot103_zoom_provider.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2130_ot103_zoom_provider.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2130_ot103_zoom_provider.sql"
       ]
     },
     {
@@ -2945,7 +3004,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
@@ -2977,8 +3039,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2160_ot106_buffer_social_publishing.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2160_ot106_buffer_social_publishing.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2160_ot106_buffer_social_publishing.sql"
       ]
     },
     {
@@ -3006,7 +3067,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/codex/w12-00-canonical-director-handoff:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
@@ -3038,8 +3102,7 @@
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/integration/ops04c-one-time-access-content-convergence-20260716T213505Z:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
         "origin/integration/ops08-overnight-final-20260716T230543Z:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2190_ot109_rabbi_content_publisher.sql"
       ]
     },
     {
@@ -3065,7 +3128,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2200_w12_02_communication_history.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2200_w12_02_communication_history.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2200_w12_02_communication_history.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/w12-02-communication-history:packages/db/migrations/2200_w12_02_communication_history.sql",
@@ -3086,8 +3152,7 @@
         "origin/codex/w12-100-isolated-staging-deployment-20260717:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/w13-10-complete-launch-foundations:packages/db/migrations/2200_w12_02_communication_history.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2200_w12_02_communication_history.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2200_w12_02_communication_history.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2200_w12_02_communication_history.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2200_w12_02_communication_history.sql"
       ]
     },
     {
@@ -3113,7 +3178,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/w12-01-crm-audience-import:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
@@ -3134,8 +3202,7 @@
         "origin/codex/w12-100-isolated-staging-deployment-20260717:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/w13-10-complete-launch-foundations:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2201_w12_01_crm_audience_import.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2201_w12_01_crm_audience_import.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2201_w12_01_crm_audience_import.sql"
       ]
     },
     {
@@ -3161,7 +3228,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2202_w12_05_telegram_operations.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2202_w12_05_telegram_operations.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2202_w12_05_telegram_operations.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/w12-100-00-director-and-ops13a-convergence:packages/db/migrations/2202_w12_05_telegram_operations.sql",
@@ -3181,8 +3251,7 @@
         "origin/codex/w12-100-isolated-staging-deployment-20260717:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/w13-10-complete-launch-foundations:packages/db/migrations/2202_w12_05_telegram_operations.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2202_w12_05_telegram_operations.sql",
-        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2202_w12_05_telegram_operations.sql",
-        "origin/integration/w12-final-convergence-20260717T123715Z:packages/db/migrations/2202_w12_05_telegram_operations.sql"
+        "origin/integration/w12-100-launch-readiness-convergence-20260717:packages/db/migrations/2202_w12_05_telegram_operations.sql"
       ]
     },
     {
@@ -3208,7 +3277,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2203_w13_100_student_gamification.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2203_w13_100_student_gamification.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2203_w13_100_student_gamification.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2203_w13_100_student_gamification.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2203_w13_100_student_gamification.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2203_w13_100_student_gamification.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2203_w13_100_student_gamification.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2203_w13_100_student_gamification.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2203_w13_100_student_gamification.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2203_w13_100_student_gamification.sql"
@@ -3237,7 +3309,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
         "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2204_w12_100_real_source_crm_apply.sql"
@@ -3259,6 +3334,7 @@
         "origin/codex/student-experience-preview:packages/db/migrations/2206_student_non_email_credentials.sql",
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2206_student_non_email_credentials.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2206_student_non_email_credentials.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2206_student_non_email_credentials.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2206_student_non_email_credentials.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2206_student_non_email_credentials.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2206_student_non_email_credentials.sql"
@@ -3280,6 +3356,7 @@
         "origin/codex/student-experience-preview:packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2207_classroom_board_and_lesson_projection.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2207_classroom_board_and_lesson_projection.sql"
@@ -3299,9 +3376,27 @@
         "origin/codex/rabbi-live-console-zoom-obs:packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
         "origin/codex/vimeo-autotrim-transcription-repair:packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2208_learning_delivery_media_pipeline.sql",
         "origin/codex/zoom-real-control-activation:packages/db/migrations/2208_learning_delivery_media_pipeline.sql"
+      ]
+    },
+    {
+      "id": "2209_class_series_scope_unique",
+      "checksums": [
+        "28aa6ee66f93222765751b096b6f2a317184e728973e0b695e3cb70e2f6a5627",
+        "1b215099c05e083b40fe0821388b8ffd0eda7897d90f80a92579963afaf85f67"
+      ],
+      "paths": [
+        "worktree:packages/db/migrations/2209_class_series_scope_unique.sql",
+        "origin/codex/full-app-staging-live:packages/db/migrations/2209_class_series_scope_unique.sql",
+        "origin/codex/ot-launch-01-highlevel-app-contracts:packages/db/migrations/2209_class_series_scope_unique.sql",
+        "origin/codex/rabbi-live-console-zoom-obs:packages/db/migrations/2209_class_series_scope_unique.sql",
+        "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2209_class_series_scope_unique.sql",
+        "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2209_class_series_scope_unique.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2209_class_series_scope_unique.sql",
+        "origin/codex/zoom-real-control-activation:packages/db/migrations/2209_class_series_scope_unique.sql"
       ]
     },
     {
@@ -3317,7 +3412,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2210_tisha_bav_event_funnel.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2210_tisha_bav_event_funnel.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2210_tisha_bav_event_funnel.sql",
-        "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2210_tisha_bav_event_funnel.sql"
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2210_tisha_bav_event_funnel.sql",
+        "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2210_tisha_bav_event_funnel.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2210_tisha_bav_event_funnel.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2210_tisha_bav_event_funnel.sql"
       ]
     },
     {
@@ -3333,7 +3431,10 @@
         "origin/codex/tisha-bav-2026-funnel:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql",
         "origin/codex/tisha-bav-visual-repair:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql",
-        "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql"
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql",
+        "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2211_tisha_bav_provider_event_scope.sql"
       ]
     },
     {
@@ -3347,7 +3448,8 @@
         "origin/codex/full-app-staging-live:packages/db/migrations/2212_rabbi_live_console_zoom_obs.sql",
         "origin/codex/ot-launch-01-highlevel-app-contracts:packages/db/migrations/2212_rabbi_live_console_zoom_obs.sql",
         "origin/codex/rabbi-live-console-zoom-obs:packages/db/migrations/2212_rabbi_live_console_zoom_obs.sql",
-        "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2212_rabbi_live_console_zoom_obs.sql"
+        "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2212_rabbi_live_console_zoom_obs.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2212_rabbi_live_console_zoom_obs.sql"
       ]
     },
     {
@@ -3360,7 +3462,8 @@
         "worktree:packages/db/migrations/2213_learning_delivery_autotrim_transcripts.sql",
         "origin/codex/full-app-staging-live:packages/db/migrations/2213_learning_delivery_autotrim_transcripts.sql",
         "origin/codex/ot-launch-01-highlevel-app-contracts:packages/db/migrations/2213_learning_delivery_autotrim_transcripts.sql",
-        "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2213_learning_delivery_autotrim_transcripts.sql"
+        "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2213_learning_delivery_autotrim_transcripts.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2213_learning_delivery_autotrim_transcripts.sql"
       ]
     },
     {
@@ -3374,6 +3477,7 @@
         "origin/codex/full-app-staging-live:packages/db/migrations/2214_learning_delivery_content_factory.sql",
         "origin/codex/ot-launch-01-highlevel-app-contracts:packages/db/migrations/2214_learning_delivery_content_factory.sql",
         "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2214_learning_delivery_content_factory.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2214_learning_delivery_content_factory.sql",
         "origin/codex/vimeo-drive-content-factory:packages/db/migrations/2214_learning_delivery_content_factory.sql"
       ]
     },
@@ -3387,7 +3491,8 @@
         "worktree:packages/db/migrations/2215_experience_preview_sessions.sql",
         "origin/codex/full-app-staging-live:packages/db/migrations/2215_experience_preview_sessions.sql",
         "origin/codex/ot-launch-01-highlevel-app-contracts:packages/db/migrations/2215_experience_preview_sessions.sql",
-        "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2215_experience_preview_sessions.sql"
+        "origin/codex/tisha-bav-one-screen-staging-patch-20260722:packages/db/migrations/2215_experience_preview_sessions.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2215_experience_preview_sessions.sql"
       ]
     },
     {
@@ -3398,7 +3503,9 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2216_highlevel_application_contracts.sql",
-        "origin/codex/ot-launch-01-highlevel-app-contracts:packages/db/migrations/2216_highlevel_application_contracts.sql"
+        "origin/codex/full-app-staging-live:packages/db/migrations/2216_highlevel_application_contracts.sql",
+        "origin/codex/ot-launch-01-highlevel-app-contracts:packages/db/migrations/2216_highlevel_application_contracts.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2216_highlevel_application_contracts.sql"
       ]
     },
     {
@@ -3409,7 +3516,11 @@
       ],
       "paths": [
         "worktree:packages/db/migrations/2220_tisha_bav_event_email_permission.sql",
-        "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2220_tisha_bav_event_email_permission.sql"
+        "origin/codex/full-app-staging-live:packages/db/migrations/2220_tisha_bav_event_email_permission.sql",
+        "origin/codex/tisha-live-signup-and-visual-hotfix-20260722:packages/db/migrations/2220_tisha_bav_event_email_permission.sql",
+        "origin/codex/tisha-registration-ghl-handoff-repair-20260722:packages/db/migrations/2220_tisha_bav_event_email_permission.sql",
+        "origin/codex/tisha-title-on-art-20260722:packages/db/migrations/2220_tisha_bav_event_email_permission.sql",
+        "origin/codex/video-to-classroom-e2e:packages/db/migrations/2220_tisha_bav_event_email_permission.sql"
       ]
     },
     {
