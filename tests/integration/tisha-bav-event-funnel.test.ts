@@ -846,7 +846,7 @@ describe('Tisha BAv event registration', () => {
     expect(highLevel.workflowRequests).toHaveLength(1);
   });
 
-  it('does not reopen a legacy false-success delivery from an ordinary public replay', async () => {
+  it('reopens a legacy false-success delivery once from a fresh public registration', async () => {
     const initial = await captureTishaBavRegistration({
       pool,
       config: testConfig(),
@@ -875,8 +875,32 @@ describe('Tisha BAv event registration', () => {
       now: openWindow,
       highLevelClient: highLevel,
     });
-    expect(replay).toMatchObject({ ghl_sync_status: 'skipped', confirmation_queued: false });
-    expect(highLevel.workflowRequests).toHaveLength(0);
+    expect(replay).toMatchObject({ ghl_sync_status: 'succeeded', confirmation_queued: true });
+    expect(highLevel.workflowRequests).toHaveLength(1);
+    expect([...highLevel.contacts.values()][0]?.tags).toEqual(
+      expect.arrayContaining([
+        "OT | Event | Tisha B'Av 2026 | Registered",
+        "OT | Source | Tisha B'Av 2026",
+      ]),
+    );
+
+    const verifiedReplay = await captureTishaBavRegistration({
+      pool,
+      config: fallbackConfig({
+        HIGHLEVEL_EVENT_SYNC_MODE: 'mock',
+        HIGHLEVEL_TISHA_BAV_WORKFLOW_ID: 'wf_tisha_bav_confirmation',
+      }),
+      payload: registrationPayload('legacy-public-replay@example.test', {
+        idempotency_key: 'legacy-public-replay-3',
+      }),
+      now: openWindow,
+      highLevelClient: highLevel,
+    });
+    expect(verifiedReplay).toMatchObject({
+      ghl_sync_status: 'succeeded',
+      confirmation_queued: true,
+    });
+    expect(highLevel.workflowRequests).toHaveLength(1);
     const fallback = await pool.query(
       `SELECT count(*)::int AS count
          FROM onetime.event_delivery_events

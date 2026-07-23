@@ -1294,24 +1294,28 @@ async function upsertHighLevelDelivery(
      VALUES ($1,$2,$3,$4,$5,$6,'highlevel',$7,$8,$9,$10,$11::jsonb,$12::jsonb,$13)
      ON CONFLICT (account_key, product_key, event_code, idempotency_key)
      DO UPDATE SET
-       protected_payload = EXCLUDED.protected_payload,
-       public_metadata = CASE
-          WHEN onetime.event_delivery_events.status = 'succeeded'
-           AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
-          THEN onetime.event_delivery_events.public_metadata
+        protected_payload = EXCLUDED.protected_payload,
+        public_metadata = CASE
+           WHEN onetime.event_delivery_events.status = 'succeeded'
+            AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
+            AND onetime.event_delivery_events.public_metadata->>'workflow_enrollment_verified' = 'true'
+            AND onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
+           THEN onetime.event_delivery_events.public_metadata
           WHEN onetime.event_delivery_events.public_metadata->>'membership_existing' = 'true'
-          THEN onetime.event_delivery_events.public_metadata
+           THEN onetime.event_delivery_events.public_metadata
           WHEN onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
           THEN onetime.event_delivery_events.public_metadata
           ELSE EXCLUDED.public_metadata
         END,
        payload_digest = EXCLUDED.payload_digest,
-       status = CASE
-          WHEN onetime.event_delivery_events.status = 'succeeded'
-           AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
-          THEN 'succeeded'
+        status = CASE
+           WHEN onetime.event_delivery_events.status = 'succeeded'
+            AND onetime.event_delivery_events.public_metadata->>'tags_verified' = 'true'
+            AND onetime.event_delivery_events.public_metadata->>'workflow_enrollment_verified' = 'true'
+            AND onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
+           THEN 'succeeded'
           WHEN onetime.event_delivery_events.public_metadata->>'membership_existing' = 'true'
-          THEN 'skipped'
+           THEN 'skipped'
           WHEN onetime.event_delivery_events.public_metadata->>'new_enrollment_accepted' = 'true'
           THEN onetime.event_delivery_events.status
           ELSE EXCLUDED.status
