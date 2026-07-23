@@ -14,7 +14,7 @@
     "superseded_head": "41d4d30af09fca44d12fb47f527fc4f4e37b3820",
     "superseded_reason": "Independent exact-head audit found failStage was not fenced by lease generation.",
     "implementation_head_before_handoff": "e7f001ee9496109bac0ea20af5065bdabe7de122",
-    "terminal_pr_head": "resolve from the immutable PR checkpoint created after this handoff commit",
+    "terminal_pr_head": "45b213a5ddfde97d60f220ae3eb0bdff5cda51ed",
     "semantic_patch_boundary": [
       {
         "commit": "516a0a58b083c583a05dcfcbd79d5f0b10833916",
@@ -79,7 +79,7 @@
       "packages/contracts/src/content/content-factory.ts",
       "packages/db/migrations/2221_video_to_classroom_e2e.sql",
       "packages/db/migrations/2222_content_factory_provider_constraint.sql",
-      "packages/db/migrations/2223_content_factory_publish_ready_constraint.sql",
+      "packages/db/migrations/2224_content_factory_publish_ready_constraint.sql",
       "packages/domain/src/content/content-factory-storage.ts",
       "packages/domain/src/content/content-factory-worker.ts",
       "packages/domain/src/content/content-factory.ts",
@@ -115,7 +115,8 @@
         "ownership": "PR 113"
       },
       {
-        "path": "packages/db/migrations/2223_content_factory_publish_ready_constraint.sql",
+        "path": "packages/db/migrations/2224_content_factory_publish_ready_constraint.sql",
+        "upstream_isolated_preview_path": "packages/db/migrations/2223_content_factory_publish_ready_constraint.sql",
         "sha256": "59ac22d69f56382669d70d1e78c7556e162efcc3183a5552b111f3d7b9953a65",
         "ownership": "PR 113",
         "preview_state": "applied",
@@ -157,7 +158,7 @@
       "url": "https://ot99-web-onetimev2-pr-113.up.railway.app",
       "verified_implementation_deployment_id": "1c185c44-d079-49f4-aea5-a5663f6b8238",
       "verified_implementation_head": "bafd1e3110a529f538a823ea1ec15892630710bf",
-      "terminal_handoff_deployment": "resolve from the immutable PR checkpoint",
+      "terminal_handoff_deployment": "aea5aace-4b11-427a-a56f-db2e468d3ed1",
       "health": "pass",
       "readiness": "pass; database ready; latest migration 2223; no blockers",
       "service_initiated_internet_flows": 0
@@ -189,7 +190,7 @@
         "stage": "mark_published",
         "safe_error_code": "pg_23514"
       },
-      "repair": "2223 replaces the stale generated raw-provider-URL publish check with the opaque provider ID, approval, publication, and captions-ready contract",
+      "repair": "The conductor-integrated 2224 migration preserves the upstream 2223 SQL bytes and checksum while replacing the stale generated raw-provider-URL publish check with the opaque provider ID, approval, publication, and captions-ready contract",
       "student_library_repair": "Occurrence-scoped factory video access now requires the exact active content entitlement plus exact active occurrence entitlement; review sheets retain the household billing gate."
     },
     "seed_contract": {
@@ -245,7 +246,7 @@
   },
   "conductor_integration": [
     "Integrate the complete semantic range from 69e451184ea2a80d13b12ccaf3da20db0c2684cf through the terminal PR head; do not cherry-pick only the UI or only a repair commit.",
-    "Preserve migrations 2214, 2221, 2222, and 2223 with the recorded checksums and apply them before starting the narrow worker.",
+    "Preserve migrations 2214, 2221, 2222, and conductor-integrated 2224 with the recorded checksums and apply them before starting the narrow worker. The upstream isolated preview's 2223 filename remains historical evidence; PR 97 already owns 2223_account_product_access_projection.",
     "Preserve ops/goals/OT-LAUNCH-01/BOARD.yaml, ops/goals/CURRENT.yaml, and ops/previews/current.json bytes until the conductor performs its owned status update.",
     "Provision persistent private storage at /var/lib/onetime/content-factory on the service running the narrow worker, or replace it with shared private object storage.",
     "Keep provider calls disabled until separately and exactly authorized.",

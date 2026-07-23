@@ -4952,9 +4952,7 @@ function classroomLaunchHtml() {
 </html>`;
 }
 
-function contentFactoryPlayerHtml(
-  playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>,
-) {
+function contentFactoryPlayerHtml(playback: Awaited<ReturnType<typeof getContentFactoryPlayback>>) {
   return `<!doctype html>
 <html lang="en">
 <head>

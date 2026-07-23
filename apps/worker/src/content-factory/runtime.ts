@@ -4,7 +4,7 @@ import path from 'node:path';
 import { loadConfig, type AppConfig } from '../../../../packages/config/src/index.ts';
 import type { DbPool } from '../../../../packages/db/src/index.ts';
 
-export const CONTENT_FACTORY_MIGRATION_ID = '2223_content_factory_publish_ready_constraint';
+export const CONTENT_FACTORY_MIGRATION_ID = '2224_content_factory_publish_ready_constraint';
 export const CONTENT_FACTORY_MIGRATION_CHECKSUM =
   '59ac22d69f56382669d70d1e78c7556e162efcc3183a5552b111f3d7b9953a65';
 

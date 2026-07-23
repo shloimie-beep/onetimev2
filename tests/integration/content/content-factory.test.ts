@@ -158,6 +158,7 @@ describe('durable occurrence-scoped content factory', () => {
       studentOneUserKey: studentOne.userKey,
       siblingUserKey: sibling.userKey,
     });
+    await seedActiveAccessProjection();
 
     const firstWebProcess = await listenForTest(createApp({ config, pool }));
     const video = syntheticMp4('first');

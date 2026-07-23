@@ -11,7 +11,7 @@ describe('content factory migration allocation', () => {
     const previewMigrationName = '2215_experience_preview_sessions.sql';
     const durableMigrationName = '2221_video_to_classroom_e2e.sql';
     const providerConstraintMigrationName = '2222_content_factory_provider_constraint.sql';
-    const publishConstraintMigrationName = '2223_content_factory_publish_ready_constraint.sql';
+    const publishConstraintMigrationName = '2224_content_factory_publish_ready_constraint.sql';
     expect(names).toContain(migrationName);
     expect(names).toContain(previewMigrationName);
     expect(names).toContain(durableMigrationName);
@@ -22,6 +22,8 @@ describe('content factory migration allocation', () => {
 
     const prefixes = names.flatMap((name) => name.match(/^(\d{4})_/)?.[1] ?? []);
     expect(new Set(prefixes).size).toBe(prefixes.length);
+    expect(names).toContain('2223_account_product_access_projection.sql');
+    expect(names).not.toContain('2223_content_factory_publish_ready_constraint.sql');
 
     const sql = await readFile(path.join(directory, migrationName), 'utf8');
     expect(sql).toContain(
