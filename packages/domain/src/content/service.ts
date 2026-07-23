@@ -143,16 +143,12 @@ export function createContentPortalAccessAdapter(input: {
 }): LearnerContentAccessAdapter {
   return {
     publishedLibraryForLearner: async ({ actor, learner }) => {
-      if (
-        !(await householdHasLearningAccess({
-          pool: input.pool,
-          accountKey: actor.account_key,
-          productKey: actor.product_key,
-          householdKey: learner.household_key,
-        }))
-      ) {
-        return [];
-      }
+      const householdAccess = await householdHasLearningAccess({
+        pool: input.pool,
+        accountKey: actor.account_key,
+        productKey: actor.product_key,
+        householdKey: learner.household_key,
+      });
       return portalItemsForLearner({
         pool: input.pool,
         accountKey: actor.account_key,
@@ -161,6 +157,7 @@ export function createContentPortalAccessAdapter(input: {
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['video', 'source'],
+        occurrenceScopedOnly: !householdAccess,
       });
     },
     reviewSheetsForLearner: async ({ actor, learner }) => {
@@ -182,6 +179,7 @@ export function createContentPortalAccessAdapter(input: {
         learnerKey: learner.learner_key,
         householdKey: learner.household_key,
         itemTypes: ['sheet', 'review'],
+        occurrenceScopedOnly: false,
       });
     },
   };
@@ -463,6 +461,7 @@ async function portalItemsForLearner(input: {
   learnerKey: string;
   householdKey: string;
   itemTypes: ContentItemType[];
+  occurrenceScopedOnly: boolean;
 }): Promise<LibraryItem[]> {
   const result = await input.pool.query(
     `SELECT items.*,
@@ -495,6 +494,13 @@ async function portalItemsForLearner(input: {
         AND factory.product_key = items.product_key
         AND factory.source_key = items.content_item_key
         AND factory.factory_state = 'published'
+       LEFT JOIN onetime.classroom_occurrence_learner_entitlements AS occurrence_entitlement
+         ON occurrence_entitlement.account_key = items.account_key
+        AND occurrence_entitlement.product_key = items.product_key
+        AND occurrence_entitlement.occurrence_key = items.occurrence_key
+        AND occurrence_entitlement.household_key = $5
+        AND occurrence_entitlement.learner_key = $4
+        AND occurrence_entitlement.entitlement_state = 'active'
        LEFT JOIN onetime.class_occurrences AS occurrence
          ON occurrence.account_key = items.account_key
         AND occurrence.product_key = items.product_key
@@ -520,6 +526,13 @@ async function portalItemsForLearner(input: {
           OR lessons.lesson_key IS NOT NULL
           OR factory.source_key IS NOT NULL
         )
+        AND (
+          $7::boolean = false
+          OR (
+            factory.source_key IS NOT NULL
+            AND occurrence_entitlement.occurrence_entitlement_key IS NOT NULL
+          )
+        )
       ORDER BY items.published_at DESC, items.content_item_key ASC
       LIMIT 25`,
     [
@@ -529,6 +542,7 @@ async function portalItemsForLearner(input: {
       input.learnerKey,
       input.householdKey,
       input.actorRole,
+      input.occurrenceScopedOnly,
     ],
   );
   const messagesByLesson = await approvedMessagesByLesson(
@@ -544,6 +558,11 @@ async function portalItemsForLearner(input: {
     const factoryDraft = row.factory_draft_json
       ? (row.factory_draft_json as Record<string, unknown>)
       : null;
+    const factoryOccurrenceKey = nullableString(row.occurrence_key);
+    const factoryClassTitle = nullableString(row.factory_class_title);
+    const factoryClassDate = row.factory_class_date ? asDate(row.factory_class_date) : null;
+    const completeFactoryProjection =
+      factoryDraft && factoryOccurrenceKey && factoryClassTitle && factoryClassDate;
     const itemKey = String(row.content_item_key);
     return {
       item_key: itemKey,
@@ -559,11 +578,11 @@ async function portalItemsForLearner(input: {
       ),
       featured: Boolean(row.lesson_featured),
       published_at: nullableIso(row.published_at),
-      content_factory: factoryDraft
+      content_factory: completeFactoryProjection
         ? {
-            occurrence_key: String(row.occurrence_key),
-            class_title: String(row.factory_class_title),
-            class_date: asDate(row.factory_class_date).toISOString().slice(0, 10),
+            occurrence_key: factoryOccurrenceKey,
+            class_title: factoryClassTitle,
+            class_date: factoryClassDate.toISOString().slice(0, 10),
             approved_summary: String(factoryDraft.short_description ?? ''),
             approved_review_questions: Array.isArray(factoryDraft.review_questions)
               ? factoryDraft.review_questions.map(String)

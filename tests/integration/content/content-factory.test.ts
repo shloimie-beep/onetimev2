@@ -10,6 +10,7 @@ import {
   claimContentFactoryJob,
   contentFactoryStorageFromEnv,
   createAccountUser,
+  createContentPortalAccessAdapter,
   createSession,
   getSessionUserByKey,
   retryContentFactoryIntake,
@@ -214,6 +215,47 @@ describe('durable occurrence-scoped content factory', () => {
         }),
       ]);
       expect(entitlements.rows.some((row) => row.audience === 'all_active_learners')).toBe(false);
+
+      const portalLibrary = createContentPortalAccessAdapter({ pool, config });
+      const portalLearner = (learnerKey: string, displayName: string) => ({
+        learner_key: learnerKey,
+        household_key: 'household_video_e2e',
+        display_name: displayName,
+        hebrew_name: null,
+        grade_label: null,
+        learner_status: 'active' as const,
+        version: 1,
+        created_at: '2026-07-22T12:00:00.000Z',
+        updated_at: '2026-07-22T12:00:00.000Z',
+      });
+      const portalActor = (userKey: string, learnerKey: string, accessStateKey: string) => ({
+        account_key: config.accountKey,
+        product_key: config.productKey,
+        actor_user_ref: userKey,
+        actor_role: 'student' as const,
+        session_key: `session_${learnerKey}`,
+        capabilities: ['student:dashboard:read' as const],
+        authorized_households: [],
+        student_learner: {
+          learner_key: learnerKey,
+          household_key: 'household_video_e2e',
+          access_state_key: accessStateKey,
+        },
+      });
+      const entitledLibrary = await portalLibrary.publishedLibraryForLearner({
+        actor: portalActor(studentOne.userKey, 'learner_video_one', 'student_access_video_one'),
+        learner: portalLearner('learner_video_one', 'Entitled learner'),
+      });
+      const siblingLibrary = await portalLibrary.publishedLibraryForLearner({
+        actor: portalActor(
+          sibling.userKey,
+          'learner_video_sibling',
+          'student_access_video_sibling',
+        ),
+        learner: portalLearner('learner_video_sibling', 'Unentitled sibling'),
+      });
+      expect(entitledLibrary.map((item) => item.item_key)).toEqual([sourceKey]);
+      expect(siblingLibrary).toEqual([]);
 
       const entitledPlayback = await playback(restartedWebProcess.baseUrl, studentOne, sourceKey);
       const entitledHtml = await entitledPlayback.text();
